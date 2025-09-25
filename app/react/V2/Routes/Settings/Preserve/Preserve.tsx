@@ -1,14 +1,15 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout/PreserveIcon.js' ... Remove this comment to see the full error message
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+
+import { Translate } from 'app/I18N/index.js';
+
 import { PreserveIcon } from '../../Layout/PreserveIcon.js';
 import { useAtomValue } from 'jotai';
 import { settingsAtom, userAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button, Card, CopyValueInput } from '../../V2/Components/UI.js';
+
+import { Button, Card, CopyValueInput } from 'app/V2/Components/UI/index.js';
+
 import { requestToken } from 'api/preserve/index.js';
 
 const Preserve = () => {

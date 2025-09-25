@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
+
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
-import { Entity } from '../entities.v2/model/Entity.js';
+
+import { Entity } from 'api/entities.v2/model/Entity.js';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 

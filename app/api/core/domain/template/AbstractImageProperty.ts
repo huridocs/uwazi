@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property.js';
 import { InvalidStyleTypeError } from './errors';
 

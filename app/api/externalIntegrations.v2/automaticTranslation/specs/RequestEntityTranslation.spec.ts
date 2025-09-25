@@ -1,16 +1,16 @@
 /* eslint-disable max-classes-per-file */
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/types/EntityInp... Remove this comment to see the full error message
-import { entityInputDataSchema } from '../entities.v2/types/EntityInputDataSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/types/EntityInp... Remove this comment to see the full error message
-import { EntityInputModel } from '../entities.v2/types/EntityInputDataType.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
-import { Logger } from '../log.v2/contracts/Logger.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
-import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { TaskManager } from '../services/tasksmanager/TaskManager.js';
+
+import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema.js';
+
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+
+import { Logger } from 'api/log.v2/contracts/Logger.js';
+
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+
+import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
@@ -19,14 +19,14 @@ import testingDB, { DBFixture } from 'api/utils/testing_db.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
-// @ts-expect-error TS(2307): Cannot find module '../infrastructure/Redis.js' or... Remove this comment to see the full error message
+
 import { Redis } from '../infrastructure/Redis.js';
 
 const factory = getFixturesFactory();
@@ -109,7 +109,6 @@ describe('RequestEntityTranslation', () => {
   describe('on requests that should be processed', () => {
     beforeEach(async () => {
       const languageFromEntity = {
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         ...fixtures.entities?.find(e => e.language === 'en'),
       } as EntitySchema;
       languageFromEntity._id = languageFromEntity?._id?.toString();
@@ -122,21 +121,18 @@ describe('RequestEntityTranslation', () => {
       const entities =
         (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity1' }).toArray()) ||
         [];
-      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       expect(entities.find(e => e.language === 'es')).toMatchObject({
         title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
         metadata: {
           text1: [{ value: `${RequestEntityTranslation.AITranslationPendingText} original text1` }],
         },
       });
-      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       expect(entities.find(e => e.language === 'pt')).toMatchObject({
         title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
         metadata: {
           text1: [{ value: `${RequestEntityTranslation.AITranslationPendingText} original text1` }],
         },
       });
-      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       expect(entities.find(e => e.language === 'en')).toMatchObject({
         title: 'entity1',
         metadata: { text1: [{ value: 'original text1' }] },
@@ -195,7 +191,6 @@ describe('RequestEntityTranslation', () => {
       ...fixtures,
       settings: [{ languages: [{ label: 'en', key: 'en' as LanguageISO6391, default: true }] }],
     });
-    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     const languageFromEntity = fixtures.entities?.find(e => e.language === 'en') as EntitySchema;
     languageFromEntity._id = languageFromEntity?._id?.toString();
     languageFromEntity.template = languageFromEntity?.template?.toString();

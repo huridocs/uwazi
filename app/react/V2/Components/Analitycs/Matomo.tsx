@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { globalMatomoAtom, settingsAtom } from '../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
-import { isClient } from 'api/utils/index.js';
+
+import { isClient } from 'app/utils/index.js';
 
 const buildScript = ({
   globalUrl,
@@ -55,7 +55,7 @@ const Matomo = () => {
     ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
     //silent fail
     // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) { }
 
   useEffect(() => {
     if (!scriptIsPresent.current) {

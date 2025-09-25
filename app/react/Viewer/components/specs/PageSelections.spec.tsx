@@ -6,10 +6,10 @@ import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
 
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientFile } from '../../istore.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+
+import { ClientEntitySchema, ClientFile } from "app/V2/shared/types.js";
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { pdfScaleAtom } from '../../../V2/atoms/index.js';
 import { PageSelections } from '../PageSelections.js';

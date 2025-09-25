@@ -12,24 +12,24 @@ import {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
-  // @ts-expect-error TS(2307): Cannot find module '../services/pdfsegmentation/sp... Remove this comment to see the full error message
+  
 } from '../services/pdfsegmentation/specs/fixtures.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { storage } from '../files.js';
+
+import { storage } from '../files/index.js';
 import path from 'path';
 
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
+
+import { tenants } from 'api/tenants/tenantContext.js';
+
 import { DB } from '../odm.js';
 import { Db } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+
 import { config } from '../config.js';
 import { PDFSegmentation } from '../PDFSegmentation.js';
 import { SegmentationModel } from '../segmentationModel.js';

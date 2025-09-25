@@ -5,13 +5,13 @@ import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import ReactPlayer from 'react-player';
 import { actions as formActions } from 'react-redux-form';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { renderConnectedMount } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Attachments/components/R... Remove this comment to see the full error message
+
+import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
+
 import { RenderAttachment } from '../../Attachments/components/RenderAttachment.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Attachments/components/W... Remove this comment to see the full error message
+
 import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Metadata/actions/support... Remove this comment to see the full error message
+
 import * as supportingFileActions from '../../Metadata/actions/supportingFilesActions.js';
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
@@ -112,7 +112,6 @@ describe('Media Modal', () => {
     render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Image });
 
     const attachments = component.find(RenderAttachment);
-    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(attachments.at(0).props().attachment).toEqual(jpgAttachment);
 
     expect(attachments.length).toBe(1);
@@ -125,7 +124,6 @@ describe('Media Modal', () => {
     render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Media });
 
     const attachments = component.find(RenderAttachment);
-    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(attachments.at(0).props().attachment).toEqual(videoAttachment);
 
     expect(attachments.length).toBe(1);
@@ -156,7 +154,6 @@ describe('Media Modal', () => {
       const testAttachment = 'http://test.test/test.jpg';
       const form = component.find(WebMediaResourceForm).at(0);
       const formData = { url: testAttachment };
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       form.props().handleSubmit(formData);
       expect(props.onChange).toHaveBeenCalledWith(testAttachment);
       expect(props.onClose).toHaveBeenCalled();
@@ -235,7 +232,6 @@ describe('Media Modal', () => {
       const form = component.find(WebMediaResourceForm).at(0);
       const formData = { url: testUrl };
 
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       form.props().handleSubmit(formData);
 
       expect(props.onChange).toHaveBeenCalledWith(testUrl);

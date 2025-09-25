@@ -1,27 +1,27 @@
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { storage, uploadsPath } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/FileNotFound.js' or i... Remove this comment to see the full error message
+
+import { storage, uploadsPath } from '../files/index.js';
+
 import { FileNotFound } from '../files/FileNotFound.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesModel.js' or its... Remove this comment to see the full error message
+
 import { filesModel } from '../files/filesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { ResultsMessage, TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
 import settings from 'api/settings/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/index.js' or its corr... Remove this comment to see the full error message
-import { handleError } from '../utils/index.js';
+
+import { tenants } from 'api/tenants/tenantContext.js';
+
+import { handleError } from 'app/utils/index.js';
 import path from 'path';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
 
 import { ObjectIdSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+
 import { SegmentationType } from 'shared/types/segmentationType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings } from 'shared/types/settingsType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';

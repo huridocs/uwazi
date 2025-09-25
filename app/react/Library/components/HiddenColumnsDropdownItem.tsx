@@ -2,8 +2,8 @@ import React from 'react';
 import { Icon } from 'UI';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
-import { TableViewColumn } from '../../istore.js';
-import { Translate } from '../../I18N/index.js';
+import { TableViewColumn } from "app/V2/shared/types.js";
+import { Translate } from 'app/I18N/index.js';
 
 interface SelectableColumn extends TableViewColumn {
   indeterminate?: boolean;
@@ -25,7 +25,6 @@ const ColumnItem = ({ item }: { item: SelectableColumn }) => (
       checked={!item.hidden}
       onChange={() => { }}
     />
-    // @ts-expect-error TS(2339): Property 'label' does not exist on type 'Selectabl... Remove this
     comment to see the full error message
     <Translate context={item.translationContext}>{item.label}</Translate>
   </>

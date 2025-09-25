@@ -3,10 +3,10 @@ import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '../suggestions/suggestions.js';
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
-import { validateAndCoerceRequest } from '../utils/validateRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
+import { validateAndCoerceRequest } from 'app/utils/validateRequest.js';
+
 import { needsAuthorization } from '../auth.js';
-import { parseQuery } from '../utils/parseQueryMiddleware.js';
+import { parseQuery } from 'app/utils/parseQueryMiddleware.js';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema.js';
 import { objectIdSchema } from 'shared/types/commonSchemas.js';
 import {
@@ -14,7 +14,7 @@ import {
   IXSuggestionAggregation,
   IXSuggestionsQuery,
 } from 'shared/types/suggestionType.js';
-import { handleError } from '../utils/index.js';
+import { handleError } from 'app/utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
@@ -162,7 +162,6 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/process',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
-    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     ProcessSuggestionsController.createHandler()
   );
 

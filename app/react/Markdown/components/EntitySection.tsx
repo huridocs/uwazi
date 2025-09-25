@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { IStore } from '../../istore.js';
+import { IStore } from "app/V2/shared/types.js";
 import { logError } from '../utils';
 import { Section } from './Section';
 
@@ -30,7 +30,6 @@ const getPropertyValue = (property: any, metadataProperty: any) => {
       return metadataProperty.map((v: any) => v.label || v.value);
     case 'relationship': {
       let value: any[] = [];
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       metadataProperty.forEach(v => {
         if (v.inheritedType && v.inheritedValue) {
           const properties = getPropertyValue({ type: v.inheritedType }, v.inheritedValue);
@@ -64,7 +63,6 @@ export const UnwrapMetadataObject = (MetadataObject: any, Template: any) =>
 // eslint-disable-next-line max-statements
 const EntitySection = ({ entity, templates, children, 'show-if': showIf }: ComponentProps) => {
   const jsEntity = entity.toJS();
-  // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
   const template = templates.find(t => t?.get('_id') === jsEntity.template);
   const unwrappedMetadata = UnwrapMetadataObject(jsEntity.metadata, template.toJS());
   jsEntity.metadata = unwrappedMetadata;

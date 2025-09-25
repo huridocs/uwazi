@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
+
 import { UseCase } from '../common.v2/contracts/UseCase.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { LanguageUtils } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
+import { files } from '../files/index.js';
+
 import { IXSuggestionType } from 'shared/types/suggestionType.js';
 import { Suggestions } from '../suggestions';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
@@ -28,7 +28,6 @@ export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
 
     entities.forEach(entity => {
       const file = filesForSuggestions.find(
-        // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
         f =>
           f.entity === entity.sharedId &&
           LanguageUtils.fromISO639_3(f.language!, false)?.ISO639_1 === entity.language

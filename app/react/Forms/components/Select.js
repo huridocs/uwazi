@@ -1,9 +1,9 @@
 /** @format */
 
-import { advancedSort } from '../../utils/advancedSort.js';
+import { advancedSort } from 'app/utils/advancedSort.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 export default class Select extends Component {
   render() {
     const { options, optionsValue, optionsLabel, placeholder, sort } = this.props;

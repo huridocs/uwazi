@@ -2,15 +2,15 @@ import { groupBy } from 'lodash';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { WithId } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files as filesAPI, storage } from '../files.js';
+
+import { files as filesAPI, storage } from '../files/index.js';
 import { processDocument } from '../files/processDocument.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 import { legacyLogger } from '../log/index.js';
-import { handleError, prettifyError } from '../utils/handleError.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema } from '../../istore.js';
+import { handleError, prettifyError } from 'app/utils/handleError.js';
+
+import { ClientEntitySchema } from "app/V2/shared/types.js";
 import { FileType } from 'shared/types/fileType.js';
 import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from 'shared/types/entityType.js';
@@ -206,7 +206,6 @@ const saveFiles = async (
     ).then(results => {
       results
         .filter(result => result.status === 'rejected')
-        // @ts-expect-error TS(2339): Property 'reason' does not exist on type 'PromiseS... Remove this comment to see the full error message
         .map(rejected => handleError(rejected.reason));
     });
 

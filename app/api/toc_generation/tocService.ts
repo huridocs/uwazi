@@ -1,15 +1,15 @@
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, storage } from '../files.js';
-import { prettifyError } from '../utils/handleError.js';
+
+import { files, storage } from '../files/index.js';
+import { prettifyError } from 'app/utils/handleError.js';
 import { legacyLogger } from '../log/index.js';
 import request from 'shared/JSONRequest.js';
 import entities from '../entities/index.js';
 import { TocSchema } from 'shared/types/commonTypes.js';
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
 import settings from '../settings/index.js';
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],

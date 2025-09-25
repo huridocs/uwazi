@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';
 import { TableLanguages } from '../LanguagesList.js';
@@ -15,11 +15,10 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
   >
     <Translate className="sr-only">Default</Translate>
     <StarIcon
-      className={`${
-        !cell.row.original.default
-          ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
-          : 'w-4'
-      }`}
+      className={`${!cell.row.original.default
+        ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
+        : 'w-4'
+        }`}
     />
   </Button>
 );

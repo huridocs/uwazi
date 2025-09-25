@@ -24,14 +24,14 @@ import { PreviewProperty } from '../../../domain/template/PreviewProperty.js';
 import { SelectProperty } from '../../../domain/template/SelectProperty.js';
 import { TextProperty } from '../../../domain/template/TextProperty.js';
 import { TitleProperty } from '../../../domain/template/TitleProperty.js';
-import { TemplateDBO } from '../../../../templates.v2/database/schemas/TemplateDBO.js';
-import { CommonProperty } from '../../../../templates.v2/model/CommonProperty.js';
-import { Property } from '../../../../templates.v2/model/Property.js';
-import { Template } from '../../../../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../../../../templates.v2/model/V1RelationshipProperty.js';
+import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO.js';
+import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
+import { Property } from 'api/templates.v2/model/Property.js';
+import { Template } from 'api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../../../../shared/types/commo... Remove this comment to see the full error message
-import { PropertySchema } from '../../../../shared/types/commonTypes.js';
+
+import { PropertySchema } from '../../../../../shared/types/commonTypes.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {
@@ -66,7 +66,6 @@ class CommonPropertyMapper {
 
   static toDomain(schema: PropertySchema, template: string): CommonProperty {
     if (schema.name === 'title') {
-      // @ts-expect-error TS(2740): Type 'TitleProperty' is missing the following prop... Remove this comment to see the full error message
       return new TitleProperty({
         id: schema._id!.toString(),
         label: schema.label,
@@ -83,7 +82,6 @@ class CommonPropertyMapper {
     }
 
     if (schema.name === 'creationDate') {
-      // @ts-expect-error TS(2740): Type 'CreationDateProperty' is missing the followi... Remove this comment to see the full error message
       return new CreationDateProperty({
         id: schema._id!.toString(),
         label: schema.label,
@@ -99,7 +97,6 @@ class CommonPropertyMapper {
     }
 
     if (schema.name === 'editDate') {
-      // @ts-expect-error TS(2740): Type 'ModifiedDateProperty' is missing the followi... Remove this comment to see the full error message
       return new ModifiedDateProperty({
         id: schema._id!.toString(),
         label: schema.label,
@@ -179,7 +176,6 @@ class PropertyMapper {
 
     switch (schema.type) {
       case 'text':
-        // @ts-expect-error TS(2740): Type 'TextProperty' is missing the following prope... Remove this comment to see the full error message
         return new TextProperty({
           ...baseProps,
           ...filterableProps,
@@ -187,39 +183,30 @@ class PropertyMapper {
         });
 
       case 'date':
-        // @ts-expect-error TS(2740): Type 'DateProperty' is missing the following prope... Remove this comment to see the full error message
         return new DateProperty({ ...baseProps, ...filterableProps });
 
       case 'daterange':
-        // @ts-expect-error TS(2740): Type 'DateRangeProperty' is missing the following ... Remove this comment to see the full error message
         return new DateRangeProperty({ ...baseProps, ...filterableProps });
 
       case 'generatedid':
-        // @ts-expect-error TS(2740): Type 'GenerateIdProperty' is missing the following... Remove this comment to see the full error message
         return new GenerateIdProperty({ ...baseProps, ...filterableProps });
 
       case 'markdown':
-        // @ts-expect-error TS(2740): Type 'MarkdownProperty' is missing the following p... Remove this comment to see the full error message
         return new MarkdownProperty({ ...baseProps, ...filterableProps });
 
       case 'multidate':
-        // @ts-expect-error TS(2740): Type 'MultiDateProperty' is missing the following ... Remove this comment to see the full error message
         return new MultiDateProperty({ ...baseProps, ...filterableProps });
 
       case 'multidaterange':
-        // @ts-expect-error TS(2740): Type 'MultiDateRangeProperty' is missing the follo... Remove this comment to see the full error message
         return new MultiDateRangeProperty({ ...baseProps, ...filterableProps });
 
       case 'numeric':
-        // @ts-expect-error TS(2740): Type 'NumericProperty' is missing the following pr... Remove this comment to see the full error message
         return new NumericProperty({ ...baseProps, ...filterableProps });
 
       case 'geolocation':
-        // @ts-expect-error TS(2740): Type 'GeolocationProperty' is missing the followin... Remove this comment to see the full error message
         return new GeolocationProperty(baseProps);
 
       case 'link':
-        // @ts-expect-error TS(2740): Type 'LinkProperty' is missing the following prope... Remove this comment to see the full error message
         return new LinkProperty(baseProps);
 
       case 'image':
@@ -229,11 +216,8 @@ class PropertyMapper {
           fullWidth: schema.fullWidth,
           style: schema.style as ImageStyle,
         };
-        // @ts-expect-error TS(2740): Type 'ImageProperty' is missing the following prop... Remove this comment to see the full error message
         if (schema.type === 'image') return new ImageProperty({ ...baseProps, ...imageStyleProps });
-        // @ts-expect-error TS(2740): Type 'MediaProperty' is missing the following prop... Remove this comment to see the full error message
         if (schema.type === 'media') return new MediaProperty({ ...baseProps, ...imageStyleProps });
-        // @ts-expect-error TS(2740): Type 'PreviewProperty' is missing the following pr... Remove this comment to see the full error message
         return new PreviewProperty({ ...baseProps, ...imageStyleProps });
       }
 
@@ -244,16 +228,13 @@ class PropertyMapper {
         };
 
         if (schema.type === 'multiselect') {
-          // @ts-expect-error TS(2740): Type 'MultiSelectProperty' is missing the followin... Remove this comment to see the full error message
           return new MultiSelectProperty({ ...baseProps, ...filterableProps, ...selectProps });
         }
 
-        // @ts-expect-error TS(2740): Type 'SelectProperty' is missing the following pro... Remove this comment to see the full error message
         return new SelectProperty({ ...baseProps, ...filterableProps, ...selectProps });
       }
 
       case 'relationship':
-        // @ts-expect-error TS(2740): Type 'V1RelationshipProperty' is missing the follo... Remove this comment to see the full error message
         return V1RelationshipProperty.create({
           ...baseProps,
           ...filterableProps,
@@ -273,7 +254,6 @@ class TemplateMapper {
   static toSchema(domain: Template): TemplateDBO {
     return {
       _id: ObjectId.createFromHexString(domain.id),
-      // @ts-expect-error TS(2322): Type '{ _id: ObjectId; color: string | undefined; ... Remove this comment to see the full error message
       color: domain.color,
       name: domain.name,
       default: domain.isDefault,
@@ -281,7 +261,6 @@ class TemplateMapper {
         PropertySchema,
         ...PropertySchema[],
       ],
-      // @ts-expect-error TS(2345): Argument of type '(domain: Property) => PropertySc... Remove this comment to see the full error message
       properties: domain.properties.map(PropertyMapper.toSchema),
       processing: domain.processing,
       entityViewPage: domain.entityViewPage,
@@ -293,15 +272,11 @@ class TemplateMapper {
 
     return new Template(
       templateId,
-      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplateDB... Remove this comment to see the full error message
       schema.name,
       schema.properties.map(item => PropertyMapper.toDomain(item, templateId)),
       schema.commonProperties.map(item => CommonPropertyMapper.toDomain(item, templateId)),
-      // @ts-expect-error TS(2339): Property 'color' does not exist on type 'TemplateD... Remove this comment to see the full error message
       schema.color,
-      // @ts-expect-error TS(2339): Property 'default' does not exist on type 'Templat... Remove this comment to see the full error message
       schema.default,
-      // @ts-expect-error TS(2339): Property 'entityViewPage' does not exist on type '... Remove this comment to see the full error message
       schema.entityViewPage
     );
   }

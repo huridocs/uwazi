@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from '../../../../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { AddExtractorSteps } from './steps/index.js';
 import { useCreateExtractorContext } from './CreateExtractorContext.js';
 import { Steppers } from './Steppers.js';

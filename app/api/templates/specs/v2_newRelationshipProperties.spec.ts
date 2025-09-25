@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/validation/Valida... Remove this comment to see the full error message
+
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/services/Entity... Remove this comment to see the full error message
-import { EntityRelationshipsUpdateService } from '../entities.v2/services/EntityRelationshipsUpdateService.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
-import translations from '../i18n.js';
-// @ts-expect-error TS(2307): Cannot find module '../migrations/migrations/143-p... Remove this comment to see the full error message
+
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+
+import translations from 'app/I18N/index.js';
+
 import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-fields/types.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
 import * as setupSockets from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
-import { elasticTesting } from '../utils/elastic_testing.js';
+
+import { elasticTesting } from 'app/utils/elastic_testing.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
@@ -357,7 +357,6 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         expect(relatedEntities?.map(e => e.metadata)).toEqual([{}]);
       });
     });
@@ -396,7 +395,6 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         expect(relatedEntities?.map(e => e.metadata)).toEqual([
           {
             new_name: [{ value: 'existing_value' }],
@@ -436,14 +434,12 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         expect(relatedEntities?.map(e => e.obsoleteMetadata)).toMatchObject([
           ['existing_relationship'],
         ]);
 
         await elasticTesting.refresh();
         const indexed = (await elasticTesting.getIndexedEntities()).find(
-          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           e => e.template === existingTemplate._id.toString()
         );
         expect(indexed?.obsoleteMetadata).toMatchObject(['existing_relationship']);
@@ -478,7 +474,6 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         expect(relatedEntities?.map(e => e.metadata.existing_relationship)).toEqual([
           [{ value: 'existing_value' }],
         ]);

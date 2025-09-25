@@ -4,8 +4,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { Checkbox } from '../../../../Components/Forms/index.js';
 import { StatsTooltip } from './Tooltip.js';
@@ -54,7 +54,7 @@ const FiltersSidepanel = ({
     if (searchParams.has('filter')) {
       initialFilters = JSON.parse(searchParams.get('filter')!);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const { register, handleSubmit, reset, setValue } = useForm({
     values: initialFilters,

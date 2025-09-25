@@ -3,28 +3,28 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 import db from 'api/utils/testing_db.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../entities/entitySavingManage... Remove this comment to see the full error message
+
 import * as entitySavingManager from '../entities/entitySavingManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/routes.js' or its ... Remove this comment to see the full error message
+
 import routes from '../entities/routes.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.js' or its correspondin... Remove this comment to see the full error message
+
 import { legacyLogger } from '../log.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
-import templates from '../templates.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
-import thesauri from '../thesauri.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
-import { appContext } from '../utils/AppContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+
+import templates from '../templates/index.js';
+
+import thesauri from '../../thesauri/thesauri.js';
+
+import { appContext } from 'app/utils/AppContext.js';
+
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 
 import { UserRole } from 'shared/types/userSchema.js';

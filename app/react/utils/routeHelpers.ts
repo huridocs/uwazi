@@ -1,5 +1,4 @@
 import { Location } from 'react-router';
-// @ts-expect-error TS(2305): Module '"../../api/utils/index.js"' has no exporte... Remove this comment to see the full error message
 import { risonDecodeOrIgnore } from 'api/utils/index.js';
 import { isArray } from 'lodash';
 

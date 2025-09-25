@@ -6,10 +6,10 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientFile } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { ClientFile } from "app/V2/shared/types.js";
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 

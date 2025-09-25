@@ -41,7 +41,6 @@ export function buildLabelCounts(
   ) {
     const { buckets: rawValues } = raw.aggregations.all[suggestionFieldName];
     const totalValues: { [key: string]: number } = {};
-    // @ts-expect-error TS(7006): Parameter 'rawResult' implicitly has an 'any' type... Remove this comment to see the full error message
     rawValues.forEach(rawResult => {
       totalValues[rawResult.key] = rawResult.filtered.doc_count;
       result.totalLabels += rawResult.filtered.doc_count;

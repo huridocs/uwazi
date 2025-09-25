@@ -1,9 +1,9 @@
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettings } from '../../apiResponseTypes.js';
+
+import api from 'app/utils/api.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
+
+import { ClientSettings } from 'app/apiResponseTypes.js';
 
 export default {
   async save(settings: RequestParams<ClientSettings>): Promise<ClientSettings> {

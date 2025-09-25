@@ -1,6 +1,6 @@
 import path from 'path';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { Tenant } from '../tenants/tenantContext.js';
+
+import { Tenant } from 'api/tenants/tenantContext.js';
 import { FileType } from '../model/FileType';
 
 type PathManagerProps = {

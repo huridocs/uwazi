@@ -8,7 +8,6 @@ const { BasicErrorBoundary } = composeStories(stories);
 
 const FragileComponent = ({ source }: { source?: { text: string } }) => (
   <div>
-    {/* @ts-expect-error */}
     <span>this works {source.text}</span>
   </div>
 );

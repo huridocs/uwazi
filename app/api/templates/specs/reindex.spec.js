@@ -1,4 +1,4 @@
-import translations from '../i18n.js';
+import translations from 'app/I18N/index.js';
 import { search } from '../search.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { checkIfReindex } from '../reindex';

@@ -1,13 +1,13 @@
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
+
+import { ClientEntitySchema, ClientPropertySchema } from "app/V2/shared/types.js";
 
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
 import { EntitySuggestionType } from 'shared/types/suggestionType.js';
-import { secondsToISODate } from '../../../../shared/dateHelpers.js';
+import { secondsToISODate } from '../../../../../shared/dateHelpers.js';
 import * as entitiesAPI from 'api/entities/index.js';
 import * as filesAPI from 'api/files/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
@@ -74,7 +74,6 @@ const handleEntitySave = async (
     return undefined;
   }
 
-  // @ts-expect-error TS(7034): Variable 'data' implicitly has type 'any' in some ... Remove this comment to see the full error message
   let data;
 
   if (propertyName === 'title' && typeof metadata === 'string') {
@@ -86,15 +85,12 @@ const handleEntitySave = async (
   if (property?.type === 'relationship') {
     template?.properties
       ?.filter(
-        // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
         prop =>
           prop._id !== property._id &&
           prop.content === property.content &&
           prop.type === property.type
       )
-      // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
       .forEach(prop => {
-        // @ts-expect-error TS(7005): Variable 'data' implicitly has an 'any' type.
         data.properties?.push({ [prop.name]: metadata });
       });
   }

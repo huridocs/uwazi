@@ -1,7 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/Paragra... Remove this comment to see the full error message
+
 import { TablePXEntityParagraphRow } from 'shared/V2/shared/ParagraphExtractionTypes.js';
-import { generateTableHeader } from '../../../utils/generateTableHeader';
+import { generateTableHeader } from 'app/utils/generateTableHeader';
 import { LanguagesCell } from './LanguagesCell';
 import { ParagraphCountCell } from './ParagraphCountCell';
 import { ActionCell } from './ActionCell';

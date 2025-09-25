@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as actions from '../../Library/actions/libraryActions.js';
+import * as actions from 'app/Library/actions/libraryActions.js';
 
-import aggregationsReducer from '../../Library/reducers/aggregationsReducer.js';
+import aggregationsReducer from 'app/Library/reducers/aggregationsReducer.js';
 
 describe('aggregationsReducer', () => {
   const initialState = Immutable.fromJS({});

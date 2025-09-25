@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSetAtom } from 'jotai';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { notificationAtom } from '../atoms/index.js';
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { RequestParams } from 'app/utils/RequestParams.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
 
 interface ApiCallerResult {

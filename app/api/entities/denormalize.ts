@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { WithId } from '../odm/index.js';
-import translationsModel, { IndexedTranslations } from '../i18n/translations.js';
+import translationsModel, { IndexedTranslations } from 'api/i18n/translations.js';
 import { search } from '../search/index.js';
 import templates from '../templates/index.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';

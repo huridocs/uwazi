@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
 
-import { atomStore, userAtom } from '../../V2/atoms.js';
+import { atomStore, userAtom } from 'app/V2/atoms.js';
 import { store } from '../../store.js';
 import CustomHookComponents from '../CustomHooks';
 import MarkdownViewer from '../MarkdownViewer';

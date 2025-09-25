@@ -1,24 +1,24 @@
 
 import { EnforcedWithId } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/templatesModel.js... Remove this comment to see the full error message
+
 import templatesModel from '../templates/templatesModel.js';
 
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+
 import { ModelStatus } from 'shared/types/IXModelSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/getIXSuggestionSt... Remove this comment to see the full error message
+
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
+
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelType... Remove this comment to see the full error message
+
 import { IXModelType } from 'shared/types/IXModelType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels.js';
 
@@ -51,9 +51,7 @@ export class IXServices {
     const template = await templatesModel.getById(extractor.templates[0]);
     const property =
       extractor.property === 'title'
-        ? // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
           template?.commonProperties?.find(p => p.name === extractor.property)
-        : // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
           template?.properties?.find(p => p.name === extractor.property);
 
     return property!;
@@ -62,9 +60,7 @@ export class IXServices {
   static extractTargetProperty(extractor: IXExtractorType, template: TemplateSchema) {
     const property =
       extractor.property === 'title'
-        ? // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
           template?.commonProperties?.find(p => p.name === extractor.property)
-        : // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
           template?.properties?.find(p => p.name === extractor.property);
 
     return property!;
@@ -146,7 +142,6 @@ export class IXServices {
       return entity.title!;
     }
 
-    // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
     const values = entity.metadata?.[targetProperty.name]?.map(i => i.value);
     if (!values?.length) {
       return isMultiValued ? [] : '';
@@ -157,7 +152,6 @@ export class IXServices {
 
   static extractLabeledValueFromFile({ file, targetProperty }: ExtractLabelTextForPDFInput) {
     return (
-      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       file.extractedMetadata?.find(m => m.name === targetProperty.name)?.selection?.text || null
     );
   }

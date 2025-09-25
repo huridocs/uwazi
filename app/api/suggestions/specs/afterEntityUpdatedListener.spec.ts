@@ -1,14 +1,14 @@
-// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
+
 import { EventsBus } from '../eventsbus.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/utils/Test.js' or... Remove this comment to see the full error message
+
 import { TestUtils } from '../common.v2/utils/Test.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
-import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/events/EntityUpdat... Remove this comment to see the full error message
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+
 import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
 import { AfterEntityUpdatedListener } from '../listeners/afterEntityUpdatedListener';

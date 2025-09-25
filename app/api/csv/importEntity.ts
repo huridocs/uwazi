@@ -15,8 +15,8 @@ import { propertyTypes } from 'shared/propertyTypes.js';
 import { ImportFile } from '../csv/importFile.js';
 import { EntitySchema } from 'shared/types/entityType.js';
 import { ensure } from 'shared/tsUtils.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, generateFileName, storage } from '../files.js';
+
+import { files, generateFileName, storage } from '../files/index.js';
 import { generateID } from 'shared/IDGenerator.js';
 
 import typeParsers from './typeParsers.js';
@@ -173,7 +173,6 @@ const importEntity = async (
 
   if (parsedAttachments?.length) {
     Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {
-      // @ts-expect-error TS(2532): Object is possibly 'undefined'.
       const attachment = parsedAttachments.find(pA => pA.originalname === metadata[0].value);
 
       if (attachment) {

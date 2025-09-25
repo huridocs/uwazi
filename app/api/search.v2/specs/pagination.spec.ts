@@ -2,16 +2,16 @@ import qs from 'qs';
 import { Application } from 'express';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 import { testingDB } from 'api/utils/testing_db.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 import { searchRoutes } from '../routes';
-// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
-import { elasticTesting } from '../utils/elastic_testing.js';
+
+import { elasticTesting } from 'app/utils/elastic_testing.js';
 import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Pagination', () => {

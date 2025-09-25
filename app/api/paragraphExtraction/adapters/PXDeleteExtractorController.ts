@@ -1,5 +1,5 @@
 import { z } from 'zod';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/infrastructure/Ab... Remove this comment to see the full error message
+
 import { AbstractController } from '../common.v2/infrastructure/AbstractController.js';
 import { PXDeleteExtractorFactory } from '../infrastructure/PXDeleteExtractorFactory';
 
@@ -15,7 +15,6 @@ type Response = {
 
 class PXDeleteExtractorController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'request' does not exist on type 'PXDelet... Remove this comment to see the full error message
     const dto = RequestSchema.parse(this.request.query);
 
     const useCase = PXDeleteExtractorFactory.createDefault();
@@ -24,7 +23,6 @@ class PXDeleteExtractorController extends AbstractController<Request> {
 
     const response: Response = { success: true };
 
-    // @ts-expect-error TS(2339): Property 'jsonResponse' does not exist on type 'PX... Remove this comment to see the full error message
     this.jsonResponse(response);
   }
 }

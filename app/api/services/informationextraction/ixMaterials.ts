@@ -10,40 +10,40 @@ import {
   PropertyTypeSchema,
   
 } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesModel.js' or its... Remove this comment to see the full error message
+
 import { filesModel } from '../files/filesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+
 import { SegmentationType } from 'shared/types/segmentationType.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/entitiesModel.js' ... Remove this comment to see the full error message
+
 import entitiesModel from '../entities/entitiesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/pdfsegmentation/se... Remove this comment to see the full error message
+
 import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
+
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import ixmodels from '../services/informationextraction/ixmodels.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/templates.js' or ... Remove this comment to see the full error message
+
 import templatesModel from '../templates/templates.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+
 import { propertyTypes } from 'shared/propertyTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+
 import { ensure } from 'shared/tsUtils.js';
 
 import { EnforcedWithId, UwaziFilterQuery } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
-import { Entity } from '../entities.v2/model/Entity.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelType... Remove this comment to see the full error message
+
+import { Entity } from 'api/entities.v2/model/Entity.js';
+
 import { IXModelType } from 'shared/types/IXModelType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
 import { IXSuggestionType } from 'shared/types/suggestionType.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/queryBuilder.js... Remove this comment to see the full error message
+
 import { PipelineBuilder } from '../suggestions/queryBuilder.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
+
 import { Suggestions } from '../suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
 import { IXServices } from './IXServices.js';
@@ -141,7 +141,6 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
 async function getSegmentedFilesIds() {
   const segmentations = await SegmentationModel.get({ status: 'ready' }, 'fileID');
-  // @ts-expect-error TS(7006): Parameter 'x' implicitly has an 'any' type.
   const result = segmentations.filter(x => x.fileID).map(x => x.fileID) as ObjectIdSchema[];
   return result;
 }
@@ -151,7 +150,6 @@ async function getPropertyType(templates: ObjectIdSchema[], property: string) {
 
   let type: PropertyTypeSchema | undefined = 'text';
   if (property !== 'title') {
-    // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
     const prop = template?.properties?.find(p => p.name === property);
     type = prop?.type;
   }
@@ -245,11 +243,9 @@ async function getEntitiesForSuggestionsQuery(
 
   // Build an OR of exact (sharedId, language) pairs to avoid cross-product expansion
   const uniquePairs = Array.from(
-    // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
     new Set(suggestions.map(s => `${s.entityId}::${s.language || ''}`))
   )
     .map(key => {
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const [sharedId, language] = key.split('::');
       return { sharedId, language } as { sharedId: string; language: string };
     })
@@ -400,7 +396,6 @@ async function getFilesForTraining(extractor: IXExtractorType) {
     }) => Promise<void>
   ) => {
     await cursor.eachAsync(
-      // @ts-expect-error TS(7031): Binding element 'fileId' implicitly has an 'any' t... Remove this comment to see the full error message
       async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
         let propertyValue;
 
@@ -473,7 +468,6 @@ async function getFileIdsWithReadySegmentations(
       break;
     }
 
-    // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
     const fileIds = currentBatch.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
 
     if (fileIds.length > 0) {
@@ -484,26 +478,18 @@ async function getFileIdsWithReadySegmentations(
       );
 
       const readySegmentationFileIds = segmentations
-        // @ts-expect-error TS(7006): Parameter 'seg' implicitly has an 'any' type.
         .filter(seg => seg.status === 'ready')
-        // @ts-expect-error TS(7006): Parameter 'seg' implicitly has an 'any' type.
         .map(seg => seg.fileID!);
 
       const failedSegmentationFileIds = segmentations
-        // @ts-expect-error TS(7006): Parameter 'seg' implicitly has an 'any' type.
         .filter(seg => seg.status === 'failed')
-        // @ts-expect-error TS(7006): Parameter 'seg' implicitly has an 'any' type.
         .map(seg => seg.fileID!);
 
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const failedSuggestions = currentBatch.filter(s =>
-        // @ts-expect-error TS(7006): Parameter 'failedId' implicitly has an 'any' type.
         failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
       );
       // Partition ready fileIds into labeled / unlabeled buckets preserving insertion order
-      // @ts-expect-error TS(7006): Parameter 'id' implicitly has an 'any' type.
       const readySet = new Set(readySegmentationFileIds.map(id => id.toString()));
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       currentBatch.forEach(s => {
         const fId = s.fileId as ObjectIdSchema | undefined;
         if (!fId) return;
@@ -582,7 +568,6 @@ async function filterFileIdsByReadySegmentations(
     'fileID'
   );
 
-  // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
   return segmentations.map(s => s.fileID!);
 }
 
@@ -631,7 +616,6 @@ async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZ
   const allFiles = await filesModel.get(createFilesQueryByEntities(sharedIds));
 
   // Filter to only files with ready segmentations
-  // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
   const allFileIds = allFiles.map(f => f._id);
   const readyFileIds = await filterFileIdsByReadySegmentations(allFileIds);
 

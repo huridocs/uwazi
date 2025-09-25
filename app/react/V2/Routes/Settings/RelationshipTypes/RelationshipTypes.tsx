@@ -5,26 +5,26 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { useSetAtom, useAtomValue } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/relationshipt... Remove this comment to see the full error message
+
+import { t, Translate } from 'app/I18N/index.js';
+
 import * as relationshipTypesAPI from 'api/V2/api/relationshiptypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { Template } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from '../../V2/atoms.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button, Table, Sidepanel, ConfirmationModal } from '../../V2/Components/UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { Template } from 'app/apiResponseTypes.js';
+
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms.js';
+
+import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI/index.js';
+
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    // @ts-expect-error TS(7006): Parameter 'rel' implicitly has an 'any' type.
-    (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
+    async () =>
+      (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
 
 const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as Relationships[];
@@ -48,17 +48,13 @@ const RelationshipTypes = () => {
     setTableRelationshipTypes(
       relationshipTypes
         .map(relationshipType => {
-          // @ts-expect-error TS(2571): Object is of type 'unknown'.
           const templatesUsingIt = templates
-            // @ts-expect-error TS(7006): Parameter 'tmpl' implicitly has an 'any' type.
             .map(tmpl => {
               const usingIt = tmpl.properties?.some(
-                // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
                 property => property.relationType === relationshipType._id
               );
               return usingIt ? tmpl : null;
             })
-            // @ts-expect-error TS(7006): Parameter 'tmpl' implicitly has an 'any' type.
             .filter(tmpl => tmpl) as Template[];
 
           return {
@@ -140,7 +136,6 @@ const RelationshipTypes = () => {
                 Relationship types
               </Translate>
             }
-            // @ts-expect-error TS(7031): Binding element 'selectedRows' implicitly has an '... Remove this comment to see the full error message
             onSelect={({ selectedRows }) => {
               setSelectedItems(
                 tableRelationshipTypes.filter(relationship => relationship.rowId in selectedRows)

@@ -1,9 +1,9 @@
 import { Application, Request } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
+
 import { needsAuthorization } from '../auth.js';
-import { validation } from '../utils/index.js';
-import { entitiesPermissions } from '../permissions/entitiesPermissions.js';
-import { collaborators } from '../permissions/collaborators.js';
+import { validation } from 'app/utils/index.js';
+import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
+import { collaborators } from 'api/permissions/collaborators.js';
 import { permissionsDataSchema } from 'shared/types/permissionSchema.js';
 
 export const permissionRoutes = (app: Application) => {

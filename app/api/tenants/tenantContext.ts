@@ -1,6 +1,6 @@
 import { config } from '../config.js';
-import { handleError } from '../utils/index.js';
-import { appContext } from '../utils/AppContext.js';
+import { handleError } from 'app/utils/index.js';
+import { appContext } from 'app/utils/AppContext.js';
 import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel.js';
 
 type TenantFeatureFlags = keyof NonNullable<Required<Tenant>['featureFlags']>;

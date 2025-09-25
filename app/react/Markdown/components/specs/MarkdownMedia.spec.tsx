@@ -5,8 +5,8 @@ import React from 'react';
 import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import MarkdownMedia from '../MarkdownMedia';
 
 let playerRef: { current: { seekTo: any; getCurrentTime: () => number } };

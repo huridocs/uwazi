@@ -1,13 +1,12 @@
 import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientPropertySchema, ClientEntitySchema } from '../../istore.js';
-import { search } from 'api/search/index.js';
+
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/types.j... Remove this comment to see the full error message
-import { ClientTemplateSchema } from 'shared/V2/shared/types.js';
+
 import { SuggestionValue, EntitySuggestion } from '../types.js';
+import { ClientPropertySchema, ClientEntitySchema, ClientTemplateSchema } from 'app/istore.js';
+import { search } from 'app/V2/api/search/index.js';
 
 type TransformedSuggestion = EntitySuggestion & {
   rowId: string;

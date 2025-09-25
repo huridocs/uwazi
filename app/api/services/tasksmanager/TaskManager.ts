@@ -1,13 +1,13 @@
 /* eslint-disable no-await-in-loop */
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import { RedisClient } from 'redis';
-// @ts-expect-error TS(2307): Cannot find module '../utils/Repeater.js' or its c... Remove this comment to see the full error message
-import { Repeater } from '../utils/Repeater.js';
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+
+import { Repeater } from 'app/utils/Repeater.js';
+
 import { config } from '../config.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/index.js' or its corr... Remove this comment to see the full error message
-import { handleError } from '../utils/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../infrastructure/Redis.js' or... Remove this comment to see the full error message
+
+import { handleError } from 'app/utils/index.js';
+
 import { Redis } from '../infrastructure/Redis.js';
 
 type DefaultTaskType = string;

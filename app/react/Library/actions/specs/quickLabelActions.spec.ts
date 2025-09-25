@@ -1,15 +1,15 @@
-// @ts-expect-error TS(2307): Cannot find module '../../BasicReducer.js' or its ... Remove this comment to see the full error message
-import { actions } from '../../BasicReducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Entities/EntitiesAPI.js'... Remove this comment to see the full error message
+
+import { actions } from 'app/V2/BasicReducer/reducer.js';
+
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { QuickLabelState } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+
+import { QuickLabelState } from "app/V2/shared/types.js";
+
 import { wrapDispatch } from '../../Multireducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../store.js' or its corresp... Remove this comment to see the full error message
+
 import { store } from '../../store.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import * as libraryActions from '../libraryActions';
 import * as quickLabelActions from '../quickLabelActions';

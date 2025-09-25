@@ -5,10 +5,10 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
 
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/libraryA... Remove this comment to see the full error message
-import * as actions from '../../Library/actions/libraryActions.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+
+import * as actions from 'app/Library/actions/libraryActions.js';
 import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 
 describe('HiddenColumnsDropdown', () => {
@@ -55,9 +55,7 @@ describe('HiddenColumnsDropdown', () => {
           name,
           hidden: action,
         });
-        // @ts-expect-error TS(2345): Argument of type '(action: boolean) => { type: str... Remove this comment to see the full error message
         jest.spyOn(actions, 'setTableViewAllColumnsHidden').mockImplementation(hiddenAllAction);
-        // @ts-expect-error TS(2345): Argument of type '(name: string, action: boolean) ... Remove this comment to see the full error message
         jest.spyOn(actions, 'setTableViewColumnHidden').mockImplementation(hiddenAction);
       });
 

@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from '../utils/date.js';
+import date from 'app/utils/date.js';
 import propertiesHelper from 'shared/commonProperties.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
-import { createError } from '../utils/index.js';
+import { createError } from 'app/utils/index.js';
 import { filterOptions } from 'shared/optionsUtils.js';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config.js';
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import { checkWritePermissions } from 'shared/permissionsUtils.js';
 import usersModel from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';

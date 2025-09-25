@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../usergroups/userGroups.js' o... Remove this comment to see the full error message
+
 import userGroups from '../usergroups/userGroups.js';
 import {
   getByMemberIdList,
   removeUsersFromAllGroups,
   updateUserMemberships,
-  // @ts-expect-error TS(2307): Cannot find module '../usergroups/userGroupsMember... Remove this comment to see the full error message
+  
 } from '../usergroups/userGroupsMembers.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
@@ -48,17 +48,13 @@ describe('userGroupsMembers', () => {
       await updateUserMemberships(userToUpdate, [{ _id: group1Id.toString() }]);
       const groups = await userGroups.get({}, { members: 1 });
       const newGroup1Members =
-        // @ts-expect-error TS(7006): Parameter 'group' implicitly has an 'any' type.
         groups.find(group => group._id!.toString() === group1Id.toString())?.members || [];
       const newGroup2Members =
-        // @ts-expect-error TS(7006): Parameter 'group' implicitly has an 'any' type.
         groups.find(group => group._id!.toString() === group2Id.toString())?.members || [];
       expect(
-        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         newGroup1Members.find(m => m.refId.toString() === userToUpdate._id.toString())
       ).not.toBeUndefined();
       expect(
-        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         newGroup2Members.find(m => m.refId.toString() === userToUpdate._id.toString())
       ).toBeUndefined();
     });
@@ -79,7 +75,6 @@ describe('userGroupsMembers', () => {
       async ({ users, expectedMemberLists }) => {
         await removeUsersFromAllGroups(users);
         const groups = await userGroups.get({}, { members: 1 });
-        // @ts-expect-error TS(7006): Parameter 'group' implicitly has an 'any' type.
         const memberIds = groups.map(group => group.members);
         expect(memberIds).toMatchObject(expectedMemberLists);
       }

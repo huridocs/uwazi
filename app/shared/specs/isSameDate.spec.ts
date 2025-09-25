@@ -1,6 +1,6 @@
 import moment from 'moment';
-// @ts-expect-error TS(2307): Cannot find module './isSameDate.js' or its corres... Remove this comment to see the full error message
-import { isSameDate } from './isSameDate.js';
+import { isSameDate } from 'shared/isSameDate.js';
+
 
 it('should only consider year, month and day', () => {
   const todayUtc = moment().utc();

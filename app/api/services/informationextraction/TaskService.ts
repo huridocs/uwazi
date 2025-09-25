@@ -1,13 +1,13 @@
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/index.js' or its c... Remove this comment to see the full error message
+
 import settings from '../settings/index.js';
 import { ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../entities/index.js' or its c... Remove this comment to see the full error message
+
 import entities from '../entities/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri/dictionariesModel.... Remove this comment to see the full error message
+
 import dictionatiesModel from '../thesauri/dictionariesModel.js';
 import _ from 'lodash';
 
@@ -53,7 +53,6 @@ export class IXTaskService {
     }
     if (targetProperty.type === 'relationship') {
       const candidates = await this.fetchCandidates(targetProperty);
-      // @ts-expect-error TS(7006): Parameter 'candidate' implicitly has an 'any' type... Remove this comment to see the full error message
       params.options = candidates.map(candidate => ({
         label: candidate.title || '',
         id: candidate.sharedId || '',

@@ -3,8 +3,8 @@ import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from '../../../../Components/UI/index.js';
 import { StarIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, I18NLinkV2 as I18NLink } from '../../I18N/index.js';
+
+import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 import { TemplateRow } from '../types.js';
 
@@ -50,23 +50,23 @@ const EntityCountCell = ({ cell }: CellContext<TemplateRow, number>) => (
 
 const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
-  ({ cell }: CellContext<TemplateRow, boolean>) => (
-    <Button
-      styling={cell.row.original.default ? 'solid' : 'light'}
-      onClick={() => handleSetDefault(cell.row.original)}
-      className="leading-4 m-auto"
-      disabled={cell.row.original.default || cell.row.original.synced}
-    >
-      <Translate className="sr-only">Set as default</Translate>
-      <StarIcon
-        className={
-          cell.row.original.default
-            ? 'w-4 text-white'
-            : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
-        }
-      />
-    </Button>
-  );
+    ({ cell }: CellContext<TemplateRow, boolean>) => (
+      <Button
+        styling={cell.row.original.default ? 'solid' : 'light'}
+        onClick={() => handleSetDefault(cell.row.original)}
+        className="leading-4 m-auto"
+        disabled={cell.row.original.default || cell.row.original.synced}
+      >
+        <Translate className="sr-only">Set as default</Translate>
+        <StarIcon
+          className={
+            cell.row.original.default
+              ? 'w-4 text-white'
+              : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
+          }
+        />
+      </Button>
+    );
 
 const EditButton = ({ cell }: CellContext<TemplateRow, string>) => (
   <I18NLink to={`/settings/templates/edit/${cell.row.original._id}`} className="px-3 py-1">

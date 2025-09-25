@@ -1,17 +1,17 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/CommonPr... Remove this comment to see the full error message
+
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Property } from 'api/templates.v2/model/Property.js';
 import { Db } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings as SettingsType } from 'shared/types/settingsType.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
 import { ATGateway } from '../contracts/ATGateway';
@@ -43,7 +43,6 @@ export class MongoATConfigDataSource
   }
 
   async get() {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const settings = await this.getCollection().findOne();
     const rawConfig = settings?.features?.automaticTranslation ?? { active: false };
 
@@ -52,7 +51,6 @@ export class MongoATConfigDataSource
     const supportedLanguages = await this.automaticTranslation.supportedLanguages();
 
     const validPropertiesMap = validProperties.reduce(
-      // @ts-expect-error TS(7006): Parameter 'memo' implicitly has an 'any' type.
       (memo, property) => {
         // eslint-disable-next-line no-param-reassign
         memo[property.id] = property;
@@ -63,7 +61,6 @@ export class MongoATConfigDataSource
 
     const validPropertiesIds = Object.keys(validPropertiesMap);
 
-    // @ts-expect-error TS(7006): Parameter 'templateConfig' implicitly has an 'any'... Remove this comment to see the full error message
     const templates = (rawConfig.templates || []).map(templateConfig => {
       const configPropertiesIds = (templateConfig.commonProperties || []).concat(
         templateConfig.properties || []
@@ -72,26 +69,22 @@ export class MongoATConfigDataSource
         templateConfig.template,
         configPropertiesIds
           .filter(
-            // @ts-expect-error TS(7006): Parameter 'propertyId' implicitly has an 'any' typ... Remove this comment to see the full error message
             propertyId =>
               validPropertiesIds.includes(propertyId) &&
               validPropertiesMap[propertyId].template === templateConfig.template
           )
-          // @ts-expect-error TS(7006): Parameter 'propertyId' implicitly has an 'any' typ... Remove this comment to see the full error message
           .map(propertyId => validPropertiesMap[propertyId])
       );
     });
 
     return new ATConfig(
       rawConfig.active,
-      // @ts-expect-error TS(7006): Parameter 'languageKey' implicitly has an 'any' ty... Remove this comment to see the full error message
       configuredLanguages.filter(languageKey => supportedLanguages.includes(languageKey)),
       templates
     );
   }
 
   async update(active: boolean, config: ATTemplateConfig[]) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().findOneAndUpdate(
       {},
       {

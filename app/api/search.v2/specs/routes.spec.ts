@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { Application } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
 import { elastic } from '../search.js';
 
 

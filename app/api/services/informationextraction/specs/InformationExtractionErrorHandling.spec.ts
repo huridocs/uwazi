@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
+
+import { testingTenants } from 'app/utils/testingTenants.js';
+
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
 import * as setupSockets from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+
 import { ModelStatus } from 'shared/types/IXModelSchema.js';
 
 import { factory, fixtures, patchFixturesWithPort } from './fixtures';
@@ -133,7 +133,6 @@ describe('InformationExtraction Error Handling', () => {
       expect(model.findingSuggestions).toBe(false);
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');
@@ -183,7 +182,6 @@ describe('InformationExtraction Error Handling', () => {
       });
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');
@@ -258,7 +256,6 @@ describe('InformationExtraction Error Handling', () => {
       });
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');

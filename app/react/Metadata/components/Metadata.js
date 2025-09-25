@@ -3,11 +3,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { flattenDeep } from 'lodash';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 import MarkdownViewer from '../../Markdown/index.js';
 import { GroupedGeolocationViewer } from '../../Metadata/components/GroupedGeolocationViewer.js';
-import { MediaPlayer } from '../../V2/Components/UI/index.js';
+import { MediaPlayer } from 'app/V2/Components/UI/index.js';
 import GeolocationViewer from './GeolocationViewer.js';
 import { RelationshipLink } from './RelationshipLink.js';
 import ValueList from './ValueList.js';

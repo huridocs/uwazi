@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Selec... Remove this comment to see the full error message
-import SelectFilter from '../../Library/components/SelectFilter.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+
+import SelectFilter from 'app/Library/components/SelectFilter.js';
+
 import { Aggregations } from 'shared/types/aggregations.js';
 import { FilterTocGeneration } from '../FilterTocGeneration';
 

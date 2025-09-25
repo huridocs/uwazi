@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
+
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 
 import { UserSchema } from 'shared/types/userType.js';
 

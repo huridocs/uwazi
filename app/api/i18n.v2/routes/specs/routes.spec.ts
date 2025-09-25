@@ -1,21 +1,20 @@
 import 'isomorphic-fetch';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
-import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
+
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { TestEmitSources, iosocket, setUpApp } from '../utils/testingRoutes.js';
+
+import { TestEmitSources, iosocket, setUpApp } from 'api/utils/testingRoutes.js';
 
 import { UserRole } from 'shared/types/userSchema.js';
 import { translationsRoutes } from '..';
 
 describe('i18n translations V2 routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
-  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app = setUpApp(translationsRoutes, (req, _res, next) => {
     req.user = {
       username: 'admin',

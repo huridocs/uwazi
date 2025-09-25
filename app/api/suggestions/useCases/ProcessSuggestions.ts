@@ -1,28 +1,28 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
+
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { ObjectId } from 'mongodb';
 
 import { EnforcedWithId } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelType... Remove this comment to see the full error message
+
 import { IXModelType } from 'shared/types/IXModelType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import ixmodels from '../services/informationextraction/ixmodels.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import { IXServices } from '../services/informationextraction/IXServices.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import {
   ProcessMode,
   ProcessFindFilters,
   AutoAcceptSource,
   OverwriteMode,
-  // @ts-expect-error TS(2307): Cannot find module '../suggestions/contracts/Proce... Remove this comment to see the full error message
+  
 } from '../suggestions/contracts/ProcessSuggestionsContracts.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
@@ -106,7 +106,6 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
 
     // Initialize run queue for process_selected
     if (mode === 'process_selected' && Array.isArray(find?.selectedSharedIds)) {
-      // @ts-expect-error TS(2532): Object is possibly 'undefined'.
       const uniqueIds = Array.from(new Set(find.selectedSharedIds));
       await ixmodels.initializeFindRunQueue(model!._id!, uniqueIds);
     }

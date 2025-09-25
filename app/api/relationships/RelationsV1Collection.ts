@@ -15,7 +15,6 @@ export class RelationsV1Collection extends Array<Relation> {
 
   constructor(relations: Relation[]) {
     if (Array.isArray(relations)) {
-      // @ts-expect-error TS(2401): A 'super' call must be a root-level statement with... Remove this comment to see the full error message
       super(...relations);
     } else {
       super(relations);

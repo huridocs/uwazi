@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { ImportFile } from '../csv/importFile.js';
-import translations from '../i18n/translations.js';
+import translations from 'api/i18n/translations.js';
 import { WithId } from '../odm/index.js';
 import thesauri from '../thesauri/index.js';
 import { normalizeThesaurusLabel } from '../thesauri/thesauri.js';

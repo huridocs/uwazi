@@ -1,4 +1,4 @@
-import { createError } from '../utils/index.js';
+import { createError } from 'app/utils/index.js';
 import csvtojson from 'csvtojson';
 import { availableLanguages } from 'shared/language/index.js';
 import { LanguageSchema } from 'shared/types/commonTypes.js';

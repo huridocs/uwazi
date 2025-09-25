@@ -1,12 +1,12 @@
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+
 import { Aggregations } from 'shared/types/aggregations.js';
 import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
-import SelectFilter from '../../Library/components/SelectFilter.js';
+import SelectFilter from 'app/Library/components/SelectFilter.js';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
-import { t } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
+import { t } from 'app/I18N/index.js';
+
+import { NeedAuthorization } from 'app/Auth/index.js';
 
 export interface FilterTocGenerationProps {
   onChange: () => void;
@@ -14,7 +14,6 @@ export interface FilterTocGenerationProps {
 }
 
 const filteredAggregation = (aggregations: Aggregations, key: string) => {
-  // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
   const bucket = (aggregations?.all?.generatedToc?.buckets || []).find(a => a.key === key) || {
     filtered: { doc_count: 0 },
   };

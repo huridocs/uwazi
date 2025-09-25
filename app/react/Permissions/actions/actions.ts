@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
 import { Dispatch } from 'redux';
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
+import { IStore } from "app/V2/shared/types.js";
+
 import { notificationActions } from '../../Notifications.js';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import { savePermissions } from '../../Permissions/PermissionsAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+
 import { PermissionsDataSchema } from 'shared/types/permissionType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+
 import { wrapDispatch } from '../../Multireducer.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
-} from '../../Library/actions/actionTypes.js';
-import { unselectAllDocuments } from '../../Library/actions/libraryActions.js';
+} from 'app/Library/actions/actionTypes.js';
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions.js';
 import { PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 
 export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {

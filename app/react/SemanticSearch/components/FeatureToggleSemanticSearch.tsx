@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
+
+import { NeedAuthorization } from 'app/Auth/index.js';
 
 type PropTypes = {
   semanticSearchActivated: boolean;

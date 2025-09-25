@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Button, FileIcon } from '../../../../Components/UI/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
@@ -60,32 +60,32 @@ const createColumns = (
   handleDelete: (file: CustomUpload) => void,
   editFile: (file: CustomUpload) => void
 ) => [
-  columnHelper.display({
-    id: 'preview',
-    header: PreviewHeader,
-    cell: PreviewCell,
-    meta: { headerClassName: 'w-0' },
-  }),
-  columnHelper.accessor('originalname', {
-    id: 'originalname',
-    header: TitleHeader,
-    cell: TitleCell,
-    meta: { headerClassName: 'w-2/4' },
-  }),
-  columnHelper.accessor('filename', {
-    id: 'filename',
-    header: URLHeader,
-    cell: URLCell,
-    enableSorting: false,
-    meta: { headerClassName: 'w-2/4' },
-  }),
-  columnHelper.display({
-    id: 'action',
-    header: ActionHeader,
-    cell: ActionCell,
-    enableSorting: false,
-    meta: { action: () => ({ delete: handleDelete, edit: editFile }) },
-  }),
-];
+    columnHelper.display({
+      id: 'preview',
+      header: PreviewHeader,
+      cell: PreviewCell,
+      meta: { headerClassName: 'w-0' },
+    }),
+    columnHelper.accessor('originalname', {
+      id: 'originalname',
+      header: TitleHeader,
+      cell: TitleCell,
+      meta: { headerClassName: 'w-2/4' },
+    }),
+    columnHelper.accessor('filename', {
+      id: 'filename',
+      header: URLHeader,
+      cell: URLCell,
+      enableSorting: false,
+      meta: { headerClassName: 'w-2/4' },
+    }),
+    columnHelper.display({
+      id: 'action',
+      header: ActionHeader,
+      cell: ActionCell,
+      enableSorting: false,
+      meta: { action: () => ({ delete: handleDelete, edit: editFile }) },
+    }),
+  ];
 
 export { createColumns };

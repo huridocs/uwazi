@@ -5,7 +5,6 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   private latestTenants: string[] = ['', ''];
 
   private async findAndUpdateJob(queueName: string, excludeTenants: string[] = []) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     // eslint-disable-next-line no-return-await
     return await super.getCollection().findOneAndUpdate(
       {

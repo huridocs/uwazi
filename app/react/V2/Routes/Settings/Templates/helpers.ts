@@ -1,11 +1,11 @@
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import uniqueID from 'shared/uniqueID.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
 import { ClientTemplateSchema, ClientProperty } from 'shared/types.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+
+import { t } from 'app/I18N/index.js';
 import { PropertyRow } from './components/TemplateEditorTableComponents.js';
 
 const commonPropertyTitle: ClientProperty = {

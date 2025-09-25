@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
-import { UnauthorizedError } from '../authorization.v2/errors/UnauthorizedError.ts';
+import { UnauthorizedError } from '../../errors/UnauthorizedError.ts';
 import { OperationalError } from '../common.v2/errors/OperationalError.ts';
 import { ValidationError } from '../common.v2/validation/ValidationError.ts';
 import { config } from '../config.ts';
-import { DomainError } from '../core/domain/error/DomainError.ts';
+import { DomainError } from 'api/core/domain/error/DomainError.ts';
 import { FileNotFound } from '../files/FileNotFound.ts';
 import { S3Error } from '../files/S3Storage.ts';
 import { legacyLogger } from '../log/index.ts';

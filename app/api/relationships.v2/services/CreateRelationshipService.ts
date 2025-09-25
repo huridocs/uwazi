@@ -1,18 +1,18 @@
-// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
-import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/IdGener... Remove this comment to see the full error message
+
+import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
+
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
+
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
-import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/errors/entityEr... Remove this comment to see the full error message
-import { MissingEntityError } from '../entities.v2/errors/entityErrors.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.v2/contracts/FilesDat... Remove this comment to see the full error message
+
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+
+import { MissingEntityError } from 'api/entities.v2/errors/entityErrors.js';
+
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/contra... Remove this comment to see the full error message
+
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/errors... Remove this comment to see the full error message
+
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import {

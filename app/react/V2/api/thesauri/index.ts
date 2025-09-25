@@ -1,11 +1,11 @@
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
+
+import api from 'app/utils/api.js';
+
+import { ClientThesaurus } from 'app/apiResponseTypes.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/superagent.js' or... Remove this comment to see the full error message
+
 import { httpRequest } from 'shared/superagent.js';
 
 const get = async (

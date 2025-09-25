@@ -1,4 +1,4 @@
-import createReducer, { actions } from '../../BasicReducer/reducer.js';
+import createReducer, { actions } from 'app/V2/BasicReducer/reducer.js';
 
 export default createReducer;
 export { actions };

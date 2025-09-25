@@ -1,12 +1,12 @@
 import { Db } from 'mongodb';
 import mongoose from 'mongoose';
 import waitForExpect from 'wait-for-expect';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/tenantContext.js';
+
+import { testingTenants } from 'app/utils/testingTenants.js';
+
+
 import { config } from '../config.js';
 import { DB } from '../DB.js';
 import { instanceModel } from '../model.js';

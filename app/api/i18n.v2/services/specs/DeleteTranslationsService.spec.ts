@@ -1,5 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/database/data_sourc... Remove this comment to see the full error message
-import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
+
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 

@@ -1,9 +1,9 @@
 import { actions as formActions } from 'react-redux-form';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import * as types from '../../Thesauri/actions/actionTypes.js';
 import api from '../../Thesauri/ThesauriAPI.js';
 import * as notifications from '../../Notifications/actions/notificationsActions.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 
 export function saveThesaurus(thesaurus) {
   return dispatch =>

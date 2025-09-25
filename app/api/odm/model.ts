@@ -102,7 +102,6 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
         throw Error('The document was not updated!');
       }
 
-      // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject<WithId<T>>();
     }
@@ -115,7 +114,6 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
 
   async create(data: Partial<DataType<T>>) {
     const saved = await this.db.create([data]);
-    // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
     await this.logHelper.upsertLogOne(saved[0]);
     return saved[0].toObject<WithId<T>>();
   }
@@ -137,7 +135,6 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
     }
 
     const saved = created.concat(updated);
-    // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
     await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
     return saved.map(s => s.toObject<WithId<T>>());
   }

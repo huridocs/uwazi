@@ -1,5 +1,5 @@
 import { CSVLoader } from '../csv/index.js';
-import { uploadMiddleware } from '../files.js';
+import { uploadMiddleware } from '../files/index.js';
 
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';

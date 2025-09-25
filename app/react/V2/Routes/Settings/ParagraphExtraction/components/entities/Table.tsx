@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table } from '../../../../../Components/UI/index.js';
 import { TablePXEntityRow } from '../../../../../shared/ParagraphExtractionTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { Template } from '../../apiResponseTypes.js';
+
+import { Template } from 'app/apiResponseTypes.js';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';
 import { columns } from './TableElements/index.js';

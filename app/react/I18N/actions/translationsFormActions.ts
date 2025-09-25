@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/IDGenerator.js' o... Remove this comment to see the full error message
+
 import { generateID } from 'shared/IDGenerator.js';
-import { ClientTranslationSchema } from '../../istore.js';
+import { ClientTranslationSchema } from "app/V2/shared/types.js";
 import { filter, find } from 'lodash';
 
 type LocaleTranslation = { locale: string; [key: string]: string };

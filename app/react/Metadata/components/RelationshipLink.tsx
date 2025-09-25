@@ -1,9 +1,9 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { I18NLink } from '../../I18N/index.js';
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout.js' or its corres... Remove this comment to see the full error message
+import { I18NLink } from 'app/I18N/index.js';
+import { IStore } from "app/V2/shared/types.js";
+
 import { Icon } from '../../Layout.js';
 import * as actions from '../../Relationships/actions/actions';
 

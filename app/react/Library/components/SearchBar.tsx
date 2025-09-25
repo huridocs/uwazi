@@ -8,18 +8,18 @@ import { Icon } from 'UI';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
-} from '../../Library/actions/libraryActions.js';
-import { t, Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+} from 'app/Library/actions/libraryActions.js';
+import { t, Translate } from 'app/I18N/index.js';
+
 import { wrapDispatch } from '../../Multireducer.js';
 import ModalTips from '../../App/ModalTips.js';
 import { SearchTipsContent } from '../../App/SearchTipsContent.js';
 import { submitNewSearch } from '../../SemanticSearch/actions/actions.js';
 import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { IStore } from '../../istore.js';
-import { Form } from '../../Forms/Form.js';
+import { IStore } from "app/V2/shared/types.js";
+import { Form } from 'app/Forms/Form.js';
 
-interface SearchBarOwnProps {}
+interface SearchBarOwnProps { }
 const mapStateToProps = (state: IStore) => {
   const { search, filters } = state.library;
   return {
@@ -75,7 +75,6 @@ const SearchBarComponent = ({
     semanticSearch(search);
   };
 
-  // @ts-expect-error TS(7006): Parameter 'newSearch' implicitly has an 'any' type... Remove this comment to see the full error message
   const doSearch = newSearch => {
     change('library.search.searchTerm', searchTerm);
     searchDocuments({ search: { ...newSearch, searchTerm }, location, navigate });

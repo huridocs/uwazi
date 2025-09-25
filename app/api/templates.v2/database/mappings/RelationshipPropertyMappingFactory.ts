@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Property, PropertyTypes } from 'api/templates.v2/model/Property.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
 
 type MappedPropertyTypes = Exclude<PropertyTypes, 'preview' | 'newRelationship'>;
@@ -26,14 +26,11 @@ export class RelationshipPropertyMappingFactory {
       const properties = await this.templateDS.getAllProperties().all();
       this.propertiesCache = objectIndex(
         properties,
-        // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
         p => p.name,
-        // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
         p => p
       );
     }
 
-    // @ts-expect-error TS(2532): Object is possibly 'undefined'.
     return this.propertiesCache[name];
   }
 

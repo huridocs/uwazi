@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
-import { APIURL } from '../config.js';
+import { APIURL } from '../react/config.js';
 import superagent, { MultipartValueSingle } from 'superagent';
 
 interface Fields {

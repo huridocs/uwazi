@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../socket.js' or its corres... Remove this comment to see the full error message
+
 import { socket } from '../../socket.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from '../../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+import { notificationAtom } from 'app/V2/atoms/index.js';
+
+import { t } from 'app/I18N/index.js';
 import { ModelEvents, SuggestionEvents } from '../events.js';
 import type {
   IXModelStatusCallback,

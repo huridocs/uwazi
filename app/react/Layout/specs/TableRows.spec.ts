@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from '../../utils/test/renderConnected.js';
+import { renderConnected } from 'app/utils/test/renderConnected.js';
 import { TableRows } from '../../Layout/TableRows.js';
-import { TableRow } from '../../Library/components/TableRow.js';
+import { TableRow } from 'app/Library/components/TableRow.js';
 
 describe('TableRows', () => {
   let component: any;

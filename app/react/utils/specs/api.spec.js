@@ -4,8 +4,8 @@
 import backend from 'fetch-mock';
 import { APIURL } from '../../config.js';
 import { store } from '../../store.js';
-import api from '../../utils/api.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import api from 'app/utils/api.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 import * as notifyActions from '../../Notifications/actions/notificationsActions.js';
 

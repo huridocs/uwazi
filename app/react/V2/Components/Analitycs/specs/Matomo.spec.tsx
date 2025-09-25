@@ -28,7 +28,6 @@ describe('Matomo', () => {
     window.location = originalLocation;
   });
 
-  // @ts-expect-error TS(7006): Parameter 'storeState' implicitly has an 'any' typ... Remove this comment to see the full error message
   const renderComponent = storeState => {
     render(
       <MemoryRouter>

@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema, ClientTranslationSchema } from '../../istore.js';
+
+import { ClientThesaurus } from 'app/apiResponseTypes.js';
+
+import { ClientTemplateSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
 
 const currentTranslations: ClientTranslationSchema[] = [
   {

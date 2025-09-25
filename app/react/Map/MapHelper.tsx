@@ -1,7 +1,7 @@
 import L, { latLng } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+
+import { t } from 'app/I18N/index.js';
 
 type MarkerProperties = {
   entity?: {

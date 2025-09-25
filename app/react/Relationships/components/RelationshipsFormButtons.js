@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { NeedAuthorization } from '../../Auth.js';
-import { t } from '../../I18N/index.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
+import { t } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 
 import * as actions from '../actions/actions';

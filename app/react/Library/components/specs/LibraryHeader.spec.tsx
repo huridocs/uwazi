@@ -7,14 +7,14 @@ import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/libraryA... Remove this comment to see the full error message
-import * as libraryActions from '../../Library/actions/libraryActions.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+
+import * as libraryActions from 'app/Library/actions/libraryActions.js';
+
+
+import { IStore } from "app/V2/shared/types.js";
+
 import { IImmutable } from 'shared/types/Immutable.js';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';

@@ -2,15 +2,15 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-  // @ts-expect-error TS(2307): Cannot find module '../common.v2/infrastructure/Ab... Remove this comment to see the full error message
+  
 } from '../common.v2/infrastructure/AbstractController.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
 import {
   PROCESS_MODES,
   AUTO_ACCEPT_SOURCES,
   OVERWRITE_MODES,
-  // @ts-expect-error TS(2307): Cannot find module '../suggestions/contracts/Proce... Remove this comment to see the full error message
+  
 } from '../suggestions/contracts/ProcessSuggestionsContracts.js';
 import { ProcessSuggestions } from '../useCases/ProcessSuggestions';
 
@@ -74,9 +74,7 @@ class ProcessSuggestionsController extends AbstractController<Request> {
   }
 
   async handle(): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'request' does not exist on type 'Process... Remove this comment to see the full error message
     const dto = RequestSchema.parse(this.request.body);
-    // @ts-expect-error TS(2339): Property 'ensureUser' does not exist on type 'Proc... Remove this comment to see the full error message
     this.ensureUser();
 
     const informationExtraction = new InformationExtraction();
@@ -89,7 +87,6 @@ class ProcessSuggestionsController extends AbstractController<Request> {
       autoAccept: dto.autoAccept,
     });
 
-    // @ts-expect-error TS(2339): Property 'jsonResponse' does not exist on type 'Pr... Remove this comment to see the full error message
     this.jsonResponse(response);
   }
 }

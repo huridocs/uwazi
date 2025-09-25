@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+
 import { User } from 'api/users.v2/model/User.js';
 import { EntityPermissions, Entry } from '../EntityPermissions';
 

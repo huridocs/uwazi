@@ -2,39 +2,39 @@
 import { ObjectId } from 'mongodb';
 import { ApiResponse } from '@elastic/elasticsearch';
 
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.v2/database/data_sour... Remove this comment to see the full error message
+
 import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+
 import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
 
 import { DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
-import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';

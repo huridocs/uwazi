@@ -4,8 +4,7 @@ import {
   propertyValueSchema,
   selectionRectanglesSchema,
 } from 'shared/types/commonSchemas.js';
-// @ts-expect-error TS(2307): Cannot find module './propertyTypes.js' or its cor... Remove this comment to see the full error message
-import { propertyTypes } from './propertyTypes.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
 
 const commonSuggestionMessageProperties = {
   tenant: { type: 'string', minLength: 1 },

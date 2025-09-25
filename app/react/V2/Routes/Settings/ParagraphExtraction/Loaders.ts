@@ -13,10 +13,10 @@ import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from 'shared/ParagraphExtractionTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
-import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema } from '../../istore.js';
+
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers.js';
+
+import { ClientEntitySchema } from "app/V2/shared/types.js";
 
 const PAGE_SIZE = 30;
 
@@ -56,7 +56,6 @@ const PXEntityLoader =
       const rows =
         pxEntityRows.rows?.map(row => ({
           ...row,
-          // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
           rowId: row.entity._id!.toString(),
         })) || [];
 
@@ -105,7 +104,6 @@ const PXParagraphLoader =
       totalRows: 0,
     };
 
-    // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
     const defaultLanguage = (await settingsApi.get(headers)).languages?.find(lang => lang.default);
 
     const extractors = await extractorsAPI.get(headers);
@@ -127,11 +125,9 @@ const PXParagraphLoader =
 
     const template = templates.find(temp => temp._id === extractor.targetTemplateId);
     const textProperty = template?.properties?.find(
-      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property._id === extractor.paragraphPropertyId
     );
     const numberProperty = template?.properties?.find(
-      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property._id === extractor.paragraphNumberPropertyId
     );
 

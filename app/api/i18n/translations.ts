@@ -1,12 +1,12 @@
 import { CSVLoader } from '../csv/index.js';
 import { generateFileName } from '../files/index.js';
-import { CreateTranslationsData } from '../i18n.v2/services/CreateTranslationsService.js';
+import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService.js';
 import { DefaultTranslations } from './defaultTranslations.js';
 import { legacyLogger } from '../log/index.js';
 import { EnforcedWithId, WithId } from '../odm/index.js';
 import settings from 'api/settings/settings.js';
 import thesauri from '../thesauri/thesauri.js';
-import { prettifyError } from '../utils/handleError.js';
+import { prettifyError } from 'app/utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
 import {
@@ -21,7 +21,7 @@ import { availableLanguages } from 'shared/language/index.js';
 import { ContextType } from 'shared/translationSchema.js';
 import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { pipeline } from 'stream/promises';
-import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO.js';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,

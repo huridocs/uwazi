@@ -4,8 +4,8 @@
 import React, { act } from 'react';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import { ImageViewer, ImageViewerProps } from '../ImageViewer';
 
 describe('ImageViewer', () => {

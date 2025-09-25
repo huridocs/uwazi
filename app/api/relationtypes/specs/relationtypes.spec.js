@@ -1,4 +1,4 @@
-import translations from '../i18n/translations.js';
+import translations from 'api/i18n/translations.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ContextType } from 'shared/translationSchema.js';

@@ -1,12 +1,12 @@
 import { IncomingHttpHeaders } from 'http';
-// @ts-expect-error TS(2307): Cannot find module '../../Users/UsersAPI.js' or it... Remove this comment to see the full error message
-import UsersAPI from '../../Users/UsersAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientUserGroupSchema, ClientUserSchema } from '../../apiResponseTypes.js';
+
+import UsersAPI from 'app/Users/UsersAPI.js';
+
+import api from 'app/utils/api.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
+
+import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes.js';
 
 const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   const preparedUser = { ...user };

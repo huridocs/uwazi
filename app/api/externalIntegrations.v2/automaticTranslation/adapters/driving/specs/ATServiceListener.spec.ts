@@ -1,11 +1,11 @@
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+
 import { config } from '../config.js';
-// @ts-expect-error TS(2307): Cannot find module '../externalIntegrations.v2/aut... Remove this comment to see the full error message
+
 import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../externalIntegrations.v2/aut... Remove this comment to see the full error message
+
 import { SaveEntityTranslations } from '../externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import RedisSMQ from 'rsmq';
@@ -13,7 +13,7 @@ import RedisSMQ from 'rsmq';
 import { UserSchema } from 'shared/types/userType.js';
 import waitForExpect from 'wait-for-expect';
 import { ATServiceListener } from '../ATServiceListener.js';
-// @ts-expect-error TS(2307): Cannot find module '../infrastructure/Redis.js' or... Remove this comment to see the full error message
+
 import { Redis } from '../infrastructure/Redis.js';
 import { RedisClient } from 'redis';
 

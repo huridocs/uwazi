@@ -1,26 +1,26 @@
 /* eslint-disable max-lines */
-// @ts-expect-error TS(2307): Cannot find module '../entities/entitySavingManage... Remove this comment to see the full error message
+
 import { saveEntity } from '../entities/entitySavingManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/processDocument.js' o... Remove this comment to see the full error message
+
+import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '../files/index.js';
+
 import * as processDocumentApi from '../files/processDocument.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 
 import db from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../../../utils/advancedSort.js... Remove this comment to see the full error message
-import { advancedSort } from '../../../utils/advancedSort.js';
+
+import { advancedSort } from 'app/utils/advancedSort.js';
 import * as os from 'os';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntityWithFilesSchema } from 'shared/types/entityType.js';
 import entities from '../entities';
 import {
@@ -131,7 +131,6 @@ describe('entitySavingManager', () => {
         expect(
           await fileExistsOnPath(
             attachmentsPath(
-              // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
               savedEntity.attachments?.find(a => a.originalname === 'sampleFile.txt')?.filename
             )
           )
@@ -380,7 +379,6 @@ describe('entitySavingManager', () => {
 
         expect(savedFiles.length).toBe(3);
 
-        // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
         const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
 
         expect(savedEntity.metadata?.image?.[0].value).toBe(`/api/files/${savedImage?.filename}`);

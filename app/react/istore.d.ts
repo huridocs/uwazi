@@ -7,7 +7,7 @@ import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonType
 import { TemplateSchema } from 'shared/types/templateType.js';
 import { EntitySchema } from 'shared/types/entityType.js';
 import { ConnectionSchema } from 'shared/types/connectionType.js';
-import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '../../apiResponseTypes.js';
+import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/apiResponseTypes.js';
 import { FileType } from 'shared/types/fileType.js';
 import { PageType } from 'shared/types/pageType.js';
 import { TranslationContext, TranslationType } from 'shared/translationType.js';

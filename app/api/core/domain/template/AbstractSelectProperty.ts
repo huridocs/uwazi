@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Context } from 'api/templates.v2/model/Property.js';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
@@ -24,7 +24,6 @@ class AbstractSelectProperty extends FilterableProperty {
   }
 
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
-    // @ts-expect-error TS(2339): Property 'ensurePropertyIsConsistent' does not exi... Remove this comment to see the full error message
     super.ensurePropertyIsConsistent(property);
     if (this.content !== property.content) {
       throw new PropertyThesaurusMismatchError(this, property);

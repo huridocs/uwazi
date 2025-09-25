@@ -2,15 +2,15 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-import { secondsToDate } from '../../../../shared/dateHelpers.js';
+
+import { ClientTemplateSchema } from "app/V2/shared/types.js";
+
+import { Translate } from 'app/I18N/index.js';
+import { secondsToDate } from '../../../../../shared/dateHelpers.js';
 import { Truncate } from '../../../../Components/UI/index.js';
-import { thesauriAtom } from '../../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
+import { thesauriAtom } from 'app/V2/atoms/index.js';
+
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes.js';
 import { EntitySuggestion } from '../types.js';
 
 // eslint-disable-next-line max-statements
@@ -39,7 +39,6 @@ const SuggestedValue = ({
     colorClass = 'text-orange-600';
   }
 
-  // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);
   const { content, type } = property || {};
   const thesaurus = thesauris.find(t => t._id === content);
@@ -49,7 +48,6 @@ const SuggestedValue = ({
       return '';
     }
 
-    // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
     const flattenedValues = _thesaurus.values.reduce((acc: any, v) => {
       if (v.values) {
         return [...acc, ...v.values];

@@ -6,10 +6,10 @@ import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import uniqueID from 'shared/uniqueID.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+
+import { t } from 'app/I18N/index.js';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 
@@ -70,7 +70,6 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
 
 const validateLocale = (language: string) => {
   try {
-    // @ts-expect-error TS(2339): Property 'getCanonicalLocales' does not exist on t... Remove this comment to see the full error message
     Intl.getCanonicalLocales(language);
     return language;
   } catch (_err) {
@@ -97,9 +96,9 @@ const DatePickerComponent = React.forwardRef(
       inputClassName = '',
       className = '',
       name = '',
-      onChange = () => {},
-      onBlur = () => {},
-      clearFieldAction = () => {},
+      onChange = () => { },
+      onBlur = () => { },
+      clearFieldAction = () => { },
     }: DatePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
@@ -109,7 +108,7 @@ const DatePickerComponent = React.forwardRef(
     const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
@@ -208,9 +207,9 @@ DatePickerComponent.defaultProps = {
   className: '',
   autoComplete: 'off',
   name: 'datePicker',
-  clearFieldAction: () => {},
-  onChange: () => {},
-  onBlur: () => {},
+  clearFieldAction: () => { },
+  onChange: () => { },
+  onBlur: () => { },
 };
 
 export type { DatePickerProps };

@@ -1,11 +1,11 @@
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
-import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
-import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
+
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO.js';
+
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO.js';
 
 import { getIdMapper } from 'api/utils/fixturesFactory.js';
 

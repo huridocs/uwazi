@@ -1,10 +1,10 @@
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import { availableLanguages } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema } from '../../istore.js';
+
+import { ClientEntitySchema } from "app/V2/shared/types.js";
 import { Button, Sidepanel } from '../../../../../Components/UI/index.js';
 import { PDF } from '../../../../../Components/PDFViewer/index.js';
 
@@ -15,10 +15,8 @@ interface PDFSidepanelSidepanelProps {
 }
 
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelSidepanelProps) => {
-  // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
   const defaultLanguage = availableLanguages.find(lang => lang.key === entity?.language);
   const mainDocument =
-    // @ts-expect-error TS(7006): Parameter 'document' implicitly has an 'any' type.
     entity?.documents?.find(document => document.language === defaultLanguage?.ISO639_3) ||
     (entity?.documents && entity.documents[0]);
 

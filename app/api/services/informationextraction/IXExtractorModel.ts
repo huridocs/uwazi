@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { instanceModel } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
 
 const props = {

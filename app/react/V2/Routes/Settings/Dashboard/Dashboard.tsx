@@ -4,15 +4,16 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
 
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Card } from '../../V2/Components/UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/settings.js' ... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+
+import { Card } from 'app/V2/Components/UI/index.js';
+
+
 import { getStats } from 'api/V2/api/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/formatH... Remove this comment to see the full error message
+
 import { formatBytes } from 'shared/V2/shared/formatHelpers.js';
 
 interface InstanceStats {
@@ -24,8 +25,8 @@ interface InstanceStats {
 
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getStats(headers);
+    async () =>
+      getStats(headers);
 
 const Dashboard = () => {
   const stats = useLoaderData() as InstanceStats;

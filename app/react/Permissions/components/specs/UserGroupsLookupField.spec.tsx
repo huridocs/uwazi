@@ -3,9 +3,9 @@
  */
 import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+
 import { MemberWithPermission } from 'shared/types/entityPermisions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 

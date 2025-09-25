@@ -1,9 +1,9 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-import { TemplateUpdateDenormalizeEntitiesBatch } from '../core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
@@ -63,7 +63,6 @@ export const denormalizeTemplateEntities = async (
       entitiesIds: await resultSet.nextBatch(limit),
       templateId: template.id,
       language,
-      // @ts-expect-error TS(2339): Property 'id' does not exist on type 'V1Relationsh... Remove this comment to see the full error message
       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
       newGeneratedIdProps: [],
       deletedProperties,

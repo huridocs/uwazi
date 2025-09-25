@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { validMediaFile } from '../../Metadata/helpers/validator.js';
 
 interface MarkdownMediaProps {
@@ -91,7 +91,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     setVideoPlaying(playingStatus);
   };
 
-  // @ts-expect-error TS(7006): Parameter '_timelinks' implicitly has an 'any' typ... Remove this comment to see the full error message
   const timeLinks = _timelinks => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
@@ -310,7 +309,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           url = URL.createObjectURL(blob);
           setMediaURL(url);
         })
-        .catch(_e => {})
+        .catch(_e => { })
         .finally(() => {
           setIsLoading(false);
         });

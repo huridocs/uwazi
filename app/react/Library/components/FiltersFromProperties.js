@@ -4,11 +4,11 @@ import { useLocation } from 'react-router';
 import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
-import { getAggregationSuggestions } from '../../Library/actions/libraryActions.js';
-import { selectTemplates } from '../../utils/coreSelectors.js';
-import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
+import { getAggregationSuggestions } from 'app/Library/actions/libraryActions.js';
+import { selectTemplates } from 'app/utils/coreSelectors.js';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers.js';
 
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';

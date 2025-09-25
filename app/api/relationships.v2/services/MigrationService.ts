@@ -1,16 +1,16 @@
 /* eslint-disable max-lines */
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/IdGener... Remove this comment to see the full error message
+
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/SaveStr... Remove this comment to see the full error message
+
 import { SaveStream } from '../common.v2/contracts/SaveStream.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
-import { Logger } from '../log.v2/contracts/Logger.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
+import { Logger } from 'api/log.v2/contracts/Logger.js';
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+
 import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';
@@ -36,13 +36,10 @@ class RelationshipMatcher {
   readonly fieldLibrary: Record<string, Record<string, Set<string | undefined>>>;
 
   constructor(migrationPlan: MigrationPlan) {
-    // @ts-expect-error TS(7006): Parameter 'field' implicitly has an 'any' type.
     const filteredPlan = migrationPlan.filter(field => !field.ignored);
     const groupedByTemplate = objectIndexToArrays(
       filteredPlan,
-      // @ts-expect-error TS(7006): Parameter 'field' implicitly has an 'any' type.
       field => field.sourceTemplateId,
-      // @ts-expect-error TS(7006): Parameter 'field' implicitly has an 'any' type.
       field => field
     );
     this.fieldLibrary = Object.fromEntries(
@@ -50,9 +47,7 @@ class RelationshipMatcher {
         template,
         objectIndexToSets(
           fields,
-          // @ts-expect-error TS(7006): Parameter 'field' implicitly has an 'any' type.
           field => field.relationTypeId,
-          // @ts-expect-error TS(7006): Parameter 'field' implicitly has an 'any' type.
           field => field.targetTemplateId
         ),
       ])
@@ -152,7 +147,6 @@ export class MigrationService {
     const cursor = this.v1ConnectionsDS.all();
 
     let hubIds: Set<string> = new Set();
-    // @ts-expect-error TS(7006): Parameter 'connection' implicitly has an 'any' typ... Remove this comment to see the full error message
     await cursor.forEach(async connection => {
       if (connection) hubIds.add(connection.hub);
       if (hubIds.size >= HUB_BATCH_SIZE) {
@@ -179,7 +173,6 @@ export class MigrationService {
 
   private async tryInferingFile(connection: V1Connection): Promise<string | null | undefined> {
     const similarConnections = this.v1ConnectionsDS.getSimilarConnections(connection);
-    // @ts-expect-error TS(7006): Parameter 'c' implicitly has an 'any' type.
     const candidate = await similarConnections.find(c => c.hasSameReferenceAs(connection));
     return candidate ? candidate.file : null;
   }
@@ -304,9 +297,7 @@ export class MigrationService {
     const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
     const connectionsGrouped = objectIndexToArrays(
       connections,
-      // @ts-expect-error TS(7006): Parameter 'connection' implicitly has an 'any' typ... Remove this comment to see the full error message
       connection => connection.hub,
-      // @ts-expect-error TS(7006): Parameter 'connection' implicitly has an 'any' typ... Remove this comment to see the full error message
       connection => connection
     );
     const connectionGroups = Array.from(Object.values(connectionsGrouped));
@@ -314,14 +305,12 @@ export class MigrationService {
     await connectionGroups.reduce(async (prevPromise, group) => {
       await prevPromise;
       const { stats: groupStats, transformed: groupTransformed } = await this.transformHub(
-        // @ts-expect-error TS(2345): Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
         group,
         matcher,
         transform
       );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      // @ts-expect-error TS(2345): Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
       return this.recordUnusedConnections(unusedHubsSaveStream, groupStats, group);
     }, Promise.resolve());
     await this.writeTransformed(write, transformed);
@@ -337,7 +326,6 @@ export class MigrationService {
     const hubCursor = this.hubsDS.all();
     const unusedHubsSaveStream = this.hubRecordDS.openSaveStream();
     const stats = new Statistics();
-    // @ts-expect-error TS(7006): Parameter 'hubIdBatch' implicitly has an 'any' typ... Remove this comment to see the full error message
     await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch =>
       this.transformBatch(hubIdBatch, matcher, stats, unusedHubsSaveStream, transform, write)
     );

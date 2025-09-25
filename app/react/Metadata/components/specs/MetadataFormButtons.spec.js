@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
-import { I18NLink } from '../../I18N.js';
+import { I18NLink } from 'app/I18N/index.js';
 
 import { Icon } from 'UI';
 

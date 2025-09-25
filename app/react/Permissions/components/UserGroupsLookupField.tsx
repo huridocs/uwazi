@@ -1,9 +1,9 @@
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+
 import { MemberWithPermission } from 'shared/types/entityPermisions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+
 import { debounce } from 'api/utils/index.js';
 import { MemberListItemInfo } from './MemberListItemInfo.js';
 

@@ -2,15 +2,14 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
-// @ts-expect-error TS(2305): Module '"../files.js"' has no exported member 'upl... Remove this comment to see the full error message
-import { uploadsPath, customUploadsPath, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp, socketEmit, iosocket, TestEmitSources } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { uploadsPath, customUploadsPath, storage } from '../files/index.js';
+
+import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes.js';
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
 
 

@@ -5,7 +5,7 @@ import {
   fileFromReadStream,
   getMimetypeFromOriginalName,
 } from '../files/filesystem.js';
-import zipFile from '../utils/zipFile.js';
+import zipFile from 'app/utils/zipFile.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import

@@ -1,10 +1,10 @@
-import api from '../../utils/api.js';
+import api from 'app/utils/api.js';
 import {
   loadGrantedPermissions,
   savePermissions,
   searchCollaborators,
 } from '../../Permissions/PermissionsAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 
 jest.mock('app/utils/api', () => ({

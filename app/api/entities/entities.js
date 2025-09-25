@@ -4,12 +4,12 @@
 import { applicationEventsBus } from '../eventsbus/index.js';
 import * as filesystem from '../files/index.js';
 import { PDF, files } from '../files/index.js';
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import relationships from '../relationships/relationships.js';
 import { search } from '../search/index.js';
 import templates from '../templates/templates.js';
-import date from '../utils/date.js';
-import { unique } from '../utils/filters.js';
+import date from 'app/utils/date.js';
+import { unique } from 'app/utils/filters.js';
 import { propertyTypes } from 'shared/propertyTypes.js';
 import { AccessLevels } from 'shared/types/permissionSchema.js';
 import ID from 'shared/uniqueID.js';

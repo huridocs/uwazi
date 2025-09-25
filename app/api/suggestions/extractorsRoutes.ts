@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
+
 import { needsAuthorization } from '../auth.js';
 import { Extractors } from '../services/informationextraction/ixextractors.js';
-import { parseQuery } from '../utils/index.js';
-import { validateAndCoerceRequest } from '../utils/validateRequest.js';
+import { parseQuery } from 'app/utils/index.js';
+import { validateAndCoerceRequest } from 'app/utils/validateRequest.js';
 import { Application, Request, Response, NextFunction } from 'express';
 import { ObjectId } from 'mongodb';
 import { ensure } from 'shared/tsUtils.js';
@@ -77,7 +77,6 @@ export const extractorsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       const updated = await Extractors.update({
-        // @ts-expect-error TS(2345): Argument of type '{ _id: any; name: any; source: a... Remove this comment to see the full error message
         _id: req.body._id,
         name: req.body.name,
         source: req.body.source,

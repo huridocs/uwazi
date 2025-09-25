@@ -8,38 +8,38 @@ import { ObjectId } from 'mongodb';
 
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
+
+import { testingTenants } from 'app/utils/testingTenants.js';
+
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
 import * as setupSockets from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+
 import { sortByStrings } from 'shared/data_utils/objectSorting.js';
 
 import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
 
 
 import testingDB from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
+
 import { EnforcedWithId } from '../odm.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
+
 import settings from '../settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
+
 import { Suggestions } from '../suggestions/suggestions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language.js' or i... Remove this comment to see the full error message
+
 import { LanguageUtils } from 'shared/language.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
 import { IXSuggestionType } from 'shared/types/suggestionType.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/pdfsegmentation/se... Remove this comment to see the full error message
+
 import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesModel.js' or its... Remove this comment to see the full error message
+
 import { filesModel } from '../files/filesModel.js';
 import { factory, fixtures } from './fixtures';
 import {
@@ -1163,11 +1163,9 @@ describe('InformationExtraction', () => {
       });
       expect(suggestions.length).toBe(2);
 
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const failedSuggestions = suggestions.filter(s => s.status === 'failed');
       expect(failedSuggestions.length).toBe(2);
 
-      // @ts-expect-error TS(7006): Parameter 'suggestion' implicitly has an 'any' typ... Remove this comment to see the full error message
       failedSuggestions.forEach(suggestion => {
         expect(suggestion.status).toBe('failed');
         expect(suggestion.state?.error).toBe(true);
@@ -1618,7 +1616,6 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
       });
       expect(suggestions.length).toBe(2);
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
@@ -1698,7 +1695,6 @@ describe('InformationExtraction', () => {
           status: 'processing',
         });
         expect(suggestionsInProcessing.length).toBe(1);
-        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         expect(suggestionsInProcessing.map(s => s.entityId)).toContain('entity_without_label_data');
         expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
           1,
@@ -1728,7 +1724,6 @@ describe('InformationExtraction', () => {
       await IXModelsModel.save(model);
 
       const message: IXResultsMessage = {
-        // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
         task: 'any_task',
         data_url: 'some/url',
         error_message: '',
@@ -1779,7 +1774,6 @@ describe('InformationExtraction', () => {
       });
 
       expect(suggestions.length).toBe(2);
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
@@ -1856,7 +1850,6 @@ describe('InformationExtraction', () => {
 
       expect(suggestions.length).toBe(2);
 
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(suggestions.find(s => s.language === 'other')).toEqual(
         expect.objectContaining({
           language: 'other',
@@ -1876,7 +1869,6 @@ describe('InformationExtraction', () => {
         })
       );
 
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(suggestions.find(s => s.language === 'en')).toEqual(
         expect.objectContaining({
           language: 'en',

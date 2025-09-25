@@ -3,7 +3,7 @@ import {
   BODY_REQUIRED_ENDPOINTS,
   IGNORED_ENDPOINTS,
 } from '../activitylog/activitylogMiddleware.js';
-import date from '../utils/date.js';
+import date from 'app/utils/date.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

@@ -1,16 +1,16 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import {
   Table,
   ConfirmNavigationModal,
   ConfirmationModal,
   ProgressBar,
 } from '../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/Translate.js' or it... Remove this comment to see the full error message
-import { Translate } from '../../I18N/Translate.js';
+
+import { Translate } from 'app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -27,9 +27,9 @@ import { Page, ClientTemplateSchema } from 'shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import uniqueID from 'shared/uniqueID.js';
-// @ts-expect-error TS(2307): Cannot find module '../../socket.js' or its corres... Remove this comment to see the full error message
+
 import { socket } from '../../socket.js';
 import {
   cleanProperty,

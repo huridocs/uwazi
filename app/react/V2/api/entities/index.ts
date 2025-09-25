@@ -1,12 +1,12 @@
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
+
+import api from 'app/utils/api.js';
 import { IncomingHttpHeaders } from 'http';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
 import * as formatter from './formatter';
 
 type EntityApiParams = {

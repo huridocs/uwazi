@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import { model } from '../entities.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../updatelogs.js' or its corre... Remove this comment to see the full error message
+
 import { model as updatelogsModel } from '../updatelogs.js';
 
 const fixtureFactory = getFixturesFactory();
@@ -56,7 +56,6 @@ describe('EntitiesUpdateLogHelper', () => {
         fixtureFactory.id('files-document1'),
       ].forEach(id => {
         const original = fixtures.updatelogs.find(log => log._id!.toString() === id.toString());
-        // @ts-expect-error TS(7006): Parameter 'log' implicitly has an 'any' type.
         const current = logs.find(log => log._id.toString() === id.toString());
 
         expect(current!.timestamp).toBeGreaterThan(original!.timestamp! as number);

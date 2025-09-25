@@ -1,8 +1,8 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { storage } from '../files/storage.js';
-import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 import { dbSessionContext } from '../odm/sessionsContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
@@ -12,7 +12,6 @@ interface TransactionOperation {
 }
 
 const originalIndexEntities = search.indexEntities.bind(search);
-// @ts-expect-error TS(7006): Parameter 'query' implicitly has an 'any' type.
 search.indexEntities = async (query, select, limit) => {
   if (dbSessionContext.getSession()) {
     return dbSessionContext.registerESIndexOperation([query, select, limit]);

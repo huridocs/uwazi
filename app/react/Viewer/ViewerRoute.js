@@ -7,7 +7,7 @@ import { actions } from '../../BasicReducer/index.js';
 import * as relationships from '../../Relationships/utils/routeUtils.js';
 import { showTab } from '../../Entities/actions/uiActions.js';
 import { trackPage } from '../../App/GoogleAnalytics.js';
-import { ErrorBoundary } from '../../V2/Components/ErrorHandling.js';
+import { ErrorBoundary } from 'app/V2/Components/ErrorHandling.js';
 import { PDFViewComponent } from './PDFView';
 import EntityView from './EntityView';
 import { ViewerComponent } from './components/ViewerComponent';

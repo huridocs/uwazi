@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
-import { t, Translate } from '../../I18N/index.js';
+
+import { Icon } from 'app/UI/Icon/Icon.js';
+import { t, Translate } from 'app/I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+
 import { wrapDispatch } from '../../Multireducer.js';
-import { exportDocuments } from '../../Library/actions/exportActions.js';
-// @ts-expect-error TS(2307): Cannot find module '../users/usersModel.js' or its... Remove this comment to see the full error message
+import { exportDocuments } from 'app/Library/actions/exportActions.js';
+
 import { User } from 'api/users/usersModel.js';
 import Modal from '../../Layout/Modal.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Captcha.js'... Remove this comment to see the full error message
+
 import { CaptchaValue } from 'shared/types/Captcha.js';
 import { Captcha, FormGroup } from '../../ReactReduxForms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
-import { LocalForm } from '../../Forms/Form.js';
+import { LocalForm } from 'app/Forms/Form.js';
 import { ExportStore } from '../reducers/ExportStoreType';
 
 type ExportButtonProps = {

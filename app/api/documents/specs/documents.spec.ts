@@ -1,16 +1,16 @@
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { fileExistsOnPath, uploadsPath } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
+
+import { fileExistsOnPath, uploadsPath } from '../files/index.js';
+
 import relationships from '../relationships.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 
 import db from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import { mockID } from 'shared/uniqueID.js';
 
 // eslint-disable-next-line node/no-restricted-import

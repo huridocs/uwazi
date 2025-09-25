@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import ModalTips from '../../App/ModalTips.js';
 import { SearchTipsContent } from '../../App/SearchTipsContent.js';
 

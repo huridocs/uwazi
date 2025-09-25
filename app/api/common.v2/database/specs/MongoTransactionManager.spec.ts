@@ -6,8 +6,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import testingDB from 'api/utils/testing_db.js';
 import { MongoClient, MongoError } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
-import { StandardLogger } from '../log.v2/infrastructure/StandardLogger.js';
+
+import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 import { getClient, getTenant } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 

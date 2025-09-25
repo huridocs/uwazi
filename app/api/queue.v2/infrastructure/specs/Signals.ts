@@ -32,7 +32,6 @@ export function createSignals() {
 
       if (
         !jobSignals[index].targetCalls ||
-        // @ts-expect-error TS(2532): Object is possibly 'undefined'.
         jobSignals[index].numberOfCalls >= jobSignals[index].targetCalls
       ) {
         jobSignals[index].cbHolder.finish();

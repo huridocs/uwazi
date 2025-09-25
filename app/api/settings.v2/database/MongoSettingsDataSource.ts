@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { LanguageUtils } from 'shared/language/index.js';
 
 import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings as SettingsType } from 'shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
@@ -26,7 +26,6 @@ export class MongoSettingsDataSource
     }
 
     return settings.languages.map(
-      // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
       language =>
         ({
           ...LanguageUtils.fromISO639_1(language.key),
@@ -36,7 +35,6 @@ export class MongoSettingsDataSource
   }
 
   protected async readSettings(): Promise<SettingsType | null> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     return this.getCollection().findOne({});
   }
 
@@ -46,13 +44,11 @@ export class MongoSettingsDataSource
 
   async getLanguageKeys() {
     const languages = await this.readLanguages();
-    // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
     return languages?.map(l => l.key) || [];
   }
 
   async getDefaultLanguageKey() {
     const languages = await this.readLanguages();
-    // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
     const defaultLanguage = languages?.find(l => l.default);
     if (!defaultLanguage) {
       throw new DefaultLanguageMissingError('Default language needs to be defined.');

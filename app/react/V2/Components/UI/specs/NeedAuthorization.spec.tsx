@@ -4,16 +4,16 @@
 import React, { ReactNode } from 'react';
 import { render } from '@testing-library/react';
 import { userAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientUserSchema } from '../../apiResponseTypes.js';
+
+import { ClientUserSchema } from 'app/apiResponseTypes.js';
 
 import { UserRole } from 'shared/types/userSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 import { NeedAuthorization } from '../index.js';
 import { TestAtomStoreProvider } from '../../../testing/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema } from '../../istore.js';
+
+import { ClientEntitySchema } from "app/V2/shared/types.js";
 
 describe('NeedAuthorization', () => {
   const editorUser = {

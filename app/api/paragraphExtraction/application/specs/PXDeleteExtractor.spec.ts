@@ -2,21 +2,21 @@ import { ObjectId } from 'mongodb';
 
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { MongoExtractorBuilder } from '../paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { DBFixture } from 'api/utils/testing_db.js';

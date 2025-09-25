@@ -69,12 +69,10 @@ describe('CreateBlankSuggestionsFromDocument', () => {
     expect(suggestions).toHaveLength(2);
 
     const fromExtractor1 = suggestions?.filter(
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.extractorId.toString() === factory.id('extractor_1').toString()
     );
 
     const fromExtractor4 = suggestions?.filter(
-      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.extractorId.toString() === factory.id('extractor_4').toString()
     );
 

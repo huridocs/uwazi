@@ -1,14 +1,14 @@
-import { MongoIdHandler } from '../../common.v2/database/MongoIdGenerator.js';
-import { MatchQueryNode } from '../../relationships.v2/model/MatchQueryNode.js';
-import { TraversalQueryNode } from '../../relationships.v2/model/TraversalQueryNode.js';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode.js';
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode.js';
 import {
   MatchQuery,
   TraverseQuery,
-  // @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/temp... Remove this comment to see the full error message
+  
 } from 'shared/types/api.v2/templates.createTemplateRequest.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 import { propertyTypes } from 'shared/propertyTypes.js';
 import { ObjectId } from 'mongodb';
@@ -52,7 +52,6 @@ const propertyToApp = (property: PropertySchema, templateId: string): Property =
   }
   if (property.type === propertyTypes.relationship) {
     if (!property.relationType) throw new Error('Relation type is required');
-    // @ts-expect-error TS(2740): Type 'V1RelationshipProperty' is missing the follo... Remove this comment to see the full error message
     return new V1RelationshipProperty(
       propertyId,
       property.name,
@@ -80,9 +79,7 @@ const TemplateInputMappers = {
     return new Template(
       id,
       template.name,
-      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       template.properties?.map(p => propertyToApp(p, id)) || [],
-      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       (template.commonProperties?.map(p =>
         TemplateMappers.propertyToApp(p, ObjectId.createFromHexString(id))
       ) || []) as CommonProperty[]

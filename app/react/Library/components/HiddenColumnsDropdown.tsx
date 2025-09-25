@@ -3,21 +3,21 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { DropdownList } from '../../Forms/index.js';
-import { TableViewColumn, IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
-import { wrapDispatch } from '../../Multireducer.js';
+
 import {
   ColumnItem,
   ValueItem,
   SelectableColumn,
-} from '../../Library/components/HiddenColumnsDropdownItem.js';
+} from 'app/Library/components/HiddenColumnsDropdownItem.js';
 import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
-} from '../../Library/actions/libraryActions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+} from 'app/Library/actions/libraryActions.js';
+
 import { IImmutable } from 'shared/types/Immutable.js';
-import { useOnClickOutsideElement } from '../../utils/useOnClickOutsideElementHook.js';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook.js';
+import { TableViewColumn, IStore } from 'app/istore.js';
+import wrapDispatch from 'app/Multireducer/wrapDispatch.js';
 
 interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;
@@ -45,7 +45,6 @@ const processColumns = (
   const hiddenColumns = columns.filter((c: TableViewColumn) => c.hidden);
   const shownColumns = columns.filter((c: TableViewColumn) => !c.hidden);
   const selectAllColumn: Partial<SelectableColumn> = {
-    // @ts-expect-error TS(2322): Type '{ label: string; selectAll: true; indetermin... Remove this comment to see the full error message
     label: 'Show all',
     selectAll: true,
     indeterminate: hiddenColumns.length !== 0 && shownColumns.length !== 0,
@@ -90,10 +89,9 @@ export const HideColumnsComponent = ({
   useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
   const onSelect = (item: SelectableColumn) =>
-    item.selectAll
-      ? setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
-      : // @ts-expect-error TS(2339): Property 'name' does not exist on type 'Selectable... Remove this comment to see the full error message
-      setColumnHidden(item.name, !item.hidden);
+    item.selectAll ?
+      setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
+      : setColumnHidden(item.name, !item.hidden);
 
   return (
     <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
@@ -102,7 +100,6 @@ export const HideColumnsComponent = ({
         open={open}
         data={sortedColumns}
         filter={(item: SelectableColumn, searchTerm: string) =>
-          // @ts-expect-error TS(2339): Property 'label' does not exist on type 'Selectabl... Remove this comment to see the full error message
           item.label.toLowerCase().includes(searchTerm.toLowerCase())
         }
         itemComponent={ColumnItem}

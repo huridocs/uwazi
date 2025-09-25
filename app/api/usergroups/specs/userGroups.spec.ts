@@ -1,11 +1,11 @@
 import Ajv from 'ajv';
-// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
+
 import { models } from '../odm.js';
-// @ts-expect-error TS(2307): Cannot find module '../usergroups/userGroups.js' o... Remove this comment to see the full error message
+
 import userGroups from '../usergroups/userGroups.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/userGroupTy... Remove this comment to see the full error message
+
 import { UserGroupSchema } from 'shared/types/userGroupType.js';
 
 import { UserSchema } from 'shared/types/userType.js';

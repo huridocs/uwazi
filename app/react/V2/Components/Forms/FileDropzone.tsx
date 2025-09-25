@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { formatBytes } from 'shared/formatHelpers.js';
 
 type FileDropzoneProps = {
@@ -44,18 +44,18 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   };
 
   return (
-    <Dropzone onDro ={handleOnDrop}>
+    <Dropzone onDrop={handleOnDrop}>
       {({ getRootProps, getInputProps }) => (
         <section
           className={`p-4 bg-gray-50 rounded border border-gray-300 border-dashed ${className}`}
         >
-          <div {...g tRootProps()}>
-            <input {...g tInputProps()} />
-            <div class ame="flex flex-col gap-4">
-              <ArrowUpTrayIcon class ame="m-auto w-auto text-gray-200 max-w-20" />
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <div className="flex flex-col gap-4">
+              <ArrowUpTrayIcon className="m-auto w-auto text-gray-200 max-w-20" />
 
-              <div class ame="leading-6 text-center">
-                <Translate class ame="font-semibold border-b-2 border-black cursor-pointer">
+              <div className="leading-6 text-center">
+                <Translate className="font-semibold border-b-2 border-black cursor-pointer">
                   Browse files to upload
                 </Translate>
                 &nbsp;
@@ -70,12 +70,12 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
                 key={`${file.name}-${index}`}
                 className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
               >
-                <span class ame="truncate max-w-32">{file.name}</span>
+                <span className="truncate max-w-32">{file.name}</span>
                 <span>-</span>
-                <span class ame="whitespace-nowrap">{formatBytes(file.size)}</span>
-                <button type= button" onCli k={() => removeFile(index)}>
-                  <Translate class ame="sr-only">Delete</Translate>
-                  <XMarkIcon class ame="w-4" />
+                <span className="whitespace-nowrap">{formatBytes(file.size)}</span>
+                <button type="button" onClick={() => removeFile(index)}>
+                  <Translate className="sr-only">Delete</Translate>
+                  <XMarkIcon className="w-4" />
                 </button>
               </div>
             ))}

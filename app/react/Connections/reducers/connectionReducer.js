@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 
-import * as viewerTypes from '../../Viewer/actions/actionTypes.js';
+import * as viewerTypes from 'app/Viewer/actions/actionTypes.js';
 
 import * as types from '../actions/actionTypes';
 

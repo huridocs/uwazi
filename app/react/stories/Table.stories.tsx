@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from '../V2/Components/UI/index.js';
+import { Button, Table } from 'V2/Components/UI/index.js';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures.js';
 
 type StoryProps = {
@@ -25,7 +25,7 @@ const ActionHeader = () => <span className="sr-only">Actions</span>;
 const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
   const actionFn = cell.getContext().column.columnDef.meta?.action
     ? cell.getContext().column.columnDef.meta?.action!
-    : () => {};
+    : () => { };
 
   return (
     <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>

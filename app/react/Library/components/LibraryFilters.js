@@ -1,7 +1,7 @@
-import { t, Translate } from '../../I18N/index.js';
+import { t, Translate } from 'app/I18N/index.js';
 import SidePanel from '../../Layout/SidePanel.js';
-import { resetFilters } from '../../Library/actions/filterActions.js';
-import FiltersForm from '../../Library/components/FiltersForm.js';
+import { resetFilters } from 'app/Library/actions/filterActions.js';
+import FiltersForm from 'app/Library/components/FiltersForm.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

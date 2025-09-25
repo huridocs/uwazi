@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { ClientSettings } from '../../apiResponseTypes.js';
+import { ClientSettings } from 'app/apiResponseTypes.js';
 
 const settingsAtom = atom({} as ClientSettings);
 

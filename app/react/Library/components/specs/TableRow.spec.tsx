@@ -5,15 +5,15 @@ import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Table... Remove this comment to see the full error message
-import { TableRow } from '../../Library/components/TableRow.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
+import { renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+
+import { TableRow } from 'app/Library/components/TableRow.js';
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { TableViewColumn } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
+import { TableViewColumn } from "app/V2/shared/types.js";
+
 import { IImmutable } from 'shared/types/Immutable.js';
 import { deletedEntityAtom } from '../../../V2/atoms/index.js';
 

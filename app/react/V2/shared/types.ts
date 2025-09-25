@@ -1,11 +1,11 @@
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { Tenant } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
+import { Tenant } from 'api/tenants/tenantContext.js';
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { SettingsLinkSchema } from 'shared/types/settingsType.js';
-import { Property, Template } from '../../apiResponseTypes.js';
-import { ClientPropertySchema } from '../../istore.js';
+import { Property, Template } from 'app/apiResponseTypes.js';
+import { ClientPropertySchema } from "app/V2/shared/types.js";
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;

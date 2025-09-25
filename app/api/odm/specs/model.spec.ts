@@ -1,21 +1,21 @@
-// @ts-expect-error TS(2307): Cannot find module '../log.js' or its correspondin... Remove this comment to see the full error message
+
 import { legacyLogger } from '../log.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../odm/logHelper.js' or its co... Remove this comment to see the full error message
+
 import { UpdateLogHelper } from '../odm/logHelper.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../updatelogs.js' or its corre... Remove this comment to see the full error message
+
 import { model as updatelogsModel } from '../updatelogs.js';
-// @ts-expect-error TS(2307): Cannot find module '../updatelogs/updatelogsModel.... Remove this comment to see the full error message
+
 import { UpdateLog } from '../updatelogs/updatelogsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
+
+import { testingTenants } from 'app/utils/testingTenants.js';
 
 import testingDB from 'api/utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+
 import { ensure } from 'shared/tsUtils.js';
 import { instanceModel, models, OdmModel, WithId } from '../model.js';
 
@@ -136,7 +136,6 @@ describe('ODM Model', () => {
       expect(logEntries.length).toBe(2);
       expect(
         ensure<UpdateLog>(
-          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           logEntries.find(e => e.mongoId.toString() === savedDocument._id.toString())
         ).timestamp
       ).toBe(2);
@@ -156,7 +155,6 @@ describe('ODM Model', () => {
         const logEntries = await updatelogsModel.find({}, '', { sort: { _id: 1 } });
 
         expect(
-          // @ts-expect-error TS(7031): Binding element 'mongoId' implicitly has an 'any' ... Remove this comment to see the full error message
           logEntries.map(({ mongoId, timestamp }) => ({ mongoId: mongoId.toString(), timestamp }))
         ).toEqual([
           { mongoId: newDocument1._id.toString(), timestamp: 3 },
@@ -178,7 +176,6 @@ describe('ODM Model', () => {
       const logEntries = await updatelogsModel.find({}, '', { sort: { _id: 1 } });
 
       expect(
-        // @ts-expect-error TS(7031): Binding element 'mongoId' implicitly has an 'any' ... Remove this comment to see the full error message
         logEntries.map(({ mongoId, timestamp }) => ({ mongoId: mongoId.toString(), timestamp }))
       ).toEqual([
         { mongoId: newDocument1._id.toString(), timestamp: 3 },
@@ -200,13 +197,11 @@ describe('ODM Model', () => {
 
         expect(
           ensure<UpdateLog>(
-            // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
             logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString())
           ).timestamp
         ).toBe(1);
 
         const document2Log = ensure<UpdateLog>(
-          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString())
         );
         expect(document2Log.timestamp).toBe(4);
@@ -217,7 +212,6 @@ describe('ODM Model', () => {
         await extendedModel.delete({ hub: 'non existent' });
 
         const logEntries = await updatelogsModel.find({});
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         const undefinedIdLog = logEntries.find(e => !e.mongoId);
         expect(undefinedIdLog).not.toBeDefined();
       });
@@ -230,13 +224,11 @@ describe('ODM Model', () => {
 
         expect(
           ensure<UpdateLog>(
-            // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
             logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString())
           ).timestamp
         ).toBe(1);
 
         const document2Log = ensure<UpdateLog>(
-          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString())
         );
         expect(document2Log.timestamp).toBe(4);

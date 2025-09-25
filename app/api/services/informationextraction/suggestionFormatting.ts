@@ -3,25 +3,25 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/date.js' or its corre... Remove this comment to see the full error message
-import date from '../utils/date.js';
+
+import date from 'app/utils/date.js';
 
 import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
 import {
   CommonSuggestion,
   IXSuggestionType,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-  // @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+  
 } from 'shared/types/suggestionType.js';
 import {
   TextSelectionSuggestionSchema,
   ValuesSelectionSuggestionSchema,
-  // @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionS... Remove this comment to see the full error message
+  
 } from 'shared/types/suggestionSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+
 import { syncWrapValidator } from 'shared/tsUtils.js';
 import { InternalIXResultsMessage } from './InformationExtraction.js';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors.js';
@@ -42,7 +42,6 @@ type TitleAsProperty = {
   type: 'title';
 };
 
-// @ts-expect-error TS(7006): Parameter 'schema' implicitly has an 'any' type.
 const createAjvValidator = schema => {
   const ajv = new Ajv({ allErrors: true });
   ajv.addVocabulary(['tsType']);
@@ -92,7 +91,6 @@ const simpleSuggestion = (
 ) => ({
   suggestedValue,
   segment: rawSuggestion.segment_text,
-  // @ts-expect-error TS(7006): Parameter 'box' implicitly has an 'any' type.
   selectionRectangles: rawSuggestion.segments_boxes.map(box => {
     const rect = { ...box, page: box.page_number.toString() };
     delete rect.page_number;
@@ -101,7 +99,6 @@ const simpleSuggestion = (
 });
 
 function multiValueIdsSuggestion(rawSuggestion: ValuesSelectionSuggestion) {
-  // @ts-expect-error TS(7006): Parameter 'value' implicitly has an 'any' type.
   const suggestedValue = rawSuggestion.values.map(value => ({
     id: value.id,
     label: value.label,

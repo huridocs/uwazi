@@ -2,13 +2,13 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTranslationContextSchema, ClientTranslationSchema } from '../../istore.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientTranslationContextSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
 import { Table } from '../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import * as translationsAPI from 'api/translations/index.js';
 import {
   ContextPill,
@@ -24,8 +24,8 @@ const columnHelper = createColumnHelper<TranslationContext>();
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    translationsAPI.get(headers);
+    async () =>
+      translationsAPI.get(headers);
 
 const TranslationsList = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
@@ -35,7 +35,6 @@ const TranslationsList = () => {
     contentContexts: TranslationContext[];
   } = { systemContexts: [], contentContexts: [] };
 
-  // @ts-expect-error TS(7006): Parameter 'context' implicitly has an 'any' type.
   translations[0]?.contexts?.forEach(context => {
     const contextTranslations: TranslationContext = {
       ...context,

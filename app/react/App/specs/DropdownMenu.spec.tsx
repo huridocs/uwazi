@@ -5,9 +5,9 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/types.j... Remove this comment to see the full error message
+
 import { ILink } from 'shared/V2/shared/types.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
 import { DropdownMenu } from '../DropdownMenu';
 

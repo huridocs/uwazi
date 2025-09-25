@@ -1,5 +1,5 @@
 import createReducer, { actions } from '../../BasicReducer/index.js';
-import * as types from '../../Library/actions/actionTypes.js';
+import * as types from 'app/Library/actions/actionTypes.js';
 
 const reducer = createReducer('aggregations', {});
 

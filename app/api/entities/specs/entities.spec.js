@@ -8,11 +8,11 @@ import fs from 'fs/promises';
 import entitiesModel from '../entities/entitiesModel.js';
 import { spyOnEmit } from '../eventsbus/eventTesting.js';
 import relationships from '../relationships.js';
-import { storage, uploadsPath } from '../files.js';
+import { storage, uploadsPath } from '../files/index.js';
 import { search } from '../search.js';
-import date from '../utils/date.js.js';
+import date from 'api/utils/date.js';;
 import db from 'api/utils/testing_db.js';
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 import { UserRole } from 'shared/types/userSchema.js';
 
 import { applicationEventsBus } from '../eventsbus.js';

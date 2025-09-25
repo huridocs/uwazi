@@ -2,12 +2,12 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
 
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
-import { ClientFile, IStore } from '../../istore.js';
-import { Translate } from '../../I18N/index.js';
+import { ClientFile, IStore } from "app/V2/shared/types.js";
+import { Translate } from 'app/I18N/index.js';
 import { deleteSelection } from '../actions/metadataExtractionActions';
 
 type deleteSelectionButtonProps = {

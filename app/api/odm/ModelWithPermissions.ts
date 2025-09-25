@@ -2,7 +2,7 @@
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 import { UserSchema } from 'shared/types/userType.js';
 import { PermissionSchema } from 'shared/types/permissionType.js';

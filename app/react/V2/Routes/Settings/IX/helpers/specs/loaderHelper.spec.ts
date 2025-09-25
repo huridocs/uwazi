@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientPropertySchema } from '../../istore.js';
+
+import { ClientPropertySchema } from "app/V2/shared/types.js";
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
 import {

@@ -1,8 +1,8 @@
 import { Store } from 'redux';
-import { AtomStoreData } from '../../V2/atoms.js';
+import { AtomStoreData } from 'app/V2/atoms.js';
 import { ClientFeatureFlags } from './V2/shared/types.js';
 import { RequestError } from './V2/shared/errorUtils.js';
-import { IStore } from '../../istore.js';
+import { IStore } from "app/V2/shared/types.js";
 import { updatePageDatasets } from '../../Pages/utils/updatePageDatasets.js';
 
 declare global {

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-import { DefaultRelationshipDataSource } from '../relationships.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults.js';
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories.js';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 

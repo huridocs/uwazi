@@ -2,15 +2,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 
-// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Expor... Remove this comment to see the full error message
-import ExportButton, { ExportButtonProps } from '../../Library/components/ExportButton.js';
+
+import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton.js';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout/Modal.js' or its ... Remove this comment to see the full error message
+
 import Modal from '../../Layout/Modal.js';
 import Immutable from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../Forms/Form.js' or its co... Remove this comment to see the full error message
-import { LocalForm } from '../../Forms/Form.js';
+
+import { LocalForm } from 'app/Forms/Form.js';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
@@ -46,7 +46,7 @@ describe('ExportButton', () => {
     });
 
     it('should dispatch exportDocuments on click', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
+      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
       render();
 
       component.find('.btn').simulate('click');
@@ -77,7 +77,7 @@ describe('ExportButton', () => {
     });
 
     it('should not dispatch on click', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
+      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
       render();
       expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
@@ -98,7 +98,7 @@ describe('ExportButton', () => {
     });
 
     it('should add a captcha when user is not logged in', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
+      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
       render();
       component.find('.btn').simulate('click');
       component.find(LocalForm).simulate('submit', { captcha: { text: 'abcde', id: '1234' } });

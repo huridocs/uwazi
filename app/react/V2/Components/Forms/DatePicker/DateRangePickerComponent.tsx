@@ -5,7 +5,7 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import uniqueID from 'shared/uniqueID.js';
 import { Label } from '../Label';
 import { InputError } from '../InputError';

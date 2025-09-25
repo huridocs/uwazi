@@ -2,8 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 
 const HTMLNotification = () => (
   <div className="flex items-center gap-4 p-4 text-primary-700 border-primary-300 bg-primary-100 w-fit">

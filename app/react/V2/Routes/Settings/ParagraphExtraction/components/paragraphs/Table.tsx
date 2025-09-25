@@ -1,15 +1,15 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { availableLanguages } from 'shared/language/index.js';
 import { Table, Button } from '../../../../../Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '../../../../../shared/ParagraphExtractionTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { templatesAtom } from '../../../../../atoms/index.js';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';
@@ -34,20 +34,18 @@ const ParagraphsTable = ({
   const languages =
     pxParagraphData.length > 0
       ? [
-          {
-            _id: pxParagraphData[0]._id,
-            name:
-              // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
-              availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
-              '',
-          },
-          ...(pxParagraphData[0].subRows || []).map(subRow => ({
-            _id: subRow._id,
-            name:
-              // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
-              availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
-          })),
-        ]
+        {
+          _id: pxParagraphData[0]._id,
+          name:
+            availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
+            '',
+        },
+        ...(pxParagraphData[0].subRows || []).map(subRow => ({
+          _id: subRow._id,
+          name:
+            availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
+        })),
+      ]
       : [];
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId)!;

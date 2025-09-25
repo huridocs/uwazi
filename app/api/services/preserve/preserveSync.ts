@@ -1,41 +1,41 @@
-// @ts-expect-error TS(2307): Cannot find module '../entities/index.js' or its c... Remove this comment to see the full error message
+
 import entities from '../entities/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, generateFileName, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../log/index.js' or its corres... Remove this comment to see the full error message
+
+import { files, generateFileName, storage } from '../files/index.js';
+
 import { legacyLogger } from '../log/index.js';
 
 import { EnforcedWithId } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/index.js' or its c... Remove this comment to see the full error message
+
 import settings from '../settings/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/index.js' or its ... Remove this comment to see the full error message
+
 import templates from '../templates/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/utils.js' or its ... Remove this comment to see the full error message
+
 import { newThesauriId } from '../templates/utils.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
-import thesauri from '../thesauri.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri/dictionariesModel.... Remove this comment to see the full error message
+
+import thesauri from '../../thesauri/thesauri.js';
+
 import dictionariesModel from '../thesauri/dictionariesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../users/users.js' or its corr... Remove this comment to see the full error message
+
 import users from '../users/users.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
-import { appContext } from '../utils/AppContext.js';
+
+import { appContext } from 'app/utils/AppContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+
 import { propertyTypes } from 'shared/propertyTypes.js';
 
 import { ObjectIdSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { PreserveConfig } from 'shared/types/settingsType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
@@ -54,7 +54,6 @@ const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) =
 
 const getSourceThesauriId = async (template: EnforcedWithId<TemplateSchema> | null) =>
   (template?.properties || []).find(
-    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     property => property.name === 'source' && property.type === propertyTypes.select
   );
 
@@ -89,7 +88,6 @@ const extractURL = async (
   evidence: { [k: string]: any }
 ) => {
   const hasURLProperty = (template?.properties || []).find(
-    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     property => property.name === 'url' && property.type === propertyTypes.link
   );
 
@@ -101,7 +99,6 @@ const extractDate = async (
   evidence: { [k: string]: any }
 ) => {
   const hasDateProperty = (template?.properties || []).find(
-    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     property => property.name === 'preservation_date' && property.type === propertyTypes.date
   );
 
@@ -138,7 +135,6 @@ const saveEvidence =
         { language: 'en', user: user || {} }
       );
       await Promise.all(
-        // @ts-expect-error TS(7006): Parameter 'download' implicitly has an 'any' type.
         evidence.attributes.downloads.map(async download => {
           const fileName = generateFileName({ originalname: path.basename(download.path) });
           const fileStream = (
@@ -178,7 +174,6 @@ const preserveSync = {
   },
 
   async sync(preserveConfig: PreserveConfig) {
-    // @ts-expect-error TS(7006): Parameter 'promise' implicitly has an 'any' type.
     // eslint-disable-next-line no-restricted-syntax
     await preserveConfig.config.reduce(async (promise, config) => {
       await promise;

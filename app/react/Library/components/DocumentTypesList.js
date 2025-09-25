@@ -7,11 +7,11 @@ import { Link } from 'react-router';
 import rison from '@huridocs/rison';
 import ShowIf from '../../App/ShowIf.js';
 import { withRouter } from '../../componentWrappers.js';
-import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
-import { t, Translate } from '../../I18N/index.js';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers.js';
+import { t, Translate } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 
-import { filterDocumentTypes } from '../../Library/actions/filterActions.js';
+import { filterDocumentTypes } from 'app/Library/actions/filterActions.js';
 
 const getItemsToShow = (fromFilters, templates, settings) => {
   let items = fromFilters ? settings.collection.toJS().filters : [];

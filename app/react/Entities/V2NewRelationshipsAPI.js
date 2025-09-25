@@ -1,5 +1,5 @@
-import api from '../../utils/api.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import api from 'app/utils/api.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 
 export default {
   get(requestParams = new RequestParams()) {

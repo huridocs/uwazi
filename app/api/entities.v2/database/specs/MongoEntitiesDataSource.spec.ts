@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/testing/partialIm... Remove this comment to see the full error message
+
 import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/MongoS... Remove this comment to see the full error message
-import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource.js';
+
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
@@ -14,7 +14,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import testingDB from 'api/utils/testing_db.js';
 
 import { MetadataSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
@@ -179,7 +179,6 @@ describe('Relationship fields caching strategy', () => {
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
       expect(
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         entities?.map(e => ({
           sharedId: e.sharedId,
           language: e.language,
@@ -225,7 +224,6 @@ describe('Relationship fields caching strategy', () => {
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
       expect(
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         entities?.map(e => ({
           sharedId: e.sharedId,
           language: e.language,

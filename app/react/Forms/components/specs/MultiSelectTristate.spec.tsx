@@ -1,5 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { TriStateSelectValue } from '../../istore.js';
+
+import { TriStateSelectValue } from "app/V2/shared/types.js";
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { MultiSelectProps, MultiSelectState, MultiSelectTristate } from '../MultiSelect';

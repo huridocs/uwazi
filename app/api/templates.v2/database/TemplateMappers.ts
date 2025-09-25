@@ -1,9 +1,9 @@
 /* eslint-disable no-redeclare */
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Common... Remove this comment to see the full error message
-import { CommonPropertyFactory } from '../core/domain/template/CommonPropertyFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+
+import { CommonPropertyFactory } from 'api/core/domain/template/CommonPropertyFactory.js';
+
 import { propertyTypes } from 'shared/propertyTypes.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
@@ -56,7 +56,6 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
       );
     case propertyTypes.relationship:
       if (!property.relationType) throw new Error('Relation type is required');
-      // @ts-expect-error TS(2740): Type 'V1RelationshipProperty' is missing the follo... Remove this comment to see the full error message
       return new V1RelationshipProperty(
         propertyId,
         property.name,
@@ -82,16 +81,12 @@ const TemplateMappers = {
   toApp: (tdbo: TemplateDBO): Template => {
     const template = new Template(
       MongoIdHandler.mapToApp(tdbo._id),
-      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplateDB... Remove this comment to see the full error message
       tdbo.name,
       tdbo.properties.map(p => propertyToApp(p, tdbo._id)),
       tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id) as any), // TODO: remove as any
-      // @ts-expect-error TS(2339): Property 'color' does not exist on type 'TemplateD... Remove this comment to see the full error message
       tdbo.color || '',
-      // @ts-expect-error TS(2339): Property 'default' does not exist on type 'Templat... Remove this comment to see the full error message
       tdbo.default
     );
-    // @ts-expect-error TS(2339): Property 'processing' does not exist on type 'Temp... Remove this comment to see the full error message
     template.processing = tdbo.processing;
     return template;
   },

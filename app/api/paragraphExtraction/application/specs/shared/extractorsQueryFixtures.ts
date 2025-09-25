@@ -3,13 +3,13 @@ import { ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource';

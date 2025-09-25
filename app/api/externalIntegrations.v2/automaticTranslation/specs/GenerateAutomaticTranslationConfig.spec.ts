@@ -2,11 +2,11 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
@@ -16,7 +16,7 @@ import { ValidationError, Validator } from '../infrastructure/Validator';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 
 import testingDB from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings } from 'shared/types/settingsType.js';
 
 const factory = getFixturesFactory();

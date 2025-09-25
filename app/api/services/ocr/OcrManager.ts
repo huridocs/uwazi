@@ -1,30 +1,30 @@
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
+
+import { files, storage } from '../files/index.js';
+
 import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/processDocument.js' o... Remove this comment to see the full error message
+
 import { processDocument } from '../files/processDocument.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships/relationships... Remove this comment to see the full error message
+
 import relationships from '../relationships/relationships.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { ResultsMessage, TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
 import settings from 'api/settings/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
 import { emitToTenant } from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/Error.js' or its corr... Remove this comment to see the full error message
-import createError from '../utils/Error.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/handleError.js' or it... Remove this comment to see the full error message
-import { handleError } from '../utils/handleError.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
+import { tenants } from 'api/tenants/tenantContext.js';
+
+import createError from 'app/utils/Error.js';
+
+import { handleError } from 'app/utils/handleError.js';
+
 import { LanguageUtils } from 'shared/language/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';

@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-// @ts-expect-error TS(2307): Cannot find module './types/suggestionType.js' or ... Remove this comment to see the full error message
+
 import { SuggestionOptionValue } from './types/suggestionType.js';
 import { getSuggestionState, SuggestionValues } from '../getIXSuggestionState';
 

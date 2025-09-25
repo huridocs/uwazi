@@ -3,14 +3,14 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
 
 import { PropertyValueSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 import {
   Button,
   Sidepanel,
@@ -18,9 +18,9 @@ import {
   VerticalDrawer,
   Truncate,
 } from '../../../../Components/UI/index.js';
-import { notificationAtom } from '../../../../atoms/index.js';
-import { secondsToISODate } from '../../../../shared/dateHelpers.js';
-import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { notificationAtom } from 'app/V2/atoms/index.js';
+import { secondsToISODate } from '../../../../../shared/dateHelpers.js';
+import { ClientIXExtractorType } from '../../../../../shared/types.js';
 import { TableSuggestion } from '../types.js';
 import {
   coerceValue,
@@ -34,7 +34,6 @@ import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from './atoms/i
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
-// @ts-expect-error TS(2769): No overload matches this call.
 const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
 
 interface PropertySidepanelProps {
@@ -65,7 +64,6 @@ const PropertySidepanel = ({
 
   useEffect(() => {
     if (showSidepanel && suggestion) {
-      // @ts-expect-error TS(2345): Argument of type 'TableSuggestion' is not assignab... Remove this comment to see the full error message
       loadSidepanelData(suggestion)
         .then(({ entity: suggestionEntity }) => {
           setEntity(suggestionEntity);
@@ -147,7 +145,6 @@ const PropertySidepanel = ({
     >
       <Sidepanel.Body className="overflow-y-auto">
         <TextProperty
-          // @ts-expect-error TS(2322): Type '{ propertyName: string | undefined; entity: ... Remove this comment to see the full error message
           propertyName={suggestion?.extractorSource.property}
           entity={entity}
           template={template}
@@ -187,7 +184,6 @@ const PropertySidepanel = ({
                 </div>
               }
             >
-              // @ts-expect-error TS(2786): 'SidepanelForms' cannot be used as a JSX component...
               Remove this comment to see the full error message
               <SidepanelForms
                 property={property}

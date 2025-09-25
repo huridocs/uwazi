@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
@@ -16,7 +16,6 @@ export class MongoV1ConnectionsDataSource
   protected collectionName = 'connections';
 
   all(): MongoResultSet<V1ConnectionDBO, V1Connection> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find({});
     return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnectionToApp);
   }
@@ -24,7 +23,6 @@ export class MongoV1ConnectionsDataSource
   getConnectedToHubs(
     hubIds: string[]
   ): MongoResultSet<V1ConnectionDBOWithEntityInfo, ReadableV1Connection> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const collection = this.getCollection();
     const cursor = collection.aggregate<V1ConnectionDBOWithEntityInfo>([
       {
@@ -70,7 +68,6 @@ export class MongoV1ConnectionsDataSource
   }
 
   getSimilarConnections(connection: V1Connection): MongoResultSet<V1ConnectionDBO, V1Connection> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find({
       entity: connection.entity,
       template: connection.template ? MongoIdHandler.mapToDb(connection.template) : undefined,

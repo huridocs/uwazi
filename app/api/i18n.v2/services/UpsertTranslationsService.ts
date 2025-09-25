@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
+
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';
@@ -111,7 +111,6 @@ export class UpsertTranslationsService {
     if (missingKeysInDB.length) {
       await this.translationsDS.insert(
         (await this.settingsDS.getLanguageKeys()).reduce<Translation[]>(
-          // @ts-expect-error TS(7006): Parameter 'memo' implicitly has an 'any' type.
           (memo, languageKey) =>
             memo.concat(
               missingKeysInDB.map(

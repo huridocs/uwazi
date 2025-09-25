@@ -1,15 +1,15 @@
 import 'isomorphic-fetch';
 import backend from 'fetch-mock';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { attachmentsPath, setupTestUploadedPaths } from '../files.js';
+
+import { attachmentsPath, setupTestUploadedPaths } from '../files/index.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 // eslint-disable-next-line node/no-restricted-import
 import { tenants } from 'api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import JSONRequest from 'shared/JSONRequest.js';
 import { Readable } from 'stream';
 import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';

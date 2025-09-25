@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
+
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
 
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/errors/Operationa... Remove this comment to see the full error message
+
 import { OperationalError } from '../common.v2/errors/OperationalError.js';
 import {
   CreateInput,
@@ -52,7 +52,6 @@ export class MongoPXEntitiesStatusDataSource
         status: input.status,
       };
 
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       await this.getCollection().insertOne(dbo, { session: this.getSession() });
 
       return MongoPXEntitiesStatusDataSource.toDomain(dbo);
@@ -72,7 +71,6 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async getById(extractionId: string): Promise<PXEntityStatusModel | undefined> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const dbo = await this.getCollection().findOne({
       _id: new ObjectId(extractionId),
     });
@@ -107,7 +105,6 @@ export class MongoPXEntitiesStatusDataSource
       query.extractorId = new ObjectId(extractorId);
     }
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const mongoEntityStatus = await this.getCollection().findOne(query);
 
     if (!mongoEntityStatus) {
@@ -118,7 +115,6 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async markAsError(extractionId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = await this.getCollection().updateOne(
       { _id: new ObjectId(extractionId) },
       { $set: { status: EntityStatus.Error } },
@@ -133,7 +129,6 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async markAsObsolete(entityStatusId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const currentStatus = await this.getCollection().findOne(
       { _id: new ObjectId(entityStatusId) },
       { projection: { status: 1 } }
@@ -143,7 +138,6 @@ export class MongoPXEntitiesStatusDataSource
       return;
     }
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().updateOne(
       { _id: new ObjectId(entityStatusId) },
       {
@@ -159,7 +153,6 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async markAsProcessing(entityStatusId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const mongoEntityStatus = await this.getCollection().updateOne(
       {
         _id: new ObjectId(entityStatusId),
@@ -176,7 +169,6 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async markAsProcessed(entityStatusId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const currentStatus = await this.getCollection().findOne(
       { _id: new ObjectId(entityStatusId) },
       { projection: { status: 1 } }
@@ -187,7 +179,6 @@ export class MongoPXEntitiesStatusDataSource
         ? EntityStatus.Obsolete
         : EntityStatus.Processed;
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().updateOne(
       {
         _id: new ObjectId(entityStatusId),
@@ -198,12 +189,10 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async delete(entityStatusId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().deleteOne({ _id: new ObjectId(entityStatusId) });
   }
 
   async deleteBySourceEntity(entitySharedId: string): Promise<void> {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().deleteOne({ entitySharedId });
   }
 
@@ -218,7 +207,6 @@ export class MongoPXEntitiesStatusDataSource
       Object.entries(query).filter(([_, value]) => Boolean(value))
     );
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find(sanitized);
 
     return new MongoResultSet(cursor, MongoPXEntitiesStatusDataSource.toDomain.bind(this));

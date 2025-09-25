@@ -17,14 +17,14 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
 import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
+import api from 'app/utils/api.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettings } from '../../apiResponseTypes.js';
+
+import { ClientSettings } from 'app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from 'api/i18n/translations';
 import settingsApi from 'api/settings/settings';
 import { tenants } from 'api/tenants';
@@ -154,13 +154,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
-        ])
+        api.get('user', requestParams),
+        api.get('settings', requestParams),
+        api.get('templates', requestParams),
+        api.get('dictionaries', requestParams),
+        api.get('relationTypes', requestParams),
+        Promise.resolve({ json: { rows: translations } }),
+      ])
       : [];
 
   const reduxData = {
@@ -303,7 +303,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   //extract the language from the route pathName, i.e /en/library
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
-  // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
   const language = languageKeys.includes(pathPossibleLanguage)
     ? pathPossibleLanguage
@@ -324,7 +323,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
 
-  // @ts-expect-error TS(2345): Argument of type '{ locale: any; settings: any; th... Remove this comment to see the full error message
   hydrateAtomStore(atomStoreData);
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>

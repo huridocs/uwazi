@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/CommonPr... Remove this comment to see the full error message
+
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
 import { CommonPropertyInvalidError } from '../errors';
 

@@ -1,27 +1,24 @@
-// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
-import translations from '../i18n.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
-import settings from '../settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
-import thesauri from '../thesauri.js';
+import translations from 'api/i18n/translations.js';
+
+import settings from 'api/settings/index.js';
+
+import thesauri from '../../thesauri/thesauri.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
-import { IndexedContextValues } from '../i18n/translations.js';
-// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
-import { WithId } from '../odm.js';
+
+import { IndexedContextValues } from 'api/i18n/translations.js';
+
+import { WithId } from 'api/odm/index.js';
 import { ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/thesaurusTy... Remove this comment to see the full error message
+
 import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
 const getTranslation = async (lang: string, id: ObjectId) =>
-  // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
   ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(
-    // @ts-expect-error TS(7006): Parameter 'c' implicitly has an 'any' type.
     c => c?.id === id?.toString()
   )?.values || ({} as IndexedContextValues);
 
@@ -62,7 +59,6 @@ describe('csvLoader thesauri', () => {
 
     it('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesaurus = await thesauri.getById(thesauriId);
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(thesaurus!.values!.map(v => v.label)).toEqual([
         'existing value',
         'value 1',
@@ -178,7 +174,6 @@ describe('csvLoader thesauri', () => {
         language: 'en',
       });
 
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(result!.values!.map(v => v.label)).toEqual([
         'existing color',
         'Blanco',
@@ -228,7 +223,6 @@ describe('csvLoader thesauri', () => {
         language: 'en',
       });
 
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(result!.values!.map(v => v.label)).toEqual([
         'existing value',
         'White',
@@ -260,7 +254,6 @@ describe('csvLoader thesauri', () => {
         language: 'en',
       });
 
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(result!.values!.map(v => v.label)).toEqual([
         'existing value',
         'Blanco',

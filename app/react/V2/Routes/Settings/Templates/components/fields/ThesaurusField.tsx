@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import { Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from '../../../../../Components/Forms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
+
+import { t, Translate } from 'app/I18N/index.js';
 import { thesauriAtom } from '../../../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus } from '../../apiResponseTypes.js';
+
+import { ClientThesaurus } from 'app/apiResponseTypes.js';
 import { orderBy } from 'lodash';
 
 interface ThesaurusFieldProps {

@@ -1,12 +1,13 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button, Pill } from '../../V2/Components/UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientRelationshipType, Template } from '../../apiResponseTypes.js';
+
+import { Button, Pill } from 'app/V2/Components/UI/index.js';
+
+
+import { ClientRelationshipType, Template } from 'app/apiResponseTypes.js';
 
 type Relationships = ClientRelationshipType & { rowId: string };
 

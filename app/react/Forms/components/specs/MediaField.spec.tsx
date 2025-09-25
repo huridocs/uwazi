@@ -3,12 +3,12 @@
  */
 import React from 'react';
 import { screen, RenderResult, act, fireEvent } from '@testing-library/react';
-// @ts-expect-error TS(2307): Cannot find module '../../Forms/components/MediaFi... Remove this comment to see the full error message
+
 import MediaField from '../../Forms/components/MediaField.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Metadata/components/Medi... Remove this comment to see the full error message
+
 import { MediaModalType } from '../../Metadata/components/MediaModal.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 
 describe('MediaField', () => {
   let renderResult: RenderResult;

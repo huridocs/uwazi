@@ -1,5 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Rela... Remove this comment to see the full error message
-import { EntityPointer, Relationship } from '../relationships.v2/model/Relationship.js';
+
+import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relationship.js';
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';
 import { TraversalQueryNode } from '../TraversalQueryNode';

@@ -1,9 +1,9 @@
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { TaskManager } from '../services/tasksmanager/TaskManager.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
+import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
+
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/infrastructure/Nam... Remove this comment to see the full error message
+
 import { QueueOptions } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXCreateParagraphsJob } from './PXCreateParagraphsJob';

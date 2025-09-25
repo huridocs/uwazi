@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
 
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/errors/Duplicated... Remove this comment to see the full error message
+
 import { DuplicatedKeyError } from '../common.v2/errors/DuplicatedKeyError.js';
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
 
@@ -21,7 +21,6 @@ export class MongoTranslationsDataSource
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     try {
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       if (items.length > 0) await this.getCollection().insertMany(items);
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
@@ -34,7 +33,6 @@ export class MongoTranslationsDataSource
 
   async upsert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
-    // @ts-expect-error TS(2339): Property 'createBulkStream' does not exist on type... Remove this comment to see the full error message
     const stream = this.createBulkStream();
 
     await items.reduce(async (previous, item) => {
@@ -51,18 +49,15 @@ export class MongoTranslationsDataSource
   }
 
   async deleteByContextId(contextId: string) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     return this.getCollection().deleteMany({ 'context.id': contextId });
   }
 
   async deleteByLanguage(language: LanguageISO6391) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     return this.getCollection().deleteMany({ language });
   }
 
   getAll() {
     return new MongoResultSet<TranslationDBO, Translation>(
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find({}),
       TranslationMappers.toModel
     );
@@ -70,7 +65,6 @@ export class MongoTranslationsDataSource
 
   getByLanguage(language: LanguageISO6391) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find({ language }),
       TranslationMappers.toModel
     );
@@ -78,7 +72,6 @@ export class MongoTranslationsDataSource
 
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find({ 'context.id': context }),
       TranslationMappers.toModel
     );
@@ -86,14 +79,12 @@ export class MongoTranslationsDataSource
 
   getContextAndKeys(contextId: string, keys: string[]) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),
       TranslationMappers.toModel
     );
   }
 
   async updateContextLabel(contextId: string, contextLabel: string) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     return this.getCollection().updateMany(
       { 'context.id': contextId },
       { $set: { 'context.label': contextLabel } }
@@ -101,7 +92,6 @@ export class MongoTranslationsDataSource
   }
 
   async updateKeysByContext(contextId: string, keyChanges: { [k: string]: string }) {
-    // @ts-expect-error TS(2339): Property 'createBulkStream' does not exist on type... Remove this comment to see the full error message
     const stream = this.createBulkStream();
 
     await Object.entries(keyChanges).reduce(async (previous, [keyName, newKeyName]) => {
@@ -115,18 +105,15 @@ export class MongoTranslationsDataSource
   }
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const context = await this.getCollection().findOne({ 'context.id': contextId });
     if (!context) {
       return keys;
     }
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const [result] = await this.getCollection()
       .aggregate([
         { $match: { key: { $in: keys }, 'context.id': contextId } },

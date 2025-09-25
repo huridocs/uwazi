@@ -1,11 +1,11 @@
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/errors/Duplicated... Remove this comment to see the full error message
+
 import { DuplicatedKeyError } from '../common.v2/errors/DuplicatedKeyError.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/model/Translation.j... Remove this comment to see the full error message
-import { Translation } from '../i18n.v2/model/Translation.js';
+
+import { Translation } from 'api/i18n.v2/model/Translation.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
@@ -62,7 +62,6 @@ describe('MongoTranslationsDataSource', () => {
         const transactionManager = DefaultTransactionManager();
 
         await expect(
-          // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
           new MongoTranslationsDataSource(getConnection(), transactionManager).insert([
             new Translation('existing_key', 'valor', 'es', {
               type: 'Entity',
@@ -76,7 +75,6 @@ describe('MongoTranslationsDataSource', () => {
       it('should not fail on an empty input', async () => {
         const transactionManager = DefaultTransactionManager();
         await expect(
-          // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
           new MongoTranslationsDataSource(getConnection(), transactionManager).insert([])
         ).resolves.toEqual([]);
       });
@@ -90,7 +88,6 @@ describe('MongoTranslationsDataSource', () => {
           throw new Error('db error');
         });
         await expect(
-          // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
           new MongoTranslationsDataSource(db, transactionManager).insert([
             new Translation('key', 'valor', 'es', {
               type: 'Entity',

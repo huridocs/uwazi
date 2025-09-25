@@ -1,10 +1,10 @@
 import ID from 'shared/uniqueID.js';
 import { PageType } from 'shared/types/pageType.js';
 import { validatePage } from 'shared/types/pageSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/date.js.js' or its co... Remove this comment to see the full error message
-import date from '../utils/date.js.js';
+
+import date from 'api/utils/date.js';;
 import templates from '../templates/index.js';
-import { createError } from '../utils/index.js';
+import { createError } from 'app/utils/index.js';
 import { UwaziFilterQuery } from '../odm/index.js';
 import { User } from 'api/users/usersModel.js';
 

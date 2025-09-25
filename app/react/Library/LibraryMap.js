@@ -1,10 +1,10 @@
 import React from 'react';
 import { withRouter } from '../../componentWrappers.js';
-import { requestState } from '../../Library/helpers/requestState.js';
-import { MapView } from '../../Library/components/MapView.js';
-import { LibraryRootComponent } from '../../Library/Library.js';
-import LibraryLayout from '../../Library/LibraryLayout.js';
-import LibraryModeToggleButtons from '../../Library/components/LibraryModeToggleButtons.js';
+import { requestState } from 'app/Library/helpers/requestState.js';
+import { MapView } from 'app/Library/components/MapView.js';
+import { LibraryRootComponent } from 'app/Library/Library.js';
+import LibraryLayout from 'app/Library/LibraryLayout.js';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons.js';
 import { trackPage } from '../../App/GoogleAnalytics.js';
 
 class LibraryMapComponent extends LibraryRootComponent {

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import { instanceModel } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+
 import { SegmentationType } from 'shared/types/segmentationType.js';
 
 const props = {

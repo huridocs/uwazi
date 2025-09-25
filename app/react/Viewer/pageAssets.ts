@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Metadata.js' or its corr... Remove this comment to see the full error message
+
+import { IStore } from "app/V2/shared/types.js";
+
 import { formater as formatter } from '../../Metadata.js';
 import {
   pick,
@@ -75,10 +75,8 @@ const formatPropertyValue = (
 const formatProperty = (item: FormattedPropertyValueSchema) => {
   const values: unknown[] = !isArray(item.value) || !item.value.length ? [item] : item.value;
   const formattedItem = values.map(target => {
-    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     const relatedEntity = pickEntityFields(target.relatedEntity);
     const metadataField = metadataFields(item);
-    // @ts-expect-error TS(2345): Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
     const value = formatPropertyValue(target, metadataField);
     return {
       displayValue: get(target, metadataField.displayValue, value),

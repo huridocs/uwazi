@@ -5,14 +5,14 @@ import { ValidationError } from '../common.v2/validation/ValidationError.js';
 import entities from '../entities/index.js';
 import { populateGeneratedIdByTemplate } from '../entities/generatedIdPropertyAutoFiller.js';
 import { applicationEventsBus } from '../eventsbus/index.js';
-import translations from '../i18n/translations.js';
+import translations from 'api/i18n/translations.js';
 import { WithId } from '../odm/index.js';
 import { search } from '../search/index.js';
 import { reindexAll, updateMapping } from '../search/entitiesIndex.js';
 import settings from 'api/settings/settings.js';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
-import createError from '../utils/Error.js';
+import createError from 'app/utils/Error.js';
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import { propertyTypes } from 'shared/propertyTypes.js';
 import { ContextType } from 'shared/translationSchema.js';
@@ -22,31 +22,31 @@ import { validateTemplate } from 'shared/types/templateSchema.js';
 import { TemplateSchema } from 'shared/types/templateType.js';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { tenants } from '../tenants/index.js';
-import { CreateTemplateUseCase } from '../core/application/CreateTemplate.js';
+import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults.js';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
-import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
-import { LegacyTranslationService } from '../core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { MongoThesauriDataSource } from 'api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
+import { TemplateMapper } from 'api/core/infrastructure//mongodb/template/Mapper.js';
+import { LegacyTranslationService } from 'api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
-import { UpdateTemplateUseCase } from '../core/application/UpdateTemplate.js';
+import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate.js';
 import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
-} from '../core/application/TemplateDTOs.js';
+} from 'api/core/application/TemplateDTOs.js';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
-import { TemplateUpdateDenormalizeEntitiesBatch } from '../core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
-import { LegacyPageService } from '../core/infrastructure/mongodb/page/LegacyPageService.js';
+import { LegacyPageService } from 'api/core/infrastructure//mongodb/page/LegacyPageService.js';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase.js';
 import { TemplateValidationService } from './validation/TemplateValidationService.js';
 import * as v2 from './v2_support.js';
@@ -310,7 +310,6 @@ export default {
     let denormalizationExecuted = false;
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
-      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
     if (
       (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
@@ -321,7 +320,6 @@ export default {
       await denormalizeTemplateEntities(
         TemplateInputMappers.toApp(template),
         language,
-        // @ts-expect-error TS(2769): No overload matches this call.
         relationshipPropsWithChangedRelData.concat(newRelationshipProps),
         deletedProperties,
         renamedProperties,

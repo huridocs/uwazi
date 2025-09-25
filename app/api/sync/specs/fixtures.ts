@@ -2,7 +2,7 @@
 
 
 import db, { DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../updatelogs/index.js' or its... Remove this comment to see the full error message
+
 import { UpdateLog } from '../updatelogs/index.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';

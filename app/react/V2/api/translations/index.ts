@@ -1,19 +1,19 @@
 import { Params } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { I18NApi } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
+import api from 'app/utils/api.js';
+
+import { I18NApi } from 'app/I18N/index.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTranslationSchema, ClientTranslationContextSchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
+
+import { ClientTranslationSchema, ClientTranslationContextSchema } from "app/V2/shared/types.js";
+
+import { RequestParams } from 'app/utils/RequestParams.js';
 import { TranslationValue } from 'shared/types.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/superagent.js' or... Remove this comment to see the full error message
+
 import { httpRequest } from 'shared/superagent.js';
-// @ts-expect-error TS(2307): Cannot find module '../../App/LoadingProgressBar.j... Remove this comment to see the full error message
+
 import loadingBar from '../../App/LoadingProgressBar.js';
 
 const filterTranslationsByContext = (
@@ -21,7 +21,6 @@ const filterTranslationsByContext = (
   contextId: string
 ): ClientTranslationSchema[] =>
   translations.map(language => {
-    // @ts-expect-error TS(7006): Parameter 'context' implicitly has an 'any' type.
     const contexts = language.contexts.filter(context => context.id === contextId);
     return { ...language, contexts };
   });

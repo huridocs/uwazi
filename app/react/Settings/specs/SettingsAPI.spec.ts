@@ -1,10 +1,10 @@
 import SettingsAPI from '../../Settings/SettingsAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../config.js.js' or its cor... Remove this comment to see the full error message
+
 import { APIURL } from '../../config.js.js';
 import backend from 'fetch-mock';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/jasmineHelpers... Remove this comment to see the full error message
+
 import { catchErrors } from 'api/utils/jasmineHelpers.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 
 describe('SettingsAPI', () => {
   beforeEach(() => {

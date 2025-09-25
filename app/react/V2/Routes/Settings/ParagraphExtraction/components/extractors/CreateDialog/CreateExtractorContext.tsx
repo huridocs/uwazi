@@ -2,11 +2,11 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { templatesAtom } from '../../../../../../atoms/index.js';
 import { useAtomValue } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
-import { MultiselectListOption } from '../../V2/Components/Forms.js';
+
+import { MultiselectListOption } from 'app/V2/Components/Forms.js';
 import { AddExtractorSteps } from './steps/index.js';
-import { formatTemplatesToOptions } from '../../../utils/formatters.js';
-import { filterPXQualifiedTemplates } from '../../../utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from 'app/utils/formatters.js';
+import { filterPXQualifiedTemplates } from 'app/utils/filterPXQualifiedTemplates.js';
 
 interface CreateExtractorContextType {
   targetTemplateId: string;

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import SidePanel from '../../Layout/SidePanel.js';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 
 import { closePanel } from '../actions/uiActions';
 import { setRelationType, setTargetDocument } from '../actions/actions';

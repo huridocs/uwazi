@@ -2,7 +2,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { fromJS } from 'immutable';
-import { IStore } from '../../istore.js';
+import { IStore } from "app/V2/shared/types.js";
 
 const defaultState = {
   locale: 'en',

@@ -7,9 +7,9 @@ import superagent from 'superagent';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-// @ts-expect-error TS(2307): Cannot find module '../../config.js.js' or its cor... Remove this comment to see the full error message
+
 import { APIURL } from '../../config.js.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Notifications/actions/no... Remove this comment to see the full error message
+
 import * as notifications from '../../Notifications/actions/notificationsActions.js';
 import * as actions from '../exportActions';
 

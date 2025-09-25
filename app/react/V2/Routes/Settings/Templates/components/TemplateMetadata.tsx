@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms/Colo... Remove this comment to see the full error message
-import { ColorPicker } from '../../V2/Components/Forms/ColorPicker.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms/Inpu... Remove this comment to see the full error message
-import { InputField } from '../../V2/Components/Forms/InputField.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms/Chec... Remove this comment to see the full error message
-import { Checkbox } from '../../V2/Components/Forms/Checkbox.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms/Sele... Remove this comment to see the full error message
-import { Select, OptionSchema } from '../../V2/Components/Forms/Select.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/Translate.js' or it... Remove this comment to see the full error message
-import { Translate } from '../../I18N/Translate.js';
+
+import { ColorPicker } from 'app/V2/Components/Forms/ColorPicker.js';
+
+import { InputField } from 'app/V2/Components/Forms/InputField.js';
+
+import { Checkbox } from 'app/V2/Components/Forms/Checkbox.js';
+
+import { Select, OptionSchema } from 'app/V2/Components/Forms/Select.js';
+
+import { Translate } from 'app/I18N/Translate.js';
 
 const templateColors = [
   '#628ccf',
@@ -70,7 +70,6 @@ export const TemplateMetadata = ({
       <ColorPicker
         name="template-color"
         value={value.color}
-        // @ts-expect-error TS(7006): Parameter 'color' implicitly has an 'any' type.
         onChange={color => onChange({ ...value, color })}
         hasErrors={!!colorError}
         options={templateColors}
@@ -80,7 +79,6 @@ export const TemplateMetadata = ({
         name="template-name"
         placeholder="Template name"
         value={value.name}
-        // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
         onChange={e => onChange({ ...value, name: e.target.value })}
         className="flex-grow min-w-[120px]"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
@@ -100,7 +98,6 @@ export const TemplateMetadata = ({
             <Checkbox
               name="display-as-page"
               checked={displayAsPage}
-              // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
               onChange={e => handleCheckboxChange((e.target as HTMLInputElement).checked)}
               label={<Translate>Display entity view from page</Translate>}
               className="mb-0"
@@ -110,7 +107,6 @@ export const TemplateMetadata = ({
               label=""
               options={[{ value: '', label: 'Select page' }, ...pages] as OptionSchema[]}
               value={value.entityViewPage}
-              // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
               onChange={e => onChange({ ...value, entityViewPage: e.target.value })}
               disabled={!displayAsPage}
               className="w-36"

@@ -1,15 +1,15 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
-import { Entity } from '../entities.v2/model/Entity.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/types/EntityInp... Remove this comment to see the full error message
-import { EntityInputModel } from '../entities.v2/types/EntityInputDataType.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
-import { Logger } from '../log.v2/contracts/Logger.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
-import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+
+import { Entity } from 'api/entities.v2/model/Entity.js';
+
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+
+import { Logger } from 'api/log.v2/contracts/Logger.js';
+
+import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 
@@ -64,7 +64,6 @@ export class RequestEntityTranslation {
     }
 
     let updatedEntities = (await this.entitiesDS.getByIds([entity.sharedId]).all()).filter(
-      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       e => e.language !== languageFrom
     );
 
@@ -75,7 +74,6 @@ export class RequestEntityTranslation {
       if (propertyValue) {
         const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${propertyValue}`;
 
-        // @ts-expect-error TS(7006): Parameter 'fetchedEntity' implicitly has an 'any' ... Remove this comment to see the full error message
         updatedEntities = updatedEntities.map(fetchedEntity =>
           fetchedEntity.setPropertyValue(property, pendingText)
         );
@@ -99,7 +97,6 @@ export class RequestEntityTranslation {
     }, Promise.resolve());
 
     await Promise.all(
-      // @ts-expect-error TS(7006): Parameter 'updatedEntity' implicitly has an 'any' ... Remove this comment to see the full error message
       updatedEntities.map(async updatedEntity => {
         this.logger.info(`[AT] - Pending translation saved on DB for entity - ${entity._id}`);
         await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);

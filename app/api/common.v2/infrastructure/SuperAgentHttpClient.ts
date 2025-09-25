@@ -1,6 +1,6 @@
 import superagent from 'superagent';
-// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/File.js' or ... Remove this comment to see the full error message
-import { File } from '../files.v2/model/File.js';
+
+import { File } from '../../files.v2/model/File.js';
 import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
 import { HttpField } from '../contracts/HttpField';
 

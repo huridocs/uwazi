@@ -7,13 +7,13 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 
 import { debounce } from 'api/utils/index.js';
-import libraryHelper, { prepareDefaultFilters } from '../../Library/helpers/libraryFilters.js';
-import { searchDocuments } from '../../Library/actions/libraryActions.js';
-import { Translate } from '../../I18N/index.js';
+import libraryHelper, { prepareDefaultFilters } from 'app/Library/helpers/libraryFilters.js';
+import { searchDocuments } from 'app/Library/actions/libraryActions.js';
+import { Translate } from 'app/I18N/index.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import { FilterTocGeneration } from '../../ToggledFeatures/tocGeneration.js';
-import { TemplatesFilter } from '../../Library/components/TemplatesFilter.js';
-import { AssigneeFilter } from '../../Library/components/AssigneeFilter.js';
+import { TemplatesFilter } from 'app/Library/components/TemplatesFilter.js';
+import { AssigneeFilter } from 'app/Library/components/AssigneeFilter.js';
 import { withRouter } from '../../componentWrappers.js';
 import { PermissionsFilter } from './PermissionsFilter.js';
 import { PublishedFilters } from './PublishedFilters.js';

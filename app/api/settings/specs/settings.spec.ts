@@ -1,12 +1,12 @@
-// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
-import translations from '../i18n/translations.js';
-// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
+
+import translations from 'api/i18n/translations.js';
+
 import { WithId } from '../odm.js';
 
 import db from 'api/utils/testing_db.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings } from 'shared/types/settingsType.js';
 import settings from '../settings';
 import fixtures, { linkFixtures, newLinks } from './fixtures';

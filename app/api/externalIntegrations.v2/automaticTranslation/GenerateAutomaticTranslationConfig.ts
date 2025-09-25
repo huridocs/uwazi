@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { GenerateATConfigError } from './errors/generateATErrors';
@@ -31,7 +31,6 @@ export class GenerateAutomaticTranslationsCofig {
       .all();
 
     const templates = semanticConfig.templates.map(configData => {
-      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       const templateData = templatesData.find(t => t.name === configData.template);
       if (!templateData) {
         throw new GenerateATConfigError(`Template not found: ${configData.template}`);
@@ -40,7 +39,6 @@ export class GenerateAutomaticTranslationsCofig {
         templateData?.id,
         (configData.properties || [])
           .map(label => {
-            // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
             const foundProperty = templateData.properties.find(p => p.label === label);
             if (!foundProperty) {
               throw new GenerateATConfigError(`Property not found: ${label}`);
@@ -49,7 +47,6 @@ export class GenerateAutomaticTranslationsCofig {
           })
           .concat(
             (configData.commonProperties || []).map(label => {
-              // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
               const foundProperty = templateData?.commonProperties.find(p => p.label === label);
               if (!foundProperty) {
                 throw new GenerateATConfigError(`Common property not found: ${label}`);

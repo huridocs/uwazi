@@ -1,9 +1,9 @@
 /* eslint-disable no-template-curly-in-string */
-// @ts-expect-error TS(2307): Cannot find module '../../Search/SearchAPI.js' or ... Remove this comment to see the full error message
+
 import api from '../../Search/SearchAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Markdown.js' or its corr... Remove this comment to see the full error message
+
+import { RequestParams } from 'app/utils/RequestParams.js';
+
 import { markdownDatasets } from '../../Markdown.js';
 
 import PagesAPI from '../../PagesAPI';
@@ -57,7 +57,6 @@ describe('getPageAssets', () => {
     expect(stateActions).toMatchSnapshot();
   });
 
-  // @ts-expect-error TS(7006): Parameter 'itemLists' implicitly has an 'any' type... Remove this comment to see the full error message
   const assertItemLists = itemLists => {
     expect(itemLists.length).toBe(4);
     expect(itemLists[0].params).toBe('?q=(a:1,b:2)');

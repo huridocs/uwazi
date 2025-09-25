@@ -1,13 +1,13 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { setTargetSelection, unsetTargetSelection } from '../../Viewer/actions/selectionActions.js';
-import Document from '../../Viewer/components/Document.js';
+import { setTargetSelection, unsetTargetSelection } from 'app/Viewer/actions/selectionActions.js';
+import Document from 'app/Viewer/components/Document.js';
 import {
   highlightReference,
   selectReference,
   deactivateReference,
-} from '../../Viewer/actions/uiActions.js';
+} from 'app/Viewer/actions/uiActions.js';
 import { selectTargetDoc, selectTargetReferences } from '../selectors';
 
 import TargetDocumentHeader from './TargetDocumentHeader';

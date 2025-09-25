@@ -1,10 +1,10 @@
 import React from 'react';
 import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientTemplateSchema } from '../../istore.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientEntitySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 
 type TextPropertyProps = {
   onSelect: (selection: TextSelection) => any;
@@ -32,7 +32,6 @@ const TextProperty = ({
       <Translate>Title</Translate>
     ) : (
       <Translate context={template?._id.toString()}>
-        // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
         {template?.properties?.find(property => property.name === propertyName)?.label}
       </Translate>
     );

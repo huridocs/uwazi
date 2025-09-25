@@ -2,15 +2,15 @@
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from '../../../../Components/UI/Sidepanel.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
+
+import { t, Translate } from 'app/I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
 
 import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
-import { ClientTemplateSchema, ClientProperty } from '../../../../shared/types.js';
+import { ClientTemplateSchema, ClientProperty } from '../../../../../shared/types.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '../../../../atoms/index.js';
+import { templatesAtom } from 'app/V2/atoms/index.js';
 import {
   PropertyTypeField,
   LabelField,

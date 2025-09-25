@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Doc.j... Remove this comment to see the full error message
-import Doc from '../../Library/components/Doc.js';
+
+import { IStore } from "app/V2/shared/types.js";
+
+import Doc from 'app/Library/components/Doc.js';
 import { CollectionViewerProps } from './CollectionViewerProps';
 import { RowList } from './Lists';
 

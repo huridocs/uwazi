@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { scrollToToc } from '../../Viewer/actions/uiActions.js';
+import { scrollToToc } from 'app/Viewer/actions/uiActions.js';
 import ShowIf from '../../App/ShowIf.js';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import { Icon } from 'UI';
-import { selectionHandlers } from '../../V2/Components/PDFViewer/index.js';
+import { selectionHandlers } from 'app/V2/Components/PDFViewer/index.js';
 import './scss/showToc.scss';
 
 class ShowToc extends Component {

@@ -1,6 +1,6 @@
 import { objectIdSchema } from 'shared/types/commonSchemas.js';
-// @ts-expect-error TS(2307): Cannot find module './types/entitySchema.js' or it... Remove this comment to see the full error message
-import { entitySchema } from './types/entitySchema.js';
+import { entitySchema } from './entitySchema.js';
+
 
 export const emitSchemaTypes = true;
 

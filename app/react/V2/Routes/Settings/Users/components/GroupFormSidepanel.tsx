@@ -2,11 +2,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/userGroupTy... Remove this comment to see the full error message
+
 import { UserGroupSchema } from 'shared/types/userGroupType.js';
 import { User, Group } from '../types.js';
 
@@ -72,7 +72,6 @@ const GroupFormSidepanel = ({
     const formData = new FormData();
     const formattedData = {
       ...data,
-      // @ts-expect-error TS(7006): Parameter 'member' implicitly has an 'any' type.
       members: data.members.map(member => ({ refId: member.refId })),
     };
 
@@ -103,7 +102,6 @@ const GroupFormSidepanel = ({
                   label={<Translate className="block mb-1 font-bold">Name</Translate>}
                   id="name"
                   autoComplete="off"
-                  // @ts-expect-error TS(2345): Argument of type 'FieldError | Merge<FieldError, F... Remove this comment to see the full error message
                   errorMessage={getFieldError(errors.name?.type)}
                   className="mb-1"
                   {...register('name', {
@@ -133,7 +131,6 @@ const GroupFormSidepanel = ({
                 options={
                   users?.map(user => ({ label: user.username, value: user._id as string })) || []
                 }
-                // @ts-expect-error TS(7006): Parameter 'member' implicitly has an 'any' type.
                 value={selectedGroup?.members?.map(member => member.refId) || []}
                 placeholder="Nothing selected"
               />

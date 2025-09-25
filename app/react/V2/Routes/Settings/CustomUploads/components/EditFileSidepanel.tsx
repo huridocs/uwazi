@@ -3,16 +3,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
-import { getFileNameAndExtension } from '../../../../shared/formatHelpers.js';
-import { notificationAtom } from '../../../../atoms/index.js';
+import { getFileNameAndExtension } from '../../../../../shared/formatHelpers.js';
+import { notificationAtom } from 'app/V2/atoms/index.js';
 import { update } from 'api/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
@@ -68,7 +68,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={isSubmitting ? () => {} : closeSidepanel}
+      closeSidepanelFunction={isSubmitting ? () => { } : closeSidepanel}
       title={<Translate>Edit File</Translate>}
     >
       <form onSubmit={handleSubmit(save)} className="flex flex-col h-full" id="file-edit-form">

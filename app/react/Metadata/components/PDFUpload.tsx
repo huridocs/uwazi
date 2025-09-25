@@ -4,8 +4,8 @@ import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { get } from 'lodash';
 import { Icon } from 'UI';
-import { Translate } from '../../I18N/index.js';
-import { IStore } from '../../istore.js';
+import { Translate } from 'app/I18N/index.js';
+import { IStore } from "app/V2/shared/types.js";
 import { MetadataFormFiles } from './MetadataFormFiles';
 
 type PDFUploadProps = {

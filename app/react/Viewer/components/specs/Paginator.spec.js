@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { CurrentLocationLink } from '../../Layout.js';
-import { renderConnectedMount } from '../../utils/test/renderConnected.js';
+import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
 import { PaginatorWithPage as Paginator } from '../Paginator';
 
 let page = 1;

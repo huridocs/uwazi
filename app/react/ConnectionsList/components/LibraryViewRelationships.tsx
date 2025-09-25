@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout.js' or its corres... Remove this comment to see the full error message
+
+import { Icon } from 'app/UI/Icon/Icon.js';
+
 import { Item } from '../../Layout.js';
 import { Collapsible } from '../../App/Collapsible.js';
 import { StickyHeader } from '../../App/StickyHeader.js';
 import RelationshipMetadata from '../../Relationships/components/RelationshipMetadata.js';
 import LoadMoreRelationshipsButton from '../../Relationships/components/LoadMoreRelationshipsButton.js';
-import { IStore } from '../../istore.js';
+import { IStore } from "app/V2/shared/types.js";
 import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {

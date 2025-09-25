@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettingsFilterSchema } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema } from '../../istore.js';
+
+import { ClientSettingsFilterSchema } from 'app/apiResponseTypes.js';
+
+import { ClientTemplateSchema } from "app/V2/shared/types.js";
 
 type Filter = ClientSettingsFilterSchema & {
   rowId: string;
@@ -23,7 +23,6 @@ const filterAvailableTemplates = (templates: ClientTemplateSchema[], filters?: F
 
   filters?.forEach(filter => {
     if (filter.subRows) {
-      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       filter.subRows.forEach(item => {
         usedTemplatesIds.push(item.id!);
       });
@@ -78,7 +77,6 @@ const deleteFilters = (originalFilters?: Filter[], filtersToRemove?: (string | u
     const updatedFilter = { ...filter };
     if (!filtersToRemove.includes(filter.rowId)) {
       if (filter.subRows) {
-        // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
         const subRows = filter.subRows.filter(item => !filtersToRemove.includes(item.rowId));
         updatedFilter.subRows = subRows;
       }
@@ -93,7 +91,6 @@ const sanitizeFilters = (filters?: Filter[]) => {
   const sanitizedFilters: ClientSettingsFilterSchema[] = [];
 
   filters?.forEach(filter => {
-    // @ts-expect-error TS(2525): Initializer provides no value for this binding ele... Remove this comment to see the full error message
     const { rowId, subRows, ...sanitizedFilter } = { ...filter };
 
     if (subRows && subRows.length === 0) {
@@ -102,7 +99,6 @@ const sanitizeFilters = (filters?: Filter[]) => {
 
     if (subRows) {
       sanitizedFilter.items = subRows.map(
-        // @ts-expect-error TS(7031): Binding element 'itemRowId' implicitly has an 'any... Remove this comment to see the full error message
         ({ rowId: itemRowId, _id, ...sanitizedItem }) => sanitizedItem
       );
     }
@@ -120,7 +116,6 @@ const formatFilters = (filters: ClientSettingsFilterSchema[]): Filter[] =>
       rowId: filter._id!,
     };
     if (filter.items) {
-      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       const subRows = filter.items.map(item => ({ ...item, rowId: item.id! }));
       tableFilter.subRows = subRows;
     }

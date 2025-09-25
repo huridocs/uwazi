@@ -3,14 +3,13 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { get, isEmpty, uniqBy } from 'lodash';
+import { get, isEmpty, property, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
-import { isClient } from 'api/utils/index.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+
+import { isClient } from 'app/utils/index.js';
 import {
   defaultSearch,
   InputField,
@@ -19,13 +18,17 @@ import {
   Textarea,
 } from '../../../../Components/Forms/index.js';
 import { Button } from '../../../../Components/UI/index.js';
-import { thesauriAtom } from '../../../../atoms/index.js';
-import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { thesauriAtom } from 'app/V2/atoms/index.js';
 import { selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
 import { SuggestionValue, TableSuggestion } from '../types.js';
 import { MultiselectItemLabel } from './MultiselectItemLabel.js';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 import { escapeLucene, searchRelatedEntities } from '../helpers/index.js';
+import { extractor } from 'api/paragraphExtraction/application/specs/fixtures.js';
+import { ClientIXExtractorType } from 'app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore.js';
+import { response } from 'express';
+import { setOptions } from 'leaflet';
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
@@ -58,7 +61,6 @@ const getEntityLabel = (entity: ClientEntitySchema, extractor?: ClientIXExtracto
     return entity.title as string;
   }
 
-  // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientProp... Remove this comment to see the full error message
   const inheritedValue = entity.metadata?.[extractor.inheritedProperty.name]?.[0];
   const inheritedLabel = inheritedValue?.label || inheritedValue?.value;
 
@@ -190,7 +192,6 @@ const Relationships = ({
         currentValues
           .concat(suggestedValues)
           .filter(value => value !== undefined)
-          // @ts-expect-error TS(2345): Argument of type '(value: SuggestionValue) => { sh... Remove this comment to see the full error message
           .map((value: SuggestionValue) => ({
             sharedId: get(value, 'id') || (value as string),
             label: get(value, 'label') || (value as string),
@@ -201,11 +202,9 @@ const Relationships = ({
       let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
       if (searchTextRef.current) {
         const escapedText = escapeLucene(searchTextRef.current.trim());
-        // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientProp... Remove this comment to see the full error message
         const fieldName = extractor?.inheritedProperty?.name;
 
         let searchField = ['select', 'multiselect'].includes(
-          // @ts-expect-error TS(2339): Property 'type' does not exist on type 'ClientProp... Remove this comment to see the full error message
           extractor?.inheritedProperty?.type || ''
         )
           ? '.label'
@@ -270,25 +269,21 @@ const Relationships = ({
       setOptions(initialOptionsRef.current);
     } else {
       const escapedText = escapeLucene(searchTerm.trim());
-      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientProp... Remove this comment to see the full error message
       const fieldName = extractor?.inheritedProperty?.name;
 
-      // @ts-expect-error TS(2339): Property 'type' does not exist on type 'ClientProp... Remove this comment to see the full error message
       let searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && fieldName
-          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-          : `title:(${escapedText}*)`
-      } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
+        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+        : `title:(${escapedText}*)`
+        } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
-      const suggestedValues = Array.isArray(suggestion?.suggestedValue)
-        ? // @ts-expect-error TS(2532): Object is possibly 'undefined'.
-          suggestion.suggestedValue
+      const suggestedValues = Array.isArray(suggestion?.suggestedValue) ?
+        suggestion.suggestedValue
         : [suggestion?.suggestedValue];
 
       const suggestedSharedIds = suggestedValues.map(value => get(value, 'value') || value);

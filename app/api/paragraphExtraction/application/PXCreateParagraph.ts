@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
+
 import { UseCase } from '../common.v2/contracts/UseCase.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/utils/Array.js' o... Remove this comment to see the full error message
+
 import { ArrayUtils } from '../common.v2/utils/Array.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
-import { Logger } from '../log.v2/contracts/Logger.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/index.js' or its c... Remove this comment to see the full error message
+
+import { Logger } from 'api/log.v2/contracts/Logger.js';
+
 import entities from '../entities/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
+
 import relationshipsDS from '../relationships.js';
 
 import { PXExtractor } from '../domain/PXExtractor';
@@ -73,7 +73,6 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       mainParagraphCreated.language
     );
 
-    // @ts-expect-error TS(7006): Parameter 'paragraphTranslation' implicitly has an... Remove this comment to see the full error message
     await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
       const existingTranslation = await this.dependencies.entitiesDS.getById(
         mainParagraphCreated.sharedId,

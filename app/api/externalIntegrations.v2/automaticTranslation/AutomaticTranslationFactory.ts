@@ -1,26 +1,26 @@
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/types/EntityInp... Remove this comment to see the full error message
-import { entityInputDataSchema } from '../entities.v2/types/EntityInputDataSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/types/EntityInp... Remove this comment to see the full error message
-import { EntityInputModel } from '../entities.v2/types/EntityInputDataType.js';
-// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
+
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
+
+import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema.js';
+
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+
 import { EventsBus } from '../eventsbus.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
-import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+
+import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';

@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
-import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { HubDataSource, HubType } from '../contracts/HubDataSource';
 
 class TemporaryDataSourceError extends Error {}
@@ -67,7 +67,6 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
   all(): MongoResultSet<HubType, string> {
     this.shouldBeReady();
     const cursor = this.getCollection().find({});
-    // @ts-expect-error TS(7006): Parameter 'dbo' implicitly has an 'any' type.
     return new MongoResultSet<HubType, string>(cursor, dbo => dbo._id.toString());
   }
 }

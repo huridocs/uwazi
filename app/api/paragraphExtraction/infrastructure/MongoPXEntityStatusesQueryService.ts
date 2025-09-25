@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
 import { LanguagesListSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService';
@@ -33,7 +33,6 @@ class MongoPXEntityStatusesQueryService
               $expr: {
                 $and: [
                   { $eq: ['$entity', '$$entitySharedId'] },
-                  // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
                   { $in: ['$language', installedLanguages.map(l => l.ISO639_3)] },
                 ],
               },
@@ -93,7 +92,6 @@ class MongoPXEntityStatusesQueryService
   ): Promise<{ sharedId: string }[]> {
     const aggregationPipeline = MongoPXEntityStatusesQueryService.buildAggregationPipeline(params);
 
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const entitiesCollection = this.getCollection();
     const unprocessedEntitiesBatch = await entitiesCollection
       .aggregate<{ sharedId: string }>(aggregationPipeline)

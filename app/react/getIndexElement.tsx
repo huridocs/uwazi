@@ -1,5 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettings } from '../../apiResponseTypes.js';
+
+import { ClientSettings } from 'app/apiResponseTypes.js';
 import React from 'react';
 import { Navigate } from 'react-router';
 import LibraryRoot from './Library/Library';
@@ -82,7 +82,6 @@ const getLibraryDefault = (
 
 // eslint-disable-next-line max-statements
 const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
-  // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
   const customHomePage = settings?.home_page ? settings?.home_page.split('/').filter(v => v) : [];
   const isValidHomePage = validateHomePageRoute(settings?.home_page || '');
   let element = <Navigate to={customHomePage.join('/')} />;

@@ -86,7 +86,6 @@ describe('MongoPermissionsDataSource', () => {
   ])(
     'should return the permissions for entities with the given sharedIds',
     async ({ sharedIds, expected }) => {
-      // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
       const dataSource = new MongoPermissionsDataSource(db!, DefaultTransactionManager());
       const resultSet = dataSource.getByEntities(sharedIds);
       expect(resultSet).toBeInstanceOf(MongoResultSet);

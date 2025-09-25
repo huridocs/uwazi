@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
@@ -27,7 +27,6 @@ export class MongoPermissionsDataSource
   protected collectionName = 'entities';
 
   getByEntities(sharedIds: string[]) {
-    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find(
       { sharedId: { $in: sharedIds } },
       { projection: { sharedId: 1, permissions: 1, published: 1 } }

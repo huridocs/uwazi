@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../relationtypes/relationtypes... Remove this comment to see the full error message
+
 import relationtypes from '../relationtypes/relationtypes.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';

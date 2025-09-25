@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import api from '../../Search/SearchAPI.js';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 
 import CejilChart from './CejilChart';
-import parsingUtils from '../utils/parsingUtils';
+import parsingUtils from 'app/utils/parsingUtils';
 
 const judgesCommisionersTemplate = '58b2f3a35d59f31e1345b4b6';
 const countryKey = 'pa_s';

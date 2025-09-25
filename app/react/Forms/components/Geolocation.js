@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from '../../Map.js';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 

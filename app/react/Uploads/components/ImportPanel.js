@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import SidePanel from '../../Layout/SidePanel.js';
 import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';

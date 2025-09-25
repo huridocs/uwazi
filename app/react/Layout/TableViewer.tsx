@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { EntityDisplayState, IStore, TableViewColumn } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout/TableRows.js' or ... Remove this comment to see the full error message
+
+import { EntityDisplayState, IStore, TableViewColumn } from "app/V2/shared/types.js";
+
+import { Translate } from 'app/I18N/index.js';
+
 import { TableRows } from '../../Layout/TableRows.js';
 import { CollectionViewerProps } from './CollectionViewerProps';
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+
 import { Aggregations } from 'shared/types/aggregations.js';
 import { fromJS } from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../Forms.js' or its corresp... Remove this comment to see the full error message
+
 import { MultiSelect } from '../../Forms.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { renderConnected } from '../../utils/test/renderConnected.js';
+
+import { renderConnected } from 'app/utils/test/renderConnected.js';
 import { PermissionsFilter, PermissionsFilterUncontrolled } from '../PermissionsFilter';
 
 describe('Permissions Filter', () => {

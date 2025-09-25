@@ -15,7 +15,6 @@ const addTenant = (info: any, { instanceName }: { instanceName: string }) => {
   return { ...info, tenant: tenantName, tenantError };
 };
 
-// @ts-expect-error TS(7006): Parameter 'info' implicitly has an 'any' type.
 const formatInfo = info => {
   const message = info.message && info.message.join ? info.message.join('\n') : info.message;
   return `${info.timestamp} [${info.tenant}] ${message}${info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''}`;

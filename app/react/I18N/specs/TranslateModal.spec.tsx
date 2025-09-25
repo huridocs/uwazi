@@ -3,15 +3,15 @@
  */
 import React, { act } from 'react';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
-import { TestAtomStoreProvider } from '../../V2/testing/index.js';
+import { TestAtomStoreProvider } from 'app/V2/testing/index.js';
 import {
   settingsAtom,
   translationsAtom,
   inlineEditAtom,
   notificationAtom,
-} from '../../V2/atoms/index.js';
+} from 'app/V2/atoms/index.js';
 import * as translationsAPI from 'app/V2/api/translations/index.js';
-import { NotificationsContainer } from '../../V2/Components/UI/index.js';
+import { NotificationsContainer } from 'app/V2/Components/UI/index.js';
 import { TranslateModal } from '../TranslateModal.js';
 import { languages, translations } from './fixtures.js';
 
@@ -36,7 +36,6 @@ describe('TranslateModal', () => {
           [notificationAtom, {}],
         ]}
       >
-        // @ts-expect-error TS(2786): 'TranslateModal' cannot be used as a JSX component... Remove
         this comment to see the full error message
         <TranslateModal />
         <NotificationsContainer />

@@ -2,13 +2,13 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { ClientTemplateSchema, IStore } from '../../istore.js';
+import { ClientTemplateSchema, IStore } from "app/V2/shared/types.js";
 import formatter from '../../Metadata/helpers/formater.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyNames.js'... Remove this comment to see the full error message
+
 import { safeName } from 'shared/propertyNames.js';
 import { showByType } from '../../Metadata/components/Metadata.js';
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { Translate } from 'app/I18N/index.js';
+
 import { IImmutable } from 'shared/types/Immutable.js';
 
 import { ensure } from 'shared/tsUtils.js';
@@ -43,7 +43,6 @@ const getPropertyName = (propertyName: string, _template: IImmutable<ClientTempl
   return (
     template
       .get('commonProperties')
-      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       ?.find(p => p?.get('label') === propertyName)
       ?.get('name') || propertyName
   );
@@ -67,7 +66,6 @@ const extractRootLabel = ({ propertyName, template: _template }: Options) => {
   const term =
     template
       .get('commonProperties')
-      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       ?.find(p => p?.get('name') === propertyName)
       .get('label') || '';
 
@@ -119,7 +117,6 @@ const EntityData = ({
   newNameGeneration,
 }: ComponentProps) => {
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
-  // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
   const template = templates.find(t => t?.get('_id') === entity.get('template'));
   // eslint-disable-next-line react/jsx-no-useless-fragment
   let output = <></>;

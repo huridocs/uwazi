@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 import ShowIf from '../../App/ShowIf.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/optionsUtils.js' ... Remove this comment to see the full error message
+
 import { filterOptions } from 'shared/optionsUtils.js';
-import { t, Translate } from '../../I18N/index.js';
-import { TriStateSelectValue } from '../../istore.js';
+import { t, Translate } from 'app/I18N/index.js';
+import { TriStateSelectValue } from "app/V2/shared/types.js";
 import { Icon as CustomIcon } from '../../Layout/Icon.js';
 import React, { Component, createRef, RefObject } from 'react';
 import { Icon } from 'UI';
@@ -56,7 +56,6 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  // @ts-expect-error TS(7006): Parameter '_v' implicitly has an 'any' type.
   onChange: _v => { },
   onFilter: async (_searchTerm: string) => { },
   totalPossibleOptions: 0,

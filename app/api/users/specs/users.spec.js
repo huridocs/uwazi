@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 
 import { createError } from '../utils.js';
-import mailer from '../utils/mailer.js';
+import mailer from 'app/utils/mailer.js';
 import db from 'api/utils/testing_db.js';
 import * as random from 'shared/uniqueID.js';
 

@@ -1,13 +1,10 @@
 import React from 'react';
-import SelectFilter from '../../Library/components/SelectFilter.js';
+import SelectFilter from 'app/Library/components/SelectFilter.js';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
 import { Aggregations } from 'shared/types/aggregations.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
+import { Translate } from 'app/I18N/index.js';
+import Icon from 'app/UI/Icon/Icon.js';
 
 interface PublishedFiltersProps {
   onChange: () => void;
@@ -15,7 +12,6 @@ interface PublishedFiltersProps {
 }
 
 const filteredAggregation = (aggregations: Aggregations, key: string) =>
-  // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
   (
     (aggregations?.all?._published?.buckets || []).find(a => a.key === key) || {
       filtered: { doc_count: 0 },

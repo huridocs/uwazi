@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useSearchParams } from 'react-router';
 import { PaginationState, Paginator } from '../../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
-import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
+
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers.js';
 import { PAGE_SIZE } from '../Loaders.js';
 
 const PXTableFooter = ({

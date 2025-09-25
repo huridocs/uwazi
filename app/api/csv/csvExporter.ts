@@ -5,7 +5,7 @@ import templates from '../templates/index.js';
 import { PropertySchema } from 'shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType.js';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate.js';
-import translations from '../i18n/translations.js';
+import translations from 'api/i18n/translations.js';
 import {
   formatters,
   formatCreationDate,

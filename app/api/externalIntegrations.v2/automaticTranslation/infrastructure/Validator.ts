@@ -19,8 +19,7 @@ export class Validator<T> {
 
   validate(data: unknown): data is T {
     const result = this.validateFunction(data);
-    this.errors = this.validateFunction.errors
-      ? // @ts-expect-error TS(2741): Property 'name' is missing in type 'ErrorObject<st... Remove this comment to see the full error message
+    this.errors = this.validateFunction.errors ?
         this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
       : [];
     return result;
@@ -28,8 +27,7 @@ export class Validator<T> {
 
   ensure(data: unknown): asserts data is T {
     this.validateFunction(data);
-    this.errors = this.validateFunction.errors
-      ? // @ts-expect-error TS(2322): Type 'ErrorObject<string, Record<string, any>, unk... Remove this comment to see the full error message
+    this.errors = this.validateFunction.errors ?
         this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
       : [];
     if (this.errors.length) {

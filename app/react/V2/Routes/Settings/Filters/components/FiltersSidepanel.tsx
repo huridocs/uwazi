@@ -3,12 +3,12 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
 import uniqueID from 'shared/uniqueID.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema } from '../../istore.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientTemplateSchema } from "app/V2/shared/types.js";
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
 import { sidepanelAtom } from './sidepanelAtom.js';
@@ -29,7 +29,6 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const { templates: allTemplates } = useLoaderData() as LoaderData;
   const filter = useAtomValue(sidepanelAtom);
-  // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
   const multiselectValues = filter?.subRows?.map(item => item.id).filter(v => v) as
     | string[]
     | undefined;
@@ -76,11 +75,8 @@ const FiltersSidepanel = ({
   const handleSave = (values: Omit<Filter, 'subRows'> & { subRows: string[] }) => {
     const result = { ...values, subRows: formatSelected(values.subRows) };
 
-    // @ts-expect-error TS(2339): Property '_id' does not exist on type '{ subRows: ... Remove this comment to see the full error message
     if (!filter?._id) delete result._id;
-    // @ts-expect-error TS(2339): Property 'id' does not exist on type '{ subRows: {... Remove this comment to see the full error message
     if (!filter?.id) result.id = uniqueID();
-    // @ts-expect-error TS(2339): Property 'rowId' does not exist on type '{ subRows... Remove this comment to see the full error message
     if (result.rowId === defaultValues.rowId) result.rowId = uniqueID();
 
     onSave(result);

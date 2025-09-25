@@ -1,4 +1,4 @@
-import api from '../../utils/api.js';
+import api from 'app/utils/api.js';
 
 export default {
   search(requestParams) {

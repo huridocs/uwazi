@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
@@ -32,7 +32,6 @@ afterAll(async () => {
 describe('MongoFilesDataSource', () => {
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
-      // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
       const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
 
       expect(
@@ -53,7 +52,6 @@ describe('MongoFilesDataSource', () => {
 
   describe('getDocumentsForEntity', () => {
     it('should return the documents for an entity', async () => {
-      // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
       const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
 
       const documentsForEntity = await ds.getDocumentsForEntity('entity1').all();
@@ -61,7 +59,6 @@ describe('MongoFilesDataSource', () => {
     });
 
     it('should allow fetching documents only in specific languages', async () => {
-      // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
       const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
 
       const documentsForEntity = await ds

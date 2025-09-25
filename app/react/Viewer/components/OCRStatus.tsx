@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { socket } from '../../socket.js';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
-import { ocrStatusTips } from '../utils/ocrStatusTips';
+import { ocrStatusTips } from 'app/utils/ocrStatusTips';
 import { reloadDocument } from '../actions/documentActions';
 
 type OCRStatusProps = {
@@ -77,7 +77,7 @@ const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps)
         socket.on('ocr:ready', listenOnSuccess);
         socket.on('ocr:error', listenOnError);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const lastUpdated = formatDate(ocrStatus.lastUpdated, locale);

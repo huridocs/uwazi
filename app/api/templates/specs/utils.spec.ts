@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
 import settings from 'api/settings/settings.js';
 
 import db from 'api/utils/testing_db.js';

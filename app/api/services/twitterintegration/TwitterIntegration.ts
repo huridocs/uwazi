@@ -1,24 +1,24 @@
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { ResultsMessage, TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
 import settings from 'api/settings/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js' or it... Remove this comment to see the full error message
+
 import entities from '../entities/entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/index.js' or its ... Remove this comment to see the full error message
+
 import templates from '../templates/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationtypes.js' or its co... Remove this comment to see the full error message
+
 import relationtypes from '../relationtypes.js';
 import {
   getTextWithAttachedImages,
   getTwitterImages,
   getTwitterImagesData,
   TwitterImageData,
-  // @ts-expect-error TS(2307): Cannot find module '../services/twitterintegration... Remove this comment to see the full error message
+  
 } from '../services/twitterintegration/getTwitterImages.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 
 interface TweetParamsType {
   title: string;

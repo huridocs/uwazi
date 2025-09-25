@@ -3,15 +3,15 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/ix/extractors... Remove this comment to see the full error message
+
 import * as extractorsAPI from 'api/V2/api/ix/extractors.js';
 import * as templatesAPI from 'api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema } from '../../istore.js';
+
+import { ClientTemplateSchema } from "app/V2/shared/types.js";
 import { Button, ConfirmationModal, Table } from '../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, t } from '../../I18N/index.js';
+
+import { Translate, t } from 'app/I18N/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
 import { ClientIXExtractorType } from 'shared/types.js';
 import { ExtractorModal } from './components/ExtractorModal.js';
@@ -36,14 +36,12 @@ const formatExtractors = (
 
     templates.some(template => {
       const property = template.properties.find(
-        // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
         templateProperty => templateProperty.name === extractor.property
       );
 
       if (!sourceLabel) {
         sourceLabel =
           template.properties.find(
-            // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
             templateProperty => templateProperty.name === extractor.source.property
           )?.label || '';
       }
@@ -207,10 +205,10 @@ const IXDashboard = () => {
 
 const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const extractors = await extractorsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
-    return { extractors, templates };
-  };
+    async () => {
+      const extractors = await extractorsAPI.get(headers);
+      const templates = await templatesAPI.get(headers);
+      return { extractors, templates };
+    };
 
 export { IXDashboard, IXdashboardLoader, formatExtractors };

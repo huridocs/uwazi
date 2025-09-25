@@ -1,8 +1,8 @@
 import React, { ReactEventHandler } from 'react';
 import { Radio, Label } from 'flowbite-react';
 import { isString } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Option } from './SelectTypes';
 
 interface RadioProps {
@@ -26,9 +26,8 @@ const RadioSelect = ({
   orientation = 'vertical',
 }: RadioProps) => (
   <fieldset
-    className={`flex flex-wrap gap-4 ${
-      orientation === 'vertical' ? 'flex-col max-w-md' : ''
-    } ${className}`}
+    className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''
+      } ${className}`}
     id={`radio_${name}`}
   >
     {legend && <legend className="mb-2 text-sm font-medium text-gray-700">{legend}</legend>}

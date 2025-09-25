@@ -2,13 +2,13 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+
 import { wrapDispatch } from '../../Multireducer.js';
 import { Icon } from 'UI';
 import { DropdownList } from '../../Forms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
-import { IStore } from '../../istore.js';
+import { IStore } from "app/V2/shared/types.js";
 import { omit } from 'lodash';
 import {
   filterTemplates,

@@ -8,12 +8,12 @@ import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from '../../../../Components/UI/index.js';
 import { EmbededButton } from '../../../../Components/UI/EmbededButton.js';
-import { ClientTemplateSchema } from '../../../../shared/types.js';
+import { ClientTemplateSchema } from '../../../../../shared/types.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientPropertySchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { ClientPropertySchema } from "app/V2/shared/types.js";
+
+import { Translate } from 'app/I18N/index.js';
 import {
   TableExtractor,
   TableSuggestion,
@@ -273,7 +273,6 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
       </span>
     );
   }
-  // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
   return <ContextCell text={segment} />;
 };
 

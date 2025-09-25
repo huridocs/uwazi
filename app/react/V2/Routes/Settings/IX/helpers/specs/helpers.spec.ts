@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/translateFunction.j... Remove this comment to see the full error message
-import * as translate from '../../I18N/translateFunction.js';
+
+import * as translate from 'app/I18N/translateFunction.js';
 import { formatOptions } from '../../components/ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
 import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';

@@ -1,60 +1,60 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, I18NLinkV2 as I18NLink, t } from '../../I18N/index.js';
+
+import { Translate, I18NLinkV2 as I18NLink, t } from 'app/I18N/index.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from '../../../atoms/index.js';
 import { Table } from '../../../Components/UI/Table/Table.js';
 import { Button } from '../../../Components/UI/Button.js';
 import * as templatesApi from 'api/templates/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { Template } from '../../apiResponseTypes.js';
+
+import { Template } from 'app/apiResponseTypes.js';
 import { columns } from './components/TemplatesTableComponents.js';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
 import { TemplateRow } from './types.js';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
-  async () => {
-    const templates = await templatesApi.get(headers);
-    const templateIds = templates.map((template: Template) => template._id);
-    const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-    return templates.map((template: Template) => {
-      const reasons = [];
-      if (template.default) {
-        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
-      }
-      if (entityCounts[template._id] > 0) {
-        reasons.push(
-          t(
-            'System',
-            'This template is in use by existing entities and cannot be deleted.',
-            null,
-            false
-          )
-        );
-      }
-      if (template.synced) {
-        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
-      }
+    async () => {
+      const templates = await templatesApi.get(headers);
+      const templateIds = templates.map((template: Template) => template._id);
+      const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
+      return templates.map((template: Template) => {
+        const reasons = [];
+        if (template.default) {
+          reasons.push(t('System', 'A default template cannot be deleted.', null, false));
+        }
+        if (entityCounts[template._id] > 0) {
+          reasons.push(
+            t(
+              'System',
+              'This template is in use by existing entities and cannot be deleted.',
+              null,
+              false
+            )
+          );
+        }
+        if (template.synced) {
+          reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
+        }
 
-      const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
+        const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
 
-      return {
-        ...template,
-        rowId: template._id,
-        translation: template.name,
-        entityCount: entityCounts[template._id] || 0,
-        disableRowSelection,
-      };
-    });
-  };
+        return {
+          ...template,
+          rowId: template._id,
+          translation: template.name,
+          entityCount: entityCounts[template._id] || 0,
+          disableRowSelection,
+        };
+      });
+    };
 
 const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];

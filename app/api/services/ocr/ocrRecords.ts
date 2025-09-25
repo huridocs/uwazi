@@ -24,7 +24,6 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
   const recordsToNullSource: OcrRecord[] = [];
   const recordIdsToDelete: string[] = [];
 
-  // @ts-expect-error TS(7006): Parameter 'record' implicitly has an 'any' type.
   records.forEach(record => {
     if (record.sourceFile) {
       idRecordMap.set(record.sourceFile.toString(), record);

@@ -9,15 +9,15 @@ import { ConnectionsList } from '../../ConnectionsList.js';
 import { CreateConnectionPanel } from '../../Connections.js';
 import { CurrentLocationLink, Icon } from '../../Layout.js';
 import { RelationshipsFormButtons } from '../../Relationships.js';
-import { Translate, I18NLink } from '../../I18N/index.js';
+import { Translate, I18NLink } from 'app/I18N/index.js';
 import { actions } from '../../BasicReducer/index.js';
 import AddEntitiesPanel from '../../Relationships/components/AddEntities.js';
 import ContextMenu from '../../ContextMenu.js';
 import Footer from '../../App/Footer.js';
-import Marker from '../../Viewer/utils/Marker.js';
+import Marker from 'app/Viewer/utils/Marker.js';
 import RelationshipMetadata from '../../Relationships/components/RelationshipMetadata.js';
 import ShowIf from '../../App/ShowIf.js';
-import { NeedAuthorization } from '../../Auth.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
 import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
 import V2NewRelationshipsBoard from '../../Entities/components/V2NewRelationshipsBoard.js';
 import { PaginatorWithPage } from './Paginator';
@@ -34,7 +34,7 @@ import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument.js';
-import determineDirection from '../utils/determineDirection';
+import determineDirection from 'app/utils/determineDirection';
 import { OCRStatus } from './OCRStatus';
 
 class Viewer extends Component {

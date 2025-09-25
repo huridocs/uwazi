@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import testingDB from 'api/utils/testing_db.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+
 import { config } from '../config.js';
 import { tenants } from '../tenantContext.js';
 import { tenantsModel } from '../tenantsModel.js';

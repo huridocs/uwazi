@@ -1,8 +1,8 @@
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+import { Translate } from 'app/I18N/index.js';
+
 import { wrapDispatch } from '../../Multireducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
+
+import { Icon } from 'app/UI/Icon/Icon.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
@@ -10,8 +10,8 @@ import {
   showImportPanel as showImportPanelAction,
 } from '../../Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
+
+import { NeedAuthorization } from 'app/Auth/index.js';
 import Export from './ExportButton';
 import { PDFUploadButton } from './PDFUploadButton';
 

@@ -1,6 +1,6 @@
 import { Application, NextFunction, Request, Response } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 import statsRoutes from '../routes';
 import request from 'supertest';
 

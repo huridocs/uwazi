@@ -1,8 +1,9 @@
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Pill } from '../../V2/Components/UI.js';
+
+import { Pill } from 'app/V2/Components/UI/index.js';
+
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { EntityStatus } from '../../../../../shared/ParagraphExtractionTypes.js';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 

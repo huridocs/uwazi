@@ -4,10 +4,10 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { screen, act, fireEvent } from '@testing-library/react';
-// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
+
 import { notificationActions } from '../../Notifications.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import * as actions from '../../actions/metadataExtractionActions';
 import { MetadataExtractor, Selection } from '../MetadataExtractor';
 
@@ -15,9 +15,9 @@ describe('MetadataExtractor', () => {
   let selected: Selection | undefined;
 
   beforeEach(() => {
-    spyOn(actions, 'updateSelection').and.returnValue(() => {});
-    spyOn(actions, 'updateFormField').and.returnValue(() => {});
-    spyOn(notificationActions, 'notify').and.returnValue(() => {});
+    spyOn(actions, 'updateSelection').and.returnValue(() => { });
+    spyOn(actions, 'updateFormField').and.returnValue(() => { });
+    spyOn(notificationActions, 'notify').and.returnValue(() => { });
     selected = {
       text: 'a user selected text',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 1, page: '1' }],

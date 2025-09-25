@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
-import * as types from '../../Library/actions/actionTypes.js';
+import * as types from 'app/Library/actions/actionTypes.js';
 
-import { documentsReducer } from '../../Library/reducers/documentsReducer.js';
-import * as actions from '../../Library/actions/libraryActions.js';
+import { documentsReducer } from 'app/Library/reducers/documentsReducer.js';
+import * as actions from 'app/Library/actions/libraryActions.js';
 import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
 import * as attachmentTypes from '../../Attachments/actions/actionTypes.js';
 

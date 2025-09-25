@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Matc... Remove this comment to see the full error message
-import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Trav... Remove this comment to see the full error message
-import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
+
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode.js';
+
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
@@ -10,8 +10,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import testingDB from 'api/utils/testing_db.js';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Rela... Remove this comment to see the full error message
-import { Relationship } from '../relationships.v2/model/Relationship.js';
+
+import { Relationship } from 'api/relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
@@ -95,7 +95,6 @@ let ds: MongoRelationshipsDataSource;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
   ds = new MongoRelationshipsDataSource(testingDB.mongodb!, DefaultTransactionManager());
 });
 
@@ -275,7 +274,6 @@ describe('getByefinition()', () => {
       .getByDefinition([{ from: 'entity1', type: factory.id('nullType').toString(), to: 'hub1' }])
       .all();
     expect(rels).toEqual([expect.objectContaining({ _id: factory.id('rel1').toString() })]);
-    // @ts-expect-error TS(7006): Parameter 'rel' implicitly has an 'any' type.
     rels.forEach(rel => {
       expect(rel).toBeInstanceOf(Relationship);
     });

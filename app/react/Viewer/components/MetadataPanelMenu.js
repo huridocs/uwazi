@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { actions } from '../../Metadata.js';
 import { MenuButtons } from '../../ContextMenu.js';
-import { NeedAuthorization } from '../../Auth.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
 import { Icon } from 'UI';
 
 export class MetadataPanelMenu extends Component {

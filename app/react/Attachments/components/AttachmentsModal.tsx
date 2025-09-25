@@ -5,9 +5,9 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
+import { Translate } from 'app/I18N/index.js';
+
+import { Icon } from 'app/UI/Icon/Icon.js';
 import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {
@@ -32,7 +32,7 @@ const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  let formDispatch: Function = () => {};
+  let formDispatch: Function = () => { };
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {

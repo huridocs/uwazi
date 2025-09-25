@@ -4,10 +4,10 @@
  */
 import Immutable from 'immutable';
 
-import Marker from '../../Viewer/utils/Marker.js.js';
-import * as actions from '../../Viewer/actions/uiActions.js';
-import scroller from '../../Viewer/utils/Scroller.js';
-import * as types from '../../Viewer/actions/actionTypes.js';
+import Marker from 'app/Viewer/utils/Marker.js.js';
+import * as actions from 'app/Viewer/actions/uiActions.js';
+import scroller from 'app/Viewer/utils/Scroller.js';
+import * as types from 'app/Viewer/actions/actionTypes.js';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {

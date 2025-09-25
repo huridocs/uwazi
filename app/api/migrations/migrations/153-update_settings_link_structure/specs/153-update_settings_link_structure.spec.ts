@@ -37,7 +37,6 @@ beforeAll(async () => {
   // @ts-ignore - intentionally wrong fixtures for testing
   await testingDB.setupFixturesAndContext(fixtures);
   db = testingDB.mongodb!;
-  // @ts-expect-error TS(2345): Argument of type 'Db | null' is not assignable to ... Remove this comment to see the full error message
   await migration.up(db);
 });
 

@@ -5,10 +5,10 @@ import { bindActionCreators } from 'redux';
 import RouteHandler from '../../App/RouteHandler.js';
 import qs from 'qs';
 import { Icon } from 'UI';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { withRouter } from '../../componentWrappers.js';
 
-import auth from '../../Auth.js';
+import auth from 'app/Auth/index.js';
 
 class ResetPasswordComponent extends RouteHandler {
   constructor(props, context) {

@@ -1,5 +1,5 @@
 import { SearchQuery } from 'shared/types/SearchQueryType.js';
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 
 import { cleanUp } from './queryHelpers';
 

@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
+
 import { EventsBus } from '../eventsbus.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
-import { Logger } from '../log.v2/contracts/Logger.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/events/EntityUpdat... Remove this comment to see the full error message
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+
+import { Logger } from 'api/log.v2/contracts/Logger.js';
+
 import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
 import { isEqual } from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -36,9 +36,7 @@ export class AfterEntityUpdatedListener {
     const settings = await this.deps.settingsDS.get();
     if (!settings.features?.metadataExtraction) return;
 
-    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     const afterEntity = after.find(e => e.language === targetLanguageKey);
-    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     const beforeEntity = before.find(e => e.language === targetLanguageKey);
 
     if (afterEntity?.template?.toString() === beforeEntity?.template?.toString()) {

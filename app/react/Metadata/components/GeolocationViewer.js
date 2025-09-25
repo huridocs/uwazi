@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import formatcoords from 'formatcoords';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 
 import { Map } from '../../Map.js';
 

@@ -3,8 +3,8 @@ import request from 'supertest';
 
 import { testingDB } from 'api/utils/testing_db.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';

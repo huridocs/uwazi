@@ -9,14 +9,14 @@ import {
   customUploadsPath,
   deleteFile,
   storage,
-  // @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-} from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/multitenantMiddleware... Remove this comment to see the full error message
-import { multitenantMiddleware } from '../utils/multitenantMiddleware.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/appContextMiddleware.... Remove this comment to see the full error message
-import { appContextMiddleware } from '../utils/appContextMiddleware.js';
+  
+} from '../files/index.js';
+
+import { testingTenants } from 'app/utils/testingTenants.js';
+
+import { multitenantMiddleware } from 'app/utils/multitenantMiddleware.js';
+
+import { appContextMiddleware } from 'app/utils/appContextMiddleware.js';
 
 import syncRoutes from '../routes';
 

@@ -1,16 +1,16 @@
 import { Dispatch } from 'redux';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
+
+import { IStore } from "app/V2/shared/types.js";
+
 import { notificationActions } from '../../Notifications.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+
 import { PermissionsDataSchema } from 'shared/types/permissionType.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
-  // @ts-expect-error TS(2307): Cannot find module '../../Library/actions/actionTy... Remove this comment to see the full error message
-} from '../../Library/actions/actionTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/permissions/publicPe... Remove this comment to see the full error message
+  
+} from 'app/Library/actions/actionTypes.js';
+
 import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission.js';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';

@@ -1,17 +1,17 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/routes.js' or i... Remove this comment to see the full error message
-import { permissionRoutes } from '../permissions/routes.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/entitiesPermiss... Remove this comment to see the full error message
-import { entitiesPermissions } from '../permissions/entitiesPermissions.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/collaborators.j... Remove this comment to see the full error message
-import { collaborators } from '../permissions/collaborators.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
+import { permissionRoutes } from 'api/permissions/routes.js';
+
+import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
+
+import { collaborators } from 'api/permissions/collaborators.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { PUBLIC_PERMISSION } from '../publicPermission';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+
 import { MemberWithPermission } from 'shared/types/entityPermisions.js';
 
 jest.mock(

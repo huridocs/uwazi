@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { is, Map } from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { NeedAuthorization } from '../../Auth.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
 import ShowIf from '../../App/ShowIf.js';
-import { t } from '../../I18N/index.js';
-import UploadEntityStatus from '../../Library/components/UploadEntityStatus.js';
-import ViewDocButton from '../../Library/components/ViewDocButton.js';
+import { t } from 'app/I18N/index.js';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus.js';
+import ViewDocButton from 'app/Library/components/ViewDocButton.js';
 import { Icon } from 'UI';
-import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
+import { atomStore, deletedEntityAtom } from 'app/V2/atoms/index.js';
 
 import { Item } from '../../Layout.js';
 import helpers from '../../Documents/helpers.js';

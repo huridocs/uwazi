@@ -3,13 +3,13 @@
 /* eslint-disable max-lines */
 import entities from '../entities/index.js';
 import { ArrayUtils } from '../common.v2/utils/Array.js';
-import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 import { checkTypeIsAllowed } from '../services/informationextraction/ixextractors.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
-import thesauri from '../thesauri.js';
+
+import thesauri from '../../thesauri/thesauri.js';
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
-import { tenants } from '../tenants/tenantContext.js';
+import { tenants } from 'api/tenants/tenantContext.js';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff.js';
 import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex.js';
 import { setIntersection } from 'shared/data_utils/setUtils.js';
@@ -99,7 +99,6 @@ const fetchResources = async (
   suggestions: IXSuggestionType[]
 ) => {
   const type = checkTypeIsAllowed(property.type);
-  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const fetcher = resourceFetchers[type];
   return fetcher(property, acceptedSuggestions, suggestions);
 };
@@ -335,7 +334,6 @@ const getValue = (
   if (type === 'title') {
     throw new SuggestionAcceptanceError('Title should not be handled here.');
   }
-  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const getter = valueGetters[type];
   return getter(property, entity, suggestionsById, acceptedSuggestionsByEntityId, resources);
 };

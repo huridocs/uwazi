@@ -1,4 +1,4 @@
-import { testingTenants } from '../utils/testingTenants.js';
+import { testingTenants } from 'app/utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { mockID } from 'shared/uniqueID.js';

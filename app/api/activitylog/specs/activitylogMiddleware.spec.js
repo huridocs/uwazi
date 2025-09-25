@@ -1,7 +1,7 @@
 import { IGNORED_ENDPOINTS } from '../activitylog/activitylogMiddleware.js';
-import { deleteFile, storage } from '../files.js';
+import { deleteFile, storage } from '../files/index.js';
 import { tenants } from 'api/tenants/index.js';
-import date from '../utils/date.js';
+import date from 'app/utils/date.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { legacyLogger } from '../log.js';
 // eslint-disable-next-line node/no-restricted-import

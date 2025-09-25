@@ -1,8 +1,9 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { TablePXEntityParagraphRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Truncate } from '../../V2/Components/UI.js';
+
+import { Truncate } from 'app/V2/Components/UI/index.js';
+
 
 const TextCell = ({
   cell,

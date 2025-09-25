@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { t } from '../../I18N.js';
+import { t } from 'app/I18N/index.js';
 import getFieldLabel from '../getFieldLabel';
 
 describe('getFieldLabel', () => {

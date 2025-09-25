@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
+
 import { config } from '../config.js';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
 import { Redis } from 'api/infrastructure/Redis.js';
@@ -118,7 +118,6 @@ DB.connect(config.DBHOST, config.DBAUTH)
       process.exit(0);
     });
   })
-  // @ts-expect-error TS(7006): Parameter 'error' implicitly has an 'any' type.
   .catch(error => {
     throw error;
   });

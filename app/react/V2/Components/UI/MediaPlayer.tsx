@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -30,10 +30,10 @@ const verifyUrl = (url: string): MediaType => {
 const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
   const overlayBackgroundStyle = thumbnail?.url
     ? {
-        backgroundImage: `url("${thumbnail.url}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
+      backgroundImage: `url("${thumbnail.url}")`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }
     : { background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 6%, rgba(156,163,175,0.6) 50%)' };
 
   const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';

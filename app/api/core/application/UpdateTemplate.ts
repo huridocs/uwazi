@@ -1,18 +1,18 @@
-import { IdGenerator } from '../../common.v2/contracts/IdGenerator.js';
-import { TransactionManager } from '../../common.v2/contracts/TransactionManager.js';
-import { AbstractUseCase } from '../../common.v2/contracts/UseCase.js';
-import { ValidationError } from '../../common.v2/validation/ValidationError.js';
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator.js';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager.js';
+import { AbstractUseCase } from 'api/common.v2/contracts/UseCase.js';
+import { ValidationError } from 'api/common.v2/validation/ValidationError.js';
 import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { applicationEventsBus } from '../../eventsbus/index.js';
 import { permissionsContext } from '../../permissions/permissionsContext.js';
 import { JobsDispatcher } from '../../queue.v2/application/contracts/JobsDispatcher.js';
-import { RelationshipTypesDataSource } from '../../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { SettingsDataSource } from '../../settings.v2/contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
-import { Template } from '../../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../../templates.v2/model/V1RelationshipProperty.js';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+import { Template } from 'api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { TemplateUpdatedEvent } from '../../templates/events/TemplateUpdatedEvent.js';
-import { tenants } from '../../tenants/index.js';
+import { tenants } from 'api/tenants/index.js';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
@@ -107,7 +107,6 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
 
     const swappedNameProp = currentTemplate.selectSwappedNameProperties(updatedTemplate);
     if (swappedNameProp) {
-      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
       throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
     }
     await this.deps.transactionManager.run(async () => {
@@ -121,9 +120,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
-        // @ts-expect-error TS(2741): Property 'name' is missing in type 'TemplateDBO' b... Remove this comment to see the full error message
         before: TemplateMapper.toSchema(currentTemplate),
-        // @ts-expect-error TS(2322): Type 'TemplateDBO' is not assignable to type 'Temp... Remove this comment to see the full error message
         after: TemplateMapper.toSchema(updatedTemplate),
       })
     );
@@ -142,11 +139,9 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     const newProperties = currentTemplate.selectNewProperties(updatedTemplate);
 
     const newRelationshipProps = newProperties.filter(
-      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       (p): p is V1RelationshipProperty => p.type === 'relationship'
     );
     const newGeneratedIdProps = newProperties.filter(
-      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
     if (
@@ -178,9 +173,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
           templateId: updatedTemplate.id,
           language,
           modifiedRelationshipsProps: relationshipPropsWithChangedRelData
-            // @ts-expect-error TS(2769): No overload matches this call.
             .concat(newRelationshipProps)
-            // @ts-expect-error TS(2339): Property 'id' does not exist on type 'V1Relationsh... Remove this comment to see the full error message
             .map(p => p.id),
           newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
           deletedProperties,

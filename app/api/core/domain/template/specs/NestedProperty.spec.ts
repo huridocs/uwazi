@@ -9,7 +9,6 @@ describe('NestedProperty', () => {
       template: 'any',
     });
 
-    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'NestedProp... Remove this comment to see the full error message
     expect(nestedProperty.name).toBe('a_label_nested');
   });
 
@@ -22,7 +21,6 @@ describe('NestedProperty', () => {
       template: 'any',
     });
 
-    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'NestedProp... Remove this comment to see the full error message
     expect(nestedProperty.name).toBe('a_label_2_nested');
   });
 });

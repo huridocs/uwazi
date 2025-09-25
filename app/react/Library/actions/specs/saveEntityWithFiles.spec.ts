@@ -4,13 +4,13 @@
 import superagent from 'superagent';
 import fetchMock from 'fetch-mock';
 
-// @ts-expect-error TS(2307): Cannot find module '../../config.js' or its corres... Remove this comment to see the full error message
+
 import { APIURL } from '../../config.js';
 import {
   readFileAsBase64,
   saveEntityWithFiles,
-  // @ts-expect-error TS(2307): Cannot find module '../../Library/actions/saveEnti... Remove this comment to see the full error message
-} from '../../Library/actions/saveEntityWithFiles.js';
+  
+} from 'app/Library/actions/saveEntityWithFiles.js';
 import { contentForFiles } from './fixtures';
 
 describe('saveEntityWithFiles', () => {
@@ -55,7 +55,6 @@ describe('saveEntityWithFiles', () => {
       });
 
       let serializedFile = '';
-      // @ts-expect-error TS(7006): Parameter 'info' implicitly has an 'any' type.
       await readFileAsBase64(file, info => {
         serializedFile = info.toString();
       });

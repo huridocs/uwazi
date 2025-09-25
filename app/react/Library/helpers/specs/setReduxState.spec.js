@@ -1,4 +1,4 @@
-import * as actionTypes from '../../Library/actions/actionTypes.js';
+import * as actionTypes from 'app/Library/actions/actionTypes.js';
 import * as libraryActions from '../../actions/libraryActions';
 import setReduxState from '../setReduxState';
 

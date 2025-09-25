@@ -1,6 +1,6 @@
 import { APIURL } from '../../config.js.js';
 import backend from 'fetch-mock';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import I18NApi from '../I18NApi';
 
 describe('I18NApi', () => {

@@ -1,15 +1,15 @@
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, storage, testingUploadPaths } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../infrastructure/Redis.js' or... Remove this comment to see the full error message
+
+import { files, storage, testingUploadPaths } from '../files/index.js';
+
 import { Redis } from '../infrastructure/Redis.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
+
 import * as setupSockets from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/handleError.js.js' or... Remove this comment to see the full error message
-import * as handleError from '../utils/handleError.js.js';
+
+import * as handleError from 'app/utils/handleError.js.js';
 
 import testingDB from 'api/utils/testing_db.js';
 

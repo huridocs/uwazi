@@ -6,39 +6,38 @@ import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { cloneDeep, isEqual } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/settings.js' ... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import * as SettingsAPI from 'api/V2/api/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
-import { notificationAtom } from '../../V2/atoms.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms/settingsAtom.js... Remove this comment to see the full error message
-import { settingsAtom } from '../../V2/atoms/settingsAtom.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button, Table, Sidepanel, ConfirmNavigationModal } from '../../V2/Components/UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { notificationAtom } from 'app/V2/atoms.js';
+
+import { settingsAtom } from 'app/V2/atoms/settingsAtom.js';
+
+import { Button, Table, Sidepanel, ConfirmNavigationModal } from 'app/V2/Components/UI/index.js';
+
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm';
 import { columns } from './components/TableComponents';
 import { Link, sanitizeIds } from './shared';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    // @ts-expect-error TS(7006): Parameter 'link' implicitly has an 'any' type.
-    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
-      const linkWithRowId: Link = { ...link, rowId: link._id! };
-      if (link.sublinks) {
-        // @ts-expect-error TS(7006): Parameter 'sublink' implicitly has an 'any' type.
-        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
-          ...sublink,
-          rowId: `${link._id}-${index}`,
-        }));
-      }
-      return linkWithRowId;
-    });
-    return tableRows;
-  };
+    async () => {
+      const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+        const linkWithRowId: Link = { ...link, rowId: link._id! };
+        if (link.sublinks) {
+          linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+            ...sublink,
+            rowId: `${link._id}-${index}`,
+          }));
+        }
+        return linkWithRowId;
+      });
+      return tableRows;
+    };
 
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
@@ -124,11 +123,9 @@ const MenuConfig = () => {
             dnd={{ enable: true }}
             columns={columns({ edit })}
             data={linkState}
-            // @ts-expect-error TS(7031): Binding element 'selectedRows' implicitly has an '... Remove this comment to see the full error message
             onSelect={({ selectedRows }) => {
               setSelectedLinks(selectedRows);
             }}
-            // @ts-expect-error TS(7031): Binding element 'rows' implicitly has an 'any' typ... Remove this comment to see the full error message
             onSort={({ rows }) => {
               setLinkState(rows);
             }}
@@ -188,9 +185,8 @@ const MenuConfig = () => {
       <Sidepanel
         title={
           <Translate className="uppercase">
-            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
-              formValues?.type === 'group' ? 'Group' : 'Link'
-            }`}
+            {`${formValues?.title === '' ? 'New' : 'Edit'} ${formValues?.type === 'group' ? 'Group' : 'Link'
+              }`}
           </Translate>
         }
         isOpen={isSidepanelOpen}

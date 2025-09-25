@@ -15,8 +15,8 @@ import {
 } from '@testing-library/react/pure';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { has } from 'lodash';
-import { templatesAtom } from '../../../../atoms/index.js';
-import { TestAtomStoreProvider } from '../../../../testing/index.js';
+import { templatesAtom } from 'app/V2/atoms/index.js';
+import { TestAtomStoreProvider } from 'app/V2/testing/index.js';
 import { ThesauriList, thesauriLoader } from '../ThesauriList.js';
 import { EditThesaurus } from '../EditThesaurus.js';
 import { editThesaurusLoader } from '../helpers.js';
@@ -43,7 +43,7 @@ jest.mock('app/V2/api/thesauri', () => ({
 describe('Settings Thesauri', () => {
   beforeEach(() => {
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => { });
   });
 
   describe('ThesauriList', () => {
@@ -119,7 +119,6 @@ describe('Settings Thesauri', () => {
       cleanup();
     });
 
-    // @ts-expect-error TS(7006): Parameter 'expectedParams' implicitly has an 'any'... Remove this comment to see the full error message
     const checkRightSaving = async expectedParams => {
       await act(async () => {
         fireEvent.click(

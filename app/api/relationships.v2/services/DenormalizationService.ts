@@ -1,15 +1,15 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
+
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
-import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
-import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Relation... Remove this comment to see the full error message
+
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
-import { Entity } from '../entities.v2/model/Entity.js';
+
+import { Entity } from 'api/entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
@@ -59,7 +59,6 @@ export class DenormalizationService {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
-      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       properties.map(async property => {
         relatedEntities.forEach(re => {
           if (property.template === re.template) {
@@ -72,7 +71,6 @@ export class DenormalizationService {
 
         return Promise.all(
           invertQueryCallback(property).map(async query => {
-            // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
             await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
                 sharedId: entity.sharedId,
@@ -114,7 +112,6 @@ export class DenormalizationService {
 
   private async getCandidateEntitiesForTemplate(templateId: string, propertyNames: string[]) {
     const entities = await this.entitiesDS.getIdsByTemplate(templateId).all();
-    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     return entities.map(entity => ({ sharedId: entity, properties: propertyNames }));
   }
 
@@ -160,12 +157,9 @@ export class DenormalizationService {
 
   private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
-    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
-    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {
-      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       const newValuesForProperties = relationshipProperties.map(property => ({
         propertyName: property.name,
         ...(property.denormalizedProperty
@@ -205,9 +199,7 @@ export class DenormalizationService {
     const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
     return this.runQueriesAndInvalidateMetadataCaches(
-      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       relationships.map(r => r._id),
-      // @ts-expect-error TS(2345): Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
       async id => this.getCandidateEntitiesForRelationship(id, defaultLanguage)
     );
   }

@@ -1,9 +1,9 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
+
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/services/Entity... Remove this comment to see the full error message
-import { EntityRelationshipsUpdateService } from '../entities.v2/services/EntityRelationshipsUpdateService.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
-import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
 import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 
 interface IndexEntitiesCallback {
@@ -47,7 +47,6 @@ export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
     await this.transactionManager.run(async () => {
       await this.entitiesDataSource
         .getIdsByTemplate(template)
-        // @ts-expect-error TS(7006): Parameter 'sharedIds' implicitly has an 'any' type... Remove this comment to see the full error message
         .forEachBatch(OnlineRelationshipPropertyUpdateStrategy.BATCH_SIZE, async sharedIds => {
           await this.updater.update(sharedIds);
 

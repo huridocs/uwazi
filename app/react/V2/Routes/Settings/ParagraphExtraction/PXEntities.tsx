@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button } from '../../../Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
@@ -80,7 +80,6 @@ const PXEntityDashboard = () => {
     } else {
       setData(prevRows =>
         prevRows.map(row => {
-          // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
           const newStatus = rows.find(r => r.entity._id === row.entity._id)?.status;
           if (newStatus && newStatus.status !== row.status.status) {
             // Only reassign if status changed

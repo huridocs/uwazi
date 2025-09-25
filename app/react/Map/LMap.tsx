@@ -7,7 +7,7 @@ import { GeolocationSchema } from 'shared/types/commonTypes.js';
 import uniqueID from 'shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { deletedEntityAtom } from '../V2/atoms/index.js';
+import { deletedEntityAtom } from 'V2/atoms/index.js';
 import {
   DataMarker,
   getClusterMarker,
@@ -50,7 +50,6 @@ const LMap = ({
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
 
-  // @ts-expect-error TS(7006): Parameter 'markerPoint' implicitly has an 'any' ty... Remove this comment to see the full error message
   const clickHandler = markerPoint => {
     if (!map.dragging.enabled()) {
       map.dragging.enable();

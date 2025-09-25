@@ -1,18 +1,18 @@
 import { actions } from '../../BasicReducer/index.js';
 import api from '../../Entities/EntitiesAPI.js';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import {
   removeDocument,
   removeDocuments,
   unselectAllDocuments,
   unselectDocument,
-} from '../../Library/actions/libraryActions.js';
-import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+} from 'app/Library/actions/libraryActions.js';
+import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles.js';
 import { notificationActions } from '../../Notifications.js';
 import { actions as relationshipActions } from '../../Relationships.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
-import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
+import { atomStore, deletedEntityAtom } from 'app/V2/atoms/index.js';
 
 export function saveEntity(entity) {
   return async dispatch => {

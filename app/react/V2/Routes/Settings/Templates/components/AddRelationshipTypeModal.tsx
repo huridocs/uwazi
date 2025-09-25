@@ -1,11 +1,11 @@
 import React, { useState, ChangeEvent } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
+
+import { t, Translate } from 'app/I18N/index.js';
 import { Modal, Button } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import * as relationshipTypesAPI from 'api/relationshiptypes/index.js';
 import { useSetAtom, useAtom } from 'jotai';
-import { notificationAtom, relationshipTypesAtom } from '../../../../atoms/index.js';
+import { notificationAtom, relationshipTypesAtom } from 'app/V2/atoms/index.js';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;

@@ -3,10 +3,10 @@ import React from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { availableLanguages } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 
 interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
@@ -66,14 +66,13 @@ const Sidepanel = ({
       break;
   }
 
-  // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
   const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
   if (withOverlay) {
     return (
-      <Transition show= isOpen} class ame="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
+      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
         <Transition.Child
           className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
           enterFrom="opacity-0"

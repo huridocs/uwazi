@@ -1,7 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
-import { getConnection } 'api/common.v2/database/getConnectionForCurrentTenant.js';
-
-import { DefaultTransactionManager } 'api/common.v2/database/data_source_defaults.js';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus';

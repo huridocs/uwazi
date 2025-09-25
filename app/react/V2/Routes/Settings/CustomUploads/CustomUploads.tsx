@@ -5,11 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 import { getByType, remove, UploadService } from 'api/files/index.js';
 import {
@@ -32,10 +32,10 @@ type CustomUpload = FileType & { rowId: string };
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<CustomUpload[]> =>
-  async () => {
-    const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
-    return files;
-  };
+    async () => {
+      const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
+      return files;
+    };
 
 const uploadService = new UploadService('custom');
 
@@ -53,7 +53,7 @@ const CustomUploads = () => {
     action: () => void;
     items: CustomUpload[];
   }>({
-    action: () => {},
+    action: () => { },
     items: [],
   });
 

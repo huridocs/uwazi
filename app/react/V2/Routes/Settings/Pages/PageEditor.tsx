@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, t } from '../../I18N/index.js';
+
+import { Translate, t } from 'app/I18N/index.js';
 import * as pagesAPI from 'api/pages/index.js';
 import { Page } from 'shared/types.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
@@ -27,25 +27,25 @@ import {
   ConfirmNavigationModal,
 } from '../../../Components/UI/index.js';
 import { CodeEditor } from '../../../Components/CodeEditor/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
-import { EnableButtonCheckbox, InputField } from '../../V2/Components/Forms.js';
+
+import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms.js';
 import { notificationAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    if (params.sharedId) {
-      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
+    async ({ params }) => {
+      if (params.sharedId) {
+        const page = await pagesAPI.getBySharedId(params.sharedId, headers);
 
-      return page;
-    }
+        return page;
+      }
 
-    return {};
-  };
+      return {};
+    };
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;

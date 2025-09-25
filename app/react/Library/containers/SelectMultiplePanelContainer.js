@@ -7,7 +7,7 @@ import {
   updateSelectedEntities,
   updateEntities,
   getAndSelectDocument,
-} from '../../Library/actions/libraryActions.js';
+} from 'app/Library/actions/libraryActions.js';
 import { SelectMultiplePanel } from '../../Metadata.js';
 
 function mapStateToProps(state, props) {

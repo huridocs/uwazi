@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
-import { Translate, I18NLink } from '../../I18N/index.js';
+import { Translate, I18NLink } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 import { actions } from '../../BasicReducer/index.js';
 import url from 'url';

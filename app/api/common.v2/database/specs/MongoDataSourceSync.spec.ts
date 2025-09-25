@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
-import { StandardLogger } from '../log.v2/infrastructure/StandardLogger.js';
+
+import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 
 import { getIdMapper } from 'api/utils/fixturesFactory.js';
 

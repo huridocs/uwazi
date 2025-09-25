@@ -2,12 +2,12 @@ import superagent from 'superagent';
 
 import { actions as basicActions } from '../../BasicReducer/index.js';
 import { notificationActions } from '../../Notifications.js';
-import { selectSingleDocument } from '../../Library/actions/libraryActions.js';
+import { selectSingleDocument } from 'app/Library/actions/libraryActions.js';
 import * as metadata from '../../Metadata.js';
 import * as types from '../../Uploads/actions/actionTypes.js';
-import * as libraryTypes from '../../Library/actions/actionTypes.js';
-import { RequestParams } from '../../utils/RequestParams.js';
-import { t } from '../../I18N/index.js';
+import * as libraryTypes from 'app/Library/actions/actionTypes.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
+import { t } from 'app/I18N/index.js';
 import { APIURL } from '../../config.js';
 import EntitiesApi from '../../Entities/EntitiesAPI';
 

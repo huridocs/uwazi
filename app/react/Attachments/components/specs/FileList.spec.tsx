@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Metadata/components/Uplo... Remove this comment to see the full error message
+
 import UploadButton from '../../Metadata/components/UploadButton.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language.js' or i... Remove this comment to see the full error message
+
 import { LanguageUtils } from 'shared/language.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
 import { ConnectedFile as File } from '../File';
 import { FileList, FileListProps } from '../FileList';
@@ -78,7 +78,6 @@ describe('FileList', () => {
   it('should render an upload button by default', () => {
     render();
     const button = component.find(UploadButton);
-    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(button.props().entitySharedId).toBe(props.entity!.sharedId);
   });
 

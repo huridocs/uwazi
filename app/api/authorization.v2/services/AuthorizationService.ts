@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Rela... Remove this comment to see the full error message
-import { Relationship } from '../relationships.v2/model/Relationship.js';
-// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+
+import { Relationship } from 'api/relationships.v2/model/Relationship.js';
+
 import { User } from 'api/users.v2/model/User.js';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { UnauthorizedError } from '../errors/UnauthorizedError';
@@ -36,14 +36,12 @@ export class AuthorizationService {
     let filteredEntitiesPermissions: EntityPermissions[] = [];
     if (this.authenticatedUser) {
       const user = this.authenticatedUser;
-      // @ts-expect-error TS(7006): Parameter 'entityPermissions' implicitly has an 'a... Remove this comment to see the full error message
       filteredEntitiesPermissions = allEntitiesPermissions.filter(entityPermissions =>
         entityPermissions.allowsUserTo(user, level)
       );
     } else {
       filteredEntitiesPermissions =
-        level === 'read'
-          ? // @ts-expect-error TS(7006): Parameter 'entityPermissions' implicitly has an 'a... Remove this comment to see the full error message
+        level === 'read' ?
             allEntitiesPermissions.filter(entityPermissions =>
               entityPermissions.allowsPublicReads()
             )
@@ -75,7 +73,6 @@ export class AuthorizationService {
 
     if (this.authenticatedUser) {
       const user = this.authenticatedUser;
-      // @ts-expect-error TS(7006): Parameter 'entityPermissions' implicitly has an 'a... Remove this comment to see the full error message
       return allEntitiesPermissions.every(entityPermissions =>
         entityPermissions.allowsUserTo(user, level)
       );
@@ -83,7 +80,6 @@ export class AuthorizationService {
 
     return (
       level === 'read' &&
-      // @ts-expect-error TS(7006): Parameter 'entityPermissions' implicitly has an 'a... Remove this comment to see the full error message
       allEntitiesPermissions.every(entityPermissions => entityPermissions.allowsPublicReads())
     );
   }

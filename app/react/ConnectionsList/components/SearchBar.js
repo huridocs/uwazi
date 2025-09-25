@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 
 import { debounce } from 'api/utils/index.js';
-import { t } from '../../I18N/index.js';
+import { t } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 
 import { searchReferences } from '../actions/actions.js';

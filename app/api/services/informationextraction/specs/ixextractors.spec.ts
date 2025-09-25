@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import _ from 'lodash';
 
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
+
 import { Suggestions } from '../suggestions/suggestions.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
@@ -9,9 +9,9 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
+import { testingTenants } from 'app/utils/testingTenants.js';
+
 import { IXSuggestionStateType } from 'shared/types/suggestionType.js';
 import { Extractors } from '../ixextractors';
 import { IXValidationError } from '../IXValidationError';
@@ -678,7 +678,6 @@ describe('ixextractors', () => {
   describe('update()', () => {
     it('should delete the existing suggestions when removing a template and add an empty suggestion when adding a template', async () => {
       await Extractors.update({
-        // @ts-expect-error TS(2345): Argument of type '{ _id: any; name: string; source... Remove this comment to see the full error message
         _id: fixtureFactory.id('existingExtractor'),
         name: 'existingExtractor',
         source: { pdf: true },
@@ -711,7 +710,6 @@ describe('ixextractors', () => {
       ]);
 
       await Extractors.update({
-        // @ts-expect-error TS(2345): Argument of type '{ _id: any; name: string; source... Remove this comment to see the full error message
         _id: fixtureFactory.id('existingExtractor'),
         name: 'existingExtractor',
         source: { pdf: true },
@@ -756,12 +754,10 @@ describe('ixextractors', () => {
     it('should delete existing suggestions when the property is changed, and create new blank suggestions', async () => {
       const [existing] = await Extractors.get({ name: 'existingExtractor' });
       await Extractors.update({
-        // @ts-expect-error TS(2345): Argument of type '{ _id: any; source: { pdf: boole... Remove this comment to see the full error message
         _id: existing._id,
         source: { pdf: true },
         name: 'existingExtractor',
         property: 'title',
-        // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
         templates: existing.templates.map(t => t.toString()),
       });
       const suggestions = _.orderBy(await Suggestions.getByExtractor(existing._id), [
@@ -800,12 +796,10 @@ describe('ixextractors', () => {
       const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
       await expect(async () =>
         Extractors.update({
-          // @ts-expect-error TS(2345): Argument of type '{ _id: any; name: string; source... Remove this comment to see the full error message
           _id: existing._id,
           name: 'existingExtractor',
           source: { pdf: true },
           property: 'missing_property',
-          // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
           templates: existing.templates.map(t => t.toString()),
         })
       ).rejects.toMatchObject({
@@ -819,12 +813,10 @@ describe('ixextractors', () => {
       const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
       await expect(async () =>
         Extractors.update({
-          // @ts-expect-error TS(2345): Argument of type '{ _id: any; name: string; source... Remove this comment to see the full error message
           _id: existing._id,
           name: 'existingExtractor',
           source: { pdf: true },
           property: 'location',
-          // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
           templates: existing.templates.map(t => t.toString()),
         })
       ).rejects.toMatchObject({

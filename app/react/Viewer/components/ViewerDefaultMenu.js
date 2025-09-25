@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import ShowIf from '../../App/ShowIf.js';
 import { Icon } from 'UI';
 
-import { openPanel } from '../../Viewer/actions/uiActions.js';
+import { openPanel } from 'app/Viewer/actions/uiActions.js';
 
 export class ViewerDefaultMenu extends Component {
   render() {

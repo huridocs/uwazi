@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button } from '../../V2/Components/UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI/Sidepan... Remove this comment to see the full error message
-import { Sidepanel } from '../../V2/Components/UI/Sidepanel.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/Paragra... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
+import { Button } from 'app/V2/Components/UI/index.js';
+
+
+import { Sidepanel } from 'app/V2/Components/UI/Sidepanel.js';
+
 import { TablePXEntityParagraphRow } from 'shared/V2/shared/ParagraphExtractionTypes.js';
 import { ViewParagraph } from './ViewParagraph';
 

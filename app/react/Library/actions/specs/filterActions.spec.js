@@ -4,12 +4,12 @@
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import * as actions from '../../Library/actions/filterActions.js';
+import * as actions from 'app/Library/actions/filterActions.js';
 import comonPropertiesHelper from 'shared/commonProperties.js';
-import * as libraryActions from '../../Library/actions/libraryActions.js';
-import libraryHelper from '../../Library/helpers/libraryFilters.js';
-import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
-import * as types from '../../Library/actions/actionTypes.js';
+import * as libraryActions from 'app/Library/actions/libraryActions.js';
+import libraryHelper from 'app/Library/helpers/libraryFilters.js';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
+import * as types from 'app/Library/actions/actionTypes.js';
 
 describe('filterActions', () => {
   const templates = ['templates'];

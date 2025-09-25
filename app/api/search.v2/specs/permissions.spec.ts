@@ -3,10 +3,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { Application } from 'express';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 
 import { searchRoutes } from '../routes';
 import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures';

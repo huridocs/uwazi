@@ -2,8 +2,8 @@
 import React, { ReactEventHandler, Ref } from 'react';
 import { Checkbox as FlowbiteCheckbox, Label } from 'flowbite-react';
 import { isString } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 
 interface CheckboxProps {
   name: string;

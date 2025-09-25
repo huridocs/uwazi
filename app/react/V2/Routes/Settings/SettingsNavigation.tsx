@@ -1,10 +1,10 @@
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
+
+import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N/index.js';
 import { NeedAuthorization } from '../../Components/UI/NeedAuthorization.js';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Layout/PreserveIcon.js' ... Remove this comment to see the full error message
+
+import { Icon } from 'app/UI/Icon/Icon.js';
+
 import { PreserveIcon } from '../../Layout/PreserveIcon.js';
 import { FeatureToggle } from '../../Components/UI/FeatureToggle.js';
 import { useAtomValue } from 'jotai';

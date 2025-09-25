@@ -1,5 +1,5 @@
 import { WithId } from '../odm/index.js';
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
 import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty.js';
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories.js';
 import { ensure } from 'shared/tsUtils.js';

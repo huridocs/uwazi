@@ -3,20 +3,19 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntityWithFilesSchema } from 'shared/types/entityType.js';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
-// @ts-expect-error TS(2305): Module '"../files.js"' has no exported member 'set... Remove this comment to see the full error message
-import { setupTestUploadedPaths, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+import { setupTestUploadedPaths, storage } from '../files/index.js';
+
 import { search } from '../search.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/mailer.js' or its cor... Remove this comment to see the full error message
-import mailer from '../utils/mailer.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp, socketEmit } from '../utils/testingRoutes.js';
+
+import mailer from 'app/utils/mailer.js';
+
+import { setUpApp, socketEmit } from 'api/utils/testingRoutes.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
@@ -74,7 +73,6 @@ describe('public routes', () => {
       })) as EntityWithFilesSchema[];
 
       const textAttachment = (newEntity.attachments || []).find(
-        // @ts-expect-error TS(7006): Parameter 'attachment' implicitly has an 'any' typ... Remove this comment to see the full error message
         attachment => attachment.originalname === 'filename with special char ñ.txt'
       );
       expect(textAttachment).not.toBeUndefined();

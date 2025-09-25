@@ -41,7 +41,6 @@ describe('DoubleIndexedObject', () => {
     describe('with two values', () => {
       it('should throw error', () => {
         const obj = new DoubleIndexedObject();
-        // @ts-expect-error
         const setition = () => obj.set('1', '11');
         expect(setition).toThrowError(
           'Needs one index to initialize an empty nested object, or three indices for a full key1-key2-value information.'

@@ -32,7 +32,6 @@ const PXParagraphDashboard = () => {
     setParagraphOnView(selectedParagraph);
     setSidePanel(true);
   };
-  // @ts-expect-error TS(2339): Property 'title' does not exist on type 'ClientEnt... Remove this comment to see the full error message
   const entityTitle = sourceEntity?.title || '';
 
   return (

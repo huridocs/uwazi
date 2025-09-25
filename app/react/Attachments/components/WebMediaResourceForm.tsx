@@ -1,22 +1,14 @@
 import { Field } from 'react-redux-form';
 import { Icon } from 'UI';
-// @ts-expect-error TS(2300): Duplicate identifier 'React'.
 import React, { useState } from 'react';
-// @ts-expect-error TS(2300): Duplicate identifier 'FormGroup'.
 import { FormGroup } from '../../../Forms.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'LocalForm'.
 import { LocalForm } from '../../../Forms/Form.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'Translate'.
-import { Translate, t } from '../../../I18N.js';
+import { Translate, t } from 'app/I18N/index.js';
 import { isValidUrl, sanitizeUrl, isValidUrlLength } from 'shared/urlValidationUtils.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'React'.
 import React from 'react';
-// @ts-expect-error TS(2300): Duplicate identifier 'FormGroup'.
 import { FormGroup } from '../../Forms/index.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'LocalForm'.
-import { LocalForm } from '../../Forms/Form.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'Translate'.
-import { Translate, t } from '../../I18N/index.js';
+import { LocalForm } from 'app/Forms/Form.js';
+import { Translate, t } from 'app/I18N/index.js';
 
 interface WebMediaResourceFormProps {
   handleSubmit: (args: any) => void;
@@ -51,7 +43,6 @@ const WebMediaResourceForm = ({
     return 'btn hover:bg-blue-600';
   };
 
-  // @ts-expect-error TS(7006): Parameter 'formData' implicitly has an 'any' type.
   const handleFormSubmit = formData => {
     if (formData.url && typeof formData.url === 'string' && formData.url.trim() !== '') {
       const sanitized = sanitizeUrl(formData.url);
@@ -79,7 +70,6 @@ const WebMediaResourceForm = ({
     ...(hasName && { name: { required: (val: any) => !!val && val.trim() !== '' } }),
     url: {
       required: (val: any) => !!val && val.trim() !== '',
-      // @ts-expect-error TS(7006): Parameter 'val' implicitly has an 'any' type.
       validUrl: val => {
         if (!val || typeof val !== 'string') return false;
         const sanitized = sanitizeUrl(val);

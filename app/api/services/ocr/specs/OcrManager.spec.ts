@@ -1,25 +1,25 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
+
+import { files, storage } from '../files/index.js';
+
 import * as filesApi from '../files/filesystem.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/processDocument.js' o... Remove this comment to see the full error message
+
 import * as processDocumentApi from '../files/processDocument.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
+import { tenants } from 'api/tenants/tenantContext.js';
+
 import settings from 'api/settings/settings.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { Readable } from 'stream';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
 import * as sockets from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/handleError.js' or it... Remove this comment to see the full error message
-import * as handleError from '../utils/handleError.js';
+
+import * as handleError from 'app/utils/handleError.js';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
@@ -42,7 +42,6 @@ class Mocks {
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
-      // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
       'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(),
       'filesApi.generateFileName': jest
         .spyOn(filesApi, 'generateFileName')
@@ -302,7 +301,6 @@ describe('OcrManager', () => {
     it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
-      // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
       mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue();
 
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
@@ -361,11 +359,8 @@ describe('OcrManager', () => {
           { _id: fixturesFactory.id('sourceToDelete2') },
         ],
       });
-      // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
       await cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
-      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records[0].sourceFile).toBeNull();
       expect(records[1].sourceFile).toBeNull();
@@ -378,11 +373,8 @@ describe('OcrManager', () => {
           { _id: fixturesFactory.id('resultToDelete2') },
         ],
       });
-      // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
       let records = await OcrModel.get({ sourceFile: { $in: filesToCleanup.map(f => f._id) } });
-      // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
       await cleanupRecordsOfFiles(filesToCleanup.map(f => f._id));
-      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       records = await OcrModel.get({ _id: { $in: records.map(r => r._id) } });
       expect(records).toHaveLength(0);
     });

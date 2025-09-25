@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
+
+import { t, Translate } from 'app/I18N/index.js';
 import { Modal, Button } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import { save as saveThesauri } from 'api/thesauri/index.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, thesauriAtom } from '../../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/sanitizationUtils... Remove this comment to see the full error message
+import { notificationAtom, thesauriAtom } from 'app/V2/atoms/index.js';
+
 import { sanitizeThesaurusName } from 'shared/sanitizationUtils.js';
 
 interface AddThesaurusModalProps {

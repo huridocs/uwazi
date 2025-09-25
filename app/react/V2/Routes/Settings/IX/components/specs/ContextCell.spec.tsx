@@ -15,7 +15,6 @@ import {
 describe('ContextCell', () => {
   it('should not render script tags', () => {
     render(
-      // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
       <ContextCell text='<script src="/some.js"></script> <p class="regular-text">Text 1</p> <script src="/another.js" />' />
     );
     expect(screen.getAllByText('Text 1')[0].parentElement).toMatchSnapshot();
@@ -23,21 +22,18 @@ describe('ContextCell', () => {
   });
 
   it('should not render script tags when nested on valid tags', () => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text='<p class="regular-text">Text 1 <script src="/another.js" /></p>' />);
     expect(screen.getAllByText('Text 1')[0]).toMatchSnapshot();
     expect(document.querySelector('script')).toBeNull();
   });
 
   it('should not render unsafe html tags', () => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text='<object>Text 1 <p class="regular-text">Nested valid</p></object>' />);
     expect(screen.getAllByText('Nested valid')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Text 1')[0].tagName).toBe('DIV');
   });
 
   it('should return a truncated string if it is not html', () => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text={plainText} />);
 
     expect(screen.getByText('[...]'));
@@ -45,7 +41,6 @@ describe('ContextCell', () => {
 
   it('should return the html with the correct classes', () => {
     render(
-      // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
       <ContextCell text='<p class="ix_matching_paragraph">Some primary text <span class="ix_match">with matching</span> words</p>' />
     );
 
@@ -61,7 +56,6 @@ describe('ContextCell', () => {
     ['html with single matching paragraph', basicMatching],
     ['html with multiple matching paragraphs', multipleMatching],
   ])('should truncate %s and only show relevant paragraphs', (_, content) => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text={content} />);
     expect(
       screen.getAllByText('Praesent sed molestie risus, vitae laoreet elit.')[0].parentElement
@@ -69,13 +63,11 @@ describe('ContextCell', () => {
   });
 
   it('should work when a matching paragraph has multiple match words', () => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text={multipleMatchInMatching} />);
     expect(screen.getAllByText('Revenue: $1.2M')[0].parentElement).toMatchSnapshot();
   });
 
   it('should show the first available paragraph if not matching elements are present', () => {
-    // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
     render(<ContextCell text={noMatching} />);
     expect(screen.getByText('Duis volutpat leo eu...').className).toBe(
       'ix_paragraph text-gray-500'

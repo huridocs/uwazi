@@ -1,29 +1,29 @@
 
 import { testingDB } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
+
 import * as filesApi from '../files/filesystem.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { storage, files } from '../files.js';
+
+import { storage, files } from '../files/index.js';
 import {
   TweetParamsType,
   TwitterIntegration,
-  // @ts-expect-error TS(2307): Cannot find module '../services/twitterintegration... Remove this comment to see the full error message
+  
 } from '../services/twitterintegration/TwitterIntegration.js';
 import {
   fixturesOneTenant,
   fixturesOtherTenant,
   fixturesTenantWithoutTwitter,
-  // @ts-expect-error TS(2307): Cannot find module '../services/twitterintegration... Remove this comment to see the full error message
+  
 } from '../services/twitterintegration/specs/fixtures.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/entitiesModel.js' ... Remove this comment to see the full error message
+
 import EntitiesModel from '../entities/entitiesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/templates.js' or ... Remove this comment to see the full error message
+
 import templates from '../templates/templates.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
+
+import { testingTenants } from 'app/utils/testingTenants.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
 import fetchMock from 'fetch-mock';
 
@@ -171,13 +171,11 @@ describe('TwitterIntegration', () => {
 
     const tweetEntity = tweetsEntities[0];
     expect(hashtagsEntities.length).toBe(2);
-    // @ts-expect-error TS(7006): Parameter 'x' implicitly has an 'any' type.
     expect(hashtagsEntities.map(x => x.title)).toEqual([
       '#other_hashtag_example',
       '#hashtag_example',
     ]);
     expect(tweetEntity.metadata?.tweet_hashtags).toMatchObject(
-      // @ts-expect-error TS(7006): Parameter 'x' implicitly has an 'any' type.
       hashtagsEntities.map(x => ({
         value: x.sharedId,
       }))
@@ -185,7 +183,6 @@ describe('TwitterIntegration', () => {
   });
 
   it('should download and replace the images in the twitter text', async () => {
-    // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
     const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue();
     jest.spyOn(filesApi, 'generateFileName').mockReturnValue('generatedUwaziFilename');
 

@@ -1,8 +1,8 @@
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, t } from '../../I18N/index.js';
+
+import { Translate, t } from 'app/I18N/index.js';
 import { Pill } from '../../../../Components/UI/index.js';
-import { ClientTemplateSchema } from '../../../../shared/types.js';
+import { ClientTemplateSchema } from '../../../../../shared/types.js';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,

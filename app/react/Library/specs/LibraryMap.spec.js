@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryMapComponent } from '../../Library/LibraryMap.js';
+import { LibraryMapComponent } from 'app/Library/LibraryMap.js';
 import RouteHandler from '../../App/RouteHandler.js';
-import { MapView } from '../../Library/components/MapView.js';
-import LibraryModeToggleButtons from '../../Library/components/LibraryModeToggleButtons.js';
+import { MapView } from 'app/Library/components/MapView.js';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons.js';
 
 jest.mock('app/appRoutes');
 

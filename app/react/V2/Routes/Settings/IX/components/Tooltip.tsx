@@ -2,8 +2,8 @@
 import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 
 type TooltipProps = { content: 'accuracy' };
 
@@ -24,7 +24,6 @@ const Contents = ({ content }: TooltipProps) => {
 
 const StatsTooltip = ({ content }: TooltipProps) => (
   <Tooltip
-    // @ts-expect-error TS(2786): 'Contents' cannot be used as a JSX component.
     content={<Contents content={content} />}
     arrow
     animation="duration-100"

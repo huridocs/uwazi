@@ -1,20 +1,20 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
+
 import { Suggestions } from '../suggestions/suggestions.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates/index.js' or its ... Remove this comment to see the full error message
+
 import templates from '../templates/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
-  // @ts-expect-error TS(2307): Cannot find module '../suggestions/blankSuggestion... Remove this comment to see the full error message
+  
 } from '../suggestions/blankSuggestions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+
 import { Subset } from 'shared/tsUtils.js';
 
 import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
@@ -64,9 +64,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
   const tArray = await templates.get({ _id: { $in: templateIds } });
   const usedTemplates = objectIndex(
     tArray,
-    // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
     t => t._id.toString(),
-    // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
     t => t
   );
   templateIds.forEach(id => {
@@ -80,7 +78,6 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
   }
 
   templateIds.forEach(id => {
-    // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
     const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
 
     if (!property) {
@@ -104,13 +101,10 @@ const handleTemplateUpdate = async (
   newExtractor: IXExtractorType
 ) => {
   const templatesRemoved = oldExtractor.templates
-    // @ts-expect-error TS(7006): Parameter 'templateId' implicitly has an 'any' typ... Remove this comment to see the full error message
     .filter(templateId => !newExtractor.templates.includes(templateId.toString()))
-    // @ts-expect-error TS(7006): Parameter 'templateId' implicitly has an 'any' typ... Remove this comment to see the full error message
     .map(templateId => templateId.toString());
 
   const templatesAdded = newExtractor.templates.filter(
-    // @ts-expect-error TS(7006): Parameter 'templateId' implicitly has an 'any' typ... Remove this comment to see the full error message
     templateId => !oldExtractor.templates.find(template => template.toString() === templateId)
   );
 
@@ -148,7 +142,6 @@ const Extractors = {
     return saved;
   },
   update: async (extractor: ExtractorType) => {
-    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ExtractorTy... Remove this comment to see the full error message
     const { _id, name, source, property, templates: templateIds } = extractor;
     const [curentExtractor] = await model.get({ _id });
     if (!curentExtractor) throw Error('Missing extractor.');
@@ -180,7 +173,6 @@ const Extractors = {
       property: { $nin: propertyNamesToKeep },
     });
 
-    // @ts-expect-error TS(7006): Parameter 'extractor' implicitly has an 'any' type... Remove this comment to see the full error message
     const extractorIds = extractorsToUpdate.map(extractor => extractor._id);
 
     await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });

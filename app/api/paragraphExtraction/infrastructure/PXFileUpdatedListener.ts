@@ -1,12 +1,12 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/utils/featureFlag... Remove this comment to see the full error message
+
 import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
-// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
+
 import { EventsBus } from '../eventsbus.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/events/FileUpdatedEve... Remove this comment to see the full error message
+
 import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
-// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
-import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+
 import { LanguageUtils } from 'shared/language/index.js';
 import { inspect } from 'util';
 import { PXValidationError } from '../domain/PXValidationError';

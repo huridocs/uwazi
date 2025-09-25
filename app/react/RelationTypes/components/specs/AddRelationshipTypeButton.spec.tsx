@@ -4,8 +4,8 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import { AddRelationshipTypeButton } from '../AddRelationshipTypeButton';
 import * as relationTypeActions from '../../actions/relationTypeActions';
 

@@ -5,14 +5,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { Loader } from '../../components/Elements/Loader.js';
-import { t as translate, I18NLink } from '../../I18N/index.js';
+import { t as translate, I18NLink } from 'app/I18N/index.js';
 import ShowIf from '../../App/ShowIf.js';
 
 import DocumentsAPI from '../../Documents/DocumentsAPI.js';
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
-import ReferencesAPI from '../../Viewer/referencesAPI.js';
+import ReferencesAPI from 'app/Viewer/referencesAPI.js';
 import formater from '../../Metadata/helpers/formater.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 
 import { Icon } from 'UI';
 
@@ -23,7 +23,7 @@ import {
   matterTemplate,
   renderableTemplates,
   datePropertyOverrides,
-} from '../utils/timelineFixedData';
+} from 'app/utils/timelineFixedData';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
 const dateProperties = Object.keys(renderableTemplates).reduce(

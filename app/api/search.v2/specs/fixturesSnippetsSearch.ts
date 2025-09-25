@@ -1,6 +1,6 @@
 
 import db, { testingDB, DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 
 const entity1enId = testingDB.id();

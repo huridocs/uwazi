@@ -1,10 +1,10 @@
 import { actions } from '../../BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { notificationActions } from '../../Notifications.js';
-import referencesAPI from '../../Viewer/referencesAPI.js';
+import referencesAPI from 'app/Viewer/referencesAPI.js';
 import { fromJS as Immutable } from 'immutable';
-import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;

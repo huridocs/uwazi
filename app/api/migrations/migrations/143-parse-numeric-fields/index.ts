@@ -1,7 +1,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 import { Db, ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import { EntitySchema, TemplateSchema } from './types';
 
@@ -21,16 +21,12 @@ export default {
 
     const templates = objectIndex(
       await db.collection<TemplateSchema>('templates').find({}).toArray(),
-      // @ts-expect-error TS(7006): Parameter 'template' implicitly has an 'any' type.
       template => template._id.toString(),
-      // @ts-expect-error TS(7006): Parameter 'template' implicitly has an 'any' type.
       template => ({
         ...template,
         properties: objectIndex(
           template.properties || [],
-          // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
           property => property.name,
-          // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
           property => property
         ),
       })

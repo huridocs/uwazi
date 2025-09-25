@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as types from '../../Library/actions/actionTypes.js';
+import * as types from 'app/Library/actions/actionTypes.js';
 import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
 import * as attachmentTypes from '../../Attachments/actions/actionTypes.js';
 

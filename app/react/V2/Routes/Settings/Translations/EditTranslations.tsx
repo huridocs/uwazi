@@ -14,75 +14,74 @@ import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/advancedSort.js' o... Remove this comment to see the full error message
-import { advancedSort } from '../../utils/advancedSort.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTranslationSchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
-import { InputField } from '../../V2/Components/Forms.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { advancedSort } from 'app/utils/advancedSort.js';
+
+import { ClientTranslationSchema } from "app/V2/shared/types.js";
+
+import { InputField } from 'app/V2/Components/Forms.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import * as translationsAPI from 'api/translations/index.js';
 import * as settingsAPI from 'api/settings/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { availableLanguages } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { Settings } from 'shared/types/settingsType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }: { params: Params }) => {
-    const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
+    async ({ params }: { params: Params }) => {
+      const translations = await translationsAPI.get(headers, params);
+      const settings = await settingsAPI.get(headers);
 
-    const sortedTranslations = translations.map(language => {
-      // @ts-expect-error TS(7006): Parameter 'context' implicitly has an 'any' type.
-      const sortedContexts = language.contexts.map(context => {
-        const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
+      const sortedTranslations = translations.map(language => {
+        const sortedContexts = language.contexts.map(context => {
+          const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
-        const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
-          const value = context.values[contextKey];
-          return { ...results, [contextKey]: value };
-        }, {});
+          const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
+            const value = context.values[contextKey];
+            return { ...results, [contextKey]: value };
+          }, {});
 
-        return { ...context, values: sortedContext };
+          return { ...context, values: sortedContext };
+        });
+
+        return { ...language, contexts: sortedContexts };
       });
 
-      return { ...language, contexts: sortedContexts };
-    });
-
-    return { translations: sortedTranslations, settings };
-  };
+      return { translations: sortedTranslations, settings };
+    };
 
 const editTranslationsAction =
   (): ActionFunction =>
-  // eslint-disable-next-line max-statements
-  async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
-    const formData = await request.formData();
-    const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
-    const { context } = params;
-    let response: ClientTranslationSchema[] | FetchResponseError = [];
+    // eslint-disable-next-line max-statements
+    async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
+      const formData = await request.formData();
+      const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
+      const { context } = params;
+      let response: ClientTranslationSchema[] | FetchResponseError = [];
 
-    if (formIntent === 'form-submit' && context) {
-      const formValues = formData.get('data') as string;
-      response = await translationsAPI.post(JSON.parse(formValues), context);
-    }
+      if (formIntent === 'form-submit' && context) {
+        const formValues = formData.get('data') as string;
+        response = await translationsAPI.post(JSON.parse(formValues), context);
+      }
 
-    if (formIntent === 'file-upload') {
-      const file = formData.get('data') as File;
-      response = await translationsAPI.importTranslations(file, 'System');
-    }
+      if (formIntent === 'file-upload') {
+        const file = formData.get('data') as File;
+        response = await translationsAPI.importTranslations(file, 'System');
+      }
 
-    return response;
-  };
+      return response;
+    };
 
 type formValuesType = {
   _id?: string;
@@ -111,7 +110,6 @@ const prepareValuesToSave = (
 const composeTableValues = (formValues: formValuesType, termIndex: number) =>
   formValues.map((language, languageIndex) => {
     const languageLabel = availableLanguages.find(
-      // @ts-expect-error TS(7006): Parameter 'availableLanguage' implicitly has an 'a... Remove this comment to see the full error message
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
     return {
@@ -154,7 +152,6 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
           value,
           translationStatus: getTranslationStatus(
             defaultLanguageValues || {},
-            // @ts-expect-error TS(2322): Type 'unknown' is not assignable to type 'string'.
             { key, value },
             language.locale,
             defaultLanguageKey
@@ -199,7 +196,6 @@ const EditTranslations = () => {
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
-  // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
 

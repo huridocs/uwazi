@@ -1,12 +1,12 @@
 import { Application, Request } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
-import { needsAuthorization } from '../auth.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/index.js' or its corr... Remove this comment to see the full error message
-import { validation } from '../utils/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
-import translations from '../i18n.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n/v2_support.js' or its ... Remove this comment to see the full error message
-import { getTranslationsEntriesV2 } from '../i18n/v2_support.js';
+
+
+import { validation } from 'api/utils/index.js';
+
+import translations from 'api/i18n/index.js';
+import { needsAuthorization } from 'api/auth';
+import { getTranslationsEntriesV2 } from 'api/i18n/v2_support';
+
 
 const translationsRoutes = (app: Application) => {
   app.get('/api/v2/translations', async (_req: Request, res) => {

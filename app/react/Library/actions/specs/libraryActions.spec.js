@@ -8,15 +8,15 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import rison from '@huridocs/rison';
 import { APIURL } from '../../config.js.js';
-import { RequestParams } from '../../utils/RequestParams.js';
-import * as types from '../../Library/actions/actionTypes.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
+import * as types from 'app/Library/actions/actionTypes.js';
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
-import * as actions from '../../Library/actions/libraryActions.js';
+import * as actions from 'app/Library/actions/libraryActions.js';
 import { documentsApi } from '../../Documents.js';
 import { mockID } from 'shared/uniqueID.js.js';
 
 import { api } from '../../Entities.js';
-import referencesAPI from '../../Viewer/referencesAPI.js';
+import referencesAPI from 'app/Viewer/referencesAPI.js';
 import SearchApi from '../../Search/SearchAPI.js';
 import * as saveEntityWithFiles from '../saveEntityWithFiles';
 

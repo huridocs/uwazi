@@ -2,7 +2,7 @@ import React from 'react';
 import GeolocationViewer from '../../Metadata/components/GeolocationViewer.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { bindActionCreators, Dispatch } from 'redux';
 import { IStore } from '../../istore';
 import { ensure } from 'shared/tsUtils';
@@ -42,7 +42,6 @@ const templatesMap = createSelector(
   (s: IStore) => s.templates,
   templates =>
     templates.reduce(
-      // @ts-expect-error TS(7006): Parameter 'map' implicitly has an 'any' type.
       (map, template) => ({
         ...map,
         [ensure<string>(template?.get('_id'))]: {
@@ -105,41 +104,41 @@ const getMultiMemberInfo =
     selectConnection: mappedProps['selectConnection'],
     templateId: string
   ) =>
-  (member: GroupMember) => (
-    <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
-      <dt>
-        <span>
-          <Translate context={templateId}>{member.label}</Translate>
-          {templatesInfo[member.translateContext]?.name && (
-            <>
-              {' ('}
-              <Translate>linked</Translate>{' '}
-              <Translate context={templateId}>
-                {templatesInfo[member.translateContext].name}
-              </Translate>
-              {') '}
-            </>
-          )}
-        </span>
-      </dt>
-      <dd>
-        {member.value.map(value => (
-          <div
-            key={`${value.lat}_${value.lon}`}
-            onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
-            style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
-          >
-            <Pill
+    (member: GroupMember) => (
+      <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
+        <dt>
+          <span>
+            <Translate context={templateId}>{member.label}</Translate>
+            {templatesInfo[member.translateContext]?.name && (
+              <>
+                {' ('}
+                <Translate>linked</Translate>{' '}
+                <Translate context={templateId}>
+                  {templatesInfo[member.translateContext].name}
+                </Translate>
+                {') '}
+              </>
+            )}
+          </span>
+        </dt>
+        <dd>
+          {member.value.map(value => (
+            <div
               key={`${value.lat}_${value.lon}`}
-              color={pillColor(member, templatesInfo, templateId)}
+              onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
+              style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
             >
-              <Translate context={member.translateContext}>{value.label || ''}</Translate>
-            </Pill>
-          </div>
-        ))}
-      </dd>
-    </dl>
-  );
+              <Pill
+                key={`${value.lat}_${value.lon}`}
+                color={pillColor(member, templatesInfo, templateId)}
+              >
+                <Translate context={member.translateContext}>{value.label || ''}</Translate>
+              </Pill>
+            </div>
+          ))}
+        </dd>
+      </dl>
+    );
 
 const computeRenderMemberGroups = (
   members: GroupMember[],

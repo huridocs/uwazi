@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Translate } from '../../I18N/index.js';
-import { IStore } from '../../istore.js';
+import { Translate } from 'app/I18N/index.js';
+import { IStore } from "app/V2/shared/types.js";
 import Modal from '../../Layout/Modal.js';
 import { Icon } from 'UI';
 import { saveRelationType } from '../actions/relationTypeActions';
@@ -49,7 +49,6 @@ const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: 
   };
 
   const isNotDuplicated = (value: string) =>
-    // @ts-expect-error TS(7006): Parameter 'type' implicitly has an 'any' type.
     !relationshipTypes?.find(type => type?.get('name') === value);
 
   return (

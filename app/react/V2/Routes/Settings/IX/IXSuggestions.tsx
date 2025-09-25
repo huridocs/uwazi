@@ -19,10 +19,10 @@ import * as templatesAPI from 'api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '../../../Components/UI/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientPropertySchema } from '../../istore.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientPropertySchema } from "app/V2/shared/types.js";
 import { SuggestionsTitle } from './components/SuggestionsTitle.js';
 import { FiltersSidepanel } from './components/FiltersSidepanel.js';
 import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
@@ -141,7 +141,7 @@ const IXSuggestions = () => {
             suggestionsToFind: findAmount,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
-        } catch (error) {}
+        } catch (error) { }
       }
     }
   };
@@ -157,7 +157,7 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      } catch (error) {}
+      } catch (error) { }
     }
   };
 
@@ -244,10 +244,8 @@ const IXSuggestions = () => {
     const template = templates.find(t => t._id === extractor.templates[0]);
     const _property =
       extractor.property === 'title'
-        ? // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
-          template?.commonProperties?.find(prop => prop.name === extractor.property)
-        : // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
-          template?.properties?.find(prop => prop.name === extractor.property);
+    template?.commonProperties?.find(prop => prop.name === extractor.property)
+    template?.properties?.find(prop => prop.name === extractor.property);
     setProperty(_property);
   }, [templates, extractor]);
 
@@ -445,84 +443,82 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId }, request }): Promise<IXSuggestionsLoaderResponse> => {
-    if (!extractorId) throw new Error('extractorId is required');
-    const searchParams = new URLSearchParams(request.url.split('?')[1]);
-    const filter: any = { extractorId };
-    let activeFilters = 0;
-    if (searchParams.has('filter')) {
-      filter.customFilter = JSON.parse(searchParams.get('filter')!);
-      activeFilters = Object.values(filter.customFilter).filter(Boolean).length;
-    }
-    const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
+    async ({ params: { extractorId }, request }): Promise<IXSuggestionsLoaderResponse> => {
+      if (!extractorId) throw new Error('extractorId is required');
+      const searchParams = new URLSearchParams(request.url.split('?')[1]);
+      const filter: any = { extractorId };
+      let activeFilters = 0;
+      if (searchParams.has('filter')) {
+        filter.customFilter = JSON.parse(searchParams.get('filter')!);
+        activeFilters = Object.values(filter.customFilter).filter(Boolean).length;
+      }
+      const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
-    const suggestionsList: {
-      suggestions: EntitySuggestion[];
-      totalPages: number;
-      total: number;
-    } = await suggestionsAPI.get(
-      {
-        filter,
-        page: {
-          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
-          size: SUGGESTIONS_PER_PAGE,
+      const suggestionsList: {
+        suggestions: EntitySuggestion[];
+        totalPages: number;
+        total: number;
+      } = await suggestionsAPI.get(
+        {
+          filter,
+          page: {
+            number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+            size: SUGGESTIONS_PER_PAGE,
+          },
+          ...(sortingOption && { sort: JSON.parse(sortingOption) }),
         },
-        ...(sortingOption && { sort: JSON.parse(sortingOption) }),
-      },
-      headers
-    );
-
-    const extractors = await extractorsAPI.getById(extractorId, headers);
-    const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
-    const currentStatus = await suggestionsAPI.status(extractorId, headers);
-    const templates = await templatesAPI.get(headers);
-
-    const template = templates.find(t => extractors[0].templates.includes(t._id));
-    const property =
-      extractors[0].property === 'title'
-        ? // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
-          template?.commonProperties?.find(prop => prop.name === extractors[0].property)
-        : // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
-          template?.properties?.find(prop => prop.name === extractors[0].property);
-
-    let suggestions = suggestionsList.suggestions.map(suggestion => ({
-      ...suggestion,
-      rowId: suggestion._id,
-      disableRowSelection: suggestion.state.processing,
-      extractorSource: extractors[0].source,
-    }));
-
-    if (property?.type === 'relationship') {
-      const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
-        suggestions,
-        property,
-        templates
+        headers
       );
-      extractors[0].inheritedProperty = targetProperty;
-      const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
-        ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
-        : new Map();
-      const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
-        ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
-        : new Map();
 
-      suggestions = updateSuggestionValues(
+      const extractors = await extractorsAPI.getById(extractorId, headers);
+      const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
+      const currentStatus = await suggestionsAPI.status(extractorId, headers);
+      const templates = await templatesAPI.get(headers);
+
+      const template = templates.find(t => extractors[0].templates.includes(t._id));
+      const property =
+        extractors[0].property === 'title'
+      template?.commonProperties?.find(prop => prop.name === extractors[0].property)
+      template?.properties?.find(prop => prop.name === extractors[0].property);
+
+      let suggestions = suggestionsList.suggestions.map(suggestion => ({
+        ...suggestion,
+        rowId: suggestion._id,
+        disableRowSelection: suggestion.state.processing,
+        extractorSource: extractors[0].source,
+      }));
+
+      if (property?.type === 'relationship') {
+        const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
+          suggestions,
+          property,
+          templates
+        );
+        extractors[0].inheritedProperty = targetProperty;
+        const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
+          ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
+          : new Map();
+        const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
+          ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
+          : new Map();
+
+        suggestions = updateSuggestionValues(
+          suggestions,
+          entityCurrentValuesMap,
+          entitySuggestedValuesMap
+        );
+      }
+
+      return {
         suggestions,
-        entityCurrentValuesMap,
-        entitySuggestedValuesMap
-      );
-    }
-
-    return {
-      suggestions,
-      totalPages: suggestionsList.totalPages,
-      extractor: extractors[0],
-      templates,
-      aggregation,
-      currentStatus: currentStatus.status,
-      activeFilters,
-      total: suggestionsList.total,
+        totalPages: suggestionsList.totalPages,
+        extractor: extractors[0],
+        templates,
+        aggregation,
+        currentStatus: currentStatus.status,
+        activeFilters,
+        total: suggestionsList.total,
+      };
     };
-  };
 
 export { IXSuggestions, IXSuggestionsLoader };

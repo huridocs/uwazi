@@ -1,9 +1,9 @@
 import request from 'supertest';
 import express, { Application } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../utils/requestIdMiddleware.j... Remove this comment to see the full error message
-import { requestIdMiddleware } from '../utils/requestIdMiddleware.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/appContextMiddleware.... Remove this comment to see the full error message
-import { appContextMiddleware } from '../utils/appContextMiddleware.js';
+
+import { requestIdMiddleware } from 'app/utils/requestIdMiddleware.js';
+
+import { appContextMiddleware } from 'app/utils/appContextMiddleware.js';
 import { appContext } from '../AppContext';
 
 const testingRoutes = (app: Application) => {

@@ -1,8 +1,8 @@
 import { Application } from 'express';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
@@ -11,7 +11,6 @@ import { fixtures } from './fixtures';
 
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 
-// @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
 const app: Application = setUpApp(pagesRoutes, (req, _res, next) => {
   (req as any).user = getUser();
   next();

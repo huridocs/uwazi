@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../odm/model.js.js' or its cor... Remove this comment to see the full error message
+
 import { WithId } from '../odm/model.js.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';

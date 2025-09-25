@@ -205,12 +205,10 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
         .toArray();
 
       const suggestionsFromExtractor1 = suggestions?.filter(
-        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
       );
 
       const suggestionsFromExtractor2 = suggestions?.filter(
-        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
       );
@@ -283,12 +281,10 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
         .toArray();
 
       const suggestionsFromExtractor1 = suggestions?.filter(
-        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
       );
 
       const suggestionsFromExtractor2 = suggestions?.filter(
-        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
       );

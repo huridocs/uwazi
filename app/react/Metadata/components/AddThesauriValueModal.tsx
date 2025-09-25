@@ -1,8 +1,8 @@
 import React from 'react';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/sanitizationUtils... Remove this comment to see the full error message
+
 import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils.js';
 
 interface AddThesauriValueModalProps {
@@ -40,7 +40,6 @@ const AddThesauriValueModal = ({
     reset,
   } = useForm<FormInputs>({ defaultValues: { group: 'root' } });
 
-  // @ts-expect-error TS(7006): Parameter 'submittedValues' implicitly has an 'any... Remove this comment to see the full error message
   const onSubmitted = submittedValues => {
     // Sanitize the value before accepting
     const sanitizedValues = {

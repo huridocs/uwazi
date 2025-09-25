@@ -4,7 +4,7 @@ import {
   CodeEditor,
   CodeEditorProps,
   CodeEditorInstance,
-} from '../V2/Components/CodeEditor/index.js';
+} from 'V2/Components/CodeEditor/index.js';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {

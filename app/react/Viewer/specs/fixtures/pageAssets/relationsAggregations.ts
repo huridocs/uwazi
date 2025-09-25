@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientTemplateSchema } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
+import { ClientTemplateSchema } from "app/V2/shared/types.js";
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
 
 const DocumentWithRelationsTemplate = Immutable.fromJS({

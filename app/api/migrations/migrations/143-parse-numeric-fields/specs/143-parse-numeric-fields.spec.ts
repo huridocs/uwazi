@@ -29,7 +29,6 @@ describe('migration parse-numeric-fields', () => {
     beforeEach(async () => {
       await migration.up(testingDB.mongodb!);
 
-      // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
       results = await testingDB.mongodb
         ?.collection<EntitySchema>('entities')
         .find({}, { sort: { _id: 1 } })

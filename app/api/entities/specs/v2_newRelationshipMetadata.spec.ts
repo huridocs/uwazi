@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
@@ -336,7 +336,6 @@ describe('entities.save()', () => {
 
     const relsInDb = await db?.collection('relationships').find({}).toArray();
 
-    // @ts-expect-error TS(7006): Parameter 'rel' implicitly has an 'any' type.
     expect(relsInDb?.find(rel => rel._id.equals(factory.id('rel1-3')))).toBe(undefined);
     expect(relsInDb).toEqual(
       expect.arrayContaining([

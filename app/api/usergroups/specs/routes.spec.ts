@@ -2,12 +2,12 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../usergroups/routes.js' or it... Remove this comment to see the full error message
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
 import userGroupRoutes from '../usergroups/routes.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
-import { testingTenants } from '../utils/testingTenants.js';
+
+import { testingTenants } from 'app/utils/testingTenants.js';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';

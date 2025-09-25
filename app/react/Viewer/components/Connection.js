@@ -5,17 +5,17 @@ import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { I18NLink } from '../../I18N/index.js';
-import { NeedAuthorization } from '../../Auth.js';
+import { I18NLink } from 'app/I18N/index.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
 import { withContext } from '../../componentWrappers.js';
 import ShowIf from '../../App/ShowIf.js';
-import { deleteReference } from '../../Viewer/actions/referencesActions.js';
+import { deleteReference } from 'app/Viewer/actions/referencesActions.js';
 import {
   highlightReference,
   activateReference,
   selectReference,
   toggleReferences,
-} from '../../Viewer/actions/uiActions.js';
+} from 'app/Viewer/actions/uiActions.js';
 import { Item } from '../../Layout.js';
 import helpers from '../../Documents/helpers.js';
 

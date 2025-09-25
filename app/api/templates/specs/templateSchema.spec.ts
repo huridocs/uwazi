@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 
 import { testingDB } from 'api/utils/testing_db.js';

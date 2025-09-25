@@ -1,9 +1,9 @@
 import { ObjectWritableMock } from 'stream-mock';
-// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
-import templates from '../templates.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
-import translations from '../i18n/translations.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/translate.js' or ... Remove this comment to see the full error message
+
+import templates from 'api/templates/index.js';
+
+import translations from 'api/i18n/translations.js';
+
 import * as translate from 'shared/translate.js';
 import moment from 'moment-timezone';
 import CSVExporter, {
@@ -44,7 +44,6 @@ describe('csvExporter', () => {
   describe('getTemplateModels', () => {
     beforeAll(() => {
       jest.spyOn(templates, 'getById').mockImplementation(async id =>
-        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
       );
     });
@@ -448,7 +447,6 @@ describe('csvExporter', () => {
   describe('CSVExport class', () => {
     beforeEach(() => {
       jest.spyOn(templates, 'getById').mockImplementation(async id =>
-        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
       );
       jest.spyOn(translations, 'get').mockResolvedValue([]);

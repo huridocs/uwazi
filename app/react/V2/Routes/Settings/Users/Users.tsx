@@ -2,12 +2,12 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Button, ConfirmationModal, Table, Tabs } from '../../../Components/UI/index.js';
 import * as usersAPI from 'api/users/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
-import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
@@ -235,47 +235,47 @@ const Users = () => {
 
 const usersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const users = (await usersAPI.get(headers)).map(user => ({ ...user, rowId: user._id! }));
-    const groups = (await usersAPI.getUserGroups(headers)).map(group => ({
-      ...group,
-      rowId: group._id!,
-    }));
-    return { users, groups };
-  };
+    async () => {
+      const users = (await usersAPI.get(headers)).map(user => ({ ...user, rowId: user._id! }));
+      const groups = (await usersAPI.getUserGroups(headers)).map(group => ({
+        ...group,
+        rowId: group._id!,
+      }));
+      return { users, groups };
+    };
 
 const userAction =
   (): ActionFunction =>
-  async ({ request }) => {
-    const formData = await request.formData();
-    const formIntent = formData.get('intent') as FormIntent;
+    async ({ request }) => {
+      const formData = await request.formData();
+      const formIntent = formData.get('intent') as FormIntent;
 
-    const formValues = JSON.parse(formData.get('data') as string);
-    const confirmation = formData.get('confirmation') as string;
+      const formValues = JSON.parse(formData.get('data') as string);
+      const confirmation = formData.get('confirmation') as string;
 
-    switch (formIntent) {
-      case 'new-user':
-        return usersAPI.newUser(formValues, confirmation);
-      case 'edit-user':
-        return usersAPI.updateUser(formValues, confirmation);
-      case 'delete-users':
-        return usersAPI.deleteUser(formValues, confirmation);
-      case 'new-group':
-      case 'edit-group':
-        return usersAPI.saveGroup(formValues);
-      case 'delete-groups':
-        return usersAPI.deleteGroup(formValues);
-      case 'unlock-user':
-        return usersAPI.unlockAccount(formValues, confirmation);
-      case 'reset-password':
-      case 'bulk-reset-password':
-        return usersAPI.resetPassword(formValues);
-      case 'reset-2fa':
-      case 'bulk-reset-2fa':
-        return usersAPI.reset2FA(formValues, confirmation);
-      default:
-        return null;
-    }
-  };
+      switch (formIntent) {
+        case 'new-user':
+          return usersAPI.newUser(formValues, confirmation);
+        case 'edit-user':
+          return usersAPI.updateUser(formValues, confirmation);
+        case 'delete-users':
+          return usersAPI.deleteUser(formValues, confirmation);
+        case 'new-group':
+        case 'edit-group':
+          return usersAPI.saveGroup(formValues);
+        case 'delete-groups':
+          return usersAPI.deleteGroup(formValues);
+        case 'unlock-user':
+          return usersAPI.unlockAccount(formValues, confirmation);
+        case 'reset-password':
+        case 'bulk-reset-password':
+          return usersAPI.resetPassword(formValues);
+        case 'reset-2fa':
+        case 'bulk-reset-2fa':
+          return usersAPI.reset2FA(formValues, confirmation);
+        default:
+          return null;
+      }
+    };
 
 export { Users, usersLoader, userAction };

@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { ResultsMessage } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
+import { ResultsMessage } from 'api/services/tasksmanager/TaskManager.js';
+
 import { EntitySchema } from 'shared/types/entityType.js';
 import { Readable } from 'stream';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, generateFileName, storage } from '../files.js';
+
+import { files, generateFileName, storage } from '../files/index.js';
 
 interface TwitterImageData {
   fileName: string;

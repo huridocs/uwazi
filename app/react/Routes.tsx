@@ -2,26 +2,23 @@
 import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-// @ts-expect-error TS(2307): Cannot find module '../../App/App.js' or its corre... Remove this comment to see the full error message
-import { App } from '../../App/App.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/Library.js' or i... Remove this comment to see the full error message
-import LibraryRoot from '../../Library/Library.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/LibraryMap.js' o... Remove this comment to see the full error message
-import { LibraryMap } from '../../Library/LibraryMap.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/LibraryCards.js'... Remove this comment to see the full error message
-import { LibraryCards } from '../../Library/LibraryCards.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/LibraryTable.js'... Remove this comment to see the full error message
-import { LibraryTable } from '../../Library/LibraryTable.js';
+
+
+import LibraryRoot from 'app/Library/Library.js';
+
+import { LibraryCards } from 'app/Library/LibraryCards.js';
+
+import { LibraryTable } from 'app/Library/LibraryTable.js';
 import { Preserve } from './V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from './V2/Routes/Settings/Settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Users/Login.js' or its c... Remove this comment to see the full error message
-import { Login } from '../../Users/Login.js';
+
+import { Login } from 'app/Users/Login.js';
 import { Users, usersLoader, userAction } from './V2/Routes/Settings/Users/Users.js';
 import { Collection, collectionLoader } from './V2/Routes/Settings/Collection/Collection.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Viewer/ViewerRoute.js' o... Remove this comment to see the full error message
-import ViewerRoute from '../../Viewer/ViewerRoute.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettings } from '../../apiResponseTypes.js';
+
+import ViewerRoute from 'app/Viewer/ViewerRoute.js';
+
+import { ClientSettings } from 'app/apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,
@@ -38,8 +35,8 @@ import {
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
-  // @ts-expect-error TS(2307): Cannot find module '../../V2/Routes/Settings/Thesa... Remove this comment to see the full error message
-} from '../../V2/Routes/Settings/Thesauri.js';
+
+} from 'app/V2/Routes/Settings/Thesauri/index.js';
 
 import { MenuConfig, menuConfigloader } from './V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
@@ -83,8 +80,8 @@ import {
   templatesLoader,
   TemplatesEditor,
   templatesEditorLoader,
-  // @ts-expect-error TS(2307): Cannot find module '../../V2/Routes/Settings/Templ... Remove this comment to see the full error message
-} from '../../V2/Routes/Settings/Templates.js';
+
+} from 'app/V2/Routes/Settings/Templates/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -96,6 +93,8 @@ import { PageView } from './Pages/PageView.js';
 import ResetPassword from './Users/ResetPassword.js';
 import ConnectedUnlockAccount from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
+import { LibraryMap } from './Library/LibraryMap.js';
+import { App } from './App/App.js';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -314,7 +313,6 @@ const getRoutes = (
 ) => {
   const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
   const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
-  // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route
@@ -323,7 +321,6 @@ const getRoutes = (
       errorElement={<RouteErrorBoundary />}
     >
       {layout}
-      // @ts-expect-error TS(7006): Parameter 'langKey' implicitly has an 'any' type.
       {languageKeys.map(langKey => languageLayout(langKey, layout))}
       <Route path="*" element={<GeneralError />} />
     </Route>

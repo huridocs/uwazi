@@ -8,9 +8,9 @@ import Footer from '../../App/Footer.js';
 import MarkdownViewer from '../../Markdown/index.js';
 import { Context } from '../../Markdown/components.js';
 import { Icon } from 'UI';
-import { Translate } from '../../I18N/index.js';
-import { NeedAuthorization } from '../../Auth.js';
-import { ErrorBoundary, ErrorFallback } from '../../V2/Components/ErrorHandling.js';
+import { Translate } from 'app/I18N/index.js';
+import { NeedAuthorization } from 'app/Auth/index.js';
+import { ErrorBoundary, ErrorFallback } from 'app/V2/Components/ErrorHandling.js';
 import Script from './Script';
 
 class PageViewer extends Component {

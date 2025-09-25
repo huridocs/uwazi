@@ -3,9 +3,9 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
 import RelationTypesAPI from '../../RelationTypes/RelationTypesAPI.js';
-import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
 import * as relationships from '../../Relationships/utils/routeUtils.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import * as pageAssetsUtils from '../../Pages/utils/getPageAssets.js';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI';

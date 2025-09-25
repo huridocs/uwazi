@@ -141,7 +141,7 @@ function fixImportsInContent(filePath, content) {
   }
 
   // Fix missing utils/index.js imports
-  if (modifiedContent.includes("from '../../utils/index.js'") || modifiedContent.includes('from "../../utils/index.js"')) {
+  if (modifiedContent.includes("from 'app/utils/index.js'") || modifiedContent.includes('from "../../utils/index.js"')) {
     const utilsPath = path.join(repoRoot, 'app', 'api', 'utils', 'index.js');
     if (fs.existsSync(utilsPath)) {
       modifiedContent = modifiedContent.replace(

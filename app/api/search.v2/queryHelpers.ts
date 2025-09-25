@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { elastic } from '../search.js';
 import { SearchQuery } from 'shared/types/SearchQueryType.js';
 import templatesModel from '../templates/templates.js';

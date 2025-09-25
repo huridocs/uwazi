@@ -1,36 +1,20 @@
 /* eslint-disable max-lines */
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoDataSource'.
-import { MongoDataSource, MongoDSOptions } from '../../common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoIdHandler'.
-import { MongoIdHandler } from '../../common.v2/database/MongoIdGenerator.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoResultSet'.
-import { MongoResultSet } from '../../common.v2/database/MongoResultSet.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoTransactionManager'.
-import { MongoTransactionManager } from '../../common.v2/database/MongoTransactionManager.js';
-import { GenerateIdProperty } from '../../core/domain/template/GenerateIdProperty.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'TemplateMapper'.
-import { TemplateMapper } from '../../core/infrastructure/mongodb/template/Mapper.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'updateMapping'.
-import { resetIndex, updateMapping } from '../../search/entitiesIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'Db'.
-import { Db, ObjectId } from 'mongodb';
-// @ts-expect-error TS(2300): Duplicate identifier 'objectIndex'.
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoDataSource'.
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoIdHandler'.
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoResultSet'.
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'Db'.
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { GenerateIdProperty } from '../../core/domain/template/GenerateIdProperty.js';
+import { TemplateMapper } from 'api/core/infrastructure//mongodb/template/Mapper.js';
+import { resetIndex, updateMapping } from '../../search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
-// @ts-expect-error TS(2300): Duplicate identifier 'objectIndex'.
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'TemplateMapper'.
-import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'updateMapping'.
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { Db, ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { TemplateMapper } from 'api/core/infrastructure//mongodb/template/Mapper.js';
 import { updateMapping } from '../search/entitiesIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'MongoTransactionManager'.
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
@@ -271,9 +255,7 @@ export class MongoTemplatesDataSource
       { returnDocument: 'after' }
     );
     return {
-      // @ts-expect-error TS(2339): Property 'processing' does not exist on type 'With... Remove this comment to see the full error message
       total: result?.processing?.totalJobs || 1,
-      // @ts-expect-error TS(2339): Property 'processing' does not exist on type 'With... Remove this comment to see the full error message
       completed: result?.processing?.completedJobs || 0,
     };
   }

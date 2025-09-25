@@ -2,34 +2,34 @@
 import { WithId } from 'mongodb';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
-  // @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/jobs/Cr... Remove this comment to see the full error message
+  
 } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
+
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/infrastructure/err... Remove this comment to see the full error message
+
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/connectionT... Remove this comment to see the full error message
+
 import { ConnectionSchema } from 'shared/types/connectionType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { PXCreateEntityStatusesFactory } from '../paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
 import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';
 

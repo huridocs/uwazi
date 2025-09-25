@@ -2,8 +2,8 @@
 import React, { PropsWithChildren } from 'react';
 import { Breadcrumb } from 'flowbite-react';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, I18NLinkV2 as I18NLink } from '../../I18N/index.js';
+
+import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N/index.js';
 
 interface SettingsContentProps extends PropsWithChildren {
   className?: string;
@@ -65,7 +65,6 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
       ))}
       {title !== undefined && (
         <Breadcrumb.Item>
-          // @ts-expect-error TS(2786): 'SettingsHeaderTitle' cannot be used as a JSX comp... Remove
           this comment to see the full error message
           <SettingsHeaderTitle title={title} contextId={contextId} />
         </Breadcrumb.Item>
@@ -88,9 +87,8 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${
-      highlighted ? 'bg-indigo-50' : 'bg-white'
-    }`}
+    className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${highlighted ? 'bg-indigo-50' : 'bg-white'
+      }`}
     data-testid="settings-content-footer"
   >
     {children}

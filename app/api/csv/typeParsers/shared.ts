@@ -1,13 +1,13 @@
 import moment from 'moment';
-// @ts-expect-error TS(2307): Cannot find module '../csv/entityRow.js' or its co... Remove this comment to see the full error message
-import { RawEntity } from '../csv/entityRow.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri/thesauri.js' or it... Remove this comment to see the full error message
-import { normalizeThesaurusLabel } from '../thesauri/thesauri.js';
+
+import { RawEntity } from 'api/csv/entityRow.js';
+
+import { normalizeThesaurusLabel } from 'api/thesauri/thesauri.js';
 
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes.js';
 
 import { ensure } from 'shared/tsUtils.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/thesaurusTy... Remove this comment to see the full error message
+
 import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
 import {
   sanitizeMetadataValue,
@@ -235,7 +235,6 @@ export const generateMetadataValue = (
   labelInfo: LabelInfo
 ): MetadataObjectSchema | null => {
   const parent = currentThesaurus.values?.find(
-    // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
     v => normalizeThesaurusLabel(v.label) === labelInfo.normalizedLabel
   );
 
@@ -245,7 +244,6 @@ export const generateMetadataValue = (
 
   if (labelInfo.child) {
     const child = parent?.values?.find(
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       v => normalizeThesaurusLabel(v.label) === labelInfo.child?.normalizedLabel
     );
 

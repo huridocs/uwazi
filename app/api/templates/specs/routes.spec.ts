@@ -1,19 +1,11 @@
-// @ts-expect-error TS(2300): Duplicate identifier 'translations'.
-import translations from '../../i18n/index.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'entitiesIndex'.
+import translations from 'app/I18N/index.js';
 import * as entitiesIndex from '../../search/entitiesIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'testingEnvironment'.
-import { testingEnvironment } from '../../utils/testingEnvironment.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'setUpApp'.
-import { setUpApp } from '../../utils/testingRoutes.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'translations'.
-import translations from '../i18n.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'entitiesIndex'.
+import { testingEnvironment } from 'app/utils/testingEnvironment.js';
+import { setUpApp } from 'app/utils/testingRoutes.js';
+import translations from 'app/I18N/index.js';
 import * as entitiesIndex from '../search/entitiesIndex.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'testingEnvironment'.
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2300): Duplicate identifier 'setUpApp'.
-import { setUpApp } from '../utils/testingRoutes.js';
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 import { testingDB } from 'api/utils/testing_db.js';
 

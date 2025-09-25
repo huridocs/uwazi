@@ -2,19 +2,19 @@ import path from 'path';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
-import { search } from '../search.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+import { search } from '../search.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
+
 import { ensure } from 'shared/tsUtils.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/thesaurusTy... Remove this comment to see the full error message
+
 import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { routes } from '../routes.js';
-import { thesauri } from '../thesauri.js';
+import { thesauri } from '../../thesauri/thesauri.js';
 import { fixtures } from './fixtures.js';
 
 jest.mock(
@@ -45,11 +45,8 @@ describe('Thesauri routes', () => {
       const { values = [] } = ensure<ThesaurusSchema>(await thesauri.getById(response.body._id));
 
       expect(values.length).toBe(3);
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(values.some(v => v.label === 'one')).toBe(true);
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(values.some(v => v.label === 'Value 1')).toBe(true);
-      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(values.some(v => v.label === 'Value 2')).toBe(true);
     });
   });

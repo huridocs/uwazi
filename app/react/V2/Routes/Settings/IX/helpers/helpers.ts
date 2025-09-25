@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientTemplateSchema } from '../../istore.js';
+
+import { ClientEntitySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 
 import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+
+import { t } from 'app/I18N/index.js';
 import { RadioProps } from '../../../../Components/Forms/index.js';
-import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { ClientIXExtractorType } from '../../../../../shared/types.js';
 import { TableSuggestion, MultiValueSuggestion } from '../types.js';
 import {
   getPropertyNameFromExtractPair,
@@ -97,10 +97,8 @@ const propertyIsInAllTemplates = (
   templates.every(template =>
     template.properties
       .filter(
-        // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
         templateProperty => templateProperty.type === 'markdown' || templateProperty.type === 'text'
       )
-      // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
       .some(templateProperty => {
         if (templateProperty.name === property.propertyName) {
           return true;
@@ -141,7 +139,6 @@ const getAvailableSources = (
 
   templatesIncluded.every(template => {
     const templateMarkdownProperties = template.properties?.filter(
-      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property.type === 'markdown' || property.type === 'text'
     );
 
@@ -151,7 +148,6 @@ const getAvailableSources = (
     }
 
     markdownProperties.push(
-      // @ts-expect-error TS(7006): Parameter 'templateMarkdownProperty' implicitly ha... Remove this comment to see the full error message
       ...templateMarkdownProperties.map(templateMarkdownProperty => ({
         templateId: template._id.toString(),
         propertyName: templateMarkdownProperty.name,

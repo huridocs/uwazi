@@ -2,7 +2,7 @@
 import backend from 'fetch-mock';
 import { APIURL } from '../../config.js.js';
 
-import referencesAPI from '../../Viewer/referencesAPI.js';
+import referencesAPI from 'app/Viewer/referencesAPI.js';
 import * as modalActions from '../../Modals/actions/modalActions.js';
 import * as actions from '../../RelationTypes/actions/relationTypesActions.js';
 

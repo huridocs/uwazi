@@ -116,7 +116,6 @@ export const postProcessCurrentValues = (
   propertyType: PropertyTypeSchema
 ) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
 
-// @ts-expect-error TS(7006): Parameter 'query' implicitly has an 'any' type.
 // eslint-disable-next-line max-statements
 export const updateStates = async query => {
   const { languages } = await settings.get();

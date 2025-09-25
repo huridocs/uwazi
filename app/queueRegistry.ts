@@ -71,10 +71,8 @@ export function registerJobs(
 
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 
-  // @ts-expect-error TS(2345): Argument of type 'typeof PXExtractParagraphsFromEn... Remove this comment to see the full error message
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
-  // @ts-expect-error TS(2345): Argument of type 'typeof PXCreateParagraphsJob' is... Remove this comment to see the full error message
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = DefaultTransactionManager();
     const connection = getConnection();
@@ -130,7 +128,6 @@ export function registerJobs(
     });
   });
 
-  // @ts-expect-error TS(2345): Argument of type 'typeof AcceptSuggestionsJob' is ... Remove this comment to see the full error message
   register(AcceptSuggestionsJob, async (tenantName: string) => {
     const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName });
     return job;

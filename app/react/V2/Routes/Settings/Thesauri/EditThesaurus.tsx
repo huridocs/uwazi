@@ -5,14 +5,14 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { isEmpty } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus } from '../../apiResponseTypes.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientThesaurus } from 'app/apiResponseTypes.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
-import { notificationAtom, templatesAtom } from '../../V2/atoms.js';
+
+import { notificationAtom, templatesAtom } from 'app/V2/atoms.js';
 
 import { PropertySchema } from 'shared/types/commonTypes.js';
 import {
@@ -55,7 +55,6 @@ const EditThesaurus = () => {
   useMemo(() => {
     const currentThesaurus = thesaurus || { values: [] };
     setWarnAboutUse(
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       templates.find(t =>
         (t.properties || []).some(
           (property: PropertySchema) => property.content === currentThesaurus._id

@@ -1,4 +1,4 @@
-import { setUpApp } from '../utils/testingRoutes.js';
+import { setUpApp } from 'api/utils/testingRoutes.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import request from 'supertest';
 import { UserRole } from 'shared/types/userSchema.js';

@@ -14,7 +14,6 @@ const HydrateAtoms = ({ initialValues, children }: TestProviderProps) => {
 
 const TestAtomStoreProvider = ({ initialValues, children }: TestProviderProps) => (
   <Provider>
-    // @ts-expect-error TS(2786): 'HydrateAtoms' cannot be used as a JSX component.
     <HydrateAtoms initialValues={initialValues}>{children}</HydrateAtoms>
   </Provider>
 );

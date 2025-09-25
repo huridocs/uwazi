@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 
 const FileList = ({ items }: { items: Row<FileType>[] | FileType[] }) => (

@@ -4,10 +4,11 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate, t } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
-import { Button, Modal, Table } from '../../V2/Components/UI.js';
+
+import { Translate, t } from 'app/I18N/index.js';
+
+import { Button, Modal, Table } from 'app/V2/Components/UI/index.js';
+
 
 type Level = 'none' | 'partial' | 'full';
 

@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
-import { isClient } from 'api/utils/index.js';
+
+import { isClient } from 'app/utils/index.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 

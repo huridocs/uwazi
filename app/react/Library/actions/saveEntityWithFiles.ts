@@ -1,12 +1,12 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
 import { groupBy } from 'lodash';
-import { ClientBlobFile, ClientEntitySchema, ClientFile } from '../../istore.js';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from "app/V2/shared/types.js";
 import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
 import * as uploadsActionTypes from '../../Uploads/actions/actionTypes.js';
 
 import { ensure } from 'shared/tsUtils.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/fileUploadUtils.j... Remove this comment to see the full error message
+
 import { constructFile } from 'shared/fileUploadUtils.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
@@ -38,7 +38,6 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     : [[], []];
 
   const { oldDocuments = [], newDocuments = [] } = groupBy(entity.documents || [], document =>
-    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientFile ... Remove this comment to see the full error message
     document._id !== undefined ? 'oldDocuments' : 'newDocuments'
   );
   const entityToSave = { ...entity, documents: oldDocuments };
@@ -67,14 +66,12 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
         if (data.percent && Math.floor(data.percent) === 100) {
           return dispatch({
             type: attachmentsTypes.ATTACHMENT_LOCAL_COMPLETE,
-            // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
             entity: entity.sharedId || 'NEW_ENTITY',
           });
         }
 
         return dispatch({
           type: attachmentsTypes.ATTACHMENT_PROGRESS,
-          // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
           entity: entity.sharedId || 'NEW_ENTITY',
           progress: data.percent ? Math.floor(data.percent) : data.percent,
         });

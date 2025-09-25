@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
 import { ShallowWrapper } from 'enzyme';
-// @ts-expect-error TS(2307): Cannot find module '../../Permissions/components/S... Remove this comment to see the full error message
+
 import { ShareEntityModal } from '../../Permissions/components/ShareEntityModal.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+
 import { PermissionSchema } from 'shared/types/permissionType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+
 import { MemberWithPermission } from 'shared/types/entityPermisions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { renderConnected } from '../../utils/test/renderConnected.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Permissions/PermissionsA... Remove this comment to see the full error message
+
+import { renderConnected } from 'app/utils/test/renderConnected.js';
+
 import * as api from '../../Permissions/PermissionsAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Permissions/actions/acti... Remove this comment to see the full error message
+
 import { saveEntitiesPermissions } from '../../Permissions/actions/actions.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { MembersList } from '../MembersList';

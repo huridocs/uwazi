@@ -5,10 +5,10 @@ import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { notificationAtom, settingsAtom } from '../../../atoms/index.js';
 import * as settingsAPI from 'api/settings/index.js';
 import * as templatesAPI from 'api/templates/index.js';
@@ -31,12 +31,12 @@ import {
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
-  async () => {
-    const { filters } = await settingsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
-    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
-    return { filters: tableFilters, templates };
-  };
+    async () => {
+      const { filters } = await settingsAPI.get(headers);
+      const templates = await templatesAPI.get(headers);
+      const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+      return { filters: tableFilters, templates };
+    };
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;
@@ -89,7 +89,6 @@ const FiltersTable = () => {
         idsToRemove.push(filter.rowId);
       }
       if (filter.subRows) {
-        // @ts-expect-error TS(7006): Parameter 'subRow' implicitly has an 'any' type.
         filter.subRows.forEach(subRow => {
           if (subRow.rowId in selectedFilters) {
             idsToRemove.push(subRow.rowId);

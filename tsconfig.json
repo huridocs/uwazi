@@ -10,7 +10,7 @@
     "module": "ES2022",
     "target": "es2022",
     "jsx": "react",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,

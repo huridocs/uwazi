@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Map/MapContainer.js' or ... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import { Map, Layer } from '../../Map/MapContainer.js';
 import { Label, InputField } from './index.js';
 

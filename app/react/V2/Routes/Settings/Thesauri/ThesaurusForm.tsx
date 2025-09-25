@@ -4,13 +4,13 @@ import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientThesaurus } from '../../apiResponseTypes.js';
+
+import { Translate } from 'app/I18N/index.js';
+
+import { ClientThesaurus } from 'app/apiResponseTypes.js';
 import * as thesauriAPI from 'api/thesauri/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
-import { notificationAtom } from '../../V2/atoms.js';
+
+import { notificationAtom } from 'app/V2/atoms.js';
 import { Table } from '../../../Components/UI/index.js';
 import { InputField } from '../../../Components/Forms/index.js';
 import { addSelection, sanitizeThesaurusValues } from './helpers.js';
@@ -82,15 +82,13 @@ const ThesaurusForm = ({
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
       <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
         <Table
-          // @ts-expect-error TS(2322): Type 'ThesaurusRow[]' is not assignable to type 'T... Remove this comment to see the full error message
           data={thesaurusValues}
-          // @ts-expect-error TS(2322): Type 'AccessorKeyColumnDef<ThesaurusRow, string>[]... Remove this comment to see the full error message
           columns={columnsThesaurus({ edit }, thesaurus)}
           dnd={{ enable: true, disableEditingGroups: true }}
           enableSelections
           header={
             <InputField
-              clearFieldAction={() => {}}
+              clearFieldAction={() => { }}
               id="thesauri-name"
               placeholder="Thesauri name"
               hasErrors={!!errors.name}
@@ -109,7 +107,6 @@ const ThesaurusForm = ({
             });
           }}
           onSort={({ rows }) => {
-            // @ts-expect-error TS(2345): Argument of type 'TableRow<ThesaurusRow>[]' is not... Remove this comment to see the full error message
             setThesaurusValues(rows);
           }}
         />

@@ -1,9 +1,9 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Matc... Remove this comment to see the full error message
-import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Trav... Remove this comment to see the full error message
-import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
+
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode.js';
+
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode.js';
 import { MatchQueryDBO, TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 
 const QueryMapperToModel = {

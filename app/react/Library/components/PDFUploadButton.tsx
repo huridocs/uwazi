@@ -2,21 +2,21 @@ import React, { ChangeEvent, Dispatch } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
-import { Icon } from '../../UI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { Translate } from 'app/I18N/index.js';
+
+import { Icon } from 'app/UI/Icon/Icon.js';
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/IDGenerator.js' o... Remove this comment to see the full error message
+
 import { generateID } from 'shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
 } from '../../Uploads/actions/uploadsActions.js';
-import { unselectAllDocuments as unselectAllDocumentsAction } from '../../Library/actions/libraryActions.js';
-import { ClientEntitySchema } from '../../istore.js';
-import { templatesAtom } from '../../V2/atoms/index.js';
-import { ClientTemplateSchema } from '../../V2/shared/types.js';
+import { unselectAllDocuments as unselectAllDocumentsAction } from 'app/Library/actions/libraryActions.js';
+import { ClientEntitySchema } from "app/V2/shared/types.js";
+import { templatesAtom } from 'app/V2/atoms/index.js';
+import { ClientTemplateSchema } from '../../../../../shared/types.js';
 
 const extractTitle = (file: File) => {
   const title = file.name
@@ -50,7 +50,6 @@ const onChangePDFs =
         template =>
           template.default &&
           template.commonProperties?.some(
-            // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
             property => property.name === 'title' && property.generatedId
           )
       );
@@ -62,9 +61,7 @@ const onChangePDFs =
             const newEntity = { title: hasGeneratedId ? generateID(3, 4, 4) : extractTitle(file) };
             const entity = (await createDocument(newEntity)) as ClientEntitySchema;
 
-            // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
             if (entity.sharedId) {
-              // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
               uploadDocument(entity.sharedId, file);
             }
           } catch (_e) { }

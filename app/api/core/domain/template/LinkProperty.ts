@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Property, PropertyTypes, PropertyProps, Context } from 'api/templates.v2/model/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 
@@ -14,9 +14,7 @@ class LinkProperty extends Property {
   }
 
   protected validate() {
-    // @ts-expect-error TS(2339): Property 'type' does not exist on type 'LinkProper... Remove this comment to see the full error message
     if (this.type !== 'link') {
-      // @ts-expect-error TS(2339): Property 'type' does not exist on type 'LinkProper... Remove this comment to see the full error message
       throw new PropertyTypeInvalidTypeError(this.type, 'LinkProperty');
     }
   }

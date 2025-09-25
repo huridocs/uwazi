@@ -1,16 +1,14 @@
-// @ts-expect-error TS(2307): Cannot find module '../../BasicReducer.js' or its ... Remove this comment to see the full error message
-import { actions } from '../../BasicReducer.js';
 import { actions as formActions } from 'react-redux-form';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+
 import { IImmutable } from 'shared/types/Immutable.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Entities/EntitiesAPI.js'... Remove this comment to see the full error message
-import api from '../../Entities/EntitiesAPI.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientFile } from '../../istore.js';
+
+
 import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions';
+import { api } from 'app/Entities/index.js';
+import { actions } from 'app/BasicReducer/index.js';
 
 describe('metadataExtractionActions', () => {
   describe('updateFormField', () => {

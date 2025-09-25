@@ -1,13 +1,13 @@
 import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { files, generateFileName, storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/processDocument.js' o... Remove this comment to see the full error message
+
+import { files, generateFileName, storage } from '../files/index.js';
+
 import { processDocument } from '../files/processDocument.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
-import { permissionsContext } from '../permissions/permissionsContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
+
 import { emitToTenant } from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';

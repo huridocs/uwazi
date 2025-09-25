@@ -1,20 +1,20 @@
-// @ts-expect-error TS(2307): Cannot find module '../search.v2/routes.js' or its... Remove this comment to see the full error message
+
 import { searchRoutes } from '../search.v2/routes.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../../utils/advancedSort.js... Remove this comment to see the full error message
-import { advancedSort } from '../../../utils/advancedSort.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
+
+import { advancedSort } from 'app/utils/advancedSort.js';
 import { Application } from 'express';
 import qs from 'qs';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
-import { elasticTesting } from '../utils/elastic_testing.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/SearchQuery... Remove this comment to see the full error message
+
+import { elasticTesting } from 'app/utils/elastic_testing.js';
+
 import { SearchQuery } from 'shared/types/SearchQueryType.js';
 import { entity1enId, entity2enId, fixturesSnippetsSearch } from './fixturesSnippetsSearch';
 

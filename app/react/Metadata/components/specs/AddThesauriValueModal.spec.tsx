@@ -4,8 +4,8 @@
 import React from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
-import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
 import AddThesauriValueModal, { AddThesauriValueModalProps } from '../AddThesauriValueModal';
 
 describe('Add Add thesauri value', () => {
@@ -21,7 +21,7 @@ describe('Add Add thesauri value', () => {
     const props: AddThesauriValueModalProps = {
       isOpen: true,
       onAccept: jest.fn(),
-      onCancel: () => {},
+      onCancel: () => { },
       values: [],
     };
 

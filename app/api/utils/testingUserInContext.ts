@@ -1,4 +1,4 @@
-import { permissionsContext } from '../permissions/permissionsContext.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import { UserSchema } from 'shared/types/userType.js';
 import { UserRole } from 'shared/types/userSchema.js';
 import { DataType } from '../odm/index.js';

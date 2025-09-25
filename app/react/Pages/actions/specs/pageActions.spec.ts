@@ -2,14 +2,14 @@
  * @jest-environment jsdom
  */
 import { actions as formActions } from 'react-redux-form';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../../BasicReducer.js' or its ... Remove this comment to see the full error message
-import { actions as basicActions } from '../../BasicReducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
+import { RequestParams } from 'app/utils/RequestParams.js';
+
+
+import { actions as basicActions } from 'app/V2/BasicReducer/reducer.js';
+
 import { notificationActions } from '../../Notifications.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Pages/PagesAPI.js' or it... Remove this comment to see the full error message
+
 import api from '../../Pages/PagesAPI.js';
 
 import * as actions from '../pageActions';

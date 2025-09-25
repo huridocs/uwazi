@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import moment from 'moment-timezone';
 import Immutable from 'immutable';
-import { advancedSort } from '../../utils/advancedSort.js';
+import { advancedSort } from 'app/utils/advancedSort.js';
 import { store } from '../../store.js';
 import nestedProperties from '../../Templates/components/ViolatedArticlesNestedProperties.js';
 

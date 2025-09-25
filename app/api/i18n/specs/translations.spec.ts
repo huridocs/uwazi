@@ -1,17 +1,17 @@
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
-// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
+
 import entities from '../entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
-import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
-// @ts-expect-error TS(2307): Cannot find module '../pages.js' or its correspond... Remove this comment to see the full error message
+
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO.js';
+
 import pages from '../pages.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
+
 import settings from '../settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../thesauri/thesauri.js.js' or... Remove this comment to see the full error message
+
 import thesauri from '../thesauri/thesauri.js.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/translationSchema... Remove this comment to see the full error message
+
 import { ContextType } from 'shared/translationSchema.js';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
@@ -412,7 +412,6 @@ describe('translations', () => {
 
         await addLanguage({ key: 'fr', label: 'french' });
 
-        // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
         const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
         expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
 

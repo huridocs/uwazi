@@ -7,7 +7,6 @@ export enum IXErrorCode {
 export class IXValidationError extends Error {
   static codes = IXErrorCode;
 
-  // @ts-expect-error TS(2699): Static property 'name' conflicts with built-in pro... Remove this comment to see the full error message
   static name = 'IXValidationError';
 
   constructor(

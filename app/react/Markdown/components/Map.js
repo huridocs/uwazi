@@ -10,7 +10,7 @@ import {
   getAndSelectDocument,
   selectDocuments,
   unselectAllDocuments,
-} from '../../Library/actions/libraryActions.js';
+} from 'app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '../../Multireducer.js';
 
 import { Loader } from '../../components/Elements/Loader.js';

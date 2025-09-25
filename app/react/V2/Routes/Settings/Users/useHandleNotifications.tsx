@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useFetchers } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { last } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
+import { Translate } from 'app/I18N/index.js';
+
 import { FetchResponseError } from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
-import { notificationAtom } from '../../V2/atoms.js';
+
+import { notificationAtom } from 'app/V2/atoms.js';
 import { FormIntent } from './types';
 
 const useHandleNotifications = () => {

@@ -374,7 +374,6 @@ const Suggestions = {
       $set: { 'state.obsolete': true, 'state.match': null },
     }),
 
-  // @ts-expect-error TS(7006): Parameter 'query' implicitly has an 'any' type.
   markSuggestionsWithoutSegmentation: async query => {
     const segmentedFilesIds = await getSegmentedFilesIds();
     await IXSuggestionsModel.updateMany(
@@ -419,7 +418,6 @@ const Suggestions = {
       }),
     ]);
 
-    // @ts-expect-error TS(2769): No overload matches this call.
     return new Set<string>([...queuedNow, ...readyThisRun]);
   },
 

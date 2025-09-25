@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { I18NLink } from '../../I18N/index.js';
+import { I18NLink } from 'app/I18N/index.js';
 import { Icon } from 'UI';
 
 import api from '../../Search/SearchAPI.js';

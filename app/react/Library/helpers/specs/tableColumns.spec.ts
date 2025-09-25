@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+
 import { TemplateSchema } from 'shared/types/templateType.js';
 import { getTableColumns } from '../tableColumns';
 

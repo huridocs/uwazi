@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
-// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
-import { InputField } from '../../V2/Components/Forms.js';
+
+import { InputField } from 'app/V2/Components/Forms.js';
 import { usePopper } from 'react-popper';
 
 type ColorPickerProps = {

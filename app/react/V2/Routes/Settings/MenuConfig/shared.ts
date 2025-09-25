@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientSettingsLinkSchema, ClientSublink } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+
+import { ClientSettingsLinkSchema, ClientSublink } from 'app/apiResponseTypes.js';
+
 import uniqueID from 'shared/uniqueID.js';
 
 type Link = Omit<ClientSettingsLinkSchema, 'sublinks'> & {

@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/CommonPr... Remove this comment to see the full error message
+
 import { CommonProperty, CommonPropertyProps } from 'api/templates.v2/model/CommonProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { Context, PropertyTypes } from 'api/templates.v2/model/Property.js';
 import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from './errors';
 
@@ -23,15 +23,11 @@ class TitleProperty extends CommonProperty {
   }
 
   protected validate() {
-    // @ts-expect-error TS(2339): Property 'type' does not exist on type 'TitlePrope... Remove this comment to see the full error message
     if (this.type !== 'text') {
-      // @ts-expect-error TS(2339): Property 'type' does not exist on type 'TitlePrope... Remove this comment to see the full error message
       throw new PropertyTypeInvalidTypeError(this.type, 'TitleProperty');
     }
 
-    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TitlePrope... Remove this comment to see the full error message
     if (this.name !== 'title') {
-      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TitlePrope... Remove this comment to see the full error message
       throw new TitlePropertyInvalidNameError(this.name);
     }
   }

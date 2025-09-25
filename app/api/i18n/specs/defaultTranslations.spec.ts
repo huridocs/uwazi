@@ -3,12 +3,12 @@ import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-// @ts-expect-error TS(2307): Cannot find module '../csv/csv.js' or its correspo... Remove this comment to see the full error message
+
 import { validateFormat, ValidateFormatError } from '../csv/csv.js';
 
 import { DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { iosocket, setUpApp } from '../utils/testingRoutes.js';
+
+import { iosocket, setUpApp } from 'api/utils/testingRoutes.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
@@ -151,7 +151,6 @@ describe(`${TRANSLATION_FILES_DIR}`, () => {
 });
 
 describe('translation files', () => {
-  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
       username: 'admin',

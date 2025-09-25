@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Tabs } from '../V2/Components/UI/Tabs.js';
+import { Tabs } from 'V2/Components/UI/Tabs.js';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
@@ -38,7 +38,7 @@ const Primary: Story = {
 const Basic = {
   ...Primary,
   args: {
-    onTabSelected: () => {},
+    onTabSelected: () => { },
     unmountTabs: undefined,
   },
 };

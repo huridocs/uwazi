@@ -2,13 +2,13 @@
  * @jest-environment jsdom
  */
 
-// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Table... Remove this comment to see the full error message
-import { TableCell, TableCellProps } from '../../Library/components/TableCell.js';
+
+import { TableCell, TableCellProps } from 'app/Library/components/TableCell.js';
 import { shallow } from 'enzyme';
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../Markdown.js' or its corr... Remove this comment to see the full error message
+
 import MarkdownViewer from '../../Markdown.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Metadata/components/Valu... Remove this comment to see the full error message
+
 import ValueList from '../../Metadata/components/ValueList.js';
 
 describe('TableCell', () => {

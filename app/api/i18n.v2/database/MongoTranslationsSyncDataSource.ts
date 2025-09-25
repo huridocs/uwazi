@@ -1,7 +1,7 @@
 import { DeleteResult, Filter, ObjectId, OptionalId } from 'mongodb';
 
-import { SyncDBDataSource } from '../../common.v2/database/SyncDBDataSource.js';
-import { MongoDataSource } from '../../common.v2/database/MongoDataSource.js';
+import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource.js';
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
 import { TranslationMappers } from './TranslationMappers.js';
 import { TranslationDBO } from '../schemas/TranslationDBO.js';
 import { TranslationSyO } from '../schemas/TranslationSyO.js';

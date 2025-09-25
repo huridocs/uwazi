@@ -1,4 +1,4 @@
-import { DefaultLogger } from '../../log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 import { dbSessionContext } from '../../odm/sessionsContext.js';
 import { IdGenerator } from '../contracts/IdGenerator.js';
 import { getClient } from './getConnectionForCurrentTenant.js';

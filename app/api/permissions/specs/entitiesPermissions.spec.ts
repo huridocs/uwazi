@@ -1,21 +1,21 @@
 /* eslint-disable max-lines */
-// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js' or it... Remove this comment to see the full error message
+
 import entities from '../entities/entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/entitiesPermiss... Remove this comment to see the full error message
-import { entitiesPermissions } from '../permissions/entitiesPermissions.js';
-// @ts-expect-error TS(2307): Cannot find module '../permissions/specs/fixtures.... Remove this comment to see the full error message
-import { fixtures, groupA, userA, userB } from '../permissions/specs/fixtures.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
+import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
+
+import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures.js';
+
 import { search } from '../search.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels, MixedAccess, PermissionType } from 'shared/types/permissionSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+
 import { PermissionsDataSchema } from 'shared/types/permissionType.js';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
@@ -44,12 +44,10 @@ describe('permissions', () => {
   describe('set entities permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages and make no other changes', async () => {
       const originalEntities = await entities.getUnrestricted({}, 'sharedId +permissions');
-      // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
       const originalUpdatedEntities = originalEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
       const originalNotUpdatedEntities = originalEntities.filter(
-        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         entity => !['shared1', 'shared2'].includes(entity.sharedId!)
       );
 
@@ -64,15 +62,12 @@ describe('permissions', () => {
       await entitiesPermissions.set(permissionsData);
       mockCollab();
       const storedEntities = await entities.getUnrestricted({}, 'sharedId +permissions');
-      // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
       const expectedNewPermissions = permissionsData.permissions.filter(
-        // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
         p => p.type !== PermissionType.PUBLIC
       );
-      // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
       updateEntities.forEach((entity, index) => {
         const original = originalUpdatedEntities[index];
         expect(entity).toEqual({
@@ -81,7 +76,6 @@ describe('permissions', () => {
         });
       });
       const notUpdatedEntities = storedEntities.filter(
-        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         entity => !['shared1', 'shared2'].includes(entity.sharedId!)
       );
       expect(notUpdatedEntities).toEqual(originalNotUpdatedEntities);

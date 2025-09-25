@@ -1,18 +1,18 @@
-// @ts-expect-error TS(2307): Cannot find module '../auth/authMiddleware.js' or ... Remove this comment to see the full error message
+
 import authMiddleware from '../auth/authMiddleware.js';
-// @ts-expect-error TS(2307): Cannot find module '../csv/csvExporter.js' or its ... Remove this comment to see the full error message
+
 import csvExporter, { SearchResults } from '../csv/csvExporter.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
+
 import * as filesystem from '../files/filesystem.js';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../users/usersModel.js' or its... Remove this comment to see the full error message
+
 import { User } from 'api/users/usersModel.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';

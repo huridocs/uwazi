@@ -1,5 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
+
 import { search } from '../search.js';
 import { OperationalError } from '../common.v2/errors/OperationalError.js';
 
@@ -15,7 +15,6 @@ export default (app: Application) => {
       const templates: [] = typeof query.templates === 'string' ? JSON.parse(query.templates) : [];
       search
         .autocomplete(query.searchTerm, req.language, templates)
-        // @ts-expect-error TS(7006): Parameter 'response' implicitly has an 'any' type.
         .then(response => res.json(response))
         .catch(next);
     }
@@ -42,7 +41,6 @@ export default (app: Application) => {
           req.query.searchTerm,
           req.user
         )
-        // @ts-expect-error TS(7006): Parameter 'response' implicitly has an 'any' type.
         .then(response => res.json(response))
         .catch(next);
     }

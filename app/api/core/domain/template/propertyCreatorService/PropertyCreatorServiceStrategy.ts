@@ -1,8 +1,8 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+
 import { PropertyTypes } from 'api/templates.v2/model/Property.js';
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/contra... Remove this comment to see the full error message
+
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';

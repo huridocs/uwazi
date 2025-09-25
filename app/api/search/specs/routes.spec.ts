@@ -3,14 +3,14 @@ import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-// @ts-expect-error TS(2307): Cannot find module '../search/routes.js' or its co... Remove this comment to see the full error message
+
 import searchRoutes from '../search/routes.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 
 
 import { UserRole } from 'shared/types/userSchema.js';
-import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext';
 import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 
 describe('Search routes', () => {

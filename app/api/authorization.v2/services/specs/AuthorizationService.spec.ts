@@ -1,14 +1,14 @@
-// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/database/M... Remove this comment to see the full error message
-import { MongoPermissionsDataSource } from '../authorization.v2/database/MongoPermissionsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/errors/Una... Remove this comment to see the full error message
-import { UnauthorizedError } from '../authorization.v2/errors/UnauthorizedError.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
+import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
+
+import { UnauthorizedError } from '../../errors/UnauthorizedError.js';
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Rela... Remove this comment to see the full error message
-import { Relationship } from '../relationships.v2/model/Relationship.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/database/M... Remove this comment to see the full error message
-import { MongoRelationshipsDataSource } from '../relationships.v2/database/MongoRelationshipsDataSource.js';
-// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+
+import { Relationship } from 'api/relationships.v2/model/Relationship.js';
+
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource.js';
+
 import { User, UserRole } from 'api/users.v2/model/User.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';

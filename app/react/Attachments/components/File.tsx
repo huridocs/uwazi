@@ -3,29 +3,27 @@ import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from '../../componentWrappers.js';
-import { t, Translate } from '../../I18N/index.js';
+import { t, Translate } from 'app/I18N/index.js';
 import { Icon } from 'UI';
-// @ts-expect-error TS(2307): Cannot find module '../../config.js.js' or its cor... Remove this comment to see the full error message
-import { APIURL } from '../../config.js.js';
-import { ClientBlobFile } from '../../istore.js';
-import { updateFile, deleteFile } from '../../Attachments/actions/actions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
-import { wrapDispatch } from '../../Multireducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../ToggledFeatures/tocGener... Remove this comment to see the full error message
-import { TocGeneratedLabel } from '../../ToggledFeatures/tocGeneration.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
-import { LocalForm } from '../../Forms/Form.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
+import { updateFile, deleteFile } from 'app/Attachments/actions/actions.js';
+
+import { NeedAuthorization } from 'app/Auth/index.js';
+import { LocalForm } from 'app/Forms/Form.js';
+
 import { availableLanguages, LanguageUtils } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+
 import { isBlobFile } from 'shared/tsUtils.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 
 import { ViewDocumentLink } from './ViewDocumentLink.js';
+import { APIURL } from 'app/config.js';
+import { ClientBlobFile } from 'app/istore.js';
+import wrapDispatch from 'app/Multireducer/wrapDispatch.js';
+import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;
@@ -202,7 +200,6 @@ class File extends Component<FileOwnProps, FileState> {
           </div>
           <div className="col-sm-9">
             <Control.select className="form-control" model=".language" id="language">
-              // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
               {availableLanguages.map(language => (
                 <option key={language.ISO639_3} value={language.ISO639_3}>
                   {language.localized_label} ({language.label})

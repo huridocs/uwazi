@@ -7,12 +7,12 @@ import thunk from 'redux-thunk';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 import { mount, ReactWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+
 import { AccessLevels } from 'shared/types/permissionSchema.js';
 
 import { UserRole } from 'shared/types/userSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
-import { ClientUserSchema } from '../../apiResponseTypes.js';
+
+import { ClientUserSchema } from 'app/apiResponseTypes.js';
 import { RelationshipsFormButtons } from '../RelationshipsFormButtons';
 
 describe('RelationshipsFormButtons', () => {

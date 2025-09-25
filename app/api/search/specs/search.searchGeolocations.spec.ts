@@ -1,8 +1,8 @@
 
 import db from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../search/search.js' or its co... Remove this comment to see the full error message
+
 import { search } from '../search/search.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
 
 import inheritanceFixtures, { ids } from './fixturesInheritance';

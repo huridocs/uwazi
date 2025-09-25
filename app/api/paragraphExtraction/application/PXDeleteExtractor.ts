@@ -1,6 +1,6 @@
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
+
 import { UseCase } from '../common.v2/contracts/UseCase.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
+
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 

@@ -6,7 +6,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from 'api/ix/suggestions.js';
 import { TestAtomStoreProvider, TestRouterContext } from '../../../../testing/index.js';
-import { thesauriAtom } from '../../../../atoms/index.js';
+import { thesauriAtom } from 'app/V2/atoms/index.js';
 import { IXSuggestions } from '../IXSuggestions.js';
 import { loaderData, thesauri, entity1, entity2 } from './fixtures.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
@@ -41,7 +41,6 @@ jest.mock('V2/Components/PDFViewer', () => ({
 }));
 
 const testCheckboxes = async (expectedSelected?: string) => {
-  // @ts-expect-error TS(7006): Parameter 'value' implicitly has an 'any' type.
   thesauri[0].values.forEach(async value => {
     const checkbox = await screen.findByLabelText(value.label);
     if (value.label === expectedSelected) {

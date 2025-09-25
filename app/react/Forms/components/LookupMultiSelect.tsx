@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+
 import { debounce } from 'api/utils/index.js';
 import { MultiSelect, MultiSelectProps, Option, defaultProps } from './MultiSelect.js';
 

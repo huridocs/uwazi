@@ -1,10 +1,10 @@
-import { MongoDataSource, MongoDSOptions } from '../../common.v2/database/MongoDataSource.js';
-import { MongoResultSet } from '../../common.v2/database/MongoResultSet.js';
-import { MongoTransactionManager } from '../../common.v2/database/MongoTransactionManager.js';
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 import { search } from '../../search/index.js';
-import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
-import { TemplateProperty } from '../../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../../templates.v2/model/V1RelationshipProperty.js';
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplateProperty } from 'api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes.js';
@@ -72,7 +72,6 @@ export class MongoMultiLanguageEntityDataSource
             const $set = properties.reduce<{ [k: string]: any }>((setOperation, property) => {
               const value = entity.getValue(property, language);
               if (value) {
-                // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
                 return { ...setOperation, [`metadata.${property.name}`]: value };
               }
               return setOperation;

@@ -4,29 +4,29 @@
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
 
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { storage } from '../files.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
-import { TaskManager } from '../services/tasksmanager/TaskManager.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
+
+import { storage } from '../files/index.js';
+
+import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../services/pdfsegmentation/se... Remove this comment to see the full error message
+
 import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
 
 import { EnforcedWithId } from '../odm/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
-import { tenants } from '../tenants/tenantContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
+
+import { tenants } from 'api/tenants/tenantContext.js';
+
 import { emitToTenant } from '../socketio/setupSockets.js';
-// @ts-expect-error TS(2307): Cannot find module '../files/filesModel.js' or its... Remove this comment to see the full error message
+
 import { filesModel } from '../files/filesModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js' or it... Remove this comment to see the full error message
+
 import entities from '../entities/entities.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+
 import settings from 'api/settings/settings.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+
 import request from 'shared/JSONRequest.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+
 import { EntitySchema } from 'shared/types/entityType.js';
 import {
   ExtractedMetadataSchema,
@@ -35,9 +35,9 @@ import {
   PropertySchema,
   
 } from 'shared/types/commonTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+
 import { ModelStatus } from 'shared/types/IXModelSchema.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+
 import { FileType } from 'shared/types/fileType.js';
 import {
   BATCH_SIZE_FOR_PDF,
@@ -46,30 +46,30 @@ import {
   getEntitiesForSuggestions,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-  // @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
+  
 } from '../services/informationextraction/ixMaterials.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
+
 import { Suggestions } from '../suggestions/suggestions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+
 import { IXExtractorType } from 'shared/types/extractorType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+
 import { LanguageUtils } from 'shared/language/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelType... Remove this comment to see the full error message
+
 import { IXModelType } from 'shared/types/IXModelType.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+
 import { ParagraphSchema } from 'shared/types/segmentationType.js';
 import moment from 'moment';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/utils/Array.js' o... Remove this comment to see the full error message
+
 import { ArrayUtils } from '../common.v2/utils/Array.js';
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
+
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/retryWithBackoff.js' ... Remove this comment to see the full error message
-import { retryWithBackoff, descriptiveError } from '../utils/retryWithBackoff.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestionFacto... Remove this comment to see the full error message
+
+import { retryWithBackoff, descriptiveError } from 'app/utils/retryWithBackoff.js';
+
 import { SuggestionFactory } from '../suggestions/suggestionFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../suggestions/infrastructure/... Remove this comment to see the full error message
+
 import { AcceptSuggestionsFactory } from '../suggestions/infrastructure/AcceptSuggestionsFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+
 import { IXSuggestionType } from 'shared/types/suggestionType.js';
 import ixmodels from './ixmodels.js';
 import { IXModelsModel } from './IXModelsModel.js';
@@ -314,7 +314,6 @@ class InformationExtraction {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
-        // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
         label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
           const { page, ...rectangle } = r;
           return { ...rectangle, page_number: page };
@@ -353,7 +352,6 @@ class InformationExtraction {
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
         const propertyLabeledData = file.extractedMetadata?.find(
-          // @ts-expect-error TS(7006): Parameter 'labeledData' implicitly has an 'any' ty... Remove this comment to see the full error message
           labeledData => labeledData.name === extractor.property
         );
         const { propertyValue, propertyType } = file;
@@ -398,7 +396,6 @@ class InformationExtraction {
         .lean();
 
       await Suggestions.saveMultiple(
-        // @ts-expect-error TS(7006): Parameter 'suggestion' implicitly has an 'any' typ... Remove this comment to see the full error message
         suggestions.map(suggestion =>
           SuggestionFactory.markAsProcessing({ suggestion, targetProperty })
         )
@@ -423,7 +420,6 @@ class InformationExtraction {
     targetProperty: PropertySchema,
     type = 'labeled_data'
   ) {
-    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     await ArrayUtils.sequentialFor(entitiesForTraining, async entity => {
       const extractionKey = ExtractionKey.create({
         entitySharedId: entity.sharedId!,
@@ -448,13 +444,11 @@ class InformationExtraction {
 
       if (type === 'labeled_data') {
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {
-          // @ts-expect-error TS(7031): Binding element 'value' implicitly has an 'any' ty... Remove this comment to see the full error message
           const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
             id: String(value),
             label,
           }));
 
-          // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
           const hasValue = !!values?.filter(v => !!v.id)?.length;
           if (!values || !hasValue) {
             return;
@@ -497,7 +491,6 @@ class InformationExtraction {
         .lean();
 
       await Suggestions.saveMultiple(
-        // @ts-expect-error TS(7006): Parameter 'suggestion' implicitly has an 'any' typ... Remove this comment to see the full error message
         suggestions.map(suggestion =>
           SuggestionFactory.markAsProcessing({ suggestion, targetProperty })
         )
@@ -564,7 +557,6 @@ class InformationExtraction {
   ) {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-    // @ts-expect-error TS(7006): Parameter 'rawSuggestion' implicitly has an 'any' ... Remove this comment to see the full error message
     await ArrayUtils.sequentialFor(rawSuggestions, async rawSuggestion => {
       if (!rawSuggestion.entity_name) {
         return;

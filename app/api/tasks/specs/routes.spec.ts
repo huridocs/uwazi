@@ -1,7 +1,7 @@
-// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
-import { setUpApp } from '../utils/testingRoutes.js';
+
+import { setUpApp } from 'api/utils/testingRoutes.js';
 import { NextFunction } from 'express';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/tasks/tasks.js' o... Remove this comment to see the full error message
+
 import { Task, TaskProvider } from 'shared/tasks/tasks.js';
 import request from 'supertest';
 import testRoute from '../routes';
@@ -25,9 +25,7 @@ class TestTask extends Task {
     if (args.a === 0) {
       throw Error('Bad a!');
     }
-    // @ts-expect-error TS(2339): Property 'status' does not exist on type 'TestTask... Remove this comment to see the full error message
     this.status.message = `${args.a}`;
-    // @ts-expect-error TS(2339): Property 'status' does not exist on type 'TestTask... Remove this comment to see the full error message
     this.status.result.a = args.a;
   }
 }

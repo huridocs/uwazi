@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { Button } from '../../../../../../../../Components/UI/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
-import { isClient } from 'api/utils/index.js';
+
+import { Translate } from 'app/I18N/index.js';
+
 import { captureException } from '@sentry/react';
 import * as extractorsAPI from 'api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '../../../../../../../../atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { isClient } from 'app/utils/index.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();

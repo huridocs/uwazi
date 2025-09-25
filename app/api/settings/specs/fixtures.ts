@@ -1,10 +1,10 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates/index.js' or its ... Remove this comment to see the full error message
+
 import { templateUtils } from '../templates/index.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 import db, { DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+
 import { propertyTypes } from 'shared/propertyTypes.js';
 
 const factory = getFixturesFactory();

@@ -1,10 +1,10 @@
-import { appContext } from '../utils/AppContext.js';
+import { appContext } from 'app/utils/AppContext.js';
 import testingDB, { DBFixture } from 'api/utils/testing_db.js';
-import { testingTenants } from '../utils/testingTenants.js';
-import { elasticTesting } from '../utils/elastic_testing.js';
-import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
-// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
-import { setupTestUploadedPaths } from '../files.js';
+import { testingTenants } from 'app/utils/testingTenants.js';
+import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+
+import { setupTestUploadedPaths } from '../files/index.js';
 import { UserSchema } from 'shared/types/userType.js';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;

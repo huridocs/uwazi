@@ -1,18 +1,18 @@
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/TextPr... Remove this comment to see the full error message
-import { TextProperty } from '../core/domain/template/TextProperty.js';
+
+import { TextProperty } from 'api/core/domain/template/TextProperty.js';
 import {
   TemplateWithDuplicatedPropertyError,
   TemplateWithMissingCommonProperty,
-  // @ts-expect-error TS(2307): Cannot find module '../core/domain/template/errors... Remove this comment to see the full error message
-} from '../core/domain/template/errors.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/TitleP... Remove this comment to see the full error message
-import { TitleProperty } from '../core/domain/template/TitleProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Creati... Remove this comment to see the full error message
-import { CreationDateProperty } from '../core/domain/template/CreationDateProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Modifi... Remove this comment to see the full error message
-import { ModifiedDateProperty } from '../core/domain/template/ModifiedDateProperty.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/specs/... Remove this comment to see the full error message
-import { TemplateBuilder } from '../core/domain/template/specs/TemplateBuilder.js';
+  
+} from '../../domain/template/errors.js';
+
+import { TitleProperty } from 'api/core/domain/template/TitleProperty.js';
+
+import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty.js';
+
+import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty.js';
+
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder.js';
 import { Template } from '../Template';
 import { Property } from '../Property';
 import { V1RelationshipProperty } from '../V1RelationshipProperty';

@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module './types/userSchema.js' or its ... Remove this comment to see the full error message
+
 import { UserRole } from './types/userSchema.js';
 import { UserSchema } from '../types/userType';
 import { PermissionSchema } from '../types/permissionType';

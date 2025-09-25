@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
-import api from '../../utils/api.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
-import { RequestParams } from '../../utils/RequestParams.js';
+
+import api from 'app/utils/api.js';
+
+import { RequestParams } from 'app/utils/RequestParams.js';
 import {
   TablePXEntityRow,
   PXEntityQuery,
@@ -50,7 +50,6 @@ const extractSelected = async (
   try {
     const modeledPayload = {
       extractorId,
-      // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
       entitySharedIds: entityIds.map(entity => entity.entity.sharedId),
     };
     const requestParams = new RequestParams(modeledPayload, headers);
@@ -64,7 +63,6 @@ const extractSelected = async (
 const remove = async (entries: TablePXEntityRow[]) => {
   //model values to be sent to backend, adjust this to satisfy backend requirements
   const modeledPayload = {
-    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
     ids: entries.map(entry => entry.entity._id),
   };
 

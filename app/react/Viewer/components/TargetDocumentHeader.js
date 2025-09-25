@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Translate } from '../../I18N/index.js';
+import { Translate } from 'app/I18N/index.js';
 
 import { Icon } from 'UI';
 import { addReference, saveTargetRangedReference } from '../actions/referencesActions';

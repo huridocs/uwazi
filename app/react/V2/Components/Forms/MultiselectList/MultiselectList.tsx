@@ -3,9 +3,9 @@
 /* eslint-disable max-lines */
 import React, { useEffect, useState, useRef } from 'react';
 import { isString } from 'lodash';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t, Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+
+import { t, Translate } from 'app/I18N/index.js';
+
 import { debounce } from 'api/utils/index.js';
 import { Label } from '../Label.js';
 import { Checkbox } from '../Checkbox.js';
@@ -351,7 +351,6 @@ const MultiselectList = ({
 
       {availableItems?.length === 0 && (
         <div className="flex grow w-full h-full justify-center items-start">
-          // @ts-expect-error TS(2786): 'WrapChild' cannot be used as a JSX component.
           <WrapChild>{noItems}</WrapChild>
         </div>
       )}

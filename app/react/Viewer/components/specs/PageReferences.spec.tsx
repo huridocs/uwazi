@@ -7,8 +7,8 @@ import Immutable from 'immutable';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
+
+import { IStore } from "app/V2/shared/types.js";
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { pdfScaleAtom } from '../../../V2/atoms/index.js';
 import { PageReferences, groupByRectangle } from '../PageReferences.js';
@@ -27,7 +27,7 @@ describe('FormConfigInput', () => {
     pdfScale = 1;
   });
 
-  afterEach(() => {});
+  afterEach(() => { });
 
   const store = mockStoreCreator({
     documentViewer: {

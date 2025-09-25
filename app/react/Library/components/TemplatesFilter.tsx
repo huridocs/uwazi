@@ -3,12 +3,12 @@ import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from '../../ReactReduxForms/index.js';
-import { Translate } from '../../I18N/index.js';
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
+import { Translate } from 'app/I18N/index.js';
+import { IStore } from "app/V2/shared/types.js";
+
+import { NeedAuthorization } from 'app/Auth/index.js';
 import { withRouter } from '../../componentWrappers.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+
 import { SettingsFilterSchema } from 'shared/types/settingsType.js';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
@@ -44,7 +44,6 @@ const filterValidSelectedTemplates = (configuredFilters: string[], selectedTempl
 const flattenConfiguredFilters = (configuredFilters: SettingsFilterSchema[]) =>
   configuredFilters.reduce((result: string[], filter) => {
     if (filter.items && filter.items.length) {
-      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       const items = filter.items.map(item => item.id!);
       result.push(...items);
     }

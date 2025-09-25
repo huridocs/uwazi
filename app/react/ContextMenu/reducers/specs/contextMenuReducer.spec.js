@@ -2,9 +2,9 @@ import Immutable from 'immutable';
 
 import contextMenuReducer from '../../ContextMenu/reducers/contextMenuReducer.js';
 import * as types from '../../ContextMenu/actions/actionTypes.js';
-import * as ViewerTypes from '../../Viewer/actions/actionTypes.js';
+import * as ViewerTypes from 'app/Viewer/actions/actionTypes.js';
 import * as UploadActions from '../../Uploads/actions/actionTypes.js';
-import * as LibraryActions from '../../Library/actions/actionTypes.js';
+import * as LibraryActions from 'app/Library/actions/actionTypes.js';
 
 describe('contextMenuReducer', () => {
   describe('when state is undefined', () => {

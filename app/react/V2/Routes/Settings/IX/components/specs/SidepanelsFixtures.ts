@@ -1,5 +1,5 @@
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
+
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../types';
 
 const suggestion1: TableSuggestion = {

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Translate, t } from '../../I18N/index.js';
+import { Translate, t } from 'app/I18N/index.js';
 
 import Modal from '../../Layout/Modal.js';
 import { Loader } from '../../components/Elements/Loader.js';

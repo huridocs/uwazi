@@ -1,6 +1,6 @@
 import React from 'react';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { t } from '../../I18N/index.js';
+
+import { t } from 'app/I18N/index.js';
 
 const SearchTipsContent = () => (
   <ul>
@@ -9,7 +9,7 @@ const SearchTipsContent = () => (
         'System',
         'Search Tips: wildcard',
         'Use an * for wildcard search. Ie: "juris*" will match words  ' +
-          'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.',
+        'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.',
         false
       )}
     </li>
@@ -26,7 +26,7 @@ const SearchTipsContent = () => (
         'System',
         'Search Tips: exact term',
         'Exact term match by enclosing your search string with quotes. Ie. "Costa Rica"' +
-          ' will toss different results compared to Costa Rica without quotes.',
+        ' will toss different results compared to Costa Rica without quotes.',
         false
       )}
     </li>
@@ -35,7 +35,7 @@ const SearchTipsContent = () => (
         'System',
         'Search Tips: proximity',
         '~ for proximity searches. Ie: "the status"~5 will find anything having "the" and' +
-          '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".',
+        '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".',
         false
       )}
     </li>
@@ -44,7 +44,7 @@ const SearchTipsContent = () => (
         'System',
         'Search Tips: boolean',
         'AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything ' +
-          'containing both the words status and women, and necessarily not containing the word Nicaragua.',
+        'containing both the words status and women, and necessarily not containing the word Nicaragua.',
         false
       )}
     </li>

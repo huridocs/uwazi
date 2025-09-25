@@ -1,4 +1,4 @@
-import translations from '../i18n/translations.js';
+import translations from 'api/i18n/translations.js';
 
 import {
   Settings,
@@ -49,7 +49,6 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
   flattenedCurrentValues.forEach(value => {
     const matchValue = flattenedNewValues.find(
       (v): v is T =>
-        // @ts-expect-error TS(2339): Property 'toString' does not exist on type 'NonNul... Remove this comment to see the full error message
         v[matchProperty] && v[matchProperty]?.toString() === value[matchProperty]?.toString()
     );
 
@@ -162,7 +161,6 @@ export default {
       await (
         await templates.get()
       ).reduce<Promise<TemplateSchema>>(
-        // @ts-expect-error TS(2345): Argument of type '(lastSave: Promise<TemplateSchem... Remove this comment to see the full error message
         async (lastSave, template) => {
           await lastSave;
           return templates.save(

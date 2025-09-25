@@ -1,7 +1,7 @@
 import { omit } from 'lodash';
-import api from '../../utils/api.js';
-import referencesAPI from '../../Viewer/referencesAPI.js';
-import * as types from '../../Viewer/actions/actionTypes.js';
+import api from 'app/utils/api.js';
+import referencesAPI from 'app/Viewer/referencesAPI.js';
+import * as types from 'app/Viewer/actions/actionTypes.js';
 import * as connectionsTypes from '../../Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
 
@@ -9,15 +9,15 @@ import { actions } from '../../BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { documentsApi } from '../../Documents.js';
 import { notificationActions } from '../../Notifications.js';
-import { removeDocument, unselectAllDocuments } from '../../Library/actions/libraryActions.js';
+import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '../../Relationships.js';
-import { RequestParams } from '../../utils/RequestParams.js';
+import { RequestParams } from 'app/utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '../../Connections/actions/uiActions.js.js';
-import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
-import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+import { atomStore, deletedEntityAtom } from 'app/V2/atoms/index.js';
+import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
-import { sortTextSelections } from '../utils/sortTextSelections.js';
+import { sortTextSelections } from 'app/utils/sortTextSelections.js';
 import EntitiesApi from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {

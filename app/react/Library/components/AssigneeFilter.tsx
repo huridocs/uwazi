@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+
 import { Aggregations } from 'shared/types/aggregations.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
-import { Translate } from '../../I18N/index.js';
+
+import { NeedAuthorization } from 'app/Auth/index.js';
+import { Translate } from 'app/I18N/index.js';
 import { MultiSelect } from '../../Forms/index.js';
 import { Control } from 'react-redux-form';
 import { Switcher } from '../../ReactReduxForms/index.js';
@@ -22,9 +22,7 @@ interface AssigneeFilterProps {
 
 const generateOptions = (aggregations: Aggregations, level: FiltrableLevel) =>
   aggregations?.all?.[`_permissions.${level}`]?.buckets
-    // @ts-expect-error TS(7006): Parameter 'aggregation' implicitly has an 'any' ty... Remove this comment to see the full error message
     .filter(aggregation => aggregation.key !== 'any')
-    // @ts-expect-error TS(7006): Parameter 'aggregation' implicitly has an 'any' ty... Remove this comment to see the full error message
     .map(aggregation => ({
       label: aggregation.label!,
       title: aggregation.label!,

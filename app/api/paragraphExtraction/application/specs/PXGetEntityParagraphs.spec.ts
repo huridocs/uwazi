@@ -2,7 +2,7 @@
 import { DBFixture } from 'api/utils/testing_db.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+
 import { PXEntityParagraphsFactory } from '../paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
 import {
   extractorsQueryFixtures,

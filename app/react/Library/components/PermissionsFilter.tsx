@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
 import { MultiSelect } from '../../Forms/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+
 import { Aggregations } from 'shared/types/aggregations.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
-import { Translate } from '../../I18N/index.js';
+
+import { Translate } from 'app/I18N/index.js';
 import { Control } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { ClientUserSchema } from '../../apiResponseTypes.js';
-// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { ClientUserSchema } from 'app/apiResponseTypes.js';
+
 import { IImmutable } from 'shared/types/Immutable.js';
 import Immutable from 'immutable';
 import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
+import { NeedAuthorization } from 'app/Auth/index.js';
 
 interface PermissionsValue {
   level: FiltrableLevel;
@@ -26,7 +26,6 @@ export interface PermissionsFilterProps {
 
 const filteredAggregation = (aggregations: Aggregations, key: FiltrableLevel) => {
   const bucket = (aggregations?.all?.['_permissions.self']?.buckets || []).find(
-    // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
     a => a.key === key
   ) || {
     filtered: { doc_count: 0 },
@@ -65,7 +64,6 @@ export const PermissionsFilterUncontrolled = connect(
   value: PermissionsValue[];
 }) => {
   const refIds: string[] = useMemo(
-    // @ts-expect-error TS(7006): Parameter 'g' implicitly has an 'any' type.
     () => [user.get('_id') as string, ...(user.toJS().groups?.map(g => g._id as string) || [])],
     [user]
   );

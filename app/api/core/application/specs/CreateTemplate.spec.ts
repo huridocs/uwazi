@@ -1,4 +1,4 @@
-// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
 import {
   DefaultIdGenerator,
@@ -8,22 +8,22 @@ import {
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/errors... Remove this comment to see the full error message
-import { TemplateWithDuplicatedNameOnTheSystemError } from '../core/domain/template/errors.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/infrastructure/mongodb... Remove this comment to see the full error message
-import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/infrastructure/mongodb... Remove this comment to see the full error message
-import { LegacyTranslationService } from '../core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
-// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/databa... Remove this comment to see the full error message
+
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../../domain/template/errors.js';
+
+import { MongoThesauriDataSource } from 'api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
+
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+
+import { LegacyTranslationService } from 'api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
+
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 import { DBFixture } from 'api/utils/testing_db.js';
-// @ts-expect-error TS(2307): Cannot find module '../core/infrastructure/mongodb... Remove this comment to see the full error message
-import { LegacyPageService } from '../core/infrastructure/mongodb/page/LegacyPageService.js';
+
+import { LegacyPageService } from 'api/core/infrastructure//mongodb/page/LegacyPageService.js';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
@@ -158,7 +158,6 @@ describe('CreateTemplateUseCase', () => {
     });
 
     const created = (await testingEnvironment.db.getAllFrom('templates'))?.find(
-      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t._id.toHexString() === output.id
     );
 

@@ -4,27 +4,27 @@ import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
-// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
+
 import { wrapDispatch } from '../../Multireducer.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
-import { NeedAuthorization } from '../../Auth.js';
-// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
-import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '../../I18N/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/libraryA... Remove this comment to see the full error message
-import { processFilters, encodeSearch } from '../../Library/actions/libraryActions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../SemanticSearch/actions/a... Remove this comment to see the full error message
+
+import { NeedAuthorization } from 'app/Auth/index.js';
+
+import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N/index.js';
+
+import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions.js';
+
 import { showSemanticSearch as showSemanticSearchAction } from '../../SemanticSearch/actions/actions.js';
-// @ts-expect-error TS(2307): Cannot find module '../../SemanticSearch/component... Remove this comment to see the full error message
+
 import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
-// @ts-expect-error TS(2307): Cannot find module '../../App/libraryViewInfo.js' ... Remove this comment to see the full error message
+
 import { libraryViewInfo } from '../../App/libraryViewInfo.js';
 import { Icon } from 'UI';
-// @ts-expect-error TS(2307): Cannot find module '../../BasicReducer/index.js' o... Remove this comment to see the full error message
+
 import { actions } from '../../BasicReducer/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
-import { IStore } from '../../istore.js';
-// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
-import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
+
+import { IStore } from "app/V2/shared/types.js";
+
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {
@@ -85,7 +85,6 @@ const MenuComponent = ({
   };
 
   const navLinks = links
-    // @ts-expect-error TS(7006): Parameter 'link' implicitly has an 'any' type.
     .map((link, index) => {
       if (link === undefined) {
         return null;
@@ -126,7 +125,6 @@ const MenuComponent = ({
         />
       );
     })
-    // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
     .filter(v => v !== null)
     .toArray();
 
@@ -168,8 +166,6 @@ const MenuComponent = ({
                 activeclassname="active-link"
                 aria-label={t('System', 'Library', null, false)}
               >
-                // @ts-expect-error TS(2578): Unused '@ts-expect-error' directive.
-                {/* @ts-expect-error */}
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
                 <span className="tab-link-label">
                   <Translate>Library</Translate>

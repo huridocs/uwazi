@@ -6,7 +6,7 @@ import templatesAPI from '../templates/index.js';
 import settings from '../settings/index.js';
 import relationtypes from '../relationtypes/index.js';
 import entities from '../entities/entities.js';
-import { createError } from '../utils/index.js';
+import { createError } from 'app/utils/index.js';
 
 import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '../common.v2/utils/Array.js';

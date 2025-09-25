@@ -1,19 +1,19 @@
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/applica... Remove this comment to see the full error message
+
 import { PXCreateParagraphs } from '../paragraphExtraction/application/PXCreateParagraphs.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
-// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+
 import { PXExtractionService } from '../paragraphExtraction/domain/PXExtractionService.js';
-// @ts-expect-error TS(2307): Cannot find module '../queue.v2/infrastructure/err... Remove this comment to see the full error message
+
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
-// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
-import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
@@ -96,7 +96,6 @@ describe('ExtractionUseCase', () => {
 
   it('should call useCase execute with extracted data', async () => {
     const heartBeatCallBack = jest.fn();
-    // @ts-expect-error TS(2339): Property 'handleDispatch' does not exist on type '... Remove this comment to see the full error message
     await job.handleDispatch(
       heartBeatCallBack,
       {
@@ -129,7 +128,6 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      // @ts-expect-error TS(2339): Property 'handleDispatch' does not exist on type '... Remove this comment to see the full error message
       job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
@@ -143,7 +141,6 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      // @ts-expect-error TS(2339): Property 'handleDispatch' does not exist on type '... Remove this comment to see the full error message
       job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
@@ -157,7 +154,6 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      // @ts-expect-error TS(2339): Property 'handleDispatch' does not exist on type '... Remove this comment to see the full error message
       job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
 
@@ -168,7 +164,6 @@ describe('ExtractionUseCase', () => {
     ]);
 
     await expect(
-      // @ts-expect-error TS(2339): Property 'handleDispatch' does not exist on type '... Remove this comment to see the full error message
       job.handleDispatch(jest.fn(), params, { retryCount: 3, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
 

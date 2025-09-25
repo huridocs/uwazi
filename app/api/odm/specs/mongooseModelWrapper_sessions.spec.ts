@@ -1,7 +1,7 @@
 /*eslint-disable max-statements*/
 
-// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
-import { appContext } from '../utils/AppContext.js';
+
+import { appContext } from 'app/utils/AppContext.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ClientSession } from 'mongodb';

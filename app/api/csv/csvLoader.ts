@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { groupBy } from 'lodash';
 
-import translations from '../i18n/index.js';
+import translations from 'app/I18N/index.js';
 import { EnforcedWithId } from '../odm/index.js';
 import settings from '../settings/index.js';
 import templates from '../templates/index.js';

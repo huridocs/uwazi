@@ -1,17 +1,17 @@
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-// @ts-expect-error TS(2307): Cannot find module '../entities/events/EntityCreat... Remove this comment to see the full error message
+
 import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
-// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
+
 import { EventsBus } from '../eventsbus.js';
-// @ts-expect-error TS(2307): Cannot find module '../externalIntegrations.v2/aut... Remove this comment to see the full error message
+
 import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-// @ts-expect-error TS(2307): Cannot find module '../externalIntegrations.v2/aut... Remove this comment to see the full error message
+
 import { RequestEntityTranslation } from '../externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
-// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+
 import { tenants } from 'api/tenants/index.js';
-// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
-import { appContext } from '../utils/AppContext.js';
+
+import { appContext } from 'app/utils/AppContext.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
