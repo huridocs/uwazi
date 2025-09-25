@@ -160,6 +160,115 @@ Last updated: 2025-09-24
       - `app/api/suggestions/specs/customFilters.spec.ts` → aggregation-level count covers `useForTraining` = 2
   - Fixtures hygiene preserved; tests mark flags via DB writes where needed
 
+## Training flow (pre-send) — control/data flow chart
+
+Goal: clarify WHEN we fetch entities/files for training and WHEN `processRun` is touched, to decide the correct hook for `samplePolicy` selection without breaking existing logic.
+
+1. Route: POST `/api/suggestions/train`
+
+   - Validates `{ extractorId, suggestionsToFind?, options.samplePolicy? }` (schema extended; behavior unchanged)
+   - Calls `InformationExtraction.trainModel(extractorId, suggestionsToFind, options?)`
+
+2. InformationExtraction.trainModel
+
+   - Calls `ixmodels.startTraining(extractorId, { suggestionsToFind })`
+     - Sets model: `findingSuggestions = true`, `status = processing`, stores `maxSuggestionsToFind`
+     - UNSETS `processRun` entirely for a clean start (critical)
+     - Unsets any previous find-run queue data
+   - If provided, persists `options.samplePolicy` via `ixmodels.setProcessRun(extractorId, { samplePolicy })`
+     - IMPORTANT: This happens AFTER `startTraining`, so the unset above does not squash this new value
+   - Emits status event and dispatches `IXTrainModelJob`
+
+3. IXTrainModelJob
+
+   - Loads extractor by id
+   - Branches by source:
+     - PDF → `TrainModelForPDF.execute`
+     - Property/Text → `TrainModelForText.execute`
+
+4. TrainModelForText.execute (Property source)
+
+   - Fetches entities via `getEntitiesForTraining(extractor.templates, extractor.property, extractor.source.property)`
+     - This selection is entity-centric and does NOT use suggestions
+   - Iterates entities sequentially
+   - Prepares `PropertySourceMaterials` per entity
+   - Sends labeled_data (not changed yet)
+   - Collects processed `entity.sharedId` → marks suggestions of those entities as `trainingSample`
+
+5. TrainModelForPDF.execute (PDF source)
+   - Fetches files/materials via `getFilesForTraining(extractor)` which returns a `process` iterator over files with segmentation info
+     - This is file-centric and does NOT use suggestions
+   - For each file:
+     - Verifies XML exists; computes `propertyLabeledData`, `propertyValue`/`propertyType`
+     - Sends XML and labeled_data (not changed yet)
+     - Collects processed `file.entity` → marks suggestions of those entities as `trainingSample`
+
+Key implications and hook points for samplePolicy selection:
+
+- `getEntitiesForTraining` and `getFilesForTraining` are the canonical sources; current flows don’t pull selection from suggestions.
+- `processRun` is cleared in `startTraining` and can safely store our `samplePolicy` only if written AFTER that call (current ordering is correct).
+- To honor `samplePolicy` without rewriting core materials logic, selection should intercept:
+  - Text: After `getEntitiesForTraining` returns, trim the `entities` list to those derived from samplePolicy:
+    - Map marked suggestions (`useForTraining`) to `entity.sharedId/lang` and intersect
+    - For `marked_plus_labeled`, union with labeled entities
+  - PDF: After `getFilesForTraining` yields a file, decide to skip/keep based on samplePolicy:
+    - Map marked suggestions to `fileId` (and/or entity) and filter
+    - For `marked_plus_labeled`, union with labeled suggestions/files
+- `processRun.samplePolicy` should be read inside the train use cases right before iteration, NOT earlier in the queue/job layer.
+
+Why not query suggestions directly upfront?
+
+- Current training selection is decoupled from suggestions; replacing it risks breaking PDF segmentation and property source paths. Using post-fetch filtering preserves existing logic while allowing curated selection.
+
+Safeguards and ordering guarantees:
+
+- Maintain `setProcessRun` strictly after `startTraining` to avoid losing `samplePolicy`.
+- Ensure selection filters are applied immediately before the per-item loop in Text/PDF use cases, so no other step resets or overrides selection.
+
+## Agreed selection strategy (no payload changes yet)
+
+Two-stage selection to guarantee inclusion of marked samples while preserving current logic and limits:
+
+Stage A — Always include “marked for training”
+
+- Purpose: guarantee that all suggestions marked `useForTraining` are included regardless of sampling/limits upstream.
+- Text (Property source):
+  - Build the cohort from suggestions: map `(entityId/sharedId, language)` where `useForTraining === true` for the extractor.
+  - Truncate the “is labeled” requirement: marked samples are valid even if unlabeled (service will handle empty/none labels as discussed).
+  - Fetch entities via existing `getEntitiesForTraining(...)` path but ensure inclusion of the marked cohort: intersect by sharedId+language, and bypass the labeled-only guards for these.
+- PDF (File source):
+  - Build the cohort from suggestions: prefer `fileId` when present; fall back to `entityId/sharedId` if `fileId` is missing.
+  - XML/segmentation and any other data constraints still apply; if constraints fail (e.g., missing XML), skip as today.
+  - Fetch files via `getFilesForTraining(extractor)` and ensure inclusion of the marked cohort early in the iteration (do not rely on sampling or prior limits).
+- De-duplication: unify by `(sharedId, language)` on Text and `(fileId)` (or `(entity, file)` pair) on PDF to avoid repeated sends.
+- Cap behavior: Stage A can exceed `maxSuggestionsToFind` (we will not drop marked items). Stage B then uses an effective remaining budget (possibly zero).
+
+Stage B — Current logic with adjusted limit
+
+- Run the existing training selection as-is (no semantic changes).
+- Effective limit = `maxSuggestionsToFind - StageACount`, lower-bounded at 0.
+- Exclude anything already included in Stage A to avoid duplicates.
+- Conditional on sample policy:
+  - If `samplePolicy === only_marked`, skip Stage B entirely (Stage A only).
+  - If `samplePolicy === marked_plus_labeled` or not provided, execute Stage B as above.
+
+Implementation notes (to be done next):
+
+- Encapsulate Stage A + Stage B orchestration in a small helper module (keep `InformationExtraction.ts` readable). The helper exposes two functions used by `TrainModelForText.execute` and `TrainModelForPDF.execute` just before their per-item loops.
+- Use present indexes: `{ extractorId, useForTraining }` on `ixsuggestions` for fast cohort discovery.
+- Language precision: suggestions are per entity-language; Stage A must include the corresponding language variant in Text flow.
+- Telemetry (optional): record StageA/StageB counts in `processRun` if future progress feedback is needed (not required now).
+
+Test plan (selection-only)
+
+- Text:
+  - Marked unlabeled entities are included; labeled guards are bypassed for Stage A.
+  - Stage B returns exactly `max - StageACount` additional entities, excluding duplicates.
+- PDF:
+  - Marked files are included if XML exists; absent XML still skips as today.
+  - Stage B returns exactly `max - StageACount` additional files, excluding duplicates.
+  - If `fileId` is missing on marked suggestion, inclusion falls back via entity association if feasible; otherwise skip (documented).
+
 ## What remains (next steps)
 
 1. Update `/api/suggestions/train` to accept `options.samplePolicy` (mutually exclusive: `only_marked` | `marked_plus_labeled`); add tests

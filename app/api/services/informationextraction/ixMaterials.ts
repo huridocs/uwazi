@@ -667,6 +667,8 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
 export {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
+  MAX_TRAINING_FILES_NUMBER,
+  MAX_TRAINING_ENTITIES_NUMBER,
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,

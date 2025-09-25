@@ -10,10 +10,10 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
 import {
   FileWithAggregation,
-  getFilesForTraining,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
 } from './ixMaterials';
+import { getPdfTrainingProcess } from './FetchMaterialsForTraining';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import { CommonMaterialsData, MaterialsData } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
@@ -43,7 +43,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
-      const { process } = await getFilesForTraining(extractor);
+      const { process } = await getPdfTrainingProcess(extractor);
       const processedEntityIds: string[] = [];
 
       await process(async file => {
