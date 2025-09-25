@@ -101,6 +101,18 @@ describe('POST /api/suggestions/train', () => {
 
     expect(response.body).toMatchObject({ status: 'processing' });
   });
+
+  it('should accept options.samplePolicy', async () => {
+    const response = await request(app)
+      .post('/api/suggestions/train')
+      .send({
+        extractorId: factory.id('super_powers_extractor').toString(),
+        options: { samplePolicy: 'only_marked' },
+      })
+      .expect(202);
+
+    expect(response.body).toMatchObject({ status: 'processing' });
+  });
 });
 
 describe('POST /api/suggestions/accept', () => {

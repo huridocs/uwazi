@@ -144,15 +144,28 @@ export const suggestionsRoutes = (app: Application) => {
           properties: {
             extractorId: { type: 'string' },
             suggestionsToFind: { type: 'number', minimum: 0 },
+            options: {
+              type: 'object',
+              optional: true,
+              additionalProperties: false,
+              properties: {
+                samplePolicy: {
+                  type: 'string',
+                  enum: ['only_marked', 'marked_plus_labeled'],
+                  optional: true,
+                },
+              },
+            },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const { extractorId, suggestionsToFind } = req.body;
+      const { extractorId, suggestionsToFind, options } = req.body;
       const output = await IX.trainModel(
         ObjectId.createFromHexString(extractorId),
-        suggestionsToFind
+        suggestionsToFind,
+        options
       );
       res.status(202).json(output);
     }

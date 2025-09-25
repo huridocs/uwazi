@@ -1,6 +1,6 @@
 # IX "use for training" — Working Context
 
-Last updated: 2025-09-24
+Last updated: 2025-09-25
 
 ## Scope
 
@@ -95,9 +95,9 @@ Last updated: 2025-09-24
 3. Extend suggestion schema/model with `useForTraining: boolean` (default `false`) and add index by `{ extractorId, useForTraining }`.
 4. Extend aggregation to include `useForTraining` count; tests.
 5. Extend GET `/api/suggestions` custom filter to filter by `useForTraining`; tests.
-6. Extend `/api/suggestions/train` request schema to accept `options.samplePolicy`; tests.
-7. Implement dataset selection honoring `samplePolicy` (Text and PDF), preserving existing filtering logic.
-8. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); tests/e2e.
+6. Extend `/api/suggestions/train` request schema to accept `options.samplePolicy`; tests. (DONE)
+7. Implement dataset selection honoring `samplePolicy` (Text and PDF), preserving existing filtering logic. (DONE)
+8. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); tests/e2e. (PENDING)
 
 ## Existing references (for later integration)
 
@@ -152,6 +152,7 @@ Last updated: 2025-09-24
   - Clean-up: removed accidental `useForTraining` additions from unrelated `comprehensiveTestFixtures` to avoid cross-test pollution
 
 - GET filtering support (table query):
+
   - Schema: `SuggestionCustomFilterSchema` includes `useForTraining: boolean` (required in shape)
   - Pipeline: `filterFragments.useForTraining` and `translateCustomFilter` extended
   - Tests:
@@ -159,6 +160,36 @@ Last updated: 2025-09-24
       - `app/api/suggestions/specs/getSuggestionsForTableQuery.spec.ts` → end-to-end table query filtering, including `useForTraining` scenario (flags two records then asserts total 2)
       - `app/api/suggestions/specs/customFilters.spec.ts` → aggregation-level count covers `useForTraining` = 2
   - Fixtures hygiene preserved; tests mark flags via DB writes where needed
+
+- Training entrypoint schema and persistence (samplePolicy):
+
+  - Train route schema updated to accept `options.samplePolicy` (allowed values: `only_marked` | `marked_plus_labeled`). File: `app/api/suggestions/routes.ts`.
+  - `InformationExtraction.trainModel(extractorId, suggestionsToFind?, options?)` persists `processRun.samplePolicy` via `ixmodels.setProcessRun` AFTER `ixmodels.startTraining`. File: `app/api/services/informationextraction/InformationExtraction.ts`.
+  - Model typing extended to include `processRun.samplePolicy`:
+    - Schema: `app/shared/types/IXModelSchema.ts`
+    - Emitted types: `app/shared/types/IXModelType.d.ts`
+
+- Selection implemented with agreed two-stage strategy (Stage A/Stage B):
+
+  - Property/Text flow: `getPropertyTrainingEntities(extractor)` in `app/api/services/informationextraction/FetchMaterialsForTraining.ts`
+    - Stage A: includes all marked suggestions by `(sharedId, language)` for the extractor, bypassing the "is labeled" requirement in selection.
+    - Stage B: draws from existing `getEntitiesForTraining(...)`, excludes Stage A by `(sharedId, language)`, and uses remaining budget = `MAX_TRAINING_ENTITIES_NUMBER - StageACount`.
+    - Gates: if `processRun.samplePolicy === 'only_marked'`, Stage B is skipped.
+  - PDF flow: `getPdfTrainingProcess(extractor)` in the same file returns a `process` that:
+    - Yields Stage A materials first, built from marked suggestions with a ready segmentation by `fileId` (XML enforced). Dedupe by `fileId`.
+    - Then yields up to the remaining budget from the base PDF iterator (Stage B), skipping duplicates.
+    - Gates: if `processRun.samplePolicy === 'only_marked'`, Stage B is skipped.
+    - Note: currently Stage A only considers suggestions with `fileId`. Marked suggestions without `fileId` are not included (fallback via entity is not implemented).
+  - Train use cases read these helpers right before iteration:
+    - Text: `app/api/services/informationextraction/TrainModelForText.ts`
+    - PDF: `app/api/services/informationextraction/TrainModelForPDF.ts`
+
+- Tests added for selection and route:
+
+  - Route accepts `options.samplePolicy`: `app/api/suggestions/specs/routes.spec.ts`.
+  - Selection tests: `app/api/services/informationextraction/specs/FetchMaterialsForTraining.spec.ts`
+    - Property: includes marked unlabeled entities; Stage B gated by policy; deduped by `(sharedId, language)`.
+    - PDF: Stage A first; XML missing/processing skipped; Stage B gated by policy; no duplicates; budget respected.
 
 ## Training flow (pre-send) — control/data flow chart
 
@@ -200,7 +231,7 @@ Goal: clarify WHEN we fetch entities/files for training and WHEN `processRun` is
      - This is file-centric and does NOT use suggestions
    - For each file:
      - Verifies XML exists; computes `propertyLabeledData`, `propertyValue`/`propertyType`
-     - Sends XML and labeled_data (not changed yet)
+   - Sends XML and labeled_data (not changed yet)
      - Collects processed `file.entity` → marks suggestions of those entities as `trainingSample`
 
 Key implications and hook points for samplePolicy selection:
@@ -254,10 +285,11 @@ Stage B — Current logic with adjusted limit
 
 Implementation notes (to be done next):
 
-- Encapsulate Stage A + Stage B orchestration in a small helper module (keep `InformationExtraction.ts` readable). The helper exposes two functions used by `TrainModelForText.execute` and `TrainModelForPDF.execute` just before their per-item loops.
-- Use present indexes: `{ extractorId, useForTraining }` on `ixsuggestions` for fast cohort discovery.
-- Language precision: suggestions are per entity-language; Stage A must include the corresponding language variant in Text flow.
-- Telemetry (optional): record StageA/StageB counts in `processRun` if future progress feedback is needed (not required now).
+- Encapsulate Stage A + Stage B orchestration in a small helper module (DONE) — `app/api/services/informationextraction/FetchMaterialsForTraining.ts`.
+- Use present indexes: `{ extractorId, useForTraining }` on `ixsuggestions` for fast cohort discovery. (IN PLACE)
+- Language precision: suggestions are per entity-language; Stage A includes the corresponding language variant in Text flow. (IN PLACE)
+- PDF Stage A currently requires a ready segmentation (XML); suggestions without `fileId` are ignored (no entity fallback yet). (KNOWN LIMITATION)
+- Telemetry (optional): record StageA/StageB counts in `processRun` if future progress feedback is needed (not required now). (NOT IMPLEMENTED)
 
 Test plan (selection-only)
 
@@ -271,9 +303,11 @@ Test plan (selection-only)
 
 ## What remains (next steps)
 
-1. Update `/api/suggestions/train` to accept `options.samplePolicy` (mutually exclusive: `only_marked` | `marked_plus_labeled`); add tests
-2. Implement training dataset selection honoring `samplePolicy` for Text and PDF, preserving existing filtering logic
-3. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); add tests/e2e
+1. Include `useForTraining` in outbound payloads to the IX service (Text and PDF), then add tests/e2e.
+   - Text: add `useForTraining` to each `labeled_data` record.
+   - PDF: include `useForTraining` in materials payload (decide per-file or per-item granularity; current selection already enforces curated files first).
+2. Optional: implement PDF Stage A fallback by entity when `fileId` is missing on marked suggestions, if feasible without breaking current flows.
+3. Optional: telemetry of Stage A/Stage B counts into `processRun` for progress reporting.
 
 ## Notes for future implementers
 
@@ -284,3 +318,30 @@ Test plan (selection-only)
 - Follow PX controller/use case via factory; keep controllers free of business logic.
 - Maintain the "no `as any`" guideline; prefer precise typings and adapters where needed.
 - Be disciplined with fixtures: if you add data to the wrong fixture while iterating (e.g., set a flag in `comprehensiveTestFixtures` but the test uses `stateFilterFixtures`), remove the incorrect changes. Keep fixture mutations minimal and scoped to the test that requires them to avoid cross-test pollution.
+
+## Handoff context (for a new Agent)
+
+- Entry points and main files touched:
+
+  - Train route schema: `app/api/suggestions/routes.ts` (accepts `options.samplePolicy`).
+  - Training start and persistence: `app/api/services/informationextraction/InformationExtraction.ts` (sets `processRun.samplePolicy` after `startTraining`).
+  - Selection orchestration (Stage A/B): `app/api/services/informationextraction/FetchMaterialsForTraining.ts`
+    - Property: `getPropertyTrainingEntities`
+    - PDF: `getPdfTrainingProcess`
+  - Use cases consuming selection:
+    - Text: `app/api/services/informationextraction/TrainModelForText.ts`
+    - PDF: `app/api/services/informationextraction/TrainModelForPDF.ts`
+  - IX model typing for `samplePolicy`:
+    - Schema: `app/shared/types/IXModelSchema.ts`
+    - Types: `app/shared/types/IXModelType.d.ts`
+
+- Tests to review:
+
+  - Route: `app/api/suggestions/specs/routes.spec.ts` (asserts `options.samplePolicy` accepted).
+  - Selection: `app/api/services/informationextraction/specs/FetchMaterialsForTraining.spec.ts` (policy gating, unlabeled inclusion in selection, XML skip, budget, dedupe).
+
+- Behavioral notes and assumptions:
+  - Selection guarantees inclusion of all marked items (Stage A) within the configured caps; Stage B fills the remaining budget unless `samplePolicy === 'only_marked'`.
+  - Outbound payloads remain unchanged for now. As a consequence, some Stage A items without labels in Text flow will still be skipped during send by existing logic; this is expected until step 8 is completed.
+  - PDF Stage A currently includes only files with ready segmentations; suggestions marked without `fileId` are ignored. Implementing an entity-based fallback is optional and pending.
+  - UI has not been updated to send `options.samplePolicy`; backend supports it and defaults to Stage B execution when policy is absent (equivalent to `marked_plus_labeled`).

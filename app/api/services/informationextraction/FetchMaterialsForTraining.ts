@@ -19,6 +19,7 @@ import {
   MAX_TRAINING_ENTITIES_NUMBER,
 } from './ixMaterials';
 import { IXServices } from './IXServices';
+import { IXModelsModel } from './IXModelsModel';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {
@@ -37,6 +38,8 @@ async function getMarkedEntityPairs(extractorId: ObjectId) {
 
 const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
+  const [model] = await IXModelsModel.get({ extractorId });
+  const samplePolicy = model?.processRun?.samplePolicy;
   const pairs = await getMarkedEntityPairs(extractorId);
 
   // Stage A: marked cohort (bypass labeled guard)
@@ -51,9 +54,9 @@ const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractor
   }
 
   // Stage B: existing logic with adjusted limit
-  const remaining = Math.max(0, MAX_TRAINING_ENTITIES_NUMBER - stageA.length);
+  const remainingBudget = Math.max(0, MAX_TRAINING_ENTITIES_NUMBER - stageA.length);
   let stageB: EntitySchema[] = [];
-  if (remaining > 0) {
+  if (remainingBudget > 0 && samplePolicy !== 'only_marked') {
     const candidates = await getEntitiesForTraining(
       extractor.templates,
       extractor.property,
@@ -64,7 +67,7 @@ const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractor
     const seen = new Set(stageA.map(e => `${e.sharedId}::${e.language}`));
     stageB = candidates
       .filter((e: any) => !seen.has(`${e.sharedId}::${e.language}`))
-      .slice(0, remaining);
+      .slice(0, remainingBudget);
   }
 
   return [...stageA, ...stageB];
@@ -151,6 +154,8 @@ const buildPdfMaterialsForFiles = async (
 
 const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
+  const [model] = await IXModelsModel.get({ extractorId });
+  const samplePolicy = model?.processRun?.samplePolicy;
   // Stage A: marked files
   const stageAFileIds = await getMarkedFileIds(extractorId);
   const stageAMaterials = await buildPdfMaterialsForFiles(extractor, stageAFileIds);
@@ -164,7 +169,7 @@ const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>)
   const process = async (handler: (file: FileWithAggregation) => Promise<void>): Promise<void> => {
     await ArrayUtils.sequentialFor(stageAMaterials, async m => handler(m));
 
-    if (remainingBudget <= 0) return;
+    if (remainingBudget <= 0 || samplePolicy === 'only_marked') return;
 
     let delivered = 0;
     await baseProcess(async (f: FileWithAggregation) => {

@@ -832,9 +832,20 @@ class InformationExtraction {
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
-  trainModel = async (extractorId: ObjectIdSchema, suggestionsToFind?: number) => {
+  // eslint-disable-next-line max-params
+  trainModel = async (
+    extractorId: ObjectIdSchema,
+    suggestionsToFind?: number,
+    options?: { samplePolicy?: 'only_marked' | 'marked_plus_labeled' }
+  ) => {
     const tenant = tenants.current();
     await ixmodels.startTraining(extractorId, { suggestionsToFind });
+
+    if (options?.samplePolicy) {
+      await ixmodels.setProcessRun(extractorId.toString(), {
+        samplePolicy: options.samplePolicy,
+      });
+    }
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
