@@ -168,6 +168,7 @@ Last updated: 2025-09-25
   - Model typing extended to include `processRun.samplePolicy`:
     - Schema: `app/shared/types/IXModelSchema.ts`
     - Emitted types: `app/shared/types/IXModelType.d.ts`
+  - Ajv strict mode: optional fields must be omitted from `required`; do not use `optional` keyword in JSON schemas. Train route schema updated accordingly.
 
 - Selection implemented with agreed two-stage strategy (Stage A/Stage B):
 
@@ -183,6 +184,7 @@ Last updated: 2025-09-25
   - Train use cases read these helpers right before iteration:
     - Text: `app/api/services/informationextraction/TrainModelForText.ts`
     - PDF: `app/api/services/informationextraction/TrainModelForPDF.ts`
+    - TypeScript: select-like values mapping uses destructuring `{ value, label }` to satisfy `MetadataObjectSchema` (label optional).
 
 - Tests added for selection and route:
 
@@ -318,6 +320,7 @@ Test plan (selection-only)
 - Follow PX controller/use case via factory; keep controllers free of business logic.
 - Maintain the "no `as any`" guideline; prefer precise typings and adapters where needed.
 - Be disciplined with fixtures: if you add data to the wrong fixture while iterating (e.g., set a flag in `comprehensiveTestFixtures` but the test uses `stateFilterFixtures`), remove the incorrect changes. Keep fixture mutations minimal and scoped to the test that requires them to avoid cross-test pollution.
+- Testing UX: route tests log unexpected responses (status/body) when assertions fail to ease debugging in CI without polluting production logs.
 
 ## Handoff context (for a new Agent)
 
