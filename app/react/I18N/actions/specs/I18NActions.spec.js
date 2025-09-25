@@ -1,7 +1,7 @@
 import { actions as formActions } from 'react-redux-form';
-import { store } from '../../store.js';
+import { store } from '#app/store.js';
 import Immutable from 'immutable';
-import SettingsAPI from '../../Settings/SettingsAPI.js';
+import SettingsAPI from '#app/Settings/SettingsAPI.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 

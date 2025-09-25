@@ -1,4 +1,4 @@
-import { APIURL } from '../../config.js.js';
+import { APIURL } from '#app/config.js';
 import api from '#app/utils/api.js';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
@@ -7,7 +7,7 @@ import { mockID } from '#shared/uniqueID.js.js';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { NOTIFY } from '../../Notifications/actions/actionTypes.js';
+import { NOTIFY } from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '../actions';
 import * as types from '../actionTypes';
 

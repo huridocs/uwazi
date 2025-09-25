@@ -1,5 +1,5 @@
 import referencesAPI from '#app/Viewer/referencesAPI.js';
-import { APIURL } from '../../config.js.js';
+import { APIURL } from '#app/config.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import backend from 'fetch-mock';
 

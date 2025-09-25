@@ -10,11 +10,11 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
 
-import { socket } from '../../socket.js';
+import { socket } from '#app/socket.js';
 import { Provider } from 'react-redux';
 import { OCRStatus } from '../OCRStatus';
-import * as ocrActions from '../../actions/ocrActions';
-import * as documentActions from '../../actions/documentActions';
+import * as ocrActions from '#app/actions/ocrActions';
+import * as documentActions from '#app/actions/documentActions';
 
 describe('OCRStatus', () => {
   let file: FileType;

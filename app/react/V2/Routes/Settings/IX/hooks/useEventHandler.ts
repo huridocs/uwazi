@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 
-import { socket } from '../../socket.js';
+import { socket } from '#app/socket.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from '#app/V2/atoms/index.js';
 

@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 import { updateLinks } from '../MenuForm';
 import { links } from './fixtures';
-import { Link } from '../../MenuConfig';
+import { Link } from '#app/V2/Routes/Settings/MenuConfig';
 
 describe('updateLinks', () => {
   let existinglinks: Link[] = [];

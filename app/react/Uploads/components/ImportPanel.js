@@ -5,10 +5,10 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 
 import { Translate } from '#app/I18N/index.js';
-import SidePanel from '../../Layout/SidePanel.js';
+import SidePanel from '#app/Layout/SidePanel.js';
 import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
-import { closeImportPanel, importData } from '../../Uploads/actions/uploadsActions.js';
+import { closeImportPanel, importData } from '#app/Uploads/actions/uploadsActions.js';
 import ImportProgress from './ImportProgress';
 
 class ImportPanel extends Component {

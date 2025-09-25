@@ -1,12 +1,12 @@
 /* eslint-disable no-template-curly-in-string */
 
-import api from '../../Search/SearchAPI.js';
+import api from '#app/Search/SearchAPI.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { markdownDatasets } from '../../Markdown.js';
+import { markdownDatasets } from '#app/Markdown.js';
 
-import PagesAPI from '../../PagesAPI';
+import PagesAPI from '#app/Pages/PagesAPI';
 import pageItemLists from '../pageItemLists';
 
 import { getPageAssets } from '../getPageAssets';

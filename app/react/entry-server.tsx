@@ -25,9 +25,9 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import translationsApi, { IndexedTranslations } from '#app/i18n/translations';
-import settingsApi from '#app/settings/settings';
-import { tenants } from '#app/tenants';
+import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
+import settingsApi from '#api/settings/settings.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';

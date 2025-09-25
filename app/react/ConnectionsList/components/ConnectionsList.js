@@ -2,10 +2,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
 
-import SearchBar from '../../ConnectionsList/components/SearchBar.js';
-import RelationshipsGraph from '../../Relationships/components/RelationshipsGraphEdit.js';
-import LoadMoreRelationshipsButton from '../../Relationships/components/LoadMoreRelationshipsButton.js';
-import DocumentsList from '../../Layout/DocumentsList.js';
+import SearchBar from '#app/ConnectionsList/components/SearchBar.js';
+import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.js';
+import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
+import DocumentsList from '#app/Layout/DocumentsList.js';
 import { SortButtons } from '#app/Library/components/SortButtons.js';
 import { searchReferences } from '../actions/actions';
 

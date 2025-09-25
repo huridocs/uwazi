@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
 
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 
-import { notificationActions } from '../../Notifications.js';
+import { notificationActions } from '#app/Notifications.js';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import {
@@ -11,7 +11,7 @@ import {
 } from '#app/Library/actions/actionTypes.js';
 
 import { PUBLIC_PERMISSION } from '#app/permissions/publicPermission.js';
-import * as api from '../../PermissionsAPI';
+import * as api from '#app/Permissions/PermissionsAPI';
 import * as actions from '../actions';
 
 describe('Permissions actions', () => {

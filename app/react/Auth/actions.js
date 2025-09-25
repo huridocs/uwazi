@@ -2,8 +2,8 @@
 
 import api from '#app/utils/api.js';
 import { t } from '#app/I18N/index.js';
-import { actions } from '../../BasicReducer/index.js';
-import { notify } from '../../Notifications/actions/notificationsActions.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 export function login(credentials) {

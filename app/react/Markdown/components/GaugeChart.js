@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-import { Loader } from '../../components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 import markdownDatasets from '../markdownDatasets';
 
 export const GaugeChartComponent = props => {

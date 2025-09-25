@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 
-import { ShareButton } from '../../Permissions/components/ShareButton.js';
+import { ShareButton } from '#app/Permissions/components/ShareButton.js';
 import * as actions from '../actions/actions';
 
 class MetadataFormButtons extends Component {

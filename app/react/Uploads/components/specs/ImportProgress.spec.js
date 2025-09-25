@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { ImportProgress } from '../../Uploads/components/ImportProgress.js';
+import { ImportProgress } from '#app/Uploads/components/ImportProgress.js';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 

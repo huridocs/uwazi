@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
 import { Icon } from 'UI';
-import { withContext } from '../../componentWrappers.js';
+import { withContext } from '#app/componentWrappers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import ShowIf from '../../App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { Translate, t } from '#app/I18N/index.js';
-import AttachmentForm from '../../Attachments/components/AttachmentForm.js';
-import { wrapDispatch } from '../../Multireducer.js';
-import { notify } from '../../Notifications/actions/notificationsActions.js';
-import { store } from '../../store.js';
+import AttachmentForm from '#app/Attachments/components/AttachmentForm.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
+import { store } from '#app/store.js';
 import { getFileExtension } from '#app/utils/getFileExtension.js';
 
 import {

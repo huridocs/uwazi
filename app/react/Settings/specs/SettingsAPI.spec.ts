@@ -1,4 +1,4 @@
-import SettingsAPI from '../../Settings/SettingsAPI.js';
+import SettingsAPI from '#app/Settings/SettingsAPI.js';
 
 import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Map, List } from 'immutable';
 
 import { t } from '#app/I18N/index.js';
-import formater from '../../Metadata/helpers/formater.js';
+import formater from '#app/Metadata/helpers/formater.js';
 import { Icon } from 'UI';
 
 const conformQuote = text => (

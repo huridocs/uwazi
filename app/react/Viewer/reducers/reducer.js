@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
-import createReducer from '../../BasicReducer/index.js';
+import createReducer from '#app/BasicReducer/index.js';
 import { modelReducer, formReducer } from 'react-redux-form';
 
-import { manageAttachmentsReducer } from '../../Attachments.js';
+import { manageAttachmentsReducer } from '#app/Attachments.js';
 import references from './referencesReducer';
 import uiState from './uiReducer';
 

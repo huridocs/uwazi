@@ -6,11 +6,11 @@ import { IImmutable } from '#shared/types/Immutable.js';
 
 import comonProperties from '#shared/commonProperties.js';
 import { Icon } from 'UI';
-import { ClientEntitySchema } from 'app/V2/shared/types.js';
+import { ClientEntitySchema } from '#app/V2/shared/types.js';
 import { Translate } from '#app/I18N/index.js';
 
-import { actions, ShowMetadata, wrapEntityMetadata } from '../../Metadata.js';
-import { store } from '../../store.js';
+import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata.js';
+import { store } from '#app/store.js';
 
 import { SearchEntities } from './SearchEntities';
 

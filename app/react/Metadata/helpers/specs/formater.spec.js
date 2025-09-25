@@ -3,7 +3,7 @@
 import Immutable from 'immutable';
 import moment from 'moment-timezone';
 
-import { metadataSelectors } from '../../selectors';
+import { metadataSelectors } from '#app/selectors';
 
 import formater from '../formater';
 import { doc, templates, thesauris, relationships } from './fixtures';

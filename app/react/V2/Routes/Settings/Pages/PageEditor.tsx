@@ -19,14 +19,14 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#app/V2/api/pages/index.js';
 import { Page } from '#app/V2/shared/types.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import {
   Button,
   CopyValueInput,
   Tabs,
   ConfirmNavigationModal,
 } from '#app/V2/Components/UI/index.js';
-import { CodeEditor } from '../../../Components/CodeEditor/index.js';
+import { CodeEditor } from '#app/V2/Components/CodeEditor/index.js';
 
 import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';

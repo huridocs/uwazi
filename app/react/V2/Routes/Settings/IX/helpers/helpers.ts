@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
 
-import { ClientEntitySchema, ClientTemplateSchema } from 'app/V2/shared/types.js';
+import { ClientEntitySchema, ClientTemplateSchema } from '#app/V2/shared/types.js';
 
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 import { t } from '#app/I18N/index.js';
-import { RadioProps } from '../../../../Components/Forms/index.js';
-import { ClientIXExtractorType } from '../../../../../shared/types.js';
+import { RadioProps } from '#app/V2/Components/Forms/index.js';
+import { ClientIXExtractorType } from '#shared/types.js';
 import { TableSuggestion, MultiValueSuggestion } from '../types.js';
 import {
   getPropertyNameFromExtractPair,

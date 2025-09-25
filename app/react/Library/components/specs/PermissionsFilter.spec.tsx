@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { Aggregations } from '#shared/types/aggregations.js';
 import { fromJS } from 'immutable';
 
-import { MultiSelect } from '../../Forms.js';
+import { MultiSelect } from '#app/Forms.js';
 
 import { renderConnected } from '#app/utils/test/renderConnected.js';
 import { PermissionsFilter, PermissionsFilterUncontrolled } from '../PermissionsFilter';

@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import UploadButton from '../../Metadata/components/UploadButton.js';
+import UploadButton from '#app/Metadata/components/UploadButton.js';
 
 import { LanguageUtils } from '#shared/language.js';
 

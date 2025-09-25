@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { notificationActions } from '../../Notifications.js';
-import api from '../../Pages/PagesAPI.js';
+import { notificationActions } from '#app/Notifications.js';
+import api from '#app/Pages/PagesAPI.js';
 import { t } from '#app/I18N/index.js';
-import * as types from '../../Pages/actions/actionTypes.js';
+import * as types from '#app/Pages/actions/actionTypes.js';
 
 import { PageType } from '#shared/types/pageType.js';
 

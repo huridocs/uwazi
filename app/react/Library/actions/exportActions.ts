@@ -1,8 +1,8 @@
 import { List } from 'immutable';
 
 import superagent from 'superagent';
-import { actions } from '../../BasicReducer/index.js';
-import { notify } from '../../Notifications/actions/notificationsActions.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { t } from '#app/I18N/index.js';
 import { Dispatch } from 'redux';
 

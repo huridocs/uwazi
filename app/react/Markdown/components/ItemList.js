@@ -3,11 +3,11 @@ import { fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 
-import { RowList } from '../../Layout/Lists.js';
+import { RowList } from '#app/Layout/Lists.js';
 import Doc from '#app/Library/components/Doc.js';
 import { t, I18NLink } from '#app/I18N/index.js';
 import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Slider from './slider';

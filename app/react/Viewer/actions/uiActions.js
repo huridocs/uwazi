@@ -1,4 +1,4 @@
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { events } from '#app/utils/index.js';
 import { setTargetSelection } from '#app/Viewer/actions/selectionActions.js';
 import Marker from '#app/Viewer/utils/Marker.js.js';

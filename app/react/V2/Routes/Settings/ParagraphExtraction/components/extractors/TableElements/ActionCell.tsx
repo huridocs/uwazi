@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 
 import { Button } from '#app/V2/Components/UI/index.js';
 
-import { PXTable } from '../../../types';
+import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
   <div className="flex gap-2 justify-end">

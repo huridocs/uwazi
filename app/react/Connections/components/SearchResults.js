@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { TemplateLabel, Icon } from '../../Layout.js';
-import { Loader } from '../../components/Elements/Loader.js';
+import { TemplateLabel, Icon } from '#app/Layout.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 
 export class SearchResults extends Component {
   render() {

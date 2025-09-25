@@ -1,7 +1,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import multiReducer from '../../Multireducer.js';
+import multiReducer from '#app/Multireducer.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import actions from '../../actions';
 

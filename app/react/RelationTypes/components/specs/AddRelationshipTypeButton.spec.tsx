@@ -7,7 +7,7 @@ import { screen, fireEvent, act } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { AddRelationshipTypeButton } from '../AddRelationshipTypeButton';
-import * as relationTypeActions from '../../actions/relationTypeActions';
+import * as relationTypeActions from '#app/actions/relationTypeActions';
 
 describe('Add relationship type button', () => {
   const render = () => {

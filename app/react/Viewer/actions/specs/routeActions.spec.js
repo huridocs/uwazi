@@ -1,6 +1,6 @@
-import { APIURL } from '../../config.js.js';
+import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
-import * as relationships from '../../Relationships/utils/routeUtils.js';
+import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { fromJS } from 'immutable';
 import { getDocument } from '#app/Viewer/actions/documentActions.js';
 import * as routeActions from '../routeActions';

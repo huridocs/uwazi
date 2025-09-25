@@ -1,13 +1,13 @@
 import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ShowMetadata, MetadataForm } from '../../Metadata.js';
-import { api as entitiesAPI } from '../../Entities.js';
-import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles';
+import { ShowMetadata, MetadataForm } from '#app/Metadata.js';
+import { api as entitiesAPI } from '#app/Entities.js';
+import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles';
 import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
 import * as routeUtils from '#app/utils/routeUtils';
 
-import * as actions from '../../actions/actions';
+import * as actions from '#app/actions/actions';
 
 describe('RelationshipMetadata', () => {
   let component;

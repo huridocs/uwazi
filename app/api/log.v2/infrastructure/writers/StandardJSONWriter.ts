@@ -1,6 +1,6 @@
-import { config } from '../config.js';
-import { LogEntry } from '../LogEntry.js';
-import { LogWriter } from '../LogWriter.js';
+import { config } from '#api/config.js';
+import { LogEntry } from '#api/log.v2/infrastructure/LogEntry.js';
+import { LogWriter } from '#api/log.v2/infrastructure/LogWriter.js';
 
 export const StandardJSONWriter: LogWriter = (log: LogEntry) => {
   process.stdout.write(

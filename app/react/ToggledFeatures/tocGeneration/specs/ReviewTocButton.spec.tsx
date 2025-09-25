@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { ClientFile } from 'app/V2/shared/types.js';
+import { ClientFile } from '#app/V2/shared/types.js';
 import { ReviewTocButton } from '../ReviewTocButton';
 
 describe('ReviewTocButton', () => {

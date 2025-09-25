@@ -2,8 +2,8 @@
 import Immutable from 'immutable';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import searchApi from '../../Search/SearchAPI.js';
-import entitiesApi from '../../Entities/EntitiesAPI.js';
+import searchApi from '#app/Search/SearchAPI.js';
+import entitiesApi from '#app/Entities/EntitiesAPI.js';
 import api from '#app/utils/api.js';
 
 import markdownDatasets from '../markdownDatasets';

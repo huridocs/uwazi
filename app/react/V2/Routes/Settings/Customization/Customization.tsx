@@ -9,12 +9,12 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 import * as settingsAPI from '#app/V2/api/settings/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
 import { Button, Tabs } from '#app/V2/Components/UI/index.js';
 
 import { CodeEditor } from '#app/V2/Components/CodeEditor.js';
-import { ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import { ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 
 import { notificationAtom } from '#app/V2/atoms.js';
 

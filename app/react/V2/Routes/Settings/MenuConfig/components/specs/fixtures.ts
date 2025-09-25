@@ -1,4 +1,4 @@
-import { Link } from '../../MenuConfig';
+import { Link } from '#app/V2/Routes/Settings/MenuConfig';
 
 const links: Link[] = [
   {

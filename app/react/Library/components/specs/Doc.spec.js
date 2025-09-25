@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { Item } from '../../Layout.js';
+import { Item } from '#app/Layout.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { mapStateToProps } from '../Doc';
 import { Doc } from '../Doc';

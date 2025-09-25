@@ -7,7 +7,7 @@ import { Form, Field } from 'react-redux-form';
 
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
-import { Select as SimpleSelect } from '../../../Forms';
+import { Select as SimpleSelect } from '#app/Forms';
 import { SupportingFiles } from '../SupportingFiles';
 
 describe('MetadataForm', () => {

@@ -6,7 +6,7 @@ import { Button, Modal } from '#app/V2/Components/UI/index.js';
 
 import { defaultSearch, MultiselectList, MultiselectListOption } from '#app/V2/Components/Forms.js';
 
-import { ClientTemplateSchema } from 'app/V2/shared/types.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
 
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;

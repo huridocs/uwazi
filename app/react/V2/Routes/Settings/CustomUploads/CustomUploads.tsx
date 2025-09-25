@@ -17,9 +17,9 @@ import {
   ConfirmationModal,
   Table,
   ConfirmNavigationModal,
-} from '../../../Components/UI/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
-import { notificationAtom } from '../../../atoms/index.js';
+} from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 import {
   createColumns,
   FileList,

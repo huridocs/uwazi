@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { logError } from '../utils';
 import { Section } from './Section';
 

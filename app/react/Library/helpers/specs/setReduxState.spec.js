@@ -1,5 +1,5 @@
 import * as actionTypes from '#app/Library/actions/actionTypes.js';
-import * as libraryActions from '../../actions/libraryActions';
+import * as libraryActions from '#app/actions/libraryActions';
 import setReduxState from '../setReduxState';
 
 describe('setReduxState()', () => {

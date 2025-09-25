@@ -3,7 +3,7 @@ import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, FileIcon } from '../../../../Components/UI/index.js';
+import { Button, FileIcon } from '#app/V2/Components/UI/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
 const columnHelper = createColumnHelper<CustomUpload>();

@@ -6,9 +6,9 @@ import {
   MultiselectList,
   MultiselectListOption,
 } from '../../../../../../../../Components/Forms/index.js';
-import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
-import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates.js';
-import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
+import { useCreateExtractorContext } from '#app/V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
+import { filterPXQualifiedTemplates } from '#app/V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from '#app/V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
 
 const Body = () => {
   const { targetTemplateId, setTargetTemplateId } = useCreateExtractorContext();

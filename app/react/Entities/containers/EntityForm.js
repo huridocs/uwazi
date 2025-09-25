@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { saveEntity, resetForm } from '../../Entities/actions/actions.js';
-import { actions, MetadataForm } from '../../Metadata.js';
+import { saveEntity, resetForm } from '#app/Entities/actions/actions.js';
+import { actions, MetadataForm } from '#app/Metadata.js';
 
 function mapStateToProps(state) {
   return {

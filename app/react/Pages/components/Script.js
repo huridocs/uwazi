@@ -1,4 +1,4 @@
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 
 import { Component } from 'react';
 import { connect } from 'react-redux';

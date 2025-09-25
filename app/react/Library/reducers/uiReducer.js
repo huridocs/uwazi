@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
 import * as types from '#app/Library/actions/actionTypes.js';
-import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
+import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
 
 const initialState = Immutable.fromJS({
   searchTerm: '',

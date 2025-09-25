@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '../../stories/ErrorBoundary.stories.js';
+import * as stories from '#app/V2/stories/ErrorBoundary.stories.js';
 
 const { BasicErrorBoundary } = composeStories(stories);
 

@@ -7,13 +7,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
 import uuid from 'node-uuid';
-import { FormGroup } from '../../Forms/index.js';
+import { FormGroup } from '#app/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { getSuggestions } from '../../Metadata/actions/actions.js';
-import Tip from '../../Layout/Tip.js';
+import { getSuggestions } from '#app/Metadata/actions/actions.js';
+import Tip from '#app/Layout/Tip.js';
 import { generateID } from '#shared/IDGenerator.js';
 
-import { saveThesaurus } from '../../Thesauri/actions/thesauriActions.js';
+import { saveThesaurus } from '#app/Thesauri/actions/thesauriActions.js';
 import { sanitizeThesauri } from '#app/V2/Routes/Settings/Thesauri/helpers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import {
@@ -30,7 +30,7 @@ import {
   Select,
   LookupMultiSelect,
   MediaField,
-} from '../../ReactReduxForms';
+} from '#app/ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';

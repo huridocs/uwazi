@@ -4,11 +4,11 @@ import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTe
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
+import { PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 

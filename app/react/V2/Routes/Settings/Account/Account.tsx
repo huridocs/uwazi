@@ -13,10 +13,10 @@ import { validEmailFormat } from '#shared/formatHelpers.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { updateUser, getCurrentUser } from '#app/users/index.js';
-import { notificationAtom } from '../../../atoms/index.js';
-import { InputField } from '../../../Components/Forms/index.js';
-import { Button, Card, ConfirmationModal } from '../../../Components/UI/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { Button, Card, ConfirmationModal } from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 
 const accountLoader =

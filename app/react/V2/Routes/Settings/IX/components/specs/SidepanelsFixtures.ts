@@ -2,8 +2,8 @@ import {
   ClientEntitySchema,
   ClientPropertySchema,
   ClientTemplateSchema,
-} from 'app/V2/shared/types.js';
-import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../types';
+} from '#app/V2/shared/types.js';
+import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '#app/V2/Routes/Settings/IX/types';
 
 const suggestion1: TableSuggestion = {
   _id: 'suggestion1',

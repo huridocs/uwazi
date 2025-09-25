@@ -3,7 +3,7 @@ import { TemplateCell } from './TemplateCell';
 import { EntityCountCell } from './EntityCountCell';
 import { ActionCell } from './ActionCell';
 import { generateTableHeader } from '#app/utils/generateTableHeader';
-import { PXTable } from '../../../types';
+import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types';
 
 const extractorColumnHelper = createColumnHelper<PXTable>();
 

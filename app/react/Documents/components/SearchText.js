@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { withRouter } from '../../componentWrappers.js';
+import { withRouter } from '#app/componentWrappers.js';
 import { t } from '#app/I18N/index.js';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Icon } from 'UI';
-import ModalTips from '../../App/ModalTips.js';
+import ModalTips from '#app/App/ModalTips.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
-import { SearchTipsContent } from '../../App/SearchTipsContent.js';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import SnippetList from './SnippetList';
 

@@ -2,13 +2,13 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import RelationTypesAPI from '../../RelationTypes/RelationTypesAPI.js';
+import RelationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import * as relationships from '../../Relationships/utils/routeUtils.js';
+import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import * as pageAssetsUtils from '../../Pages/utils/getPageAssets.js';
+import * as pageAssetsUtils from '#app/Pages/utils/getPageAssets.js';
 
-import EntitiesAPI from '../../Entities/EntitiesAPI';
+import EntitiesAPI from '#app/Entities/EntitiesAPI';
 import EntityView from '../EntityView';
 
 describe('EntityView', () => {

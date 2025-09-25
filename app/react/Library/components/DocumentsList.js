@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '../../Multireducer.js';
-import { actions as actionCreators } from '../../BasicReducer/index.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import { actions as actionCreators } from '#app/BasicReducer/index.js';
 
 import {
   searchDocuments,
@@ -11,7 +11,7 @@ import {
   unselectAllDocuments,
   selectDocuments,
 } from '#app/Library/actions/libraryActions.js';
-import DocumentsList from '../../Layout/DocumentsList';
+import DocumentsList from '#app/Layout/DocumentsList';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;

@@ -4,9 +4,9 @@
 import React from 'react';
 import { screen, RenderResult, act, fireEvent } from '@testing-library/react';
 
-import MediaField from '../../Forms/components/MediaField.js';
+import MediaField from '#app/Forms/components/MediaField.js';
 
-import { MediaModalType } from '../../Metadata/components/MediaModal.js';
+import { MediaModalType } from '#app/Metadata/components/MediaModal.js';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 

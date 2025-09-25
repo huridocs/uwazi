@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as types from '../../Modals/actions/actionTypes.js';
+import * as types from '#app/Modals/actions/actionTypes.js';
 
 const initialState = {};
 

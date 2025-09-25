@@ -3,7 +3,7 @@ import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/V2/shared/types.js';
+import { ClientTemplateSchema, IStore, RelationshipTypesType } from '#app/V2/shared/types.js';
 import {
   getCurrentPlan,
   getHubrecordPage,
@@ -12,7 +12,7 @@ import {
   createRelationshipMigrationField,
   updateRelationshipMigrationField,
   deleteRelationshipMigrationField,
-} from '../../Entities/actions/V2NewRelationshipsActions.js';
+} from '#app/Entities/actions/V2NewRelationshipsActions.js';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
 

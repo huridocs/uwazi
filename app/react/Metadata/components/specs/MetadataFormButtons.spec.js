@@ -5,7 +5,7 @@ import { I18NLink } from '#app/I18N/index.js';
 
 import { Icon } from 'UI';
 
-import { ShareButton } from '../../Permissions/components/ShareButton.js';
+import { ShareButton } from '#app/Permissions/components/ShareButton.js';
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {

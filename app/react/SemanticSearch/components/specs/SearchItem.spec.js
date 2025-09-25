@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { SearchItemComponent as SearchItem, mapDispatchToProps } from '../SearchItem';
-import * as actions from '../../actions/actions';
+import * as actions from '#app/actions/actions';
 
 describe('SearchItem', () => {
   let search;

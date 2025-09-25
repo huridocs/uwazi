@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { Map, Layer } from '../../Map/MapContainer.js';
+import { Map, Layer } from '#app/Map/MapContainer.js';
 import { Label, InputField } from './index.js';
 
 interface GeolocationProps {

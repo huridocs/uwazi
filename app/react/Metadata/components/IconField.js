@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { IconSelector } from '../../ReactReduxForms/index.js';
-import { actions } from '../../Metadata.js';
-import { FormValue } from '../../Forms/index.js';
-import ToggleDisplay from '../../Layout/ToggleDisplay.js';
+import { IconSelector } from '#app/ReactReduxForms/index.js';
+import { actions } from '#app/Metadata.js';
+import { FormValue } from '#app/Forms/index.js';
+import ToggleDisplay from '#app/Layout/ToggleDisplay.js';
 import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';

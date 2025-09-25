@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
 
 import { showFilters, hideFilters } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 import { Icon } from 'UI';
 import { unselectAllDocuments } from '../actions/libraryActions';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Icon } from 'UI';
 
-import { Notification } from '../../Notifications/components/Notification.js';
+import { Notification } from '#app/Notifications/components/Notification.js';
 
 describe('Notification', () => {
   let component;

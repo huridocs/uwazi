@@ -1,5 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
+import { TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
 import { DisplayCell } from './DisplayCell.js';
 import { LanguagesCell } from './LanguagesCell.js';
 import { StatusCell } from './StatusCell.js';

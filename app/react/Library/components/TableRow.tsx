@@ -1,10 +1,10 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { connect, ConnectedProps } from 'react-redux';
-import { IStore, TableViewColumn } from 'app/V2/shared/types.js';
+import { IStore, TableViewColumn } from '#app/V2/shared/types.js';
 
-import { Icon as PropertyIcon } from '../../Layout.js';
-import formatter from '../../Metadata/helpers/formater.js';
+import { Icon as PropertyIcon } from '#app/Layout.js';
+import formatter from '#app/Metadata/helpers/formater.js';
 import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';

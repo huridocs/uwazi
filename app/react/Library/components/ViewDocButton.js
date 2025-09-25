@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Map } from 'immutable';
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { Icon } from 'UI';
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 import url from 'url';
 
 function getDocumentUrlQuery(searchTerm, targetReference) {

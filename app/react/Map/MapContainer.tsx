@@ -3,11 +3,11 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
 
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 
-import { LMap } from '../../Map/index.js';
+import { LMap } from '#app/Map/index.js';
 
-import { DataMarker, MarkerInput } from '../../Map/MapHelper.js';
+import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
 
 import { ErrorBoundary } from '#app/V2/Components/ErrorHandling.js';
 

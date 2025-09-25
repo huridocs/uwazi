@@ -5,8 +5,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/V2/shared/types.js';
-import { Table } from '../../../Components/UI/index.js';
+import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/V2/shared/types.js';
+import { Table } from '#app/V2/Components/UI/index.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import * as translationsAPI from '#app/V2/api/translations/index.js';

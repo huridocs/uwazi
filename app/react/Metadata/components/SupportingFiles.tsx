@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { ClientFile } from 'app/V2/shared/types.js';
+import { ClientFile } from '#app/V2/shared/types.js';
 import { Translate } from '#app/I18N/index.js';
-import UploadSupportingFile from '../../Attachments/components/UploadSupportingFile.js';
+import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
 import {
   uploadLocalAttachment,
   uploadLocalAttachmentFromUrl,

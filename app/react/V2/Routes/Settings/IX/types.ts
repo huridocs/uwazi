@@ -1,7 +1,7 @@
 import { ClientIXExtractorType, ClientTemplateSchema } from '#shared/types.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { TextHighlight } from '../../../Components/PDFViewer/types.js';
+import { TextHighlight } from '#app/V2/Components/PDFViewer/types.js';
 
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
 

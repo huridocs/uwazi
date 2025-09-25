@@ -8,9 +8,9 @@ import uniqueID from '#shared/uniqueID.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientTemplateSchema } from 'app/V2/shared/types.js';
-import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
-import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
+import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#app/V2/Components/Forms/index.js';
 import { sidepanelAtom } from './sidepanelAtom.js';
 import { Filter, LoaderData } from './helpers.js';
 

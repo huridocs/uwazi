@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { Collapsible } from '../../App/Collapsible.js';
+import { Collapsible } from '#app/App/Collapsible.js';
 import { LibraryViewRelationshipsComp } from '../LibraryViewRelationships';
 
 describe('LibraryViewRelationships', () => {

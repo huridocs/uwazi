@@ -7,16 +7,16 @@ import { get } from 'lodash';
 import { Translate } from '#app/I18N/index.js';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
-import { ClientFile, IStore } from 'app/V2/shared/types.js';
+import { ClientFile, IStore } from '#app/V2/shared/types.js';
 
 import uniqueID from '#shared/uniqueID.js';
 
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
-import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
-import { uploadLocalAttachment } from '../../Metadata/actions/supportingFilesActions.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
 
 import { mimeTypeFromUrl } from '#app/files/extensionHelper.js';
-import { MediaModalFileList } from '../../Metadata/components/MediaModalFileList.js';
+import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.js';
 import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 import { validImageFile, validMediaFile } from '../helpers/validator';
 

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { t } from '#app/I18N/index.js';
 
-import { loadMoreReferences } from '../../ConnectionsList/actions/actions';
+import { loadMoreReferences } from '#app/ConnectionsList/actions/actions';
 
 export const LoadMoreRelationshipsButton = ({
   totalHubs,

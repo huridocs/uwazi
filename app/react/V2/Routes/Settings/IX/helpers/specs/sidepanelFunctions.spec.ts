@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { ClientEntitySchema, ClientPropertySchema } from 'app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/V2/shared/types.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import {

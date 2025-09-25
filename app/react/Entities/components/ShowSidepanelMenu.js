@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import ShowIf from '../../App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { Icon } from 'UI';
 
 export class ShowSidepanelMenu extends Component {

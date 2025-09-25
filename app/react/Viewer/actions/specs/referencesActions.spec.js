@@ -7,12 +7,12 @@ import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
 import { mockID } from '#shared/uniqueID.js.js';
-import { APIURL } from '../../config.js.js';
-import * as connectionsActions from '../../Connections/actions/actions.js';
-import { actions as relationshipsActions } from '../../Relationships.js';
+import { APIURL } from '#app/config.js';
+import * as connectionsActions from '#app/Connections/actions/actions.js';
+import { actions as relationshipsActions } from '#app/Relationships.js';
 import * as actions from '#app/Viewer/actions/referencesActions.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
-import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
+import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import scroller from '#app/Viewer/utils/Scroller.js';
 

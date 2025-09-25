@@ -6,11 +6,11 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { ClientFile } from 'app/V2/shared/types.js';
+import { ClientFile } from '#app/V2/shared/types.js';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { SupportingFiles } from '../SupportingFiles';
-import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
+import * as supportingLocalFilesActions from '#app/actions/supportingFilesActions';
 
 describe('Supporting files', () => {
   let reduxStore = {};

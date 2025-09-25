@@ -6,8 +6,8 @@ import Immutable from 'immutable';
 import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
 import Dropzone from 'react-dropzone';
-import { MetadataFormFields } from '../../Metadata.js';
-import { Captcha } from '../../ReactReduxForms.js';
+import { MetadataFormFields } from '#app/Metadata.js';
+import { Captcha } from '#app/ReactReduxForms.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import { PublicFormComponent as PublicForm } from '../PublicForm';
 

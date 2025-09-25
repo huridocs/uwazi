@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
-import { Loader } from '../../components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 
 import { SearchResults } from '../SearchResults';
 

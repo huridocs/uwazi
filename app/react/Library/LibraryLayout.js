@@ -6,9 +6,9 @@ import { t } from '#app/I18N/index.js';
 import LibraryFilters from '#app/Library/components/LibraryFilters.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import SemanticSearchPanel from '../../SemanticSearch/components/SemanticSearchPanel.js';
-import ImportPanel from '../../Uploads/components/ImportPanel.js';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import SemanticSearchPanel from '#app/SemanticSearch/components/SemanticSearchPanel.js';
+import ImportPanel from '#app/Uploads/components/ImportPanel.js';
 import { LibraryFooter } from './components/LibraryFooter';
 
 class LibraryLayoutBase extends Component {

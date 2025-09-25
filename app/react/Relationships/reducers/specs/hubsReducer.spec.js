@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import * as types from '../../actions/actionTypes';
+import * as types from '#app/actions/actionTypes';
 import hubsReducer from '../hubsReducer';
 
 describe('Hubs Reducer', () => {

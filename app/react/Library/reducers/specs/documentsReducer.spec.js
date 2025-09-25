@@ -4,8 +4,8 @@ import * as types from '#app/Library/actions/actionTypes.js';
 
 import { documentsReducer } from '#app/Library/reducers/documentsReducer.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
-import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
-import * as attachmentTypes from '../../Attachments/actions/actionTypes.js';
+import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
+import * as attachmentTypes from '#app/Attachments/actions/actionTypes.js';
 
 describe('documentsReducer', () => {
   const initialState = Immutable.fromJS({ rows: [], totalRows: 0 });

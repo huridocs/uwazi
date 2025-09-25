@@ -6,12 +6,12 @@ import { useAtom } from 'jotai';
 import { get } from 'lodash';
 import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Pill } from '../../../../Components/UI/index.js';
-import { EmbededButton } from '../../../../Components/UI/EmbededButton.js';
-import { ClientTemplateSchema } from '../../../../../shared/types.js';
-import { propertyIcons } from '../../../../Components/UI/Icons.js';
+import { Button, Pill } from '#app/V2/Components/UI/index.js';
+import { EmbededButton } from '#app/V2/Components/UI/EmbededButton.js';
+import { ClientTemplateSchema } from '#shared/types.js';
+import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
 
-import { ClientPropertySchema } from 'app/V2/shared/types.js';
+import { ClientPropertySchema } from '#app/V2/shared/types.js';
 
 import { Translate } from '#app/I18N/index.js';
 import {

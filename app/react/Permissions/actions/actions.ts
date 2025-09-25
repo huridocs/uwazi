@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 import { Dispatch } from 'redux';
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 
-import { notificationActions } from '../../Notifications.js';
+import { notificationActions } from '#app/Notifications.js';
 import { t } from '#app/I18N/index.js';
-import { savePermissions } from '../../Permissions/PermissionsAPI.js';
+import { savePermissions } from '#app/Permissions/PermissionsAPI.js';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,

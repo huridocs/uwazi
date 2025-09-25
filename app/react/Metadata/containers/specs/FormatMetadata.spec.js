@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { FormatMetadata } from '../FormatMetadata';
-import { metadataSelectors } from '../../selectors';
+import { metadataSelectors } from '#app/selectors';
 
 describe('FormatMetadata', () => {
   it('should render Metadata component passing the formatted metadata', () => {

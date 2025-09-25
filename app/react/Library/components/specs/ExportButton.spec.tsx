@@ -6,11 +6,11 @@ import ExportButton, { ExportButtonProps } from '#app/Library/components/ExportB
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
-import Modal from '../../Layout/Modal.js';
+import Modal from '#app/Layout/Modal.js';
 import Immutable from 'immutable';
 
 import { LocalForm } from '#app/Forms/Form.js';
-import * as actions from '../../actions/exportActions';
+import * as actions from '#app/actions/exportActions';
 
 describe('ExportButton', () => {
   let component: any;

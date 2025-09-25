@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
+import { formatTemplatesToOptions } from '#app/V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
 import {
   MultiselectListOption,
   MultiselectList,
@@ -9,7 +9,7 @@ import {
 } from '../../../../../../../../Components/Forms/index.js';
 import { templatesAtom } from '../../../../../../../../atoms/index.js';
 import { Extractor } from '../../../../../../../../shared/ParagraphExtractionTypes.js';
-import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { useCreateExtractorContext } from '#app/V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
 
 const Body = () => {
   const { extractors = [] } = useLoaderData() as {

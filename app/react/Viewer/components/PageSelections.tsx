@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
 import { useAtomValue } from 'jotai';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { pdfScaleAtom } from '#app/V2/atoms/index.js';
 

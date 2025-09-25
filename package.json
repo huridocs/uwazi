@@ -27,7 +27,9 @@
     "#UI": "./app/react/UI/index.js",
     "#UI/*": "./app/react/UI/*",
     "#V2": "./app/react/V2/index.js",
-    "#V2/*": "./app/react/V2/*"
+    "#V2/*": "./app/react/V2/*",
+    "V2/*": "./app/react/V2/*",
+    "ParagraphExtractionTypes.js": "./app/shared/ParagraphExtractionTypes.js"
   },
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
+import { TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
 import { PXEntityStatus } from '../PXEntityStatus.js';
 
 const StatusCell = ({ cell }: CellContext<TablePXEntityRow, TablePXEntityRow['status']>) => (

@@ -1,3 +1,3 @@
-import createReducer from '../../BasicReducer/index.js';
+import createReducer from '#app/BasicReducer/index.js';
 
 export default createReducer('locale', '');

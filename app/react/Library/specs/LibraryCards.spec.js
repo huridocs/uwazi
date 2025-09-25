@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { LibraryCardsComponent } from '#app/Library/LibraryCards.js';
-import RouteHandler from '../../App/RouteHandler.js';
-import createStore from '../../store.js';
+import RouteHandler from '#app/App/RouteHandler.js';
+import createStore from '#app/store.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 import LibraryLayout from '#app/Library/LibraryLayout.js';
 

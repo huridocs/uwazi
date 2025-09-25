@@ -8,7 +8,7 @@ import {
   ConfirmNavigationModal,
   ConfirmationModal,
   ProgressBar,
-} from '../../../Components/UI/index.js';
+} from '#app/V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
@@ -26,11 +26,11 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
 
-import { socket } from '../../socket.js';
+import { socket } from '#app/socket.js';
 import {
   cleanProperty,
   emptyTemplate,

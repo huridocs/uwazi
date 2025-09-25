@@ -5,7 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { PDF } from '../../PDF.js';
+import { PDF } from '#app/Viewer/PDF.js';
 import { Document } from '#app/Viewer/components/Document.js.js';
 
 jest.mock('V2/atoms', () => ({

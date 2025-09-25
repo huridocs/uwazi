@@ -6,7 +6,7 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 import { Translate } from '#app/I18N/index.js';
-import { validMediaFile } from '../../Metadata/helpers/validator.js';
+import { validMediaFile } from '#app/Metadata/helpers/validator.js';
 
 interface MarkdownMediaProps {
   compact?: boolean;

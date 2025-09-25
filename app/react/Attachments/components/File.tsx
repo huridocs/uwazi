@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
-import { withContext } from '../../componentWrappers.js';
+import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 

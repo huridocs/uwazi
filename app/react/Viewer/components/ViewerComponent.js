@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import EntityView from '#app/Viewer/EntityView.js';
-import { Loader } from '../../components/Elements/Loader.js';
-import { actions } from '../../BasicReducer/index.js';
+import { Loader } from '#app/components/Elements/Loader.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
 import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
 import { PDFView } from '../PDFView';

@@ -4,9 +4,9 @@ import * as redux from 'redux';
 import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { FormGroup } from '../../Forms.js';
+import { FormGroup } from '#app/Forms.js';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
-import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
+import { LookupMultiSelect, DatePicker } from '#app/ReactReduxForms';
 import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields';
 import { AddThesauriValueButton } from '../AddThesauriValueButton';
 

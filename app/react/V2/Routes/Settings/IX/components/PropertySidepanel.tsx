@@ -14,17 +14,17 @@ import {
   ClientEntitySchema,
   ClientPropertySchema,
   ClientTemplateSchema,
-} from 'app/V2/shared/types.js';
+} from '#app/V2/shared/types.js';
 import {
   Button,
   Sidepanel,
   ToggleButton,
   VerticalDrawer,
   Truncate,
-} from '../../../../Components/UI/index.js';
+} from '#app/V2/Components/UI/index.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';
-import { secondsToISODate } from '../../../../../shared/dateHelpers.js';
-import { ClientIXExtractorType } from '../../../../../shared/types.js';
+import { secondsToISODate } from '#shared/dateHelpers.js';
+import { ClientIXExtractorType } from '#shared/types.js';
 import { TableSuggestion } from '../types.js';
 import {
   coerceValue,

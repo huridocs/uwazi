@@ -1,6 +1,6 @@
-import ShowIf from '../../App/ShowIf.js';
-import { DocumentLanguage, TemplateLabel } from '../../Layout.js';
-import { Icon } from '../../Layout/Icon.js';
+import ShowIf from '#app/App/ShowIf.js';
+import { DocumentLanguage, TemplateLabel } from '#app/Layout.js';
+import { Icon } from '#app/Layout/Icon.js';
 import TimelineViewer from '#app/Timeline/components/TimelineViewer.js';
 import { caseTemplate, matterTemplate } from '#app/Timeline/utils/timelineFixedData.js';
 import Immutable from 'immutable';

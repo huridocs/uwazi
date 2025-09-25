@@ -1,5 +1,5 @@
-import { actions } from '../../BasicReducer/index.js';
-import api from '../../Entities/EntitiesAPI.js';
+import { actions } from '#app/BasicReducer/index.js';
+import api from '#app/Entities/EntitiesAPI.js';
 import { t } from '#app/I18N/index.js';
 import {
   removeDocument,
@@ -8,8 +8,8 @@ import {
   unselectDocument,
 } from '#app/Library/actions/libraryActions.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
-import { notificationActions } from '../../Notifications.js';
-import { actions as relationshipActions } from '../../Relationships.js';
+import { notificationActions } from '#app/Notifications.js';
+import { actions as relationshipActions } from '#app/Relationships.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.js';

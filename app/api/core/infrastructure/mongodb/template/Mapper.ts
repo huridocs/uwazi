@@ -4,26 +4,26 @@
 import {
   AbstractImageProperty,
   ImageStyle,
-} from '../../../domain/template/AbstractImageProperty.js';
-import { CreationDateProperty } from '../../../domain/template/CreationDateProperty.js';
-import { DateProperty } from '../../../domain/template/DateProperty.js';
-import { DateRangeProperty } from '../../../domain/template/DateRangeProperty.js';
-import { FilterableProperty } from '../../../domain/template/FilterableProperty.js';
-import { GenerateIdProperty } from '../../../domain/template/GenerateIdProperty.js';
-import { GeolocationProperty } from '../../../domain/template/GeoLocationProperty.js';
-import { ImageProperty } from '../../../domain/template/ImageProperty.js';
-import { LinkProperty } from '../../../domain/template/LinkProperty.js';
-import { MarkdownProperty } from '../../../domain/template/MarkdownProperty.js';
-import { MediaProperty } from '../../../domain/template/MediaProperty.js';
-import { ModifiedDateProperty } from '../../../domain/template/ModifiedDateProperty.js';
-import { MultiDateProperty } from '../../../domain/template/MultiDateProperty.js';
-import { MultiDateRangeProperty } from '../../../domain/template/MultiDateRangeProperty.js';
-import { MultiSelectProperty } from '../../../domain/template/MultiSelectProperty.js';
-import { NumericProperty } from '../../../domain/template/NumericProperty.js';
-import { PreviewProperty } from '../../../domain/template/PreviewProperty.js';
-import { SelectProperty } from '../../../domain/template/SelectProperty.js';
-import { TextProperty } from '../../../domain/template/TextProperty.js';
-import { TitleProperty } from '../../../domain/template/TitleProperty.js';
+} from '#api/core/domain/template/AbstractImageProperty.js';
+import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
+import { DateProperty } from '#api/core/domain/template/DateProperty.js';
+import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
+import { FilterableProperty } from '#api/core/domain/template/FilterableProperty.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { GeolocationProperty } from '#api/core/domain/template/GeoLocationProperty.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
+import { LinkProperty } from '#api/core/domain/template/LinkProperty.js';
+import { MarkdownProperty } from '#api/core/domain/template/MarkdownProperty.js';
+import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
+import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
+import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
+import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/MultiSelectProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
+import { SelectProperty } from '#api/core/domain/template/SelectProperty.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 import { TemplateDBO } from '#api/templates.v2/database/schemas/TemplateDBO.js';
 import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
 import { Property } from '#api/templates.v2/model/Property.js';

@@ -3,12 +3,12 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 import { Icon } from 'UI';
-import { DropdownList } from '../../Forms/index.js';
+import { DropdownList } from '#app/Forms/index.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { omit } from 'lodash';
 import {
   filterTemplates,

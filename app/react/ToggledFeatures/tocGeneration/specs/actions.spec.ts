@@ -1,18 +1,18 @@
 import api from '#app/utils/api.js';
 import backend from 'fetch-mock';
 
-import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
+import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 
-import { actions as relationshipActions } from '../../Relationships.js';
+import { actions as relationshipActions } from '#app/Relationships.js';
 
-import { APIURL } from '../../config.js';
+import { APIURL } from '#app/config.js';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 
 import { mockID } from '#shared/uniqueID.js.js';
 
-import { ClientEntitySchema } from 'app/V2/shared/types.js';
+import { ClientEntitySchema } from '#app/V2/shared/types.js';
 import { tocGenerationActions } from '../actions';
 
 const middlewares = [thunk];

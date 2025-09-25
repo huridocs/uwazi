@@ -10,7 +10,7 @@ import { PDFView } from '#app/Viewer/PDFView.js';
 
 import EntityView from '#app/Viewer/EntityView.js';
 
-import { Loader } from '../../components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 
 import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
 

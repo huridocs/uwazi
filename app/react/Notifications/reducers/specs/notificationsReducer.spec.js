@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import notificationsReducer from '../../Notifications/reducers/notificationsReducer.js';
-import * as types from '../../Notifications/actions/actionTypes.js';
+import notificationsReducer from '#app/Notifications/reducers/notificationsReducer.js';
+import * as types from '#app/Notifications/actions/actionTypes.js';
 
 describe('templateReducer', () => {
   describe('when state is undefined', () => {

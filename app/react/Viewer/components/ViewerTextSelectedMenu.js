@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
-import { actions as connectionsActions } from '../../Connections.js';
+import { actions as connectionsActions } from '#app/Connections.js';
 import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
-import ShowIf from '../../App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { Icon } from 'UI';
 import { Translate } from '#app/I18N/index.js';
 

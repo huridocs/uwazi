@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { Connection } from '#app/Viewer/components/Connection.js';
-import { Item } from '../../Layout.js';
+import { Item } from '#app/Layout.js';
 
 describe('Connection', () => {
   let component;

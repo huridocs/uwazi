@@ -3,11 +3,11 @@ import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
 
-import { EntityDisplayState, IStore, TableViewColumn } from 'app/V2/shared/types.js';
+import { EntityDisplayState, IStore, TableViewColumn } from '#app/V2/shared/types.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { TableRows } from '../../Layout/TableRows.js';
+import { TableRows } from '#app/Layout/TableRows.js';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
 interface TableViewerProps extends CollectionViewerProps {

@@ -4,9 +4,9 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import multiReducer from '../../Multireducer.js';
-import * as metadataActions from '../../Metadata/actions/actions.js';
-import * as searchActions from '../../SemanticSearch/actions/actions.js';
+import multiReducer from '#app/Multireducer.js';
+import * as metadataActions from '#app/Metadata/actions/actions.js';
+import * as searchActions from '#app/SemanticSearch/actions/actions.js';
 import {
   mapStateToProps,
   mapDispatchToProps,

@@ -15,8 +15,8 @@ import {
   MultiselectList,
   MultiselectListOption,
   Textarea,
-} from '../../../../Components/Forms/index.js';
-import { Button } from '../../../../Components/UI/index.js';
+} from '#app/V2/Components/Forms/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
 import { thesauriAtom } from '#app/V2/atoms/index.js';
 import { selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
 import { SuggestionValue, TableSuggestion } from '../types.js';
@@ -272,10 +272,11 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && fieldName
           ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
           : `title:(${escapedText}*)`
-        } `;
+      } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 

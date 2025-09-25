@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
-import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#app/V2/Components/Forms/index.js';
 
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { User, Group } from '../types.js';

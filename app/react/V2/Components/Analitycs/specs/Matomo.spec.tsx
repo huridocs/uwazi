@@ -5,8 +5,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from '../../../atoms/index.js';
-import { TestAtomStoreProvider } from '../../../testing/index.js';
+import { globalMatomoAtom, settingsAtom } from '#app/V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
 import { Matomo } from '../Matomo.js';
 
 describe('Matomo', () => {

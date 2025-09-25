@@ -1,6 +1,6 @@
 import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent';
 
-import { APIURL } from '../../config.js';
+import { APIURL } from '#app/config.js';
 
 import { FileType } from '#shared/types/fileType.js';
 

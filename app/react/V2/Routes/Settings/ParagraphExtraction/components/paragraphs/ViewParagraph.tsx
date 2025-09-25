@@ -5,11 +5,11 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
-import { templatesAtom } from '../../../../../atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '../../../../../shared/ParagraphExtractionTypes.js';
+} from '#shared/ParagraphExtractionTypes.js';
 import { DisplayPill } from '../DisplayPills.js';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => {

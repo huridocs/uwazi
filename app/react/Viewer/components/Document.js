@@ -4,8 +4,8 @@ import 'app/Viewer/scss/document.scss';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 
-import { Loader } from '../../components/Elements/Loader.js';
-import { PDF } from '../../PDF.js';
+import { Loader } from '#app/components/Elements/Loader.js';
+import { PDF } from '#app/Viewer/PDF.js';
 import Immutable from 'immutable';
 import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
@@ -13,7 +13,7 @@ import { atomStore, pdfScaleAtom } from '#app/V2/atoms/index.js';
 
 import determineDirection from '#app/utils/determineDirection.js';
 
-import { APIURL } from '../../config.js';
+import { APIURL } from '#app/config.js';
 
 class Document extends Component {
   constructor(props) {

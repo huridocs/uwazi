@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Counter, { mapStateToProps } from '../Counter.js';
-import markdownDatasets from '../../markdownDatasets';
+import markdownDatasets from '#app/Markdown/markdownDatasets';
 
 describe('Counter', () => {
   it('should render the count passed by mapStateToProps', () => {

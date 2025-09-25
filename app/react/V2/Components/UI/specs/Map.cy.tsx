@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount } from '@cypress/react18';
 import { Provider } from 'react-redux';
-import { LEGACY_createStore as createStore } from '../../../testing/reduxStore';
-import { LMap } from '../../../../Map/LMap';
+import { LEGACY_createStore as createStore } from '#app/V2/testing/reduxStore';
+import { LMap } from '#app/Map/LMap';
 
 describe('LMap Component', () => {
   beforeEach(() => {

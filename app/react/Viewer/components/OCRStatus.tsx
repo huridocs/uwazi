@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
-import { socket } from '../../socket.js';
+import { socket } from '#app/socket.js';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrStatusTips } from '#app/utils/ocrStatusTips';

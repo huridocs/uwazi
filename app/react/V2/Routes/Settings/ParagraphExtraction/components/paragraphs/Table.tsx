@@ -3,14 +3,14 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 
 import { availableLanguages } from '#shared/language/index.js';
-import { Table, Button } from '../../../../../Components/UI/index.js';
+import { Table, Button } from '#app/V2/Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '../../../../../shared/ParagraphExtractionTypes.js';
+} from '#shared/ParagraphExtractionTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { templatesAtom } from '../../../../../atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';
 import { tableBuilder } from './TableElements/index.js';

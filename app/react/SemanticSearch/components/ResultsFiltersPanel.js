@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Form } from 'react-redux-form';
-import { NumericRangeSlide } from '../../ReactReduxForms/index.js';
+import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
 import { Icon } from 'UI';
 
-import SidePanel from '../../Layout/SidePanel.js';
+import SidePanel from '#app/Layout/SidePanel.js';
 import { t, Translate } from '#app/I18N/index.js';
 
 const filters = [

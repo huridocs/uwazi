@@ -8,7 +8,7 @@ import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
-import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {
   isOpen: boolean;

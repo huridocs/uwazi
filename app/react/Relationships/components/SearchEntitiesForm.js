@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import SearchInput from '../../Layout/SearchInput.js';
+import SearchInput from '#app/Layout/SearchInput.js';
 
 import { search } from '../actions/actions';
 

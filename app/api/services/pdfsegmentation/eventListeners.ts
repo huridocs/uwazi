@@ -1,6 +1,6 @@
-import { EventsBus } from '../eventsbus.js';
+import { EventsBus } from '#api/eventsbus/index.js';
 
-import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { SegmentationModel } from './segmentationModel';
 
 const registerEventListeners = (eventsBus: EventsBus) => {

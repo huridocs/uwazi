@@ -5,8 +5,8 @@ import { isEmpty, last } from 'lodash';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 
 import { Translate } from '#app/I18N/index.js';
-import { InputField } from '../../../../Components/Forms/index.js';
-import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
 import { ThesaurusRow } from './TableComponents.js';

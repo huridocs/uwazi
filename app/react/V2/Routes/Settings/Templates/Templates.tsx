@@ -4,9 +4,9 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 
 import { Translate, I18NLinkV2 as I18NLink, t } from '#app/I18N/index.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from '../../../atoms/index.js';
-import { Table } from '../../../Components/UI/Table/Table.js';
-import { Button } from '../../../Components/UI/Button.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
+import { Table } from '#app/V2/Components/UI/Table/Table.js';
+import { Button } from '#app/V2/Components/UI/Button.js';
 import * as templatesApi from '#app/templates/index.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';

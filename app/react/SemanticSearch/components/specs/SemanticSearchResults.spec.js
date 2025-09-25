@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import Doc from '#app/Library/components/Doc.js';
-import * as actions from '../../SemanticSearch/actions/actions.js';
+import * as actions from '#app/SemanticSearch/actions/actions.js';
 
 import {
   SemanticSearchResults,

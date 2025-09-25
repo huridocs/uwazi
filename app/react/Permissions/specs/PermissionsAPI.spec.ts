@@ -3,7 +3,7 @@ import {
   loadGrantedPermissions,
   savePermissions,
   searchCollaborators,
-} from '../../Permissions/PermissionsAPI.js';
+} from '#app/Permissions/PermissionsAPI.js';
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 

@@ -2,13 +2,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { DocumentSidePanel } from '../../Documents.js';
-import { actions as actionCreators } from '../../BasicReducer/index.js';
-import { actions } from '../../Metadata.js';
+import { DocumentSidePanel } from '#app/Documents.js';
+import { actions as actionCreators } from '#app/BasicReducer/index.js';
+import { actions } from '#app/Metadata.js';
 import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
-import { deleteEntity } from '../../Entities/actions/actions.js';
-import multiReducer from '../../Multireducer.js';
-import modals from '../../Modals.js';
+import { deleteEntity } from '#app/Entities/actions/actions.js';
+import multiReducer from '#app/Multireducer.js';
+import modals from '#app/Modals.js';
 
 import EntityForm from '#app/Library/containers/EntityForm.js';
 

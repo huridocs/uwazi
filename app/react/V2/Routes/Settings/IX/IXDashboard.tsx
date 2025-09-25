@@ -6,13 +6,13 @@ import { useSetAtom } from 'jotai';
 
 import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
 import * as templatesAPI from '#app/V2/api/templates/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { ClientTemplateSchema } from 'app/V2/shared/types.js';
-import { Button, ConfirmationModal, Table } from '../../../Components/UI/index.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
+import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
 
 import { Translate, t } from '#app/I18N/index.js';
-import { notificationAtom } from '../../../atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 import { ClientIXExtractorType } from '#shared/types.js';
 import { ExtractorModal } from './components/ExtractorModal.js';
 import { extractorsTableColumns } from './components/TableElements.js';

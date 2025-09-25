@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useLoaderData, useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import type {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '#shared/ParagraphExtractionTypes.js';
-import { templatesAtom } from '../../../atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import { ParagraphsTable } from './components/paragraphs/Table.js';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel.js';
 import { PDFSidepanel } from './components/paragraphs/PDFSidepanel.js';

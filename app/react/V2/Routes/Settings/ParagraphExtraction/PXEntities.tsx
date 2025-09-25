@@ -3,9 +3,9 @@ import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
-import { Button } from '../../../Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { Button } from '#app/V2/Components/UI/index.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
 import type { PXEntityLoaderResponse, TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
 import { EntityStatus } from '#shared/ParagraphExtractionTypes.js';
 import * as entitiesAPI from '#app/V2/api/paragraphExtractor/entities.js';

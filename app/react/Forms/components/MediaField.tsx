@@ -3,16 +3,16 @@ import { isObject } from 'lodash';
 import { Translate } from '#app/I18N/index.js';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
-import { ClientFile } from 'app/V2/shared/types.js';
+import { ClientFile } from '#app/V2/shared/types.js';
 
 import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 import {
   MediaModal,
   MediaModalProps,
   MediaModalType,
-} from '../../Metadata/components/MediaModal.js';
-import MarkdownMedia, { TimeLink } from '../../Markdown/components/MarkdownMedia.js';
-import { ImageViewer } from '../../Metadata/components/ImageViewer.js';
+} from '#app/Metadata/components/MediaModal.js';
+import MarkdownMedia, { TimeLink } from '#app/Markdown/components/MarkdownMedia.js';
+import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: Partial<File> } | null;

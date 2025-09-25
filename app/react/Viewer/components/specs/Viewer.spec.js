@@ -5,13 +5,13 @@ import { fromJS } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { CreateConnectionPanel } from '../../Connections.js';
-import ContextMenu from '../../ContextMenu.js';
-import ShowIf from '../../App/ShowIf.js';
+import { CreateConnectionPanel } from '#app/Connections.js';
+import ContextMenu from '#app/ContextMenu.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { ConnectedViewer } from '../Viewer';
 import SourceDocument from '../SourceDocument';
 import TargetDocument from '../TargetDocument';
-import * as routeActions from '../../actions/routeActions';
+import * as routeActions from '#app/actions/routeActions';
 
 describe('Viewer', () => {
   let component;

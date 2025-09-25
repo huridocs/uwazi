@@ -9,20 +9,13 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { elasticClient } from '#api/search/elastic.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-
-
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { spyOnEmit } from '#api/eventsbus/eventTesting.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { applicationEventsBus } from '#api/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { inspect } from 'util';
-import { testingTenants } from '#api/utils/testingTenants.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { TemplateDeletedEvent } from '#api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '#api/templates/events/TemplateUpdatedEvent';

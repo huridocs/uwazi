@@ -9,8 +9,8 @@ import { isEmpty } from 'lodash';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
-import { Button, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { Button, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 
 import { notificationAtom, templatesAtom } from '#app/V2/atoms.js';
 

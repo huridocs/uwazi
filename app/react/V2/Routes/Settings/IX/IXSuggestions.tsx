@@ -16,13 +16,13 @@ import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
 import * as suggestionsAPI from '#app/V2/api/ix/suggestions.js';
 import * as templatesAPI from '#app/V2/api/templates/index.js';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
-import { Button, PaginationState, Paginator, Table } from '../../../Components/UI/index.js';
-import { notificationAtom } from '../../../atoms/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { Button, PaginationState, Paginator, Table } from '#app/V2/Components/UI/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientPropertySchema } from 'app/V2/shared/types.js';
+import { ClientPropertySchema } from '#app/V2/shared/types.js';
 import { SuggestionsTitle } from './components/SuggestionsTitle.js';
 import { FiltersSidepanel } from './components/FiltersSidepanel.js';
 import { suggestionsTableColumnsBuilder } from './components/TableElements.js';

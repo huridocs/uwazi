@@ -1,6 +1,6 @@
 import { Translate } from '#app/I18N/index.js';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
 import React, { Dispatch, useEffect, useState } from 'react';
@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   newEntity as newEntityAction,
   showImportPanel as showImportPanelAction,
-} from '../../Uploads/actions/uploadsActions.js';
+} from '#app/Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
 
 import { NeedAuthorization } from '#app/Auth/index.js';

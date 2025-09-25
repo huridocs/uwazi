@@ -6,12 +6,12 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { Translate, t } from '#app/I18N/index.js';
-import SnippetList from '../../Documents/components/SnippetList.js';
+import SnippetList from '#app/Documents/components/SnippetList.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
-import { NumericRangeSlide } from '../../ReactReduxForms/index.js';
-import { Icon } from '../../Layout/Icon.js';
-import { TemplateLabel, DocumentLanguage } from '../../Layout.js';
+import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
+import { Icon } from '#app/Layout/Icon.js';
+import { TemplateLabel, DocumentLanguage } from '#app/Layout.js';
 
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);

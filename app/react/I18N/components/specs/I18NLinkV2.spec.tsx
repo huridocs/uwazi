@@ -4,8 +4,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { TestAtomStoreProvider, TestRouterContext } from '../../../V2/testing/index.js';
-import { localeAtom } from '../../../V2/atoms/index.js';
+import { TestAtomStoreProvider, TestRouterContext } from '#app/V2/testing/index.js';
+import { localeAtom } from '#app/V2/atoms/index.js';
 import { I18NLink, I18NLinkProps } from '../../I18NLinkV2.js';
 
 describe('I18NLinkV2', () => {

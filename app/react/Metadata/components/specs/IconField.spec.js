@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-import { FormValue } from '../../Forms.js';
+import { FormValue } from '#app/Forms.js';
 import { shallow } from 'enzyme';
-import ToggleDisplay from '../../Layout/ToggleDisplay.js';
+import ToggleDisplay from '#app/Layout/ToggleDisplay.js';
 
 import { IconFieldBase } from '../IconField';
 

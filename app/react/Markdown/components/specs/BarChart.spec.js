@@ -8,8 +8,8 @@ import Immutable from 'immutable';
 import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
 import BarChartComponent, { mapStateToProps } from '../BarChart.js';
-import markdownDatasets from '../../markdownDatasets';
-import { aggregationWithNestedValues } from '../../../Charts/utils/specs/fixtures/arrayUtilsFixtures';
+import markdownDatasets from '#app/Markdown/markdownDatasets';
+import { aggregationWithNestedValues } from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures';
 import { nestedThesauri } from './fixture/nestedThesauri';
 
 describe('BarChart Markdown component', () => {

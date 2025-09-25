@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { RowList } from '../../Layout/Lists.js';
+import { RowList } from '#app/Layout/Lists.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { ItemList } from '../ItemList';
 import Slider from '../slider';

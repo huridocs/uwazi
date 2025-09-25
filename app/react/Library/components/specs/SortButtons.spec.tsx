@@ -7,7 +7,7 @@ import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { fromJS, fromJS as immutable } from 'immutable';
 
-import { IStore } from 'app/V2/shared/types.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { actions } from 'react-redux-form';
 
 import { IImmutable } from '#shared/types/Immutable.js';

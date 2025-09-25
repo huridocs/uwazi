@@ -5,8 +5,8 @@
 import React from 'react';
 import { render, act, queryAllByAttribute, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { pdfScaleAtom } from '../../../atoms/index.js';
-import { TestAtomStoreProvider } from '../../../testing/index.js';
+import { pdfScaleAtom } from '#app/V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
 import PDF, { PDFProps } from '../PDF.js';
 import * as helpers from '../functions/helpers.js';
 

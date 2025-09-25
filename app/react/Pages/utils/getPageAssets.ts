@@ -1,7 +1,7 @@
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { get, has, uniq } from 'lodash';
-import api from '../../Search/SearchAPI.js';
-import { markdownDatasets } from '../../Markdown/index.js';
+import api from '#app/Search/SearchAPI.js';
+import { markdownDatasets } from '#app/Markdown/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import PagesAPI from '../PagesAPI.js';
 import pageItemLists from './pageItemLists.js';

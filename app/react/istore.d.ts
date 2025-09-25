@@ -1,6 +1,6 @@
 import { TaskStatus } from '#shared/tasks/tasks.js';
-import { ClassifierModelSchema } from '../../Thesauri/types/classifierModelType.js';
-import { LabelCountSchema } from '../../Thesauri/types/labelCountType.js';
+import { ClassifierModelSchema } from '#app/Thesauri/types/classifierModelType.js';
+import { LabelCountSchema } from '#app/Thesauri/types/labelCountType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';

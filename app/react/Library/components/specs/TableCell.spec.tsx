@@ -6,9 +6,9 @@ import { TableCell, TableCellProps } from '#app/Library/components/TableCell.js'
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import MarkdownViewer from '../../Markdown.js';
+import MarkdownViewer from '#app/Markdown.js';
 
-import ValueList from '../../Metadata/components/ValueList.js';
+import ValueList from '#app/Metadata/components/ValueList.js';
 
 describe('TableCell', () => {
   let component: any;

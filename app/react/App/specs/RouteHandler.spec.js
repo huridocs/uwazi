@@ -11,7 +11,7 @@ import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { I18NUtils } from '#app/I18N/index.js';
 import RouteHandler from '../RouteHandler';
-import { APIURL } from '../../config.js';
+import { APIURL } from '#app/config.js';
 
 class TestController extends RouteHandler {
   static requestState(_requestParams, _state) {

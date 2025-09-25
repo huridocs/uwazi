@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
 
 import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList';
-import { DocumentsList } from '../../../Layout/DocumentsList';
+import { DocumentsList } from '#app/Layout/DocumentsList';
 
 describe('Library DocumentsList container', () => {
   let component;

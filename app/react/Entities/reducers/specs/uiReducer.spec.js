@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
 import uiReducer, { initialState as rawInitialState } from '../uiReducer';
-import * as actions from '../../actions/uiActions';
+import * as actions from '#app/actions/uiActions';
 
 describe('uiReducer', () => {
   const initialState = Immutable.fromJS(rawInitialState);

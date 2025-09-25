@@ -7,8 +7,8 @@ import { useLocation, Location } from 'react-router';
 import { Icon } from 'UI';
 import { I18NLink, t } from '#app/I18N/index.js';
 
-import { wrapDispatch } from '../../Multireducer.js';
-import { IStore } from 'app/V2/shared/types.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import { IStore } from '#app/V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';

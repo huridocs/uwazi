@@ -7,8 +7,8 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { FileType } from '#shared/types/fileType.js';
-import { FileDropzone } from '../../../../Components/Forms/index.js';
-import { Button, Modal } from '../../../../Components/UI/index.js';
+import { FileDropzone } from '#app/V2/Components/Forms/index.js';
+import { Button, Modal } from '#app/V2/Components/UI/index.js';
 import { UploadService } from '#app/files/index.js';
 import { uploadProgressAtom } from './uploadProgressAtom.js';
 

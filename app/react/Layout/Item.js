@@ -2,12 +2,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { FormatMetadata } from '../../Metadata.js';
+import { FormatMetadata } from '#app/Metadata.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 
-import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
-import { FavoriteBanner } from '../../Favorites.js';
-import helpers from '../../Documents/helpers.js';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
+import { FavoriteBanner } from '#app/Favorites.js';
+import helpers from '#app/Documents/helpers.js';
 import { Translate } from '#app/I18N/index.js';
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';

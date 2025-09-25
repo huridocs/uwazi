@@ -4,9 +4,9 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component, Suspense } from 'react';
 
-import Footer from '../../App/Footer.js';
-import MarkdownViewer from '../../Markdown/index.js';
-import { Context } from '../../Markdown/components.js';
+import Footer from '#app/App/Footer.js';
+import MarkdownViewer from '#app/Markdown/index.js';
+import { Context } from '#app/Markdown/components.js';
 import { Icon } from 'UI';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';

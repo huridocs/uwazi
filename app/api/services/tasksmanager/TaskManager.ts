@@ -4,11 +4,10 @@ import { RedisClient } from 'redis';
 
 import { Repeater } from '#api/utils/Repeater.js';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 import { handleError } from '#api/utils/index.js';
-
-import { Redis } from '../infrastructure/Redis.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 type DefaultTaskType = string;
 

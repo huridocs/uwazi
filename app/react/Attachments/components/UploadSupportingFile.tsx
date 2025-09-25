@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
-import { attachmentCompleted } from '../../Metadata/actions/supportingFilesActions.js';
+import { attachmentCompleted } from '#app/Metadata/actions/supportingFilesActions.js';
 import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
 import { AttachmentsModal } from './AttachmentsModal';
 

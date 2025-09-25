@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, ConfirmationModal, Table, Tabs } from '../../../Components/UI/index.js';
+import { Button, ConfirmationModal, Table, Tabs } from '#app/V2/Components/UI/index.js';
 import * as usersAPI from '#app/V2/api/users/index.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';

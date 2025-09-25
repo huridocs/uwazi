@@ -4,7 +4,7 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button } from '../../../../Components/UI/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
 import { sidepanelAtom } from './sidepanelAtom.js';
 import { Filter } from './helpers.js';
 

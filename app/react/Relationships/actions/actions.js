@@ -1,17 +1,17 @@
 import { sortBy } from 'lodash';
 import api from '#app/utils/api.js';
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { debounce } from '#app/utils/index.js';
 import { createSelector } from 'reselect';
-import { notificationActions } from '../../Notifications.js';
+import { notificationActions } from '#app/Notifications.js';
 import { referencesActions } from '#app/Viewer.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import SearchApi from '../../Search/SearchAPI.js';
+import SearchApi from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
-import EntitiesApi from '../../Entities/EntitiesAPI.js';
+import EntitiesApi from '#app/Entities/EntitiesAPI.js';
 import * as types from './actionTypes.js';
 import * as uiActions from './uiActions.js';
-import * as routeUtils from '#app/utils/routeUtils.js';
+import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
 
 function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };

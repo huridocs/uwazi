@@ -7,17 +7,17 @@ import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import rison from '@huridocs/rison';
-import { APIURL } from '../../config.js.js';
+import { APIURL } from '#app/config.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import * as types from '#app/Library/actions/actionTypes.js';
-import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
+import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { documentsApi } from '../../Documents.js';
+import { documentsApi } from '#app/Documents.js';
 import { mockID } from '#shared/uniqueID.js.js';
 
-import { api } from '../../Entities.js';
+import { api } from '#app/Entities.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
-import SearchApi from '../../Search/SearchAPI.js';
+import SearchApi from '#app/Search/SearchAPI.js';
 import * as saveEntityWithFiles from '../saveEntityWithFiles';
 
 const middlewares = [thunk];

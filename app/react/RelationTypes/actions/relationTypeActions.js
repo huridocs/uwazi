@@ -1,7 +1,7 @@
-import * as types from '../../RelationTypes/actions/actionTypes.js';
-import api from '../../RelationTypes/RelationTypesAPI.js';
-import { actions } from '../../BasicReducer/index.js';
-import { notificationActions } from '../../Notifications.js';
+import * as types from '#app/RelationTypes/actions/actionTypes.js';
+import api from '#app/RelationTypes/RelationTypesAPI.js';
+import { actions } from '#app/BasicReducer/index.js';
+import { notificationActions } from '#app/Notifications.js';
 import { t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 

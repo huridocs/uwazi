@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { ShallowWrapper } from 'enzyme';
 
-import { ShareEntityModal } from '../../Permissions/components/ShareEntityModal.js';
+import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.js';
 
 import { PermissionSchema } from '#shared/types/permissionType.js';
 
@@ -11,9 +11,9 @@ import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permiss
 
 import { renderConnected } from '#app/utils/test/renderConnected.js';
 
-import * as api from '../../Permissions/PermissionsAPI.js';
+import * as api from '#app/Permissions/PermissionsAPI.js';
 
-import { saveEntitiesPermissions } from '../../Permissions/actions/actions.js';
+import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { MembersList } from '../MembersList';
 import { data } from './testData';

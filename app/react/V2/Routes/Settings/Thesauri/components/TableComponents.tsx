@@ -3,7 +3,7 @@ import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { Button, Pill } from '../../../../Components/UI/index.js';
+import { Button, Pill } from '#app/V2/Components/UI/index.js';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
 import { ThesauriRow } from './ThesauriTable.js';

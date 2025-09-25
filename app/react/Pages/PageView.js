@@ -1,13 +1,13 @@
 import React from 'react';
 import { isClient } from '#app/utils/index.js';
-import { actions } from '../../BasicReducer/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '../../Multireducer.js';
-import RouteHandler from '../../App/RouteHandler.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { withRouter } from '../../componentWrappers.js';
-import { trackPage } from '../../App/GoogleAnalytics.js';
+import { withRouter } from '#app/componentWrappers.js';
+import { trackPage } from '#app/App/GoogleAnalytics.js';
 import { ErrorBoundary } from '#app/V2/Components/ErrorHandling.js';
 import { PageViewer } from './components/PageViewer.js';
 import { getPageAssets } from './utils/getPageAssets.js';

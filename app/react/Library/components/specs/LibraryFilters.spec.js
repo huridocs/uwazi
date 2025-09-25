@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { LibraryFilters, mapStateToProps } from '#app/Library/components/LibraryFilters.js';
-import SidePanel from '../../Layout/SidePanel.js';
+import SidePanel from '#app/Layout/SidePanel.js';
 
 describe('LibraryFilters', () => {
   let component;

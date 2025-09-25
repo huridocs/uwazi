@@ -19,16 +19,16 @@ import { Translate } from '#app/I18N/index.js';
 
 import { advancedSort } from '#app/utils/advancedSort.js';
 
-import { ClientTranslationSchema } from 'app/V2/shared/types.js';
+import { ClientTranslationSchema } from '#app/V2/shared/types.js';
 
 import { InputField } from '#app/V2/Components/Forms.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
-import { Button, ToggleButton, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import { Button, ToggleButton, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 import * as translationsAPI from '#app/V2/api/translations/index.js';
 import * as settingsAPI from '#app/V2/api/settings/index.js';
-import { notificationAtom } from '../../../atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
 

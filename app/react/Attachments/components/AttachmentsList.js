@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Translate } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import Attachment from '../../Attachments/components/Attachment.js';
+import Attachment from '#app/Attachments/components/Attachment.js';
 
 import UploadSupportingFile from './UploadSupportingFile';
 

@@ -11,12 +11,12 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { t, Translate } from '#app/I18N/index.js';
 
-import { wrapDispatch } from '../../Multireducer.js';
-import ModalTips from '../../App/ModalTips.js';
-import { SearchTipsContent } from '../../App/SearchTipsContent.js';
-import { submitNewSearch } from '../../SemanticSearch/actions/actions.js';
-import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { IStore } from 'app/V2/shared/types.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import ModalTips from '#app/App/ModalTips.js';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
+import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { Form } from '#app/Forms/Form.js';
 
 interface SearchBarOwnProps {}

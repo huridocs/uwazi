@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ShowIf from '../../App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { Field, Control } from 'react-redux-form';
 import { t } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import nestedProperties from '../../Templates/components/ViolatedArticlesNestedProperties.js';
-import { store } from '../../store.js';
+import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
+import { store } from '#app/store.js';
 import { Icon } from 'UI';
 import { MultiSelect } from './MultiSelect';
 

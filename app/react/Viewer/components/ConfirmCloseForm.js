@@ -5,8 +5,8 @@ import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
-import { hideModal } from '../../Modals/actions/modalActions.js';
-import Modal from '../../Layout/Modal.js';
+import { hideModal } from '#app/Modals/actions/modalActions.js';
+import Modal from '#app/Layout/Modal.js';
 import { Icon } from 'UI';
 import { closePanel } from '../actions/uiActions';
 

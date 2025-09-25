@@ -5,10 +5,10 @@ import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from 'UI';
 import { t, Translate } from '#app/I18N/index.js';
-import { reconnectSocket } from '../../socket.js';
-import RouteHandler from '../../App/RouteHandler.js';
-import { reloadThesauri } from '../../Thesauri/actions/thesaurisActions.js';
-import { withRouter } from '../../componentWrappers.js';
+import { reconnectSocket } from '#app/socket.js';
+import RouteHandler from '#app/App/RouteHandler.js';
+import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
+import { withRouter } from '#app/componentWrappers.js';
 import auth from '#app/Auth/index.js';
 
 const reloadHome = () => {

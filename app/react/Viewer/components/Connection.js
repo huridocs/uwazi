@@ -7,8 +7,8 @@ import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { withContext } from '../../componentWrappers.js';
-import ShowIf from '../../App/ShowIf.js';
+import { withContext } from '#app/componentWrappers.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { deleteReference } from '#app/Viewer/actions/referencesActions.js';
 import {
   highlightReference,
@@ -16,8 +16,8 @@ import {
   selectReference,
   toggleReferences,
 } from '#app/Viewer/actions/uiActions.js';
-import { Item } from '../../Layout.js';
-import helpers from '../../Documents/helpers.js';
+import { Item } from '#app/Layout.js';
+import helpers from '#app/Documents/helpers.js';
 
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router';
 
-import { CurrentLocationLink } from '../../Layout.js';
+import { CurrentLocationLink } from '#app/Layout.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 

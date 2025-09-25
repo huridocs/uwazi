@@ -4,9 +4,9 @@ import { Translate } from '#app/I18N/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
 
-import { ClientEntitySchema } from 'app/V2/shared/types.js';
-import { Button, Sidepanel } from '../../../../../Components/UI/index.js';
-import { PDF } from '../../../../../Components/PDFViewer/index.js';
+import { ClientEntitySchema } from '#app/V2/shared/types.js';
+import { Button, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { PDF } from '#app/V2/Components/PDFViewer/index.js';
 
 interface PDFSidepanelSidepanelProps {
   showSidepanel: boolean;

@@ -12,11 +12,11 @@ import { generateID } from '#shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
-} from '../../Uploads/actions/uploadsActions.js';
+} from '#app/Uploads/actions/uploadsActions.js';
 import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
-import { ClientEntitySchema } from 'app/V2/shared/types.js';
+import { ClientEntitySchema } from '#app/V2/shared/types.js';
 import { templatesAtom } from '#app/V2/atoms/index.js';
-import { ClientTemplateSchema } from '../../../../../shared/types.js';
+import { ClientTemplateSchema } from '#shared/types.js';
 
 const extractTitle = (file: File) => {
   const title = file.name

@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import * as extractorsAPI from '#app/V2/api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';
-import { PXTable } from '../../../types.js';
+import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types.js';
 
 const DeleteDialog = ({
   setIsProcessing,

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { I18NLink } from '#app/I18N/index.js';
 import SearchDescription from '#app/Library/components/SearchDescription.js';
-import { withContext } from '../../componentWrappers.js';
+import { withContext } from '#app/componentWrappers.js';
 import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';

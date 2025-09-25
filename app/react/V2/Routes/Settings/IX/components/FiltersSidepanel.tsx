@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
-import { Checkbox } from '../../../../Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { Checkbox } from '#app/V2/Components/Forms/index.js';
 import { StatsTooltip } from './Tooltip.js';
 import { IXFilters } from '../types.js';
 

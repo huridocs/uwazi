@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { actions } from '../../Metadata.js';
-import { MenuButtons } from '../../ContextMenu.js';
+import { actions } from '#app/Metadata.js';
+import { MenuButtons } from '#app/ContextMenu.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Icon } from 'UI';
 

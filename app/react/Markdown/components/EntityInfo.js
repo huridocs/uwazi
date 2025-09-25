@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 import { getAndSelectDocument as getAndSelectDocumentAction } from '#app/Library/actions/libraryActions.js';
 
 class EntityInfo extends Component {

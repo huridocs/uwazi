@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon } from 'UI';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { TableViewColumn } from 'app/V2/shared/types.js';
+import { TableViewColumn } from '#app/V2/shared/types.js';
 import { Translate } from '#app/I18N/index.js';
 
 interface SelectableColumn extends TableViewColumn {

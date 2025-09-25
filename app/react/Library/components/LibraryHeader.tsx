@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 
 import { Icon } from 'UI';
 
@@ -16,8 +16,8 @@ import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
 } from '#app/Library/actions/libraryActions.js';
-import { showFilters as showFiltersAction } from '../../Entities/actions/uiActions.js';
-import { IStore } from 'app/V2/shared/types.js';
+import { showFilters as showFiltersAction } from '#app/Entities/actions/uiActions.js';
+import { IStore } from '#app/V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';

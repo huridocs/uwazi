@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { MenuButtons } from '../../ContextMenu.js';
+import { MenuButtons } from '#app/ContextMenu.js';
 import { MetadataPanelMenu } from '../MetadataPanelMenu';
 
 describe('MetadataPanelMenu', () => {

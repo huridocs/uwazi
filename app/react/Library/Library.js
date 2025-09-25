@@ -1,15 +1,15 @@
 import React from 'react';
 import { Outlet, matchPath } from 'react-router';
-import RouteHandler from '../../App/RouteHandler.js';
-import { actions } from '../../BasicReducer/index.js';
+import RouteHandler from '#app/App/RouteHandler.js';
+import { actions } from '#app/BasicReducer/index.js';
 import {
   enterLibrary,
   unsetDocuments,
   zoomIn,
   zoomOut,
 } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '../../Multireducer.js';
-import { withRouter } from '../../componentWrappers.js';
+import { wrapDispatch } from '#app/Multireducer.js';
+import { withRouter } from '#app/componentWrappers.js';
 import { routes as appRoutes } from '../../appRoutes.js';
 
 class LibraryRootComponent extends RouteHandler {

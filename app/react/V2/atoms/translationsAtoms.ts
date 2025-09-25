@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { ClientTranslationSchema } from 'app/V2/shared/types.js';
+import { ClientTranslationSchema } from '#app/V2/shared/types.js';
 
 const translationsAtom = atom([] as ClientTranslationSchema[]);
 const localeAtom = atom('');

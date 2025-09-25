@@ -3,11 +3,11 @@
  */
 
 import * as translate from '#app/I18N/translateFunction.js';
-import { formatOptions } from '../../components/ExtractorModal';
-import { formatExtractors } from '../../IXDashboard';
+import { formatOptions } from '#app/components/ExtractorModal';
+import { formatExtractors } from '#app/V2/Routes/Settings/IX/IXDashboard';
 import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';
 import { extractors, templates, templatesWithCommonProperties } from './fixtures';
-import { MultiValueSuggestion } from '../../types';
+import { MultiValueSuggestion } from '#app/V2/Routes/Settings/IX/types';
 
 describe('helpers', () => {
   describe('formatOptions', () => {

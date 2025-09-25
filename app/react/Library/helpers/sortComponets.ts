@@ -1,5 +1,5 @@
 import { t } from '#app/I18N/index.js';
-import { ClientTemplateSchema } from 'app/V2/shared/types.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 

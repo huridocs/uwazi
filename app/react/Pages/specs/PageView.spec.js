@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import RouteHandler from '../../App/RouteHandler.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import { shallow } from 'enzyme';
 import { actions } from '#app/V2/BasicReducer/reducer.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { PageViewer } from '../../Pages/components/PageViewer.js';
+import { PageViewer } from '#app/Pages/components/PageViewer.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';

@@ -2,8 +2,8 @@
 import moment from 'moment-timezone';
 import Immutable from 'immutable';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { store } from '../../store.js';
-import nestedProperties from '../../Templates/components/ViolatedArticlesNestedProperties.js';
+import { store } from '#app/store.js';
+import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
 
 const prepareRelatedEntity = (options, propValue, templates, property) => {
   const relation =

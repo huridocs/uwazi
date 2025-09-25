@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Truncate } from '../../../../Components/UI/index.js';
+import { Truncate } from '#app/V2/Components/UI/index.js';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';

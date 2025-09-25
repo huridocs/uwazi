@@ -9,9 +9,9 @@ import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
-import { ClientEntitySchema, ClientFile } from 'app/V2/shared/types.js';
-import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
-import { pdfScaleAtom } from '../../../V2/atoms/index.js';
+import { ClientEntitySchema, ClientFile } from '#app/V2/shared/types.js';
+import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
+import { pdfScaleAtom } from '#app/V2/atoms/index.js';
 import { PageSelections } from '../PageSelections.js';
 
 const defaultEntityDocument: ClientFile = {

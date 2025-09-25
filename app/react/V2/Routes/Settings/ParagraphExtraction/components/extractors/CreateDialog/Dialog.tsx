@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from '../../../../../../Components/UI/index.js';
+import { Modal } from '#app/V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { AddExtractorSteps } from './steps/index.js';

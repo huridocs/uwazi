@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
-import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '../../../atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import { Extractor } from '#shared/ParagraphExtractionTypes.js';
 
 import { Button } from '#app/V2/Components/UI/index.js';

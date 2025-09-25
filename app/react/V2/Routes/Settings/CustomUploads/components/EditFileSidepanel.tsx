@@ -9,9 +9,9 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
-import { InputField } from '../../../../Components/Forms/index.js';
-import { getFileNameAndExtension } from '../../../../../shared/formatHelpers.js';
+import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
+import { getFileNameAndExtension } from '#shared/formatHelpers.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';
 import { update } from '#app/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';

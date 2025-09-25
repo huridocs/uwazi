@@ -3,7 +3,7 @@ import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import MarkDownViewer from '../../Markdown.js';
+import MarkDownViewer from '#app/Markdown.js';
 
 import { MarkDown, MarkDownType } from '../MarkDown';
 

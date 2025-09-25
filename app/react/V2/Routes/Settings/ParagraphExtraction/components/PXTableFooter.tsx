@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useSearchParams } from 'react-router';
-import { PaginationState, Paginator } from '../../../../Components/UI/index.js';
+import { PaginationState, Paginator } from '#app/V2/Components/UI/index.js';
 
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import { PAGE_SIZE } from '../Loaders.js';

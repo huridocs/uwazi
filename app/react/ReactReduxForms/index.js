@@ -1,6 +1,6 @@
 import React from 'react';
 import { Control } from 'react-redux-form';
-import * as forms from '../../Forms/index.js';
+import * as forms from '#app/Forms/index.js';
 
 export const Select = props => <Control.select component={forms.Select} {...props} />;
 export const DatePicker = props => <Control component={forms.DatePicker} {...props} />;

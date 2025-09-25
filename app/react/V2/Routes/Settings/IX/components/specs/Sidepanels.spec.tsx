@@ -5,10 +5,10 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 
-import { ClientPropertySchema } from 'app/V2/shared/types.js';
-import { TestRouterContext } from '../../../../../testing/TestRouterContext.js';
-import { TestAtomStoreProvider as AtomProvider } from '../../../../../testing/index.js';
-import { thesauriAtom } from '../../../../../atoms/index.js';
+import { ClientPropertySchema } from '#app/V2/shared/types.js';
+import { TestRouterContext } from '#app/V2/testing/TestRouterContext.js';
+import { TestAtomStoreProvider as AtomProvider } from '#app/V2/testing/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.js';
 import {
   loaderData,
   suggestion1,
@@ -23,7 +23,7 @@ import {
 } from './SidepanelsFixtures.js';
 import { PDFSidepanel } from '../PDFSidepanel.js';
 import { PropertySidepanel } from '../PropertySidepanel.js';
-import * as sidepanelFunctions from '../../helpers/sidepanelFunctions.js';
+import * as sidepanelFunctions from '#app/V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
 
 const renderPDFSidepanel = (
   suggestion: any,

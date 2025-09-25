@@ -5,10 +5,10 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, act, fireEvent } from '@testing-library/react';
 
-import { notificationActions } from '../../Notifications.js';
+import { notificationActions } from '#app/Notifications.js';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import * as actions from '../../actions/metadataExtractionActions';
+import * as actions from '#app/actions/metadataExtractionActions';
 import { MetadataExtractor, Selection } from '../MetadataExtractor';
 
 describe('MetadataExtractor', () => {

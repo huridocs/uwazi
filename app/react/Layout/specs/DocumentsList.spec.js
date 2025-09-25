@@ -3,11 +3,11 @@ import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 
 import Doc from '#app/Library/components/Doc.js';
-import Footer from '../../App/Footer.js';
+import Footer from '#app/App/Footer.js';
 
-import { DocumentCounter } from '../../Layout/DocumentCounter.js';
-import { TilesViewer } from '../../Layout/TilesViewer.js';
-import { TableViewer } from '../../Layout/TableViewer.js';
+import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
+import { TilesViewer } from '#app/Layout/TilesViewer.js';
+import { TableViewer } from '#app/Layout/TableViewer.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { SearchBar } from '#app/Library/components/SearchBar.js';
 import { DocumentsList } from '../DocumentsList';

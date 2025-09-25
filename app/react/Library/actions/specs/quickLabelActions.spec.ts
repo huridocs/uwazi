@@ -1,12 +1,12 @@
 import { actions } from '#app/V2/BasicReducer/reducer.js';
 
-import EntitiesAPI from '../../Entities/EntitiesAPI.js';
+import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 
-import { QuickLabelState } from 'app/V2/shared/types.js';
+import { QuickLabelState } from '#app/V2/shared/types.js';
 
-import { wrapDispatch } from '../../Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer.js';
 
-import { store } from '../../store.js';
+import { store } from '#app/store.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import api from '../../Search/SearchAPI.js';
+import api from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
 
 import CejilChart from './CejilChart';

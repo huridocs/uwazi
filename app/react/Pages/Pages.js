@@ -1,7 +1,7 @@
 import React from 'react';
 
-import RouteHandler from '../../App/RouteHandler.js';
-import { actions } from '../../BasicReducer/index.js';
+import RouteHandler from '#app/App/RouteHandler.js';
+import { actions } from '#app/BasicReducer/index.js';
 import PagesAPI from './PagesAPI';
 
 import PagesList from './components/PagesList';

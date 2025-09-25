@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { PDFPage } from '../../PDF.js';
+import { PDFPage } from '#app/Viewer/PDF.js';
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
 

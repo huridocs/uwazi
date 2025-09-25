@@ -3,8 +3,8 @@ import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/utils/api.js';
 
-import { notificationActions } from '../../Notifications.js';
-import { IStore } from 'app/V2/shared/types.js';
+import { notificationActions } from '#app/Notifications.js';
+import { IStore } from '#app/V2/shared/types.js';
 import { Dispatch } from 'redux';
 
 import { ensure } from '#shared/tsUtils.js';

@@ -14,8 +14,8 @@ import {
   Cell,
 } from 'recharts';
 
-import { Loader } from '../../components/Elements/Loader.js';
-import { arrayUtils } from '../../Charts.js';
+import { Loader } from '#app/components/Elements/Loader.js';
+import { arrayUtils } from '#app/Charts.js';
 import markdownDatasets from '../markdownDatasets';
 
 const objectFlip = obj => {
