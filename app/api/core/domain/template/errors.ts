@@ -5,6 +5,7 @@ import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipPro
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
 import { AbstractSelectProperty } from './AbstractSelectProperty';
+import { NestedPropertyProps } from './NestedProperty';
 
 class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -215,6 +216,15 @@ class RelationshipTargetTypeMismatchError extends DomainError {
   }
 }
 
+class NestedPropertyNotAvailableError extends DomainError {
+  constructor(props: NestedPropertyProps) {
+    super(
+      `The nested Property type is not available for your organization ${JSON.stringify(props)}`,
+      'template.property.nested_property_type_not_available_error'
+    );
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -237,4 +247,5 @@ export {
   PropertyThesaurusMismatchError,
   PropertyRelationTypeMismatchError,
   PropertyInheritedTypeMismatchError,
+  NestedPropertyNotAvailableError,
 };
