@@ -8,6 +8,7 @@ import { SearchQuery, Page } from 'shared/types/SearchQueryType';
 import { mapResults } from 'api/search.v2/searchResponse';
 import qs from 'qs';
 import { buildQuery } from './buildQuery';
+import { tenants } from 'api/tenants';
 
 interface UwaziResponse {
   data: any;
@@ -67,7 +68,9 @@ const searchRoutes = (app: Application) => {
     }),
     async (req: UwaziReq, res: UwaziRes) => {
       const { query, language, url } = req;
-      const response = await elastic.search({ body: await buildQuery(query, language) });
+      const mappings = (await elastic.indices.getMapping()).body[tenants.current().indexName]
+        .mappings.properties;
+      const response = await elastic.search({ body: await buildQuery(query, language, mappings) });
       res.json({
         data: mapResults(response.body, query),
         links: pagination(url, response.body.hits.total.value, query.page),
