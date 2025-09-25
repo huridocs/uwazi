@@ -134,6 +134,7 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  const gotToPane = (paneNumber: number) => setCurrentPane(paneNumber);
   const goToNext = () => setCurrentPane(prev => (prev + 1) % children.length);
   const goToPrev = () => setCurrentPane(prev => (prev - 1) % children.length);
 
@@ -179,9 +180,6 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         style={{
           transform: `translateX(calc(-${currentPane * 100}% + ${dragOffset}px))`,
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {children.map((child, index) => (
           <div
@@ -194,15 +192,33 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         ))}
       </div>
 
-      <nav className="flex w-full p-1 justify-between bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white to-gray-100 rounded-2xl">
-        <button onClick={goToPrev} type="button" aria-label={t('System', 'Previous', null, false)}>
-          <ArrowLeftIcon className="w-5" />
-          <Translate className="sr-only">Previous</Translate>
-        </button>
-        <button onClick={goToNext} type="button" aria-label={t('System', 'Next', null, false)}>
-          <ArrowRightIcon className="w-5" />
-          <Translate className="sr-only">Next</Translate>
-        </button>
+      <nav
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="flex p-2 w-full flex-nowrap justify-around">
+          {children.map((_child, index) => (
+            <button
+              onClick={() => gotToPane(index)}
+              type="button"
+              aria-hidden
+              className={`w-2 h-2 border border-primary-300 rounded-full ${currentPane === index ? 'bg-primary-500' : 'bg-transparent'}`}
+            />
+          ))}
+        </div>
+        <div className="sr-only">
+          <button
+            onClick={goToPrev}
+            type="button"
+            aria-label={t('System', 'Previous', null, false)}
+          >
+            <ArrowLeftIcon className="w-5" />
+          </button>
+          <button onClick={goToNext} type="button" aria-label={t('System', 'Next', null, false)}>
+            <ArrowRightIcon className="w-5" />
+          </button>
+        </div>
       </nav>
     </section>
   );
