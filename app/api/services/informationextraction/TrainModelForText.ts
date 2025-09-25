@@ -71,12 +71,10 @@ class TrainModelForText implements UseCase<Input, Output> {
         }
 
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {
-          const values = entity?.metadata?.[extractor.property]?.map(
-            (x: { value: any; label: any }) => ({
-              id: String(x.value),
-              label: x.label,
-            })
-          );
+          const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
+            id: String(value),
+            label,
+          }));
 
           const hasValue = !!values?.filter((v: { id: string }) => !!v.id)?.length;
           if (!values || !hasValue) {
