@@ -158,6 +158,7 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
           {index < children.length - 1 && (
             <div
               aria-hidden
+              role="separator"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
               className="cursor-col-resize flex-shrink-0 bg-gray-200"

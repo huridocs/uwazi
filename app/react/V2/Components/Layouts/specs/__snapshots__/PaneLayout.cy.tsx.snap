@@ -1,6 +1,6 @@
 exports[`PaneLayout > Desktop > should have the expected HTML #0`] = `
 <div class="flex h-full min-h-0 main-view">
-  <section class="h-full min-h-0" style="width: 405.667px;">
+  <section class="h-full min-h-0" style="width: 407px;">
     <div tabindex="0" class="h-full min-h-0 overflow-auto">
       <div style="background: white;">
         <div>
@@ -19,11 +19,12 @@ exports[`PaneLayout > Desktop > should have the expected HTML #0`] = `
     </div>
   </section>
   <div
-    role="separator"
     aria-hidden="true"
-    class="w-1 cursor-col-resize flex-shrink-0 bg-gray-200"
+    role="separator"
+    class="cursor-col-resize flex-shrink-0 bg-gray-200"
+    style="width: 4px;"
   ></div>
-  <section class="h-full min-h-0" style="width: 405.667px;">
+  <section class="h-full min-h-0" style="width: 407px;">
     <div tabindex="0" class="h-full min-h-0 overflow-auto">
       <div style="background: white;">
         <div class="min-w-96 overflow-x-auto">
@@ -44,11 +45,12 @@ exports[`PaneLayout > Desktop > should have the expected HTML #0`] = `
     </div>
   </section>
   <div
-    role="separator"
     aria-hidden="true"
-    class="w-1 cursor-col-resize flex-shrink-0 bg-gray-200"
+    role="separator"
+    class="cursor-col-resize flex-shrink-0 bg-gray-200"
+    style="width: 4px;"
   ></div>
-  <section class="h-full min-h-0" style="width: 405.667px;">
+  <section class="h-full min-h-0" style="width: 407px;">
     <div tabindex="0" class="h-full min-h-0 overflow-auto">
       <div style="background: white;">
         <div>

@@ -26,9 +26,23 @@ describe('PaneLayout', () => {
 
     it('should be able to resize panes', () => {
       render();
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 467px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 347px;');
     });
 
-    it('panel should have a minimum size', () => {});
+    it('panel should have a minimum size', () => {
+      render();
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.realDrag(cy.get('div[role="separator"]'), 297, 0);
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 100px;');
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 714px;');
+    });
+
+    it('should save panel setup to the localStorage', () => {});
   });
 
   describe('mobile', () => {
