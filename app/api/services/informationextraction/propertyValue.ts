@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { ensure } from 'shared/tsUtils';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
-import { propertyTypeIsWithoutExtractedMetadata } from './ixMaterials';
+import { propertyTypes } from 'shared/propertyTypes';
 
 type EntityValue = { value?: string; label?: string };
 
@@ -16,7 +16,12 @@ export function deriveTrainingPropertyValue(
   targetPropertyType: PropertyTypeSchema,
   { currentValue, selectionText, entityValues }: DeriveParams
 ): string | Array<{ value: string; label: string }> {
-  if (propertyTypeIsWithoutExtractedMetadata(targetPropertyType)) {
+  const isSelectLike =
+    targetPropertyType === propertyTypes.select ||
+    targetPropertyType === propertyTypes.multiselect ||
+    targetPropertyType === propertyTypes.relationship;
+
+  if (isSelectLike) {
     const values = entityValues || [];
     return values.map(v => ({
       value: ensure<string>(v.value || ''),

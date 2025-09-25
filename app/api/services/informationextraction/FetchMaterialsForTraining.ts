@@ -9,6 +9,7 @@ import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationMode
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
 import { EntitySchema } from 'shared/types/entityType';
+import { LanguageUtils } from 'shared/language';
 import {
   getEntitiesForTraining,
   getFilesForTraining,
@@ -117,17 +118,22 @@ const buildPdfMaterialsForFiles = async (
       const seg = segById.get(f._id.toString());
       if (!seg) return null;
 
-      const [entityLang] = await entitiesModel.get(
-        { sharedId: f.entity, language: f.language },
-        `metadata.${extractor.property}`
+      const lookupLang =
+        LanguageUtils.fromISO639_3(ensure<string>(f.language), false)?.ISO639_1 ||
+        ensure<string>(f.language);
+      const [entityLang] = await entitiesModel.getUnrestricted(
+        { sharedId: f.entity, language: lookupLang },
+        `language metadata.${extractor.property}`
       );
       const entityValues = (entityLang?.metadata?.[extractor.property] || []) as Array<{
         value?: string;
         label?: string;
       }>;
       const selectionText = f.extractedMetadata?.[0]?.selection?.text;
+      const entityCurrent = (entityLang?.metadata?.[extractor.property]?.[0]?.value ??
+        undefined) as string | number | undefined;
       const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
-        currentValue: undefined,
+        currentValue: entityCurrent,
         selectionText,
         entityValues,
       });
@@ -135,7 +141,7 @@ const buildPdfMaterialsForFiles = async (
       const item: FileWithAggregation = {
         _id: f._id,
         entity: ensure<string>(f.entity),
-        language: ensure<string>(f.language),
+        language: entityLang?.language || ensure<string>(f.language),
         extractedMetadata: f.extractedMetadata || [],
         segmentation: seg,
         propertyValue: propertyValue as PropertyValue,

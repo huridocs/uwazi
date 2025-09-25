@@ -17,7 +17,6 @@ import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ensure } from 'shared/tsUtils';
 import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { IXModelType } from 'shared/types/IXModelType';
@@ -384,8 +383,8 @@ async function getFilesForTraining(extractor: IXExtractorType) {
           currentValue,
           selectionText: file?.extractedMetadata?.[0]?.selection?.text,
           entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
-            value: ensure<string>(value),
-            label: ensure<string>(label),
+            value,
+            label,
           })),
         });
         const parsed = {
