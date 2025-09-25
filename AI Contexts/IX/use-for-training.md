@@ -1,6 +1,6 @@
 # IX "use for training" — Working Context
 
-Last updated: 2025-09-25
+Last updated: 2025-09-25 (end of day)
 
 ## Scope
 
@@ -186,12 +186,37 @@ Last updated: 2025-09-25
     - PDF: `app/api/services/informationextraction/TrainModelForPDF.ts`
     - TypeScript: select-like values mapping uses destructuring `{ value, label }` to satisfy `MetadataObjectSchema` (label optional).
 
+- Shared property-value derivation (parity across Stage A and Stage B):
+
+  - New helper: `deriveTrainingPropertyValue` in `app/api/services/informationextraction/propertyValue.ts` centralizes how training values are derived.
+  - Behavior (unchanged vs earlier flows, now explicit in one place):
+    - For select/multiselect/relationship: returns `[{ value, label }, ...]` from entity metadata values.
+    - For other types (text/markdown/date/etc.): prefers `currentValue` when provided; falls back to selection text; normalizes epoch-like dates to `YYYY-MM-DD`.
+  - Both Stage A (files path) and Stage B (aggregation path) call this helper so value semantics are identical.
+
+- Stage A (files-based) implementation details and parity guarantees:
+
+  - Module: `app/api/services/informationextraction/FetchMaterialsForTraining.ts`.
+  - Entity access: uses `entitiesModel.getUnrestricted({ sharedId, language })` to ensure the correct entity-language variant is read without permission constraints, matching previous training flows.
+  - Language source on materials: Stage A sets the `FileWithAggregation.language` to the entity-language (`entityLang.language`) when available; otherwise uses the file’s language. This ensures the outbound `language_iso` reflects the entity language (e.g., 'es').
+  - File selection: Stage A pulls marked files (`useForTraining: true`) and builds materials only for files with ready segmentations; deduped by `fileId`.
+  - Flag propagation: `useForTraining` is set to `true` on Stage A materials only; Stage B materials default to `false`.
+  - Budget: Remaining budget for Stage B is `MAX_TRAINING_FILES_NUMBER - StageACount`. If `samplePolicy === 'only_marked'`, Stage B is skipped.
+
+- Stage B (aggregation-based) unchanged behavior:
+
+  - Module: `app/api/services/informationextraction/ixMaterials.ts`.
+  - Continues to use balanced sampling within process constraints; now calls the shared helper for value derivation.
+  - `useForTraining` remains `false` for Stage B materials.
+
 - Tests added for selection and route:
 
   - Route accepts `options.samplePolicy`: `app/api/suggestions/specs/routes.spec.ts`.
   - Selection tests: `app/api/services/informationextraction/specs/FetchMaterialsForTraining.spec.ts`
     - Property: includes marked unlabeled entities; Stage B gated by policy; deduped by `(sharedId, language)`.
     - PDF: Stage A first; XML missing/processing skipped; Stage B gated by policy; no duplicates; budget respected.
+  - Helper tests: `app/api/services/informationextraction/specs/propertyValue.spec.ts` validate select/text/date behaviors.
+  - Route tests: expectations updated to reflect `options.samplePolicy` acceptance and `useForTraining` boolean in payloads.
 
 ## Training flow (pre-send) — control/data flow chart
 
@@ -310,6 +335,45 @@ Test plan (selection-only)
    - PDF: include `useForTraining` in materials payload (decide per-file or per-item granularity; current selection already enforces curated files first).
 2. Optional: implement PDF Stage A fallback by entity when `fileId` is missing on marked suggestions, if feasible without breaking current flows.
 3. Optional: telemetry of Stage A/Stage B counts into `processRun` for progress reporting.
+
+## Findings, pitfalls, and parity notes (important)
+
+- Ajv strict-mode schemas: do not use the `optional` keyword; optionality is controlled via omission from `required`. This affected the train route when adding `options.samplePolicy`.
+- No `as any`: removed all remaining casts in the new code paths, notably:
+  - Segmentation lookups filter out entries with missing `fileID` before building maps (`FetchMaterialsForTraining`).
+  - `FileWithAggregation` now includes an optional `useForTraining?: boolean` and reuses the shared `PropertyValue` type.
+- Stage A parity with Stage B:
+  - Entity-language and value must come from the entity-language record; do not rely on `file.language` (which can be ISO639-3 like 'spa'). Stage A sets `item.language` to `entityLang.language` when available so the outbound `language_iso` matches the entity (e.g., 'es').
+  - Value derivation must prefer the entity’s current value over selection text; both paths now call the same helper to enforce this.
+  - `useForTraining` must be `true` only for Stage A (marked) materials; `false` for Stage B.
+- PDF payload language:
+  - The outbound `language_iso` in the materials is sourced from `FileWithAggregation.language`. Since Stage A sets this to the entity’s language where available, the payload mirrors previous behavior without extra normalization.
+- Logging: temporary console logs were added during debugging (in `propertyValue.ts`, Stage A builder, and `TrainModelForPDF`). These should be removed once the flow is stable.
+
+## Handoff context (for a new Agent)
+
+Key modules and responsibilities:
+
+- `app/api/suggestions/routes.ts`: adds `options.samplePolicy` validation to `POST /api/suggestions/train`.
+- `app/api/services/informationextraction/InformationExtraction.ts`: persists `processRun.samplePolicy` after `ixmodels.startTraining` (ordering matters because `startTraining` unsets `processRun`).
+- `app/api/services/informationextraction/propertyValue.ts`: shared helper for value derivation across Stage A and Stage B.
+- `app/api/services/informationextraction/FetchMaterialsForTraining.ts`: Stage A implementation for Property and PDF:
+  - Property: `getPropertyTrainingEntities` ensures marked cohort inclusion (dedupe by `(sharedId, language)`), honors `samplePolicy` for Stage B gating.
+  - PDF: `getPdfTrainingProcess` yields Stage A first (marked files with ready XML), then Stage B up to remaining budget; attaches `useForTraining: true` to Stage A materials and sets `item.language` from the entity-language when available.
+- `app/api/services/informationextraction/ixMaterials.ts`: Stage B path; unchanged semantics but now delegates value derivation to the shared helper.
+- `app/api/services/informationextraction/TrainModelForText.ts` and `TrainModelForPDF.ts`: use the derived materials and send to the external IX service; no payload format changes besides including `useForTraining` (boolean).
+
+Tests of interest:
+
+- Selection tests: `FetchMaterialsForTraining.spec.ts` (Stage A gating, dedupe, budget; XML-ready enforcement).
+- Helper tests: `propertyValue.spec.ts` (select, text, date behaviors).
+- Integration tests: `InformationExtraction.spec.ts` (including a case that marks the Spanish file to assert `useForTraining: true`, `label_text` from the entity, and `language_iso: 'es'`).
+
+Open items to consider post-handoff:
+
+- Remove debugging console logs once stability is confirmed.
+- Add e2e tests for payloads that include `useForTraining` in both Text and PDF.
+- Consider a fallback for PDF Stage A when `fileId` is missing on marked suggestions (documented limitation).
 
 ## Notes for future implementers
 
