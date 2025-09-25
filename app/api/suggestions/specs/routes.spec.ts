@@ -87,18 +87,16 @@ describe('POST /api/suggestions/train', () => {
   it('should return the status of the IX process', async () => {
     const response = await request(app)
       .post('/api/suggestions/train')
-      .send({ extractorId: factory.id('super_powers_extractor').toString() })
-      .expect(202);
-
+      .send({ extractorId: factory.id('super_powers_extractor').toString() });
+    expect(response.status).toBe(202);
     expect(response.body).toMatchObject({ status: 'processing' });
   });
 
   it('should accept suggestionsToFind', async () => {
     const response = await request(app)
       .post('/api/suggestions/train')
-      .send({ extractorId: factory.id('super_powers_extractor').toString(), suggestionsToFind: 1 })
-      .expect(202);
-
+      .send({ extractorId: factory.id('super_powers_extractor').toString(), suggestionsToFind: 1 });
+    expect(response.status).toBe(202);
     expect(response.body).toMatchObject({ status: 'processing' });
   });
 
@@ -108,9 +106,8 @@ describe('POST /api/suggestions/train', () => {
       .send({
         extractorId: factory.id('super_powers_extractor').toString(),
         options: { samplePolicy: 'only_marked' },
-      })
-      .expect(202);
-
+      });
+    expect(response.status).toBe(202);
     expect(response.body).toMatchObject({ status: 'processing' });
   });
 });
