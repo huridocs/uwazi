@@ -44,6 +44,7 @@ const fixtures: DBFixture = {
   settings: [
     {
       newNameGeneration: true,
+      project: 'cejil',
     },
   ],
 
@@ -134,7 +135,7 @@ describe('CreateTemplateUseCase', () => {
             type: 'date',
           },
         },
-        { label: 'Nested', type: 'nested' }, // missing
+        { label: 'Nested', type: 'nested' },
 
         // { label: 'New Relationship', type: 'newRelationship' }, // missing
       ],
