@@ -54,7 +54,7 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
       const leftIndex = draggingIndex.current;
       const rightIndex = leftIndex + 1;
 
-      if (leftIndex < 0 || rightIndex >= currentWidths.length) return;
+      if (leftIndex < 0 || rightIndex >= children.length) return;
 
       const leftStart = currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
       const currentLeft = xValue - containerRect.left - leftStart;
@@ -70,7 +70,7 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
         setPercentagesToLocalStorage(percentages, localStorageKey);
       }
     },
-    [localStorageKey]
+    [children.length, localStorageKey]
   );
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
       const containerRect = containerRef.current.getBoundingClientRect();
       const containerWidth = containerRect.width || 1;
 
-      const separatorCount = Math.max(0, children.length - 1);
+      const separatorCount = children.length - 1;
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
       const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
@@ -93,17 +93,19 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
       const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
 
       if (savedPercentages.length === children.length) {
-        const fromStorage = savedPercentages.map(p => Math.max(p * containerWidth, MIN_WIDTH));
+        const fromStorage = savedPercentages.map(percentage =>
+          Math.max(percentage * containerWidth, MIN_WIDTH)
+        );
         const total = fromStorage.reduce((a, b) => a + b, 0);
         if (total > containerWidth) {
           const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
-          setWidths(fromStorage.map(w => w * scale));
+          setWidths(fromStorage.map(width => width * scale));
         } else {
           setWidths(fromStorage);
         }
       } else {
         setWidths(initials);
-        const percents = initials.map(w => w / containerWidth);
+        const percents = initials.map(width => width / containerWidth);
         setPercentagesToLocalStorage(percents, localStorageKey);
       }
     };
