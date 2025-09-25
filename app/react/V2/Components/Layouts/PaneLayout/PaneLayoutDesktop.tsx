@@ -1,112 +1,152 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { captureException } from '@sentry/react';
 import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
 
 const MIN_WIDTH = 100;
+const SEPARATOR_PX = 4;
 
-const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => {
-  if ('clientX' in event) return event.clientX;
-  if ('touches' in event && event.touches.length) return event.touches[0].clientX;
+const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undefined => {
+  if ('clientX' in event && typeof event.clientX === 'number') return event.clientX;
+  if ('touches' in event && event.touches?.length) return event.touches[0].clientX;
   return undefined;
 };
 
-const getFromLocalStorage = (localStorageKey?: string): number[] => {
+const getPercentagesFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
-    const value: number[] = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
-    return value;
+    try {
+      const parsed: number[] = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      captureException(new Error('getPercentagesFromLocalStorage error', { cause: e }));
+    }
   }
   return [];
 };
 
-const setToLocalStorage = (values: number[], localStorageKey?: string) => {
+const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: string) => {
   if (isClient && localStorageKey) {
-    localStorage.setItem(localStorageKey, JSON.stringify(values));
+    try {
+      localStorage.setItem(localStorageKey, JSON.stringify(percentages));
+    } catch (e) {
+      captureException(new Error('setPercentagesToLocalStorage error', { cause: e }));
+    }
   }
 };
 
-// eslint-disable-next-line max-statements
 const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLayoutProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
-  const [widths, setWidths] = useState<number[]>(() => getFromLocalStorage(localStorageKey));
+  const [widths, setWidths] = useState<number[]>([]);
+  const widthsRef = useRef<number[]>([]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.getBoundingClientRect().width;
-        const initials = children.map(() => containerWidth / children.length - 4);
-        setWidths(initials);
-      }
-    };
-
-    if (widths.length === 0) {
-      handleResize();
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-    // Only update if the number of children changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [children.length]);
-
-  const resizeHandler = useCallback(
+  const handleResize = useCallback(
     // eslint-disable-next-line max-statements
-    (event: MouseEvent | TouchEvent) => {
-      event.preventDefault?.();
+    (event: Event) => {
       if (draggingIndex.current === null || !containerRef.current) return;
+
       const xValue = getClientXValue(event);
+
       if (xValue === undefined) return;
-      const newWidths = [...widths];
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const currentWidths = [...widthsRef.current];
       const leftIndex = draggingIndex.current;
       const rightIndex = leftIndex + 1;
-      const leftStart = newWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
-      const currentLeft = xValue - containerRef.current.getBoundingClientRect().left - leftStart;
-      const totalPair = newWidths[leftIndex] + newWidths[rightIndex];
+
+      if (leftIndex < 0 || rightIndex >= currentWidths.length) return;
+
+      const leftStart = currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
+      const currentLeft = xValue - containerRect.left - leftStart;
+      const totalPair = currentWidths[leftIndex] + currentWidths[rightIndex];
       const rightNew = totalPair - currentLeft;
+
       if (currentLeft >= MIN_WIDTH && rightNew >= MIN_WIDTH) {
-        newWidths[leftIndex] = currentLeft;
-        newWidths[rightIndex] = rightNew;
-        setWidths(newWidths);
-        setToLocalStorage(newWidths, localStorageKey);
+        currentWidths[leftIndex] = currentLeft;
+        currentWidths[rightIndex] = rightNew;
+        setWidths(currentWidths);
+
+        const percentages = currentWidths.map(w => w / (containerRect.width || 1));
+        setPercentagesToLocalStorage(percentages, localStorageKey);
       }
     },
-    [localStorageKey, widths]
+    [localStorageKey]
   );
 
-  const onMouseUp = () => {
-    draggingIndex.current = null;
-    document.removeEventListener('mousemove', resizeHandler);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
+  useEffect(() => {
+    widthsRef.current = widths;
+  }, [widths]);
+
+  useEffect(() => {
+    // eslint-disable-next-line max-statements
+    const handleScreenResize = () => {
+      if (!containerRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width || 1;
+
+      const separatorCount = Math.max(0, children.length - 1);
+      const initialWidth =
+        (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
+      const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
+
+      const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
+
+      if (savedPercentages.length === children.length) {
+        const fromStorage = savedPercentages.map(p => Math.max(p * containerWidth, MIN_WIDTH));
+        const total = fromStorage.reduce((a, b) => a + b, 0);
+        if (total > containerWidth) {
+          const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
+          setWidths(fromStorage.map(w => w * scale));
+        } else {
+          setWidths(fromStorage);
+        }
+      } else {
+        setWidths(initials);
+        const percents = initials.map(w => w / containerWidth);
+        setPercentagesToLocalStorage(percents, localStorageKey);
+      }
+    };
+
+    handleScreenResize();
+
+    window.addEventListener('resize', handleScreenResize);
+
+    return () => window.removeEventListener('resize', handleScreenResize);
+  }, [children, localStorageKey]);
 
   const onMouseDown = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
+    const onMouseUp = () => {
+      draggingIndex.current = null;
+      document.removeEventListener('mousemove', handleResize);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
     event.preventDefault();
     draggingIndex.current = index;
-    document.addEventListener('mousemove', resizeHandler);
+    document.addEventListener('mousemove', handleResize);
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  const onTouchEnd = () => {
-    draggingIndex.current = null;
-    document.removeEventListener('touchmove', resizeHandler);
-    document.removeEventListener('touchend', onTouchEnd);
-  };
-
   const onTouchStart = (event: React.TouchEvent<HTMLDivElement>, index: number) => {
+    const onTouchEnd = () => {
+      draggingIndex.current = null;
+      document.removeEventListener('touchmove', handleResize);
+      document.removeEventListener('touchend', onTouchEnd);
+    };
+
     event.preventDefault();
     draggingIndex.current = index;
-    document.addEventListener('touchmove', resizeHandler, { passive: false });
+    document.addEventListener('touchmove', handleResize, { passive: false });
     document.addEventListener('touchend', onTouchEnd);
   };
 
   return (
-    <div ref={containerRef} className={`flex h-full min-h-0 ${className ?? ''}`}>
+    <div ref={containerRef} className={`flex h-full min-h-0 ${className}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section style={{ width: widths[index] }} className="h-full min-h-0">
-            {/* tabIndex requiered by cypress accessibility test */}
+            {/* tabIndex required by cypress accessibility test */}
             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
             <div tabIndex={0} className="h-full min-h-0 overflow-auto">
               {child}
@@ -115,11 +155,11 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
 
           {index < children.length - 1 && (
             <div
-              role="separator"
               aria-hidden
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="w-1 cursor-col-resize flex-shrink-0 bg-gray-200"
+              className="cursor-col-resize flex-shrink-0 bg-gray-200"
+              style={{ width: SEPARATOR_PX }}
             />
           )}
         </Fragment>
