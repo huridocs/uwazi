@@ -206,7 +206,6 @@ describe('IX suggestions', () => {
         expect(nonProcessedSelect).not.toBeDisabled();
         expect(obsoleteSelect).not.toBeDisabled();
         expect(errorSelect).not.toBeDisabled();
-        expect(acceptFromPreviousSelect).not.toBeDisabled();
         fireEvent.click(screen.getByLabelText('Find suggestions for'));
         expect(amountInput).toBeDisabled();
         expect(nonProcessedSelect).toBeDisabled();
@@ -218,6 +217,7 @@ describe('IX suggestions', () => {
       it('should disable auto-accept options when not auto accepting', () => {
         const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
         const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(acceptFromPreviousSelect).not.toBeDisabled();
         expect(acceptAllSuggestions).not.toBeDisabled();
         fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
@@ -252,7 +252,6 @@ describe('IX suggestions', () => {
         const processButton = within(modal).getByText('Process').parentElement;
         expect(processButton).not.toBeDisabled();
         fireEvent.click(screen.getByLabelText('Find suggestions for'));
-        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(processButton).toBeDisabled();
       });
 
@@ -263,7 +262,7 @@ describe('IX suggestions', () => {
           fireEvent.click(processButton!);
         });
         expect(suggestionsAPI.process).toHaveBeenCalledWith({
-          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          autoAccept: { enabled: false, overwriteMode: 'blank_only', source: 'previous' },
           extractorId: 'extractor1',
           find: {
             enabled: true,
@@ -284,6 +283,7 @@ describe('IX suggestions', () => {
         fireEvent.click(nonProcessedSelect);
         fireEvent.click(obsoleteSelect);
         fireEvent.click(errorSelect);
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(screen.getByLabelText('Find suggestions for')).not.toBeChecked();
         await act(async () => {
           fireEvent.click(processButton!);
@@ -334,12 +334,14 @@ describe('IX suggestions', () => {
       it('should show the users the mandatory find suggestions action', () => {
         const modal = screen.getByRole('dialog');
         const mandatoryField = within(modal).getByLabelText('Find suggestions for selected');
-        expect(mandatoryField).toBeDisabled();
+        expect(mandatoryField).toBeChecked();
+        fireEvent.click(mandatoryField);
         expect(mandatoryField).toBeChecked();
       });
 
       it('should disable auto-accept options when not auto accepting', () => {
         const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(acceptFromPreviousSelect).not.toBeDisabled();
         fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(acceptFromPreviousSelect).toBeDisabled();
@@ -348,6 +350,7 @@ describe('IX suggestions', () => {
       it('should disable auto accept options when not auto accepting', () => {
         const forBlank = screen.getByLabelText('For entities with blank values');
         const overwrite = screen.getByLabelText('For all entities');
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         expect(forBlank).toBeChecked();
         expect(forBlank).toBeEnabled();
         expect(overwrite).toBeEnabled();
@@ -359,11 +362,14 @@ describe('IX suggestions', () => {
       it('should call the endpoint with the expected default parameters', async () => {
         const modal = screen.getByRole('dialog');
         const processButton = within(modal).getByText('Process').parentElement;
+        const mandatoryField = within(modal).getByLabelText('Find suggestions for selected');
+        expect(mandatoryField).toBeChecked();
+        fireEvent.click(mandatoryField);
         await act(async () => {
           fireEvent.click(processButton!);
         });
         expect(suggestionsAPI.process).toHaveBeenCalledWith({
-          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          autoAccept: { enabled: false, overwriteMode: 'blank_only', source: 'previous' },
           extractorId: 'extractor1',
           find: {
             enabled: true,
@@ -379,6 +385,7 @@ describe('IX suggestions', () => {
         const modal = screen.getByRole('dialog');
         const processButton = within(modal).getByText('Process').parentElement;
 
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
         fireEvent.click(screen.getByLabelText('For all entities'));
 
         await act(async () => {
