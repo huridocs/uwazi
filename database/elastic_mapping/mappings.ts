@@ -29,17 +29,6 @@ const noIndexText = {
 
 const id = {
   type: 'keyword',
-  fields: {
-    sort: textSortField,
-  },
-};
-
-const date = {
-  type: 'date',
-  format: 'epoch_millis',
-  fields: {
-    sort: { type: 'date', format: 'epoch_millis' },
-  },
 };
 
 const nested = { type: 'nested' };
@@ -153,7 +142,6 @@ export {
   noSorttext,
   noIndexText,
   id,
-  date,
   nested,
   number,
   noSortNumber,

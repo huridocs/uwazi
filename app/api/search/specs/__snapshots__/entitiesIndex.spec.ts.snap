@@ -64,25 +64,11 @@ Object {
           "type": "text",
         },
         "value": Object {
-          "fields": Object {
-            "sort": Object {
-              "analyzer": "string_sorter",
-              "fielddata": true,
-              "type": "text",
-            },
-          },
           "type": "keyword",
         },
       },
     },
     "value": Object {
-      "fields": Object {
-        "sort": Object {
-          "analyzer": "string_sorter",
-          "fielddata": true,
-          "type": "text",
-        },
-      },
       "type": "keyword",
     },
   },
