@@ -163,7 +163,7 @@ const PDFSidepanel = ({
         } else {
           const value =
             property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
+          setValue('field', coercedValue.value, { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
