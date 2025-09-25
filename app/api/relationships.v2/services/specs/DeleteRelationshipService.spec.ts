@@ -6,7 +6,7 @@ import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTe
 
 import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
-import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
+import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
 import { User } from '#api/users.v2/model/User.js';
 
@@ -19,7 +19,7 @@ import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
-import { MissingRelationshipError } from '../../errors/relationshipErrors';
+import { MissingRelationshipError } from '#api/externalIntegrations.v2/errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
 

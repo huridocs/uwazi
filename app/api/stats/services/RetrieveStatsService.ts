@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 
-import { elastic } from '../../search.js';
+import { elastic } from '#api/search.js';
 
 import { UserSchema } from '#shared/types/userType.js';
 

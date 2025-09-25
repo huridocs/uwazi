@@ -2,7 +2,7 @@ import { Application, Request } from 'express';
 
 import { validation } from '#api/utils/index.js';
 
-import entities from '../../entities/entities.js';
+import entities from '#api/entities/entities.js';
 
 const entitiesRoutes = (app: Application) => {
   app.get(

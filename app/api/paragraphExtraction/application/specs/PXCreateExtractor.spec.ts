@@ -26,7 +26,7 @@ import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastruc
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';
-import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from '#api/externalIntegrations.v2/infrastructure/MongoPXExtractorsDataSource';
 import { Input, PXCreateExtractor } from '../PXCreateExtractor';
 
 const f = getFixturesFactory();

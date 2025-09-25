@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { File, FileProps } from '../../File';
+import { File, FileProps } from '#api/files.v2/model/File';
 
 type FileBuilderProps = FileProps;
 

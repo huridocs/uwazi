@@ -7,7 +7,7 @@ import {
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
-import { TemplateWithDuplicatedNameOnTheSystemError } from '../../domain/template/errors.js';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 
 import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
 

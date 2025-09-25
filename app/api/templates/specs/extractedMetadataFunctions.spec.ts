@@ -1,4 +1,4 @@
-import { files } from '../../files/index.js';
+import { files } from '#api/files/index.js';
 
 import translations from '#api/i18n/translations.js';
 

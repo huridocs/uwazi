@@ -1,6 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 import { OperationalError } from '../common.v2/errors/OperationalError.js';
 
 export default (app: Application) => {

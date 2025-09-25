@@ -1,5 +1,5 @@
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
-import { elastic } from '../../search.js';
+import { elastic } from '#api/search.js';
 import { search } from '../search/search.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

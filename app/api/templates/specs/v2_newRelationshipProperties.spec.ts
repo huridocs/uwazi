@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 

@@ -1,6 +1,6 @@
 import entities from '../entities/index.js';
 
-import { files, generateFileName, storage } from '../../files/index.js';
+import { files, generateFileName, storage } from '#api/files/index.js';
 
 import { legacyLogger } from '../log/index.js';
 
@@ -14,7 +14,7 @@ import { newThesauriId } from '../templates/utils.js';
 
 import { tenants } from '#api/tenants/index.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import dictionariesModel from '../thesauri/dictionariesModel.js';
 

@@ -7,7 +7,7 @@ import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSourc
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 

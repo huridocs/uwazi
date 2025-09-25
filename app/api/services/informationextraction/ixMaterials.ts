@@ -14,7 +14,7 @@ import { filesModel } from '../files/filesModel.js';
 
 import { SegmentationType } from '#shared/types/segmentationType.js';
 
-import entitiesModel from '../../entities/entitiesModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
 
 import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
 

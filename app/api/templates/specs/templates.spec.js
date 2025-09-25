@@ -3,7 +3,7 @@ import Ajv from 'ajv';
 import documents from '#api/documents/documents.js.js';
 import translations from '#api/i18n/translations.js';
 import { elasticClient } from '#api/search/elastic.js';
-import * as setupSockets from '../../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 import db, { testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';

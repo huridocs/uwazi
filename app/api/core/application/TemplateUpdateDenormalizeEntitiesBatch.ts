@@ -2,11 +2,11 @@ import { TransactionManager } from '#api/common.v2/contracts/TransactionManager.
 import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityUpdatedEvent } from '../../entities/events/EntityUpdatedEvent.js';
-import { applicationEventsBus } from '../../eventsbus/index.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import { applicationEventsBus } from '#api/eventsbus/index.js';
 import { MongoRelationshipsV1DataSource } from '../../relationships/MongoRelationshipsV1DataSource.js';
 import { RelationsV1Collection } from '../../relationships/RelationsV1Collection.js';
-import { search } from '../../search/index.js';
+import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 import { cloneDeep } from 'lodash';
 import { generateID } from '#shared/IDGenerator.js';

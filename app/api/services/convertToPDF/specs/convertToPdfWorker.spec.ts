@@ -1,4 +1,4 @@
-import { files, storage, testingUploadPaths } from '../../files/index.js';
+import { files, storage, testingUploadPaths } from '#api/files/index.js';
 
 import { Redis } from '../infrastructure/Redis.js';
 

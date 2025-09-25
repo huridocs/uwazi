@@ -6,7 +6,7 @@ import { ArrayUtils } from '../common.v2/utils/Array.js';
 import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import { checkTypeIsAllowed } from '../services/informationextraction/ixextractors.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
 import { tenants } from '#api/tenants/tenantContext.js';

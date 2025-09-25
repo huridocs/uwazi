@@ -9,16 +9,16 @@ import _ from 'lodash';
 
 import authRoutes from '../auth/routes.js';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
-import entitiesModel from '../../entities/entitiesModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
 import {
   attachmentsPath,
   customUploadsPath,
   files,
   storage,
   testingUploadPaths,
-} from '../../files/index.js';
+} from '#api/files/index.js';
 
 import translations from '#app/I18N/index.js';
 
@@ -34,7 +34,7 @@ import templates from '../templates/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import users from '../users/users.js';
 

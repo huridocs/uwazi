@@ -2,7 +2,7 @@ import translations from '#api/i18n/translations.js';
 
 import settings from '#api/settings/index.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

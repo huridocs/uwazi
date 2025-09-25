@@ -2,9 +2,9 @@ import multer from 'multer';
 
 import { models, WithId } from '../odm/index.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
-import { storage, uploadMiddleware } from '../../files/index.js';
+import { storage, uploadMiddleware } from '#api/files/index.js';
 import { updateMapping } from '../search/entitiesIndex.js';
 import { Application, Request } from 'express';
 import { TranslationType } from '#shared/translationType.js';

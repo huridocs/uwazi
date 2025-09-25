@@ -9,7 +9,7 @@ import { Application } from 'express';
 import qs from 'qs';
 import request from 'supertest';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 

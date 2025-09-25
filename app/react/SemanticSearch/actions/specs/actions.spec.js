@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import api from '../../SemanticSearchAPI';
+import api from '#app/SemanticSearch/SemanticSearchAPI';
 import * as actions from '../actions';
 
 describe('Semantic Search actions', () => {

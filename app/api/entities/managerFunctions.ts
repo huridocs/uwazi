@@ -3,10 +3,10 @@ import { groupBy } from 'lodash';
 import { createReadStream } from 'fs';
 import { WithId } from '../odm/index.js';
 
-import { files as filesAPI, storage } from '../../files/index.js';
+import { files as filesAPI, storage } from '#api/files/index.js';
 import { processDocument } from '../files/processDocument.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 import { legacyLogger } from '../log/index.js';
 import { handleError, prettifyError } from '#api/utils/handleError.js';
 

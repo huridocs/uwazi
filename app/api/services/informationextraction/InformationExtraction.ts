@@ -4,7 +4,7 @@
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
 
-import { storage } from '../../files/index.js';
+import { storage } from '#api/files/index.js';
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
@@ -20,7 +20,7 @@ import { emitToTenant } from '../socketio/setupSockets.js';
 
 import { filesModel } from '../files/filesModel.js';
 
-import entities from '../../entities/entities.js';
+import entities from '#api/entities/entities.js';
 
 import settings from '#api/settings/settings.js';
 

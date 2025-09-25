@@ -18,7 +18,7 @@ import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 

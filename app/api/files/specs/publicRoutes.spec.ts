@@ -6,10 +6,10 @@ import path from 'path';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import request from 'supertest';
 
-import entities from '../../entities.js';
-import { setupTestUploadedPaths, storage } from '../../files/index.js';
+import entities from '#api/entities.js';
+import { setupTestUploadedPaths, storage } from '#api/files/index.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import mailer from '#api/utils/mailer.js';
 

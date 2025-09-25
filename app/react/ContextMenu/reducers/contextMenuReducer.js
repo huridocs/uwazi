@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as actions from '../../ContextMenu/actions/actionTypes.js';
+import * as actions from '#app/ContextMenu/actions/actionTypes.js';
 import * as ViewerActions from '#app/Viewer/actions/actionTypes.js';
 import * as UploadActions from '#app/Uploads/actions/actionTypes.js';
 import * as LibraryActions from '#app/Library/actions/actionTypes.js';

@@ -3,7 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 
-import entities from '../../entities/entities.js';
+import entities from '#api/entities/entities.js';
 import db from '#api/utils/testing_db.js';
 
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';

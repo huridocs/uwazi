@@ -12,7 +12,7 @@ import * as setupSockets from '../socketio/setupSockets.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
-import entitiesModel from '../../entities/entitiesModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
 import { InformationExtraction } from '../InformationExtraction';
 import { factory, fixtures } from './fixtures';
 import { IXModelsModel } from '../IXModelsModel';

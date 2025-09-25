@@ -8,7 +8,7 @@ import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
 import { UwaziFile } from '../model/UwaziFile';

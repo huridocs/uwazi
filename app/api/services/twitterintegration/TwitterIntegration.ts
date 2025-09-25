@@ -4,7 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 
 import settings from '#api/settings/settings.js';
 
-import entities from '../../entities/entities.js';
+import entities from '#api/entities/entities.js';
 
 import templates from '../templates/index.js';
 

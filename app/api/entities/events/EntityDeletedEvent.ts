@@ -1,4 +1,4 @@
-import { AbstractEvent } from '../../eventsbus/index.js';
+import { AbstractEvent } from '#api/eventsbus/index.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 

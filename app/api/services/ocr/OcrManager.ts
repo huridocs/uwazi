@@ -1,4 +1,4 @@
-import { files, storage } from '../../files/index.js';
+import { files, storage } from '#api/files/index.js';
 
 import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
 
@@ -28,7 +28,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import urljoin from 'url-join';
-import { EnforcedWithId } from '../../odm/model';
+import { EnforcedWithId } from '#api/odm/model';
 import { OcrRecord, OcrStatus } from './ocrModel';
 import {
   createForFile,

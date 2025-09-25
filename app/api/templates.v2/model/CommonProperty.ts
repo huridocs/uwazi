@@ -1,4 +1,4 @@
-import { CommonPropertyInvalidError } from '../../domain/template/errors.js';
+import { CommonPropertyInvalidError } from '#api/core/domain/template/errors.js';
 import { Context, Property, PropertyProps } from './Property';
 
 type Props = {

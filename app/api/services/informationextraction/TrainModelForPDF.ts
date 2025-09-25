@@ -4,7 +4,7 @@ import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { emitToTenant } from '../socketio/setupSockets.js';
 
-import { storage } from '../../files/index.js';
+import { storage } from '#api/files/index.js';
 import urljoin from 'url-join';
 
 import request from '#shared/JSONRequest.js';

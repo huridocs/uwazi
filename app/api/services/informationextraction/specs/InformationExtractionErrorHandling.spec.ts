@@ -12,7 +12,7 @@ import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { factory, fixtures, patchFixturesWithPort } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 
 let informationExtraction: InformationExtraction;

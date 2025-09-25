@@ -4,7 +4,7 @@ import settings from '../settings.js';
 
 import templates from '../templates/index.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import request from '#shared/JSONRequest.js';
 

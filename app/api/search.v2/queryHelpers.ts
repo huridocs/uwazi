@@ -1,4 +1,4 @@
-import { elastic } from '../../search.js';
+import { elastic } from '#api/search.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import templatesModel from '../templates/templates.js';
 import propertiesHelper from '#shared/commonProperties.js';

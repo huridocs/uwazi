@@ -3,7 +3,7 @@ import { TransactionManager } from '#api/common.v2/contracts/TransactionManager.
 import { AbstractUseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { applicationEventsBus } from '../../eventsbus/index.js';
+import { applicationEventsBus } from '#api/eventsbus/index.js';
 import { permissionsContext } from '../../permissions/permissionsContext.js';
 import { JobsDispatcher } from '../../queue.v2/application/contracts/JobsDispatcher.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';

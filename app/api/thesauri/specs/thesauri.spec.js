@@ -4,11 +4,11 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import translations from '#api/i18n/translations.js';
 import templates from '../templates/templates.js';
-import entities from '../../entities/entities.js';
-import { search } from '../../search.js';
+import entities from '#api/entities/entities.js';
+import { search } from '#api/search.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingDB } from '#api/utils/testing_db.js';
-import { thesauri } from '../../thesauri/thesauri.js';
+import { thesauri } from '#api/thesauri/thesauri.js';
 import {
   fixtures,
   dictionaryId,

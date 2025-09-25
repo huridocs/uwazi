@@ -3,9 +3,9 @@ import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDa
 import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { GenerateIdProperty } from '../../core/domain/template/GenerateIdProperty.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mapper.js';
-import { resetIndex, updateMapping } from '../../search/entitiesIndex.js';
+import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 

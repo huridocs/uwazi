@@ -7,11 +7,11 @@ import {
   fileExistsOnPath,
   files as filesAPI,
   uploadsPath,
-} from '../../files/index.js';
+} from '#api/files/index.js';
 
 import * as processDocumentApi from '../files/processDocument.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import db from '#api/utils/testing_db.js';
 

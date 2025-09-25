@@ -1,4 +1,4 @@
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
@@ -14,7 +14,7 @@ import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
 
 import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import { TemplateDeletedEvent } from '../templates/events/TemplateDeletedEvent.js';
 

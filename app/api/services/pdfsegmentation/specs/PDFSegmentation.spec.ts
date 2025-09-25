@@ -13,7 +13,7 @@ import {
   fixturesMissingPdf,
 } from '../services/pdfsegmentation/specs/fixtures.js';
 
-import { storage } from '../../files/index.js';
+import { storage } from '#api/files/index.js';
 import path from 'path';
 
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -29,7 +29,7 @@ import fs from 'fs/promises';
 import { config } from '../config.js';
 import { PDFSegmentation } from '../PDFSegmentation.js';
 import { SegmentationModel } from '../segmentationModel.js';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
+import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService.js';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 

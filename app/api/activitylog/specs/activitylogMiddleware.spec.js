@@ -1,5 +1,5 @@
 import { IGNORED_ENDPOINTS } from '../activitylog/activitylogMiddleware.js';
-import { deleteFile, storage } from '../../files/index.js';
+import { deleteFile, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

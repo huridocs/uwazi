@@ -2,7 +2,7 @@ import path from 'path';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
@@ -12,7 +12,7 @@ import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { routes } from '../routes.js';
-import { thesauri } from '../../thesauri/thesauri.js';
+import { thesauri } from '#api/thesauri/thesauri.js';
 import { fixtures } from './fixtures.js';
 
 jest.mock(

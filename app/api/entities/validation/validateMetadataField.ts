@@ -16,7 +16,7 @@ import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDif
 
 import entities from '../entities/index.js';
 
-import thesauris from '../../thesauri/thesauri.js';
+import thesauris from '#api/thesauri/thesauri.js';
 
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { validators, customErrorMessages } from './metadataValidators.js';

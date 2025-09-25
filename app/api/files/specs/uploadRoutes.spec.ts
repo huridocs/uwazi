@@ -2,14 +2,14 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from '../../search.js';
-import { uploadsPath, customUploadsPath, storage } from '../../files/index.js';
+import { search } from '#api/search.js';
+import { uploadsPath, customUploadsPath, storage } from '#api/files/index.js';
 
 import { setUpApp, socketEmit, iosocket, TestEmitSources } from '#api/utils/testingRoutes.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import

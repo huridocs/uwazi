@@ -7,7 +7,7 @@ import { testingDB } from '#api/utils/testing_db.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 

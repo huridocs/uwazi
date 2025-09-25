@@ -1,6 +1,6 @@
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
-import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
+import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
 import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 

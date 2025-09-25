@@ -1,5 +1,5 @@
-import entities, { model } from '../../entities.js';
-import { search } from '../../search.js';
+import entities, { model } from '#api/entities.js';
+import { search } from '#api/search.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

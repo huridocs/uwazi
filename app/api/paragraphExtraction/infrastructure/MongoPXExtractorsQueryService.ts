@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 

@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import backend from 'fetch-mock';
 
-import { attachmentsPath, setupTestUploadedPaths } from '../../files/index.js';
+import { attachmentsPath, setupTestUploadedPaths } from '#api/files/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

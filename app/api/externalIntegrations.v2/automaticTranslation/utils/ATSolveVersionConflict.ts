@@ -1,9 +1,9 @@
-import { DefaultTransactionManager } from '../../../common.v2/database/data_source_defaults.js';
-import { Entity } from '../../../entities.v2/model/Entity.js';
-import { entityInputDataSchema } from '../../../entities.v2/types/EntityInputDataSchema.js';
-import { EntityInputModel } from '../../../entities.v2/types/EntityInputDataType.js';
-import { DefaultLogger } from '../../../log.v2/infrastructure/StandardLogger.js';
-import { EntitySchema } from '../../../migrations/migrations/143-parse-numeric-fields/types.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
+import { Entity } from '#api/entities.v2/model/Entity.js';
+import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
+import { EntitySchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import { inspect } from 'util';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
 import { Validator } from '../infrastructure/Validator.js';

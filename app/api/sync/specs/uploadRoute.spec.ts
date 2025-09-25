@@ -9,7 +9,7 @@ import {
   customUploadsPath,
   deleteFile,
   storage,
-} from '../../files/index.js';
+} from '#api/files/index.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 

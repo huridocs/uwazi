@@ -5,7 +5,7 @@ import entities from '../entities/index.js';
 import pages from '#api/pages/index.js';
 import { CSVLoader } from '../csv/index.js';
 
-import { uploadMiddleware } from '../../files/index.js';
+import { uploadMiddleware } from '#api/files/index.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';

@@ -4,10 +4,10 @@ import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { InvalidATServerResponse } from '../../errors/generateATErrors';
-import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
-import { Validator } from '../../infrastructure/Validator';
-import { TranslationResult, translationResultSchema } from '../../types/TranslationResult';
+import { InvalidATServerResponse } from '#api/externalIntegrations.v2/errors/generateATErrors';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/AutomaticTranslationFactory';
+import { Validator } from '#api/externalIntegrations.v2/infrastructure/Validator';
+import { TranslationResult, translationResultSchema } from '#api/externalIntegrations.v2/types/TranslationResult';
 
 export class ATServiceListener {
   static SERVICE_NAME = 'translations';

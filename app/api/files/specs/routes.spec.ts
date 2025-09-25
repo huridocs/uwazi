@@ -2,7 +2,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { editorUser } from '../entities/specs/entitySavingManagerFixtures.js';
 
@@ -12,7 +12,7 @@ import { legacyLogger } from '../log.js';
 
 import connections from '../../relationships.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import * as ocrRecords from '../services/ocr/ocrRecords.js';
 

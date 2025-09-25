@@ -20,7 +20,7 @@ import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { EnforcedWithId } from '../odm.js';
 
@@ -48,7 +48,7 @@ import {
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
 } from '../InformationExtraction';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';

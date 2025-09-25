@@ -1,4 +1,4 @@
-import { storage, uploadsPath } from '../../files/index.js';
+import { storage, uploadsPath } from '#api/files/index.js';
 
 import { FileNotFound } from '../files/FileNotFound.js';
 

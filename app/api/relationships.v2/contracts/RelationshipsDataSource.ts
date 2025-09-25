@@ -1,4 +1,4 @@
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';
 import { MatchQueryNode } from '../model/MatchQueryNode';

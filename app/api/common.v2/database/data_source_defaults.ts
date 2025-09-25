@@ -1,5 +1,5 @@
 import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { dbSessionContext } from '../../odm/sessionsContext.js';
+import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import { IdGenerator } from '../contracts/IdGenerator.js';
 import { getClient } from './getConnectionForCurrentTenant.js';
 import { MongoIdHandler } from './MongoIdGenerator.js';

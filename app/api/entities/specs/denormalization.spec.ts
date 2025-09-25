@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
@@ -7,7 +7,7 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 
 import translations from '#api/i18n/translations.js';
 
-import thesauris from '../../thesauri/thesauri.js';
+import thesauris from '#api/thesauri/thesauri.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 

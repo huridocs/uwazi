@@ -1,4 +1,4 @@
-import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
+import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 

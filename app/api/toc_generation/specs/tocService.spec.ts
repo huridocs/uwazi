@@ -1,4 +1,4 @@
-import { files, storage } from '../../files/index.js';
+import { files, storage } from '#api/files/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 

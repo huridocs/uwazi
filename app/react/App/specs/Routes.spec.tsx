@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { getIndexElement } from '../../getIndexElement.js';
+import { getIndexElement } from '#app/App/getIndexElement.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { Login } from '#app/Users/Login.js';
 import { LibraryTable } from '#app/Library/LibraryTable.js';

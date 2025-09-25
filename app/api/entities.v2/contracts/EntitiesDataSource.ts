@@ -1,4 +1,4 @@
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 
 type MarkAsChangedCriteria = { template: string } | { sharedId: string };

@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { PDFPage } from '#app/Viewer/PDF.js';
-import PDFJS from '../../PDFJS';
+import PDFJS from '#app/PDF/PDFJS';
 import PDF from '../PDF';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';

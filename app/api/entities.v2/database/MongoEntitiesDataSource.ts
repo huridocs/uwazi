@@ -1,4 +1,4 @@
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
@@ -8,11 +8,11 @@ import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import entities from '../../entities/entities.js';
+import entities from '#api/entities/entities.js';
 
-import v1EntitiesModel from '../../entities/entitiesModel.js';
+import v1EntitiesModel from '#api/entities/entitiesModel.js';
 
-import { search } from '../../search.js';
+import { search } from '#api/search.js';
 
 import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
 

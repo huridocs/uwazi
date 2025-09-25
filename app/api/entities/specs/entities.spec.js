@@ -5,11 +5,11 @@ import Ajv from 'ajv';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
-import entitiesModel from '../../entities/entitiesModel.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
 import { spyOnEmit } from '../eventsbus/eventTesting.js';
 import relationships from '../../relationships.js';
-import { storage, uploadsPath } from '../../files/index.js';
-import { search } from '../../search.js';
+import { storage, uploadsPath } from '#api/files/index.js';
+import { search } from '#api/search.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
@@ -17,7 +17,7 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '../eventsbus.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import entities from '../../entities.js';
+import entities from '#api/entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { PDFPage } from '#app/Viewer/PDF.js';
-import { isClient } from '../../utils';
+import { isClient } from '#app/utils';
 import PDFJS from '../PDFJS';
 
 const cMapUrl = '/legacy_character_maps/';

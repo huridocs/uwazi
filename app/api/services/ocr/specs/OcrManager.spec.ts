@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 
-import { files, storage } from '../../files/index.js';
+import { files, storage } from '#api/files/index.js';
 
 import * as filesApi from '../files/filesystem.js';
 
@@ -22,8 +22,8 @@ import * as sockets from '../socketio/setupSockets.js';
 import * as handleError from '#api/utils/handleError.js';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
-import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
-import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
+import { ResultsMessage, TaskManager } from '#api/tasksmanager/TaskManager';
+import { mockTaskManagerImpl } from '#api/tasksmanager/specs/TaskManagerImplementationMocker';
 import { fixtures, fixturesFactory } from './fixtures/fixtures';
 import { cleanupRecordsOfFiles } from '../ocrRecords';
 

@@ -14,7 +14,7 @@ import { legacyLogger } from '../log.js';
 
 import templates from '../templates/index.js';
 
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import { appContext } from '#api/utils/AppContext.js';
 

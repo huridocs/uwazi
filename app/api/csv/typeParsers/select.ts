@@ -1,4 +1,4 @@
-import thesauri from '../../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 import { RawEntity } from '#api/csv/entityRow.js';
 

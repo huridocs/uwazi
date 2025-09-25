@@ -1,6 +1,6 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 
-import { ValidationError } from '../../core/domain/error/ValidationError.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 interface UseCase<Input, Output> {
   execute(input: Input, ...args: any): Promise<Output>;
