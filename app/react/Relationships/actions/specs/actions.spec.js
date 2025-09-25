@@ -7,7 +7,7 @@ import SearchApi from '#app/Search/SearchAPI.js';
 import api from '#app/utils/api.js';
 import * as types from '../actionTypes';
 import * as actions from '../actions';
-import * as routeUtils from '#app/utils/routeUtils';
+import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

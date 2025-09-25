@@ -23,7 +23,7 @@ import {
   matterTemplate,
   renderableTemplates,
   datePropertyOverrides,
-} from '#app/utils/timelineFixedData';
+} from '#app/Timeline/utils/timelineFixedData.js';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
 const dateProperties = Object.keys(renderableTemplates).reduce(

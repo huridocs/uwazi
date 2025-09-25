@@ -5,7 +5,7 @@ import { ShowMetadata, MetadataForm } from '#app/Metadata.js';
 import { api as entitiesAPI } from '#app/Entities.js';
 import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles';
 import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
-import * as routeUtils from '#app/utils/routeUtils';
+import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
 
 import * as actions from '#app/actions/actions';
 

@@ -54,6 +54,11 @@ module.exports = production => {
         'shared': path.join(rootPath, 'app/shared'),
         'UI': path.join(rootPath, 'app/react/UI'),
         'V2': path.join(rootPath, 'app/react/V2'),
+        '#api': path.join(rootPath, 'app/api'),
+        '#app': path.join(rootPath, 'app/react'),
+        '#shared': path.join(rootPath, 'app/shared'),
+        '#UI': path.join(rootPath, 'app/react/UI'),
+        '#V2': path.join(rootPath, 'app/react/V2'),
       },
     },
     resolveLoader: {
@@ -179,6 +184,29 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
+      // Custom plugin to handle # prefixed imports
+      new (class {
+        apply(compiler) {
+          compiler.hooks.normalModuleFactory.tap('HashPrefixPlugin', (nmf) => {
+            nmf.hooks.beforeResolve.tap('HashPrefixPlugin', (resolveData) => {
+              if (resolveData.request && resolveData.request.startsWith('#')) {
+                const request = resolveData.request;
+                if (request.startsWith('#app/')) {
+                  resolveData.request = request.replace('#app/', './app/react/');
+                } else if (request.startsWith('#api/')) {
+                  resolveData.request = request.replace('#api/', './app/api/');
+                } else if (request.startsWith('#shared/')) {
+                  resolveData.request = request.replace('#shared/', './app/shared/');
+                } else if (request.startsWith('#UI/')) {
+                  resolveData.request = request.replace('#UI/', './app/react/UI/');
+                } else if (request.startsWith('#V2/')) {
+                  resolveData.request = request.replace('#V2/', './app/react/V2/');
+                }
+              }
+            });
+          });
+        }
+      })(),
     ],
   };
 };

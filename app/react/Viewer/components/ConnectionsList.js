@@ -7,7 +7,7 @@ import { Icon } from 'UI';
 import { Warning } from '#app/Layout.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
 import Connection from './Connection';
-import { sortTextSelections } from '#app/utils/sortTextSelections';
+import { sortTextSelections } from '#app/Viewer/utils/sortTextSelections.js';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 

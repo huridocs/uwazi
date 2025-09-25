@@ -17,7 +17,7 @@ import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
-import { sortTextSelections } from '#app/utils/sortTextSelections.js';
+import { sortTextSelections } from '#app/Viewer/utils/sortTextSelections.js';
 import EntitiesApi from '#app/Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
