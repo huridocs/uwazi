@@ -5,6 +5,7 @@ type PaneProps = React.PropsWithChildren & {
 
 type PaneLayoutProps = {
   children: React.ReactElement<PaneProps>[];
+  localStorageKey?: string;
   className?: string;
 };
 

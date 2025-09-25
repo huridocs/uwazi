@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
 
 const MIN_WIDTH = 100;
@@ -9,10 +10,25 @@ const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => 
   return undefined;
 };
 
-const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
+const getFromLocalStorage = (localStorageKey?: string): number[] => {
+  if (isClient && localStorageKey) {
+    const value: number[] = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
+    return value;
+  }
+  return [];
+};
+
+const setToLocalStorage = (values: number[], localStorageKey?: string) => {
+  if (isClient && localStorageKey) {
+    localStorage.setItem(localStorageKey, JSON.stringify(values));
+  }
+};
+
+// eslint-disable-next-line max-statements
+const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
-  const [widths, setWidths] = useState<number[]>([]);
+  const [widths, setWidths] = useState<number[]>(() => getFromLocalStorage(localStorageKey));
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,8 +38,12 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
         setWidths(initials);
       }
     };
+
+    if (widths.length === 0) {
+      handleResize();
+    }
+
     window.addEventListener('resize', handleResize);
-    handleResize();
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -49,9 +69,10 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
         newWidths[leftIndex] = currentLeft;
         newWidths[rightIndex] = rightNew;
         setWidths(newWidths);
+        setToLocalStorage(newWidths, localStorageKey);
       }
     },
-    [widths]
+    [localStorageKey, widths]
   );
 
   const onMouseUp = () => {

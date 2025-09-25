@@ -3,7 +3,7 @@ import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 
 const EntityViewPlaceholder = () => (
   <div className="tw-content">
-    <PaneLayout>
+    <PaneLayout localStorageKey="entityViewerLayout">
       <PaneLayout.Pane key="pane-1">
         <div>
           <p>
