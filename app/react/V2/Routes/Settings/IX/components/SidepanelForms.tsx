@@ -3,11 +3,10 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { get, isEmpty, property, uniqBy } from 'lodash';
+import { get, isEmpty, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
 
 import { Translate } from '#app/I18N/index.js';
-
 
 import { isClient } from '#app/utils/index.js';
 import {
@@ -24,11 +23,9 @@ import { SuggestionValue, TableSuggestion } from '../types.js';
 import { MultiselectItemLabel } from './MultiselectItemLabel.js';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 import { escapeLucene, searchRelatedEntities } from '../helpers/index.js';
-import { extractor } from '#api/paragraphExtraction/application/specs/fixtures.js';
 import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
-import { response } from 'express';
-import { setOptions } from 'leaflet';
+
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
@@ -276,14 +273,14 @@ const Relationships = ({
         : '.value';
 
       const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
-        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-        : `title:(${escapedText}*)`
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
         } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
-      const suggestedValues = Array.isArray(suggestion?.suggestedValue) ?
-        suggestion.suggestedValue
+      const suggestedValues = Array.isArray(suggestion?.suggestedValue)
+        ? suggestion.suggestedValue
         : [suggestion?.suggestedValue];
 
       const suggestedSharedIds = suggestedValues.map(value => get(value, 'value') || value);

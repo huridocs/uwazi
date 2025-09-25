@@ -1,4 +1,3 @@
-
 import { Template } from '#api/templates.v2/model/Template.js';
 import { ValidationStep } from '../../Validator';
 import { TemplateWithMissingCommonProperty } from '../errors';

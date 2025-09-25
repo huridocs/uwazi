@@ -1,9 +1,8 @@
 /*global page*/
 
 export default async () => {
-  
   await page.setRequestInterception(true);
-  
+
   page.on('request', request => {
     if (
       request.url() ===

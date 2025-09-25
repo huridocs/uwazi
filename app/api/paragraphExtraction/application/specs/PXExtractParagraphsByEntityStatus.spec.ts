@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';

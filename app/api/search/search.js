@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from '#app/utils/date.js';
+import date from '#api/utils/date.js';
 import propertiesHelper from '#shared/commonProperties.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
-import { createError } from '#app/utils/index.js';
+import { createError } from '#api/utils/index.js';
 import { filterOptions } from '#shared/optionsUtils.js';
 import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';

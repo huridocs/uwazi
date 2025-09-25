@@ -5,7 +5,7 @@ import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { get as getThesauri } from '#api/thesauri/index.js';
+import { get as getThesauri } from '#app/thesauri/index.js';
 
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 

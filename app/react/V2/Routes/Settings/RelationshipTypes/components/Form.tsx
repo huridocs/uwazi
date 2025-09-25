@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 
-
 import { Translate } from '#app/I18N/index.js';
 
 import { InputField } from '#app/V2/Components/Forms.js';

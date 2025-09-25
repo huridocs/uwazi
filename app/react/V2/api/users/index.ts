@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 
-import UsersAPI from '#app/Users/UsersAPI.js';
+import UsersAPI from '#app/V2/api/Users/UsersAPI.js';
 
 import api from '#app/utils/api.js';
 

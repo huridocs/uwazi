@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import Doc from '#app/Library/components/Doc.js';
 import { CollectionViewerProps } from './CollectionViewerProps';

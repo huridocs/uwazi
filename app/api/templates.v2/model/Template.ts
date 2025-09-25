@@ -1,4 +1,3 @@
-
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 
 import { Validator } from '#api/core/domain/Validator.js';

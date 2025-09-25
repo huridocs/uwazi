@@ -1,4 +1,3 @@
-
 import { TranslationType } from '#shared/translationType.js';
 import { IndexedTranslations } from '../translations';
 

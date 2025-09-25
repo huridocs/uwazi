@@ -1,4 +1,3 @@
-
 import { Template } from '#app/apiResponseTypes.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';

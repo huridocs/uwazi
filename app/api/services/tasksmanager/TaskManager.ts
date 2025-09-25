@@ -2,11 +2,11 @@
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import { RedisClient } from 'redis';
 
-import { Repeater } from '#app/utils/Repeater.js';
+import { Repeater } from '#api/utils/Repeater.js';
 
 import { config } from '../config.js';
 
-import { handleError } from '#app/utils/index.js';
+import { handleError } from '#api/utils/index.js';
 
 import { Redis } from '../infrastructure/Redis.js';
 

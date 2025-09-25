@@ -1,7 +1,6 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { Tenant, tenants } from '#api/tenants/tenantContext.js';

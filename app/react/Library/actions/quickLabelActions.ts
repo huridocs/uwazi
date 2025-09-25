@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '../../BasicReducer/index.js';
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
-import { IStore, QuickLabelState, QuickLabelMetadata } from "app/V2/shared/types.js";
+import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/V2/shared/types.js';
 
 import { notificationActions } from '../../Notifications.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

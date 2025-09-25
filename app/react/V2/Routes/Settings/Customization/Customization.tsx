@@ -8,11 +8,10 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
-import * as settingsAPI from '#api/settings/index.js';
+import * as settingsAPI from '#app/V2/api/settings/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 
 import { Button, Tabs } from '#app/V2/Components/UI/index.js';
-
 
 import { CodeEditor } from '#app/V2/Components/CodeEditor.js';
 import { ConfirmNavigationModal } from '../../../Components/UI/index.js';
@@ -23,10 +22,10 @@ type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'cust
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
-    async () => {
-      const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-      return { allowcustomJS, customCSS, customJS };
-    };
+  async () => {
+    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
+    return { allowcustomJS, customCSS, customJS };
+  };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;

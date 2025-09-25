@@ -1,4 +1,3 @@
-
 import db from '#api/utils/testing_db.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';

@@ -3,7 +3,7 @@ import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 import { DB } from '#api/odm/index.js';
 import { models } from '../odm/model.js';
 import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
 import path from 'path';

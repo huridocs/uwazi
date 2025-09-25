@@ -1,4 +1,3 @@
-
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';

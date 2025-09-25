@@ -1,4 +1,3 @@
-
 import { applicationEventsBus } from '../eventsbus.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

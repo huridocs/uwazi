@@ -6,7 +6,6 @@ import thesauri from '../../thesauri/thesauri.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-
 import { IndexedContextValues } from '#api/i18n/translations.js';
 
 import { WithId } from '#api/odm/index.js';

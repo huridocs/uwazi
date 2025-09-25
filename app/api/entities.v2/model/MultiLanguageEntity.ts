@@ -1,4 +1,3 @@
-
 import { RelationsV1Collection } from '../relationships/RelationsV1Collection.js';
 
 import { Template, TemplateProperty } from '#api/templates.v2/model/Template.js';

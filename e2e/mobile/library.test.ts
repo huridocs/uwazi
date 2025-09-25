@@ -14,7 +14,7 @@ describe('library toolbar and action buttons', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
-    
+
     await expect(page).toClick('a.public-documents');
   });
 
@@ -23,7 +23,6 @@ describe('library toolbar and action buttons', () => {
   });
 
   const checkVisibility = async (selector: string, visible: boolean) => {
-    
     await page.waitForSelector(selector, {
       visible,
     });
@@ -31,7 +30,6 @@ describe('library toolbar and action buttons', () => {
 
   describe('small resolution', () => {
     beforeAll(async () => {
-      
       await page.setViewport({ width: 376, height: 667 });
       await disableTransitions();
     });
@@ -43,10 +41,9 @@ describe('library toolbar and action buttons', () => {
     });
 
     it('should open the toolbar and actions buttons on demand', async () => {
-      
       await expect(page).toClick('.open-toolbar-button .toggle-toolbar-button');
       await checkVisibility('.library-header', true);
-      
+
       await expect(page).toClick('.open-actions-button .toggle-footer-button');
       await checkVisibility('.library-footer', true);
       await testSelectorShot('.app-content');
@@ -60,12 +57,11 @@ describe('library toolbar and action buttons', () => {
   });
 
   it('should adjust the distribution of elements for a medium resolution', async () => {
-    
     await page.setViewport({ width: 680, height: 667 });
-    
+
     await expect(page).toClick('.open-toolbar-button .toggle-toolbar-button');
     await checkVisibility('.library-header', true);
-    
+
     await expect(page).toClick('.open-actions-button .toggle-footer-button');
     await checkVisibility('.library-footer', true);
     await testSelectorShot('.app-content');
@@ -73,7 +69,6 @@ describe('library toolbar and action buttons', () => {
   });
 
   it('should adjust the distribution of elements a large resolution', async () => {
-    
     await page.setViewport({ width: 1200, height: 667 });
     await checkVisibility('.library-header', true);
     await checkVisibility('.library-footer', true);

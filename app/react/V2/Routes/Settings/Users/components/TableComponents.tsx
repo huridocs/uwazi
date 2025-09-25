@@ -6,7 +6,6 @@ import { Tooltip } from 'flowbite-react';
 
 import { Button, Pill } from '#app/V2/Components/UI/index.js';
 
-
 import { t, Translate } from '#app/I18N/index.js';
 import { User, Group } from '../types';
 

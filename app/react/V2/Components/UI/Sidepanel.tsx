@@ -18,18 +18,18 @@ interface SidePanelProps {
 }
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
-  <div class ame="flex p-4 mb-2 text-gray-500">
-    <h1 class ame="text-base font-bold grow">{title}</h1>
+  <div className="flex p-4 mb-2 text-gray-500">
+    <h1 className="text-base font-bold grow">{title}</h1>
     <button
       type="button"
       className="justify-end"
       data-testid="close-sidepanel"
       onClick={closeSidepanelFunction}
     >
-      <span class ame="sr-only">
+      <span className="sr-only">
         <Translate>Close</Translate>
       </span>
-      <XMarkIcon class ame="w-6" />
+      <XMarkIcon className="w-6" />
     </button>
   </div>
 );
@@ -87,7 +87,7 @@ const Sidepanel = ({
           enterTo="translate-x-0"
           leaveTo={transition}
         >
-          <div class ame={contentClasses}>
+          <div className={contentClasses}>
             {sidepanelHeader(closeSidepanelFunction, title)}
             {children}
           </div>
@@ -105,7 +105,7 @@ const Sidepanel = ({
       enterTo="translate-x-0"
       leaveTo={transition}
     >
-      <div class ame={contentClasses}>
+      <div className={contentClasses}>
         {sidepanelHeader(closeSidepanelFunction, title)}
         {children}
       </div>
@@ -119,7 +119,7 @@ Sidepanel.Body = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div class ame={`flex-grow p-4 ${className}`}>{children}</div>;
+}) => <div className={`flex-grow p-4 ${className}`}>{children}</div>;
 
 Sidepanel.Footer = ({
   children,
@@ -127,7 +127,7 @@ Sidepanel.Footer = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div class ame={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
+}) => <div className={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
 
 export type { SidePanelProps };
 export { Sidepanel };

@@ -3,12 +3,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
 import { useAtomValue } from 'jotai';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { IStore } from "app/V2/shared/types.js";
-import {
-  ExtractedMetadataSchema,
-  SelectionRectangleSchema,
-
-} from '#shared/types/commonTypes.js';
+import { IStore } from 'app/V2/shared/types.js';
+import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
 import { pdfScaleAtom } from '#app/V2/atoms/index.js';
 
 import { selectionHandlers } from '#app/V2/Components/PDFViewer.js';
@@ -43,9 +39,9 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
 
   const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
     ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
-      ...currentSelection,
-      isCurrent: true,
-    }))
+        ...currentSelection,
+        isCurrent: true,
+      }))
     : [];
 
   const selections = uniqueSelections(currentSelections, newSelections);

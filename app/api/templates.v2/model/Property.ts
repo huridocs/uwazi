@@ -1,4 +1,3 @@
-
 import { PropertyTypeMismatchError } from '../../domain/template/errors.js';
 
 import { PropertyName } from '#api/core/domain/template/PropertyName.js';

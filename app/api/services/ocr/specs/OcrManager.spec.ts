@@ -19,7 +19,7 @@ import request from '#shared/JSONRequest.js';
 
 import * as sockets from '../socketio/setupSockets.js';
 
-import * as handleError from '#app/utils/handleError.js';
+import * as handleError from '#api/utils/handleError.js';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';

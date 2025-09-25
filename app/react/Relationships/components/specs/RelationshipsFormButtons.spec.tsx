@@ -55,7 +55,7 @@ describe('RelationshipsFormButtons', () => {
       permissions: [{ refId: collaboratorUser._id, level: AccessLevels.WRITE }],
     }),
     edit: jasmine.createSpy('edit'),
-    save: () => { },
+    save: () => {},
     searchResults: {},
   };
 

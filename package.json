@@ -19,10 +19,15 @@
   "main": "server.js",
   "imports": {
     "#api": "./app/api/index.js",
+    "#api/*": "./app/api/*",
     "#shared": "./app/shared/index.js",
+    "#shared/*": "./app/shared/*",
     "#app": "./app/react/index.js",
+    "#app/*": "./app/react/*",
     "#UI": "./app/react/UI/index.js",
-    "#V2": "./app/react/V2/index.js"
+    "#UI/*": "./app/react/UI/*",
+    "#V2": "./app/react/V2/index.js",
+    "#V2/*": "./app/react/V2/*"
   },
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",

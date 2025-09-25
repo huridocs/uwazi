@@ -21,7 +21,7 @@ describe('Add Add thesauri value', () => {
     const props: AddThesauriValueModalProps = {
       isOpen: true,
       onAccept: jest.fn(),
-      onCancel: () => { },
+      onCancel: () => {},
       values: [],
     };
 

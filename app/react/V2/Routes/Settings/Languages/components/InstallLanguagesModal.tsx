@@ -4,12 +4,7 @@ import { Translate, I18NApi } from '#app/I18N/index.js';
 
 import { Button, Modal } from '#app/V2/Components/UI/index.js';
 
-import {
-  defaultSearch,
-  MultiselectList,
-  MultiselectListOption,
-
-} from '#app/V2/Components/Forms.js';
+import { defaultSearch, MultiselectList, MultiselectListOption } from '#app/V2/Components/Forms.js';
 
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 

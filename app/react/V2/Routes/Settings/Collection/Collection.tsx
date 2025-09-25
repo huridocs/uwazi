@@ -10,15 +10,14 @@ import { useSetAtom } from 'jotai';
 import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from '#api/settings/index.js';
-import * as TemplatesAPI from '#api/templates/index.js';
+import * as SettingsAPI from '#app/V2/api/settings/index.js';
+import * as TemplatesAPI from '#app/V2/api/templates/index.js';
 
 import { notificationAtom } from '#app/V2/atoms.js';
 
 import { InputField, Select, MultiSelect, Geolocation } from '#app/V2/Components/Forms.js';
 
 import { Button, Card } from '#app/V2/Components/UI/index.js';
-
 
 import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 
@@ -34,11 +33,11 @@ import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const settings = await SettingsAPI.get(headers);
-      const templates = await TemplatesAPI.get(headers);
-      return { settings, templates };
-    };
+  async () => {
+    const settings = await SettingsAPI.get(headers);
+    const templates = await TemplatesAPI.get(headers);
+    return { settings, templates };
+  };
 
 const dateOptions = () => {
   const date = new Date();

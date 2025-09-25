@@ -1,9 +1,7 @@
-
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';

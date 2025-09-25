@@ -3,7 +3,6 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-
 import relationships from '../../relationships.js';
 import { storage } from '../../files/index.js';
 
@@ -26,7 +25,6 @@ import JSONRequest from '#shared/JSONRequest.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { UserSchema } from '#shared/types/userType.js';
-
 
 import * as setupSockets from '../socketio/setupSockets.js';
 // eslint-disable-next-line node/no-restricted-import

@@ -1,4 +1,3 @@
-
 import { EntitySchema } from '#shared/types/entityType.js';
 import { update } from '../formatter';
 

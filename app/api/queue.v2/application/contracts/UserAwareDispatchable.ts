@@ -1,4 +1,3 @@
-
 import { tenants } from '#api/tenants/index.js';
 
 import users from '../users/users.js';

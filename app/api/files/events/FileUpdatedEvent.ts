@@ -1,4 +1,3 @@
-
 import { AbstractEvent } from '../eventsbus.js';
 
 import { FileType } from '#shared/types/fileType.js';

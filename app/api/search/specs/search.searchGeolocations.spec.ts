@@ -1,4 +1,3 @@
-
 import db from '#api/utils/testing_db.js';
 
 import { search } from '../search/search.js';

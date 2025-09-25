@@ -2,17 +2,17 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
-import entities from '../entities/index.js';
-import { populateGeneratedIdByTemplate } from '../entities/generatedIdPropertyAutoFiller.js';
-import { applicationEventsBus } from '../eventsbus/index.js';
+import entities from '#api/entities/index.js';
+import { populateGeneratedIdByTemplate } from '#api/entities/generatedIdPropertyAutoFiller.js';
+import { applicationEventsBus } from '#api/eventsbus/index.js';
 import translations from '#api/i18n/translations.js';
-import { WithId } from '../odm/index.js';
-import { search } from '../search/index.js';
-import { reindexAll, updateMapping } from '../search/entitiesIndex.js';
+import { WithId } from '#api/odm/index.js';
+import { search } from '#api/search/index.js';
+import { reindexAll, updateMapping } from '#api/search/entitiesIndex.js';
 import settings from '#api/settings/settings.js';
 import { TemplateInputMappers } from '#api/templates.v2/services/TemplateInputMappers.js';
-import dictionariesModel from '../thesauri/dictionariesModel.js';
-import createError from '#app/utils/Error.js';
+import dictionariesModel from '#api/thesauri/dictionariesModel.js';
+import createError from '#api/utils/Error.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { ContextType } from '#shared/translationSchema.js';
@@ -21,7 +21,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import { validateTemplate } from '#shared/types/templateSchema.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
-import { tenants } from '../tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
 import {
   DefaultIdGenerator,
@@ -41,11 +41,11 @@ import {
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { JobsDispatcher } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
+import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { LegacyPageService } from '#api/core/infrastructure//mongodb/page/LegacyPageService.js';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase.js';
 import { TemplateValidationService } from './validation/TemplateValidationService.js';

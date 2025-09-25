@@ -1,6 +1,5 @@
 import { inspect } from 'util';
 
-
 import { TemplateProperty } from '#api/templates.v2/model/Template.js';
 
 import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';

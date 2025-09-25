@@ -1,10 +1,8 @@
-
 import userGroups from '../usergroups/userGroups.js';
 import {
   getByMemberIdList,
   removeUsersFromAllGroups,
   updateUserMemberships,
-  
 } from '../usergroups/userGroupsMembers.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

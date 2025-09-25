@@ -1,4 +1,3 @@
-
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 
 import { Template } from '#api/templates.v2/model/Template.js';

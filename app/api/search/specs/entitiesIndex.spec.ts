@@ -1,11 +1,10 @@
-
 import { legacyLogger } from '../log.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
 import db from '#api/utils/testing_db.js';
 

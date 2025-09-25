@@ -1,4 +1,3 @@
-
 import { storage, uploadsPath } from '../../files/index.js';
 
 import { FileNotFound } from '../files/FileNotFound.js';
@@ -11,7 +10,7 @@ import settings from '#api/settings/settings.js';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
-import { handleError } from '#app/utils/index.js';
+import { handleError } from '#api/utils/index.js';
 import path from 'path';
 
 import request from '#shared/JSONRequest.js';

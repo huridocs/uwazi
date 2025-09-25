@@ -1,4 +1,3 @@
-
 import entities from '../entities/index.js';
 
 import { files, generateFileName, storage } from '../../files/index.js';
@@ -21,7 +20,7 @@ import dictionariesModel from '../thesauri/dictionariesModel.js';
 
 import users from '../users/users.js';
 
-import { appContext } from '#app/utils/AppContext.js';
+import { appContext } from '#api/utils/AppContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';

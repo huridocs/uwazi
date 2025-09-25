@@ -1,4 +1,3 @@
-
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 
 import { I18NLink, Translate } from '#app/I18N/index.js';

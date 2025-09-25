@@ -1,4 +1,3 @@
-
 import api from '#app/utils/api.js';
 
 const requestToken = async (): Promise<string> => {

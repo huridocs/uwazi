@@ -8,7 +8,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from '../../Multireducer.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
 
-import { User } from '#api/users/usersModel.js';
+import { User } from '#app/users/usersModel.js';
 import Modal from '../../Layout/Modal.js';
 
 import { CaptchaValue } from '#shared/types/Captcha.js';

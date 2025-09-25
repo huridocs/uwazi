@@ -2,7 +2,7 @@ import qs from 'qs';
 import { actions } from '../../BasicReducer/index.js';
 import { notificationActions } from '../../Notifications.js';
 import api from '#app/utils/api.js';
-import { debounce } from '#api/utils/index.js';
+import { debounce } from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
 

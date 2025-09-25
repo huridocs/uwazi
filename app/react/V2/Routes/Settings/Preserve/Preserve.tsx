@@ -10,7 +10,7 @@ import { settingsAtom, userAtom } from '../../../atoms/index.js';
 
 import { Button, Card, CopyValueInput } from '#app/V2/Components/UI/index.js';
 
-import { requestToken } from '#api/preserve/index.js';
+import { requestToken } from '#app/preserve/index.js';
 
 const Preserve = () => {
   const settings = useAtomValue(settingsAtom);

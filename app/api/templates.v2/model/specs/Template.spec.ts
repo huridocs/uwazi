@@ -1,9 +1,7 @@
-
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import {
   TemplateWithDuplicatedPropertyError,
   TemplateWithMissingCommonProperty,
-  
 } from '../../domain/template/errors.js';
 
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';

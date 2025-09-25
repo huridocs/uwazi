@@ -1,4 +1,3 @@
-
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
 import { tenants } from '#api/tenants/index.js';
@@ -15,7 +14,6 @@ import {
   getTwitterImages,
   getTwitterImagesData,
   TwitterImageData,
-  
 } from '../services/twitterintegration/getTwitterImages.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';

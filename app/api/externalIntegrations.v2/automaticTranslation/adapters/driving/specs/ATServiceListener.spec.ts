@@ -1,4 +1,3 @@
-
 import { config } from '../config.js';
 
 import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';

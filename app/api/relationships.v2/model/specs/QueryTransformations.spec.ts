@@ -1,4 +1,3 @@
-
 import { EntityPointer, Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';

@@ -6,12 +6,7 @@ import { Icon } from 'UI';
 import { Translate } from '#app/I18N/index.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import {
-  AccessLevels,
-  MixedAccessLevels,
-  PermissionType,
-
-} from '#shared/types/permissionSchema.js';
+import { AccessLevels, MixedAccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { saveEntitiesPermissions } from '../../Permissions/actions/actions.js';
 import { connect } from 'react-redux';
 
@@ -88,9 +83,9 @@ export const ShareEntityModalComponent = ({
         const publicPermission = findPublicPermission(permissions);
         setOriginalPublicLevel(publicPermission?.level || false);
 
-        searchAndLoadCollabs('', loadedAssignments).catch(() => { });
+        searchAndLoadCollabs('', loadedAssignments).catch(() => {});
       })
-      .catch(() => { });
+      .catch(() => {});
 
     return () => {
       setAssignments([]);

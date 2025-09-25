@@ -6,7 +6,6 @@ import { AuthorizationService } from '../../authorization.v2/services/Authorizat
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-  
 } from '#api/common.v2/database/data_source_defaults.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
@@ -28,7 +27,6 @@ import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_sour
 import { User } from '#api/users.v2/model/User.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-
 
 import { tenants } from '#api/tenants/index.js';
 

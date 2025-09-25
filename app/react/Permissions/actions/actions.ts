@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { Dispatch } from 'redux';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import { notificationActions } from '../../Notifications.js';
 import { t } from '#app/I18N/index.js';

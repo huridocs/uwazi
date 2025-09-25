@@ -4,8 +4,7 @@ import waitForExpect from 'wait-for-expect';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
-
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { config } from '../config.js';
 import { DB } from '../DB.js';

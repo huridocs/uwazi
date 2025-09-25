@@ -2,7 +2,6 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-
 import entities from '../../entities.js';
 
 import { editorUser } from '../entities/specs/entitySavingManagerFixtures.js';
@@ -17,7 +16,7 @@ import { search } from '../../search.js';
 
 import * as ocrRecords from '../services/ocr/ocrRecords.js';
 
-import { appContext } from '#app/utils/AppContext.js';
+import { appContext } from '#api/utils/AppContext.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

@@ -1,5 +1,4 @@
-
-import { ClientEntitySchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema } from 'app/V2/shared/types.js';
 import { ClientTemplateSchema } from '../../../../../shared/types.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';

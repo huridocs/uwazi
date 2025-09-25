@@ -1,13 +1,11 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-
 import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
 
 import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-
 
 import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 

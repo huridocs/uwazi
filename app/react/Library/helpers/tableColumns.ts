@@ -1,4 +1,3 @@
-
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';

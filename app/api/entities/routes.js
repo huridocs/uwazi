@@ -2,12 +2,12 @@ import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
 import { saveEntity } from '../entities/entitySavingManager.js';
 import { uploadMiddleware } from '../../files/index.js';
 import { search } from '../../search.js';
-import { withTransaction } from '#app/utils/withTransaction.js';
+import { withTransaction } from '#api/utils/withTransaction.js';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates/templates';
 import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
-import date from '#app/utils/date';
+import date from '#api/utils/date';
 import entities from './entities';
 
 async function updateThesauriWithEntity(entity, req) {

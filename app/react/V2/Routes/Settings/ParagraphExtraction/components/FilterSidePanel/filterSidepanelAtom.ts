@@ -1,4 +1,3 @@
-
 import { Extractor } from '#shared/V2/shared/ParagraphExtractionTypes.js';
 import { atom } from 'jotai';
 

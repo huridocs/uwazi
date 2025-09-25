@@ -1,16 +1,13 @@
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
-
 
 import searchRoutes from '../search/routes.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
-
 import { UserRole } from '#shared/types/userSchema.js';
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 
 describe('Search routes', () => {

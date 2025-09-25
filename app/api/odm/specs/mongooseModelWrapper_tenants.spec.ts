@@ -5,7 +5,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 
 import { config } from '../config.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { instanceModel } from '../odm.js';
 

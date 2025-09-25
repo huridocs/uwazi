@@ -4,7 +4,7 @@ import thesauri from '../../thesauri/thesauri.js';
 import settings from '../settings/index.js';
 import templates from '../templates/index.js';
 import request from '#shared/JSONRequest.js';
-import createError from '#app/utils/Error.js';
+import createError from '#api/utils/Error.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { User } from '#api/users/usersModel.js';

@@ -1,4 +1,3 @@
-
 import settings from '#api/settings/settings.js';
 
 import db from '#api/utils/testing_db.js';

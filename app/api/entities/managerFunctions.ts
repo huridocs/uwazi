@@ -8,9 +8,9 @@ import { processDocument } from '../files/processDocument.js';
 
 import { search } from '../../search.js';
 import { legacyLogger } from '../log/index.js';
-import { handleError, prettifyError } from '#app/utils/handleError.js';
+import { handleError, prettifyError } from '#api/utils/handleError.js';
 
-import { ClientEntitySchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema } from 'app/V2/shared/types.js';
 import { FileType } from '#shared/types/fileType.js';
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';

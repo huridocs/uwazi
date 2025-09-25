@@ -6,7 +6,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/V2/shared/types.js';
 import { ClientIXExtractorType } from '../../../../../shared/types.js';
 import { InputField } from '../../../../Components/Forms/InputField.js';
 import { defaultSearch, MultiselectList, RadioSelect } from '../../../../Components/Forms/index.js';
@@ -159,11 +159,11 @@ const ExtractorModal = ({
 
     const result: null | ClientIXExtractorType = values.length
       ? ({
-        name,
-        source: extractorSource,
-        property: getPropertyNameFromExtractPair(values[0]),
-        templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
-      } as ClientIXExtractorType)
+          name,
+          source: extractorSource,
+          property: getPropertyNameFromExtractPair(values[0]),
+          templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
+        } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {

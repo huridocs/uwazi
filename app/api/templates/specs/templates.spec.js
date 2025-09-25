@@ -1,42 +1,34 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
-import documents from '../../documents/documents.js.js';
+import documents from '#api/documents/documents.js.js';
 import translations from '#api/i18n/translations.js';
-import { elasticClient } from '../../search/elastic.js';
+import { elasticClient } from '#api/search/elastic.js';
 import * as setupSockets from '../../socketio/setupSockets.js';
-import db, { testingDB } from '#app/utils/testing_db.js';
-import { testingEnvironment } from '#app/utils/testingEnvironment.js';
-import { ObjectId } from 'mongodb';
-import * as idGenerator from '#shared/IDGenerator.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
-import documents from '../documents/documents.js.js';
-import * as generatedIdPropertyAutoFiller from '../entities/generatedIdPropertyAutoFiller.js';
-import translations from '#api/i18n/translations.js';
-import { elasticClient } from '../search/elastic.js';
 import db, { testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
+import * as idGenerator from '#shared/IDGenerator.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { elasticClient } from '#api/search/elastic.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 
 
-import { spyOnEmit } from '../eventsbus/eventTesting.js';
+import { spyOnEmit } from '#api/eventsbus/eventTesting.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { applicationEventsBus } from '../../eventsbus/index.js';
+import { applicationEventsBus } from '#api/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { inspect } from 'util';
-import { applicationEventsBus } from '../eventsbus.js';
-import { testingTenants } from '#app/utils/testingTenants.js';
-import { inspect } from 'util';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
-import templates from '../templates';
-import templatesModel from '../templatesModel';
-import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
+import { TemplateDeletedEvent } from '#api/templates/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '#api/templates/events/TemplateUpdatedEvent';
+import templates from '#api/templates/templates';
+import templatesModel from '#api/templates/templatesModel';
+import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase';
 import fixtures, {
   factory,
   propertyToBeInherited,

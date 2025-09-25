@@ -1,4 +1,3 @@
-
 import { emitToTenant } from '../socketio/setupSockets.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
@@ -8,7 +7,6 @@ import ixmodels from '../services/informationextraction/ixmodels.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-  
 } from '../queue.v2/application/contracts/UserAwareDispatchable.js';
 
 import { HeartbeatCallback } from '../queue.v2/application/contracts/Dispatchable.js';

@@ -8,7 +8,7 @@ import { useSetAtom, useAtomValue } from 'jotai';
 
 import { t, Translate } from '#app/I18N/index.js';
 
-import * as relationshipTypesAPI from '#api/V2/api/relationshiptypes.js';
+import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes.js';
 
 import { Template } from '#app/apiResponseTypes.js';
 
@@ -16,15 +16,14 @@ import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/
 
 import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 
-
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
+  async () =>
+    (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
 
 const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as Relationships[];

@@ -33,7 +33,7 @@ const getPDFFile = async (fileUrl: string) =>
 const PDF = ({
   fileUrl,
   highlights,
-  onSelect = () => { },
+  onSelect = () => {},
   onDeselect,
   scrollToPage,
   size,

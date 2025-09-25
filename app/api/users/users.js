@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import SHA256 from 'crypto-js/sha256';
 
-import { createError } from '#app/utils/index.js';
+import { createError } from '#api/utils/index.js';
 import random from '#shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '../auth/encryptPassword.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
@@ -11,7 +11,7 @@ import {
   updateUserMemberships,
   removeUsersFromAllGroups,
 } from '../usergroups/userGroupsMembers.js';
-import mailer from '#app/utils/mailer.js';
+import mailer from '#api/utils/mailer.js';
 import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
 import settings from '#api/settings/settings.js';

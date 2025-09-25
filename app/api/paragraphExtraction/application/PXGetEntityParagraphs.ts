@@ -1,4 +1,3 @@
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';

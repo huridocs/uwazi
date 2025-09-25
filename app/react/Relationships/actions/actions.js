@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 import api from '#app/utils/api.js';
 import { actions } from '../../BasicReducer/index.js';
-import { debounce } from '#api/utils/index.js';
+import { debounce } from '#app/utils/index.js';
 import { createSelector } from 'reselect';
 import { notificationActions } from '../../Notifications.js';
 import { referencesActions } from '#app/Viewer.js';

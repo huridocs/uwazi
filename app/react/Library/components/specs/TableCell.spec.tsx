@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-
 import { TableCell, TableCellProps } from '#app/Library/components/TableCell.js';
 import { shallow } from 'enzyme';
 import React from 'react';

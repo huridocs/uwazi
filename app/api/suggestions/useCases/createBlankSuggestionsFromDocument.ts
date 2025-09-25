@@ -1,4 +1,3 @@
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import entities from '../entities/index.js';

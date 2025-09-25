@@ -51,7 +51,7 @@ describe('DropdownMenu', () => {
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
-      .simulate('click', { stopPropagation: () => { } });
+      .simulate('click', { stopPropagation: () => {} });
     expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     expect(hideMobileMenuMock).not.toBeCalled();
   });
@@ -69,12 +69,12 @@ describe('DropdownMenu', () => {
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
-      .simulate('click', { stopPropagation: () => { } });
+      .simulate('click', { stopPropagation: () => {} });
     expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     mountComp
       .find('.dropdown-item')
       .first()
-      .simulate('click', { stopPropagation: () => { } });
+      .simulate('click', { stopPropagation: () => {} });
     expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     expect(hideMobileMenuMock).toBeCalled();
   });
@@ -97,6 +97,6 @@ describe('DropdownMenu', () => {
     const option = mountComp.find('.dropdown-item').first();
     expect(option.prop('href')).toBe('http://google.com');
     expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
-    option.simulate('click', { stopPropagation: () => { } });
+    option.simulate('click', { stopPropagation: () => {} });
   });
 });

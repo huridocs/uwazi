@@ -2,7 +2,7 @@
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 

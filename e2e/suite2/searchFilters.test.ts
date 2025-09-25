@@ -7,11 +7,10 @@ import disableTransitions from '../helpers/disableTransitions';
 import { host } from '../config';
 
 const getAllEntitiesTitles = async (number: number) => {
-  
   await page.waitForSelector(
     `div.main-wrapper > div.item-group > div.item-document:nth-child(${number})`
   );
-  
+
   return page.$$eval('div.main-wrapper > div.item-group > div.item-document', entities =>
     entities.map(entity => {
       const elem = entity.querySelector('div.item-info > h2.item-name > span');
@@ -21,7 +20,6 @@ const getAllEntitiesTitles = async (number: number) => {
 };
 
 const getSearchFilters = async () =>
-  
   page.$$eval(
     '#filtersForm > div:nth-child(5) > ul > li.wide > ul > li.multiselectItem',
     filterElems => filterElems.map(filter => filter?.getAttribute('title'))
@@ -29,7 +27,6 @@ const getSearchFilters = async () =>
 
 const waitForEvent = async (eventName: string, seconds: number = 2) =>
   Promise.race([
-    
     page.evaluate(
       async (name: string) =>
         new Promise(resolve => {
@@ -38,12 +35,10 @@ const waitForEvent = async (eventName: string, seconds: number = 2) =>
       eventName
     ),
 
-    
     page.waitForTimeout(seconds * 1000),
   ]);
 
 const selectFilterOption = async (text: string, position: number) => {
-  
   await expect(page).toClick(
     `li.multiselectItem:nth-child(${position}) > label:nth-child(2) > span:nth-child(2) > span:nth-child(1)`,
     { text }
@@ -97,7 +92,7 @@ describe('search filters path', () => {
       await selectFilterOption('Mecanismo', 4);
       await selectFilterOption('Informe de admisibilidad', 2);
       await selectFilterOption('Ordenes de la corte', 6);
-      
+
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
       await waitForEvent('DOMContentLoaded');
       const entityTitles = await getAllEntitiesTitles(6);
@@ -105,7 +100,6 @@ describe('search filters path', () => {
     });
 
     it('should filter by multiple options', async () => {
-      
       await expect(page).toClick('span.multiselectItem-name', { text: 'Ecuador' });
       await waitForEvent('DOMContentLoaded');
       const entityTitles = await getAllEntitiesTitles(11);
@@ -127,16 +121,15 @@ describe('search filters path', () => {
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', async () => {
-        
         await expect(page).toClick('span.multiselectItem-name', { text: 'Ecuador' });
-        
+
         await expect(page).toClick('label[for="pa_sswitcher"].switcher');
         await waitForEvent('DOMContentLoaded');
         const entityTitles = await getAllEntitiesTitles(6);
         expect(entityTitles.length).toEqual(6);
-        
+
         await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
-        
+
         await page.waitForSelector('span.multiselectItem-name');
       });
     });
@@ -144,14 +137,12 @@ describe('search filters path', () => {
 
   describe('date filters', () => {
     const fillDate = async (selector: string, date: string) => {
-      
       await expect(page).toClick(`div.${selector}`);
-      
+
       await expect(page).toFill(`div.${selector} > div > div > input`, date);
       try {
-        
         await page.waitForSelector('.react-datepicker__day--selected');
-        
+
         await page.click('.react-datepicker__day--selected');
       } catch (_ex) {}
     };
@@ -172,7 +163,6 @@ describe('search filters path', () => {
 
   describe('sorting of filters', () => {
     beforeAll(async () => {
-      
       await expect(page).toClick('.logotype > div:nth-child(1) > a:nth-child(1)', {
         text: 'Uwazi',
       });
@@ -190,7 +180,6 @@ describe('search filters path', () => {
     });
 
     it('should show selected filter values first', async () => {
-      
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
@@ -201,11 +190,10 @@ describe('search filters path', () => {
     });
 
     it('should order by aggregation count despite of selected value when expanded', async () => {
-      
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
-      
+
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría A' });
-      
+
       await expect(page).toClick('span.multiselectItem-name', { text: 'Categoría B' });
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
@@ -219,50 +207,43 @@ describe('search filters path', () => {
   describe('default filters', () => {
     // eslint-disable-next-line max-statements
     it('should define Fecha and País as default filters', async () => {
-      
       await page.goto(host);
       await disableTransitions();
-      
+
       await expect(page).toClick('a', { text: 'Settings' });
-      
+
       await expect(page).toClick('a', { text: 'Templates' });
-      
+
       await expect(page).toClick('a', { text: 'Informe de admisibilidad' });
 
-      
       await expect(page).toClick('button', { text: 'Fecha' });
-      
+
       await expect(page).toClick('label', { text: 'Use as filter' });
-      
+
       await expect(page).toClick('label', { text: 'Default filter' });
-      
+
       await expect(page).toClick('aside button', { text: 'Save' });
 
-      
       await expect(page).toClick('button', { text: 'País' });
-      
+
       await expect(page).toClick('label', { text: 'Default filter' });
-      
+
       await expect(page).toClick('aside button', { text: 'Save' });
 
-      
       await expect(page).toClick('button', { text: 'Save' });
-      
+
       await expect(page).toClick('button', { text: 'Dismiss' });
     });
 
     it('should check that the filter show on the library', async () => {
-      
       await page.goto(host);
       await disableTransitions();
 
-      
       await expect(page).toMatchElement(
         '#filtersForm > div:nth-child(3) > ul:nth-child(1) > li:nth-child(1) > label:nth-child(1) > span',
         { text: 'Fecha' }
       );
 
-      
       await expect(page).toMatchElement(
         'div.form-group:nth-child(4) > ul:nth-child(1) > li:nth-child(1) > span',
         { text: 'País' }
@@ -270,31 +251,26 @@ describe('search filters path', () => {
     });
 
     it('should not display the No Label option for País', async () => {
-      
       await expect(page).toClick('li.multiselectActions:nth-child(7) > button', {
         text: '19 more',
       });
 
-      
       await expect(page).toMatchElement('li.multiselectItem', { text: 'Venezuela' });
-      
+
       await expect(page).not.toMatchElement('li.multiselectItem', { text: 'No Label' });
     });
 
     it('should display the No Label option with the correct aggregation when filtering by template', async () => {
-      
       await expect(page).toClick(
         'li.wide:nth-child(1) > ul:nth-child(1) > li:nth-child(3) > label:nth-child(2) > span:nth-child(2) > span',
         { text: 'Juez y/o Comisionado' }
       );
 
-      
       await expect(page).toMatchElement(
         'li.multiselectItem:nth-child(25) > label:nth-child(2) > span',
         { text: 'No Label' }
       );
 
-      
       await expect(page).toMatchElement(
         'li.multiselectItem:nth-child(25) > .multiselectItem-results > span',
         {

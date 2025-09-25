@@ -10,10 +10,10 @@ const generateTableHeader =
       className?: string;
     }
   ) =>
-    () => (
-      <TableHeader className={options?.className || ''}>
-        {translationKey && <Translate>{translationKey}</Translate>}
-      </TableHeader>
-    );
+  () => (
+    <TableHeader className={options?.className || ''}>
+      {translationKey && <Translate>{translationKey}</Translate>}
+    </TableHeader>
+  );
 
 export { generateTableHeader };

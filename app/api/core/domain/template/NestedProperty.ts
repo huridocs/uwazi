@@ -1,4 +1,3 @@
-
 import { Context, Property, PropertyProps } from '#api/templates.v2/model/Property.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';

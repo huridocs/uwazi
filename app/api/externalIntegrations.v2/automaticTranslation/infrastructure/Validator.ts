@@ -19,16 +19,16 @@ export class Validator<T> {
 
   validate(data: unknown): data is T {
     const result = this.validateFunction(data);
-    this.errors = this.validateFunction.errors ?
-        this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
+    this.errors = this.validateFunction.errors
+      ? this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
       : [];
     return result;
   }
 
   ensure(data: unknown): asserts data is T {
     this.validateFunction(data);
-    this.errors = this.validateFunction.errors ?
-        this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
+    this.errors = this.validateFunction.errors
+      ? this.validateFunction.errors.map(e => new ValidationError(e.message, { cause: e }))
       : [];
     if (this.errors.length) {
       throw this.errors[0];

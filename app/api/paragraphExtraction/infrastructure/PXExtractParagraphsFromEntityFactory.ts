@@ -1,4 +1,3 @@
-
 import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';

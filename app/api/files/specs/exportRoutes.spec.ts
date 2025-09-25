@@ -1,4 +1,3 @@
-
 import authMiddleware from '../auth/authMiddleware.js';
 
 import csvExporter, { SearchResults } from '../csv/csvExporter.js';
@@ -11,7 +10,6 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
-
 
 import { User } from '#api/users/usersModel.js';
 

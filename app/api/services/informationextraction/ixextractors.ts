@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
-
 import { Suggestions } from '../suggestions/suggestions.js';
 
 import templates from '../templates/index.js';
@@ -12,7 +11,6 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
-  
 } from '../suggestions/blankSuggestions.js';
 
 import { Subset } from '#shared/tsUtils.js';

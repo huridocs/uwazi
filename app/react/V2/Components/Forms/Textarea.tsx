@@ -38,9 +38,9 @@ const Textarea = ({
   name = '',
   ref,
   clearFieldAction,
-  onChange = () => { },
-  onSelect = () => { },
-  onBlur = () => { },
+  onChange = () => {},
+  onSelect = () => {},
+  onBlur = () => {},
   resize = 'none',
   rows = 4,
 }: TextareaProps) => {

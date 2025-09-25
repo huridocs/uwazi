@@ -8,7 +8,7 @@ import uniqueID from '#shared/uniqueID.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientTemplateSchema } from 'app/V2/shared/types.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
 import { sidepanelAtom } from './sidepanelAtom.js';

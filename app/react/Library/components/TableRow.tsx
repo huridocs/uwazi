@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { connect, ConnectedProps } from 'react-redux';
-import { IStore, TableViewColumn } from "app/V2/shared/types.js";
+import { IStore, TableViewColumn } from 'app/V2/shared/types.js';
 
 import { Icon as PropertyIcon } from '../../Layout.js';
 import formatter from '../../Metadata/helpers/formater.js';
@@ -105,8 +105,9 @@ const TableRowComponent = ({
   const [firstCell, ...rowCells] = cells;
   return (
     <tr
-      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
-        }`}
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${
+        deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
+      }`}
       onClick={selectRow}
     >
       {firstCell && (
@@ -115,7 +116,7 @@ const TableRowComponent = ({
             <div className="checkbox-cell" onClick={checkEntity}>
               <input
                 type="checkbox"
-                onChange={() => { }}
+                onChange={() => {}}
                 checked={multipleSelection && selected}
                 onClick={checkEntity}
               />

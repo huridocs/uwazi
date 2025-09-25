@@ -1,4 +1,3 @@
-
 import { Property } from '#api/templates.v2/model/Property.js';
 import { PropertyTypeMismatchError } from '../errors';
 

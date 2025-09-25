@@ -15,7 +15,6 @@ import path from 'path';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-
 import translations from '#api/i18n/translations.js';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';

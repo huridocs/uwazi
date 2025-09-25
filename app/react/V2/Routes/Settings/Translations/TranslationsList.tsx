@@ -5,11 +5,11 @@ import { createColumnHelper } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientTranslationContextSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
+import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/V2/shared/types.js';
 import { Table } from '../../../Components/UI/index.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import * as translationsAPI from '#api/translations/index.js';
+import * as translationsAPI from '#app/V2/api/translations/index.js';
 import {
   ContextPill,
   RenderButton,
@@ -24,8 +24,8 @@ const columnHelper = createColumnHelper<TranslationContext>();
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      translationsAPI.get(headers);
+  async () =>
+    translationsAPI.get(headers);
 
 const TranslationsList = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];

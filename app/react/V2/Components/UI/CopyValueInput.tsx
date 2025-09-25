@@ -27,7 +27,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
       }, 2000);
       return () => clearTimeout(timer);
     }
-    return () => { };
+    return () => {};
   }, [copied]);
 
   return (

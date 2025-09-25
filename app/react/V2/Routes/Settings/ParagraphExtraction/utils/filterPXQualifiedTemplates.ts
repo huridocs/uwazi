@@ -1,4 +1,3 @@
-
 import { Template } from '#app/apiResponseTypes.js';
 
 const filterPXQualifiedTemplates = (template: Template) =>

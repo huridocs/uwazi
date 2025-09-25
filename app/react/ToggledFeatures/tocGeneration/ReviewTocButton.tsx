@@ -3,7 +3,7 @@ import { Icon } from 'UI';
 import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { ClientFile } from "app/V2/shared/types.js";
+import { ClientFile } from 'app/V2/shared/types.js';
 import { tocGenerationActions } from './actions';
 
 interface ReviewTocButtonProps {

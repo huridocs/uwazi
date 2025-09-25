@@ -34,8 +34,8 @@ const columnHelper = createColumnHelper<TableLanguages>();
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      I18NApi.getLanguages(new RequestParams({}, headers));
+  async () =>
+    I18NApi.getLanguages(new RequestParams({}, headers));
 
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
@@ -62,16 +62,16 @@ const LanguagesList = () => {
       key: string,
       currentLanguage?: LanguageSchema
     ) =>
-      async () => {
-        setShowModal(false);
-        if (currentLanguage) {
-          await requestAction(
-            action,
-            new RequestParams({ [key]: currentLanguage.key }),
-            successMessage
-          );
-        }
-      };
+    async () => {
+      setShowModal(false);
+      if (currentLanguage) {
+        await requestAction(
+          action,
+          new RequestParams({ [key]: currentLanguage.key }),
+          successMessage
+        );
+      }
+    };
 
   const confirmAction = (
     message: string,

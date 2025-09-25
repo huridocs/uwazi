@@ -3,7 +3,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
 
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import { LMap } from '../../Map/index.js';
 
@@ -54,8 +54,8 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
     });
     loader
       .load()
-      .then(() => { })
-      .catch(() => { });
+      .then(() => {})
+      .catch(() => {});
   }
 
   const templatesInfo = templates.reduce(
@@ -63,11 +63,11 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
       ...info,
       ...(t
         ? {
-          [t.get('_id')]: {
-            color: t.get('color'),
-            name: t.get('name'),
-          },
-        }
+            [t.get('_id')]: {
+              color: t.get('color'),
+              name: t.get('name'),
+            },
+          }
         : {}),
     }),
     {}

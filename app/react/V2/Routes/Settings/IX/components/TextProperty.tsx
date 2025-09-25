@@ -4,7 +4,7 @@ import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextS
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientEntitySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/V2/shared/types.js';
 
 type TextPropertyProps = {
   onSelect: (selection: TextSelection) => any;

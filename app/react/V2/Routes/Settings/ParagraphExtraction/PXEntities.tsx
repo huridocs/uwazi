@@ -6,12 +6,9 @@ import { Translate } from '#app/I18N/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button } from '../../../Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
-import type {
-  PXEntityLoaderResponse,
-  TablePXEntityRow,
-} from '#shared/ParagraphExtractionTypes.js';
+import type { PXEntityLoaderResponse, TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
 import { EntityStatus } from '#shared/ParagraphExtractionTypes.js';
-import * as entitiesAPI from '#api/paragraphExtractor/entities.js';
+import * as entitiesAPI from '#app/V2/api/paragraphExtractor/entities.js';
 import { EntitiesTable } from './components/entities/Table.js';
 import { generateDisplayPill } from './utils/generateDisplayPill.js';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog/index.js';

@@ -1,4 +1,3 @@
-
 import { files, storage } from '../../files/index.js';
 
 import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
@@ -15,9 +14,9 @@ import { emitToTenant } from '../socketio/setupSockets.js';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
-import createError from '#app/utils/Error.js';
+import createError from '#api/utils/Error.js';
 
-import { handleError } from '#app/utils/handleError.js';
+import { handleError } from '#api/utils/handleError.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
 // eslint-disable-next-line node/no-restricted-import

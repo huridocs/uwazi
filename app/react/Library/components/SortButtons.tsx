@@ -8,7 +8,7 @@ import { Icon } from 'UI';
 import { DropdownList } from '../../Forms/index.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 import { omit } from 'lodash';
 import {
   filterTemplates,
@@ -54,10 +54,10 @@ const getToggleSearchIcon = (search: SearchOptions) =>
 const validateSearch = (search: SearchOptions): SearchOptions =>
   search.sort === '_score' && !search.searchTerm
     ? {
-      sort: 'creationDate',
-      order: 'desc',
-      searchTerm: search.searchTerm,
-    }
+        sort: 'creationDate',
+        order: 'desc',
+        searchTerm: search.searchTerm,
+      }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
 const sortDirection = (condition: string) => {

@@ -4,7 +4,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Paginator } from '#app/V2/Components/UI/index.js';
 
-
 const meta: Meta<typeof Paginator> = {
   title: 'Components/Paginator',
   component: Paginator,

@@ -1,6 +1,5 @@
 import { Db } from 'mongodb';
 
-
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -8,7 +7,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoPermissionsDataSource } from '../MongoPermissionsDataSource';

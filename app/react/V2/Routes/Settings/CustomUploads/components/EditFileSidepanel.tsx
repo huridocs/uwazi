@@ -13,7 +13,7 @@ import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import { getFileNameAndExtension } from '../../../../../shared/formatHelpers.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';
-import { update } from '#api/files/index.js';
+import { update } from '#app/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
 type EditFileSidepanelProps = {
@@ -68,7 +68,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={isSubmitting ? () => { } : closeSidepanel}
+      closeSidepanelFunction={isSubmitting ? () => {} : closeSidepanel}
       title={<Translate>Edit File</Translate>}
     >
       <form onSubmit={handleSubmit(save)} className="flex flex-col h-full" id="file-edit-form">

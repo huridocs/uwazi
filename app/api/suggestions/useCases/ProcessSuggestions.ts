@@ -1,4 +1,3 @@
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { ObjectId } from 'mongodb';
 
@@ -22,7 +21,6 @@ import {
   ProcessFindFilters,
   AutoAcceptSource,
   OverwriteMode,
-  
 } from '../suggestions/contracts/ProcessSuggestionsContracts.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;

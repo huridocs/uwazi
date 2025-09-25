@@ -4,7 +4,7 @@ import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Translate } from '#app/I18N/index.js';
-import { formatBytes } from '#shared/formatHelpers.js';
+import { formatBytes } from '#app/V2/shared/formatHelpers.js';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
@@ -63,7 +63,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
               </div>
             </div>
           </div>
-          <div class ame="flex flex-wrap gap-2 my-4">
+          <div className="flex flex-wrap gap-2 my-4">
             {files.map((file, index) => (
               <div
                 // eslint-disable-next-line react/no-array-index-key
@@ -82,7 +82,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
           </div>
 
           {files.length > 0 && (
-            <div class ame="text-sm">
+            <div className="text-sm">
               <Translate>Size</Translate>: {formatBytes(totalSize)}
             </div>
           )}

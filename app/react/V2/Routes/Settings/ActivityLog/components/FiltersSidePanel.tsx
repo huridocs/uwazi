@@ -4,7 +4,6 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { Sidepanel, Button } from '#app/V2/Components/UI/index.js';
 
-
 import { Translate, t } from '#app/I18N/index.js';
 
 import { InputField, DateRangePicker, MultiSelect } from '#app/V2/Components/Forms.js';
@@ -102,7 +101,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <InputField
                 id="search"
@@ -115,7 +114,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <Controller
                 control={control}

@@ -2,7 +2,7 @@
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 
-import { ClientTemplateSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
+import { ClientTemplateSchema, ClientTranslationSchema } from 'app/V2/shared/types.js';
 
 const currentTranslations: ClientTranslationSchema[] = [
   {

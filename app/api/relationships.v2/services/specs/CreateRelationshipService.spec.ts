@@ -1,4 +1,3 @@
-
 import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
 
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';

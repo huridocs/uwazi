@@ -1,7 +1,6 @@
-
 import db from '#api/utils/testing_db.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { search } from '../search';
 import { elastic } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';

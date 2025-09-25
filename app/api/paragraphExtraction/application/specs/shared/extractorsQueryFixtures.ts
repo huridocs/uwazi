@@ -3,7 +3,6 @@ import { ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-
 import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';

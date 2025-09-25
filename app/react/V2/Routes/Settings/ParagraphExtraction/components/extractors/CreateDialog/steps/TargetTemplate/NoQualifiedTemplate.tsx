@@ -1,4 +1,3 @@
-
 import { Translate } from '#app/I18N/index.js';
 import React from 'react';
 

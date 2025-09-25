@@ -9,14 +9,13 @@ import { cloneDeep, isEqual } from 'lodash';
 
 import { Translate } from '#app/I18N/index.js';
 
-import * as SettingsAPI from '#api/V2/api/settings.js';
+import * as SettingsAPI from '#app/V2/api/settings.js';
 
 import { notificationAtom } from '#app/V2/atoms.js';
 
 import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
-
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm';
@@ -25,19 +24,19 @@ import { Link, sanitizeIds } from './shared';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
-        const linkWithRowId: Link = { ...link, rowId: link._id! };
-        if (link.sublinks) {
-          linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
-            ...sublink,
-            rowId: `${link._id}-${index}`,
-          }));
-        }
-        return linkWithRowId;
-      });
-      return tableRows;
-    };
+  async () => {
+    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+      const linkWithRowId: Link = { ...link, rowId: link._id! };
+      if (link.sublinks) {
+        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+          ...sublink,
+          rowId: `${link._id}-${index}`,
+        }));
+      }
+      return linkWithRowId;
+    });
+    return tableRows;
+  };
 
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
@@ -185,8 +184,9 @@ const MenuConfig = () => {
       <Sidepanel
         title={
           <Translate className="uppercase">
-            {`${formValues?.title === '' ? 'New' : 'Edit'} ${formValues?.type === 'group' ? 'Group' : 'Link'
-              }`}
+            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
+              formValues?.type === 'group' ? 'Group' : 'Link'
+            }`}
           </Translate>
         }
         isOpen={isSidepanelOpen}

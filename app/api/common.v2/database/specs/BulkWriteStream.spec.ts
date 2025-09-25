@@ -1,4 +1,3 @@
-
 import db from '#api/utils/testing_db.js';
 import { BulkWriteStream } from '../BulkWriteStream';
 
@@ -16,9 +15,9 @@ const newValues: NumberValueType[] = Array(11)
   }));
 
 const checkValues = async (expectedValues: number[]) => {
-  const inDbUserNames =
-    (await db.mongodb?.collection<NumberValueType>('values').find({}).toArray())
-      ?.map(v => v.value);
+  const inDbUserNames = (
+    await db.mongodb?.collection<NumberValueType>('values').find({}).toArray()
+  )?.map(v => v.value);
   expect(inDbUserNames).toMatchObject(expectedValues);
 };
 

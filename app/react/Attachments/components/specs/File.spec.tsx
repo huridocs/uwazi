@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-
 import { FileType } from '#shared/types/fileType.js';
 
 import { Translate } from '#app/I18N/index.js';

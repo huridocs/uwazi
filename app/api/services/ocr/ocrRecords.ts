@@ -1,4 +1,3 @@
-
 import { EnforcedWithId, WithId } from '../odm/index.js';
 import { ensure } from '#shared/tsUtils.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';

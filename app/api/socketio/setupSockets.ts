@@ -2,7 +2,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
 import { config } from '../config.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { handleError } from '#app/utils/index.js';
+import { handleError } from '#api/utils/index.js';
 import * as cookie from 'cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';

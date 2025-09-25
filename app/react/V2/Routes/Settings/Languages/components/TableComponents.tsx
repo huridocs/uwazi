@@ -15,10 +15,11 @@ const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) =
   >
     <Translate className="sr-only">Default</Translate>
     <StarIcon
-      className={`${!cell.row.original.default
-        ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
-        : 'w-4'
-        }`}
+      className={`${
+        !cell.row.original.default
+          ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
+          : 'w-4'
+      }`}
     />
   </Button>
 );

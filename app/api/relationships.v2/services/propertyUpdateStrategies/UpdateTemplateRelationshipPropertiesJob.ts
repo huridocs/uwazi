@@ -1,4 +1,3 @@
-
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';

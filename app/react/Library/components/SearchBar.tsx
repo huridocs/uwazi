@@ -16,10 +16,10 @@ import ModalTips from '../../App/ModalTips.js';
 import { SearchTipsContent } from '../../App/SearchTipsContent.js';
 import { submitNewSearch } from '../../SemanticSearch/actions/actions.js';
 import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 import { Form } from '#app/Forms/Form.js';
 
-interface SearchBarOwnProps { }
+interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {
   const { search, filters } = state.library;
   return {

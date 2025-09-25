@@ -6,9 +6,7 @@ import { Tooltip } from 'flowbite-react';
 
 import { Pill, Button } from '#app/V2/Components/UI/index.js';
 
-
 import type { PillColor } from '#app/V2/Components/UI/index.js';
-
 
 import { Translate } from '#app/I18N/index.js';
 
@@ -96,15 +94,15 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
 
 const TimeCell =
   (dateFormat: string) =>
-    ({ cell }: CellContext<LogEntry, number>) => {
-      const date = moment(cell.getValue());
-      return (
-        <>
-          <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
-          <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
-        </>
-      );
-    };
+  ({ cell }: CellContext<LogEntry, number>) => {
+    const date = moment(cell.getValue());
+    return (
+      <>
+        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
+        <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
+      </>
+    );
+  };
 
 const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   <Button

@@ -1,4 +1,3 @@
-
 import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
 
 interface DeleteRelationshipsData {

@@ -9,14 +9,13 @@ import {
   customUploadsPath,
   deleteFile,
   storage,
-  
 } from '../../files/index.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
-import { multitenantMiddleware } from '#app/utils/multitenantMiddleware.js';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 
-import { appContextMiddleware } from '#app/utils/appContextMiddleware.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
 import syncRoutes from '../routes';
 

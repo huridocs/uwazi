@@ -1,9 +1,7 @@
-
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-  
 } from '#api/common.v2/database/data_source_defaults.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

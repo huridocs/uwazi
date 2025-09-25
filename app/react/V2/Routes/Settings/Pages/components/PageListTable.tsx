@@ -5,7 +5,6 @@ import { CellContext } from '@tanstack/react-table';
 
 import { Button, Pill } from '#app/V2/Components/UI/index.js';
 
-
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { TablePage } from '../PagesList';
 

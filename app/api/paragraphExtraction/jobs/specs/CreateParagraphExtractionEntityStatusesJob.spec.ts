@@ -11,7 +11,6 @@ import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastr
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
-  
 } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';

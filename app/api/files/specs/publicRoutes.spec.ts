@@ -1,4 +1,3 @@
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
@@ -7,13 +6,12 @@ import path from 'path';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import request from 'supertest';
 
-
 import entities from '../../entities.js';
 import { setupTestUploadedPaths, storage } from '../../files/index.js';
 
 import { search } from '../../search.js';
 
-import mailer from '#app/utils/mailer.js';
+import mailer from '#api/utils/mailer.js';
 
 import { setUpApp, socketEmit } from '#api/utils/testingRoutes.js';
 // eslint-disable-next-line node/no-restricted-import

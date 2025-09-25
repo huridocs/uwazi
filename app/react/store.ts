@@ -1,6 +1,5 @@
 /* eslint-disable import/no-mutable-exports,prefer-destructuring,global-require */
 
-
 import { isClient } from '#app/utils/index.js';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';

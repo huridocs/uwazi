@@ -1,4 +1,3 @@
-
 import { legacyLogger } from '../log.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

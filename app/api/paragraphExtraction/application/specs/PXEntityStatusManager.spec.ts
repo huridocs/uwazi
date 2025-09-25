@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { DBFixture } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -14,7 +13,6 @@ import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastr
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-
 
 import { PXEntityStatusManagerFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusManagerFactory.js';
 

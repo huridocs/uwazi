@@ -10,7 +10,7 @@ import { search } from '../../search.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
 import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 

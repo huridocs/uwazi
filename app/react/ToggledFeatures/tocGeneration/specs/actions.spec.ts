@@ -1,4 +1,3 @@
-
 import api from '#app/utils/api.js';
 import backend from 'fetch-mock';
 
@@ -13,7 +12,7 @@ import Immutable from 'immutable';
 
 import { mockID } from '#shared/uniqueID.js.js';
 
-import { ClientEntitySchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema } from 'app/V2/shared/types.js';
 import { tocGenerationActions } from '../actions';
 
 const middlewares = [thunk];

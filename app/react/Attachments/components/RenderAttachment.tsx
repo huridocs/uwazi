@@ -2,7 +2,7 @@ import React from 'react';
 
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
-import { ClientFile } from "app/V2/shared/types.js";
+import { ClientFile } from 'app/V2/shared/types.js';
 import MarkdownMedia from '../../Markdown/components/MarkdownMedia.js';
 
 import { isSerializedFile, prepareHTMLMediaView } from '#shared/fileUploadUtils.js';

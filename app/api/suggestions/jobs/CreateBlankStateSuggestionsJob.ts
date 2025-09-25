@@ -2,7 +2,6 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-  
 } from '../queue.v2/application/contracts/Dispatchable.js';
 
 import { tenants } from '#api/tenants/index.js';

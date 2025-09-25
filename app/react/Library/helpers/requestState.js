@@ -2,7 +2,7 @@ import { actions } from '../../BasicReducer/index.js';
 import libraryHelpers from '#app/Library/helpers/libraryFilters.js';
 import api from '../../Search/SearchAPI.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import { risonDecodeOrIgnore } from '#api/utils/index.js';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
 import { setTableViewColumns } from '#app/Library/actions/libraryActions.js';
 import { tocGenerationUtils } from '../../ToggledFeatures/tocGeneration.js';

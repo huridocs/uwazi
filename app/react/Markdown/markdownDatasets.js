@@ -1,6 +1,6 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
-import { risonDecodeOrIgnore } from '#api/utils/index.js';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import Big from 'big.js';
 
 import searchApi from '../../Search/SearchAPI.js';

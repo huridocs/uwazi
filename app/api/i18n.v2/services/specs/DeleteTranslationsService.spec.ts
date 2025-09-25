@@ -1,4 +1,3 @@
-
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

@@ -89,8 +89,8 @@ export const HideColumnsComponent = ({
   useOnClickOutsideElement<HTMLLIElement>(dropdownContainerRef, onClickOutside);
 
   const onSelect = (item: SelectableColumn) =>
-    item.selectAll ?
-      setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
+    item.selectAll
+      ? setAllColumnsHidden(item.indeterminate ? false : !item.hidden)
       : setColumnHidden(item.name, !item.hidden);
 
   return (

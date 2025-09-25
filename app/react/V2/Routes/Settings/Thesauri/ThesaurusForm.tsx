@@ -8,7 +8,7 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import * as thesauriAPI from '#api/thesauri/index.js';
+import * as thesauriAPI from '#app/V2/api/thesauri/index.js';
 
 import { notificationAtom } from '#app/V2/atoms.js';
 import { Table } from '../../../Components/UI/index.js';
@@ -88,7 +88,7 @@ const ThesaurusForm = ({
           enableSelections
           header={
             <InputField
-              clearFieldAction={() => { }}
+              clearFieldAction={() => {}}
               id="thesauri-name"
               placeholder="Thesauri name"
               hasErrors={!!errors.name}

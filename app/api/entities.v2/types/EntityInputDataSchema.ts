@@ -1,4 +1,3 @@
-
 import { ISO6391Codes } from '#shared/language/index.js';
 
 const linkSchema = {

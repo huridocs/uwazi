@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
 
 import { Icon } from '#app/UI/Icon/Icon.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 import { t, Translate } from '#app/I18N/index.js';
 
 import { notificationActions } from '../../Notifications.js';

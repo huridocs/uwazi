@@ -18,7 +18,6 @@ import {
   PXExtractRequest,
   PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
-  
 } from '../paragraphExtraction/types.js';
 
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';

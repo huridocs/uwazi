@@ -25,7 +25,7 @@ describe('TilesViewer', () => {
       storeKey: 'library',
       clickOnDocument: jasmine.createSpy('clickOnDocument'),
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
-      deleteConnection: () => { },
+      deleteConnection: () => {},
     };
   });
 

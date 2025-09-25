@@ -9,7 +9,6 @@ import api from '../../Pages/PagesAPI.js';
 import { t } from '#app/I18N/index.js';
 import * as types from '../../Pages/actions/actionTypes.js';
 
-
 import { PageType } from '#shared/types/pageType.js';
 
 export function loadPages() {

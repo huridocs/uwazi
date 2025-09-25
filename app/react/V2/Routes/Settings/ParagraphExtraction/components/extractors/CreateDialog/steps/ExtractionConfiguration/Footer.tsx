@@ -6,7 +6,7 @@ import { Button } from '../../../../../../../../Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { captureException } from '@sentry/react';
-import * as extractorsAPI from '#api/paragraphExtractor/extractors.js';
+import * as extractorsAPI from '#app/V2/api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '../../../../../../../../atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';

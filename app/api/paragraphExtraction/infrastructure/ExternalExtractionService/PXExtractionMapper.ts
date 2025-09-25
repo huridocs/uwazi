@@ -1,4 +1,3 @@
-
 import { ExtractParagraphInput } from '../paragraphExtraction/domain/PXExtractionService.js';
 
 import { ExtractionDTO } from './types';

@@ -13,10 +13,10 @@ const generateDisplayPill =
     className?: string;
     label?: string;
   }) =>
-    ({ count }: { count: number }) => (
-      <Pill color={color} className={className}>
-        {count} {label && <Translate>{label}</Translate>}
-      </Pill>
-    );
+  ({ count }: { count: number }) => (
+    <Pill color={color} className={className}>
+      {count} {label && <Translate>{label}</Translate>}
+    </Pill>
+  );
 
 export { generateDisplayPill };

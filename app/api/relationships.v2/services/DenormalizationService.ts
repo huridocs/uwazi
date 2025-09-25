@@ -1,4 +1,3 @@
-
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';

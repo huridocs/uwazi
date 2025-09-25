@@ -1,7 +1,6 @@
 import {
   PdfCharacterCountToAbsolute,
   AbsolutePositionReference,
-  
 } from '../migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute.js';
 
 import { AbsolutePositionTag } from '../migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList.js';

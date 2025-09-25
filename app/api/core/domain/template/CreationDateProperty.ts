@@ -1,4 +1,3 @@
-
 import { CommonProperty, CommonPropertyProps } from '#api/templates.v2/model/CommonProperty.js';
 
 import { Context, PropertyTypes } from '#api/templates.v2/model/Property.js';

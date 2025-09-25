@@ -1,4 +1,3 @@
-
 import { CommonPropertyInvalidError } from '../../domain/template/errors.js';
 import { Context, Property, PropertyProps } from './Property';
 

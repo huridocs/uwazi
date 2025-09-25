@@ -11,7 +11,7 @@ import { MemberListItemPermission } from '../MemberListItemPermission';
 
 describe('MemberList', () => {
   it('should render with the correct data', () => {
-    const component = shallow(<MembersList members={data} onChange={() => { }} />);
+    const component = shallow(<MembersList members={data} onChange={() => {}} />);
 
     expect(component.find('tr').length).toBe(data.length);
     data.forEach(member => {
@@ -24,7 +24,7 @@ describe('MemberList', () => {
   });
 
   it('should render pseudoMembers with the correct data', () => {
-    const component = shallow(<MembersList members={pseudoData} onChange={() => { }} />);
+    const component = shallow(<MembersList members={pseudoData} onChange={() => {}} />);
 
     expect(component.find('tr').length).toBe(pseudoData.length);
     pseudoData.forEach(member => {

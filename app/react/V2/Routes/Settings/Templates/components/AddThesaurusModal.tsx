@@ -3,7 +3,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
-import { save as saveThesauri } from '#api/thesauri/index.js';
+import { save as saveThesauri } from '#app/thesauri/index.js';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from '#app/V2/atoms/index.js';
 

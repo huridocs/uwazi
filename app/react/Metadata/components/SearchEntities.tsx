@@ -5,7 +5,7 @@ import SearchResults from '../../Connections/components/SearchResults.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import SearchInput from '../../Layout/SearchInput.js';
 
-import { debounce } from '#api/utils/index.js';
+import { debounce } from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';

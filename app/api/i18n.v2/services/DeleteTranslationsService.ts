@@ -1,4 +1,3 @@
-
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 

@@ -7,7 +7,6 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-  
 } from '../queue.v2/application/contracts/Dispatchable.js';
 
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';

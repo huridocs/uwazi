@@ -1,4 +1,3 @@
-
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';

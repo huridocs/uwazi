@@ -2,7 +2,6 @@ import { Link } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { CurrentLocationLink } from '../../Layout.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';

@@ -22,7 +22,7 @@ import { Icon } from 'UI';
 
 import { actions } from '../../BasicReducer/index.js';
 
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu';

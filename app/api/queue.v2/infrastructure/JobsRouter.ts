@@ -1,4 +1,3 @@
-
 import { config } from '../config.js';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';

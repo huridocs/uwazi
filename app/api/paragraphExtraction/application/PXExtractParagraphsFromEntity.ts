@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';

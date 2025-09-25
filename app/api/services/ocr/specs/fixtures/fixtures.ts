@@ -1,4 +1,3 @@
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { OcrStatus } from '../../ocrModel';
 

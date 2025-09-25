@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 
 import { Property, PropertyTypes } from '#api/templates.v2/model/Property.js';
@@ -15,7 +14,6 @@ import {
   ReadableEntityPointer,
   ReadableRelationship,
   Relationship,
-  
 } from '#api/relationships.v2/model/Relationship.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';

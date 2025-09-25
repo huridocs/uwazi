@@ -1,4 +1,3 @@
-
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';

@@ -43,9 +43,11 @@ describe('csvExporter', () => {
 
   describe('getTemplateModels', () => {
     beforeAll(() => {
-      jest.spyOn(templates, 'getById').mockImplementation(async id =>
-        Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
-      );
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async id =>
+          Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
+        );
     });
     beforeEach(() => {
       jest.clearAllMocks();
@@ -446,9 +448,11 @@ describe('csvExporter', () => {
 
   describe('CSVExport class', () => {
     beforeEach(() => {
-      jest.spyOn(templates, 'getById').mockImplementation(async id =>
-        Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
-      );
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async id =>
+          Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
+        );
       jest.spyOn(translations, 'get').mockResolvedValue([]);
     });
 

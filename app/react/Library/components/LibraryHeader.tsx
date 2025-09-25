@@ -17,7 +17,7 @@ import {
   zoomOut as zoomOutAction,
 } from '#app/Library/actions/libraryActions.js';
 import { showFilters as showFiltersAction } from '../../Entities/actions/uiActions.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';

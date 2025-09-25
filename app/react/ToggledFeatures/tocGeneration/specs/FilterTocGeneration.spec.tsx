@@ -20,7 +20,7 @@ describe('FilterTocGeneration', () => {
   };
 
   const render = (aggs: Aggregations = aggregations) => {
-    component = shallow(<FilterTocGeneration onChange={() => { }} aggregations={aggs} />);
+    component = shallow(<FilterTocGeneration onChange={() => {}} aggregations={aggs} />);
   };
 
   it('should render nothing if file generatedToc is false', () => {

@@ -5,7 +5,6 @@ import React from 'react';
 import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import MarkdownMedia from '../MarkdownMedia';
 

@@ -1,4 +1,3 @@
-
 import { elastic } from '../../search.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import templatesModel from '../templates/templates.js';

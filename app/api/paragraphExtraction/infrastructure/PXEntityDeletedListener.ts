@@ -1,15 +1,13 @@
-
-import { EventsBus } from '../eventsbus.js';
+import { EventsBus } from '#api/eventsbus/index.js';
 
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
-
-import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
+import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

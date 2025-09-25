@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
@@ -23,7 +22,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-
 
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 

@@ -1,19 +1,17 @@
-
 import { searchRoutes } from '../search.v2/routes.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import { advancedSort } from '#app/utils/advancedSort.js';
+import { advancedSort } from '#api/utils/advancedSort.js';
 import { Application } from 'express';
 import qs from 'qs';
 import request from 'supertest';
 
-
 import entities from '../../entities.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { entity1enId, entity2enId, fixturesSnippetsSearch } from './fixturesSnippetsSearch';

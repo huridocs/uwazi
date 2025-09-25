@@ -309,7 +309,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           url = URL.createObjectURL(blob);
           setMediaURL(url);
         })
-        .catch(_e => { })
+        .catch(_e => {})
         .finally(() => {
           setIsLoading(false);
         });

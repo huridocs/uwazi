@@ -21,8 +21,8 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    onDrop: _files => { },
-    onChange: _files => { },
+    onDrop: _files => {},
+    onChange: _files => {},
   },
 };
 

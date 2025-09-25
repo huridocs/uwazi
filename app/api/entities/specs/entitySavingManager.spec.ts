@@ -2,7 +2,12 @@
 
 import { saveEntity } from '../entities/entitySavingManager.js';
 
-import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '../../files/index.js';
+import {
+  attachmentsPath,
+  fileExistsOnPath,
+  files as filesAPI,
+  uploadsPath,
+} from '../../files/index.js';
 
 import * as processDocumentApi from '../files/processDocument.js';
 
@@ -10,12 +15,12 @@ import { search } from '../../search.js';
 
 import db from '#api/utils/testing_db.js';
 
-import { advancedSort } from '#app/utils/advancedSort.js';
+import { advancedSort } from '#api/utils/advancedSort.js';
 import * as os from 'os';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';

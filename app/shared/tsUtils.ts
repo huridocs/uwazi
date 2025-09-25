@@ -2,7 +2,7 @@ import util from 'util';
 import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
-import { ClientBlobFile } from "app/V2/shared/types.js";
+import { ClientBlobFile } from 'app/V2/shared/types.js';
 
 export type Subset<K, T extends K> = T;
 

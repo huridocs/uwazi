@@ -1,4 +1,3 @@
-
 import entities from '../../entities.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -13,7 +12,6 @@ import users from '../users/users.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-
 
 import translations from '#app/I18N/index.js';
 

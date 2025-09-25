@@ -1,4 +1,3 @@
-
 import { EventsBus } from '../eventsbus.js';
 
 import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';

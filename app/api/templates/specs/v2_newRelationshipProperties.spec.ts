@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
 import entities from '../../entities.js';
@@ -13,7 +12,7 @@ import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-field
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 

@@ -1,9 +1,8 @@
-
 import { actions } from '#app/V2/BasicReducer/reducer.js';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
 
-import { QuickLabelState } from "app/V2/shared/types.js";
+import { QuickLabelState } from 'app/V2/shared/types.js';
 
 import { wrapDispatch } from '../../Multireducer.js';
 

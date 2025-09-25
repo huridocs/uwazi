@@ -1,9 +1,7 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-
 import db from '#api/utils/testing_db.js';
-
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 

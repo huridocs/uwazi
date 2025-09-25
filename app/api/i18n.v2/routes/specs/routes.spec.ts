@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 import request from 'supertest';
 
-
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

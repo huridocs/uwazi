@@ -3,7 +3,6 @@ import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 
-
 import LibraryRoot from '#app/Library/Library.js';
 
 import { LibraryCards } from '#app/Library/LibraryCards.js';
@@ -35,7 +34,6 @@ import {
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
-
 } from '#app/V2/Routes/Settings/Thesauri/index.js';
 
 import { MenuConfig, menuConfigloader } from './V2/Routes/Settings/MenuConfig/MenuConfig.js';
@@ -80,7 +78,6 @@ import {
   templatesLoader,
   TemplatesEditor,
   templatesEditorLoader,
-
 } from '#app/V2/Routes/Settings/Templates/index.js';
 import {
   loggedInUsersRoute,

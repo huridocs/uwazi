@@ -114,7 +114,7 @@ describe('UserGroupsLookupField', () => {
   describe('keyboard use', () => {
     let component: ShallowWrapper;
 
-    const getEvent = (key: string) => ({ preventDefault: () => { }, key });
+    const getEvent = (key: string) => ({ preventDefault: () => {}, key });
 
     beforeEach(() => {
       component = shallow(

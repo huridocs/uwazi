@@ -1,4 +1,3 @@
-
 import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
 
 import { UnauthorizedError } from '../../errors/UnauthorizedError.js';

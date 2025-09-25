@@ -1,4 +1,3 @@
-
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';

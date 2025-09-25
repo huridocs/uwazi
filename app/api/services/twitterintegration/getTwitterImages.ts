@@ -1,4 +1,3 @@
-
 import { ResultsMessage } from '#api/services/tasksmanager/TaskManager.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';

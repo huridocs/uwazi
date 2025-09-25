@@ -1,19 +1,15 @@
 import { CSVLoader } from '../csv/index.js';
-import { generateFileName } from '../../files/index.js';
+import { generateFileName } from '#api/files/index.js';
 import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { DefaultTranslations } from './defaultTranslations.js';
 import { legacyLogger } from '../log/index.js';
 import { EnforcedWithId, WithId } from '../odm/index.js';
 import settings from '#api/settings/settings.js';
 import thesauri from '../thesauri/thesauri.js';
-import { prettifyError } from '#app/utils/handleError.js';
+import { prettifyError } from '#api/utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
-import {
-  TranslationContext,
-  TranslationType,
-  TranslationValue,
-} from '#shared/translationType.js';
+import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';

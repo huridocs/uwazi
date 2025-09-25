@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { DBFixture } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -14,7 +13,6 @@ import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher
 import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 
 import { PXExtractParagraphsFromEntityJob } from '../paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
-
 
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 

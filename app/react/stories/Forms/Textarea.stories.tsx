@@ -37,7 +37,7 @@ const WithClearFieldButton = {
   ...InputFieldStory,
   args: {
     ...Basic.args,
-    clearFieldAction: () => { },
+    clearFieldAction: () => {},
     value:
       'This is a very long value that will not show over the clear field button even if it is very long',
   },
@@ -49,7 +49,7 @@ const WithError = {
     ...Basic.args,
     hasErrors: true,
     value: 'This value has errors',
-    clearFieldAction: () => { },
+    clearFieldAction: () => {},
   },
 };
 
@@ -59,7 +59,7 @@ const WithErrorMessage = {
     ...Basic.args,
     errorMessage: "This is an error message that will show when there's an error",
     value: 'This value has errors',
-    clearFieldAction: () => { },
+    clearFieldAction: () => {},
   },
 };
 

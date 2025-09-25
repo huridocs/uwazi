@@ -30,10 +30,10 @@ const verifyUrl = (url: string): MediaType => {
 const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
   const overlayBackgroundStyle = thumbnail?.url
     ? {
-      backgroundImage: `url("${thumbnail.url}")`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }
+        backgroundImage: `url("${thumbnail.url}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
     : { background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 6%, rgba(156,163,175,0.6) 50%)' };
 
   const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';

@@ -1,4 +1,3 @@
-
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';

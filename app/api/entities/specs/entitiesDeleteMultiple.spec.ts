@@ -1,11 +1,11 @@
 import entities from '../../entities.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 import db from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getFixturesFactory } from '#app/utils/fixturesFactory';
+import { getFixturesFactory } from '#api/utils/fixturesFactory';
 import entitiesModel from '../entitiesModel';
 
 const factory = getFixturesFactory();

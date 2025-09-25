@@ -1,4 +1,3 @@
-
 import { EventsBus } from '../eventsbus.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

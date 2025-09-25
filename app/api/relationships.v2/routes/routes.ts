@@ -2,12 +2,11 @@ import { performance } from 'perf_hooks';
 
 import { Application, NextFunction, Request, Response } from 'express';
 
-
 import { needsAuthorization } from '../auth.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { parseQuery } from '#app/utils/index.js';
+import { parseQuery } from '#api/utils/index.js';
 
 import { GetMigrationHubRecordsResponse } from '#shared/types/api.v2/migrationHubRecords.get.js';
 

@@ -13,7 +13,6 @@ import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
 import { Button, PaginationState, Paginator, Pill, Table } from '#app/V2/Components/UI/index.js';
 
-
 import { useIsFirstRender } from '#app/V2/CustomHooks/useIsFirstRender.js';
 
 import { settingsAtom } from '#app/V2/atoms.js';

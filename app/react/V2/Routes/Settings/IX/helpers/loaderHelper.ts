@@ -1,7 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
 
-
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 import { SuggestionValue, EntitySuggestion } from '../types.js';

@@ -25,9 +25,9 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import translationsApi, { IndexedTranslations } from '#api/i18n/translations';
-import settingsApi from '#api/settings/settings';
-import { tenants } from '#api/tenants';
+import translationsApi, { IndexedTranslations } from '#app/i18n/translations';
+import settingsApi from '#app/settings/settings';
+import { tenants } from '#app/tenants';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
@@ -154,13 +154,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-        api.get('user', requestParams),
-        api.get('settings', requestParams),
-        api.get('templates', requestParams),
-        api.get('dictionaries', requestParams),
-        api.get('relationTypes', requestParams),
-        Promise.resolve({ json: { rows: translations } }),
-      ])
+          api.get('user', requestParams),
+          api.get('settings', requestParams),
+          api.get('templates', requestParams),
+          api.get('dictionaries', requestParams),
+          api.get('relationTypes', requestParams),
+          Promise.resolve({ json: { rows: translations } }),
+        ])
       : [];
 
   const reduxData = {

@@ -1,4 +1,3 @@
-
 import { Extractors } from '../services/informationextraction/ixextractors.js';
 
 import { IXSuggestionsQuery, SuggestionCustomFilter } from '#shared/types/suggestionType.js';

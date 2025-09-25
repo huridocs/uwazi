@@ -17,19 +17,19 @@ import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import { Translate, t } from '#app/I18N/index.js';
-import * as pagesAPI from '#api/pages/index.js';
-import { Page } from '#shared/types.js';
+import * as pagesAPI from '#app/V2/api/pages/index.js';
+import { Page } from '#app/V2/shared/types.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import {
   Button,
   CopyValueInput,
   Tabs,
   ConfirmNavigationModal,
-} from '../../../Components/UI/index.js';
+} from '#app/V2/Components/UI/index.js';
 import { CodeEditor } from '../../../Components/CodeEditor/index.js';
 
-import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms.js';
-import { notificationAtom } from '../../../atoms/index.js';
+import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';
@@ -37,15 +37,15 @@ import { HTMLNotification, JSNotification } from './components/PageEditorCompone
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params }) => {
-      if (params.sharedId) {
-        const page = await pagesAPI.getBySharedId(params.sharedId, headers);
+  async ({ params }) => {
+    if (params.sharedId) {
+      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
 
-        return page;
-      }
+      return page;
+    }
 
-      return {};
-    };
+    return {};
+  };
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;

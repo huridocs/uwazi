@@ -15,7 +15,7 @@ import { DocumentCounter } from '../../Layout/DocumentCounter.js';
 import { Icon } from 'UI';
 import { withRouter } from '../../componentWrappers.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
-import { risonDecodeOrIgnore } from '#api/utils/index.js';
+import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import Welcome from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
 import blankState from '../Library/helpers/blankState.js';

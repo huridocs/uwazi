@@ -7,7 +7,7 @@ import { useSetAtom } from 'jotai';
 import { notificationAtom } from '../../../atoms/index.js';
 import { Table } from '../../../Components/UI/Table/Table.js';
 import { Button } from '../../../Components/UI/Button.js';
-import * as templatesApi from '#api/templates/index.js';
+import * as templatesApi from '#app/templates/index.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
@@ -21,40 +21,40 @@ import { TemplateRow } from './types.js';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
-    async () => {
-      const templates = await templatesApi.get(headers);
-      const templateIds = templates.map((template: Template) => template._id);
-      const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-      return templates.map((template: Template) => {
-        const reasons = [];
-        if (template.default) {
-          reasons.push(t('System', 'A default template cannot be deleted.', null, false));
-        }
-        if (entityCounts[template._id] > 0) {
-          reasons.push(
-            t(
-              'System',
-              'This template is in use by existing entities and cannot be deleted.',
-              null,
-              false
-            )
-          );
-        }
-        if (template.synced) {
-          reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
-        }
+  async () => {
+    const templates = await templatesApi.get(headers);
+    const templateIds = templates.map((template: Template) => template._id);
+    const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
+    return templates.map((template: Template) => {
+      const reasons = [];
+      if (template.default) {
+        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
+      }
+      if (entityCounts[template._id] > 0) {
+        reasons.push(
+          t(
+            'System',
+            'This template is in use by existing entities and cannot be deleted.',
+            null,
+            false
+          )
+        );
+      }
+      if (template.synced) {
+        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
+      }
 
-        const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
+      const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
 
-        return {
-          ...template,
-          rowId: template._id,
-          translation: template.name,
-          entityCount: entityCounts[template._id] || 0,
-          disableRowSelection,
-        };
-      });
-    };
+      return {
+        ...template,
+        rowId: template._id,
+        translation: template.name,
+        entityCount: entityCounts[template._id] || 0,
+        disableRowSelection,
+      };
+    });
+  };
 
 const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];

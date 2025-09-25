@@ -4,11 +4,11 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import * as extractorsAPI from '#api/V2/api/ix/extractors.js';
-import * as templatesAPI from '#api/templates/index.js';
+import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
+import * as templatesAPI from '#app/V2/api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 
-import { ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientTemplateSchema } from 'app/V2/shared/types.js';
 import { Button, ConfirmationModal, Table } from '../../../Components/UI/index.js';
 
 import { Translate, t } from '#app/I18N/index.js';
@@ -205,10 +205,10 @@ const IXDashboard = () => {
 
 const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const extractors = await extractorsAPI.get(headers);
-      const templates = await templatesAPI.get(headers);
-      return { extractors, templates };
-    };
+  async () => {
+    const extractors = await extractorsAPI.get(headers);
+    const templates = await templatesAPI.get(headers);
+    return { extractors, templates };
+  };
 
 export { IXDashboard, IXdashboardLoader, formatExtractors };

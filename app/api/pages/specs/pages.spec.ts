@@ -1,9 +1,8 @@
-
 import { mockID } from '#shared/uniqueID.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import date from '#api/utils/date.js';;
+import date from '#api/utils/date.js';
 
 import db from '#api/utils/testing_db.js';
 

@@ -1,7 +1,6 @@
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { entitySchema } from './entitySchema.js';
 
-
 export const emitSchemaTypes = true;
 
 export const connectionSchema = {

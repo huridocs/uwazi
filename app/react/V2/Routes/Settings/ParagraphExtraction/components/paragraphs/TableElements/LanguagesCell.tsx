@@ -3,7 +3,6 @@ import { CellContext } from '@tanstack/react-table';
 
 import { Pill } from '#app/V2/Components/UI/index.js';
 
-
 import { TablePXEntityParagraphRow } from '#shared/V2/shared/ParagraphExtractionTypes.js';
 
 const LanguagesCell = ({

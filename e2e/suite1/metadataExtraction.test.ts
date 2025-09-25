@@ -14,9 +14,8 @@ describe('Metadata Extraction', () => {
   });
 
   it('should be hidden by a feature toggle.', async () => {
-    
     await expect(page).toClick('a', { text: 'Settings' });
-    
+
     await expect(page).not.toMatchElement('a', { text: 'Metadata Extraction' });
   });
 

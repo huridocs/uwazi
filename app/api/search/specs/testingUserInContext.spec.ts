@@ -1,7 +1,6 @@
-
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
 import { UserSchema } from '#shared/types/userType.js';
 

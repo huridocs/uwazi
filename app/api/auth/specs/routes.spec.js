@@ -6,7 +6,7 @@ import request from 'supertest';
 import users from '../users/users.js';
 import backend from 'fetch-mock';
 import svgCaptcha from 'svg-captcha';
-import instrumentRoutes from '#app/utils/instrumentRoutes';
+import instrumentRoutes from '#api/utils/instrumentRoutes';
 import { CaptchaModel } from '../CaptchaModel';
 import { comparePasswords } from '../encryptPassword';
 import authRoutes from '../routes';

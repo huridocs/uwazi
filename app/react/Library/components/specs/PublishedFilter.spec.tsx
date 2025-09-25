@@ -21,7 +21,7 @@ describe('Published Filter', () => {
   };
 
   const render = (aggs: Aggregations = aggregations) => {
-    component = shallow(<PublishedFilters onChange={() => { }} aggregations={aggs} />);
+    component = shallow(<PublishedFilters onChange={() => {}} aggregations={aggs} />);
   };
 
   it('should display the number of published and restricted entities', () => {

@@ -1,4 +1,3 @@
-
 import { Context } from '#api/templates.v2/model/Property.js';
 
 class PropertyName {

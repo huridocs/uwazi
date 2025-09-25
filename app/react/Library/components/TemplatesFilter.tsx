@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from '../../ReactReduxForms/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withRouter } from '../../componentWrappers.js';

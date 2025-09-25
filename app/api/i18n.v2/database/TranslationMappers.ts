@@ -1,6 +1,5 @@
 import { OptionalId } from 'mongodb';
 
-
 import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';

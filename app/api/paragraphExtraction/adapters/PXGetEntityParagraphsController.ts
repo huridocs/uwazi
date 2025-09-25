@@ -2,7 +2,6 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-  
 } from '../common.v2/infrastructure/AbstractController.js';
 
 import { PXEntityParagraphsFactory } from '../infrastructure/PXEntityParagraphsFactory';

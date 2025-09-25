@@ -1,7 +1,6 @@
+import { EventsBus } from '#api/eventsbus/index.js';
 
-import { EventsBus } from '../eventsbus.js';
-
-import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
@@ -9,20 +8,20 @@ import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTe
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
 
-import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
 import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
+import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

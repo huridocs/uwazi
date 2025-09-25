@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
 
-import { ClientEntitySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/V2/shared/types.js';
 
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 

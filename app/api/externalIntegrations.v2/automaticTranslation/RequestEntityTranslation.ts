@@ -1,4 +1,3 @@
-
 import { getTenant } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';

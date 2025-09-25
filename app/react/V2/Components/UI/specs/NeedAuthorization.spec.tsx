@@ -13,7 +13,7 @@ import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js'
 import { NeedAuthorization } from '../index.js';
 import { TestAtomStoreProvider } from '../../../testing/index.js';
 
-import { ClientEntitySchema } from "app/V2/shared/types.js";
+import { ClientEntitySchema } from 'app/V2/shared/types.js';
 
 describe('NeedAuthorization', () => {
   const editorUser = {

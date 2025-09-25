@@ -1,7 +1,6 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-  
 } from '../queue.v2/application/contracts/UserAwareDispatchable.js';
 
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';

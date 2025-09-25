@@ -5,18 +5,18 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
-} from '../templates/utils.js';
-import entities from '../../entities/entities.js';
+} from '#api/templates/utils.js';
+import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
-import templates from '../templates/templates.js';
+import templates from '#api/templates/templates.js';
 import settings from '#api/settings/settings.js';
 import translations from '#api/i18n/translations.js';
-import { denormalizeThesauriLabelInMetadata } from '../entities/denormalize.js';
-import { search } from '../search/index.js';
+import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
+import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import model from './dictionariesModel.js';
-import { validateThesauri } from './validateThesauri.js';
+import model from '#api/thesauri/dictionariesModel.js';
+import { validateThesauri } from '#api/thesauri/validateThesauri.js';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);

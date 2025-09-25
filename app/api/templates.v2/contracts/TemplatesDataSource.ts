@@ -1,6 +1,5 @@
 import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 import { GenerateIdProperty } from '../../core/domain/template/GenerateIdProperty.js';
-import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';

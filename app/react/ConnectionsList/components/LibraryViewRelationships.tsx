@@ -10,7 +10,7 @@ import { Collapsible } from '../../App/Collapsible.js';
 import { StickyHeader } from '../../App/StickyHeader.js';
 import RelationshipMetadata from '../../Relationships/components/RelationshipMetadata.js';
 import LoadMoreRelationshipsButton from '../../Relationships/components/LoadMoreRelationshipsButton.js';
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {

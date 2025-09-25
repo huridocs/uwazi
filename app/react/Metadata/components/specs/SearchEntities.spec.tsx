@@ -8,7 +8,6 @@ import { sleep } from '#shared/tsUtils.js';
 import SearchApi from '../../Search/SearchAPI.js';
 import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities.js';
 
-
 import SearchResults from '../../Connections/components/SearchResults.js';
 
 describe('SearchEntities', () => {

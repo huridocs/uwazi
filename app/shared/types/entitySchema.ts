@@ -2,8 +2,6 @@ import { objectIdSchema, metadataSchema } from '#shared/types/commonSchemas.js';
 import { fileSchema } from './fileSchema.js';
 import { permissionSchema } from './permissionSchema.js';
 
-
-
 export const emitSchemaTypes = true;
 
 export const entitySchema = {

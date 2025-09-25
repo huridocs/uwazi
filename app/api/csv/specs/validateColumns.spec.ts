@@ -1,4 +1,3 @@
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';

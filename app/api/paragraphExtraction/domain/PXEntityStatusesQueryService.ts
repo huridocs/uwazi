@@ -1,4 +1,3 @@
-
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 interface PXEntityStatusesQueryService {

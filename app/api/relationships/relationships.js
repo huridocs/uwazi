@@ -2,25 +2,28 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import templatesAPI from '../templates/index.js';
-import settings from '../settings/index.js';
-import relationtypes from '../relationtypes/index.js';
-import entities from '../../entities/entities.js';
-import { createError } from '#app/utils/index.js';
+import templatesAPI from '#api/templates/index.js';
+import settings from '#api/settings/index.js';
+import relationtypes from '#api/relationtypes/index.js';
+import entities from '#api/entities/entities.js';
+import { createError } from '#api/utils/index.js';
 
 import { ObjectId } from 'mongodb';
-import { ArrayUtils } from '../common.v2/utils/Array.js';
-import model from './model.js';
-import { generateNames } from '../templates/utils.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import model from '#api/relationships/model.js';
+import { generateNames } from '#api/templates/utils.js';
 
-import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
+import {
+  filterRelevantRelationships,
+  groupRelationships,
+} from '#api/relationships/groupByRelationships.js';
 import {
   processRelationshipCollection,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
-} from './relationshipsHelpers.js';
-import { validateConnectionSchema } from './validateConnectionSchema.js';
-import { relationshipsSearch } from './relationshipsSearch.js';
+} from '#api/relationships/relationshipsHelpers.js';
+import { validateConnectionSchema } from '#api/relationships/validateConnectionSchema.js';
+import { relationshipsSearch } from '#api/relationships/relationshipsSearch.js';
 
 function excludeRefs(template) {
   delete template.refs;

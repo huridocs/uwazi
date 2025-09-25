@@ -1,4 +1,3 @@
-
 import { Icon } from '#app/UI/Icon/Icon.js';
 import React from 'react';
 import { Field } from 'react-redux-form';

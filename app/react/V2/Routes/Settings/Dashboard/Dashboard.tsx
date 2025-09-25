@@ -4,15 +4,13 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
 
-
 import { Translate } from '#app/I18N/index.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
 import { Card } from '#app/V2/Components/UI/index.js';
 
-
-import { getStats } from '#api/V2/api/settings.js';
+import { getStats } from '#app/V2/api/settings.js';
 
 import { formatBytes } from '#shared/V2/shared/formatHelpers.js';
 
@@ -25,8 +23,8 @@ interface InstanceStats {
 
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      getStats(headers);
+  async () =>
+    getStats(headers);
 
 const Dashboard = () => {
   const stats = useLoaderData() as InstanceStats;

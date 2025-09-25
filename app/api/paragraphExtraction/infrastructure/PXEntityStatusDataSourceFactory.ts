@@ -1,6 +1,5 @@
 import { Db } from 'mongodb';
 
-
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';

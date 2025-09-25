@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
 
-import { ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientTemplateSchema } from 'app/V2/shared/types.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 

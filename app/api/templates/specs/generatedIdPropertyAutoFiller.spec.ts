@@ -1,4 +1,3 @@
-
 import entities from '../../entities.js';
 
 import translations from '#app/I18N/index.js';
@@ -9,12 +8,11 @@ import {
   fixtures,
   templateId,
   textPropertyId,
-  
 } from '../templates/specs/generatedIdPropertyAutoFillerFixtures.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
-import { unique } from '#app/utils/filters.js';
+import { unique } from '#api/utils/filters.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

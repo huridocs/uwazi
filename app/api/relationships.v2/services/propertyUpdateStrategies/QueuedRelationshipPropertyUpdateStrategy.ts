@@ -1,4 +1,3 @@
-
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';

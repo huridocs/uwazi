@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { FileType as LegacyFileType } from '#shared/types/fileType.js';
 
 import { FileType } from '../files.v2/model/FileType.js';

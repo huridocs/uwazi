@@ -1,4 +1,3 @@
-
 import { collaborators } from '#api/permissions/collaborators.js';
 
 import { fixtures, groupA, groupB, userA, userB } from '#api/permissions/specs/fixtures.js';
@@ -6,7 +5,7 @@ import { fixtures, groupA, groupB, userA, userB } from '#api/permissions/specs/f
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { PermissionType } from '#shared/types/permissionSchema.js';
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 describe('collaborators', () => {

@@ -3,9 +3,9 @@ import { saveEntity } from '../entities/entitySavingManager.js';
 import { processDocument } from '../files/processDocument.js';
 import { search } from '../../search.js';
 import settings from '../settings/index.js';
-import mailer from '#app/utils/mailer.js';
+import mailer from '#api/utils/mailer.js';
 import cors from 'cors';
-import { withTransaction } from '#app/utils/withTransaction.js';
+import { withTransaction } from '#api/utils/withTransaction.js';
 import proxy from 'express-http-proxy';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';

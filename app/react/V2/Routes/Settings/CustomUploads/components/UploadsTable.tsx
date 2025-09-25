@@ -60,32 +60,32 @@ const createColumns = (
   handleDelete: (file: CustomUpload) => void,
   editFile: (file: CustomUpload) => void
 ) => [
-    columnHelper.display({
-      id: 'preview',
-      header: PreviewHeader,
-      cell: PreviewCell,
-      meta: { headerClassName: 'w-0' },
-    }),
-    columnHelper.accessor('originalname', {
-      id: 'originalname',
-      header: TitleHeader,
-      cell: TitleCell,
-      meta: { headerClassName: 'w-2/4' },
-    }),
-    columnHelper.accessor('filename', {
-      id: 'filename',
-      header: URLHeader,
-      cell: URLCell,
-      enableSorting: false,
-      meta: { headerClassName: 'w-2/4' },
-    }),
-    columnHelper.display({
-      id: 'action',
-      header: ActionHeader,
-      cell: ActionCell,
-      enableSorting: false,
-      meta: { action: () => ({ delete: handleDelete, edit: editFile }) },
-    }),
-  ];
+  columnHelper.display({
+    id: 'preview',
+    header: PreviewHeader,
+    cell: PreviewCell,
+    meta: { headerClassName: 'w-0' },
+  }),
+  columnHelper.accessor('originalname', {
+    id: 'originalname',
+    header: TitleHeader,
+    cell: TitleCell,
+    meta: { headerClassName: 'w-2/4' },
+  }),
+  columnHelper.accessor('filename', {
+    id: 'filename',
+    header: URLHeader,
+    cell: URLCell,
+    enableSorting: false,
+    meta: { headerClassName: 'w-2/4' },
+  }),
+  columnHelper.display({
+    id: 'action',
+    header: ActionHeader,
+    cell: ActionCell,
+    enableSorting: false,
+    meta: { action: () => ({ delete: handleDelete, edit: editFile }) },
+  }),
+];
 
 export { createColumns };

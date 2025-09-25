@@ -1,5 +1,5 @@
 import relationtypesRoutes from '../relationtypes/routes.js.js';
-import instrumentRoutes from '#app/utils/instrumentRoutes.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
 import relationtypes from '../relationtypes/relationtypes.js';
 
 describe('relationtypes routes', () => {

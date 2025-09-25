@@ -1,4 +1,3 @@
-
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { getTableColumns } from '../tableColumns';
 

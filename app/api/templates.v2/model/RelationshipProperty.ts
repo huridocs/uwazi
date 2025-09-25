@@ -1,4 +1,3 @@
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';

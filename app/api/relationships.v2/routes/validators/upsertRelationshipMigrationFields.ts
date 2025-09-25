@@ -1,4 +1,3 @@
-
 import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
 
 import { UpdateRelationshipMigrationFieldRequest } from '#shared/types/api.v2/relationshipMigrationField.update.js';

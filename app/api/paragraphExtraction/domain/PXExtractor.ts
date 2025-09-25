@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
 import { Template } from '#api/templates.v2/model/Template.js';

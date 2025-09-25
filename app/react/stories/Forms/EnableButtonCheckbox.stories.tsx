@@ -29,7 +29,7 @@ const Basic: Story = {
     name: 'option',
     disabled: false,
     defaultChecked: false,
-    onChange: () => { },
+    onChange: () => {},
   },
 };
 

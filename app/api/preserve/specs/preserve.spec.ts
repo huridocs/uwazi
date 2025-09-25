@@ -1,4 +1,3 @@
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import settings from '../settings.js';

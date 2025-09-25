@@ -1,13 +1,7 @@
-import translations from '#app/I18N/index.js';
-import * as entitiesIndex from '../../search/entitiesIndex.js';
-import { testingEnvironment } from '#app/utils/testingEnvironment.js';
-import { setUpApp } from '#app/utils/testingRoutes.js';
-import translations from '#app/I18N/index.js';
-import * as entitiesIndex from '../search/entitiesIndex.js';
+import translations from '#api/i18n/translations.js';
+import * as entitiesIndex from '#api/search/entitiesIndex.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-
-import { testingDB } from '#api/utils/testing_db.js';
 
 import { Application, NextFunction } from 'express';
 import request from 'supertest';

@@ -1,4 +1,3 @@
-
 import testingDB from '#api/utils/testing_db.js';
 import migration from '../index';
 import { Fixture } from '../types';

@@ -1,7 +1,7 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
 import { groupBy } from 'lodash';
-import { ClientBlobFile, ClientEntitySchema, ClientFile } from "app/V2/shared/types.js";
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/V2/shared/types.js';
 import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
 import * as uploadsActionTypes from '../../Uploads/actions/actionTypes.js';
 

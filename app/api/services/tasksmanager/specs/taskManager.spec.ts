@@ -5,7 +5,7 @@ import { TaskManager, Service } from '#api/services/tasksmanager/TaskManager.js'
 
 import { config } from '../config.js';
 
-import * as handleError from '#app/utils/handleError.js.js';
+import * as handleError from '#api/utils/handleError.js.js';
 import { ExternalDummyService } from './ExternalDummyService.js';
 
 import { Redis } from '../infrastructure/Redis.js';

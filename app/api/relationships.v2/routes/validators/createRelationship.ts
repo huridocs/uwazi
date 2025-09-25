@@ -1,10 +1,8 @@
-
 import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
 import {
   CreateRelationshipData,
   EntityReference,
   TextReference,
-  
 } from '#shared/types/api.v2/relationships.createRelationshipsRequest.js';
 
 const schema: ValidatorSchema<

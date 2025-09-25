@@ -1,4 +1,3 @@
-
 import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';

@@ -34,18 +34,18 @@ const ParagraphsTable = ({
   const languages =
     pxParagraphData.length > 0
       ? [
-        {
-          _id: pxParagraphData[0]._id,
-          name:
-            availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
-            '',
-        },
-        ...(pxParagraphData[0].subRows || []).map(subRow => ({
-          _id: subRow._id,
-          name:
-            availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
-        })),
-      ]
+          {
+            _id: pxParagraphData[0]._id,
+            name:
+              availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
+              '',
+          },
+          ...(pxParagraphData[0].subRows || []).map(subRow => ({
+            _id: subRow._id,
+            name:
+              availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
+          })),
+        ]
       : [];
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId)!;

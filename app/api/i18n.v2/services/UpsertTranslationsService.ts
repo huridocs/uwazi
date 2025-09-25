@@ -1,4 +1,3 @@
-
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
 import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';

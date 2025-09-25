@@ -1,9 +1,7 @@
-
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
-  
 } from '#api/i18n.v2/errors/translationErrors.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';

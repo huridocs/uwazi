@@ -1,4 +1,3 @@
-
 import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 
 import { Property, PropertyTypes } from '#api/templates.v2/model/Property.js';

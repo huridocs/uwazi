@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 
-import { ClientPropertySchema } from "app/V2/shared/types.js";
+import { ClientPropertySchema } from 'app/V2/shared/types.js';
 import { TestRouterContext } from '../../../../../testing/TestRouterContext.js';
 import { TestAtomStoreProvider as AtomProvider } from '../../../../../testing/index.js';
 import { thesauriAtom } from '../../../../../atoms/index.js';

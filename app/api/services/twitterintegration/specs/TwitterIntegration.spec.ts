@@ -1,4 +1,3 @@
-
 import { testingDB } from '#api/utils/testing_db.js';
 
 import * as filesApi from '../files/filesystem.js';
@@ -7,20 +6,18 @@ import { storage, files } from '../../files/index.js';
 import {
   TweetParamsType,
   TwitterIntegration,
-  
 } from '../services/twitterintegration/TwitterIntegration.js';
 import {
   fixturesOneTenant,
   fixturesOtherTenant,
   fixturesTenantWithoutTwitter,
-  
 } from '../services/twitterintegration/specs/fixtures.js';
 
 import EntitiesModel from '../../entities/entitiesModel.js';
 
 import templates from '../templates/templates.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

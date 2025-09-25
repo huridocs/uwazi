@@ -1,7 +1,7 @@
 import React, { MouseEventHandler } from 'react';
 import { filesize } from 'filesize';
 import { Translate } from '#app/I18N/index.js';
-import { ClientFile } from "app/V2/shared/types.js";
+import { ClientFile } from 'app/V2/shared/types.js';
 
 import { RenderAttachment } from '../../Attachments.js';
 

@@ -1,4 +1,3 @@
-
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';

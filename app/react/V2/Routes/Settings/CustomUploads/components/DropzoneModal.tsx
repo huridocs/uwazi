@@ -9,7 +9,7 @@ import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FileDropzone } from '../../../../Components/Forms/index.js';
 import { Button, Modal } from '../../../../Components/UI/index.js';
-import { UploadService } from '#api/files/index.js';
+import { UploadService } from '#app/files/index.js';
 import { uploadProgressAtom } from './uploadProgressAtom.js';
 
 type DropzoneModalProps = {

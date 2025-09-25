@@ -2,7 +2,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-
 import testingDB, { fixturer } from '#api/utils/testing_db.js';
 import {
   fixturesOneFile,
@@ -12,13 +11,10 @@ import {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
-  
 } from '../services/pdfsegmentation/specs/fixtures.js';
-
 
 import { storage } from '../../files/index.js';
 import path from 'path';
-
 
 import { tenants } from '#api/tenants/tenantContext.js';
 

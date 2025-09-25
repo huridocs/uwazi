@@ -6,7 +6,7 @@ import { Store } from 'redux';
 
 import create from '../../store.js';
 
-import { IStore } from "app/V2/shared/types.js";
+import { IStore } from 'app/V2/shared/types.js';
 import { updatePageDatasets } from '../updatePageDatasets';
 
 describe('Update page datasets', () => {

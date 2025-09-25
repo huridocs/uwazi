@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from '../../componentWrappers.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions } from '../../BasicReducer/index.js';
-import { isClient, events } from '#api/utils/index.js';
+import { isClient, events } from '#app/utils/index.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
 import entitiesAPI from '../../Entities/EntitiesAPI.js';

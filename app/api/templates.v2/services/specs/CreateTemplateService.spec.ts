@@ -1,4 +1,3 @@
-
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';

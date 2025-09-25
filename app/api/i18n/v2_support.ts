@@ -14,11 +14,7 @@ import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslati
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { EnforcedWithId, models } from '../odm/index.js';
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-import {
-  TranslationContext,
-  TranslationType,
-  TranslationValue,
-} from '#shared/translationType.js';
+import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexedContextValues } from './translations.js';
 

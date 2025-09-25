@@ -77,7 +77,7 @@ const OCRStatus = ({ file, ocrIsToggled, locale, loadDocument }: ComponentProps)
         socket.on('ocr:ready', listenOnSuccess);
         socket.on('ocr:error', listenOnError);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   const lastUpdated = formatDate(ocrStatus.lastUpdated, locale);

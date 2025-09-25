@@ -2,7 +2,6 @@ import { Application } from 'express';
 import { Db, ObjectId } from 'mongodb';
 import request from 'supertest';
 
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

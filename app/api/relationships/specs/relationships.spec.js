@@ -6,7 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import entities from '../../entities/entities.js';
 import db from '#api/utils/testing_db.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { search } from '../../search';
 import relationships from '../relationships';
 import fixtures, {

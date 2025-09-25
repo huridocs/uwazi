@@ -1,4 +1,3 @@
-
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
 const group1Id = db.id();

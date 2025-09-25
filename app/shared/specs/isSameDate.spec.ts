@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { isSameDate } from '#shared/isSameDate.js';
 
-
 it('should only consider year, month and day', () => {
   const todayUtc = moment().utc();
   const todayInAnHourUtc = todayUtc.clone().add(1, 'hour');

@@ -1,4 +1,3 @@
-
 import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
 import { CommonPropertyInvalidError } from '../errors';
 

@@ -38,7 +38,7 @@ const Primary: Story = {
 const Basic = {
   ...Primary,
   args: {
-    onTabSelected: () => { },
+    onTabSelected: () => {},
     unmountTabs: undefined,
   },
 };

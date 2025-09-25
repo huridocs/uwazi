@@ -11,7 +11,7 @@ import { Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { FileType } from '#shared/types/fileType.js';
-import { getByType, remove, UploadService } from '#api/files/index.js';
+import { getByType, remove, UploadService } from '#app/files/index.js';
 import {
   Button,
   ConfirmationModal,
@@ -32,10 +32,10 @@ type CustomUpload = FileType & { rowId: string };
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<CustomUpload[]> =>
-    async () => {
-      const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
-      return files;
-    };
+  async () => {
+    const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
+    return files;
+  };
 
 const uploadService = new UploadService('custom');
 
@@ -53,7 +53,7 @@ const CustomUploads = () => {
     action: () => void;
     items: CustomUpload[];
   }>({
-    action: () => { },
+    action: () => {},
     items: [],
   });
 

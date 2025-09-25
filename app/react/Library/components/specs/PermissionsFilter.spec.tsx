@@ -101,7 +101,7 @@ describe('Permissions Filter', () => {
         },
       };
 
-      component = shallow(<PermissionsFilter onChange={() => { }} aggregations={aggs} />);
+      component = shallow(<PermissionsFilter onChange={() => {}} aggregations={aggs} />);
 
       expect(component.children().length).toBe(0);
     });

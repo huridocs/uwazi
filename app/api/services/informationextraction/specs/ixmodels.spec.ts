@@ -1,4 +1,3 @@
-
 import { Suggestions } from '../suggestions/suggestions.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

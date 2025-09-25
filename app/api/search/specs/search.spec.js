@@ -1,9 +1,9 @@
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 import { elastic } from '../../search.js';
 import { search } from '../search/search.js';
-import date from '#app/utils/date.js';
+import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import * as searchLimitsConfig from '#shared/config.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import elasticResult from './elasticResult';

@@ -1,4 +1,3 @@
-
 import translations from '#api/i18n/translations.js';
 
 import { WithId } from '../odm.js';

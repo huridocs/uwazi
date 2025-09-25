@@ -1,7 +1,7 @@
 /** @format */
 
 import 'api/utils/jasmineHelpers';
-import instrumentRoutes from '#app/utils/instrumentRoutes.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
 
 import auth2faRoutes from '../routes';

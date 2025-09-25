@@ -1,4 +1,3 @@
-
 import userModel from '#api/users/usersModel.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

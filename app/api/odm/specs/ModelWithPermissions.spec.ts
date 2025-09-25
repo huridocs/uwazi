@@ -1,4 +1,3 @@
-
 import { PermissionSchema } from '#shared/types/permissionType.js';
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';

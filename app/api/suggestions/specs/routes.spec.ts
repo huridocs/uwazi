@@ -2,7 +2,6 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
-
 import entities from '../../entities.js';
 
 import { search } from '../../search.js';
@@ -12,7 +11,6 @@ import {
   shared6enId,
   stateFilterFixtures,
   suggestionSharedId6Title,
-  
 } from '../suggestions/specs/fixtures.js';
 
 import { suggestionsRoutes } from '../suggestions/routes.js';

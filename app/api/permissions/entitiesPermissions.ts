@@ -6,7 +6,7 @@ import entities from '../../entities/entities.js';
 import { search } from '../../search.js';
 import users from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
-import { unique } from '#app/utils/filters.js';
+import { unique } from '#api/utils/filters.js';
 import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 import {
   AccessLevels,

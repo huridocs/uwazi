@@ -16,22 +16,22 @@ describe('DatePicker', () => {
   describe('RTL Support', () => {
     it('Should allow add a date property for a LTR language', async () => {
       await changeLanguage('English');
-      
+
       await expect(page).toClick('.btn-footer-hover-success');
-      
+
       await expect(page).toSelect('select:first-of-type', 'Reporte');
-      
+
       await expect(page).toClick('.react-datepicker-wrapper');
       await testSelectorShot('.metadata-sidepanel');
     });
 
     it('Should allow add a date property for a RTL language', async () => {
       await changeLanguage('العربية');
-      
+
       await expect(page).toClick('.btn-footer-hover-success');
-      
+
       await expect(page).toSelect('select:first-of-type', 'Reporte');
-      
+
       await expect(page).toClick('.react-datepicker-wrapper');
       await testSelectorShot('.metadata-sidepanel');
     });

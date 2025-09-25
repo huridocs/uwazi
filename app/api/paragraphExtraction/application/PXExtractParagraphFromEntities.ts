@@ -1,4 +1,3 @@
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';

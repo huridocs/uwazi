@@ -54,7 +54,7 @@ const FiltersSidepanel = ({
     if (searchParams.has('filter')) {
       initialFilters = JSON.parse(searchParams.get('filter')!);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   const { register, handleSubmit, reset, setValue } = useForm({
     values: initialFilters,

@@ -2,9 +2,9 @@ import ID from '#shared/uniqueID.js';
 import { PageType } from '#shared/types/pageType.js';
 import { validatePage } from '#shared/types/pageSchema.js';
 
-import date from '#api/utils/date.js';;
+import date from '#api/utils/date.js';
 import templates from '../templates/index.js';
-import { createError } from '#app/utils/index.js';
+import { createError } from '#api/utils/index.js';
 import { UwaziFilterQuery } from '../odm/index.js';
 import { User } from '#api/users/usersModel.js';
 

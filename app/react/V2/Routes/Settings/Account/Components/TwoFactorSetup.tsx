@@ -4,15 +4,11 @@ import api from '#app/utils/api.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-
 import { RequestParams } from '#app/utils/RequestParams.js';
-
 
 import { notificationAtom } from '#app/V2/atoms.js';
 
-
 import { Button, Card, CopyValueInput, Sidepanel } from '#app/V2/Components/UI/index.js';
-
 
 import { Translate } from '#app/I18N/index.js';
 import loadable from '@loadable/component';

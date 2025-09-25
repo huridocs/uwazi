@@ -97,14 +97,14 @@ const DateRangePickerComponent = React.forwardRef(
     }, [instance, from, to]);
 
     return (
-      <div clas name="tw-content">
+      <div className="tw-content">
         <div
           id="tw-container"
           className={`${className} absolute tw-datepicker z-50`}
           data-test-id={id}
         />
         <div>
-          <Label html or={id} hide abel={hideLabel} hasE rors={Boolean(hasErrors || errorMessage)}>
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>
           <div
@@ -119,10 +119,7 @@ const DateRangePickerComponent = React.forwardRef(
               // eslint-disable-next-line max-len
               className="relative "
             >
-              <div
-                clas
-                name="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3"
-              >
+              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <svg
                   className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
                   aria-hidden="true"
@@ -155,11 +152,8 @@ const DateRangePickerComponent = React.forwardRef(
                 }}
               />
             </div>
-            <div clas name="relative">
-              <div
-                clas
-                name="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3"
-              >
+            <div className="relative">
+              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <svg
                   className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
                   aria-hidden="true"

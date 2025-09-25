@@ -6,7 +6,7 @@ import { OperationalError } from '../common.v2/errors/OperationalError.js';
 import { S3Error } from '../files/S3Storage.js';
 import { IXValidationError } from '../services/informationextraction/IXValidationError.js';
 import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
-import { appContext } from '#app/utils/AppContext.js';
+import { appContext } from '#api/utils/AppContext.js';
 import util from 'node:util';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { handleError, prettifyError } from '../handleError';

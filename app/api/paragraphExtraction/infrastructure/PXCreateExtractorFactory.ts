@@ -1,4 +1,3 @@
-
 import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';

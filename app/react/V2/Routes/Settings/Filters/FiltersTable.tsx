@@ -10,8 +10,8 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { notificationAtom, settingsAtom } from '../../../atoms/index.js';
-import * as settingsAPI from '#api/settings/index.js';
-import * as templatesAPI from '#api/templates/index.js';
+import * as settingsAPI from '#app/V2/api/settings/index.js';
+import * as templatesAPI from '#app/V2/api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import {
@@ -31,12 +31,12 @@ import {
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
-    async () => {
-      const { filters } = await settingsAPI.get(headers);
-      const templates = await templatesAPI.get(headers);
-      const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
-      return { filters: tableFilters, templates };
-    };
+  async () => {
+    const { filters } = await settingsAPI.get(headers);
+    const templates = await templatesAPI.get(headers);
+    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+    return { filters: tableFilters, templates };
+  };
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;

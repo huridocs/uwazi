@@ -4,7 +4,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-
 import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
 
 import { PDFView } from '#app/Viewer/PDFView.js';

@@ -5,7 +5,6 @@ import { Translate } from '#app/I18N/index.js';
 
 import { Button } from '#app/V2/Components/UI/index.js';
 
-
 import { Sidepanel } from '#app/V2/Components/UI/Sidepanel.js';
 
 import { TablePXEntityParagraphRow } from '#shared/V2/shared/ParagraphExtractionTypes.js';

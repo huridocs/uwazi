@@ -1,4 +1,3 @@
-
 import { legacyLogger } from '../log.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -11,7 +10,7 @@ import { model as updatelogsModel } from '../updatelogs.js';
 
 import { UpdateLog } from '../updatelogs/updatelogsModel.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import testingDB from '#api/utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';

@@ -1,4 +1,3 @@
-
 import { files, storage, testingUploadPaths } from '../../files/index.js';
 
 import { Redis } from '../infrastructure/Redis.js';
@@ -9,7 +8,7 @@ import * as setupSockets from '../socketio/setupSockets.js';
 
 import { tenants } from '#api/tenants/index.js';
 
-import * as handleError from '#app/utils/handleError.js.js';
+import * as handleError from '#api/utils/handleError.js.js';
 
 import testingDB from '#api/utils/testing_db.js';
 

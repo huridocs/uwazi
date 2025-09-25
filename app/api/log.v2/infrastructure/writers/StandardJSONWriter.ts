@@ -1,4 +1,3 @@
-
 import { config } from '../config.js';
 import { LogEntry } from '../LogEntry.js';
 import { LogWriter } from '../LogWriter.js';

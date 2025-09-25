@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 
-
 import ExportButton, { ExportButtonProps } from '#app/Library/components/ExportButton.js';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -46,7 +45,7 @@ describe('ExportButton', () => {
     });
 
     it('should dispatch exportDocuments on click', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
 
       component.find('.btn').simulate('click');
@@ -77,7 +76,7 @@ describe('ExportButton', () => {
     });
 
     it('should not dispatch on click', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
       expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
@@ -98,7 +97,7 @@ describe('ExportButton', () => {
     });
 
     it('should add a captcha when user is not logged in', () => {
-      spyOn(actions, 'exportDocuments').and.returnValue(() => { });
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
       component.find('.btn').simulate('click');
       component.find(LocalForm).simulate('submit', { captcha: { text: 'abcde', id: '1234' } });

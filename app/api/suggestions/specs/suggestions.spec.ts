@@ -11,7 +11,6 @@ import {
   IXSuggestionStateType,
   IXSuggestionType,
   IXSuggestionsFilter,
-  
 } from '#shared/types/suggestionType.js';
 
 import { applicationEventsBus } from '../eventsbus.js';

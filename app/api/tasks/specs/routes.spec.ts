@@ -1,4 +1,3 @@
-
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction } from 'express';
 

@@ -1,6 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
 
-
 import testingDB from '#api/utils/testing_db.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

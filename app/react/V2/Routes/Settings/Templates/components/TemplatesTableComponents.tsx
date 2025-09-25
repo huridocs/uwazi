@@ -50,23 +50,23 @@ const EntityCountCell = ({ cell }: CellContext<TemplateRow, number>) => (
 
 const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
-    ({ cell }: CellContext<TemplateRow, boolean>) => (
-      <Button
-        styling={cell.row.original.default ? 'solid' : 'light'}
-        onClick={() => handleSetDefault(cell.row.original)}
-        className="leading-4 m-auto"
-        disabled={cell.row.original.default || cell.row.original.synced}
-      >
-        <Translate className="sr-only">Set as default</Translate>
-        <StarIcon
-          className={
-            cell.row.original.default
-              ? 'w-4 text-white'
-              : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
-          }
-        />
-      </Button>
-    );
+  ({ cell }: CellContext<TemplateRow, boolean>) => (
+    <Button
+      styling={cell.row.original.default ? 'solid' : 'light'}
+      onClick={() => handleSetDefault(cell.row.original)}
+      className="leading-4 m-auto"
+      disabled={cell.row.original.default || cell.row.original.synced}
+    >
+      <Translate className="sr-only">Set as default</Translate>
+      <StarIcon
+        className={
+          cell.row.original.default
+            ? 'w-4 text-white'
+            : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
+        }
+      />
+    </Button>
+  );
 
 const EditButton = ({ cell }: CellContext<TemplateRow, string>) => (
   <I18NLink to={`/settings/templates/edit/${cell.row.original._id}`} className="px-3 py-1">

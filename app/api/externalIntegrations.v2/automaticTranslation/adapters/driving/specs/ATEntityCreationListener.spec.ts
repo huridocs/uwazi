@@ -1,4 +1,3 @@
-
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
@@ -11,7 +10,7 @@ import { RequestEntityTranslation } from '../externalIntegrations.v2/automaticTr
 
 import { tenants } from '#api/tenants/index.js';
 
-import { appContext } from '#app/utils/AppContext.js';
+import { appContext } from '#api/utils/AppContext.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 

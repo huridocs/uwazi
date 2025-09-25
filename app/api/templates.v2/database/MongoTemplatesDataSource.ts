@@ -8,14 +8,6 @@ import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mappe
 import { resetIndex, updateMapping } from '../../search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
-import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mapper.js';
-import { updateMapping } from '../search/entitiesIndex.js';
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';

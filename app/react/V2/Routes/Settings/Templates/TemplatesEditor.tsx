@@ -19,8 +19,8 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from '#api/templates/index.js';
-import * as pagesAPI from '#api/pages/index.js';
+import * as templatesAPI from '#app/V2/api/templates/index.js';
+import * as pagesAPI from '#app/V2/api/pages/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#shared/types.js';
@@ -47,31 +47,31 @@ import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params }) => {
-      const allPages = await pagesAPI.get(headers);
-      const pages = allPages.filter((page: any) => page.entityView);
-      const pagesOptions = pages.map((page: Page) => ({
-        value: page.sharedId,
-        label: page.title,
-      }));
-      let loadedTemplate = emptyTemplate;
-      const templates = await templatesAPI.get(headers);
+  async ({ params }) => {
+    const allPages = await pagesAPI.get(headers);
+    const pages = allPages.filter((page: any) => page.entityView);
+    const pagesOptions = pages.map((page: Page) => ({
+      value: page.sharedId,
+      label: page.title,
+    }));
+    let loadedTemplate = emptyTemplate;
+    const templates = await templatesAPI.get(headers);
 
-      let entityCount = 0;
+    let entityCount = 0;
 
-      if (params.templateId) {
-        const templateToEdit = templates.find(template => template._id === params.templateId);
-        if (templateToEdit) {
-          entityCount =
-            (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
+    if (params.templateId) {
+      const templateToEdit = templates.find(template => template._id === params.templateId);
+      if (templateToEdit) {
+        entityCount =
+          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
             templateToEdit._id
-            ] || 0;
-          loadedTemplate = templateToEdit as ClientTemplateSchema;
-        }
+          ] || 0;
+        loadedTemplate = templateToEdit as ClientTemplateSchema;
       }
+    }
 
-      return { loadedTemplate, pagesOptions, entityCount };
-    };
+    return { loadedTemplate, pagesOptions, entityCount };
+  };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();

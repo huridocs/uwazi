@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { ClientTemplateSchema, IStore } from "app/V2/shared/types.js";
+import { ClientTemplateSchema, IStore } from 'app/V2/shared/types.js';
 import formatter from '../../Metadata/helpers/formater.js';
 
 import { safeName } from '#shared/propertyNames.js';

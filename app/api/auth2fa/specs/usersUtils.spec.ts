@@ -4,7 +4,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import * as otplib from 'otplib';
 
-
 import db from '#api/utils/testing_db.js';
 import usersModel from '#api/users/usersModel.js';
 import settingsModel from '#api/settings/settings.js';

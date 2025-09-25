@@ -7,8 +7,8 @@ import moment from 'moment';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import * as activityLogAPI from '#api/activityLog/index.js';
-import type { ActivityLogResponse } from '#api/activityLog/index.js';
+import * as activityLogAPI from '#app/V2/api/activityLog/index.js';
+import type { ActivityLogResponse } from '#app/activityLog/index.js';
 
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 

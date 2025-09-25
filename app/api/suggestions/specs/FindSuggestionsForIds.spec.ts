@@ -15,7 +15,7 @@ import { ModelNotReadyError } from '../services/informationextraction/ixextracto
 
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import ixmodels from '../services/informationextraction/ixmodels.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds';

@@ -19,12 +19,14 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "api/*": ["./app/api/*"],
-      "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"],
-      "UI": ["./app/react/UI"],
-      "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"]
+      "#api/*": ["./app/api/*"],
+      "#app/*": ["./app/react/*"],
+      "#shared/*": ["./app/shared/*"],
+      "#UI": ["./app/react/UI"],
+      "#UI/*": ["./app/react/UI/*"],
+      "#V2/*": ["./app/react/V2/*"],
+      "#api/utils/*": ["./app/api/utils/*"],
+      "#app/utils/*": ["./app/react/utils/*"]
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true

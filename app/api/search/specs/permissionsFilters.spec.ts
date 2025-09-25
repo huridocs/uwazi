@@ -1,10 +1,8 @@
-
 import { search } from '../search/search.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
-
+import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
 import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
 

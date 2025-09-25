@@ -1,4 +1,3 @@
-
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';

@@ -1,8 +1,8 @@
 import ShowIf from '../../App/ShowIf.js';
 import { DocumentLanguage, TemplateLabel } from '../../Layout.js';
 import { Icon } from '../../Layout/Icon.js';
-import TimelineViewer from '../../Timeline/components/TimelineViewer.js';
-import { caseTemplate, matterTemplate } from '../../Timeline/utils/timelineFixedData.js';
+import TimelineViewer from '#app/Timeline/components/TimelineViewer.js';
+import { caseTemplate, matterTemplate } from '#app/Timeline/utils/timelineFixedData.js';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

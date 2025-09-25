@@ -1,4 +1,3 @@
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';

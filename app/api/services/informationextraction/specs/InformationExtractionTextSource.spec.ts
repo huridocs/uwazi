@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 

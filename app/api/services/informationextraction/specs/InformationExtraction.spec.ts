@@ -6,10 +6,9 @@ import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from '#app/utils/testingTenants.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
@@ -18,7 +17,6 @@ import * as setupSockets from '../socketio/setupSockets.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-
 
 import testingDB from '#api/utils/testing_db.js';
 

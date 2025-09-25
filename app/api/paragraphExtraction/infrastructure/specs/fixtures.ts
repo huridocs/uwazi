@@ -1,4 +1,3 @@
-
 import { Document } from '../files.v2/model/Document.js';
 
 import { Segmentation } from '../files.v2/model/Segmentation.js';
@@ -9,7 +8,6 @@ import { PXExtractor } from '../paragraphExtraction/domain/PXExtractor.js';
 
 import { Property } from '#api/templates.v2/model/Property.js';
 import { ObjectId } from 'mongodb';
-
 
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';

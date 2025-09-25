@@ -6,7 +6,7 @@ import { isString } from 'lodash';
 
 import { t, Translate } from '#app/I18N/index.js';
 
-import { debounce } from '#api/utils/index.js';
+import { debounce } from '#app/utils/index.js';
 import { Label } from '../Label.js';
 import { Checkbox } from '../Checkbox.js';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';

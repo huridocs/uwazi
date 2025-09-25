@@ -1,6 +1,6 @@
 import { Application, Request } from 'express';
 
-import { validation } from '#app/utils/index.js';
+import { validation } from '#api/utils/index.js';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
 

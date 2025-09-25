@@ -8,7 +8,7 @@ import {
   ClientTemplateSchema,
   ClientTranslationSchema,
   RelationshipTypesType,
-} from "app/V2/shared/types.js";
+} from 'app/V2/shared/types.js';
 import { globalMatomoAtom } from './globalMatomoAtom.js';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
 import { relationshipTypesAtom } from './relationshipTypes.js';

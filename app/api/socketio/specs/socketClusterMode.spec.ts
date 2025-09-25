@@ -3,11 +3,11 @@ import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
 
-import { multitenantMiddleware } from '#app/utils/multitenantMiddleware.js';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 
 import { tenants, Tenant } from '#api/tenants/tenantContext.js';
 
-import { appContextMiddleware } from '#app/utils/appContextMiddleware.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
 import { config } from '../config.js';
 import waitForExpect from 'wait-for-expect';

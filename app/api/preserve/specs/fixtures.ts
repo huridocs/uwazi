@@ -1,4 +1,3 @@
-
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
 import { UserRole } from '#shared/types/userSchema.js';

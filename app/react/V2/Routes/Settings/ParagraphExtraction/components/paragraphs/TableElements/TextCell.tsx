@@ -4,7 +4,6 @@ import { TablePXEntityParagraphRow } from '../../../../../../shared/ParagraphExt
 
 import { Truncate } from '#app/V2/Components/UI/index.js';
 
-
 const TextCell = ({
   cell,
 }: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['paragraphText']>) => {

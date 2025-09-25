@@ -1,4 +1,3 @@
-
 import { Template } from '#app/apiResponseTypes.js';
 import { Extractor } from '../../../../../shared/ParagraphExtractionTypes.js';
 import { PXTemplate, PXTable } from '../types.js';

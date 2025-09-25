@@ -1,4 +1,3 @@
-
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 
 import { User } from '#api/users.v2/model/User.js';
@@ -41,8 +40,8 @@ export class AuthorizationService {
       );
     } else {
       filteredEntitiesPermissions =
-        level === 'read' ?
-            allEntitiesPermissions.filter(entityPermissions =>
+        level === 'read'
+          ? allEntitiesPermissions.filter(entityPermissions =>
               entityPermissions.allowsPublicReads()
             )
           : [];

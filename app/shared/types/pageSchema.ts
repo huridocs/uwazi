@@ -1,6 +1,5 @@
 import Ajv from 'ajv';
 
-
 import templatesModel from '#api/templates/templatesModel.js';
 
 import { objectIdSchema } from '#shared/types/commonSchemas.js';

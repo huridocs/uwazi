@@ -1,4 +1,3 @@
-
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { LanguageUtils } from '#shared/language/index.js';

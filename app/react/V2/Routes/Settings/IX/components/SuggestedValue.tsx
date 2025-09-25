@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
 
-import { ClientTemplateSchema } from "app/V2/shared/types.js";
+import { ClientTemplateSchema } from 'app/V2/shared/types.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { secondsToDate } from '../../../../../shared/dateHelpers.js';

@@ -7,7 +7,6 @@ import { rm, writeFile } from 'fs/promises';
 import bodyParser from 'body-parser';
 import _ from 'lodash';
 
-
 import authRoutes from '../auth/routes.js';
 
 import entities from '../../entities.js';
@@ -19,7 +18,6 @@ import {
   files,
   storage,
   testingUploadPaths,
-  
 } from '../../files/index.js';
 
 import translations from '#app/I18N/index.js';
@@ -40,19 +38,19 @@ import thesauri from '../../thesauri/thesauri.js';
 
 import users from '../users/users.js';
 
-import { appContext } from '#app/utils/AppContext.js';
+import { appContext } from '#api/utils/AppContext.js';
 
-import { appContextMiddleware } from '#app/utils/appContextMiddleware.js';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
-import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
-import errorHandlingMiddleware from '#app/utils/error_handling_middleware.js';
+import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 
-import mailer from '#app/utils/mailer.js';
+import mailer from '#api/utils/mailer.js';
 
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { advancedSort } from '#app/utils/advancedSort.js';
+import { advancedSort } from '#api/utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';

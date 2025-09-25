@@ -4,7 +4,7 @@ import { Icon } from 'UI';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { debounce } from '#api/utils/index.js';
+import { debounce } from '#app/utils/index.js';
 import { MemberListItemInfo } from './MemberListItemInfo.js';
 
 interface UserGroupsLookupFieldProps {

@@ -4,7 +4,6 @@ import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
 
 import { storage } from '#api/files/storage.js';
 
-
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { search } from '#api/search/index.js';
@@ -204,8 +203,8 @@ describe('preserveSync', () => {
           await entities.get({}, {}, { sort: { title: 'asc' } })
         ).map((entity: EntityWithFilesSchema) => ({
           ...entity,
-          attachments: entity.attachments ?
-              entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
+          attachments: entity.attachments
+            ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
             : [],
         }));
 

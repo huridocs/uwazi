@@ -1,5 +1,8 @@
-
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
+import {
+  ClientEntitySchema,
+  ClientPropertySchema,
+  ClientTemplateSchema,
+} from 'app/V2/shared/types.js';
 import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../types';
 
 const suggestion1: TableSuggestion = {
