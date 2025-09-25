@@ -16,6 +16,7 @@ import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDatePrope
 import { MultiDateProperty } from 'api/core/domain/template/MultiDateProperty';
 import { MultiDateRangeProperty } from 'api/core/domain/template/MultiDateRangeProperty';
 import { MultiSelectProperty } from 'api/core/domain/template/MultiSelectProperty';
+import { NestedProperty } from 'api/core/domain/template/NestedProperty';
 import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
 import { SelectProperty } from 'api/core/domain/template/SelectProperty';
@@ -229,6 +230,9 @@ class PropertyMapper {
 
         return new SelectProperty({ ...baseProps, ...filterableProps, ...selectProps });
       }
+
+      case 'nested':
+        return new NestedProperty({ ...baseProps, ...filterableProps });
 
       case 'relationship':
         return V1RelationshipProperty.create({

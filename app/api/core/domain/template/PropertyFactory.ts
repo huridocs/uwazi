@@ -19,6 +19,7 @@ import { DateProperty, DatePropertyProps } from './DateProperty';
 import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty';
 import { SelectProperty, SelectPropertyProps } from './SelectProperty';
 import { MultiSelectProperty, MultiSelectPropertyProps } from './MultiSelectProperty';
+import { NestedProperty, NestedPropertyProps } from './NestedProperty';
 
 type CreateInput =
   | TextPropertyProps
@@ -35,7 +36,8 @@ type CreateInput =
   | GenerateIdPropertyProps
   | SelectPropertyProps
   | MultiSelectPropertyProps
-  | V1RelationshipPropertyProps;
+  | V1RelationshipPropertyProps
+  | NestedPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput, context: Context): Property {
@@ -87,6 +89,9 @@ class PropertyFactory {
 
       case 'relationship':
         return V1RelationshipProperty.create(input as V1RelationshipPropertyProps, context);
+
+      case 'nested':
+        return new NestedProperty(input as NestedPropertyProps);
 
       default:
         throw new Error(`The following type was not handled. Type = ${input.type}`);
