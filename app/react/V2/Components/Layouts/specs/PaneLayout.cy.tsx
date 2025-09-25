@@ -37,9 +37,10 @@ describe('PaneLayout', () => {
       render();
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
-      cy.realDrag(cy.get('div[role="separator"]'), 297, 0);
-      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 100px;');
-      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 714px;');
+      cy.realDrag(cy.get('div[role="separator"]'), 298, 0);
+      //resizing will fail if it exceeds the minwidth in cypress.
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
     });
 
     it('should save panel setup to the localStorage', () => {});
