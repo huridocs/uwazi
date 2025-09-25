@@ -1,7 +1,7 @@
-import { CompoundFilter, RangeFilter, SearchQuery } from 'shared/types/SearchQueryType';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
-import { extractSearchParams, snippetsHighlight } from './queryHelpers';
+import { CompoundFilter, RangeFilter, SearchQuery } from 'shared/types/SearchQueryType';
 import { permissionsFilters } from './permissionsFilters';
+import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 
 type Filter = (RangeFilter | CompoundFilter | string | number | boolean) | undefined;
 
@@ -85,25 +85,40 @@ const termsFilter = (query: SearchQuery, propertyName: string) =>
 
 const defaultFields = ['title', 'template', 'sharedId'];
 
-const buildSortQuery = (query: SearchQuery) => {
+const buildSortQuery = (query: SearchQuery, currentMappings: Record<string, any>) => {
   if (!query.sort) {
     return [];
   }
 
-  const isDescending = query.sort.startsWith('-');
-  const order = isDescending ? 'desc' : 'asc';
-  const sortProp = isDescending ? query.sort.substring(1) : query.sort;
+  const order = query.sort.startsWith('-') ? 'desc' : 'asc';
+  const sortProp = query.sort.startsWith('-') ? query.sort.substring(1) : query.sort;
 
   if (sortProp.startsWith('metadata.')) {
     const labelPriority = { [`${sortProp}.label.sort`]: { unmapped_type: 'keyword', order } };
-    const valuePriority = { [`${sortProp}.value.sort`]: { order } };
-    return [labelPriority, valuePriority];
+    const valuePriority = { [`${sortProp}.value.sort`]: { unmapped_type: 'keyword', order } };
+    if (
+      currentMappings.metadata.properties[sortProp.split('.')[1]].properties?.value?.fields?.sort
+    ) {
+      return [valuePriority];
+    }
+    if (
+      currentMappings.metadata.properties[sortProp.split('.')[1]].properties?.label?.fields?.sort
+    ) {
+      return [labelPriority];
+    }
+    return [{ [`${sortProp}.value`]: { order } }];
   }
 
-  return [{ [`${sortProp}.sort`]: order }];
+  return currentMappings[sortProp]?.fields?.sort
+    ? [{ [`${sortProp}.sort`]: { order } }]
+    : [{ [`${sortProp}`]: { order } }];
 };
 
-export const buildQuery = async (query: SearchQuery, language: string): Promise<RequestBody> => {
+export const buildQuery = async (
+  query: SearchQuery,
+  language: string,
+  currentMappings: Record<string, any>
+): Promise<RequestBody> => {
   const searchParams = await extractSearchParams(query);
 
   return {
@@ -144,7 +159,7 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
       query,
       searchParams.search?.properties?.map(property => ({ [property]: {} }))
     ),
-    sort: buildSortQuery(query),
+    sort: buildSortQuery(query, currentMappings),
     from: query.page?.offset || 0,
     size: query.page?.limit || 30,
   };
