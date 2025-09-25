@@ -1,14 +1,14 @@
 import { Application } from 'express';
 import request from 'supertest';
 
+import entities from 'api/entities';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingDB } from 'api/utils/testing_db';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import entities from 'api/entities';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 
-import { searchRoutes } from '../routes';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import { searchRoutes } from '../routes';
 import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Sorting', () => {
@@ -110,7 +110,7 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
+    const { body } = await request(app).get('/api/v2/search').query(query);
 
     expect(body.data).toMatchObject([
       { metadata: { textProperty: [{ value: 'D Last property' }] } },
@@ -127,8 +127,9 @@ describe('Sorting', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
+    const { statusCode, body } = await request(app).get('/api/v2/search').query(query);
 
+    expect(statusCode).toBe(200);
     expect(body.data).toMatchObject([
       { metadata: { numberProperty: [{ value: -10 }] } },
       { metadata: { numberProperty: [{ value: 1 }] } },
