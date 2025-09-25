@@ -3,6 +3,7 @@
 exports[`search multiselect aggregations allAggregations should return all aggregations 1`] = `
 Array [
   "doc_count",
+  "select2",
   "groupedDictionary",
   "nested2",
   "nested1",
