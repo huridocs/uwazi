@@ -1,9 +1,9 @@
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import translations from 'app/I18N/index.js';
 
-import { elastic } from '../search.js';
+import { elastic } from '../../search.js';
 import {
   factory,
   fixtures,

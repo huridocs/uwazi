@@ -9,7 +9,6 @@ import { propertyMappings } from './mappings';
 const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();
   const transactionManager = DefaultTransactionManager();
-  // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {

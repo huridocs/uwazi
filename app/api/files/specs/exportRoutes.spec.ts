@@ -5,7 +5,7 @@ import csvExporter, { SearchResults } from '../csv/csvExporter.js';
 
 import * as filesystem from '../files/filesystem.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { setUpApp } from 'api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';

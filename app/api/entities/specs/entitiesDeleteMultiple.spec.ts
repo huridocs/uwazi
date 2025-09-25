@@ -1,4 +1,4 @@
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { elasticTesting } from 'app/utils/elastic_testing.js';
 

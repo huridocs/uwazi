@@ -1,7 +1,7 @@
 import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
 import { saveEntity } from '../entities/entitySavingManager.js';
-import { uploadMiddleware } from '../files/index.js';
-import { search } from '../search.js';
+import { uploadMiddleware } from '../../files/index.js';
+import { search } from '../../search.js';
 import { withTransaction } from 'app/utils/withTransaction.js';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates/templates';

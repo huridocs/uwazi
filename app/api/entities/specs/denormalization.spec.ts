@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 

@@ -1,6 +1,6 @@
 import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
 
-import { files, generateFileName, storage } from '../files/index.js';
+import { files, generateFileName, storage } from '../../files/index.js';
 
 import { processDocument } from '../files/processDocument.js';
 

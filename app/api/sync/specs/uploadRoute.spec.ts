@@ -10,7 +10,7 @@ import {
   deleteFile,
   storage,
   
-} from '../files/index.js';
+} from '../../files/index.js';
 
 import { testingTenants } from 'app/utils/testingTenants.js';
 

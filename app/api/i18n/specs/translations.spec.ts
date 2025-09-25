@@ -2,7 +2,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO.js';
 

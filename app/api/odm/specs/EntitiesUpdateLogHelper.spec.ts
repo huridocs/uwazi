@@ -1,5 +1,5 @@
 
-import { model } from '../entities.js';
+import { model } from '../../entities.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 

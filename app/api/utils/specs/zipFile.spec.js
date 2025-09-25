@@ -1,5 +1,5 @@
 import path from 'path';
-import { deleteFiles } from '../files/index.js';
+import { deleteFiles } from '../../files/index.js';
 import { createTestingZip } from '../csv/specs/helpers.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';

@@ -3,9 +3,9 @@ import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import {
   factory,
   fixtures,

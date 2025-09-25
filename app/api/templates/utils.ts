@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { differenceBy, intersectionBy } from 'lodash';
 
 import settings from 'api/settings/settings.js';
-import { files } from '../files/index.js';
+import { files } from '../../files/index.js';
 import propertiesHelper from 'shared/commonProperties.js';
 import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import { safeName as sharedSafeName } from 'shared/propertyNames.js';

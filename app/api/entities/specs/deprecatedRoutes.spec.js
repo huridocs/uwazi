@@ -1,4 +1,4 @@
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import 'api/utils/jasmineHelpers';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import templates from '../../templates/templates';

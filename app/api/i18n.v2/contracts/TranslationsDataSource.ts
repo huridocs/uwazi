@@ -1,5 +1,5 @@
 
-import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 import { DeleteResult, UpdateResult } from 'mongodb';
 import { Translation } from '../model/Translation';
 

@@ -5,7 +5,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 
-import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
+import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
 
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource.js';
 

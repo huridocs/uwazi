@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { models } from '../odm.js';
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import { storage } from '../files/storage.js';
 import 'api/utils/jasmineHelpers';
 import { ObjectId } from 'mongodb';

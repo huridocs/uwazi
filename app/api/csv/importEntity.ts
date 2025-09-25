@@ -16,7 +16,7 @@ import { ImportFile } from '../csv/importFile.js';
 import { EntitySchema } from 'shared/types/entityType.js';
 import { ensure } from 'shared/tsUtils.js';
 
-import { files, generateFileName, storage } from '../files/index.js';
+import { files, generateFileName, storage } from '../../files/index.js';
 import { generateID } from 'shared/IDGenerator.js';
 
 import typeParsers from './typeParsers.js';

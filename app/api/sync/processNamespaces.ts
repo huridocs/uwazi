@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import entitiesModel from '../entities/entitiesModel.js';
+import entitiesModel from '../../entities/entitiesModel.js';
 import { filesModel } from '../files/filesModel.js';
 import { DataType, models, WithId } from '../odm/index.js';
 import { settingsModel } from '../settings/settingsModel.js';

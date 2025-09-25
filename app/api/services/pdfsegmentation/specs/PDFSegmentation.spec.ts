@@ -16,7 +16,7 @@ import {
 } from '../services/pdfsegmentation/specs/fixtures.js';
 
 
-import { storage } from '../files/index.js';
+import { storage } from '../../files/index.js';
 import path from 'path';
 
 

@@ -2,11 +2,11 @@
 
 import { saveEntity } from '../entities/entitySavingManager.js';
 
-import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '../files/index.js';
+import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from '../../files/index.js';
 
 import * as processDocumentApi from '../files/processDocument.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import db from 'api/utils/testing_db.js';
 

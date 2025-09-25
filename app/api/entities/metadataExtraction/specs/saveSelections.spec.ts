@@ -1,5 +1,5 @@
 
-import { files } from '../files/index.js';
+import { files } from '../../files/index.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 

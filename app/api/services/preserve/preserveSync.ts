@@ -1,7 +1,7 @@
 
 import entities from '../entities/index.js';
 
-import { files, generateFileName, storage } from '../files/index.js';
+import { files, generateFileName, storage } from '../../files/index.js';
 
 import { legacyLogger } from '../log/index.js';
 

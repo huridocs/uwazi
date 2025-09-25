@@ -1,6 +1,6 @@
 /*eslint-disable max-lines*/
-import entities from '../entities.js';
-import { search } from '../search.js';
+import entities from '../../entities.js';
+import { search } from '../../search.js';
 import { settingsModel } from '../settings/settingsModel.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import express from 'express';

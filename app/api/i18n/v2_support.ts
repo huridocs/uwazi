@@ -1,4 +1,4 @@
-import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource.js';

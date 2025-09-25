@@ -1,13 +1,13 @@
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
-import { fileExistsOnPath, uploadsPath } from '../files/index.js';
+import { fileExistsOnPath, uploadsPath } from '../../files/index.js';
 
-import relationships from '../relationships.js';
+import relationships from '../../relationships.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import db from 'api/utils/testing_db.js';
 

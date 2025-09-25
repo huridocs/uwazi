@@ -3,7 +3,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { editorUser } from '../entities/specs/entitySavingManagerFixtures.js';
 
@@ -11,9 +11,9 @@ import { spyOnEmit, toEmitEvent, toEmitEventWith } from '../eventsbus/eventTesti
 
 import { legacyLogger } from '../log.js';
 
-import connections from '../relationships.js';
+import connections from '../../relationships.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import * as ocrRecords from '../services/ocr/ocrRecords.js';
 

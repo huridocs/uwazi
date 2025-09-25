@@ -1,9 +1,9 @@
 
-import entities from '../entities.js';
+import entities from '../../entities.js';
 
 import { permissionsContext } from 'api/permissions/permissionsContext.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import settings from '../settings.js';
 
 import templates from '../templates/index.js';

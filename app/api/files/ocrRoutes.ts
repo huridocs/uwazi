@@ -1,6 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { storage } from '../files/index.js';
+import { storage } from '../../files/index.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import { isOcrEnabled, ocrManager, getOcrStatus } from '../services/ocr/OcrManager.js';
 import { files } from './files';

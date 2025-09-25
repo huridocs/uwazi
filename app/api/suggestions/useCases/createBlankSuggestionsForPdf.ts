@@ -3,7 +3,7 @@ import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { LanguageUtils } from 'shared/language/index.js';
 
-import { files } from '../files/index.js';
+import { files } from '../../files/index.js';
 
 import { IXSuggestionType } from 'shared/types/suggestionType.js';
 import { Suggestions } from '../suggestions';

@@ -1,5 +1,5 @@
 import { CSVLoader } from '../csv/index.js';
-import { generateFileName } from '../files/index.js';
+import { generateFileName } from '../../files/index.js';
 import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService.js';
 import { DefaultTranslations } from './defaultTranslations.js';
 import { legacyLogger } from '../log/index.js';

@@ -3,7 +3,7 @@ import { Application } from 'express';
 
 import { setUpApp } from 'api/utils/testingRoutes.js';
 
-import { elastic } from '../search.js';
+import { elastic } from '../../search.js';
 
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';

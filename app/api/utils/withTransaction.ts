@@ -3,7 +3,7 @@ import { storage } from '../files/storage.js';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 import { dbSessionContext } from '../odm/sessionsContext.js';
 
-import { search } from '../search.js';
+import { search } from '../search/search.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 

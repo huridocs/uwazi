@@ -1,5 +1,5 @@
 
-import { files, storage } from '../files/index.js';
+import { files, storage } from '../../files/index.js';
 
 import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
 

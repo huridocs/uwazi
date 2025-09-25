@@ -1,5 +1,5 @@
 
-import { elastic, search } from '../search.js';
+import { elastic, search } from '../../search.js';
 import { IndicesPutMapping } from '../search/elasticTypes.js';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 

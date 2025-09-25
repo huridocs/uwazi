@@ -1,5 +1,5 @@
 
-import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 
 import { V1Connection, ReadableV1Connection } from '../model/V1Connection';
 

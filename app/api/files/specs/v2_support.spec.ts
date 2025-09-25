@@ -1,5 +1,5 @@
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 

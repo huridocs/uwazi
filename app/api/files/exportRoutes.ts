@@ -7,7 +7,7 @@ import QueryString from 'qs';
 
 import { legacyLogger } from '../log/index.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import { CSVExporter } from '../csv/index.js';
 import settings from '../settings/index.js';
 import captchaMiddleware from '../auth/captchaMiddleware.js';

@@ -2,8 +2,8 @@
 /* eslint-disable no-param-reassign,max-statements */
 
 import { applicationEventsBus } from '../eventsbus/index.js';
-import * as filesystem from '../files/index.js';
-import { PDF, files } from '../files/index.js';
+import * as filesystem from '../../files/index.js';
+import { PDF, files } from '../../files/index.js';
 import { permissionsContext } from 'api/permissions/permissionsContext.js';
 import relationships from '../relationships/relationships.js';
 import { search } from '../search/index.js';

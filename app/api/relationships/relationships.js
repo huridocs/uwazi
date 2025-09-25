@@ -5,7 +5,7 @@ import _ from 'lodash';
 import templatesAPI from '../templates/index.js';
 import settings from '../settings/index.js';
 import relationtypes from '../relationtypes/index.js';
-import entities from '../entities/entities.js';
+import entities from '../../entities/entities.js';
 import { createError } from 'app/utils/index.js';
 
 import { ObjectId } from 'mongodb';

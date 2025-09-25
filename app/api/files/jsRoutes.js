@@ -1,7 +1,7 @@
 import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
 import { saveEntity } from '../entities/entitySavingManager.js';
 import { processDocument } from '../files/processDocument.js';
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import settings from '../settings/index.js';
 import mailer from 'app/utils/mailer.js';
 import cors from 'cors';

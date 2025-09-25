@@ -14,9 +14,9 @@ describe('Metadata Extraction', () => {
   });
 
   it('should be hidden by a feature toggle.', async () => {
-    // @ts-expect-error TS(2304): Cannot find name 'page'.
+    
     await expect(page).toClick('a', { text: 'Settings' });
-    // @ts-expect-error TS(2304): Cannot find name 'page'.
+    
     await expect(page).not.toMatchElement('a', { text: 'Metadata Extraction' });
   });
 

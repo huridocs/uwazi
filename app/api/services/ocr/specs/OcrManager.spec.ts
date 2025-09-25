@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 
-import { files, storage } from '../files/index.js';
+import { files, storage } from '../../files/index.js';
 
 import * as filesApi from '../files/filesystem.js';
 

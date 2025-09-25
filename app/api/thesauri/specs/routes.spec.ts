@@ -3,7 +3,7 @@ import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { setUpApp } from 'api/utils/testingRoutes.js';
 

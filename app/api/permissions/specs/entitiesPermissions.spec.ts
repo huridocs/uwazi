@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 
-import entities from '../entities/entities.js';
+import entities from '../../entities/entities.js';
 
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
 
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 

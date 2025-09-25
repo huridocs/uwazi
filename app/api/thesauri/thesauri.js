@@ -6,7 +6,7 @@ import {
   getUpdatedNames,
   getDeletedProperties,
 } from '../templates/utils.js';
-import entities from '../entities/entities.js';
+import entities from '../../entities/entities.js';
 import { preloadOptionsLimit } from 'shared/config.js';
 import templates from '../templates/templates.js';
 import settings from 'api/settings/settings.js';

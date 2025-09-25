@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 
 type HubType = {
   _id: ObjectId;

@@ -4,10 +4,10 @@ import path from 'path';
 import request from 'supertest';
 
 
-import relationships from '../relationships.js';
-import { storage } from '../files/index.js';
+import relationships from '../../relationships.js';
+import { storage } from '../../files/index.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { ocrManager } from '../services/ocr/OcrManager.js';
 

@@ -3,7 +3,7 @@ import { testingDB } from 'api/utils/testing_db.js';
 
 import * as filesApi from '../files/filesystem.js';
 
-import { storage, files } from '../files/index.js';
+import { storage, files } from '../../files/index.js';
 import {
   TweetParamsType,
   TwitterIntegration,
@@ -16,7 +16,7 @@ import {
   
 } from '../services/twitterintegration/specs/fixtures.js';
 
-import EntitiesModel from '../entities/entitiesModel.js';
+import EntitiesModel from '../../entities/entitiesModel.js';
 
 import templates from '../templates/templates.js';
 

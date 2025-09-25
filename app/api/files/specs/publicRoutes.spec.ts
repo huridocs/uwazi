@@ -8,10 +8,10 @@ import { EntityWithFilesSchema } from 'shared/types/entityType.js';
 import request from 'supertest';
 
 
-import entities from '../entities.js';
-import { setupTestUploadedPaths, storage } from '../files/index.js';
+import entities from '../../entities.js';
+import { setupTestUploadedPaths, storage } from '../../files/index.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import mailer from 'app/utils/mailer.js';
 

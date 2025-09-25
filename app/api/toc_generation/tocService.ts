@@ -1,5 +1,5 @@
 
-import { files, storage } from '../files/index.js';
+import { files, storage } from '../../files/index.js';
 import { prettifyError } from 'app/utils/handleError.js';
 import { legacyLogger } from '../log/index.js';
 import request from 'shared/JSONRequest.js';

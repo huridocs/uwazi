@@ -1,7 +1,7 @@
 
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
+import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
 
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource.js';
 

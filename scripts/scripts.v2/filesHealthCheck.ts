@@ -85,7 +85,6 @@ async function handleTenant(tenantName: string) {
   await tenants.setupTenants();
 
   if (!allTenants) {
-    // @ts-expect-error TS(2345): Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
     await handleTenant(tenant);
   } else {
     await Object.keys(tenants.tenants).reduce(async (prev, tenantName) => {

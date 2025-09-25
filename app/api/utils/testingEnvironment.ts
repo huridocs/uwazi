@@ -4,7 +4,7 @@ import { testingTenants } from 'app/utils/testingTenants.js';
 import { elasticTesting } from 'app/utils/elastic_testing.js';
 import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
 
-import { setupTestUploadedPaths } from '../files/index.js';
+import { setupTestUploadedPaths } from '../../files/index.js';
 import { UserSchema } from 'shared/types/userType.js';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;

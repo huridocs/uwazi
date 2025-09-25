@@ -9,7 +9,7 @@ import entities from '../entities/index.js';
 
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
 
-import relationshipsDS from '../relationships.js';
+import relationshipsDS from '../../relationships.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { ParagraphOutput } from '../domain/PXExtractionService';

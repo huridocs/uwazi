@@ -1,5 +1,5 @@
 import translations from 'app/I18N/index.js';
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { checkIfReindex } from '../reindex';
 import templates from '../templates';

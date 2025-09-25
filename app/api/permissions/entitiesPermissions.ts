@@ -1,9 +1,9 @@
 import { WithId } from 'mongodb';
 
 import { model as entityModel } from '../entities/index.js';
-import entities from '../entities/entities.js';
+import entities from '../../entities/entities.js';
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 import users from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
 import { unique } from 'app/utils/filters.js';

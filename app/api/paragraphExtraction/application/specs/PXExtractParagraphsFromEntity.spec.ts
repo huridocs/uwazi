@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { ApiResponse } from '@elastic/elasticsearch';
 
 
-import { search } from '../search.js';
+import { search } from '../../search.js';
 
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
 

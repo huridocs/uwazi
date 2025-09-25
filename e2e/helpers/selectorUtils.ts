@@ -16,17 +16,14 @@ const checkStringValuesInSelectors = async (
 };
 
 const getContentBySelector = async (selector: string) =>
-  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   page.$$eval(selector, items => items.map(item => item.textContent));
 
 async function mouseClick(selector: string, x: number, y: number) {
   await scrollTo(selector);
-  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   const rect = await page.$eval(selector, el => {
     const { top, left, width, height } = el.getBoundingClientRect();
     return { top, left, width, height };
   });
-  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   await page.mouse.click(rect.left + x, rect.top + y);
 }
 

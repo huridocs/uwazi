@@ -11,7 +11,7 @@ import { Logger } from 'api/log.v2/contracts/Logger.js';
 
 import entities from '../entities/index.js';
 
-import relationshipsDS from '../relationships.js';
+import relationshipsDS from '../../relationships.js';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
