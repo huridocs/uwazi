@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable camelcase */
-import moment from 'moment';
 import {
   ExtractedMetadataSchema,
   LanguageISO6391,
@@ -29,6 +28,7 @@ import { ObjectId } from 'mongodb';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;
@@ -69,6 +69,7 @@ interface FileWithAggregation {
   extractedMetadata: ExtractedMetadataSchema[];
   propertyType: PropertyTypeSchema;
   propertyValue?: PropertyValue;
+  useForTraining?: boolean;
 }
 
 type FileEnforcedNotUndefined = {
@@ -379,22 +380,14 @@ async function getFilesForTraining(extractor: IXExtractorType) {
   ) => {
     await cursor.eachAsync(
       async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
-        let propertyValue;
-
-        if (propertyTypeIsWithoutExtractedMetadata(targetProperty.type)) {
-          propertyValue = entityLanguage.metadata.map(({ value, label }: any) => ({
+        const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
+          currentValue,
+          selectionText: file?.extractedMetadata?.[0]?.selection?.text,
+          entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
             value: ensure<string>(value),
             label: ensure<string>(label),
-          }));
-        } else {
-          propertyValue = currentValue.toString();
-
-          if (targetProperty.type === 'date') {
-            propertyValue = moment(currentValue * 1000)
-              .utc()
-              .format('YYYY-MM-DD');
-          }
-        }
+          })),
+        });
         const parsed = {
           _id: fileId,
           language,
@@ -682,4 +675,4 @@ export {
   NoSegmentedFiles,
   NoFilesForTraining,
 };
-export type { FileWithAggregation };
+export type { FileWithAggregation, PropertyValue };

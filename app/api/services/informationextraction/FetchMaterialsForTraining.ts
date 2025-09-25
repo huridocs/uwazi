@@ -6,7 +6,6 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import entitiesModel from 'api/entities/entitiesModel';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import moment from 'moment';
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
 import { EntitySchema } from 'shared/types/entityType';
@@ -14,12 +13,13 @@ import {
   getEntitiesForTraining,
   getFilesForTraining,
   FileWithAggregation,
-  propertyTypeIsWithoutExtractedMetadata,
   MAX_TRAINING_FILES_NUMBER,
   MAX_TRAINING_ENTITIES_NUMBER,
+  PropertyValue,
 } from './ixMaterials';
 import { IXServices } from './IXServices';
 import { IXModelsModel } from './IXModelsModel';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 // Stage A — fetch marked for training
 async function getMarkedEntityPairs(extractorId: ObjectId) {
@@ -85,7 +85,8 @@ async function getMarkedFileIds(extractorId: ObjectId) {
 
 const buildPdfMaterialsForFiles = async (
   extractor: EnforcedWithId<IXExtractorType>,
-  fileIds: ObjectId[]
+  fileIds: ObjectId[],
+  options?: { useForTraining?: boolean }
 ): Promise<FileWithAggregation[]> => {
   if (!fileIds.length) return [];
 
@@ -101,51 +102,51 @@ const buildPdfMaterialsForFiles = async (
     'extractedMetadata entity language filename'
   );
 
-  const segs = (await SegmentationModel.get(
+  const segs = await SegmentationModel.get(
     { fileID: { $in: fileIds }, status: 'ready' },
     'fileID filename xmlname segmentation'
-  )) as any[];
-  const segById = new Map(segs.map(s => [s.fileID.toString(), s]));
+  );
+  const segById = new Map(
+    segs
+      .filter((s): s is typeof s & { fileID: ObjectId } => !!s.fileID)
+      .map(s => [s.fileID!.toString(), s])
+  );
 
   const materials = await Promise.all(
     files.map(async f => {
       const seg = segById.get(f._id.toString());
       if (!seg) return null;
 
-      let propertyValue: any;
-      if (propertyTypeIsWithoutExtractedMetadata(targetProperty.type)) {
-        const [entityLang] = await entitiesModel.get(
-          { sharedId: f.entity, language: f.language },
-          `metadata.${extractor.property}`
-        );
-        const values = (entityLang?.metadata?.[extractor.property] || []) as Array<{
-          value?: string;
-          label?: string;
-        }>;
-        propertyValue = values.map(v => ({
-          value: ensure<string>(v.value || ''),
-          label: ensure<string>(v.label || ''),
-        }));
-      } else {
-        const currentValue = (f as any)?.currentValue || f.extractedMetadata?.[0]?.selection?.text;
-        let val = currentValue || '';
-        if (targetProperty.type === 'date') {
-          val = moment(Number(val) * 1000)
-            .utc()
-            .format('YYYY-MM-DD');
-        }
-        propertyValue = String(val);
-      }
+      const [entityLang] = await entitiesModel.get(
+        { sharedId: f.entity, language: f.language },
+        `metadata.${extractor.property}`
+      );
+      const entityValues = (entityLang?.metadata?.[extractor.property] || []) as Array<{
+        value?: string;
+        label?: string;
+      }>;
+      const selectionText = f.extractedMetadata?.[0]?.selection?.text;
+      const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
+        currentValue: undefined,
+        selectionText,
+        entityValues,
+      });
 
-      return {
+      const item: FileWithAggregation = {
         _id: f._id,
-        entity: f.entity,
-        language: f.language,
+        entity: ensure<string>(f.entity),
+        language: ensure<string>(f.language),
         extractedMetadata: f.extractedMetadata || [],
         segmentation: seg,
-        propertyValue,
+        propertyValue: propertyValue as PropertyValue,
         propertyType: targetProperty.type,
-      } as FileWithAggregation;
+      };
+
+      if (options?.useForTraining) {
+        item.useForTraining = true;
+      }
+
+      return item;
     })
   );
 
@@ -158,7 +159,9 @@ const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>)
   const samplePolicy = model?.processRun?.samplePolicy;
   // Stage A: marked files
   const stageAFileIds = await getMarkedFileIds(extractorId);
-  const stageAMaterials = await buildPdfMaterialsForFiles(extractor, stageAFileIds);
+  const stageAMaterials = await buildPdfMaterialsForFiles(extractor, stageAFileIds, {
+    useForTraining: true,
+  });
 
   // Stage B: existing process
   const { process: baseProcess } = (await getFilesForTraining(extractor)) as any;
@@ -174,7 +177,7 @@ const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>)
     let delivered = 0;
     await baseProcess(async (f: FileWithAggregation) => {
       if (delivered >= remainingBudget) return;
-      const id = (f._id as any).toString();
+      const id = f._id.toString();
       if (passed.has(id)) return;
       passed.add(id);
       delivered += 1;

@@ -104,6 +104,7 @@ interface CommonMaterialsData {
   xml_segments_boxes?: ParagraphSchema[];
   page_width?: number;
   page_height?: number;
+  useForTraining?: boolean;
 }
 
 interface LabeledMaterialsData extends CommonMaterialsData {
@@ -136,6 +137,7 @@ interface PropertySourceMaterials {
   source_text: string;
   label_text?: any;
   values?: { id: string; label: string }[];
+  useForTraining?: boolean;
 }
 
 type IXTaskManager = TaskManager<TaskMessage, IXResultsMessage>;

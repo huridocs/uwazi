@@ -118,6 +118,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       xml_segments_boxes: file.segmentation.segmentation?.paragraphs,
       page_width: file.segmentation.segmentation?.page_width,
       page_height: file.segmentation.segmentation?.page_height,
+      useForTraining: file.useForTraining,
     };
 
     data = this.extendMaterialsWithLabeledData(

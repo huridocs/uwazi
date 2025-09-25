@@ -317,6 +317,7 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         label_text: '1088985600',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: true,
       });
     });
 
@@ -382,6 +383,7 @@ describe('InformationExtraction', () => {
             label: 'A',
           },
         ],
+        useForTraining: true,
       });
     });
 
@@ -476,6 +478,7 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         label_text: 'any_rich_text_value_english',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: true,
       });
 
       expect(suggestion2).toEqual({
@@ -488,6 +491,7 @@ describe('InformationExtraction', () => {
         language_iso: 'es',
         label_text: 'any_rich_text_value_spanish',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: true,
       });
     });
 

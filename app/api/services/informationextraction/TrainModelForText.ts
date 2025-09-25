@@ -10,6 +10,7 @@ import { emitToTenant } from 'api/socketio/setupSockets';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { getPropertyTrainingEntities } from './FetchMaterialsForTraining';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
@@ -68,6 +69,21 @@ class TrainModelForText implements UseCase<Input, Output> {
 
         if (extractor.source.property === 'title') {
           data.source_text = entity.title || '';
+        }
+
+        // Attach useForTraining flag for this entity-language if any suggestion is marked
+        const [marked] = await IXSuggestionsModel.db
+          .find({
+            extractorId: extractor._id,
+            entityId: entity.sharedId,
+            language: entity.language,
+            useForTraining: true,
+          })
+          .limit(1)
+          .select({ _id: 1 })
+          .lean();
+        if (marked) {
+          data.useForTraining = true;
         }
 
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {
