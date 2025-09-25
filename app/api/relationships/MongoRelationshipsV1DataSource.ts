@@ -1,4 +1,4 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 import entities from '../entities/index.js';
 import { withConnectedData } from './relationshipsHelpers.js';
 import { Relation } from './RelationsV1Collection.js';

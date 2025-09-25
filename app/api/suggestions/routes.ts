@@ -3,18 +3,18 @@ import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '../suggestions/suggestions.js';
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
-import { validateAndCoerceRequest } from 'app/utils/validateRequest.js';
+import { validateAndCoerceRequest } from '#app/utils/validateRequest.js';
 
 import { needsAuthorization } from '../auth.js';
-import { parseQuery } from 'app/utils/parseQueryMiddleware.js';
-import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema.js';
-import { objectIdSchema } from 'shared/types/commonSchemas.js';
+import { parseQuery } from '#app/utils/parseQueryMiddleware.js';
+import { SuggestionsQueryFilterSchema } from '#shared/types/suggestionSchema.js';
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import {
   IXAggregationQuery,
   IXSuggestionAggregation,
   IXSuggestionsQuery,
-} from 'shared/types/suggestionType.js';
-import { handleError } from 'app/utils/index.js';
+} from '#shared/types/suggestionType.js';
+import { handleError } from '#app/utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';

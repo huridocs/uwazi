@@ -1,5 +1,5 @@
-import { ValidationError } from 'api/common.v2/validation/ValidationError.js';
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 export class TemplateValidationService {
   async validateTemplateDelete(

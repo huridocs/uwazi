@@ -2,15 +2,15 @@ import uuid from 'node-uuid';
 import { ObjectId } from 'mongodb';
 import { differenceBy, intersectionBy } from 'lodash';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 import { files } from '../../files/index.js';
-import propertiesHelper from 'shared/commonProperties.js';
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
-import { safeName as sharedSafeName } from 'shared/propertyNames.js';
-import { ensure } from 'shared/tsUtils.js';
-import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes.js';
-import { TemplateSchema } from 'shared/types/templateType.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType.js';
+import propertiesHelper from '#shared/commonProperties.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { safeName as sharedSafeName } from '#shared/propertyNames.js';
+import { ensure } from '#shared/tsUtils.js';
+import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 import model from './templatesModel.js';
 
 const safeName = sharedSafeName;

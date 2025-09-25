@@ -5,14 +5,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { InputField, Select, MultiSelect } from '../../../../Components/Forms/index.js';
 import { Button, Card, ConfirmationModal, Sidepanel } from '../../../../Components/UI/index.js';
 import { validEmailFormat } from '../../../../../shared/formatHelpers.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal.js';
 import { User, Group } from '../types.js';

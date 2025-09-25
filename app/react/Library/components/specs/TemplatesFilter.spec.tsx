@@ -1,12 +1,12 @@
 import { fromJS } from 'immutable';
 
-import { SettingsFilterSchema } from 'shared/types/settingsType.js';
+import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 
-import { ConnectedComponent as TemplatesFilterComponent } from 'app/Library/components/TemplatesFilter.js';
+import { ConnectedComponent as TemplatesFilterComponent } from '#app/Library/components/TemplatesFilter.js';
 
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 
-import { filterDocumentTypes } from 'app/Library/actions/filterActions.js';
+import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
 import * as redux from 'redux';
 import DocumentTypesList from '../DocumentTypesList';
 

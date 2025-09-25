@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 
-import { validation } from 'app/utils/index.js';
+import { validation } from '#app/utils/index.js';
 
 const createSpy = (key, resolve) =>
   jest.fn().mockImplementation((...args) => {

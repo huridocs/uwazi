@@ -3,11 +3,11 @@
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 import Immutable from 'immutable';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 const test1Attachments = [
   {

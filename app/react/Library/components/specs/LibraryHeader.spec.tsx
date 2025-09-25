@@ -8,14 +8,14 @@ import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
-import * as libraryActions from 'app/Library/actions/libraryActions.js';
+import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
 
 import { IStore } from "app/V2/shared/types.js";
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';

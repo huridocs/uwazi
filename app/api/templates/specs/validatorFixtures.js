@@ -1,5 +1,5 @@
-import db from 'api/utils/testing_db.js';
-import { propertyTypes } from 'shared/propertyTypes.js';
+import db from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
 const templateId = db.id();
 const relatedTo = db.id();

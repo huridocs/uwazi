@@ -5,16 +5,16 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
 
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Card } from 'app/V2/Components/UI/index.js';
+import { Card } from '#app/V2/Components/UI/index.js';
 
 
-import { getStats } from 'api/V2/api/settings.js';
+import { getStats } from '#api/V2/api/settings.js';
 
-import { formatBytes } from 'shared/V2/shared/formatHelpers.js';
+import { formatBytes } from '#shared/V2/shared/formatHelpers.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };

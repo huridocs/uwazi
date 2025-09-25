@@ -6,12 +6,12 @@ import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { notificationAtom, settingsAtom } from '../../../atoms/index.js';
-import * as settingsAPI from 'api/settings/index.js';
-import * as templatesAPI from 'api/templates/index.js';
+import * as settingsAPI from '#api/settings/index.js';
+import * as templatesAPI from '#api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import {

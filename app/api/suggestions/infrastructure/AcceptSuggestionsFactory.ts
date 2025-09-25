@@ -3,7 +3,7 @@ import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
 import { AcceptSuggestionsJob } from '../jobs/AcceptSuggestionsJob';
 

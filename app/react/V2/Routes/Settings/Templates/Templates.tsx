@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 
-import { Translate, I18NLinkV2 as I18NLink, t } from 'app/I18N/index.js';
+import { Translate, I18NLinkV2 as I18NLink, t } from '#app/I18N/index.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from '../../../atoms/index.js';
 import { Table } from '../../../Components/UI/Table/Table.js';
 import { Button } from '../../../Components/UI/Button.js';
-import * as templatesApi from 'api/templates/index.js';
+import * as templatesApi from '#api/templates/index.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Template } from 'app/apiResponseTypes.js';
+import { Template } from '#app/apiResponseTypes.js';
 import { columns } from './components/TemplatesTableComponents.js';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
 import { TemplateRow } from './types.js';

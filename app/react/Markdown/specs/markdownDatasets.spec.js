@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import searchApi from '../../Search/SearchAPI.js';
 import entitiesApi from '../../Entities/EntitiesAPI.js';
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
 import markdownDatasets from '../markdownDatasets';
 import fixtures from './fixtures';

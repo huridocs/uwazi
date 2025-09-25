@@ -2,9 +2,9 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { Button, ConfirmationModal } from 'app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 
 import { ConfirmationCallback } from '../helpers';
 

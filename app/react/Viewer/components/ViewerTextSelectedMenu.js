@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from '../../Connections.js';
-import { openPanel, toggleReferences } from 'app/Viewer/actions/uiActions.js';
+import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
 import ShowIf from '../../App/ShowIf.js';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { addToToc } from '../actions/documentActions';
 

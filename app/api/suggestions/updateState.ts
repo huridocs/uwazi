@@ -1,13 +1,13 @@
 import settings from '../settings/index.js';
 import templates from '../templates/index.js';
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   CurrentValue,
   getSuggestionState,
   SuggestionValues,
-} from 'shared/getIXSuggestionState.js';
-import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes.js';
-import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes.js';
+} from '#shared/getIXSuggestionState.js';
+import { propertyIsMultiselect, propertyIsRelationship } from '#shared/propertyTypes.js';
+import { LanguagesListSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorModel } from '../services/informationextraction/IXExtractorModel.js';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {

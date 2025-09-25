@@ -1,9 +1,9 @@
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 import { RelationshipTypesDataSource } from '../contracts/RelationshipTypesDataSource';
 import { RelationshipTypeDBO } from './schemas/RelationshipTypeDBO';
 import { mapRelationshipTypeToApp } from './mappings/RelationshipTypeMappers';

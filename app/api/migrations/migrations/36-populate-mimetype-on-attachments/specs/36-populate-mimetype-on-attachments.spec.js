@@ -1,5 +1,5 @@
-import testingDB from 'api/utils/testing_db.js';
-import request from 'shared/JSONRequest.js';
+import testingDB from '#api/utils/testing_db.js';
+import request from '#shared/JSONRequest.js';
 import * as attachmentMethods from '../files/filesystem.js';
 import mime from 'mime-types';
 import migration from '../index.js';

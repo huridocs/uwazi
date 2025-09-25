@@ -1,7 +1,7 @@
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import typeParsers from 'api/csv/typeParsers.js';
+import typeParsers from '#api/csv/typeParsers.js';
 
 describe('generatedid parser', () => {
   const templateProp = { name: 'id', label: 'id', type: propertyTypes.generatedid };

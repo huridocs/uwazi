@@ -1,6 +1,6 @@
 import { actions } from '../../BasicReducer/index.js';
-import { getDocument } from 'app/Viewer/actions/documentActions.js';
-import referencesAPI from 'app/Viewer/referencesAPI.js';
+import { getDocument } from '#app/Viewer/actions/documentActions.js';
+import referencesAPI from '#app/Viewer/referencesAPI.js';
 import relationTypesAPI from '../../RelationTypes/RelationTypesAPI.js';
 import * as relationships from '../../Relationships/utils/routeUtils.js';
 

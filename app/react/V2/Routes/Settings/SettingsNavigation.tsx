@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N/index.js';
+import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '../../Components/UI/NeedAuthorization.js';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 
 import { PreserveIcon } from '../../Layout/PreserveIcon.js';
 import { FeatureToggle } from '../../Components/UI/FeatureToggle.js';

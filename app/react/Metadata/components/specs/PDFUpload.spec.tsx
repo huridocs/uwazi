@@ -6,9 +6,9 @@ import { fromJS } from 'immutable';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 import { actions as formActions } from 'react-redux-form';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { PDFUpload } from '../PDFUpload';
 
 describe('PDF upload', () => {

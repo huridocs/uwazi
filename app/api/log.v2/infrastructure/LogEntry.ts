@@ -1,5 +1,5 @@
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import { LogLevel } from './LogLevels';
 
 export type LogMetadata = Record<string, any>;

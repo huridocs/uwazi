@@ -8,10 +8,10 @@ import {
   ExtractedMetadataSchema,
   SelectionRectangleSchema,
 
-} from 'shared/types/commonTypes.js';
-import { pdfScaleAtom } from 'app/V2/atoms/index.js';
+} from '#shared/types/commonTypes.js';
+import { pdfScaleAtom } from '#app/V2/atoms/index.js';
 
-import { selectionHandlers } from 'app/V2/Components/PDFViewer.js';
+import { selectionHandlers } from '#app/V2/Components/PDFViewer.js';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;

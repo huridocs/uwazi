@@ -1,12 +1,12 @@
 
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook.js';
+import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 
-import { I18NLink, Translate } from 'app/I18N/index.js';
+import { I18NLink, Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 
-import { ILink, ISublink } from 'shared/V2/shared/types.js';
-import { IImmutable } from 'shared/types/Immutable.js';
+import { ILink, ISublink } from '#shared/V2/shared/types.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 export type DropdownMenuProps = {
   link: IImmutable<ILink>;

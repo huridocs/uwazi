@@ -1,4 +1,4 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import bodyParser from 'body-parser';
 import express from 'express';
 import request from 'supertest';
@@ -6,7 +6,7 @@ import request from 'supertest';
 import users from '../users/users.js';
 import backend from 'fetch-mock';
 import svgCaptcha from 'svg-captcha';
-import instrumentRoutes from 'app/utils/instrumentRoutes';
+import instrumentRoutes from '#app/utils/instrumentRoutes';
 import { CaptchaModel } from '../CaptchaModel';
 import { comparePasswords } from '../encryptPassword';
 import authRoutes from '../routes';

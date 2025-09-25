@@ -1,9 +1,9 @@
 
 import { files } from '../../files/index.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DBFixture, testingDB } from 'api/utils/testing_db.js';
+import { DBFixture, testingDB } from '#api/utils/testing_db.js';
 import { saveSelections } from '../saveSelections';
 
 const file1ID = testingDB.id();

@@ -5,7 +5,7 @@ import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Pill } from '../UI';
 
 type Option = { label: string | React.ReactNode; value: string };

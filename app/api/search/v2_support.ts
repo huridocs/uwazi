@@ -1,9 +1,9 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource.js';
-import { propertyTypes } from 'shared/propertyTypes.js';
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();

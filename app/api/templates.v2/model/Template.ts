@@ -1,9 +1,9 @@
 
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 
-import { Validator } from 'api/core/domain/Validator.js';
+import { Validator } from '#api/core/domain/Validator.js';
 
-import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
+import { TemplateWithDuplicatedPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';

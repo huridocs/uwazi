@@ -1,9 +1,9 @@
 import { templateUtils } from '../templates/index.js';
 import _ from 'lodash';
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
-import { propertyTypes } from 'shared/propertyTypes.js';
-import { PropertySchema } from 'shared/types/commonTypes.js';
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { peekHeaders } from './csv';
 import { notTranslated } from './entityRow';
 import { ImportFile } from './importFile';

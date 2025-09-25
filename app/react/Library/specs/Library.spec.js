@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryRootComponent } from 'app/Library/Library.js';
+import { LibraryRootComponent } from '#app/Library/Library.js';
 import RouteHandler from '../../App/RouteHandler.js';
 import createStore from '../../store.js';
 

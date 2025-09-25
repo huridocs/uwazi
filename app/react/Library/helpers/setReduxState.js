@@ -3,7 +3,7 @@ import {
   addDocuments,
   setDocuments,
   initializeFiltersForm,
-} from 'app/Library/actions/libraryActions.js';
+} from '#app/Library/actions/libraryActions.js';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '../../BasicReducer/index.js';
 

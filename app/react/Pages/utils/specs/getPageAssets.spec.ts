@@ -2,7 +2,7 @@
 
 import api from '../../Search/SearchAPI.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { markdownDatasets } from '../../Markdown.js';
 

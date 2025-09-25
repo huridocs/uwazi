@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
 import { WithId } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import {
@@ -18,17 +18,17 @@ import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher
 
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
-import { ConnectionSchema } from 'shared/types/connectionType.js';
+import { ConnectionSchema } from '#shared/types/connectionType.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 import { PXCreateEntityStatusesFactory } from '../paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
 import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N/index.js';
+import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { Button } from '../../../../Components/UI/index.js';
 
 interface TemplatesEditorFooterProps {

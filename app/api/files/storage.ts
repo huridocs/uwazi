@@ -10,11 +10,11 @@ import path from 'path';
 import { config } from '../config.js';
 import { legacyLogger } from '../log/index.js';
 import { tenants } from '../tenants/index.js';
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import { FileNotFound } from './FileNotFound.js';
 import {
   activityLogPath,

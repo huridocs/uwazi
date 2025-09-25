@@ -1,11 +1,11 @@
 import 'api/entities';
 import urljoin from 'url-join';
-import request from 'shared/JSONRequest.js';
-import { SettingsSyncSchema } from 'shared/types/settingsType.js';
+import request from '#shared/JSONRequest.js';
+import { SettingsSyncSchema } from '#shared/types/settingsType.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import settings from '../settings/index.js';
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { synchronizer } from './synchronizer';
 import { createSyncConfig } from './syncConfig';
 import syncsModel from './syncsModel';

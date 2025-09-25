@@ -11,8 +11,8 @@ import { search } from '../../search.js';
 import { CSVExporter } from '../csv/index.js';
 import settings from '../settings/index.js';
 import captchaMiddleware from '../auth/captchaMiddleware.js';
-import { csvExportParamsSchema } from 'shared/types/searchParameterSchema.js';
-import { CsvExportBody } from 'shared/types/searchParameterType.js';
+import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
+import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
 

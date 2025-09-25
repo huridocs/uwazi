@@ -6,12 +6,12 @@ import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { FileType } from 'shared/types/fileType.js';
-import { getByType, remove, UploadService } from 'api/files/index.js';
+import { FileType } from '#shared/types/fileType.js';
+import { getByType, remove, UploadService } from '#api/files/index.js';
 import {
   Button,
   ConfirmationModal,

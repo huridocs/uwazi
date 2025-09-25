@@ -1,9 +1,9 @@
 import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
 
-import { isClient } from 'app/utils/index.js';
+import { isClient } from '#app/utils/index.js';
 import { store } from '../../store.js';
-import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes.js';
+import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
 import {
   ClientTemplateSchema,
   ClientTranslationSchema,

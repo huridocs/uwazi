@@ -1,19 +1,19 @@
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode.js';
+import { MatchQueryNode, TemplateRecordElement } from '#api/relationships.v2/model/MatchQueryNode.js';
 
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 
-import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest.js';
+import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 
-import { createError } from 'app/utils/index.js';
+import { createError } from '#app/utils/index.js';
 
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';

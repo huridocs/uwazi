@@ -1,11 +1,11 @@
 import { files } from '../../files/index.js';
 import { uniqBy } from 'lodash';
 
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
   __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };

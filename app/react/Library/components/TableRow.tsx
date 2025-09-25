@@ -5,12 +5,12 @@ import { IStore, TableViewColumn } from "app/V2/shared/types.js";
 
 import { Icon as PropertyIcon } from '../../Layout.js';
 import formatter from '../../Metadata/helpers/formater.js';
-import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell.js';
+import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
-import { deletedEntityAtom } from 'app/V2/atoms/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { deletedEntityAtom } from '#app/V2/atoms/index.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 interface TableRowProps {
   columns: TableViewColumn[];

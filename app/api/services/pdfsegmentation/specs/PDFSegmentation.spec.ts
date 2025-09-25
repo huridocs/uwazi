@@ -3,7 +3,7 @@
 /* eslint-disable max-lines */
 
 
-import testingDB, { fixturer } from 'api/utils/testing_db.js';
+import testingDB, { fixturer } from '#api/utils/testing_db.js';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -20,12 +20,12 @@ import { storage } from '../../files/index.js';
 import path from 'path';
 
 
-import { tenants } from 'api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
 import { DB } from '../odm.js';
 import { Db } from 'mongodb';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';

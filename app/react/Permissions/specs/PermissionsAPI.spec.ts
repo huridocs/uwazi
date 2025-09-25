@@ -1,11 +1,11 @@
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 import {
   loadGrantedPermissions,
   savePermissions,
   searchCollaborators,
 } from '../../Permissions/PermissionsAPI.js';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 jest.mock('app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),

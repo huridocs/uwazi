@@ -5,9 +5,9 @@ import { ClientBlobFile, ClientEntitySchema, ClientFile } from "app/V2/shared/ty
 import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
 import * as uploadsActionTypes from '../../Uploads/actions/actionTypes.js';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 
-import { constructFile } from 'shared/fileUploadUtils.js';
+import { constructFile } from '#shared/fileUploadUtils.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>

@@ -1,24 +1,24 @@
 import { ObjectId } from 'mongodb';
 
 
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 
-import { Property, PropertyTypes } from 'api/templates.v2/model/Property.js';
+import { Property, PropertyTypes } from '#api/templates.v2/model/Property.js';
 
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
 
-import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes.js';
+import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
 
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import {
   EntityPointer,
   ReadableEntityPointer,
   ReadableRelationship,
   Relationship,
   
-} from 'api/relationships.v2/model/Relationship.js';
+} from '#api/relationships.v2/model/Relationship.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { EntityPermissions, Entry } from '../../authorization.v2/model/EntityPermissions.js';
 

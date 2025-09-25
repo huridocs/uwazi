@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import { instanceModel } from '../odm/index.js';
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 
 const props = {
   name: { type: String, required: true },

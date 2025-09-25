@@ -3,14 +3,14 @@ import React from 'react';
 import { Button } from '../../../../Components/UI/Button.js';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { Translate } from 'app/I18N/Translate.js';
+import { Translate } from '#app/I18N/Translate.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { Pill } from '../../../../Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
-import { thesauriAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms/index.js';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
 import { translationsKeys } from '../helpers.js';
 
 type PropertyRow = PropertySchema & {

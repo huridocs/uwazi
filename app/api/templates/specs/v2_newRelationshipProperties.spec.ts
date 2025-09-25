@@ -5,21 +5,21 @@ import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
 import entities from '../../entities.js';
 
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import translations from 'app/I18N/index.js';
+import translations from '#app/I18N/index.js';
 
 import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-fields/types.js';
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

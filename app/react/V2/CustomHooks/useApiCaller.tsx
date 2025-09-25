@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { notificationAtom } from '../atoms/index.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
 interface ApiCallerResult {
   data?: Promise<any | undefined>;

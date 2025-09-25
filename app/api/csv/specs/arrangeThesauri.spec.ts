@@ -1,21 +1,21 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
 
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri';
-import translations from 'api/i18n/translations.js';
-import { templateUtils } from 'api/templates/index.js';
+import translations from '#api/i18n/translations.js';
+import { templateUtils } from '#api/templates/index.js';
 
 const createTestFixtures = () => {
   const selectThesaurusId = db.id();

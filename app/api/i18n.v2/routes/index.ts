@@ -1,11 +1,11 @@
 import { Application, Request } from 'express';
 
 
-import { validation } from 'api/utils/index.js';
+import { validation } from '#api/utils/index.js';
 
-import translations from 'api/i18n/index.js';
-import { needsAuthorization } from 'api/auth';
-import { getTranslationsEntriesV2 } from 'api/i18n/v2_support';
+import translations from '#api/i18n/index.js';
+import { needsAuthorization } from '#api/auth';
+import { getTranslationsEntriesV2 } from '#api/i18n/v2_support';
 
 
 const translationsRoutes = (app: Application) => {

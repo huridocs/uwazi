@@ -1,7 +1,7 @@
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
 const templateId = db.id();
 const textPropertyId = db.id();

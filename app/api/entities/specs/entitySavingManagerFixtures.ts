@@ -1,11 +1,11 @@
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const template1Id = db.id();
 const template2Id = db.id();

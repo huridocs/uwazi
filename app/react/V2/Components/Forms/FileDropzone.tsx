@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
-import { Translate } from 'app/I18N/index.js';
-import { formatBytes } from 'shared/formatHelpers.js';
+import { Translate } from '#app/I18N/index.js';
+import { formatBytes } from '#shared/formatHelpers.js';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];

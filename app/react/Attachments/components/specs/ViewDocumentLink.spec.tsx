@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 
 import { CurrentLocationLink } from '../../Layout.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 import { ViewDocumentLink } from '../ViewDocumentLink';
 

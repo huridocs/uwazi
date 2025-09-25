@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TwitterPicker } from 'react-color';
 
-import { COLORS } from 'app/utils/colors.js';
+import { COLORS } from '#app/utils/colors.js';
 
 class ColorPicker extends Component {
   constructor(props) {

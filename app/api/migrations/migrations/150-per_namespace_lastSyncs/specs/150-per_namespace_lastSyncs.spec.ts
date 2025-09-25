@@ -1,7 +1,7 @@
 import { Db, ObjectId } from 'mongodb';
 
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import migration from '../index';
 import { fixtures } from './fixtures';
 

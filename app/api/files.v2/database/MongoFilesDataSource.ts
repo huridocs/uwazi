@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb';
 
 
-import { LanguageUtils } from 'shared/language/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
-import { SegmentationType } from 'shared/types/segmentationType.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
 
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 
 import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 

@@ -3,7 +3,7 @@
  */
 import React from 'react';
 
-import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import { ErrorFallback } from '../ErrorFallback';
 import { RouteErrorBoundary } from '../RouteErrorBoundary';
 

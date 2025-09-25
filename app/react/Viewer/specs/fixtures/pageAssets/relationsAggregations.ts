@@ -3,9 +3,9 @@ import Immutable from 'immutable';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 const DocumentWithRelationsTemplate = Immutable.fromJS({
   _id: '629e567fd4242c571392f548',

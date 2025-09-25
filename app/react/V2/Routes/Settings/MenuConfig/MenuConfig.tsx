@@ -7,18 +7,18 @@ import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { cloneDeep, isEqual } from 'lodash';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import * as SettingsAPI from 'api/V2/api/settings.js';
+import * as SettingsAPI from '#api/V2/api/settings.js';
 
-import { notificationAtom } from 'app/V2/atoms.js';
+import { notificationAtom } from '#app/V2/atoms.js';
 
-import { settingsAtom } from 'app/V2/atoms/settingsAtom.js';
+import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 
-import { Button, Table, Sidepanel, ConfirmNavigationModal } from 'app/V2/Components/UI/index.js';
+import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { MenuForm } from './components/MenuForm';
 import { columns } from './components/TableComponents';
 import { Link, sanitizeIds } from './shared';

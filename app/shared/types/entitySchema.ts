@@ -1,4 +1,4 @@
-import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas.js';
+import { objectIdSchema, metadataSchema } from '#shared/types/commonSchemas.js';
 import { fileSchema } from './fileSchema.js';
 import { permissionSchema } from './permissionSchema.js';
 

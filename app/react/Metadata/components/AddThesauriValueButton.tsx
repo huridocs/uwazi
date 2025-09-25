@@ -1,4 +1,4 @@
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import React, { useState } from 'react';
 import AddThesauriValueModal from './AddThesauriValueModal';
 

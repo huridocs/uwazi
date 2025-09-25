@@ -1,20 +1,20 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
-import * as extractorsAPI from 'api/paragraphExtractor/extractors.js';
-import * as pxParagraphApi from 'api/paragraphExtractor/paragraphs.js';
-import * as pxEntitiesApi from 'api/paragraphExtractor/entities.js';
-import * as entitiesApi from 'api/entities/index.js';
-import * as settingsApi from 'api/settings/index.js';
-import * as templatesApi from 'api/templates/index.js';
+import * as extractorsAPI from '#api/paragraphExtractor/extractors.js';
+import * as pxParagraphApi from '#api/paragraphExtractor/paragraphs.js';
+import * as pxEntitiesApi from '#api/paragraphExtractor/entities.js';
+import * as entitiesApi from '#api/entities/index.js';
+import * as settingsApi from '#api/settings/index.js';
+import * as templatesApi from '#api/templates/index.js';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'shared/ParagraphExtractionTypes.js';
+} from '#shared/ParagraphExtractionTypes.js';
 
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
 import { ClientEntitySchema } from "app/V2/shared/types.js";
 

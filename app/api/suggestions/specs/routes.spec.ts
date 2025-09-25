@@ -17,9 +17,9 @@ import {
 
 import { suggestionsRoutes } from '../suggestions/routes.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { iosocket, setUpApp, TestEmitSources } from 'api/utils/testingRoutes.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import waitForExpect from 'wait-for-expect';
 import { Suggestions } from '../suggestions';
 

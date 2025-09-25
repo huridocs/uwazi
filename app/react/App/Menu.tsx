@@ -7,11 +7,11 @@ import { fromJS } from 'immutable';
 
 import { wrapDispatch } from '../../Multireducer.js';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 
-import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N/index.js';
+import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '#app/I18N/index.js';
 
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions.js';
+import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
 
 import { showSemanticSearch as showSemanticSearchAction } from '../../SemanticSearch/actions/actions.js';
 
@@ -24,7 +24,7 @@ import { actions } from '../../BasicReducer/index.js';
 
 import { IStore } from "app/V2/shared/types.js";
 
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {

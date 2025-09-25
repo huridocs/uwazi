@@ -1,23 +1,23 @@
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
 
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
 
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 
-import { MetadataSchema } from 'shared/types/commonTypes.js';
+import { MetadataSchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoEntitiesDataSource } from '../MongoEntitiesDataSource';
 
 const factory = getFixturesFactory();

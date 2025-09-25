@@ -5,12 +5,12 @@ import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { ClientThesaurus } from 'app/apiResponseTypes.js';
-import * as thesauriAPI from 'api/thesauri/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import * as thesauriAPI from '#api/thesauri/index.js';
 
-import { notificationAtom } from 'app/V2/atoms.js';
+import { notificationAtom } from '#app/V2/atoms.js';
 import { Table } from '../../../Components/UI/index.js';
 import { InputField } from '../../../Components/Forms/index.js';
 import { addSelection, sanitizeThesaurusValues } from './helpers.js';

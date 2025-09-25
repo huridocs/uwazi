@@ -10,17 +10,17 @@ import Immutable, { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
 import * as semanticSearchActions from '../../SemanticSearch/actions/actions.js';
 
-import * as libraryActions from 'app/Library/actions/libraryActions.js';
+import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
-import { SearchBar } from 'app/Library/components/SearchBar.js';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
 
 import { IStore } from "app/V2/shared/types.js";
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 describe('SearchBar', () => {
   let renderResult: RenderResult;

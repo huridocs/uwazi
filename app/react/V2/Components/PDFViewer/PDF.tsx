@@ -4,7 +4,7 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';

@@ -3,13 +3,13 @@ import { ShallowWrapper } from 'enzyme';
 
 import { ShareEntityModal } from '../../Permissions/components/ShareEntityModal.js';
 
-import { PermissionSchema } from 'shared/types/permissionType.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
 
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 
 import * as api from '../../Permissions/PermissionsAPI.js';
 

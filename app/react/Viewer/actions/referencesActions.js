@@ -1,8 +1,8 @@
-import * as types from 'app/Viewer/actions/actionTypes.js';
-import referencesAPI from 'app/Viewer/referencesAPI.js';
+import * as types from '#app/Viewer/actions/actionTypes.js';
+import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { notificationActions } from '../../Notifications.js';
 import { actions } from '../../BasicReducer/index.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { actions as connectionsActions } from '../../Connections.js';
 import { reloadRelationships } from '../../Relationships/actions/actions.js';

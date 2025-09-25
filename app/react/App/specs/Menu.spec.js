@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N/index.js';
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { I18NLink } from '#app/I18N/index.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 import { Menu } from '../Menu';
 
 jest.mock('react-router', () => ({

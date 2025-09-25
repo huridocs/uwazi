@@ -1,13 +1,13 @@
 
 import { search } from '../../search.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities';
 import * as v2Support from '../v2_support';
 

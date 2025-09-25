@@ -10,13 +10,13 @@ import { spyOnEmit } from '../eventsbus/eventTesting.js';
 import relationships from '../../relationships.js';
 import { storage, uploadsPath } from '../../files/index.js';
 import { search } from '../../search.js';
-import date from 'api/utils/date.js';;
-import db from 'api/utils/testing_db.js';
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
-import { UserRole } from 'shared/types/userSchema.js';
+import date from '#api/utils/date.js';;
+import db from '#api/utils/testing_db.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '../eventsbus.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import entities from '../../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';

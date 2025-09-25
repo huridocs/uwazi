@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 import connected from '../NeedAuthorization';
 
 describe('NeedAuthorization', () => {

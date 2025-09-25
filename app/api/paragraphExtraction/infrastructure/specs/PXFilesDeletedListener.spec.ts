@@ -4,15 +4,15 @@ import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
 
 import { EventsBus } from '../eventsbus.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';

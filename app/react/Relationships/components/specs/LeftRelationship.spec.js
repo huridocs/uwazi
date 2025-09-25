@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
-import Doc from 'app/Library/components/Doc.js';
+import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
 
 import { LeftRelationship } from '../LeftRelationship';

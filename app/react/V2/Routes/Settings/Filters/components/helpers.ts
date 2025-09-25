@@ -1,5 +1,5 @@
 
-import { ClientSettingsFilterSchema } from 'app/apiResponseTypes.js';
+import { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 

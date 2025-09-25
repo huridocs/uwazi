@@ -1,19 +1,19 @@
 /* eslint-disable max-lines,max-statements */
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 import templates from '../templates/index.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 import * as entitiesIndex from '../search/entitiesIndex.js';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';

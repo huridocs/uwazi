@@ -1,7 +1,7 @@
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('ColumnItem', () => {

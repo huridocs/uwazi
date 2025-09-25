@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 import { ClientIXExtractorType } from '../../../../../shared/types.js';

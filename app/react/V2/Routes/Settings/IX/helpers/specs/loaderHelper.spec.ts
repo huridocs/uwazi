@@ -4,7 +4,7 @@
 
 import { ClientPropertySchema } from "app/V2/shared/types.js";
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   searchRelatedEntities,
   getPropertyValuesMap,

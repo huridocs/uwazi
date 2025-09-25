@@ -2,8 +2,8 @@ import * as Cookie from 'tiny-cookie';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { isClient } from 'app/utils/index.js';
-import { Translate } from 'app/I18N/index.js';
+import { isClient } from '#app/utils/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { Notification } from '../../Notifications/components/Notification.js';
 

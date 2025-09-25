@@ -13,7 +13,7 @@ import templates from '../templates/index.js';
 
 import { newThesauriId } from '../templates/utils.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
@@ -21,22 +21,22 @@ import dictionariesModel from '../thesauri/dictionariesModel.js';
 
 import users from '../users/users.js';
 
-import { appContext } from 'app/utils/AppContext.js';
+import { appContext } from '#app/utils/AppContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import qs from 'qs';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { PreserveConfig } from 'shared/types/settingsType.js';
+import { PreserveConfig } from '#shared/types/settingsType.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
 import { preserveSyncModel } from './preserveSyncModel.js';

@@ -2,12 +2,12 @@
 import entities from '../entities/index.js';
 import { applicationEventsBus } from '../eventsbus/index.js';
 import { mimeTypeFromUrl } from './extensionHelper.js';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import connections from '../relationships/index.js';
 import { search } from '../search/index.js';
 import { cleanupRecordsOfFiles } from '../services/ocr/ocrRecords.js';
-import { validateFile } from 'shared/types/fileSchema.js';
-import { FileType } from 'shared/types/fileType.js';
+import { validateFile } from '#shared/types/fileSchema.js';
+import { FileType } from '#shared/types/fileType.js';
 import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent.js';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent.js';

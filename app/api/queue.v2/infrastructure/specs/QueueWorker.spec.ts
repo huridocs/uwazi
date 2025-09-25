@@ -2,7 +2,7 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
 
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -12,7 +12,7 @@ import {
 
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';

@@ -4,9 +4,9 @@ import { useRevalidator } from 'react-router';
 
 import { socket } from '../../socket.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { ModelEvents, SuggestionEvents } from '../events.js';
 import type {
   IXModelStatusCallback,

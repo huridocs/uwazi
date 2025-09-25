@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 

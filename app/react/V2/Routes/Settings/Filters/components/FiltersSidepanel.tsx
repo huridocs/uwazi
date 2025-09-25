@@ -4,9 +4,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 
-import uniqueID from 'shared/uniqueID.js';
+import uniqueID from '#shared/uniqueID.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';

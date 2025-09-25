@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { availableLanguages } from 'shared/language/index.js';
+import { availableLanguages } from '#shared/language/index.js';
 
 import { ClientEntitySchema } from "app/V2/shared/types.js";
 import { Button, Sidepanel } from '../../../../../Components/UI/index.js';

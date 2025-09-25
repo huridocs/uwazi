@@ -5,19 +5,19 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 
-import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N/index.js';
-import * as pagesAPI from 'api/pages/index.js';
+import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
+import * as pagesAPI from '#api/pages/index.js';
 
-import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
 
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Page } from 'shared/V2/shared/types.js';
+import { Page } from '#shared/V2/shared/types.js';
 
-import { notificationAtom, notificationAtomType } from 'app/V2/atoms.js';
+import { notificationAtom, notificationAtomType } from '#app/V2/atoms.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import {
   EntityViewHeader,
   YesNoPill,

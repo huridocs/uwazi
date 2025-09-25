@@ -8,9 +8,9 @@ import { createStore, Provider } from 'jotai';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
 
 import { Map } from '../../Map.js';
-import { renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import * as MapHelper from '../../Map/MapHelper.js';
-import { deletedEntityAtom } from 'app/V2/atoms/index.js';
+import { deletedEntityAtom } from '#app/V2/atoms/index.js';
 
 jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),

@@ -4,8 +4,8 @@ import { actions as formActions } from 'react-redux-form';
 
 import { actions } from '../../BasicReducer/index.js';
 import { actions as connectionsListActions } from '../../ConnectionsList.js';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
-import referencesAPI from 'app/Viewer/referencesAPI.js';
+import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
+import referencesAPI from '#app/Viewer/referencesAPI.js';
 
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {

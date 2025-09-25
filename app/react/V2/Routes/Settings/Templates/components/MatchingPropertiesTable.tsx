@@ -2,14 +2,14 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom, thesauriAtom, relationshipTypesAtom } from 'app/V2/atoms/index.js';
+import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
 import { Table } from '../../../../Components/UI/index.js';
 import { propertyIconsSmall } from '../../../../Components/UI/Icons.js';
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 
-import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { ClientTemplateSchema } from '../../../../../shared/types.js';
 import { translationsKeys } from '../helpers.js';
 

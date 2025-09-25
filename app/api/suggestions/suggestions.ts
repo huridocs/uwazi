@@ -6,21 +6,21 @@ import { files } from '../files/files.js';
 import { EnforcedWithId } from '../odm/index.js';
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 import templates from '../templates/index.js';
-import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils.js';
+import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import {
   ExtractedMetadataSchema,
   ObjectIdSchema,
   PropertySchema,
-} from 'shared/types/commonTypes.js';
-import { FileType } from 'shared/types/fileType.js';
-import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType.js';
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
+} from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
+import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
 } from '../services/informationextraction/ixMaterials.js';
 import { ArrayUtils } from '../common.v2/utils/Array.js';
-import { IXModelType } from 'shared/types/IXModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 import { registerEventListeners } from './eventListeners.js';
 import { updateStates } from './updateState.js';
 import {

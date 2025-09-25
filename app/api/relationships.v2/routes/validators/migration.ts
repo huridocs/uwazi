@@ -1,9 +1,9 @@
 
 import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
 
-import { MigrationRequest } from 'shared/types/api.v2/relationships.migrate.js';
+import { MigrationRequest } from '#shared/types/api.v2/relationships.migrate.js';
 
-import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub.js';
+import { TestOneHubRequest } from '#shared/types/api.v2/relationships.testOneHub.js';
 
 const migrationPlanSchemaDef = {
   elements: {

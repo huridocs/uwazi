@@ -4,25 +4,25 @@
 import Ajv from 'ajv';
 
 
-import date from 'app/utils/date.js';
+import date from '#app/utils/date.js';
 
-import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import {
   CommonSuggestion,
   IXSuggestionType,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
   
-} from 'shared/types/suggestionType.js';
+} from '#shared/types/suggestionType.js';
 import {
   TextSelectionSuggestionSchema,
   ValuesSelectionSuggestionSchema,
   
-} from 'shared/types/suggestionSchema.js';
+} from '#shared/types/suggestionSchema.js';
 
-import { syncWrapValidator } from 'shared/tsUtils.js';
+import { syncWrapValidator } from '#shared/tsUtils.js';
 import { InternalIXResultsMessage } from './InformationExtraction.js';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors.js';
 

@@ -2,12 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '../../../atoms/index.js';
-import { Extractor } from 'shared/ParagraphExtractionTypes.js';
+import { Extractor } from '#shared/ParagraphExtractionTypes.js';
 
-import { Button } from 'app/V2/Components/UI/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
 
 import { PXTable } from './types.js';
 import { formatExtractors } from './utils/formatters.js';

@@ -5,15 +5,15 @@ import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
 
-import { ViewerComponent } from 'app/Viewer/components/ViewerComponent.js';
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
 
-import { PDFView } from 'app/Viewer/PDFView.js';
+import { PDFView } from '#app/Viewer/PDFView.js';
 
-import EntityView from 'app/Viewer/EntityView.js';
+import EntityView from '#app/Viewer/EntityView.js';
 
 import { Loader } from '../../components/Elements/Loader.js';
 
-import { ErrorFallback } from 'app/V2/Components/ErrorHandling.js';
+import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>

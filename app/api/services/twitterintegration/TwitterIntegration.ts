@@ -1,9 +1,9 @@
 
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
 import entities from '../../entities/entities.js';
 
@@ -18,7 +18,7 @@ import {
   
 } from '../services/twitterintegration/getTwitterImages.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 interface TweetParamsType {
   title: string;

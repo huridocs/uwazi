@@ -4,13 +4,13 @@ import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import { fromJS } from 'immutable';
 import { APIURL } from '../../config.js.js';
-import { actions as basicActions } from 'app/V2/BasicReducer/reducer.js';
+import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import { actions as metadataActions } from '../../Metadata.js';
 import * as actions from '../../Uploads/actions/uploadsActions.js';
-import * as libraryTypes from 'app/Library/actions/actionTypes.js';
+import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import * as types from '../../Uploads/actions/actionTypes.js';
 import entitiesApi from '../../Entities/EntitiesAPI.js';
-import { mockID } from 'shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

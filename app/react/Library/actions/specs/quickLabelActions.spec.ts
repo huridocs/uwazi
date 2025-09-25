@@ -1,5 +1,5 @@
 
-import { actions } from 'app/V2/BasicReducer/reducer.js';
+import { actions } from '#app/V2/BasicReducer/reducer.js';
 
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
 
@@ -9,7 +9,7 @@ import { wrapDispatch } from '../../Multireducer.js';
 
 import { store } from '../../store.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import * as libraryActions from '../libraryActions';
 import * as quickLabelActions from '../quickLabelActions';

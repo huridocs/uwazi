@@ -5,12 +5,12 @@ import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automati
 
 import { SaveEntityTranslations } from '../externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import RedisSMQ from 'rsmq';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import waitForExpect from 'wait-for-expect';
 import { ATServiceListener } from '../ATServiceListener.js';
 

@@ -1,9 +1,9 @@
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { InvalidATServerResponse } from '../../errors/generateATErrors';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';

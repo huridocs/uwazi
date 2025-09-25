@@ -9,7 +9,7 @@ import Immutable from 'immutable';
 
 import { ClientFile } from "app/V2/shared/types.js";
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 

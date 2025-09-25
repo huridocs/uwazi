@@ -3,7 +3,7 @@ import { TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTy
 import { DisplayCell } from './DisplayCell.js';
 import { LanguagesCell } from './LanguagesCell.js';
 import { StatusCell } from './StatusCell.js';
-import { generateTableHeader } from 'app/utils/generateTableHeader.js';
+import { generateTableHeader } from '#app/utils/generateTableHeader.js';
 import { ActionCell } from './ActionCell.js';
 
 const pxColumnHelper = createColumnHelper<TablePXEntityRow>();

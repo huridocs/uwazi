@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from '../../../../../Components/UI/index.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { columns, NoDataCell } from './TableElements/index.js';
 import { PXTable } from '../../types.js';
 

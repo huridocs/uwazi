@@ -4,7 +4,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
 import { fromJS } from 'immutable';
 import { GeneralError } from '../GeneralError';
 

@@ -1,8 +1,8 @@
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 import React from 'react';
 import { Field } from 'react-redux-form';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 type componentProps = {
   formModel: string;

@@ -1,11 +1,11 @@
 
 import { files, storage } from '../../files/index.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import { testingDB } from 'api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 import { tocService } from '../tocService';
 import { fixtures } from './fixtures';
 

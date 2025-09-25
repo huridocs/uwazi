@@ -1,9 +1,9 @@
 /* eslint-disable camelcase, max-lines */
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
-import { preloadOptionsSearch } from 'shared/config.js';
-import { UserRole } from 'shared/types/userSchema.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { preloadOptionsSearch } from '#shared/config.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import {
   generatedTocAggregations,
   permissionsLevelAgreggations,

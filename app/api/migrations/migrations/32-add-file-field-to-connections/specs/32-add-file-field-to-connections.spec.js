@@ -1,5 +1,5 @@
 import { config } from '../config.js';
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import { legacyLogger } from '../log.js';
 import fixtures, { connectionWithRangeId, documentId } from './fixtures.js';
 import migration from '../index.js';

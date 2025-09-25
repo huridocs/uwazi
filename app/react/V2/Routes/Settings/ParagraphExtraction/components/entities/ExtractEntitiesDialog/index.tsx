@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
-import * as entitiesAPI from 'api/paragraphExtractor/entities.js';
+import { Translate } from '#app/I18N/index.js';
+import * as entitiesAPI from '#api/paragraphExtractor/entities.js';
 import { Button, ConfirmationModal } from '../../../../../../Components/UI/index.js';
 import { notificationAtom } from '../../../../../../atoms/index.js';
 import {

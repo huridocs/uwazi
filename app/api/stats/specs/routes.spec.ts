@@ -1,10 +1,10 @@
 import { Application, NextFunction, Request, Response } from 'express';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import statsRoutes from '../routes';
 import request from 'supertest';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { fixtures } from './fixtures';
 
 jest.mock(

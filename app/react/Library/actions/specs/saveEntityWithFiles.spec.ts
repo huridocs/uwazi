@@ -10,7 +10,7 @@ import {
   readFileAsBase64,
   saveEntityWithFiles,
   
-} from 'app/Library/actions/saveEntityWithFiles.js';
+} from '#app/Library/actions/saveEntityWithFiles.js';
 import { contentForFiles } from './fixtures';
 
 describe('saveEntityWithFiles', () => {

@@ -7,7 +7,7 @@ import { screen, act, fireEvent } from '@testing-library/react';
 
 import { notificationActions } from '../../Notifications.js';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import * as actions from '../../actions/metadataExtractionActions';
 import { MetadataExtractor, Selection } from '../MetadataExtractor';
 

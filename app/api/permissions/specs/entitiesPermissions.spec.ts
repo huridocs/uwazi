@@ -2,21 +2,21 @@
 
 import entities from '../../entities/entities.js';
 
-import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
+import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 
-import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures.js';
+import { fixtures, groupA, userA, userB } from '#api/permissions/specs/fixtures.js';
 
 import { search } from '../../search.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 
-import { AccessLevels, MixedAccess, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
 
-import { PermissionsDataSchema } from 'shared/types/permissionType.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 const publicPermission = {

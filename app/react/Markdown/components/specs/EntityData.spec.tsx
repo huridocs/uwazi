@@ -4,7 +4,7 @@
 import React, { act } from 'react';
 import { screen } from '@testing-library/react';
 
-import { renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { localeAtom, translationsAtom } from '../../../V2/atoms/index.js';
 import { state, translations } from './fixture/state.js';

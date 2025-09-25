@@ -8,10 +8,10 @@ import { search } from '../../search.js';
 import { storage, uploadMiddleware } from '../../files/index.js';
 import { updateMapping } from '../search/entitiesIndex.js';
 import { Application, Request } from 'express';
-import { TranslationType } from 'shared/translationType.js';
-import { FileType } from 'shared/types/fileType.js';
+import { TranslationType } from '#shared/translationType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
 
 const diskStorage = multer.diskStorage({

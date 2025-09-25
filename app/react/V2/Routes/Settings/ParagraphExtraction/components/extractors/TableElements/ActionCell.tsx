@@ -1,10 +1,10 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Link } from 'react-router';
 
-import { Button } from 'app/V2/Components/UI/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
 
 import { PXTable } from '../../../types';
 

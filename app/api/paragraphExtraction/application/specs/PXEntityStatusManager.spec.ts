@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { MongoExtractorBuilder } from '../paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
 

@@ -2,10 +2,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import SafeHTML from 'app/utils/SafeHTML.js';
+import SafeHTML from '#app/utils/SafeHTML.js';
 import getFieldLabel from '../../Templates/utils/getFieldLabel.js';
 
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 
 export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   let content;

@@ -1,7 +1,7 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';

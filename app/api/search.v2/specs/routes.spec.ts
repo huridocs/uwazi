@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { Application } from 'express';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { elastic } from '../../search.js';
 
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { searchRoutes } from '../routes';
 
 import {

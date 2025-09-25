@@ -1,15 +1,15 @@
 import { actions } from '../../BasicReducer/reducer.js';
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams.js';
-import api from 'app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import api from '#app/utils/api.js';
 
 import { notificationActions } from '../../Notifications.js';
 import { IStore } from "app/V2/shared/types.js";
 import { Dispatch } from 'redux';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const tocGenerationActions = {
   reviewToc(fileId: string) {

@@ -4,7 +4,7 @@ import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-tabl
 import { Button, Pill } from '../../../../Components/UI/index.js';
 import { StarIcon } from '@heroicons/react/20/solid';
 
-import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N/index.js';
+import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 import { TemplateRow } from '../types.js';
 

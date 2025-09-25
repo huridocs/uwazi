@@ -8,20 +8,20 @@ import * as processDocumentApi from '../files/processDocument.js';
 
 import { search } from '../../search.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
-import { advancedSort } from 'app/utils/advancedSort.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 import * as os from 'os';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 
-import { EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import entities from '../entities';
 import {
   anotherTextFile,

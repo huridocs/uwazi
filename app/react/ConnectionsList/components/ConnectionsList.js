@@ -6,7 +6,7 @@ import SearchBar from '../../ConnectionsList/components/SearchBar.js';
 import RelationshipsGraph from '../../Relationships/components/RelationshipsGraphEdit.js';
 import LoadMoreRelationshipsButton from '../../Relationships/components/LoadMoreRelationshipsButton.js';
 import DocumentsList from '../../Layout/DocumentsList.js';
-import { SortButtons } from 'app/Library/components/SortButtons.js';
+import { SortButtons } from '#app/Library/components/SortButtons.js';
 import { searchReferences } from '../actions/actions';
 
 export function mapStateToProps({ relationships }) {

@@ -1,7 +1,7 @@
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
-import { LanguagesListSchema } from 'shared/types/commonTypes.js';
+import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
 

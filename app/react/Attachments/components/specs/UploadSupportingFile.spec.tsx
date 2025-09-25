@@ -8,7 +8,7 @@ import UploadSupportingFile from '../../Attachments/components/UploadSupportingF
 import { Provider } from 'react-redux';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { MockStoreEnhanced } from 'redux-mock-store';
 
 describe('UploadSupportingFile', () => {

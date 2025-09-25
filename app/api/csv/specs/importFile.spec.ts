@@ -1,8 +1,8 @@
 import path from 'path';
 
-import { streamToString, deleteFiles } from 'api/files/filesystem.js';
+import { streamToString, deleteFiles } from '#api/files/filesystem.js';
 
-import importFile from 'api/csv/importFile.js';
+import importFile from '#api/csv/importFile.js';
 import { createTestingZip } from './helpers';
 
 describe('importFile', () => {

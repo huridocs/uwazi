@@ -2,7 +2,7 @@
 import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';
 import { TableLanguages } from '../LanguagesList.js';

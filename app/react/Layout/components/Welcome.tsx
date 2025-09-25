@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 export default class Welcome extends Component {
   render() {

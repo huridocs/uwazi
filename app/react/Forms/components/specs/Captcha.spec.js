@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import api from 'app/utils/api';
+import api from '#app/utils/api';
 import Captcha from '../Captcha';
 
 describe('Captcha', () => {

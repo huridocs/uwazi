@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from '../../../../Components/UI/Sidepanel.js';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
 
-import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { ClientTemplateSchema, ClientProperty } from '../../../../../shared/types.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import {
   PropertyTypeField,
   LabelField,

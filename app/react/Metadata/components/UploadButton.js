@@ -8,7 +8,7 @@ import { Icon } from 'UI';
 import { uploadDocument } from '../../Uploads/actions/uploadsActions.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import { socket } from '../../socket.js';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">

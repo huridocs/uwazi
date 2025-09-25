@@ -1,7 +1,7 @@
 
 import { Segmentation } from '../files.v2/model/Segmentation.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { Document } from '../files.v2/model/Document.js';
 

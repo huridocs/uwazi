@@ -1,7 +1,7 @@
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { PXCreateParagraphs } from '../paragraphExtraction/application/PXCreateParagraphs.js';
 
@@ -13,9 +13,9 @@ import { PXExtractionService } from '../paragraphExtraction/domain/PXExtractionS
 
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 import {
   mongoPXEntitiesStatusCollection,

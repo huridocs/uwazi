@@ -1,11 +1,11 @@
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 const factory = getFixturesFactory();
 

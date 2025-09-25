@@ -2,7 +2,7 @@ import {
   FilterableProperty,
   FilterablePropertyProps,
   
-} from 'api/core/domain/template/FilterableProperty.js';
+} from '#api/core/domain/template/FilterableProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,

@@ -1,10 +1,10 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
-import { risonDecodeOrIgnore } from 'api/utils/index.js';
+import { risonDecodeOrIgnore } from '#api/utils/index.js';
 import Big from 'big.js';
 
 import searchApi from '../../Search/SearchAPI.js';
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 import entitiesApi from '../../Entities/EntitiesAPI.js';
 
 const conformUrl = ({ url = '', geolocation = false }) => {

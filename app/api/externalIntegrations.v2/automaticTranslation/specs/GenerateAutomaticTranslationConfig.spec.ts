@@ -1,13 +1,13 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
 import { GenerateATConfigError } from '../errors/generateATErrors';
@@ -15,9 +15,9 @@ import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 
-import { Settings } from 'shared/types/settingsType.js';
+import { Settings } from '#shared/types/settingsType.js';
 
 const factory = getFixturesFactory();
 

@@ -1,7 +1,7 @@
 
 import { Extractors } from '../services/informationextraction/ixextractors.js';
 
-import { IXSuggestionsQuery, SuggestionCustomFilter } from 'shared/types/suggestionType.js';
+import { IXSuggestionsQuery, SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 import { ObjectId } from 'mongodb';
 
 import templates from '../templates/index.js';

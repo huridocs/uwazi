@@ -1,11 +1,11 @@
 
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 import { EnforcedWithId } from '../odm/index.js';
 
-import { IXModelType } from 'shared/types/IXModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 
 import ixmodels from '../services/informationextraction/ixmodels.js';
 

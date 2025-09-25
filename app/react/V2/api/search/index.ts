@@ -1,13 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
 
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { SearchQuery } from 'shared/types/SearchQueryType.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 type SearchResponse = {
   data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];

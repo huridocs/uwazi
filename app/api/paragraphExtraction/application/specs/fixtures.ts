@@ -7,7 +7,7 @@ import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/Mo
 
 import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();

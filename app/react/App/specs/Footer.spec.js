@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import Footer from '../../App/Footer.js';
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 
 describe('Footer', () => {
   describe('Default library view', () => {

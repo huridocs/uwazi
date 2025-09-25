@@ -1,7 +1,7 @@
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
 import { ValidateTranslationsService } from './ValidateTranslationsService';

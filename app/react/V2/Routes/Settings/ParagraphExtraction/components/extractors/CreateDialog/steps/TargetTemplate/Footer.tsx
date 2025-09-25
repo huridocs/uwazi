@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../../../../../../../../Components/UI/index.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 

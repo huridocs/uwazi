@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import { config } from '../config.js';
 

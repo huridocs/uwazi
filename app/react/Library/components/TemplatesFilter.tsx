@@ -3,13 +3,13 @@ import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from '../../ReactReduxForms/index.js';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { IStore } from "app/V2/shared/types.js";
 
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 import { withRouter } from '../../componentWrappers.js';
 
-import { SettingsFilterSchema } from 'shared/types/settingsType.js';
+import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
 

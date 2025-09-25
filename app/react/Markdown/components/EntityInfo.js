@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { wrapDispatch } from '../../Multireducer.js';
-import { getAndSelectDocument as getAndSelectDocumentAction } from 'app/Library/actions/libraryActions.js';
+import { getAndSelectDocument as getAndSelectDocumentAction } from '#app/Library/actions/libraryActions.js';
 
 class EntityInfo extends Component {
   constructor(props) {

@@ -1,7 +1,7 @@
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { prepareAssets } from '../pageAssets';
 import {
   dbEntity,

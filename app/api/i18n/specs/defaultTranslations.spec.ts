@@ -6,13 +6,13 @@ import waitForExpect from 'wait-for-expect';
 
 import { validateFormat, ValidateFormatError } from '../csv/csv.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { iosocket, setUpApp } from 'api/utils/testingRoutes.js';
+import { iosocket, setUpApp } from '#api/utils/testingRoutes.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 import { DefaultTranslations } from '../defaultTranslations';
 import i18nRoutes from '../routes';

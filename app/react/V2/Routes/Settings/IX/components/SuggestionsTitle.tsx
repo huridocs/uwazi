@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { Pill } from '../../../../Components/UI/index.js';
 import { ClientTemplateSchema } from '../../../../../shared/types.js';
 import {

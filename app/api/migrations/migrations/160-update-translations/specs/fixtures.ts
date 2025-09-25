@@ -1,5 +1,5 @@
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 import { Fixture } from '../types';
 
 const fixtures: Fixture = {

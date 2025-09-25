@@ -18,10 +18,10 @@ import {
   MetadataObjectSchema,
   MetadataSchema,
   PropertyValueSchema,
-} from 'shared/types/commonTypes.js';
-import { EntitySchema } from 'shared/types/entityType.js';
-import { IImmutable } from 'shared/types/Immutable.js';
-import { TemplateSchema } from 'shared/types/templateType.js';
+} from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 type Relation = { template: string; entityData: EntitySchema };
 type FormattedEntity = EntitySchema & { metadata: any[]; relations: Relation[] };

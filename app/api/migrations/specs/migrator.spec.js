@@ -1,9 +1,9 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from 'app/utils/testing_db';
+import testingDB from '#app/utils/testing_db';
 import migrationsModel from '../migrationsModel';
 import { migrator } from '../migrator';
 import migration1 from './testMigrations/1-migrationTest';

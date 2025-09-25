@@ -1,5 +1,5 @@
 
-import { testingDB, DBFixture } from 'api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 
 const entity1en = testingDB.id();
 const entity2en = testingDB.id();

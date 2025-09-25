@@ -7,13 +7,13 @@ import { emitToTenant } from '../socketio/setupSockets.js';
 import { storage } from '../../files/index.js';
 import urljoin from 'url-join';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
 import { EnforcedWithId } from '../odm/index.js';
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 
 import { Suggestions } from '../suggestions/suggestions.js';
 import {

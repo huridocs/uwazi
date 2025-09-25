@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import SnippetList from '../../Documents/components/SnippetList.js';
-import { selectSnippet } from 'app/Viewer/actions/uiActions.js';
+import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '../../ReactReduxForms/index.js';
 import { Icon } from '../../Layout/Icon.js';

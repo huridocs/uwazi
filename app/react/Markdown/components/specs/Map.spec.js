@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Markers } from '../../Map.js';
 
-import * as actions from 'app/Library/actions/libraryActions.js';
+import * as actions from '#app/Library/actions/libraryActions.js';
 import { mapStateToProps, mapDispatchToProps, MapComponent } from '../Map.js';
 import markdownDatasets from '../../markdownDatasets';
 

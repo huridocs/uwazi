@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import comonProperties from 'shared/commonProperties.js';
+import comonProperties from '#shared/commonProperties.js';
 
 export default (templates, entities) => {
   const selectedTemplates = entities

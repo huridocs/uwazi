@@ -2,7 +2,7 @@
 
 import { Dispatchable, HeartbeatCallback } from '../queue.v2/application/contracts/Dispatchable.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
 import { ExtractorNotFound, Extractors } from './ixextractors';

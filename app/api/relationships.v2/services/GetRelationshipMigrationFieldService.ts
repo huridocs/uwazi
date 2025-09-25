@@ -1,11 +1,11 @@
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
+import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
 
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
   RelationshipMigrationFieldUniqueId,

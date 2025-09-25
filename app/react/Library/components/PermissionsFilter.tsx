@@ -2,17 +2,17 @@ import React, { useMemo } from 'react';
 import FormGroup from '../../DocumentForm/components/FormGroup.js';
 import { MultiSelect } from '../../Forms/index.js';
 
-import { Aggregations } from 'shared/types/aggregations.js';
+import { Aggregations } from '#shared/types/aggregations.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Control } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { ClientUserSchema } from 'app/apiResponseTypes.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import Immutable from 'immutable';
 import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 
 interface PermissionsValue {
   level: FiltrableLevel;

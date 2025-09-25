@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import SelectFilter from 'app/Library/components/SelectFilter.js';
+import SelectFilter from '#app/Library/components/SelectFilter.js';
 
-import { Aggregations } from 'shared/types/aggregations.js';
+import { Aggregations } from '#shared/types/aggregations.js';
 import { PublishedFilters } from '../PublishedFilters';
 
 describe('Published Filter', () => {

@@ -1,5 +1,5 @@
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
 

@@ -1,28 +1,28 @@
 /* eslint-disable max-classes-per-file */
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema.js';
+import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 
-import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
-import { Logger } from 'api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/log.v2/contracts/Logger.js';
 
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
 
-import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';

@@ -1,18 +1,18 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { files } from 'api/files/files.js';
+import { files } from '#api/files/files.js';
 
-import { search } from 'api/search/index.js';
+import { search } from '#api/search/index.js';
 import path from 'path';
 
-import * as filesystem from 'api/files/filesystem.js';
+import * as filesystem from '#api/files/filesystem.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import entities from 'api/entities/index.js';
+import entities from '#api/entities/index.js';
 
-import { EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';

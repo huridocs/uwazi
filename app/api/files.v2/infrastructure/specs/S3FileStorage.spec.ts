@@ -13,9 +13,9 @@ import { Attachment } from '../files.v2/model/Attachment.js';
 
 import { Document } from '../files.v2/model/Document.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import { S3FileStorage } from '../S3FileStorage.js';
 
 describe('S3FileStorage', () => {

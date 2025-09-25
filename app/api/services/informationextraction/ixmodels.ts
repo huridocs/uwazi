@@ -4,11 +4,11 @@ import { Suggestions } from '../suggestions/suggestions.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
-import { ModelStatus } from 'shared/types/IXModelSchema.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
-import { IXModelType } from 'shared/types/IXModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXModelsModel as model } from './IXModelsModel';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;

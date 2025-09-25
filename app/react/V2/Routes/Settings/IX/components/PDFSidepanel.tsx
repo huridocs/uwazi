@@ -4,13 +4,13 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { PropertyValueSchema } from 'shared/types/commonTypes.js';
+import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 import {
@@ -21,7 +21,7 @@ import {
   VerticalDrawer,
 } from '../../../../Components/UI/index.js';
 import { PDF, selectionHandlers } from '../../../../Components/PDFViewer/index.js';
-import { notificationAtom, pdfScaleAtom } from 'app/V2/atoms/index.js';
+import { notificationAtom, pdfScaleAtom } from '#app/V2/atoms/index.js';
 import { secondsToISODate } from '../../../../../shared/dateHelpers.js';
 import { ClientIXExtractorType } from '../../../../../shared/types.js';
 import { TableSuggestion } from '../types.js';

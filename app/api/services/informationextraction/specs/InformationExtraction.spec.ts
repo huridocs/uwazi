@@ -7,20 +7,20 @@ import fs from 'fs/promises';
 import { ObjectId } from 'mongodb';
 
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { sortByStrings } from 'shared/data_utils/objectSorting.js';
+import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 
-import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
+import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 
 import entities from '../../entities.js';
 
@@ -30,13 +30,13 @@ import settings from '../settings.js';
 
 import { Suggestions } from '../suggestions/suggestions.js';
 
-import { LanguageUtils } from 'shared/language.js';
+import { LanguageUtils } from '#shared/language.js';
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { IXSuggestionType } from 'shared/types/suggestionType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
 import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
 

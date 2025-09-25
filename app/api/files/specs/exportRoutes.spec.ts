@@ -7,17 +7,17 @@ import * as filesystem from '../files/filesystem.js';
 
 import { search } from '../../search.js';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
 
 
-import { User } from 'api/users/usersModel.js';
+import { User } from '#api/users/usersModel.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import routes from '../exportRoutes';
 
 jest.mock('api/csv/csvExporter');

@@ -1,5 +1,5 @@
 import entities from '../entities/index.js';
-import { searchParamsSchema } from 'shared/types/searchParameterSchema.js';
+import { searchParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { search } from './search';
 import { validation, parseQuery } from '../utils';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 export interface TocGeneratedLabelProps {
   file: FileType;

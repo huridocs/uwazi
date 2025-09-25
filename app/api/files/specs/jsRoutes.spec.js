@@ -2,15 +2,15 @@
 import entities from '../../entities.js';
 import { search } from '../../search.js';
 import { settingsModel } from '../settings/settingsModel.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import express from 'express';
 import request from 'supertest';
 
-import mailer from 'app/utils/mailer.js';
+import mailer from '#app/utils/mailer.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { legacyLogger } from '../../log';
-import instrumentRoutes from 'app/utils/instrumentRoutes';
+import instrumentRoutes from '#app/utils/instrumentRoutes';
 import { createDirIfNotExists, deleteFiles } from '../filesystem';
 import uploadRoutes from '../jsRoutes.js';
 import { allowedPublicTemplate, fixtures, templateId } from './fixtures';

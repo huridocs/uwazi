@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { PermissionType } from 'shared/types/permissionSchema.js';
+import { PermissionType } from '#shared/types/permissionSchema.js';
 
 interface MemberListItemProps {
   value: MemberWithPermission;

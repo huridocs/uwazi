@@ -1,11 +1,11 @@
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 type SortType = {
   label: string;

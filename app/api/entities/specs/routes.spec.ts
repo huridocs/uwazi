@@ -1,12 +1,12 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
 
 import * as entitySavingManager from '../entities/entitySavingManager.js';
@@ -19,15 +19,15 @@ import templates from '../templates/index.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
-import { appContext } from 'app/utils/AppContext.js';
+import { appContext } from '#app/utils/AppContext.js';
 
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import entities from '../entities';
 import fixtures, { permissions } from './fixtures';
 

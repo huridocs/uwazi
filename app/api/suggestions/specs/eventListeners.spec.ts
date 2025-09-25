@@ -1,7 +1,7 @@
 
 import entities from '../../entities.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
 
@@ -21,15 +21,15 @@ import { TemplateDeletedEvent } from '../templates/events/TemplateDeletedEvent.j
 
 import { TemplateUpdatedEvent } from '../templates/events/TemplateUpdatedEvent.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import db, { DBFixture, testingDB } from 'api/utils/testing_db.js';
+import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
 import { registerEventListeners } from '../eventListeners';

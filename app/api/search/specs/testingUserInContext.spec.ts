@@ -1,11 +1,11 @@
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 describe('UserInContextMockFactory', () => {
   const user: UserSchema = {

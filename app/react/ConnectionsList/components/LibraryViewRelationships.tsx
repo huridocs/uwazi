@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 
 import { Item } from '../../Layout.js';
 import { Collapsible } from '../../App/Collapsible.js';

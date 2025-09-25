@@ -1,9 +1,9 @@
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import users from '../users/users.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
 

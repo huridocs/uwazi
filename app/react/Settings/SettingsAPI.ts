@@ -1,9 +1,9 @@
 
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 
 export default {
   async save(settings: RequestParams<ClientSettings>): Promise<ClientSettings> {

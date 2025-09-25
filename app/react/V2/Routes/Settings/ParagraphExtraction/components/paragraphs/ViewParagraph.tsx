@@ -2,9 +2,9 @@ import React from 'react';
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { availableLanguages } from 'shared/language/index.js';
+import { availableLanguages } from '#shared/language/index.js';
 import { templatesAtom } from '../../../../../atoms/index.js';
 import {
   PXParagraphLoaderResponse,

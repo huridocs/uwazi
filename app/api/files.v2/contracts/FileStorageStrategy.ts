@@ -1,5 +1,5 @@
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import { FileStorage, GetFileInput } from './FileStorage';
 import { File } from '../model/File';
 import { StoredFile } from '../model/StoredFile';

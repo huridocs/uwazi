@@ -1,11 +1,11 @@
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { LanguageUtils } from 'shared/language/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
-import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes.js';
+import { LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 
-import { Settings as SettingsType } from 'shared/types/settingsType.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 

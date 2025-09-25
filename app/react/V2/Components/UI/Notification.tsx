@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 interface NotificationProps {
   type: 'success' | 'info' | 'error' | 'warning';

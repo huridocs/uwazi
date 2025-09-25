@@ -3,9 +3,9 @@ import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 import { propertyTypeIsMultiValued } from '../services/informationextraction/ixMaterials.js';
 import templates from '../templates/index.js';
 
-import { tenants } from 'api/tenants/index.js';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { tenants } from '#api/tenants/index.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXServices } from '../services/informationextraction/IXServices.js';
 import { ExtractorNotFound, Extractors } from '../services/informationextraction/ixextractors.js';
 import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from './batchProcessing';

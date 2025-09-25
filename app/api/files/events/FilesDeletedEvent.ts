@@ -1,5 +1,5 @@
-import { AbstractEvent } from 'api/eventsbus';
-import { FileType } from 'shared/types/fileType.js';
+import { AbstractEvent } from '#api/eventsbus';
+import { FileType } from '#shared/types/fileType.js';
 
 interface FilesDeletedData {
   files: FileType[];

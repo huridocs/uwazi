@@ -1,10 +1,10 @@
 import { Db, ObjectId } from 'mongodb';
 
-import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers.js';
+import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
 import entities from '../entities/index.js';
 

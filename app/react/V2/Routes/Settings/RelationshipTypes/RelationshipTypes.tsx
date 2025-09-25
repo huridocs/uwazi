@@ -6,18 +6,18 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { useSetAtom, useAtomValue } from 'jotai';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
-import * as relationshipTypesAPI from 'api/V2/api/relationshiptypes.js';
+import * as relationshipTypesAPI from '#api/V2/api/relationshiptypes.js';
 
-import { Template } from 'app/apiResponseTypes.js';
+import { Template } from '#app/apiResponseTypes.js';
 
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms.js';
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms.js';
 
-import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI/index.js';
+import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 

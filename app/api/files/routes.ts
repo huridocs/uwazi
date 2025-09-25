@@ -6,16 +6,16 @@ import { CSVLoader } from '../csv/index.js';
 import entities from '../entities/index.js';
 import { processDocument } from '../files/processDocument.js';
 import { uploadMiddleware } from '../files/uploadMiddleware.js';
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
-import { validateAndCoerceRequest } from 'app/utils/validateRequest.js';
-import { EntitySchema } from 'shared/types/entityType.js';
-import { fileSchema } from 'shared/types/fileSchema.js';
-import { FileType } from 'shared/types/fileType.js';
-import { UserSchema } from 'shared/types/userType.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { validateAndCoerceRequest } from '#app/utils/validateRequest.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { fileSchema } from '#shared/types/fileSchema.js';
+import { FileType } from '#shared/types/fileType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { withTransaction } from 'app/utils/withTransaction.js';
+import { withTransaction } from '#app/utils/withTransaction.js';
 
 const checkEntityPermission = async (
   file: FileType,

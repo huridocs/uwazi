@@ -13,14 +13,14 @@ import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { isEmpty } from 'lodash';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import * as extractorsAPI from 'api/ix/extractors.js';
-import * as suggestionsAPI from 'api/ix/suggestions.js';
-import * as templatesAPI from 'api/templates/index.js';
+import * as extractorsAPI from '#api/ix/extractors.js';
+import * as suggestionsAPI from '#api/ix/suggestions.js';
+import * as templatesAPI from '#api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '../../../Components/UI/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema } from "app/V2/shared/types.js";
 import { SuggestionsTitle } from './components/SuggestionsTitle.js';

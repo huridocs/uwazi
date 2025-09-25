@@ -5,12 +5,12 @@ import { get, isArray } from 'lodash';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { secondsToDate } from '../../../../../shared/dateHelpers.js';
 import { Truncate } from '../../../../Components/UI/index.js';
-import { thesauriAtom } from 'app/V2/atoms/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.js';
 
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes.js';
+import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
 import { EntitySuggestion } from '../types.js';
 
 // eslint-disable-next-line max-statements

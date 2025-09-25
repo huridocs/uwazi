@@ -1,7 +1,7 @@
 
 import entities from '../../entities.js';
 
-import translations from 'app/I18N/index.js';
+import translations from '#app/I18N/index.js';
 
 import { elastic } from '../../search.js';
 import {
@@ -12,19 +12,19 @@ import {
   
 } from '../templates/specs/generatedIdPropertyAutoFillerFixtures.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 
-import { unique } from 'app/utils/filters.js';
+import { unique } from '#app/utils/filters.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

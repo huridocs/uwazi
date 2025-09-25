@@ -5,14 +5,14 @@ import EntitiesAPI from '../../Entities/EntitiesAPI.js';
 import { IStore, QuickLabelState, QuickLabelMetadata } from "app/V2/shared/types.js";
 
 import { notificationActions } from '../../Notifications.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
-import { t } from 'app/I18N/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { t } from '#app/I18N/index.js';
 
-import { getThesaurusPropertyNames } from 'shared/commonTopicClassification.js';
+import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
 
-import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import { updateEntities } from './libraryActions';
 
 function toggleQuickLabelAutoSave() {

@@ -1,5 +1,5 @@
-import comonProperties from 'shared/commonProperties.js';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
+import comonProperties from '#shared/commonProperties.js';
+import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { queryToFilter } from './publishedStatusFilter';
 
 function getOptions(property, thesauris) {

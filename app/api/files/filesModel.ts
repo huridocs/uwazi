@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-import date from 'api/utils/date.js';
+import date from '#api/utils/date.js';
 
 import { instanceModel } from '../odm/index.js';
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },

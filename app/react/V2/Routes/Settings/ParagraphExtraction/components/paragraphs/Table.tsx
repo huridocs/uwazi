@@ -2,14 +2,14 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 
-import { availableLanguages } from 'shared/language/index.js';
+import { availableLanguages } from '#shared/language/index.js';
 import { Table, Button } from '../../../../../Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '../../../../../shared/ParagraphExtractionTypes.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '../../../../../atoms/index.js';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';

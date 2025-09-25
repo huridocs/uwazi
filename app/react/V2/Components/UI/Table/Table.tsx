@@ -23,7 +23,7 @@ import {
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 import { dndSortHandler, getRowIds } from './helpers';

@@ -3,12 +3,12 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
 
 import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions';
-import { api } from 'app/Entities/index.js';
-import { actions } from 'app/BasicReducer/index.js';
+import { api } from '#app/Entities/index.js';
+import { actions } from '#app/BasicReducer/index.js';
 
 describe('metadataExtractionActions', () => {
   describe('updateFormField', () => {

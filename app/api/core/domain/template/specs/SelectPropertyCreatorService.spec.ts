@@ -1,12 +1,12 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { MongoThesauriDataSource } from 'api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';
 

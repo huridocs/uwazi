@@ -6,9 +6,9 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
 
-import { ILink } from 'shared/V2/shared/types.js';
+import { ILink } from '#shared/V2/shared/types.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import { DropdownMenu } from '../DropdownMenu';
 
 const links: ILink[] = [

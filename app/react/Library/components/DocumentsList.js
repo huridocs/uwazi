@@ -10,7 +10,7 @@ import {
   unselectDocument,
   unselectAllDocuments,
   selectDocuments,
-} from 'app/Library/actions/libraryActions.js';
+} from '#app/Library/actions/libraryActions.js';
 import DocumentsList from '../../Layout/DocumentsList';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {

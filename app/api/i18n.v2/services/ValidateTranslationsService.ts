@@ -1,7 +1,7 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
-import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { objectIndex, objectIndexToArrays } from '#shared/data_utils/objectIndex.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors.js';
 import { Translation } from '../model/Translation.js';

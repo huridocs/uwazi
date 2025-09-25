@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { FileDropzone } from '../../../../Components/Forms/index.js';
 import { Button, Modal } from '../../../../Components/UI/index.js';
-import { UploadService } from 'api/files/index.js';
+import { UploadService } from '#api/files/index.js';
 import { uploadProgressAtom } from './uploadProgressAtom.js';
 
 type DropzoneModalProps = {

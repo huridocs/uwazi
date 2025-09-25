@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import Immutable from 'immutable';
 import formater from './helpers/formater';

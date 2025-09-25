@@ -9,9 +9,9 @@ import {
   getAndSelectDocument,
   selectDocuments,
   unselectAllDocuments,
-} from 'app/Library/actions/libraryActions.js';
-import { SearchBar } from 'app/Library/components/SearchBar.js';
-import { t } from 'app/I18N/index.js';
+} from '#app/Library/actions/libraryActions.js';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
+import { t } from '#app/I18N/index.js';
 
 class MapViewComponent extends Component {
   constructor(props) {

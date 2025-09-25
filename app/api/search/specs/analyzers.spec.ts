@@ -1,5 +1,5 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { elasticClient } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
 

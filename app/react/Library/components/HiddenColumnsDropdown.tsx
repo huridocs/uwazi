@@ -8,16 +8,16 @@ import {
   ColumnItem,
   ValueItem,
   SelectableColumn,
-} from 'app/Library/components/HiddenColumnsDropdownItem.js';
+} from '#app/Library/components/HiddenColumnsDropdownItem.js';
 import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
-} from 'app/Library/actions/libraryActions.js';
+} from '#app/Library/actions/libraryActions.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook.js';
-import { TableViewColumn, IStore } from 'app/istore.js';
-import wrapDispatch from 'app/Multireducer/wrapDispatch.js';
+import { IImmutable } from '#shared/types/Immutable.js';
+import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
+import { TableViewColumn, IStore } from '#app/istore.js';
+import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
 
 interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;

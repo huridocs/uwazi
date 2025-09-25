@@ -6,21 +6,21 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { search } from '../../search.js';
 import { uploadsPath, customUploadsPath, storage } from '../../files/index.js';
 
-import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes.js';
+import { setUpApp, socketEmit, iosocket, TestEmitSources } from '#api/utils/testingRoutes.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 import entities from '../../entities.js';
 
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { fixtures, templateId, importTemplate, adminUser, collabUser } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

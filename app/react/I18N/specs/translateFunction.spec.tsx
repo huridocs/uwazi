@@ -4,7 +4,7 @@
 import React from 'react';
 import { Provider } from 'jotai';
 import { act, render, RenderResult } from '@testing-library/react';
-import { localeAtom, translationsAtom, atomStore } from 'app/V2/atoms/index.js';
+import { localeAtom, translationsAtom, atomStore } from '#app/V2/atoms/index.js';
 import { socket } from '../../socket.js';
 import 'app/App/sockets';
 import { t } from '../translateFunction.js';

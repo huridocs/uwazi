@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 type Props = {
   targetTemplate: TemplateSchema;

@@ -9,11 +9,11 @@ import {
   ObjectIdSchema,
   PropertyTypeSchema,
   
-} from 'shared/types/commonTypes.js';
+} from '#shared/types/commonTypes.js';
 
 import { filesModel } from '../files/filesModel.js';
 
-import { SegmentationType } from 'shared/types/segmentationType.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
 
 import entitiesModel from '../../entities/entitiesModel.js';
 
@@ -23,25 +23,25 @@ import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
 import ixmodels from '../services/informationextraction/ixmodels.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 import templatesModel from '../templates/templates.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 
 import { EnforcedWithId, UwaziFilterQuery } from '../odm/index.js';
 
-import { Entity } from 'api/entities.v2/model/Entity.js';
+import { Entity } from '#api/entities.v2/model/Entity.js';
 
-import { IXModelType } from 'shared/types/IXModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 
-import { IXSuggestionType } from 'shared/types/suggestionType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
 import { PipelineBuilder } from '../suggestions/queryBuilder.js';
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '../suggestions/suggestions.js';

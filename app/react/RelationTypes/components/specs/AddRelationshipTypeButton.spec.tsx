@@ -5,7 +5,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { AddRelationshipTypeButton } from '../AddRelationshipTypeButton';
 import * as relationTypeActions from '../../actions/relationTypeActions';
 

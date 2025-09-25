@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { Button, Modal } from 'app/V2/Components/UI/index.js';
+import { Button, Modal } from '#app/V2/Components/UI/index.js';
 
 import {
   defaultSearch,
   MultiselectList,
   MultiselectListOption,
 
-} from 'app/V2/Components/Forms.js';
+} from '#app/V2/Components/Forms.js';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 

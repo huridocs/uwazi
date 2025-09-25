@@ -1,11 +1,11 @@
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   generateIds,
   generateNames,

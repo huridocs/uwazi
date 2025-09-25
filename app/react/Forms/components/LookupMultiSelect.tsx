@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { debounce } from 'api/utils/index.js';
+import { debounce } from '#api/utils/index.js';
 import { MultiSelect, MultiSelectProps, Option, defaultProps } from './MultiSelect.js';
 
 interface LookupMultiSelectProps extends MultiSelectProps<string[]> {

@@ -1,7 +1,7 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { CodeEditorProps } from './CodeEditorComponent';
 
 const CodeEditorComponent = loadable(

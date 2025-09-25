@@ -1,29 +1,29 @@
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 
-import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
 
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 
-import { OnlineRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
+import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
 
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { CreateTemplateService } from '../CreateTemplateService';
 
 const fixturesFactory = getFixturesFactory();

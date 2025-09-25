@@ -2,8 +2,8 @@
 /* eslint-disable class-methods-use-this,max-lines */
 import ShowIf from '../../App/ShowIf.js';
 
-import { filterOptions } from 'shared/optionsUtils.js';
-import { t, Translate } from 'app/I18N/index.js';
+import { filterOptions } from '#shared/optionsUtils.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { TriStateSelectValue } from "app/V2/shared/types.js";
 import { Icon as CustomIcon } from '../../Layout/Icon.js';
 import React, { Component, createRef, RefObject } from 'react';

@@ -1,9 +1,9 @@
 import configureMockStore from 'redux-mock-store';
 import qs from 'qs';
 import thunk from 'redux-thunk';
-import api from 'app/utils/api.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
-import { mockID } from 'shared/uniqueID.js.js';
+import api from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { mockID } from '#shared/uniqueID.js.js';
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
 import * as actions from '../actions';
 

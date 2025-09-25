@@ -1,14 +1,14 @@
-import { UserGroupSchema } from 'shared/types/userGroupType.js';
-import { UserSchema } from 'shared/types/userType.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import {
   PreserveConfig,
   Settings,
   SettingsFilterSchema,
   SettingsLinkSchema,
-} from 'shared/types/settingsType.js';
-import { LanguageSchema } from 'shared/types/commonTypes.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType.js';
-import { TemplateSchema } from 'shared/types/templateType.js';
+} from '#shared/types/settingsType.js';
+import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
 export interface GroupMemberSchema {
   refId: string;

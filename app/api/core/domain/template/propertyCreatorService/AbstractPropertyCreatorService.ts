@@ -1,7 +1,7 @@
 
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 
-import { Context, Property } from 'api/templates.v2/model/Property.js';
+import { Context, Property } from '#api/templates.v2/model/Property.js';
 import { PropertyFactoryCreateInput } from '../PropertyFactory';
 
 type Deps<ExtendedDeps> = {

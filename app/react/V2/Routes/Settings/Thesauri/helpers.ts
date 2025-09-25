@@ -4,16 +4,16 @@ import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes.js';
-import { get as getThesauri } from 'api/thesauri/index.js';
+import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
+import { get as getThesauri } from '#api/thesauri/index.js';
 
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 
-import { httpRequest } from 'shared/superagent.js';
+import { httpRequest } from '#shared/superagent.js';
 
-import uniqueID from 'shared/uniqueID.js';
+import uniqueID from '#shared/uniqueID.js';
 
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils.js';
+import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesaurusRow } from './components/TableComponents.js';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>

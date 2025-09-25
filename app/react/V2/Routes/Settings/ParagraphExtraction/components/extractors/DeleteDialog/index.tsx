@@ -2,9 +2,9 @@ import React from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { ConfirmationModal } from '../../../../../../Components/UI/index.js';
-import * as extractorsAPI from 'api/paragraphExtractor/extractors.js';
+import * as extractorsAPI from '#api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '../../../../../../atoms/index.js';
 import { PXTable } from '../../../types.js';
 

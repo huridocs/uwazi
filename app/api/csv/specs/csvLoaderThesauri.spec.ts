@@ -1,18 +1,18 @@
-import translations from 'api/i18n/translations.js';
+import translations from '#api/i18n/translations.js';
 
-import settings from 'api/settings/index.js';
+import settings from '#api/settings/index.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 
-import { IndexedContextValues } from 'api/i18n/translations.js';
+import { IndexedContextValues } from '#api/i18n/translations.js';
 
-import { WithId } from 'api/odm/index.js';
+import { WithId } from '#api/odm/index.js';
 import { ObjectId } from 'mongodb';
 
-import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';

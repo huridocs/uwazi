@@ -6,17 +6,17 @@ import entities from '../../entities/entities.js';
 import { search } from '../../search.js';
 import users from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
-import { unique } from 'app/utils/filters.js';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { unique } from '#app/utils/filters.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 import {
   AccessLevels,
   PermissionType,
   MixedAccess,
   validateUniquePermissions,
-} from 'shared/types/permissionSchema.js';
-import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType.js';
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+} from '#shared/types/permissionSchema.js';
+import { PermissionSchema, PermissionsDataSchema } from '#shared/types/permissionType.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';
 

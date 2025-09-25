@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 import SHA256 from 'crypto-js/sha256';
 
 const userId = db.id();

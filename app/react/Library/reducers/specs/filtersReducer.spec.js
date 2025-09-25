@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
-import * as types from 'app/Library/actions/actionTypes.js';
+import * as types from '#app/Library/actions/actionTypes.js';
 
-import filtersReducer from 'app/Library/reducers/filtersReducer.js';
+import filtersReducer from '#app/Library/reducers/filtersReducer.js';
 
 describe('filtersReducer', () => {
   const initialState = Immutable.fromJS({ properties: [], documentTypes: [] });

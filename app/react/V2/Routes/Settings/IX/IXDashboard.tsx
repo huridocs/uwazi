@@ -4,16 +4,16 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import * as extractorsAPI from 'api/V2/api/ix/extractors.js';
-import * as templatesAPI from 'api/templates/index.js';
+import * as extractorsAPI from '#api/V2/api/ix/extractors.js';
+import * as templatesAPI from '#api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 
 import { ClientTemplateSchema } from "app/V2/shared/types.js";
 import { Button, ConfirmationModal, Table } from '../../../Components/UI/index.js';
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
-import { ClientIXExtractorType } from 'shared/types.js';
+import { ClientIXExtractorType } from '#shared/types.js';
 import { ExtractorModal } from './components/ExtractorModal.js';
 import { extractorsTableColumns } from './components/TableElements.js';
 import { List } from './components/List.js';

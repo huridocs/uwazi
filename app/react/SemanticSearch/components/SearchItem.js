@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { I18NLink } from 'app/I18N/index.js';
-import SearchDescription from 'app/Library/components/SearchDescription.js';
+import { I18NLink } from '#app/I18N/index.js';
+import SearchDescription from '#app/Library/components/SearchDescription.js';
 import { withContext } from '../../componentWrappers.js';
 import { Icon, ProgressBar } from 'UI';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { PXTable } from '../../../types';
-import { generateDisplayPill } from 'app/utils/generateDisplayPill';
+import { generateDisplayPill } from '#app/utils/generateDisplayPill';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',

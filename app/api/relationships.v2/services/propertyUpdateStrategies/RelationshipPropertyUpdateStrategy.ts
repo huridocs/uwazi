@@ -1,5 +1,5 @@
 
-import { Template } from 'api/templates.v2/model/Template.js';
+import { Template } from '#api/templates.v2/model/Template.js';
 
 export interface RelationshipPropertyUpdateStrategy {
   update(candidateIds: string[]): Promise<void>;

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import RouteHandler from '../../App/RouteHandler.js';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { withRouter } from '../../componentWrappers.js';
-import auth from 'app/Auth/index.js';
+import auth from '#app/Auth/index.js';
 
 class UnlockAccount extends RouteHandler {
   unlockAccount() {

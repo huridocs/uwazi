@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { withContext } from '../../componentWrappers.js';
-import { advancedSort } from 'app/utils/advancedSort.js';
-import { Translate } from 'app/I18N/index.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import UploadButton from '../../Metadata/components/UploadButton.js';
 
-import { LanguageUtils } from 'shared/language/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 import { ConnectedFile as File } from './File';
 import './scss/filelist.scss';
 

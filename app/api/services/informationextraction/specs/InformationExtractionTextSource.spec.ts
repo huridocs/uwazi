@@ -2,11 +2,11 @@
 /* eslint-disable max-statements */
 import moment from 'moment';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService.js';
+import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
 import * as setupSockets from '../socketio/setupSockets.js';
 

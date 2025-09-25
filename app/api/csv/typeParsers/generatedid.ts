@@ -1,10 +1,10 @@
-import { RawEntity } from 'api/csv/entityRow.js';
+import { RawEntity } from '#api/csv/entityRow.js';
 
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes.js';
+import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 
-import { generateID } from 'shared/IDGenerator.js';
+import { generateID } from '#shared/IDGenerator.js';
 import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
 
 export interface ParserResult {

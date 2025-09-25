@@ -1,13 +1,13 @@
 import { Db } from 'mongodb';
 
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';

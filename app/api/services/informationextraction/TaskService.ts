@@ -1,7 +1,7 @@
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 import settings from '../settings/index.js';
 import { ObjectId } from 'mongodb';

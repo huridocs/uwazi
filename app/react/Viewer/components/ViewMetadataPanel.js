@@ -9,7 +9,7 @@ import {
   actions as connectionsActions,
   uiActions as connectionsUiActions,
 } from '../../Connections.js';
-import { deleteDocument } from 'app/Viewer/actions/documentActions.js';
+import { deleteDocument } from '#app/Viewer/actions/documentActions.js';
 import modals from '../../Modals.js';
 
 import { closePanel } from '../actions/uiActions';

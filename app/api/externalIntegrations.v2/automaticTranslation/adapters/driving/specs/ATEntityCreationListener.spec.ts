@@ -1,5 +1,5 @@
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
 
@@ -9,13 +9,13 @@ import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automati
 
 import { RequestEntityTranslation } from '../externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import { appContext } from 'app/utils/AppContext.js';
+import { appContext } from '#app/utils/AppContext.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();

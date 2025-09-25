@@ -1,5 +1,5 @@
 
-import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property.js';
+import { Context, Property, PropertyProps } from '#api/templates.v2/model/Property.js';
 
 type Props = {
   filter?: boolean;

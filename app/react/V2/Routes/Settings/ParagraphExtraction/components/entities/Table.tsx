@@ -2,7 +2,7 @@ import React from 'react';
 import { Table } from '../../../../../Components/UI/index.js';
 import { TablePXEntityRow } from '../../../../../shared/ParagraphExtractionTypes.js';
 
-import { Template } from 'app/apiResponseTypes.js';
+import { Template } from '#app/apiResponseTypes.js';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';
 import { columns } from './TableElements/index.js';

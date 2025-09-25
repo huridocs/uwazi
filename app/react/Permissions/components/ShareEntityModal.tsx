@@ -3,19 +3,19 @@
 import Modal from '../../Layout/Modal.js';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import {
   AccessLevels,
   MixedAccessLevels,
   PermissionType,
 
-} from 'shared/types/permissionSchema.js';
+} from '#shared/types/permissionSchema.js';
 import { saveEntitiesPermissions } from '../../Permissions/actions/actions.js';
 import { connect } from 'react-redux';
 
-import { PermissionsDataSchema } from 'shared/types/permissionType.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';

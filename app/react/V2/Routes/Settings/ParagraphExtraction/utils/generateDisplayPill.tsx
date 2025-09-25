@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Pill, PillColor } from '../../../../Components/UI/index.js';
 
 const generateDisplayPill =

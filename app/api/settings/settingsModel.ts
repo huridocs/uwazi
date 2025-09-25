@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from '../odm/index.js';
-import { Settings } from 'shared/types/settingsType.js';
+import { Settings } from '#shared/types/settingsType.js';
 
 const propsWithDBSpecifics = {
   publicFormDestination: { type: String, select: false },

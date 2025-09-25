@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import { processQuery } from 'app/Library/helpers/requestState.js';
+import { processQuery } from '#app/Library/helpers/requestState.js';
 
 describe('Library/Uploads processQuery()', () => {
   it('should add aggregateGeneratedToc if feature activated', () => {

@@ -7,7 +7,7 @@ import {
   unsetDocuments,
   zoomIn,
   zoomOut,
-} from 'app/Library/actions/libraryActions.js';
+} from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import { withRouter } from '../../componentWrappers.js';
 import { routes as appRoutes } from '../../appRoutes.js';

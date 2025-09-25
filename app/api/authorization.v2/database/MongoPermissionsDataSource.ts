@@ -1,9 +1,9 @@
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { EntityPermissions } from '../model/EntityPermissions';
 import { EntityPermissionsDBO } from './schemas/permissionTypes';

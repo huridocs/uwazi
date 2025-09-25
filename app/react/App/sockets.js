@@ -1,5 +1,5 @@
 import { actions } from '../../BasicReducer/index.js';
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { notificationActions } from '../../Notifications.js';
 import { documentProcessed } from '../../Uploads/actions/uploadsActions.js';
 import {

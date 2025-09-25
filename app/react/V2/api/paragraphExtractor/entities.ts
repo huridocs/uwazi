@@ -2,15 +2,15 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
 
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import {
   TablePXEntityRow,
   PXEntityQuery,
   PXEntityRows,
   EntityStatus,
-} from 'shared/ParagraphExtractionTypes.js';
+} from '#shared/ParagraphExtractionTypes.js';
 
 const get = async (
   parameters: PXEntityQuery,

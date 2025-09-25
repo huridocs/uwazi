@@ -1,8 +1,8 @@
-import { RawEntity } from 'api/csv/entityRow.js';
+import { RawEntity } from '#api/csv/entityRow.js';
 
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes.js';
+import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 import { csvConstants } from '../csvDefinitions.js';
 import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
 

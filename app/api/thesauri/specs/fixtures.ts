@@ -1,7 +1,7 @@
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { DBFixture, testingDB } from 'api/utils/testing_db.js';
+import { DBFixture, testingDB } from '#api/utils/testing_db.js';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
 const documentTemplate = testingDB.id();

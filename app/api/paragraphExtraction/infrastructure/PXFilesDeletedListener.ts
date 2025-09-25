@@ -4,19 +4,19 @@ import { EventsBus } from '../eventsbus.js';
 
 import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { Document } from '../files.v2/model/Document.js';
 
 import { FileMappers } from '../files.v2/database/FilesMappers.js';
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 

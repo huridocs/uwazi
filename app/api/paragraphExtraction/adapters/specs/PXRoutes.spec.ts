@@ -5,11 +5,11 @@ import { ObjectId } from 'mongodb';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import {
   EntityStatusDTO,
   PXCreateExtractorRequest,

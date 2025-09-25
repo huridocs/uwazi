@@ -4,9 +4,9 @@
 import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 
 describe('UserGroupsLookupField', () => {

@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 import { TableViewer } from '../../Layout/TableViewer.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 describe('TableViewer', () => {
   let component: any;

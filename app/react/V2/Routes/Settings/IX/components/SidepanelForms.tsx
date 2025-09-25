@@ -6,10 +6,10 @@ import { useAtomValue } from 'jotai';
 import { get, isEmpty, property, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 
-import { isClient } from 'app/utils/index.js';
+import { isClient } from '#app/utils/index.js';
 import {
   defaultSearch,
   InputField,
@@ -18,15 +18,15 @@ import {
   Textarea,
 } from '../../../../Components/Forms/index.js';
 import { Button } from '../../../../Components/UI/index.js';
-import { thesauriAtom } from 'app/V2/atoms/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.js';
 import { selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
 import { SuggestionValue, TableSuggestion } from '../types.js';
 import { MultiselectItemLabel } from './MultiselectItemLabel.js';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 import { escapeLucene, searchRelatedEntities } from '../helpers/index.js';
-import { extractor } from 'api/paragraphExtraction/application/specs/fixtures.js';
-import { ClientIXExtractorType } from 'app/V2/shared/types.js';
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore.js';
+import { extractor } from '#api/paragraphExtraction/application/specs/fixtures.js';
+import { ClientIXExtractorType } from '#app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import { response } from 'express';
 import { setOptions } from 'leaflet';
 const updateOptionsWithSelection = (

@@ -1,10 +1,10 @@
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
+import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '../../Favorites.js';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { FormatMetadata } from '../../Metadata';
 import { Item, mapStateToProps } from '../Item';
 import { RowList, ItemFooter } from '../Lists';

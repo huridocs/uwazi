@@ -1,6 +1,6 @@
-import { createError } from 'app/utils/index.js';
-import { files } from 'api/files/index.js';
-import entities from 'api/entities';
+import { createError } from '#app/utils/index.js';
+import { files } from '#api/files/index.js';
+import entities from '#api/entities';
 
 const documents = {
   save(doc, params) {

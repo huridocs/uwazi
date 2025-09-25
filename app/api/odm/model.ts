@@ -1,4 +1,4 @@
-import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource.js';
+import { SyncDBDataSource } from '#api/common.v2/database/SyncDBDataSource.js';
 import { legacyLogger } from '../log/index.js';
 import { ObjectId, UpdateOptions } from 'mongodb';
 import mongoose, {
@@ -8,7 +8,7 @@ import mongoose, {
   Schema,
   UpdateQuery,
 } from 'mongoose';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { inspect } from 'util';
 import { MongooseModelWrapper } from './MongooseModelWrapper';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';

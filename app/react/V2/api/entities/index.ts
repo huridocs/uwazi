@@ -1,12 +1,12 @@
 
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 import { IncomingHttpHeaders } from 'http';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import * as formatter from './formatter';
 
 type EntityApiParams = {

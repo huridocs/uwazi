@@ -1,5 +1,5 @@
 
-import { testingDB } from 'api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 import * as filesApi from '../files/filesystem.js';
 
@@ -20,11 +20,11 @@ import EntitiesModel from '../../entities/entitiesModel.js';
 
 import templates from '../templates/templates.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import fetchMock from 'fetch-mock';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');

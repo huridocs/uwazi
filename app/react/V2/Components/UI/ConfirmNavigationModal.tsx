@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Button, Modal } from '.';
 
 type confirmationModalType = {

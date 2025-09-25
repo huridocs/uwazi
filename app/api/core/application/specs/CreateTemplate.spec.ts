@@ -1,29 +1,29 @@
 
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
   
-} from 'api/common.v2/database/data_source_defaults.js';
+} from '#api/common.v2/database/data_source_defaults.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../../domain/template/errors.js';
 
-import { MongoThesauriDataSource } from 'api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { LegacyTranslationService } from 'api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
+import { LegacyTranslationService } from '#api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
 
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { LegacyPageService } from 'api/core/infrastructure//mongodb/page/LegacyPageService.js';
+import { LegacyPageService } from '#api/core/infrastructure//mongodb/page/LegacyPageService.js';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {

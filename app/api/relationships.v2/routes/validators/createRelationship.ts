@@ -5,7 +5,7 @@ import {
   EntityReference,
   TextReference,
   
-} from 'shared/types/api.v2/relationships.createRelationshipsRequest.js';
+} from '#shared/types/api.v2/relationships.createRelationshipsRequest.js';
 
 const schema: ValidatorSchema<
   CreateRelationshipData,

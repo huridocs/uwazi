@@ -11,7 +11,7 @@ import {
 
 import { config } from '../config.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { rmdir } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import

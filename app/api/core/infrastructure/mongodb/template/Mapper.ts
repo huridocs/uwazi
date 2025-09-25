@@ -24,11 +24,11 @@ import { PreviewProperty } from '../../../domain/template/PreviewProperty.js';
 import { SelectProperty } from '../../../domain/template/SelectProperty.js';
 import { TextProperty } from '../../../domain/template/TextProperty.js';
 import { TitleProperty } from '../../../domain/template/TitleProperty.js';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO.js';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
-import { Property } from 'api/templates.v2/model/Property.js';
-import { Template } from 'api/templates.v2/model/Template.js';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
+import { TemplateDBO } from '#api/templates.v2/database/schemas/TemplateDBO.js';
+import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
+import { Property } from '#api/templates.v2/model/Property.js';
+import { Template } from '#api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
 import { ObjectId } from 'mongodb';
 
 import { PropertySchema } from '../../../../../shared/types/commonTypes.js';

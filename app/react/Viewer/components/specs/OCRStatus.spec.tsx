@@ -6,9 +6,9 @@ import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
 
 import { socket } from '../../socket.js';
 import { Provider } from 'react-redux';

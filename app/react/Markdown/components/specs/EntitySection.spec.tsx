@@ -4,7 +4,7 @@
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
 
-import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import { state } from './fixture/state';
 import { EntitySection } from '../EntitySection';
 

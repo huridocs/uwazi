@@ -1,10 +1,10 @@
 import path from 'path';
 
-import translations from 'api/i18n/translations.js';
+import translations from '#api/i18n/translations.js';
 import thesauri from '../../thesauri/thesauri.js';
-import entities from 'api/entities/index.js';
+import entities from '#api/entities/index.js';
 import { fixtureFactory } from '../csv/specs/csvLoaderSelectsFixtures.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { fixtures } from './csvLoaderSelectsFixtures';
 
 import { CSVLoader } from '../csvLoader';

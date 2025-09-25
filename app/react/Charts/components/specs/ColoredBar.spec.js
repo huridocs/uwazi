@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Rectangle } from 'recharts';
 
-import colorScheme, { light as colorSchemeLight } from 'app/utils/colorScheme';
+import colorScheme, { light as colorSchemeLight } from '#app/utils/colorScheme';
 import ColoredBar from '../ColoredBar';
 
 describe('ColoredBar', () => {

@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import translations from 'api/i18n/translations.js';
+import translations from '#api/i18n/translations.js';
 import templates from '../templates/templates.js';
 import entities from '../../entities/entities.js';
 import { search } from '../../search.js';
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
-import { testingDB } from 'api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { thesauri } from '../../thesauri/thesauri.js';
 import {
   fixtures,

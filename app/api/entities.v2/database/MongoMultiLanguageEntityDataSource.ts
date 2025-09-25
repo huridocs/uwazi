@@ -1,13 +1,13 @@
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource.js';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 import { search } from '../../search/index.js';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
-import { TemplateProperty } from 'api/templates.v2/model/Template.js';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
+import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplateProperty } from '#api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity.js';
 import { EntityMappers } from './EntityMapper.js';

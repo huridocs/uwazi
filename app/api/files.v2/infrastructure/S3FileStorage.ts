@@ -3,7 +3,7 @@ import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-
 
 import { config } from '../config.js';
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage.js';
 import { Attachment } from '../model/Attachment.js';

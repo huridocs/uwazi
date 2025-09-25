@@ -3,19 +3,19 @@ import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import * as ThesauriAPI from 'app/V2/api/thesauri/index.js';
+import * as ThesauriAPI from '#app/V2/api/thesauri/index.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Button, ConfirmationModal } from 'app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 
 
 import { ThesauriTable } from './components/ThesauriTable';
 import type { ThesauriRow } from './components/ThesauriTable';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms/index.js';
-import { ClientThesaurus } from 'app/apiResponseTypes.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

@@ -1,6 +1,6 @@
 import backend from 'fetch-mock';
 import { APIURL } from '../../config.js.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
 import semanticSearchAPI from '../SemanticSearchAPI';
 

@@ -5,24 +5,24 @@ import { FileNotFound } from '../files/FileNotFound.js';
 
 import { filesModel } from '../files/filesModel.js';
 
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
-import { tenants } from 'api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
-import { handleError } from 'app/utils/index.js';
+import { handleError } from '#app/utils/index.js';
 import path from 'path';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { SegmentationType } from 'shared/types/segmentationType.js';
+import { SegmentationType } from '#shared/types/segmentationType.js';
 
-import { Settings } from 'shared/types/settingsType.js';
+import { Settings } from '#shared/types/settingsType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { SegmentationModel } from './segmentationModel';

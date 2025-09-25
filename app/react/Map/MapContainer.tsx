@@ -9,7 +9,7 @@ import { LMap } from '../../Map/index.js';
 
 import { DataMarker, MarkerInput } from '../../Map/MapHelper.js';
 
-import { ErrorBoundary } from 'app/V2/Components/ErrorHandling.js';
+import { ErrorBoundary } from '#app/V2/Components/ErrorHandling.js';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 

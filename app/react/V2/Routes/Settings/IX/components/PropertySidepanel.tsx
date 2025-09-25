@@ -4,11 +4,11 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { PropertyValueSchema } from 'shared/types/commonTypes.js';
+import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 import {
@@ -18,7 +18,7 @@ import {
   VerticalDrawer,
   Truncate,
 } from '../../../../Components/UI/index.js';
-import { notificationAtom } from 'app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
 import { secondsToISODate } from '../../../../../shared/dateHelpers.js';
 import { ClientIXExtractorType } from '../../../../../shared/types.js';
 import { TableSuggestion } from '../types.js';

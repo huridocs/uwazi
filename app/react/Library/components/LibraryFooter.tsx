@@ -1,8 +1,8 @@
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '../../Multireducer.js';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
@@ -11,7 +11,7 @@ import {
 } from '../../Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 import Export from './ExportButton';
 import { PDFUploadButton } from './PDFUploadButton';
 

@@ -1,11 +1,11 @@
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import relationshipTypeDS from '../relationtypes.js';
 

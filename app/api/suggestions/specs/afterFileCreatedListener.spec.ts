@@ -3,13 +3,13 @@ import { EventsBus } from '../eventsbus.js';
 
 import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { TestUtils } from '../common.v2/utils/Test.js';
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
 import { AfterFileUpdatedListener } from '../listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
 import { ExtractorsNotAvailableError } from '../ixValidationError';

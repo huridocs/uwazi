@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 import { ClientFile } from "app/V2/shared/types.js";
 
-import { prepareHTMLMediaView } from 'shared/fileUploadUtils.js';
+import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 import {
   MediaModal,
   MediaModalProps,

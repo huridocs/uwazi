@@ -1,7 +1,7 @@
 
-import { PropertyValueSchema } from 'shared/types/commonTypes.js';
+import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 const update = (
   entity: EntitySchema,

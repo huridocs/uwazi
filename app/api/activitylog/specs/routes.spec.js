@@ -1,8 +1,8 @@
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import request from 'supertest';
 import qs from 'qs';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
-import { UserRole } from 'shared/types/userSchema.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import activitylogRoutes from '../routes.js';
 import activitylog from '../activitylog';
 

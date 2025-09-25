@@ -1,7 +1,7 @@
 
 import entities from '../../entities.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { search } from '../../search.js';
 import settings from '../settings.js';
@@ -10,14 +10,14 @@ import templates from '../templates/index.js';
 
 import users from '../users/users.js';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 
-import translations from 'app/I18N/index.js';
+import translations from '#app/I18N/index.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';

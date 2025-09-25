@@ -4,16 +4,16 @@ import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import { getFileNameAndExtension } from '../../../../../shared/formatHelpers.js';
-import { notificationAtom } from 'app/V2/atoms/index.js';
-import { update } from 'api/files/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.js';
+import { update } from '#api/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
 type EditFileSidepanelProps = {

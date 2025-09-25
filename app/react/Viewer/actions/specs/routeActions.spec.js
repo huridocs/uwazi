@@ -2,7 +2,7 @@ import { APIURL } from '../../config.js.js';
 import backend from 'fetch-mock';
 import * as relationships from '../../Relationships/utils/routeUtils.js';
 import { fromJS } from 'immutable';
-import { getDocument } from 'app/Viewer/actions/documentActions.js';
+import { getDocument } from '#app/Viewer/actions/documentActions.js';
 import * as routeActions from '../routeActions';
 
 jest.mock('app/Viewer/actions/documentActions');

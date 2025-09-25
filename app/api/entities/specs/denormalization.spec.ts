@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
 import entities from '../../entities.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
 
-import translations from 'api/i18n/translations.js';
+import translations from '#api/i18n/translations.js';
 
 import thesauris from '../../thesauri/thesauri.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
-import { getFixturesFactory } from 'app/utils/fixturesFactory';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { getFixturesFactory } from '#app/utils/fixturesFactory';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(

@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import {
   Table,
   ConfirmNavigationModal,
@@ -10,7 +10,7 @@ import {
   ProgressBar,
 } from '../../../Components/UI/index.js';
 
-import { Translate } from 'app/I18N/Translate.js';
+import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -19,16 +19,16 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from 'api/templates/index.js';
-import * as pagesAPI from 'api/pages/index.js';
+import * as templatesAPI from '#api/templates/index.js';
+import * as pagesAPI from '#api/pages/index.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from 'shared/types.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
+import { Page, ClientTemplateSchema } from '#shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
 
-import uniqueID from 'shared/uniqueID.js';
+import uniqueID from '#shared/uniqueID.js';
 
 import { socket } from '../../socket.js';
 import {

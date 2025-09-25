@@ -5,7 +5,7 @@ import {
   
 } from '../queue.v2/application/contracts/Dispatchable.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import { BatchRange } from '../batchProcessing';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions';
 

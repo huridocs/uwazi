@@ -2,22 +2,22 @@ import { ClientSession } from 'mongodb';
 import { Schema } from 'mongoose';
 
 
-import entities from 'api/entities/index.js';
+import entities from '#api/entities/index.js';
 
-import { instanceModel } from 'api/odm/model.js';
+import { instanceModel } from '#api/odm/model.js';
 
-import { dbSessionContext } from 'api/odm/sessionsContext.js';
+import { dbSessionContext } from '#api/odm/sessionsContext.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 
-import { storage } from 'api/files/index.js';
+import { storage } from '#api/files/index.js';
 import { Readable } from 'stream';
-import { appContext } from 'api/utils/AppContext';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { withTransaction } from 'api/utils/withTransaction';
+import { appContext } from '#api/utils/AppContext';
+import { elasticTesting } from '#api/utils/elastic_testing';
+import { getFixturesFactory } from '#api/utils/fixturesFactory';
+import { testingEnvironment } from '#api/utils/testingEnvironment';
+import { withTransaction } from '#api/utils/withTransaction';
 
 const factory = getFixturesFactory();
 

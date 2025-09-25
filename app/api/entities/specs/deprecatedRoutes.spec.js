@@ -1,9 +1,9 @@
 import { search } from '../../search.js';
 import 'api/utils/jasmineHelpers';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import templates from '../../templates/templates';
 import thesauri from '../../thesauri';
-import instrumentRoutes from 'app/utils/instrumentRoutes';
+import instrumentRoutes from '#app/utils/instrumentRoutes';
 import entities from '../entities';
 import * as entitiesSavingManager from '../entitySavingManager';
 import documentRoutes from '../routes.js';

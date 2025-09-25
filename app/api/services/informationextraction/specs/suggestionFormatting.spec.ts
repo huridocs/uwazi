@@ -1,11 +1,11 @@
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { IXSuggestionType } from 'shared/types/suggestionType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { formatSuggestionFacade } from '../suggestionFormatting';
 import { InternalIXResultsMessage } from '../InformationExtraction';
 

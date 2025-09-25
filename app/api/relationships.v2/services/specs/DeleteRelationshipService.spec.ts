@@ -3,22 +3,22 @@ import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataS
 
 import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
 import { partialImplementation } from '../../../common.v2/testing/partialImplementation.js';
 
-import { User } from 'api/users.v2/model/User.js';
+import { User } from '#api/users.v2/model/User.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
 import { MissingRelationshipError } from '../../errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';

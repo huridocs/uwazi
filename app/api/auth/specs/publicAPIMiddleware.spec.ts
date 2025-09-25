@@ -1,5 +1,5 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import * as auth from '../index';
 import { publicAPIMiddleware } from '../publicAPIMiddleware';
 

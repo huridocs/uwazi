@@ -4,11 +4,11 @@
 /* eslint-disable max-statements */
 import Immutable from 'immutable';
 import { act } from 'react-dom/test-utils';
-import { LocalForm } from 'app/Forms/Form.js';
+import { LocalForm } from '#app/Forms/Form.js';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from '../../Metadata.js';
 import { Captcha } from '../../ReactReduxForms.js';
-import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 import { PublicFormComponent as PublicForm } from '../PublicForm';
 
 const mockApiGet = jest.fn().mockResolvedValue({

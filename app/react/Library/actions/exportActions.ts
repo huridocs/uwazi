@@ -3,16 +3,16 @@ import { List } from 'immutable';
 import superagent from 'superagent';
 import { actions } from '../../BasicReducer/index.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { Dispatch } from 'redux';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
-import { CaptchaValue } from 'shared/types/Captcha.js';
+import { CaptchaValue } from '#shared/types/Captcha.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { CsvExportBody } from 'shared/types/searchParameterType.js';
+import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { TableViewer } from '../../Layout/TableViewer.js';
-import { LibraryRootComponent } from 'app/Library/Library.js';
-import LibraryLayout from 'app/Library/LibraryLayout.js';
-import DocumentsList from 'app/Library/components/DocumentsList.js';
-import { requestState } from 'app/Library/helpers/requestState.js';
+import { LibraryRootComponent } from '#app/Library/Library.js';
+import LibraryLayout from '#app/Library/LibraryLayout.js';
+import DocumentsList from '#app/Library/components/DocumentsList.js';
+import { requestState } from '#app/Library/helpers/requestState.js';
 import { withRouter } from '../../componentWrappers.js';
 import { trackPage } from '../../App/GoogleAnalytics.js';
 

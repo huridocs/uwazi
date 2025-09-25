@@ -6,7 +6,7 @@ import ReactModal from 'react-modal';
 import ReactPlayer from 'react-player';
 import { actions as formActions } from 'react-redux-form';
 
-import { renderConnectedMount } from 'app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
 
 import { RenderAttachment } from '../../Attachments/components/RenderAttachment.js';
 

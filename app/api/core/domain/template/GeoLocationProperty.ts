@@ -1,7 +1,7 @@
 
-import { Context, Property, PropertyProps, PropertyTypes } from 'api/templates.v2/model/Property.js';
+import { Context, Property, PropertyProps, PropertyTypes } from '#api/templates.v2/model/Property.js';
 
-import { propertyTypes } from 'shared/propertyTypes.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
 

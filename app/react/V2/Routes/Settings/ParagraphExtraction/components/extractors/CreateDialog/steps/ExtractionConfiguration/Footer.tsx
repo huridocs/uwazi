@@ -3,15 +3,15 @@
 import React from 'react';
 import { Button } from '../../../../../../../../Components/UI/index.js';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { captureException } from '@sentry/react';
-import * as extractorsAPI from 'api/paragraphExtractor/extractors.js';
+import * as extractorsAPI from '#api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '../../../../../../../../atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
-import { isClient } from 'app/utils/index.js';
+import { isClient } from '#app/utils/index.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();

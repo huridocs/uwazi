@@ -1,9 +1,9 @@
 /* eslint-disable max-params */
 /* eslint-disable max-statements */
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
 import { ObjectId } from 'mongodb';
 import {
@@ -12,7 +12,7 @@ import {
   IXSuggestionType,
   IXSuggestionsFilter,
   
-} from 'shared/types/suggestionType.js';
+} from '#shared/types/suggestionType.js';
 
 import { applicationEventsBus } from '../eventsbus.js';
 import { Suggestions } from '../suggestions';

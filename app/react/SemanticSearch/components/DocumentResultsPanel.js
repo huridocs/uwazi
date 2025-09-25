@@ -5,14 +5,14 @@ import { actions as formActions } from 'react-redux-form';
 import { DocumentSidePanel } from '../../Documents.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
 import { actions } from '../../Metadata.js';
-import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions.js';
+import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { deleteEntity } from '../../Entities/actions/actions.js';
 import multiReducer from '../../Multireducer.js';
 import modals from '../../Modals.js';
 
-import EntityForm from 'app/Library/containers/EntityForm.js';
+import EntityForm from '#app/Library/containers/EntityForm.js';
 
-import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions.js';
+import { getDocumentReferences, saveDocument } from '#app/Library/actions/libraryActions.js';
 import semanticSearchActions from '../actions';
 
 export const mapStateToProps = ({ semanticSearch, library, templates }) => ({

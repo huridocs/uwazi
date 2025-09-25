@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 interface VerticalDrawerProps {
   title?: ReactNode;

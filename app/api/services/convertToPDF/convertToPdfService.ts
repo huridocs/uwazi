@@ -1,11 +1,11 @@
 
 import { storage } from '../../files/index.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import JSONRequest from 'shared/JSONRequest.js';
+import JSONRequest from '#shared/JSONRequest.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 
 export class MimeTypeNotSupportedForConversion extends Error {

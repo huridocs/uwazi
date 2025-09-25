@@ -1,9 +1,9 @@
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
 import {
   ExtractorsNotAvailableError,

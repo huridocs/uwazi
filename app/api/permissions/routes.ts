@@ -1,10 +1,10 @@
 import { Application, Request } from 'express';
 
 import { needsAuthorization } from '../auth.js';
-import { validation } from 'app/utils/index.js';
-import { entitiesPermissions } from 'api/permissions/entitiesPermissions.js';
-import { collaborators } from 'api/permissions/collaborators.js';
-import { permissionsDataSchema } from 'shared/types/permissionSchema.js';
+import { validation } from '#app/utils/index.js';
+import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
+import { collaborators } from '#api/permissions/collaborators.js';
+import { permissionsDataSchema } from '#shared/types/permissionSchema.js';
 
 export const permissionRoutes = (app: Application) => {
   app.post(

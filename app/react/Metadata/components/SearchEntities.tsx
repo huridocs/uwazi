@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 
 import SearchResults from '../../Connections/components/SearchResults.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import SearchInput from '../../Layout/SearchInput.js';
 
-import { debounce } from 'api/utils/index.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { debounce } from '#api/utils/index.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import Immutable from 'immutable';
 import SearchApi from '../../Search/SearchAPI.js';
 

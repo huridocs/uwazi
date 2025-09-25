@@ -3,13 +3,13 @@ import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientTranslationContextSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
 import { Table } from '../../../Components/UI/index.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
-import * as translationsAPI from 'api/translations/index.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import * as translationsAPI from '#api/translations/index.js';
 import {
   ContextPill,
   RenderButton,

@@ -7,11 +7,11 @@ import React, { Component, createRef } from 'react';
 import { Loader } from '../../components/Elements/Loader.js';
 import { PDF } from '../../PDF.js';
 import Immutable from 'immutable';
-import { highlightSnippet } from 'app/Viewer/actions/uiActions.js';
-import { selectionHandlers } from 'app/V2/Components/PDFViewer/index.js';
-import { atomStore, pdfScaleAtom } from 'app/V2/atoms/index.js';
+import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
+import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
+import { atomStore, pdfScaleAtom } from '#app/V2/atoms/index.js';
 
-import determineDirection from 'app/utils/determineDirection.js';
+import determineDirection from '#app/utils/determineDirection.js';
 
 import { APIURL } from '../../config.js';
 

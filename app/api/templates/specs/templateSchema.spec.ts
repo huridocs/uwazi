@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 
-import { testingDB } from 'api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 import fixtures, {
   propertyToBeInherited,
@@ -18,7 +18,7 @@ import fixtures, {
   thesauriId4,
 } from './validatorFixtures';
 
-import { validateTemplate } from 'shared/types/templateSchema';
+import { validateTemplate } from '#shared/types/templateSchema';
 import { safeName } from '../utils';
 
 describe('template schema', () => {

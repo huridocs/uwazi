@@ -5,20 +5,20 @@ import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI/index.js';
+import { Button, PaginationState, Paginator, Pill, Table } from '#app/V2/Components/UI/index.js';
 
 
-import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender.js';
+import { useIsFirstRender } from '#app/V2/CustomHooks/useIsFirstRender.js';
 
-import { settingsAtom } from 'app/V2/atoms.js';
+import { settingsAtom } from '#app/V2/atoms.js';
 
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
 import { FiltersSidePanel } from './components/FiltersSidePanel';

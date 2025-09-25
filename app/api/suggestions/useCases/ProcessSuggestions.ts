@@ -4,9 +4,9 @@ import { ObjectId } from 'mongodb';
 
 import { EnforcedWithId } from '../odm/index.js';
 
-import { IXModelType } from 'shared/types/IXModelType.js';
+import { IXModelType } from '#shared/types/IXModelType.js';
 
-import { IXExtractorType } from 'shared/types/extractorType.js';
+import { IXExtractorType } from '#shared/types/extractorType.js';
 
 import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
 
@@ -16,7 +16,7 @@ import { InformationExtraction } from '../services/informationextraction/Informa
 
 import { IXServices } from '../services/informationextraction/IXServices.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import {
   ProcessMode,
   ProcessFindFilters,

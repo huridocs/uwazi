@@ -12,11 +12,11 @@ import {
   
 } from '../../files/index.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import { multitenantMiddleware } from 'app/utils/multitenantMiddleware.js';
+import { multitenantMiddleware } from '#app/utils/multitenantMiddleware.js';
 
-import { appContextMiddleware } from 'app/utils/appContextMiddleware.js';
+import { appContextMiddleware } from '#app/utils/appContextMiddleware.js';
 
 import syncRoutes from '../routes';
 

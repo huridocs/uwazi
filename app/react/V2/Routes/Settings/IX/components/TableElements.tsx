@@ -13,7 +13,7 @@ import { propertyIcons } from '../../../../Components/UI/Icons.js';
 
 import { ClientPropertySchema } from "app/V2/shared/types.js";
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import {
   TableExtractor,
   TableSuggestion,

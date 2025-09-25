@@ -1,39 +1,39 @@
-import entities from 'api/entities/index.js';
+import entities from '#api/entities/index.js';
 
-import { generateFileName, testingUploadPaths } from 'api/files/filesystem.js';
+import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
 
-import { storage } from 'api/files/storage.js';
+import { storage } from '#api/files/storage.js';
 
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { search } from 'api/search/index.js';
+import { search } from '#api/search/index.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import thesauri from 'api/thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
 
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
 import { config } from '../config.js';
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { preserveSync } from '../preserveSync.js';
 import { preserveSyncModel } from '../preserveSyncModel.js';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';
-import { legacyLogger } from 'api/log/index.js';
+import { legacyLogger } from '#api/log/index.js';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';

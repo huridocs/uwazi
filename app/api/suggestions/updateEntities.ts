@@ -3,19 +3,19 @@
 /* eslint-disable max-lines */
 import entities from '../entities/index.js';
 import { ArrayUtils } from '../common.v2/utils/Array.js';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import { checkTypeIsAllowed } from '../services/informationextraction/ixextractors.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
-import { tenants } from 'api/tenants/tenantContext.js';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff.js';
-import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex.js';
-import { setIntersection } from 'shared/data_utils/setUtils.js';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes.js';
-import { EntitySchema } from 'shared/types/entityType.js';
-import { IXSuggestionType } from 'shared/types/suggestionType.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
+import { IndexTypes, objectIndex } from '#shared/data_utils/objectIndex.js';
+import { setIntersection } from '#shared/data_utils/setUtils.js';
+import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
 class SuggestionAcceptanceError extends Error {}
 

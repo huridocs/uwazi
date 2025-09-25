@@ -2,17 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Sidepanel, Button } from 'app/V2/Components/UI/index.js';
+import { Sidepanel, Button } from '#app/V2/Components/UI/index.js';
 
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 
-import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms.js';
+import { InputField, DateRangePicker, MultiSelect } from '#app/V2/Components/Forms.js';
 import { useAtomValue } from 'jotai';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 
-import { settingsAtom, localeAtom } from 'app/V2/atoms.js';
+import { settingsAtom, localeAtom } from '#app/V2/atoms.js';
 
 interface ActivityLogSearch {
   username: string;

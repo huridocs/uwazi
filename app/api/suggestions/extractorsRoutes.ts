@@ -1,11 +1,11 @@
 
 import { needsAuthorization } from '../auth.js';
 import { Extractors } from '../services/informationextraction/ixextractors.js';
-import { parseQuery } from 'app/utils/index.js';
-import { validateAndCoerceRequest } from 'app/utils/validateRequest.js';
+import { parseQuery } from '#app/utils/index.js';
+import { validateAndCoerceRequest } from '#app/utils/validateRequest.js';
 import { Application, Request, Response, NextFunction } from 'express';
 import { ObjectId } from 'mongodb';
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 import { serviceMiddleware } from './serviceMiddleware.js';
 
 export const extractorsRoutes = (app: Application) => {

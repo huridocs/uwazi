@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO.js';
+import { TemplateDBO } from '#api/templates.v2/database/schemas/TemplateDBO.js';
 
 export type MongoPXExtractorDBO = {
   _id: ObjectId;

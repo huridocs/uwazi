@@ -1,8 +1,8 @@
 
 import { EnforcedWithId, WithId } from '../odm/index.js';
-import { ensure } from 'shared/tsUtils.js';
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
-import { FileType } from 'shared/types/fileType.js';
+import { ensure } from '#shared/tsUtils.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel.js';
 
 const createForFile = async (file: FileType) =>

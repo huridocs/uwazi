@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema } from "app/V2/shared/types.js";
 

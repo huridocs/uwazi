@@ -6,15 +6,15 @@ import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 
-import { renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
-import { TableRow } from 'app/Library/components/TableRow.js';
+import { TableRow } from '#app/Library/components/TableRow.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 import { TableViewColumn } from "app/V2/shared/types.js";
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 import { deletedEntityAtom } from '../../../V2/atoms/index.js';
 
 describe('TableRow', () => {

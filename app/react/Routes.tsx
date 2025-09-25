@@ -4,21 +4,21 @@ import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 
 
-import LibraryRoot from 'app/Library/Library.js';
+import LibraryRoot from '#app/Library/Library.js';
 
-import { LibraryCards } from 'app/Library/LibraryCards.js';
+import { LibraryCards } from '#app/Library/LibraryCards.js';
 
-import { LibraryTable } from 'app/Library/LibraryTable.js';
+import { LibraryTable } from '#app/Library/LibraryTable.js';
 import { Preserve } from './V2/Routes/Settings/Preserve/Preserve.js';
 import { Settings } from './V2/Routes/Settings/Settings.js';
 
-import { Login } from 'app/Users/Login.js';
+import { Login } from '#app/Users/Login.js';
 import { Users, usersLoader, userAction } from './V2/Routes/Settings/Users/Users.js';
 import { Collection, collectionLoader } from './V2/Routes/Settings/Collection/Collection.js';
 
-import ViewerRoute from 'app/Viewer/ViewerRoute.js';
+import ViewerRoute from '#app/Viewer/ViewerRoute.js';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,
@@ -36,7 +36,7 @@ import {
   ThesauriList,
   editThesaurusLoader,
 
-} from 'app/V2/Routes/Settings/Thesauri/index.js';
+} from '#app/V2/Routes/Settings/Thesauri/index.js';
 
 import { MenuConfig, menuConfigloader } from './V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
@@ -81,7 +81,7 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 
-} from 'app/V2/Routes/Settings/Templates/index.js';
+} from '#app/V2/Routes/Settings/Templates/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,

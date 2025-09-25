@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Rectangle } from 'recharts';
 
-import colorScheme, { light as colorSchemeLight } from 'app/utils/colorScheme';
+import colorScheme, { light as colorSchemeLight } from '#app/utils/colorScheme';
 
 const ColoredBar = props => {
   const { index, color } = props;

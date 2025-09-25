@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config.js';
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import migration, { fileExists } from '../index.js';
 import fixtures from './fixtures.js';
 

@@ -5,9 +5,9 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import rison from '@huridocs/rison';
-import { risonDecodeOrIgnore } from 'api/utils/index.js';
+import { risonDecodeOrIgnore } from '#api/utils/index.js';
 import qs from 'qs';
 
 import { Loader } from '../../components/Elements/Loader.js';

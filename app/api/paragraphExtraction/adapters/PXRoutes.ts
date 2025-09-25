@@ -3,7 +3,7 @@ import { Application } from 'express';
 
 import { needsAuthorization } from '../auth.js';
 
-import { featureFlagEnabled } from 'app/utils/featureFlagEnabledMiddleware.js';
+import { featureFlagEnabled } from '#app/utils/featureFlagEnabledMiddleware.js';
 
 import { PXCreateExtractorController } from './PXCreateExtractorController';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';

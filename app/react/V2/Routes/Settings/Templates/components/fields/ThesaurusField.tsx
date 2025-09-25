@@ -3,10 +3,10 @@ import { Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from '../../../../../Components/Forms/index.js';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { thesauriAtom } from '../../../../../atoms/index.js';
 
-import { ClientThesaurus } from 'app/apiResponseTypes.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { orderBy } from 'lodash';
 
 interface ThesaurusFieldProps {

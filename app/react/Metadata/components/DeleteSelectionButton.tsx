@@ -3,11 +3,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
 
-import { IImmutable } from 'shared/types/Immutable.js';
+import { IImmutable } from '#shared/types/Immutable.js';
 
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 import { ClientFile, IStore } from "app/V2/shared/types.js";
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { deleteSelection } from '../actions/metadataExtractionActions';
 
 type deleteSelectionButtonProps = {

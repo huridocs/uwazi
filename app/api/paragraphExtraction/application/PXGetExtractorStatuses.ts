@@ -1,10 +1,10 @@
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 

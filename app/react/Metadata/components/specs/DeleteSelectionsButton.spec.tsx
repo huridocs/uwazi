@@ -5,9 +5,9 @@ import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, act } from '@testing-library/react';
 
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
 import { ClientFile } from "app/V2/shared/types.js";
 import { DeleteSelectionButton } from '../DeleteSelectionButton';

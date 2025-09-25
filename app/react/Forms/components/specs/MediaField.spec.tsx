@@ -8,7 +8,7 @@ import MediaField from '../../Forms/components/MediaField.js';
 
 import { MediaModalType } from '../../Metadata/components/MediaModal.js';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 
 describe('MediaField', () => {
   let renderResult: RenderResult;

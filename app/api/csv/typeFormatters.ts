@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import { csvConstants } from './csvDefinitions';
 
 const defaultDateFormat = 'YYYY-MM-DD';

@@ -3,7 +3,7 @@ import { HttpClient } from '../common.v2/contracts/HttpClient.js';
 
 import { HttpField } from '../common.v2/contracts/HttpField.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
 

@@ -1,5 +1,5 @@
-import { DB } from 'api/odm/index.js';
-import { tenants } from 'api/tenants/tenantContext.js';
+import { DB } from '#api/odm/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 import { config } from '../config.js';
 import { migrator } from './migrator.js';
 

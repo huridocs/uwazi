@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from '../../Multireducer.js';
 
-import { saveEntity } from 'app/Library/actions/libraryActions.js';
+import { saveEntity } from '#app/Library/actions/libraryActions.js';
 import { actions, MetadataForm } from '../../Metadata.js';
 
 function mapStateToProps(state, props) {

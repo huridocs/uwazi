@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router';
 
 import { CurrentLocationLink } from '../../Layout.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 type ViewDocumentLinkProps = {
   filename: string;

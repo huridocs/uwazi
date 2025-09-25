@@ -3,19 +3,19 @@ import { EventsBus } from '../eventsbus.js';
 
 import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 
 import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';

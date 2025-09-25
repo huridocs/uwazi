@@ -4,7 +4,7 @@ import { config } from '../config.js';
 
 import { Dispatchable } from '../queue.v2/application/contracts/Dispatchable.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher.js';

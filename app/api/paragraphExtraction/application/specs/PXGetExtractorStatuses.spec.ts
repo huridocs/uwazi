@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
 

@@ -3,8 +3,8 @@
 import { readFile, readdir } from 'fs/promises';
 
 import { CSVLoader } from '../csv/index.js';
-import { objectIndex } from 'shared/data_utils/objectIndex.js';
-import { availableLanguages } from 'shared/language/index.js';
+import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { availableLanguages } from '#shared/language/index.js';
 
 const availableLanguagesByKey = objectIndex(
   availableLanguages,

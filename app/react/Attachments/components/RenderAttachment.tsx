@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { AttachmentSchema } from 'shared/types/commonTypes.js';
+import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
 import { ClientFile } from "app/V2/shared/types.js";
 import MarkdownMedia from '../../Markdown/components/MarkdownMedia.js';
 
-import { isSerializedFile, prepareHTMLMediaView } from 'shared/fileUploadUtils.js';
+import { isSerializedFile, prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 
 export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema | ClientFile }) => {
   const { mimetype = '' } = attachment;

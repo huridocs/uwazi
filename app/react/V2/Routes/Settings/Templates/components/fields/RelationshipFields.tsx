@@ -4,7 +4,7 @@ import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from '../../../../../Components/Forms/index.js';
 
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '../../../../../atoms/index.js';
 import { orderBy } from 'lodash';
 

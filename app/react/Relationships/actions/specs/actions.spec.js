@@ -1,13 +1,13 @@
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { fromJS as Immutable } from 'immutable';
-import { mockID } from 'shared/uniqueID.js.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { mockID } from '#shared/uniqueID.js.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import SearchApi from '../../Search/SearchAPI.js';
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 import * as types from '../actionTypes';
 import * as actions from '../actions';
-import * as routeUtils from 'app/utils/routeUtils';
+import * as routeUtils from '#app/utils/routeUtils';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

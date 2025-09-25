@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import * as metadataActions from '../../Metadata/actions/actions.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import SidePanel from '../../Layout/SidePanel.js';

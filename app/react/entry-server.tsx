@@ -18,16 +18,16 @@ import { Provider } from 'jotai';
 import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
-import translationsApi, { IndexedTranslations } from 'api/i18n/translations';
-import settingsApi from 'api/settings/settings';
-import { tenants } from 'api/tenants';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import translationsApi, { IndexedTranslations } from '#api/i18n/translations';
+import settingsApi from '#api/settings/settings';
+import { tenants } from '#api/tenants';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';

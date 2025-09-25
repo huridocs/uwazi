@@ -4,15 +4,15 @@ import moment from 'moment';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 
-import { Pill, Button } from 'app/V2/Components/UI/index.js';
+import { Pill, Button } from '#app/V2/Components/UI/index.js';
 
 
-import type { PillColor } from 'app/V2/Components/UI/index.js';
+import type { PillColor } from '#app/V2/Components/UI/index.js';
 
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType.js';
+import { ActivityLogSemanticType } from '#shared/types/activityLogEntryType.js';
 import { LogEntry } from '../ActivityLogLoader';
 
 const ActionHeader = () => <Translate>Action</Translate>;

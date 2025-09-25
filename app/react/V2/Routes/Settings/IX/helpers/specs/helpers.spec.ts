@@ -3,7 +3,7 @@
  */
 
 
-import * as translate from 'app/I18N/translateFunction.js';
+import * as translate from '#app/I18N/translateFunction.js';
 import { formatOptions } from '../../components/ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
 import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';

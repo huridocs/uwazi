@@ -5,15 +5,15 @@ import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { MissingEntityError } from 'api/entities.v2/errors/entityErrors.js';
+import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 
-import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import {
   EntityPointer,

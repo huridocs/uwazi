@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from 'api/users/usersModel.js';
+import { User } from '#api/users/usersModel.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {

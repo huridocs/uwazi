@@ -1,7 +1,7 @@
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { PXEntityParagraphsFactory } from '../paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
 import {

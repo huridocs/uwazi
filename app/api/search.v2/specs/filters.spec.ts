@@ -1,13 +1,13 @@
 import { Application } from 'express';
 import request from 'supertest';
 
-import { testingDB } from 'api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { searchRoutes } from '../routes';
 import { setupTestingEnviroment } from './setupTestingEnvironment';
 

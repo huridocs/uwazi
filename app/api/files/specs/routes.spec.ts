@@ -17,17 +17,17 @@ import { search } from '../../search.js';
 
 import * as ocrRecords from '../services/ocr/ocrRecords.js';
 
-import { appContext } from 'app/utils/AppContext.js';
+import { appContext } from '#app/utils/AppContext.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { Sidepanel } from 'app/V2/Components/UI/index.js';
+import { Sidepanel } from '#app/V2/Components/UI/index.js';
 
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 import { ActionPill } from './TableElements';
 
 interface ActivityLogSidePanelProps {

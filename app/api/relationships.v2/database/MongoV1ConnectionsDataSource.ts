@@ -1,9 +1,9 @@
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
 import { V1Connection, ReadableV1Connection } from '../model/V1Connection';
 import { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo } from './schemas/v1ConnectionTypes';

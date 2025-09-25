@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { Tenant } from 'api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import { StandardLogger, withFeature } from '../StandardLogger';
 import { StandardJSONWriter } from '../writers/StandardJSONWriter';
 import { StandardWriter } from '../writers/StandardWriter';

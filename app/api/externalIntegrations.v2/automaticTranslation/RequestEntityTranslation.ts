@@ -1,15 +1,15 @@
 
-import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getTenant } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { Entity } from 'api/entities.v2/model/Entity.js';
+import { Entity } from '#api/entities.v2/model/Entity.js';
 
-import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
-import { Logger } from 'api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/log.v2/contracts/Logger.js';
 
-import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 

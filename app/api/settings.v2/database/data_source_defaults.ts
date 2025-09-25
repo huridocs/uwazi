@@ -1,5 +1,5 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 import { MongoSettingsDataSource } from './MongoSettingsDataSource.js';
 
 const DefaultSettingsDataSource = (transactionManager: MongoTransactionManager) => {

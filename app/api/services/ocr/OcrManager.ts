@@ -7,25 +7,25 @@ import { processDocument } from '../files/processDocument.js';
 
 import relationships from '../relationships/relationships.js';
 
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
 import { emitToTenant } from '../socketio/setupSockets.js';
 
-import { tenants } from 'api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
-import createError from 'app/utils/Error.js';
+import createError from '#app/utils/Error.js';
 
-import { handleError } from 'app/utils/handleError.js';
+import { handleError } from '#app/utils/handleError.js';
 
-import { LanguageUtils } from 'shared/language/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import urljoin from 'url-join';

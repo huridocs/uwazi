@@ -1,5 +1,5 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import settings from '../settings.js';
 
@@ -7,9 +7,9 @@ import templates from '../templates/index.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
-import { PreserveConfig } from 'shared/types/settingsType.js.js';
+import { PreserveConfig } from '#shared/types/settingsType.js.js';
 import fixtures, { userId1, userId2 } from './fixtures';
 import { Preserve } from '../preserve';
 

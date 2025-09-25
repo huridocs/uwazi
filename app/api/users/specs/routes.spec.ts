@@ -1,17 +1,17 @@
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import request from 'supertest';
 
 
 import { WithId } from '../odm/model.js.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';

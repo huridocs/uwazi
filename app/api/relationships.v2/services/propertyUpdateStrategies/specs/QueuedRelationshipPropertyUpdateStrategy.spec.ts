@@ -1,5 +1,5 @@
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 

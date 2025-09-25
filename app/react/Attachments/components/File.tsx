@@ -3,27 +3,27 @@ import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from '../../componentWrappers.js';
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 
-import { updateFile, deleteFile } from 'app/Attachments/actions/actions.js';
+import { updateFile, deleteFile } from '#app/Attachments/actions/actions.js';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
-import { LocalForm } from 'app/Forms/Form.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { LocalForm } from '#app/Forms/Form.js';
 
-import { availableLanguages, LanguageUtils } from 'shared/language/index.js';
+import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
 
-import { isBlobFile } from 'shared/tsUtils.js';
+import { isBlobFile } from '#shared/tsUtils.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 import { ViewDocumentLink } from './ViewDocumentLink.js';
-import { APIURL } from 'app/config.js';
-import { ClientBlobFile } from 'app/istore.js';
-import wrapDispatch from 'app/Multireducer/wrapDispatch.js';
-import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
+import { APIURL } from '#app/config.js';
+import { ClientBlobFile } from '#app/istore.js';
+import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
+import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;

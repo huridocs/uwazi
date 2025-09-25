@@ -16,9 +16,9 @@ import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
-import { Translate, t } from 'app/I18N/index.js';
-import * as pagesAPI from 'api/pages/index.js';
-import { Page } from 'shared/types.js';
+import { Translate, t } from '#app/I18N/index.js';
+import * as pagesAPI from '#api/pages/index.js';
+import { Page } from '#shared/types.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import {
   Button,
@@ -28,10 +28,10 @@ import {
 } from '../../../Components/UI/index.js';
 import { CodeEditor } from '../../../Components/CodeEditor/index.js';
 
-import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms.js';
+import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms.js';
 import { notificationAtom } from '../../../atoms/index.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
 

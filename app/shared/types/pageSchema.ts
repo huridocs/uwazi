@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 
 
-import templatesModel from 'api/templates/templatesModel.js';
+import templatesModel from '#api/templates/templatesModel.js';
 
-import { objectIdSchema } from 'shared/types/commonSchemas.js';
-import { wrapValidator } from 'shared/tsUtils.js';
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
+import { wrapValidator } from '#shared/tsUtils.js';
 import { PageType } from './pageType';
 
 const ajv = new Ajv({ allErrors: true });

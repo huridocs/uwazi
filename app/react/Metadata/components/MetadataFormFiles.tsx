@@ -4,11 +4,11 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Field, actions } from 'react-redux-form';
 import { ClientFile } from "app/V2/shared/types.js";
 
-import { Icon } from 'app/UI/Icon/Icon.js';
-import { Translate } from 'app/I18N/index.js';
-import { getFileExtension } from 'app/utils/getFileExtension.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
+import { Translate } from '#app/I18N/index.js';
+import { getFileExtension } from '#app/utils/getFileExtension.js';
 
-import uniqueID from 'shared/uniqueID.js';
+import uniqueID from '#shared/uniqueID.js';
 
 const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];

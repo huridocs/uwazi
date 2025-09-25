@@ -1,22 +1,22 @@
 
 import { legacyLogger } from '../log.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { UpdateLogHelper } from '../odm/logHelper.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import { model as updatelogsModel } from '../updatelogs.js';
 
 import { UpdateLog } from '../updatelogs/updatelogsModel.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';
 
-import { ensure } from 'shared/tsUtils.js';
+import { ensure } from '#shared/tsUtils.js';
 import { instanceModel, models, OdmModel, WithId } from '../model.js';
 
 const testSchema = new Schema({

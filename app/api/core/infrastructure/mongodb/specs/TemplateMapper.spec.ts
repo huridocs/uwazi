@@ -1,35 +1,35 @@
 
-import { Template } from 'api/templates.v2/model/Template.js';
+import { Template } from '#api/templates.v2/model/Template.js';
 
-import { TitleProperty } from 'api/core/domain/template/TitleProperty.js';
+import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 
-import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty.js';
+import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
 
-import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty.js';
+import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
 
-import { TextProperty } from 'api/core/domain/template/TextProperty.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 
-import { ImageProperty } from 'api/core/domain/template/ImageProperty.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
 
-import { PreviewProperty } from 'api/core/domain/template/PreviewProperty.js';
+import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
 
-import { MediaProperty } from 'api/core/domain/template/MediaProperty.js';
+import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
 
-import { NumericProperty } from 'api/core/domain/template/NumericProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 
-import { MultiDateRangeProperty } from 'api/core/domain/template/MultiDateRangeProperty.js';
+import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
 
-import { MultiDateProperty } from 'api/core/domain/template/MultiDateProperty.js';
+import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
 
-import { MarkdownProperty } from 'api/core/domain/template/MarkdownProperty.js';
+import { MarkdownProperty } from '#api/core/domain/template/MarkdownProperty.js';
 
-import { LinkProperty } from 'api/core/domain/template/LinkProperty.js';
+import { LinkProperty } from '#api/core/domain/template/LinkProperty.js';
 
-import { GeolocationProperty } from 'api/core/domain/template/GeoLocationProperty.js';
+import { GeolocationProperty } from '#api/core/domain/template/GeoLocationProperty.js';
 
-import { DateProperty } from 'api/core/domain/template/DateProperty.js';
+import { DateProperty } from '#api/core/domain/template/DateProperty.js';
 
-import { DateRangeProperty } from 'api/core/domain/template/DateRangeProperty.js';
+import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
 import { ObjectId } from 'mongodb';
 import { TemplateMapper } from '../template/Mapper';
 

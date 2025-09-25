@@ -1,5 +1,5 @@
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
-import { UserGroupSchema } from 'shared/types/userGroupType.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import userGroups from './userGroups.js';
 import model from './userGroupsModel.js';
 

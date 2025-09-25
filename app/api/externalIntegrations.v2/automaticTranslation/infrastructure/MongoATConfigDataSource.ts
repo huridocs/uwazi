@@ -1,18 +1,18 @@
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
 
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
 
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
+import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
 
-import { Property } from 'api/templates.v2/model/Property.js';
+import { Property } from '#api/templates.v2/model/Property.js';
 import { Db } from 'mongodb';
 
-import { Settings as SettingsType } from 'shared/types/settingsType.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
 import { ATGateway } from '../contracts/ATGateway';
 import { ATConfig, ATTemplateConfig } from '../model/ATConfig';

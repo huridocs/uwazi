@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
-import type { RequestError } from 'shared/errorUtils.js';
+import { Translate } from '#app/I18N/index.js';
+import type { RequestError } from '#shared/errorUtils.js';
 
 interface ErrorFallbackProps {
   error: Error | RequestError;

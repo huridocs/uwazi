@@ -4,13 +4,13 @@ import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
 
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
-import { ClientSettings } from 'app/apiResponseTypes.js';
-import * as activityLogAPI from 'api/activityLog/index.js';
-import type { ActivityLogResponse } from 'api/activityLog/index.js';
+import { ClientSettings } from '#app/apiResponseTypes.js';
+import * as activityLogAPI from '#api/activityLog/index.js';
+import type { ActivityLogResponse } from '#api/activityLog/index.js';
 
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType.js';
+import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
 const ITEMS_PER_PAGE = 100;
 

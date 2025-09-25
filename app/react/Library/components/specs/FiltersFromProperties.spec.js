@@ -3,7 +3,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { FiltersFromProperties, mapStateToProps } from '../FiltersFromProperties';
 import DateFilter from '../DateFilter';
 import NestedFilter from '../NestedFilter';

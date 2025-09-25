@@ -3,7 +3,7 @@ import React from 'react';
 import { Row } from '@tanstack/react-table';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { EmbededButton } from '../EmbededButton';
 import { TableRow } from './Table';
 

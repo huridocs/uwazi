@@ -6,15 +6,15 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
-import api from 'app/utils/api.js';
+import api from '#app/utils/api.js';
 
-import { mockID } from 'shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js.js';
 import { documentsApi } from '../../Documents.js';
 import { APIURL } from '../../config.js.js';
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '../../Relationships.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { atomStore, deletedEntityAtom } from '../../../V2/atoms/index.js';
 import * as libraryActions from '../../../Library/actions/saveEntityWithFiles.js';
 import * as actions from '../documentActions.js';

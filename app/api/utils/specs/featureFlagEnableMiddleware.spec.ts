@@ -1,9 +1,9 @@
 import express, { Application } from 'express';
 import request from 'supertest';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import { TenantFeatureFlags } from 'api/tenants/tenantContext.js';
+import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
 import { appContextMiddleware } from '../appContextMiddleware';
 import { multitenantMiddleware } from '../multitenantMiddleware';
 

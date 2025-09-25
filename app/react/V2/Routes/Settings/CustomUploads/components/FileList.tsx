@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row } from '@tanstack/react-table';
 
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const FileList = ({ items }: { items: Row<FileType>[] | FileType[] }) => (
   <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">

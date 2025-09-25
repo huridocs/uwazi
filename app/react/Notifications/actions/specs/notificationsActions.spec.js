@@ -1,4 +1,4 @@
-import { mockID } from 'shared/uniqueID.js';
+import { mockID } from '#shared/uniqueID.js';
 import * as actions from '../../Notifications/actions/notificationsActions.js';
 import * as types from '../../Notifications/actions/actionTypes.js';
 

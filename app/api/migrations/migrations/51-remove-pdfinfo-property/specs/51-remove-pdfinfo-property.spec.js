@@ -1,5 +1,5 @@
-import testingDB from 'api/utils/testing_db.js';
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import testingDB from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

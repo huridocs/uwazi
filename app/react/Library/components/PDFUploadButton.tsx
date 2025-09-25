@@ -2,20 +2,20 @@ import React, { ChangeEvent, Dispatch } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from 'app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/Icon/Icon.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
-import { generateID } from 'shared/IDGenerator.js';
+import { generateID } from '#shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
 } from '../../Uploads/actions/uploadsActions.js';
-import { unselectAllDocuments as unselectAllDocumentsAction } from 'app/Library/actions/libraryActions.js';
+import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
 import { ClientEntitySchema } from "app/V2/shared/types.js";
-import { templatesAtom } from 'app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.js';
 import { ClientTemplateSchema } from '../../../../../shared/types.js';
 
 const extractTitle = (file: File) => {

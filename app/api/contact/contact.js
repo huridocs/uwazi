@@ -1,5 +1,5 @@
-import mailer from 'app/utils/mailer.js';
-import settings from 'api/settings/settings.js';
+import mailer from '#app/utils/mailer.js';
+import settings from '#api/settings/settings.js';
 
 export default {
   async sendMessage({ email, name, message }) {

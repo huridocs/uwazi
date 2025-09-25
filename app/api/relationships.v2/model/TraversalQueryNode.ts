@@ -1,5 +1,5 @@
 
-import { Relationship } from 'api/relationships.v2/model/Relationship.js';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import _ from 'lodash';
 import { MatchQueryNode, TemplateRecords } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';

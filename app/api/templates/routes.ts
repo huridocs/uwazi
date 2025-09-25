@@ -1,7 +1,7 @@
 import settings from '../settings/index.js';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
-import { TemplateMutationController } from 'api/core/infrastructure//express/template/TemplateMutationController.js';
+import { TemplateMutationController } from '#api/core/infrastructure//express/template/TemplateMutationController.js';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, validation } from '../utils';
 import templates from './templates';

@@ -9,7 +9,7 @@ import {
   templatesAtom,
   thesauriAtom,
   translationsAtom,
-} from 'app/V2/atoms/index.js';
+} from '#app/V2/atoms/index.js';
 import { socket } from '../../socket.js';
 import '../sockets';
 import { store } from '../../store.js';

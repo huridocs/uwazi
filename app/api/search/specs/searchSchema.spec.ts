@@ -2,7 +2,7 @@ import ValidationError from 'ajv/dist/runtime/validation_error';
 
 import { validation } from '../utils.js';
 
-import { searchParamsSchema } from 'shared/types/searchParameterSchema.js';
+import { searchParamsSchema } from '#shared/types/searchParameterSchema.js';
 
 describe('search schema', () => {
   const validQuery = {

@@ -4,13 +4,13 @@
 import React from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
 
-import * as IDGenerator from 'shared/IDGenerator.js';
+import * as IDGenerator from '#shared/IDGenerator.js';
 
-import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected.js';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
 
 import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
 
-import * as libraryActions from 'app/Library/actions/libraryActions.js';
+import * as libraryActions from '#app/Library/actions/libraryActions.js';
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { templatesAtom } from '../../../V2/atoms/index.js';
 import { PDFUploadButton } from '../PDFUploadButton.js';

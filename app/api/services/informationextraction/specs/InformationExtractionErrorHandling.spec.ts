@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { ModelStatus } from 'shared/types/IXModelSchema.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { factory, fixtures, patchFixturesWithPort } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';

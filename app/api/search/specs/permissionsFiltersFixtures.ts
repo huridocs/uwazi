@@ -1,9 +1,9 @@
 
-import { testingDB, DBFixture } from 'api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } } = {
   user1: {

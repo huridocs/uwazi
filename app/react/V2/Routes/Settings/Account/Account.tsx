@@ -6,13 +6,13 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 
-import { ClientUserSchema } from 'app/apiResponseTypes.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
-import { validEmailFormat } from 'shared/formatHelpers.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { validEmailFormat } from '#shared/formatHelpers.js';
 
-import { Translate } from 'app/I18N/index.js';
-import { updateUser, getCurrentUser } from 'api/users/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { updateUser, getCurrentUser } from '#api/users/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
 import { InputField } from '../../../Components/Forms/index.js';
 import { Button, Card, ConfirmationModal } from '../../../Components/UI/index.js';

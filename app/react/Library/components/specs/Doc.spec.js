@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
 import { Item } from '../../Layout.js';
-import { NeedAuthorization } from 'app/Auth/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
 import { mapStateToProps } from '../Doc';
 import { Doc } from '../Doc';
 

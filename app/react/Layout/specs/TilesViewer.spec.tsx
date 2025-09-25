@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 
-import Doc from 'app/Library/components/Doc.js';
+import Doc from '#app/Library/components/Doc.js';
 import { TilesViewer } from '../../Layout/TilesViewer.js';
-import { renderConnected } from 'app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.js';
 
 import { RowList } from '../Lists';
 

@@ -1,10 +1,10 @@
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { debounce } from 'api/utils/index.js';
+import { debounce } from '#api/utils/index.js';
 import { MemberListItemInfo } from './MemberListItemInfo.js';
 
 interface UserGroupsLookupFieldProps {

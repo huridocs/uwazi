@@ -4,11 +4,11 @@ import { files, generateFileName, storage } from '../../files/index.js';
 
 import { processDocument } from '../files/processDocument.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import { emitToTenant } from '../socketio/setupSockets.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import * as os from 'os';

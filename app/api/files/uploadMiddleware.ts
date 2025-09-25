@@ -3,7 +3,7 @@ import { tenants } from '../tenants/index.js';
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { legacyLogger } from '../log/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';

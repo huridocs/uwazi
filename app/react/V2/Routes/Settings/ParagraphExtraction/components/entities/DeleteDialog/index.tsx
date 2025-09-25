@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '../../../../../../Components/UI/index.js';
 import { TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
 import { notificationAtom } from '../../../../../../atoms/index.js';
-import * as entitiesAPI from 'api/paragraphExtractor/entities.js';
+import * as entitiesAPI from '#api/paragraphExtractor/entities.js';
 
 const DeleteDialog = ({
   setIsProcessing,

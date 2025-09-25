@@ -1,7 +1,7 @@
 
-import { Relationship } from 'api/relationships.v2/model/Relationship.js';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 
-import { User } from 'api/users.v2/model/User.js';
+import { User } from '#api/users.v2/model/User.js';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { UnauthorizedError } from '../errors/UnauthorizedError';
 import { EntityPermissions } from '../model/EntityPermissions';

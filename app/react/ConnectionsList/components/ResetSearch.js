@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import ShowIf from '../../App/ShowIf.js';
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 
 import { resetSearch } from '../actions/actions';

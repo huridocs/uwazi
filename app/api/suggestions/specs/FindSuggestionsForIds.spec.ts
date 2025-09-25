@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DBFixture } from 'api/utils/testing_db.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
-import { ModelStatus } from 'shared/types/IXModelSchema.js';
+import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
 
 import { ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
 
-import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService.js';
+import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
 import ixmodels from '../services/informationextraction/ixmodels.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds';

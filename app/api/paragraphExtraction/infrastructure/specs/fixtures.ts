@@ -7,11 +7,11 @@ import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.j
 
 import { PXExtractor } from '../paragraphExtraction/domain/PXExtractor.js';
 
-import { Property } from 'api/templates.v2/model/Property.js';
+import { Property } from '#api/templates.v2/model/Property.js';
 import { ObjectId } from 'mongodb';
 
 
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder.js';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {

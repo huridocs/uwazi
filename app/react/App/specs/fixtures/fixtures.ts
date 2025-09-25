@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 
-import { ClientThesaurus } from 'app/apiResponseTypes.js';
+import { ClientThesaurus } from '#app/apiResponseTypes.js';
 
 import { ClientTemplateSchema, ClientTranslationSchema } from "app/V2/shared/types.js";
 

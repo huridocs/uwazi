@@ -1,16 +1,16 @@
 
 import { search } from '../search/search.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 
 
-import { AggregationBucket, Aggregations } from 'shared/types/aggregations.js';
+import { AggregationBucket, Aggregations } from '#shared/types/aggregations.js';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 import { fixturesTimeOut } from './fixtures_elastic';
 import {
   group1,

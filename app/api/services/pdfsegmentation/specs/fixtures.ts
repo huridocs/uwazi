@@ -1,9 +1,9 @@
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { Settings } from 'shared/types/settingsType.js';
+import { Settings } from '#shared/types/settingsType.js';
 
 const factory = getFixturesFactory();
 

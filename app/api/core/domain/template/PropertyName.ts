@@ -1,5 +1,5 @@
 
-import { Context } from 'api/templates.v2/model/Property.js';
+import { Context } from '#api/templates.v2/model/Property.js';
 
 class PropertyName {
   value: string;

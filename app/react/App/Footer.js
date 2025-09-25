@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, Translate } from 'app/I18N/index.js';
+import { I18NLink, Translate } from '#app/I18N/index.js';
 import { createSelector } from 'reselect';
 import { libraryViewInfo } from '../../App/libraryViewInfo.js';
 

@@ -5,9 +5,9 @@ import { Tabs } from 'react-tabs-redux';
 
 import { ConnectionsGroups } from '../../ConnectionsList.js';
 import SidePanel from '../../Layout/SidePanel.js';
-import Connections from 'app/Viewer/components/ConnectionsList.js';
-import * as viewerModule from 'app/Viewer.js';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
+import Connections from '#app/Viewer/components/ConnectionsList.js';
+import * as viewerModule from '#app/Viewer.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';

@@ -1,9 +1,9 @@
 
 import { PropertyTypeMismatchError } from '../../domain/template/errors.js';
 
-import { PropertyName } from 'api/core/domain/template/PropertyName.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 
-import { PropertySchema } from 'shared/types/commonTypes.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 type PropertyTypes = PropertySchema['type'];
 

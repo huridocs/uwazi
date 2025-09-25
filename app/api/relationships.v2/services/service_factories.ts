@@ -7,38 +7,38 @@ import {
   DefaultIdGenerator,
   DefaultTransactionManager,
   
-} from 'api/common.v2/database/data_source_defaults.js';
+} from '#api/common.v2/database/data_source_defaults.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
 import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
 import { search } from '../../search.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
-import { User } from 'api/users.v2/model/User.js';
+import { User } from '#api/users.v2/model/User.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
 
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 
-import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories.js';
+import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/service_factories.js';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
@@ -62,7 +62,7 @@ import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMig
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {

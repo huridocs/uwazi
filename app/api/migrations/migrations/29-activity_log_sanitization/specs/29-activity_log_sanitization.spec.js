@@ -1,9 +1,9 @@
-import { testingDB } from 'api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import {
   BODY_REQUIRED_ENDPOINTS,
   IGNORED_ENDPOINTS,
 } from '../activitylog/activitylogMiddleware.js';
-import date from 'app/utils/date.js';
+import date from '#app/utils/date.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

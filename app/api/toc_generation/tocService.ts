@@ -1,15 +1,15 @@
 
 import { files, storage } from '../../files/index.js';
-import { prettifyError } from 'app/utils/handleError.js';
+import { prettifyError } from '#app/utils/handleError.js';
 import { legacyLogger } from '../log/index.js';
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 import entities from '../entities/index.js';
-import { TocSchema } from 'shared/types/commonTypes.js';
-import { FileType } from 'shared/types/fileType.js';
+import { TocSchema } from '#shared/types/commonTypes.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 import settings from '../settings/index.js';
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 const fakeTocEntry = (label: string): TocSchema => ({
   selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],

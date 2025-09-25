@@ -5,11 +5,11 @@ import React, { ReactNode } from 'react';
 import { render } from '@testing-library/react';
 import { userAtom } from '../../../atoms/index.js';
 
-import { ClientUserSchema } from 'app/apiResponseTypes.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { NeedAuthorization } from '../index.js';
 import { TestAtomStoreProvider } from '../../../testing/index.js';
 

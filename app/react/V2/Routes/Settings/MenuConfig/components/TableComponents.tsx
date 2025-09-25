@@ -1,10 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
-import { Button } from 'app/V2/Components/UI/index.js';
+import { Button } from '#app/V2/Components/UI/index.js';
 
 import { Link } from '../shared';
 

@@ -1,5 +1,5 @@
 import relationtypes from '../relationtypes/relationtypes.js';
-import { ObjectIdAsString } from 'app/utils/ajvSchemas.js';
+import { ObjectIdAsString } from '#app/utils/ajvSchemas.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 

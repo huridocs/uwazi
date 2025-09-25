@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
 import { RowList } from '../../Layout/Lists.js';
-import { I18NLink } from 'app/I18N/index.js';
+import { I18NLink } from '#app/I18N/index.js';
 import { ItemList } from '../ItemList';
 import Slider from '../slider';
 

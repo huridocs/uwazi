@@ -1,13 +1,13 @@
 
 import { RelationsV1Collection } from '../relationships/RelationsV1Collection.js';
 
-import { Template, TemplateProperty } from 'api/templates.v2/model/Template.js';
+import { Template, TemplateProperty } from '#api/templates.v2/model/Template.js';
 
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
+import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
 
-import { IndexTypes } from 'shared/data_utils/objectIndex.js';
+import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 
-import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from './Entity';
 import { EntityTranslations } from './EntityTranslations';
 

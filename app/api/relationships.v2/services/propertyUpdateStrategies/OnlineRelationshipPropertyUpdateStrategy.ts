@@ -1,9 +1,9 @@
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService.js';
+import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 
 interface IndexEntitiesCallback {

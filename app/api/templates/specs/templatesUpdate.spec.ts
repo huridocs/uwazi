@@ -11,17 +11,17 @@ import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-field
 
 import * as setupSockets from '../socketio/setupSockets.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { testingTenants } from 'app/utils/testingTenants.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

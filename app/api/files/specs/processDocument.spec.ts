@@ -1,12 +1,12 @@
 
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
   
 } from '../services/convertToPDF/convertToPdfService.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { files, UpdateFileError } from '../files';

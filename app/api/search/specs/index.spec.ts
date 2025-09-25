@@ -1,12 +1,12 @@
 
-import db from 'api/utils/testing_db.js';
+import db from '#api/utils/testing_db.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 import { search } from '../search';
 import { elastic } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 describe('index (search)', () => {
   beforeEach(async () => {

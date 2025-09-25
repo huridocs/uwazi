@@ -5,9 +5,9 @@ import { EventsBus } from '../eventsbus.js';
 
 import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 
-import { LanguageUtils } from 'shared/language/index.js';
+import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';

@@ -8,12 +8,12 @@ import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 import { withContext } from '../../componentWrappers.js';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from '../../Metadata.js';
-import { Translate, I18NLink } from 'app/I18N/index.js';
+import { Translate, I18NLink } from '#app/I18N/index.js';
 import SidePanel from '../../Layout/SidePanel.js';
 import { CopyFromEntity } from '../../Metadata/components/CopyFromEntity.js';
 import { api as entitiesAPI } from '../../Entities.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
-import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
+import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import { AttachmentsList } from '../../Attachments.js';
 import { FileList } from '../../Attachments/components/FileList.js';
 import {

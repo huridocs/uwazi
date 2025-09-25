@@ -1,11 +1,11 @@
 import urljoin from 'url-join';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
 import { storage } from '../../files/index.js';
 import { DataType } from '../odm/index.js';
 import { UpdateLog } from '../updatelogs/index.js';
-import { FileType } from 'shared/types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 
 const uploadFile = async (
   url: string,

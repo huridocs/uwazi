@@ -1,8 +1,8 @@
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction } from 'express';
 
-import { Task, TaskProvider } from 'shared/tasks/tasks.js';
+import { Task, TaskProvider } from '#shared/tasks/tasks.js';
 import request from 'supertest';
 import testRoute from '../routes';
 

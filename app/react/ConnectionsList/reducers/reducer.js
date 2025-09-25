@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from '../../BasicReducer/index.js';
 
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria.js';
+import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 
 export default combineReducers({
   entityId: createReducer('connectionsList/entityId', ''),

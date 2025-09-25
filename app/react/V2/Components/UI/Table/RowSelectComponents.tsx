@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 
 const IndeterminateCheckboxRow = <

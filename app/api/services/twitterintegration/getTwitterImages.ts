@@ -1,7 +1,7 @@
 
-import { ResultsMessage } from 'api/services/tasksmanager/TaskManager.js';
+import { ResultsMessage } from '#api/services/tasksmanager/TaskManager.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import { Readable } from 'stream';
 
 import { files, generateFileName, storage } from '../../files/index.js';

@@ -1,5 +1,5 @@
 
-import { Context, Property } from 'api/templates.v2/model/Property.js';
+import { Context, Property } from '#api/templates.v2/model/Property.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import { SelectProperty, SelectPropertyProps } from '../SelectProperty';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';

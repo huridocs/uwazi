@@ -6,10 +6,10 @@ import Immutable from 'immutable';
 import { DocumentSidePanel } from '../../Documents.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
 import { actions } from '../../Metadata.js';
-import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions.js';
+import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { deleteEntity } from '../../Entities/actions/actions.js';
 import { wrapDispatch } from '../../Multireducer.js';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import modals from '../../Modals.js';
 
 import * as connectionsActions from '../../ConnectionsList/actions/actions.js';

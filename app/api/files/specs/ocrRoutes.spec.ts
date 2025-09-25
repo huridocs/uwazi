@@ -11,21 +11,21 @@ import { search } from '../../search.js';
 
 import { ocrManager } from '../services/ocr/OcrManager.js';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { setUpApp } from 'api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import JSONRequest from 'shared/JSONRequest.js';
+import JSONRequest from '#shared/JSONRequest.js';
 
-import { UserRole } from 'shared/types/userSchema.js';
+import { UserRole } from '#shared/types/userSchema.js';
 
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 
 import * as setupSockets from '../socketio/setupSockets.js';

@@ -1,9 +1,9 @@
 
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 
-import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode.js';
+import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 const fixtureFactory = getFixturesFactory();
 

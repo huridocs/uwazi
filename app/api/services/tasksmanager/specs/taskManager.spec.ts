@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
 import waitForExpect from 'wait-for-expect';
 
-import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager.js';
+import { TaskManager, Service } from '#api/services/tasksmanager/TaskManager.js';
 
 import { config } from '../config.js';
 
-import * as handleError from 'app/utils/handleError.js.js';
+import * as handleError from '#app/utils/handleError.js.js';
 import { ExternalDummyService } from './ExternalDummyService.js';
 
 import { Redis } from '../infrastructure/Redis.js';

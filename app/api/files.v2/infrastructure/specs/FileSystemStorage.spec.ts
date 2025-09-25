@@ -2,9 +2,9 @@
 import * as fs from 'fs/promises';
 
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { Tenant, tenants } from 'api/tenants/tenantContext.js';
+import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 
 import { FileType } from '../files.v2/model/FileType.js';
 import { FileSystemStorage } from '../FileSystemStorage';

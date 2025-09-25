@@ -22,9 +22,9 @@ import {
   
 } from '../../files/index.js';
 
-import translations from 'app/I18N/index.js';
+import translations from '#app/I18N/index.js';
 
-import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
 import relationships from '../../relationships.js';
 
@@ -34,43 +34,43 @@ import syncRoutes from '../sync/routes.js';
 
 import templates from '../templates/index.js';
 
-import { tenants } from 'api/tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 import thesauri from '../../thesauri/thesauri.js';
 
 import users from '../users/users.js';
 
-import { appContext } from 'app/utils/AppContext.js';
+import { appContext } from '#app/utils/AppContext.js';
 
-import { appContextMiddleware } from 'app/utils/appContextMiddleware.js';
+import { appContextMiddleware } from '#app/utils/appContextMiddleware.js';
 
-import { elasticTesting } from 'app/utils/elastic_testing.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
 
-import errorHandlingMiddleware from 'app/utils/error_handling_middleware.js';
+import errorHandlingMiddleware from '#app/utils/error_handling_middleware.js';
 
-import mailer from 'app/utils/mailer.js';
+import mailer from '#app/utils/mailer.js';
 
-import db, { DBFixture } from 'api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { advancedSort } from 'app/utils/advancedSort.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 
-import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService.js';
+import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
 
-import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService.js';
+import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { Db, ObjectId } from 'mongodb';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import * as utils from 'shared/tsUtils.js';
+import * as utils from '#shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
 import {
   host1Fixtures,

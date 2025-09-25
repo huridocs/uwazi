@@ -1,18 +1,18 @@
 
-import { TextProperty } from 'api/core/domain/template/TextProperty.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import {
   TemplateWithDuplicatedPropertyError,
   TemplateWithMissingCommonProperty,
   
 } from '../../domain/template/errors.js';
 
-import { TitleProperty } from 'api/core/domain/template/TitleProperty.js';
+import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 
-import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty.js';
+import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
 
-import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty.js';
+import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
 
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder.js';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
 import { Template } from '../Template';
 import { Property } from '../Property';
 import { V1RelationshipProperty } from '../V1RelationshipProperty';

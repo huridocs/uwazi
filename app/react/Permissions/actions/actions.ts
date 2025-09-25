@@ -3,18 +3,18 @@ import { Dispatch } from 'redux';
 import { IStore } from "app/V2/shared/types.js";
 
 import { notificationActions } from '../../Notifications.js';
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 import { savePermissions } from '../../Permissions/PermissionsAPI.js';
 
-import { PermissionsDataSchema } from 'shared/types/permissionType.js';
+import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 
 import { wrapDispatch } from '../../Multireducer.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
-} from 'app/Library/actions/actionTypes.js';
-import { unselectAllDocuments } from 'app/Library/actions/libraryActions.js';
-import { PermissionType, MixedAccess } from 'shared/types/permissionSchema';
+} from '#app/Library/actions/actionTypes.js';
+import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
+import { PermissionType, MixedAccess } from '#shared/types/permissionSchema';
 
 export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {

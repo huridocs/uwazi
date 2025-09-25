@@ -7,7 +7,7 @@ import {
   renderConnected,
   renderConnectedContainer,
 
-} from 'app/utils/test/renderConnected.js';
+} from '#app/utils/test/renderConnected.js';
 
 import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
 import { ShallowWrapper } from 'enzyme';

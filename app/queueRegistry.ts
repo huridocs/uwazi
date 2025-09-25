@@ -1,36 +1,36 @@
 /* eslint-disable max-classes-per-file */
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
-import { ValidationError } from 'api/common.v2/validation/ValidationError.js';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
-import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
-import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
-import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
-import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
-import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
+import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory.js';
+import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
+import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
 import {
   Dispatchable,
   HeartbeatCallback,
-} from 'api/queue.v2/application/contracts/Dispatchable.js';
-import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher.js';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource.js';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction.js';
-import { IXTaskService } from 'api/services/informationextraction/TaskService.js';
-import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF.js';
-import { TrainModelForText } from 'api/services/informationextraction/TrainModelForText.js';
-import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob.js';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
-import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob.js';
-import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
-import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
-import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import settings from 'api/settings/settings.js';
+} from '#api/queue.v2/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
+import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
+import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
+import { IXTaskService } from '#api/services/informationextraction/TaskService.js';
+import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
+import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
+import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
+import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
+import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
+import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { DefaultDispatcher } from '#api/queue.v2/configuration/factories';
+import settings from '#api/settings/settings.js';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included

@@ -1,7 +1,7 @@
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 import { MongoRelationshipsDataSource } from './MongoRelationshipsDataSource';
 import { MongoV1ConnectionsDataSource } from './MongoV1ConnectionsDataSource';
 import { MongoHubsDataSource } from './MongoHubsDataSource';

@@ -1,5 +1,5 @@
 import 'api/utils/jasmineHelpers';
-import instrumentRoutes from 'app/utils/instrumentRoutes';
+import instrumentRoutes from '#app/utils/instrumentRoutes';
 import pages from '../pages';
 import pagesRoutes from '../routes';
 

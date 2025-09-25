@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { PermissionSchema } from 'shared/types/permissionType.js';
+import { PermissionSchema } from '#shared/types/permissionType.js';
 
-import { EntitySchema } from 'shared/types/entityType.js';
-import { ClientUserSchema } from 'app/apiResponseTypes.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 type PropTypes = {
   children: React.ReactNode;

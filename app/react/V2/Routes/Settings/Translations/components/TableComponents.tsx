@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { CellContext } from '@tanstack/react-table';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { Button, Pill } from '../../../../Components/UI/index.js';
 import { TranslationContext } from '../TranslationsList.js';
 

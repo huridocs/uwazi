@@ -10,25 +10,25 @@ import { useSetAtom } from 'jotai';
 import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from 'api/settings/index.js';
-import * as TemplatesAPI from 'api/templates/index.js';
+import * as SettingsAPI from '#api/settings/index.js';
+import * as TemplatesAPI from '#api/templates/index.js';
 
-import { notificationAtom } from 'app/V2/atoms.js';
+import { notificationAtom } from '#app/V2/atoms.js';
 
-import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms.js';
+import { InputField, Select, MultiSelect, Geolocation } from '#app/V2/Components/Forms.js';
 
-import { Button, Card } from 'app/V2/Components/UI/index.js';
+import { Button, Card } from '#app/V2/Components/UI/index.js';
 
 
-import { settingsAtom } from 'app/V2/atoms/settingsAtom.js';
+import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Translate, t } from 'app/I18N/index.js';
+import { Translate, t } from '#app/I18N/index.js';
 
-import { ClientSettings, Template } from 'app/apiResponseTypes.js';
+import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 

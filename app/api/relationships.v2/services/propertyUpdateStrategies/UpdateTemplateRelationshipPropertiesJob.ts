@@ -1,9 +1,9 @@
 
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 
-import { Template } from 'api/templates.v2/model/Template.js';
+import { Template } from '#api/templates.v2/model/Template.js';
 
 import { Dispatchable, HeartbeatCallback } from '../queue.v2/application/contracts/Dispatchable.js';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';

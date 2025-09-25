@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
-import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema.js';
+import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
 import { MemberListItemPermission } from '../MemberListItemPermission';
 import { data } from './testData';
 

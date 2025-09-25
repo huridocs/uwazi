@@ -5,7 +5,7 @@
 
 import { ClientEntitySchema, ClientPropertySchema } from "app/V2/shared/types.js";
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
@@ -13,7 +13,7 @@ import {
   getFormValue,
 } from '../sidepanelFunctions';
 
-import { EntitySuggestionType } from 'shared/types/suggestionType.js';
+import { EntitySuggestionType } from '#shared/types/suggestionType.js';
 
 jest.mock('V2/api/entities', () => ({
   formatter: {

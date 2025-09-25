@@ -1,11 +1,11 @@
-import { appContext } from 'app/utils/AppContext.js';
-import testingDB, { DBFixture } from 'api/utils/testing_db.js';
-import { testingTenants } from 'app/utils/testingTenants.js';
-import { elasticTesting } from 'app/utils/elastic_testing.js';
-import { UserInContextMockFactory } from 'app/utils/testingUserInContext.js';
+import { appContext } from '#app/utils/AppContext.js';
+import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingTenants } from '#app/utils/testingTenants.js';
+import { elasticTesting } from '#app/utils/elastic_testing.js';
+import { UserInContextMockFactory } from '#app/utils/testingUserInContext.js';
 
 import { setupTestUploadedPaths } from '../../files/index.js';
-import { UserSchema } from 'shared/types/userType.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;

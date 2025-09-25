@@ -8,18 +8,18 @@ import * as filesApi from '../files/filesystem.js';
 
 import * as processDocumentApi from '../files/processDocument.js';
 
-import { tenants } from 'api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
 
-import settings from 'api/settings/settings.js';
+import settings from '#api/settings/settings.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Readable } from 'stream';
 
-import request from 'shared/JSONRequest.js';
+import request from '#shared/JSONRequest.js';
 
 import * as sockets from '../socketio/setupSockets.js';
 
-import * as handleError from 'app/utils/handleError.js';
+import * as handleError from '#app/utils/handleError.js';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';

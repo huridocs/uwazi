@@ -1,27 +1,27 @@
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
-import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema.js';
+import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 
-import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType.js';
+import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
 import { EventsBus } from '../eventsbus.js';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 
-import { TaskManager } from 'api/services/tasksmanager/TaskManager.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';
 import { ATExternalAPI } from './infrastructure/ATExternalAPI';

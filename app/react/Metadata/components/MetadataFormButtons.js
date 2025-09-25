@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from '../../Multireducer.js';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
-import { Translate, I18NLink } from 'app/I18N/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { Translate, I18NLink } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 
 import { ShareButton } from '../../Permissions/components/ShareButton.js';

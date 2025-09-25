@@ -1,11 +1,11 @@
 
 import { files } from '../../files/index.js';
 
-import translations from 'api/i18n/translations.js';
+import translations from '#api/i18n/translations.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TemplateSchema } from 'shared/types/templateType.js';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import templates from '../templates';
 import fixtures, {
   propertyA,

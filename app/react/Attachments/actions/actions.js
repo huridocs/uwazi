@@ -3,11 +3,11 @@ import superagent from 'superagent';
 
 import { APIURL } from '../../config.js.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';
-import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions.js';
-import api from 'app/utils/api.js';
-import { RequestParams } from 'app/utils/RequestParams.js';
+import { updateEntity, selectSingleDocument } from '#app/Library/actions/libraryActions.js';
+import api from '#app/utils/api.js';
+import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as basicReducerActions } from '../../BasicReducer/index.js';
-import { t } from 'app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
 
 import * as types from './actionTypes';
 

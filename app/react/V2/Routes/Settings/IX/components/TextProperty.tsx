@@ -2,7 +2,7 @@ import React from 'react';
 import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
 import { ClientEntitySchema, ClientTemplateSchema } from "app/V2/shared/types.js";
 

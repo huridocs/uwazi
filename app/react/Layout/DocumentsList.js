@@ -2,20 +2,20 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { toUrlParams } from 'shared/JSONRequest.js';
+import { toUrlParams } from '#shared/JSONRequest.js';
 import rison from '@huridocs/rison';
-import { SearchBar } from 'app/Library/components/SearchBar.js';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
 import ConnectionSearchBar from '../../ConnectionsList/components/SearchBar.js';
 import { Loader } from '../../components/Elements/Loader.js';
 import Footer from '../../App/Footer.js';
 
-import { NeedAuthorization } from 'app/Auth/index.js';
-import { t, Translate } from 'app/I18N/index.js';
+import { NeedAuthorization } from '#app/Auth/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { DocumentCounter } from '../../Layout/DocumentCounter.js';
 import { Icon } from 'UI';
 import { withRouter } from '../../componentWrappers.js';
-import { LibraryHeader } from 'app/Library/components/LibraryHeader.js';
-import { risonDecodeOrIgnore } from 'api/utils/index.js';
+import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
+import { risonDecodeOrIgnore } from '#api/utils/index.js';
 import Welcome from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
 import blankState from '../Library/helpers/blankState.js';

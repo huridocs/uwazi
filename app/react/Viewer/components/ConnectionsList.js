@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t, Translate } from 'app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Icon } from 'UI';
 import { Warning } from '../../Layout.js';
-import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions.js';
+import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
 import Connection from './Connection';
-import { sortTextSelections } from 'app/utils/sortTextSelections';
+import { sortTextSelections } from '#app/utils/sortTextSelections';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from '../odm/index.js';
-import { UserGroupSchema } from 'shared/types/userGroupType.js';
+import { UserGroupSchema } from '#shared/types/userGroupType.js';
 
 const propsWithDBSpecifics = {
   name: { type: String, index: true },

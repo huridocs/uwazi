@@ -15,26 +15,26 @@ import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 
-import { Translate } from 'app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 
-import { advancedSort } from 'app/utils/advancedSort.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 
 import { ClientTranslationSchema } from "app/V2/shared/types.js";
 
-import { InputField } from 'app/V2/Components/Forms.js';
+import { InputField } from '#app/V2/Components/Forms.js';
 
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '../../../Components/UI/index.js';
-import * as translationsAPI from 'api/translations/index.js';
-import * as settingsAPI from 'api/settings/index.js';
+import * as translationsAPI from '#api/translations/index.js';
+import * as settingsAPI from '#api/settings/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
 
-import { availableLanguages } from 'shared/language/index.js';
+import { availableLanguages } from '#shared/language/index.js';
 
-import { Settings } from 'shared/types/settingsType.js';
+import { Settings } from '#shared/types/settingsType.js';
 
-import { FetchResponseError } from 'shared/JSONRequest.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill.js';
 
 const editTranslationsLoader =

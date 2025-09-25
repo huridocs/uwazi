@@ -4,7 +4,7 @@ import { promisify } from 'util';
 
 import { legacyLogger } from '../log.js';
 import { config } from '../config.js';
-import testingDB from 'api/utils/testing_db.js';
+import testingDB from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import fixtures, { docId1, docId4 } from './fixtures.js';
 
