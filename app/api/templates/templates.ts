@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
@@ -47,6 +48,7 @@ import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatch
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
 import { TemplateValidationService } from './validation/TemplateValidationService';
 import * as v2 from './v2_support';
@@ -474,6 +476,21 @@ export default {
   },
 
   async setAsDefault(_id: string) {
+    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2SetTemplateAsDefaultUseCase;
+    if (v2CreateTemplateUseCase) {
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+
+      const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
+
+      const output = await useCase.execute({ templateId: _id.toString() });
+
+      return [
+        TemplateMapper.toSchema(output.current),
+        output.previous && TemplateMapper.toSchema(output.previous),
+      ];
+    }
+
     const [templateToBeDefault] = await this.get({ _id });
     const [currentDefault] = await this.get({ _id: { $nin: [_id] }, default: true });
 

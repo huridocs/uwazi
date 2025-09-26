@@ -1,5 +1,10 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
+import { ResultType } from 'api/common.v2/contracts/Result';
+import {
+  DefaultTemplateNotFoundError,
+  TemplateDoesNotExistError,
+} from 'api/core/domain/template/errors';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
@@ -27,4 +32,6 @@ export interface TemplatesDataSource {
   update(template: Template): Promise<void>;
   isPropertyUnique(property: Property): Promise<boolean>;
   isTemplateUnique(template: Template): Promise<boolean>;
+  getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>>;
+  getByIdV2(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>>;
 }

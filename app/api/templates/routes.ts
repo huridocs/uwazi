@@ -2,6 +2,7 @@ import settings from 'api/settings';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
 import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
+import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, validation } from '../utils';
 import templates from './templates';
@@ -35,18 +36,7 @@ export default (app: Application) => {
         },
       },
     }),
-    async (req, res, next) => {
-      try {
-        const [newDefault, oldDefault] = await templates.setAsDefault(req.body._id.toString());
-        req.sockets.emitToCurrentTenant('templateChange', newDefault);
-        if (oldDefault) {
-          req.sockets.emitToCurrentTenant('templateChange', oldDefault);
-        }
-        res.json(newDefault);
-      } catch (err) {
-        next(err);
-      }
-    }
+    SetTemplateAsDefaultController.createHandler()
   );
 
   app.get('/api/templates', (_req, res, next) => {
