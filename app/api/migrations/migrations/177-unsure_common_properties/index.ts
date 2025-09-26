@@ -28,7 +28,7 @@ export default {
   description:
     'Ensure Common Properties are present in every Template and fix Property name inconsistency',
 
-  reindex: true,
+  reindex: false,
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
