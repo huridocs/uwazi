@@ -275,10 +275,11 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
-        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-        : `title:(${escapedText}*)`
-        } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && fieldName
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
+      } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
@@ -359,14 +360,17 @@ const TextInput = ({
   } = useFormContext();
 
   // Register the field for non-date fields
-  const fieldRegistration = property.type !== 'date' ? register('field', {
-    required: property.required || property.name === 'title',
-  }) : {
-    onChange: undefined,
-    onBlur: undefined,
-    name: 'field',
-    ref: undefined,
-  };
+  const fieldRegistration =
+    property.type !== 'date'
+      ? register('field', {
+          required: property.required || property.name === 'title',
+        })
+      : {
+          onChange: undefined,
+          onBlur: undefined,
+          name: 'field',
+          ref: undefined,
+        };
 
   const selectionError = useAtomValue(selectionErrorAtom);
   const templateId = suggestion?.entityTemplateId;

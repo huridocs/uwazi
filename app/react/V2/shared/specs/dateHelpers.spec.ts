@@ -31,101 +31,119 @@ describe('Date formatting helpers', () => {
   describe('parseLocalizedDate', () => {
     describe('Greek date parsing', () => {
       it.each`
-        dateString              | language | expectedTimestamp
-        ${'18ης Ιουλίου 2025'} | ${'el'}  | ${1752814800}
-        ${'18ης Ιουλίου 2025'} | ${'ell'} | ${1752814800}
-        ${'18ης Ιουλίου 2025'} | ${'greek'} | ${1752814800}
-        ${'18ης Ιουλίου 2025'} | ${'gre'}  | ${1752814800}
-        ${'18 Ιουλίου 2025'}   | ${'el'}   | ${1752814800}
-        ${'1η Ιανουαρίου 2025'} | ${'el'} | ${1735707600}
-        ${'1ος Ιανουαρίου 2025'} | ${'el'} | ${1735707600}
-      `('should parse Greek date "$dateString" with language "$language"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        dateString               | language   | expectedTimestamp
+        ${'18ης Ιουλίου 2025'}   | ${'el'}    | ${1752814800}
+        ${'18ης Ιουλίου 2025'}   | ${'ell'}   | ${1752814800}
+        ${'18ης Ιουλίου 2025'}   | ${'greek'} | ${1752814800}
+        ${'18ης Ιουλίου 2025'}   | ${'gre'}   | ${1752814800}
+        ${'18 Ιουλίου 2025'}     | ${'el'}    | ${1752814800}
+        ${'1η Ιανουαρίου 2025'}  | ${'el'}    | ${1735707600}
+        ${'1ος Ιανουαρίου 2025'} | ${'el'}    | ${1735707600}
+      `(
+        'should parse Greek date "$dateString" with language "$language"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('English date parsing', () => {
       it.each`
-        dateString        | language  | expectedTimestamp
-        ${'18th July 2025'} | ${'en'} | ${1752814800}
-        ${'18th July 2025'} | ${'eng'} | ${1752814800}
-        ${'18th July 2025'} | ${'english'} | ${1752814800}
-        ${'18 July 2025'} | ${'en'}   | ${1752814800}
-        ${'July 18, 2025'} | ${'en'}  | ${1752814800}
-        ${'1st January 2025'} | ${'en'} | ${1735707600}
-        ${'2nd January 2025'} | ${'en'} | ${1735794000}
-        ${'3rd January 2025'} | ${'en'} | ${1735880400}
-        ${'4th January 2025'} | ${'en'} | ${1735966800}
-      `('should parse English date "$dateString" with language "$language"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        dateString            | language     | expectedTimestamp
+        ${'18th July 2025'}   | ${'en'}      | ${1752814800}
+        ${'18th July 2025'}   | ${'eng'}     | ${1752814800}
+        ${'18th July 2025'}   | ${'english'} | ${1752814800}
+        ${'18 July 2025'}     | ${'en'}      | ${1752814800}
+        ${'July 18, 2025'}    | ${'en'}      | ${1752814800}
+        ${'1st January 2025'} | ${'en'}      | ${1735707600}
+        ${'2nd January 2025'} | ${'en'}      | ${1735794000}
+        ${'3rd January 2025'} | ${'en'}      | ${1735880400}
+        ${'4th January 2025'} | ${'en'}      | ${1735966800}
+      `(
+        'should parse English date "$dateString" with language "$language"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('Spanish date parsing', () => {
       it.each`
-        dateString              | language   | expectedTimestamp
-        ${'18 de julio de 2025'} | ${'es'}   | ${1752814800}
-        ${'18 de julio de 2025'} | ${'spa'}  | ${1752814800}
-        ${'18 de julio de 2025'} | ${'spanish'} | ${1752814800}
-        ${'18 de julio de 2025'} | ${'español'} | ${1752814800}
-        ${'18º de julio de 2025'} | ${'es'}  | ${1752814800}
-        ${'1ª de enero de 2025'} | ${'es'}   | ${1735707600}
-      `('should parse Spanish date "$dateString" with language "$language"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        dateString                | language     | expectedTimestamp
+        ${'18 de julio de 2025'}  | ${'es'}      | ${1752814800}
+        ${'18 de julio de 2025'}  | ${'spa'}     | ${1752814800}
+        ${'18 de julio de 2025'}  | ${'spanish'} | ${1752814800}
+        ${'18 de julio de 2025'}  | ${'español'} | ${1752814800}
+        ${'18º de julio de 2025'} | ${'es'}      | ${1752814800}
+        ${'1ª de enero de 2025'}  | ${'es'}      | ${1735707600}
+      `(
+        'should parse Spanish date "$dateString" with language "$language"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('French date parsing', () => {
       it.each`
-        dateString              | language    | expectedTimestamp
-        ${'18 juillet 2025'}   | ${'fr'}     | ${1752814800}
-        ${'18 juillet 2025'}   | ${'fra'}    | ${1752814800}
-        ${'18 juillet 2025'}    | ${'french'} | ${1752814800}
+        dateString              | language      | expectedTimestamp
+        ${'18 juillet 2025'}    | ${'fr'}       | ${1752814800}
+        ${'18 juillet 2025'}    | ${'fra'}      | ${1752814800}
+        ${'18 juillet 2025'}    | ${'french'}   | ${1752814800}
         ${'18 juillet 2025'}    | ${'français'} | ${1752814800}
-        ${'18ème juillet 2025'} | ${'fr'}    | ${1752814800}
-        ${'1er janvier 2025'}  | ${'fr'}     | ${1735707600}
-        ${'1ère janvier 2025'} | ${'fr'}     | ${1735707600}
-        ${'2ème janvier 2025'} | ${'fr'}     | ${1735794000}
-      `('should parse French date "$dateString" with language "$language"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        ${'18ème juillet 2025'} | ${'fr'}       | ${1752814800}
+        ${'1er janvier 2025'}   | ${'fr'}       | ${1735707600}
+        ${'1ère janvier 2025'}  | ${'fr'}       | ${1735707600}
+        ${'2ème janvier 2025'}  | ${'fr'}       | ${1735794000}
+      `(
+        'should parse French date "$dateString" with language "$language"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('German date parsing', () => {
       it.each`
-        dateString        | language   | expectedTimestamp
-        ${'18. Juli 2025'} | ${'de'}   | ${1752814800}
-        ${'18. Juli 2025'} | ${'deu'}  | ${1752814800}
-        ${'18. Juli 2025'} | ${'ger'}  | ${1752814800}
-        ${'18. Juli 2025'} | ${'german'} | ${1752814800}
-        ${'18. Juli 2025'} | ${'deutsch'} | ${1752814800}
-        ${'18 Juli 2025'}  | ${'de'}   | ${1752814800}
-        ${'1. Januar 2025'} | ${'de'}  | ${1735707600}
-        ${'2. Januar 2025'} | ${'de'}  | ${1735794000}
-      `('should parse German date "$dateString" with language "$language"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        dateString          | language     | expectedTimestamp
+        ${'18. Juli 2025'}  | ${'de'}      | ${1752814800}
+        ${'18. Juli 2025'}  | ${'deu'}     | ${1752814800}
+        ${'18. Juli 2025'}  | ${'ger'}     | ${1752814800}
+        ${'18. Juli 2025'}  | ${'german'}  | ${1752814800}
+        ${'18. Juli 2025'}  | ${'deutsch'} | ${1752814800}
+        ${'18 Juli 2025'}   | ${'de'}      | ${1752814800}
+        ${'1. Januar 2025'} | ${'de'}      | ${1735707600}
+        ${'2. Januar 2025'} | ${'de'}      | ${1735794000}
+      `(
+        'should parse German date "$dateString" with language "$language"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('Numeric date formats', () => {
       it.each`
-        dateString    | language | expectedTimestamp
-        ${'2025-07-18'} | ${'en'} | ${1752814800}
-        ${'18/07/2025'} | ${'en'} | ${1752814800}
-        ${'07/18/2025'} | ${'en'} | ${1752814800}
-        ${'18.07.2025'} | ${'en'} | ${1752814800}
-        ${'8.07.2025'}   | ${'en'} | ${1751950800}
-        ${'2025.07.18'} | ${'en'} | ${1752814800}
-        ${'2025/07/18'} | ${'en'} | ${1752814800}
-      `('should parse numeric date "$dateString"', ({ dateString, language, expectedTimestamp }) => {
-        const result = parseLocalizedDate(dateString, language);
-        expect(result).toBe(expectedTimestamp);
-      });
+        dateString      | language | expectedTimestamp
+        ${'2025-07-18'} | ${'en'}  | ${1752814800}
+        ${'18/07/2025'} | ${'en'}  | ${1752814800}
+        ${'07/18/2025'} | ${'en'}  | ${1752814800}
+        ${'18.07.2025'} | ${'en'}  | ${1752814800}
+        ${'8.07.2025'}  | ${'en'}  | ${1751950800}
+        ${'2025.07.18'} | ${'en'}  | ${1752814800}
+        ${'2025/07/18'} | ${'en'}  | ${1752814800}
+      `(
+        'should parse numeric date "$dateString"',
+        ({ dateString, language, expectedTimestamp }) => {
+          const result = parseLocalizedDate(dateString, language);
+          expect(result).toBe(expectedTimestamp);
+        }
+      );
     });
 
     describe('Edge cases', () => {

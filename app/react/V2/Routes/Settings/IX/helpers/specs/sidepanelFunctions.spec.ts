@@ -18,7 +18,7 @@ jest.mock('V2/api/entities', () => ({
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
   save: jest.fn().mockResolvedValue({ success: true }),
-  coerceValue: jest.fn().mockImplementation((text, type, language) => {
+  coerceValue: jest.fn().mockImplementation(async (text, type, _language) => {
     if (!text || text === '') {
       return Promise.resolve(undefined);
     }
@@ -27,7 +27,7 @@ jest.mock('V2/api/entities', () => ({
     }
     if (type === 'numeric') {
       const num = parseFloat(text);
-      if (isNaN(num)) {
+      if (Number.isNaN(num)) {
         return Promise.resolve(undefined);
       }
       return Promise.resolve({ success: true, value: num });
@@ -531,7 +531,7 @@ describe('sidepanelFunctions', () => {
         },
       ])('$description', async ({ text, language, expectedSuccess, expectedTimestamp }) => {
         const result = await coerceValue('date', text, language);
-        
+
         if (expectedSuccess) {
           expect(result).toEqual({
             success: true,
@@ -580,7 +580,7 @@ describe('sidepanelFunctions', () => {
         },
       ])('$description', async ({ text, language, expectedSuccess, expectedValue }) => {
         const result = await coerceValue('numeric', text, language);
-        
+
         if (expectedSuccess) {
           expect(result).toEqual({
             success: true,

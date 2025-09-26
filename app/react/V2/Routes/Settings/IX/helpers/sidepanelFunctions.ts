@@ -1,7 +1,7 @@
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { secondsToISODate, parseLocalizedDate } from 'V2/shared/dateHelpers';
+import { parseLocalizedDate } from 'V2/shared/dateHelpers';
 import * as entitiesAPI from 'V2/api/entities';
 import * as filesAPI from 'V2/api/files';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -27,7 +27,6 @@ const getFormValue = (
   if (suggestion.propertyName !== 'title' && entity.metadata) {
     const entityMetadata = entity.metadata[suggestion.propertyName];
     value = entityMetadata?.length ? entityMetadata[0].value : '';
-
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value) || [];
@@ -102,7 +101,7 @@ const coerceValue = async (
     if (timestamp !== null) {
       return { success: true, value: timestamp };
     }
-    
+
     // Fallback to backend API
     return entitiesAPI.coerceValue(text!, 'date', language);
   }
