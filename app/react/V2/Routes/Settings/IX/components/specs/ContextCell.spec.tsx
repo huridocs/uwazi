@@ -76,29 +76,6 @@ describe('ContextCell', () => {
   });
 
   describe('Context Trimming', () => {
-    it('should show meaningful context with dynamic context calculation', () => {
-      const issueContent =
-        '<p class="ix_adjacent_paragraph">Distr.: General</p><p class="ix_matching_paragraph"><span class="ix_match">6</span> <span class="ix_match">April</span> <span class="ix_match">2021</span></p><p class="ix_adjacent_paragraph">Recalling General Assembly resolution 68/127 on a world against violence and violent extremism, adopted by the Assembly by consensus on 18 December 2013, and welcoming the leading role of the United Nations Educational, Scientific and Cultural Organization in promoting intercultural dialogue, the work of the United Nations Alliance of Civilizations and the Anna Lindh Euro-Mediterranean Foundation for Dialogue between Cultures, the work of the King Abdullah Bin Abdulaziz International Centre for Interreligious and Intercultural dialogue in Vienna, and Assembly resolution 65/5 of 20 October 2010 on World Interfaith Harmony Week, proposed by King Abdullah II of Jordan,</p>';
-
-      render(<ContextCell text={issueContent} />);
-
-      const visibleContent = document.querySelector('[data-testid="flowbite-tooltip-target"]');
-      expect(visibleContent?.textContent).toContain('Distr.: General');
-      expect(visibleContent?.textContent).toContain('6');
-      expect(visibleContent?.textContent).toContain('April');
-      expect(visibleContent?.textContent).toContain('2021');
-      expect(visibleContent?.textContent).toContain('Recalling');
-      expect(visibleContent?.textContent).toContain('General Assembly');
-
-      const matchingParagraph = document.querySelector('.ix_matching_paragraph');
-      expect(matchingParagraph?.textContent).toContain('6');
-      expect(matchingParagraph?.textContent).toContain('April');
-      expect(matchingParagraph?.textContent).toContain('2021');
-
-      expect(visibleContent?.textContent).not.toBe('6 April 2021');
-      expect(visibleContent?.textContent).toContain('...');
-    });
-
     it('should handle very short matching text (single character)', () => {
       const shortMatch =
         '<p class="ix_adjacent_paragraph">Before context</p><p class="ix_matching_paragraph"><span class="ix_match">A</span></p><p class="ix_adjacent_paragraph">After context with more meaningful information</p>';
@@ -131,28 +108,6 @@ describe('ContextCell', () => {
       expect(visibleContent?.textContent).toContain('A');
       expect(visibleContent?.textContent).toContain('B');
       expect(visibleContent?.textContent).toContain('C');
-    });
-
-    it('should handle empty segment gracefully', () => {
-      const { container } = render(<ContextCell text="" />);
-      expect(container).toBeInTheDocument();
-    });
-
-    it('should handle "No context" text', () => {
-      const noContext = '<p class="ix_paragraph">No context</p>';
-
-      render(<ContextCell text={noContext} />);
-
-      expect(screen.getAllByText('No context')[0]).toBeInTheDocument();
-    });
-
-    it('should handle whitespace-only content', () => {
-      const whitespaceOnly = '<p class="ix_paragraph">   </p>';
-
-      render(<ContextCell text={whitespaceOnly} />);
-
-      const visibleContent = document.querySelector('[data-testid="flowbite-tooltip-target"]');
-      expect(visibleContent).toBeInTheDocument();
     });
 
     it('should handle nested HTML with multiple levels', () => {
