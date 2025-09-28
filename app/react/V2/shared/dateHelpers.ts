@@ -259,50 +259,53 @@ const parseLocalizedDate = (dateString: string | undefined, language: string = '
   // Try parsing with Spanish cleaned date first (for Spanish locale)
   if (locale === 'es') {
     const spanishResult = formats.find(format => {
-      const parsed = DateTime.fromFormat(spanishCleanedDate, format, { locale });
+      const parsed = DateTime.fromFormat(spanishCleanedDate, format, { locale, zone: 'UTC' });
       return parsed.isValid;
     });
     if (spanishResult) {
-      const parsed = DateTime.fromFormat(spanishCleanedDate, spanishResult, { locale });
+      const parsed = DateTime.fromFormat(spanishCleanedDate, spanishResult, {
+        locale,
+        zone: 'UTC',
+      });
       return parsed.toSeconds();
     }
   }
 
   // Try parsing with cleaned date first
   const cleanedResult = formats.find(format => {
-    const parsed = DateTime.fromFormat(cleanedDate, format, { locale });
+    const parsed = DateTime.fromFormat(cleanedDate, format, { locale, zone: 'UTC' });
     return parsed.isValid;
   });
   if (cleanedResult) {
-    const parsed = DateTime.fromFormat(cleanedDate, cleanedResult, { locale });
+    const parsed = DateTime.fromFormat(cleanedDate, cleanedResult, { locale, zone: 'UTC' });
     return parsed.toSeconds();
   }
 
   // Try with original string
   const originalResult = formats.find(format => {
-    const parsed = DateTime.fromFormat(dateString, format, { locale });
+    const parsed = DateTime.fromFormat(dateString, format, { locale, zone: 'UTC' });
     return parsed.isValid;
   });
   if (originalResult) {
-    const parsed = DateTime.fromFormat(dateString, originalResult, { locale });
+    const parsed = DateTime.fromFormat(dateString, originalResult, { locale, zone: 'UTC' });
     return parsed.toSeconds();
   }
 
   // Try with English locale as fallback
   if (locale !== 'en') {
     const englishResult = formats.find(format => {
-      const parsed = DateTime.fromFormat(cleanedDate, format, { locale: 'en' });
+      const parsed = DateTime.fromFormat(cleanedDate, format, { locale: 'en', zone: 'UTC' });
       return parsed.isValid;
     });
     if (englishResult) {
-      const parsed = DateTime.fromFormat(cleanedDate, englishResult, { locale: 'en' });
+      const parsed = DateTime.fromFormat(cleanedDate, englishResult, { locale: 'en', zone: 'UTC' });
       return parsed.toSeconds();
     }
   }
 
   // Fallback to ISO parsing
   try {
-    const parsed = DateTime.fromISO(dateString);
+    const parsed = DateTime.fromISO(dateString, { zone: 'UTC' });
     if (parsed.isValid) {
       return parsed.toSeconds();
     }

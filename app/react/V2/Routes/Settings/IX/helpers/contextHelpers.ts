@@ -1,4 +1,7 @@
 import React from 'react';
+import sanitizeHtml from 'sanitize-html';
+import { parseDocument } from 'htmlparser2';
+
 import { TableSuggestion } from '../types';
 
 export const BASE_CONTEXT = 50;
@@ -55,6 +58,28 @@ export const calculateOptimalContextLength = (
   return Math.min(maxContext, 150);
 };
 
+function extractTextFromHtml(html: string): string {
+  const sanitizedHtml = sanitizeHtml(html, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: 'discard',
+  });
+
+  const document = parseDocument(sanitizedHtml);
+
+  const extractTextFromNode = (node: any): string => {
+    if (node.type === 'text') {
+      return node.data || '';
+    }
+    if (node.children) {
+      return node.children.map(extractTextFromNode).join('');
+    }
+    return '';
+  };
+
+  return extractTextFromNode(document);
+}
+
 export const analyzeContentForTruncation = (
   htmlContent: string
 ): {
@@ -62,7 +87,7 @@ export const analyzeContentForTruncation = (
   optimalLength: number;
   hasLongContent: boolean;
 } => {
-  const textLength = htmlContent.replace(/<[^>]*>/g, '').length;
+  const textLength = extractTextFromHtml(htmlContent).length;
   const hasLongContent = textLength > 200;
   const shouldTruncate = textLength > 100 || hasLongContent;
   let optimalLength = BASE_CONTEXT;

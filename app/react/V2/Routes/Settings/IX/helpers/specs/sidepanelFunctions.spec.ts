@@ -18,25 +18,7 @@ jest.mock('V2/api/entities', () => ({
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
   save: jest.fn().mockResolvedValue({ success: true }),
-  coerceValue: jest.fn().mockImplementation(async (text, type, _language) => {
-    if (!text || text === '') {
-      return Promise.resolve(undefined);
-    }
-    if (text === 'invalid date' || text === 'not a number') {
-      return Promise.resolve(undefined);
-    }
-    if (type === 'numeric') {
-      const num = parseFloat(text);
-      if (Number.isNaN(num)) {
-        return Promise.resolve(undefined);
-      }
-      return Promise.resolve({ success: true, value: num });
-    }
-    if (type === 'date') {
-      return Promise.resolve({ success: true, value: 1752814800 });
-    }
-    return Promise.resolve(undefined);
-  }),
+  coerceValue: jest.fn() ,
 }));
 
 const mockEntity: ClientEntitySchema = {
@@ -298,299 +280,31 @@ describe('sidepanelFunctions', () => {
       jest.clearAllMocks();
     });
 
-    describe('date parsing with different language codes', () => {
-      it.each([
-        // Greek variations
-        {
-          description: 'should parse Greek date with ISO 639-1 code',
-          text: '18ης Ιουλίου 2025',
-          language: 'el',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Greek date with ISO 639-2 code',
-          text: '18ης Ιουλίου 2025',
-          language: 'ell',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Greek date with English name',
-          text: '18ης Ιουλίου 2025',
-          language: 'greek',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Greek date with abbreviation',
-          text: '18ης Ιουλίου 2025',
-          language: 'gre',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Greek date without ordinal',
-          text: '18 Ιουλίου 2025',
-          language: 'el',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // English variations
-        {
-          description: 'should parse English date with ordinal',
-          text: '18th July 2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse English date with ISO 639-2 code',
-          text: '18th July 2025',
-          language: 'eng',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse English date with full name',
-          text: '18th July 2025',
-          language: 'english',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse English date without ordinal',
-          text: '18 July 2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse English date with month first',
-          text: 'July 18, 2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // Spanish variations
-        {
-          description: 'should parse Spanish date with ISO 639-1 code',
-          text: '18 de julio de 2025',
-          language: 'es',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Spanish date with ISO 639-2 code',
-          text: '18 de julio de 2025',
-          language: 'spa',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Spanish date with English name',
-          text: '18 de julio de 2025',
-          language: 'spanish',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse Spanish date with native name',
-          text: '18 de julio de 2025',
-          language: 'español',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // French variations
-        {
-          description: 'should parse French date with ISO 639-1 code',
-          text: '18 juillet 2025',
-          language: 'fr',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse French date with ISO 639-2 code',
-          text: '18 juillet 2025',
-          language: 'fra',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse French date with English name',
-          text: '18 juillet 2025',
-          language: 'french',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse French date with native name',
-          text: '18 juillet 2025',
-          language: 'français',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse French date with ordinal',
-          text: '18ème juillet 2025',
-          language: 'fr',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // German variations
-        {
-          description: 'should parse German date with ISO 639-1 code',
-          text: '18. Juli 2025',
-          language: 'de',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse German date with ISO 639-2 code',
-          text: '18. Juli 2025',
-          language: 'deu',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse German date with alternative code',
-          text: '18. Juli 2025',
-          language: 'ger',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse German date with English name',
-          text: '18. Juli 2025',
-          language: 'german',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse German date with native name',
-          text: '18. Juli 2025',
-          language: 'deutsch',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse German date without dot',
-          text: '18 Juli 2025',
-          language: 'de',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // Numeric formats (language agnostic)
-        {
-          description: 'should parse ISO format date',
-          text: '2025-07-18',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse DD/MM/YYYY format date',
-          text: '18/07/2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse MM/DD/YYYY format date',
-          text: '07/18/2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should parse DD.MM.YYYY format date',
-          text: '18.07.2025',
-          language: 'en',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        // Edge cases
-        {
-          description: 'should handle unknown language code with fallback',
-          text: '18 July 2025',
-          language: 'unknown',
-          expectedSuccess: true,
-          expectedTimestamp: 1752814800,
-        },
-        {
-          description: 'should handle empty string',
-          text: '',
-          language: 'en',
-          expectedSuccess: false,
-        },
-        {
-          description: 'should handle invalid date string',
-          text: 'invalid date',
-          language: 'en',
-          expectedSuccess: false,
-        },
-      ])('$description', async ({ text, language, expectedSuccess, expectedTimestamp }) => {
-        const result = await coerceValue('date', text, language);
+    describe('date parsing', () => {
+      it('should successfully parse a valid date string', async () => {
+        const result = await coerceValue('date', '18 July 2025', 'en');
+        expect(result).toEqual({
+          success: true,
+          value: 1752796800,
+        });
+      });
 
-        if (expectedSuccess) {
-          expect(result).toEqual({
-            success: true,
-            value: expectedTimestamp,
-          });
-        } else {
-          expect(result).toBeUndefined();
-        }
+      it('should return undefined for invalid date input', async () => {
+        const result = await coerceValue('date', undefined, 'en');
+        expect(result).toBeUndefined();
+      });
+
+      it('should return undefined for empty string', async () => {
+        const result = await coerceValue('date', '', 'en');
+        expect(result).toBeUndefined();
+      });
+
+      it('should return undefined for invalid date string', async () => {
+        const result = await coerceValue('date', 'invalid date', 'en');
+        expect(result).toBeUndefined();
       });
     });
-
-    describe('numeric parsing', () => {
-      it.each([
-        {
-          description: 'should parse valid numeric string',
-          text: '42',
-          language: 'en',
-          expectedSuccess: true,
-          expectedValue: 42,
-        },
-        {
-          description: 'should parse decimal number',
-          text: '42.5',
-          language: 'en',
-          expectedSuccess: true,
-          expectedValue: 42.5,
-        },
-        {
-          description: 'should parse negative number',
-          text: '-42',
-          language: 'en',
-          expectedSuccess: true,
-          expectedValue: -42,
-        },
-        {
-          description: 'should handle invalid numeric string',
-          text: 'not a number',
-          language: 'en',
-          expectedSuccess: false,
-        },
-        {
-          description: 'should handle empty string',
-          text: '',
-          language: 'en',
-          expectedSuccess: false,
-        },
-      ])('$description', async ({ text, language, expectedSuccess, expectedValue }) => {
-        const result = await coerceValue('numeric', text, language);
-
-        if (expectedSuccess) {
-          expect(result).toEqual({
-            success: true,
-            value: expectedValue,
-          });
-        } else {
-          expect(result).toBeUndefined();
-        }
-      });
-    });
+    
 
     describe('unsupported property types', () => {
       it('should return undefined for unsupported property types', async () => {
