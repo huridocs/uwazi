@@ -20,6 +20,17 @@ jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
     secrets: inherit
+    with:
+      is_pr: ${{ github.event_name == 'pull_request' }}
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_body: ${{ github.event.pull_request.body }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      ref: ${{ github.ref }}
+      branch: ${{ github.ref_name }}
+      event_name: ${{ github.event_name }}
+      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
 
   check-types:
     needs: precheck

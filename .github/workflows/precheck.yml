@@ -2,6 +2,37 @@ name: CI Precheck
 
 on:
   workflow_call:
+    inputs:
+      is_pr:
+        required: false
+        type: boolean
+      pr_number:
+        required: false
+        type: number
+      is_draft:
+        required: false
+        type: boolean
+      pr_title:
+        required: false
+        type: string
+      pr_body:
+        required: false
+        type: string
+      head_sha:
+        required: false
+        type: string
+      ref:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      event_name:
+        required: false
+        type: string
+      is_protected_push:
+        required: false
+        type: boolean
     outputs:
       should_run:
         description: Whether downstream jobs should run
@@ -20,10 +51,21 @@ jobs:
       - name: Compute should_run
         id: compute
         uses: actions/github-script@v7
+        env:
+          INPUT_IS_PR: ${{ inputs.is_pr }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          INPUT_IS_DRAFT: ${{ inputs.is_draft }}
+          INPUT_PR_TITLE: ${{ inputs.pr_title }}
+          INPUT_PR_BODY: ${{ inputs.pr_body }}
+          INPUT_HEAD_SHA: ${{ inputs.head_sha }}
+          INPUT_REF: ${{ inputs.ref }}
+          INPUT_BRANCH: ${{ inputs.branch }}
+          INPUT_EVENT_NAME: ${{ inputs.event_name }}
+          INPUT_IS_PROTECTED_PUSH: ${{ inputs.is_protected_push }}
         with:
           script: |
-            const eventName = context.eventName;
-            const ref = context.ref || '';
+            const eventName = process.env.INPUT_EVENT_NAME || context.eventName;
+            const ref = process.env.INPUT_REF || context.ref || '';
             let shouldRun = false;
 
             function containsRunTests(text) {
@@ -45,17 +87,18 @@ jobs:
               }
             }
 
-            // Detect PR using payload and ref
+            // Detect PR using inputs, payload and ref
             const payloadPR = (context.payload && context.payload.pull_request) || null;
             const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
             const prNumberFromRef = prMatch ? Number(prMatch[1]) : undefined;
-            const prNumber = prNumberFromRef || (payloadPR && payloadPR.number) || undefined;
-            const isPR = typeof prNumber === 'number' && !Number.isNaN(prNumber);
+            const prNumberFromInput = Number(process.env.INPUT_PR_NUMBER || '') || undefined;
+            const prNumber = prNumberFromInput || prNumberFromRef || (payloadPR && payloadPR.number) || undefined;
+            const isPR = (String(process.env.INPUT_IS_PR || '') === 'true') || (typeof prNumber === 'number' && !Number.isNaN(prNumber));
 
             let hasRunTests = false;
-            let isDraft = false;
-            let branch = '';
-            let debug = { eventName, ref, isPR: false, prNumber: '', branch: '', isDraft: false, headSha: '', headMatch: false, mergeSha: '', mergeMatch: false, matchedCommitSha: '', shouldRun: false };
+            let isDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true';
+            let branch = process.env.INPUT_BRANCH || '';
+            let debug = { eventName, ref, isPR: false, prNumber: '', branch, isDraft: isDraft, headSha: '', headMatch: false, mergeSha: '', mergeMatch: false, matchedCommitSha: '', shouldRun: false };
 
             debug.isPR = isPR;
             debug.prNumber = prNumber ? String(prNumber) : '';
@@ -67,17 +110,18 @@ jobs:
                   repo: context.repo.repo,
                   pull_number: prNumber,
                 });
-                isDraft = Boolean(pr && pr.draft);
+                isDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true' ? true : Boolean(pr && pr.draft);
                 debug.isPR = isPR;
                 debug.prNumber = String(prNumber);
                 debug.isDraft = isDraft;
-                const prTitle = (pr && pr.title) || '';
-                const prBody = (pr && pr.body) || '';
+                const prTitle = process.env.INPUT_PR_TITLE || (pr && pr.title) || '';
+                const prBody = process.env.INPUT_PR_BODY || (pr && pr.body) || '';
                 if (containsRunTests(prTitle) || containsRunTests(prBody)) {
                   hasRunTests = true;
                 }
                 const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
-                const headSha = payloadHeadSha || (pr && pr.head && pr.head.sha) || '';
+                const inputHeadSha = process.env.INPUT_HEAD_SHA || '';
+                const headSha = inputHeadSha || payloadHeadSha || (pr && pr.head && pr.head.sha) || '';
                 const headMsg = await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
@@ -118,13 +162,13 @@ jobs:
             } else {
               // Treat as push-like: derive branch from ref
               const m = /^refs\/heads\/(.+)$/.exec(ref || '');
-              branch = m ? m[1] : '';
-              const isProtectedBranch = branch === 'development' || branch === 'production';
+              branch = branch || (m ? m[1] : '');
+              const isProtectedBranch = String(process.env.INPUT_IS_PROTECTED_PUSH || '') === 'true' || branch === 'development' || branch === 'production';
               if (isProtectedBranch) {
                 shouldRun = true; // always run on direct pushes to protected branches
               } else {
                 // Try context.sha first, fall back to payload
-                const headSha = context.sha || (context.payload && context.payload.head_commit && context.payload.head_commit.id) || '';
+                const headSha = process.env.INPUT_HEAD_SHA || context.sha || (context.payload && context.payload.head_commit && context.payload.head_commit.id) || '';
                 const headMsg = await getCommitMessageBySha(headSha);
                 hasRunTests = containsRunTests(headMsg);
                 if (!hasRunTests && context.payload && Array.isArray(context.payload.commits)) {
