@@ -29,6 +29,7 @@ const fixtures = {
   templates: [
     factory.template('template1', [
       {
+        _id: factory.id('relationshipProp1'),
         name: 'relationshipProp1',
         type: 'newRelationship',
         label: 'relationshipProp1',
@@ -206,7 +207,7 @@ describe('getById()', () => {
   it('should return the template', async () => {
     const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     const result = await dataSource.getById(factory.id('template1').toString());
-    expect(result).toMatchObject({
+    expect(result.getData()).toMatchObject({
       id: factory.id('template1').toString(),
       name: 'template1',
     });

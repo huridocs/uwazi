@@ -246,7 +246,29 @@ const fixtures: DBFixture = {
     {
       _id: templateWithExtractedMetadata,
       name: 'template_with_extracted_metadata',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+      commonProperties: [
+        {
+          _id: db.id(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          name: 'creationDate',
+          label: 'Creation Date',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          name: 'editDate',
+          label: 'Modified Date',
+          type: 'date',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
         {
           _id: propertyA,

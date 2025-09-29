@@ -197,6 +197,14 @@ class TemplateDoesNotExistError extends DomainError {
     );
   }
 }
+class DefaultTemplateNotFoundError extends DomainError {
+  constructor() {
+    super(
+      'A default template is required, but none is configured in the system.',
+      'template.default_not_found'
+    );
+  }
+}
 
 class RelationshipTargetPropertyNotFoundError extends DomainError {
   constructor(propertyId: string, templateId: string) {
@@ -225,6 +233,12 @@ class NestedPropertyNotAvailableError extends DomainError {
   }
 }
 
+export class DefaultTemplateConflictError extends DomainError {
+  constructor(message: string) {
+    super(message, 'template.default_template_conflict');
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -248,4 +262,5 @@ export {
   PropertyRelationTypeMismatchError,
   PropertyInheritedTypeMismatchError,
   NestedPropertyNotAvailableError,
+  DefaultTemplateNotFoundError,
 };
