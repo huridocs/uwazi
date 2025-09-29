@@ -11,8 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  precheck:
+    uses: ./.github/workflows/precheck.yml
+
   cypress-run:
     name: Component testing
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
