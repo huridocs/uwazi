@@ -45,10 +45,11 @@ jobs:
               }
             }
 
-            // Detect PR by ref (since eventName is workflow_call for reusables)
+            // Detect PR using payload and ref
+            const payloadPR = (context.payload && context.payload.pull_request) || null;
             const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
-            const isPR = Boolean(prMatch);
-            const prNumber = prMatch ? Number(prMatch[1]) : undefined;
+            const isPR = Boolean(payloadPR) || Boolean(prMatch);
+            const prNumber = (payloadPR && payloadPR.number) || (prMatch ? Number(prMatch[1]) : undefined);
 
             let hasRunTests = false;
             let isDraft = false;
@@ -63,7 +64,7 @@ jobs:
                   pull_number: prNumber,
                 });
                 isDraft = Boolean(pr && pr.draft);
-                debug.isPR = true;
+                debug.isPR = isPR;
                 debug.prNumber = String(prNumber);
                 debug.isDraft = isDraft;
                 const prTitle = (pr && pr.title) || '';
