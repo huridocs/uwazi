@@ -122,10 +122,13 @@ jobs:
                 const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
                 const inputHeadSha = process.env.INPUT_HEAD_SHA || '';
                 const headSha = inputHeadSha || payloadHeadSha || (pr && pr.head && pr.head.sha) || '';
-                const headMsg = await getCommitMessageBySha(headSha);
+            const headMsg = await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
                 debug.headMatch = containsRunTests(headMsg);
+            if (headSha) {
+              core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
+            }
                 // Also check the merge commit for PR runs
                 const payloadMergeSha = (payloadPR && payloadPR.merge_commit_sha) || '';
                 const mergeSha = context.sha || payloadMergeSha || '';
@@ -134,6 +137,9 @@ jobs:
                 if (containsRunTests(mergeMsg)) {
                   hasRunTests = true;
                   debug.mergeMatch = true;
+                }
+                if (mergeSha) {
+                  core.info(`precheck debug: mergeMsg[0:140]=${(mergeMsg || '').slice(0,140).replace(/\n/g,' ')}`);
                 }
                 if (!hasRunTests) {
                   try {
@@ -148,6 +154,7 @@ jobs:
                       if (containsRunTests(msg)) {
                         hasRunTests = true;
                         debug.matchedCommitSha = c.sha || '';
+                        core.info(`precheck debug: matched commit ${debug.matchedCommitSha} msg[0:140]=${msg.slice(0,140).replace(/\n/g,' ')}`);
                         break;
                       }
                     }
