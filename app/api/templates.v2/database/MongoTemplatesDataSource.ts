@@ -239,8 +239,14 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
   }
 
-  async getById(id: Template['id']): Promise<Template | undefined> {
-    return (await this.getByIds([id]).first()) || undefined;
+  async getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>> {
+    const schema = await this.getCollection().findOne({ _id: new ObjectId(id) });
+
+    if (!schema) {
+      return Result.fail(new TemplateDoesNotExistError(id));
+    }
+
+    return Result.ok(TemplateMapper.toDomain(schema));
   }
 
   async incrementProcessingTracking(id: Template['id']) {
@@ -329,16 +335,6 @@ export class MongoTemplatesDataSource
     const schema = await this.getCollection().findOne({ default: true });
     if (!schema) {
       return Result.fail(new DefaultTemplateNotFoundError());
-    }
-
-    return Result.ok(TemplateMapper.toDomain(schema));
-  }
-
-  async getByIdV2(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>> {
-    const schema = await this.getCollection().findOne({ _id: ObjectId.createFromHexString(id) });
-
-    if (!schema) {
-      return Result.fail(new TemplateDoesNotExistError(id));
     }
 
     return Result.ok(TemplateMapper.toDomain(schema));

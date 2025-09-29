@@ -23,7 +23,7 @@ export interface TemplatesDataSource {
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
   getByIds(ids: Template['id'][]): ResultSet<Template>;
   getByNames(names: Template['name'][]): ResultSet<Template>;
-  getById(id: Template['id']): Promise<Template | undefined>;
+  getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>>;
   getTemplatesByPropertyName(property: Property): Promise<Template[]>;
   incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
   completeProcessing(templateId: string): Promise<void>;
@@ -33,5 +33,4 @@ export interface TemplatesDataSource {
   isPropertyUnique(property: Property): Promise<boolean>;
   isTemplateUnique(template: Template): Promise<boolean>;
   getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>>;
-  getByIdV2(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>>;
 }

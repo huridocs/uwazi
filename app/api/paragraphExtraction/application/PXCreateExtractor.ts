@@ -56,14 +56,14 @@ class PXCreateExtractor implements UseCase<Input, Output> {
       );
     }
 
-    if (!targetTemplate) {
+    if (targetTemplate.isError()) {
       throw new PXValidationError(
         PXErrorCode.TARGET_TEMPLATE_NOT_FOUND,
         `Target template with id ${input.targetTemplateId} was not found`
       );
     }
 
-    if (!sourceTemplate) {
+    if (sourceTemplate.isError()) {
       throw new PXValidationError(
         PXErrorCode.SOURCE_TEMPLATE_NOT_FOUND,
         `Source template with id ${input.sourceTemplateId} was not found`
@@ -71,8 +71,8 @@ class PXCreateExtractor implements UseCase<Input, Output> {
     }
 
     return {
-      targetTemplate,
-      sourceTemplate,
+      targetTemplate: targetTemplate.getData(),
+      sourceTemplate: sourceTemplate.getData(),
       sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
       targetRelationshipTypeId: targetRelationshipType._id.toString(),
     };

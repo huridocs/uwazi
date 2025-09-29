@@ -51,10 +51,10 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     language: LanguageISO6391,
     fullReindex = false
   ): Promise<Output> {
-    const currentTemplate = await this.deps.templatesDS.getById(input._id);
-    if (!currentTemplate) {
-      throw new Error(`Trying to update an unexistant Template: ${input._id}`);
-    }
+    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
+    // if (!currentTemplate) {
+    // throw new Error(`Trying to update an unexistant Template: ${input._id}`);
+    // }
     if (currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
