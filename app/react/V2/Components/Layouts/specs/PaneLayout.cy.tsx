@@ -86,10 +86,31 @@ describe('PaneLayout', () => {
       cy.checkA11y();
     });
 
-    it('it should have hidden inputs to switch between panes', () => {});
+    it('should change panes by swiping on the pane count dots', () => {
+      render();
+      cy.contains('Aenean ac purus nulla.').should('be.visible');
+      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
 
-    it('should render the first pane', () => {});
+      cy.get('nav').realSwipe('toLeft');
 
-    it('should swipe between panes', () => {});
+      cy.contains('Aenean ac purus nulla.').should('not.be.visible');
+      cy.contains('h2', 'This pane children has a min width').should('be.visible');
+    });
+
+    it('it should have hidden inputs for accessibility to switch between panes', () => {
+      render();
+      cy.contains('Aenean ac purus nulla.').should('be.visible');
+      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
+
+      cy.get('button[aria-label="Next"]').click({ force: true });
+
+      cy.contains('Aenean ac purus nulla.').should('not.be.visible');
+      cy.contains('h2', 'This pane children has a min width').should('be.visible');
+
+      cy.get('button[aria-label="Previous"]').click({ force: true });
+
+      cy.contains('Aenean ac purus nulla.').should('be.visible');
+      cy.contains('h2', 'This pane children has a min width').should('not.be.visible');
+    });
   });
 });

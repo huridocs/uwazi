@@ -75,13 +75,11 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="flex p-2 w-full flex-nowrap justify-around">
+        <div className="flex py-4 w-full flex-nowrap justify-center gap-4" aria-hidden>
           {children.map((child, index) => (
-            <button
+            <span
               key={child.key ?? index}
               onClick={() => gotToPane(index)}
-              type="button"
-              aria-hidden
               className={`w-2 h-2 border border-primary-300 rounded-full ${
                 currentPane === index ? 'bg-primary-500' : 'bg-transparent'
               }`}

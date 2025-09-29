@@ -158,11 +158,7 @@ const PaneLayoutDesktop = ({
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section style={{ width: widths[index] }} className="h-full min-h-0">
-            {/* tabIndex required by cypress accessibility test */}
-            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-            <div tabIndex={0} className="h-full min-h-0 overflow-auto">
-              {child}
-            </div>
+            <div className="h-full min-h-0 overflow-auto">{child}</div>
           </section>
 
           {index < children.length - 1 && (
