@@ -1,7 +1,11 @@
 import { files } from 'api/files';
 import translations from 'api/i18n/translations';
+import * as setupSockets from 'api/socketio/setupSockets';
+import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
+import { inspect } from 'util';
 import templates from '../templates';
 import fixtures, {
   propertyA,
@@ -11,17 +15,56 @@ import fixtures, {
   templateWithExtractedMetadata,
 } from './fixtures/fixtures';
 
-describe('updateExtractedMetadataProperties()', () => {
+async function updateTemplate(template: TemplateSchema, language = 'en', updateV2 = false) {
+  jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+  if (updateV2) {
+    return templates.save(template, language, true, false);
+  }
+
+  return new Promise((resolve, reject) => {
+    templates
+      .save(template, language, true, false, async error => {
+        if (error) {
+          reject(inspect(error));
+        }
+        resolve(true);
+      })
+      .catch(reject);
+  });
+}
+
+describe.each([
+  {
+    title: 'v1',
+    featureFlags: { v2UpdateTemplateUseCase: false },
+  },
+  { title: 'v2', featureFlags: { v2UpdateTemplateUseCase: true } },
+])('updateExtractedMetadataProperties $title', ({ title, featureFlags }) => {
   beforeEach(async () => {
+    const elasticIndex = `uwazi_test_index_${title}`;
+    await testingEnvironment.setUp(fixtures, elasticIndex);
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    await testingEnvironment.setUp(fixtures, 'uwazi_test_index');
+    testingTenants.mockCurrentTenant({
+      name: testingDB.dbName,
+      dbName: testingDB.dbName,
+      indexName: elasticIndex,
+      featureFlags,
+    });
   });
 
   it('should remove deleted template properties from extracted metadata on files', async () => {
     const templateToUpdate: TemplateSchema = {
       _id: templateWithExtractedMetadata,
       name: 'template_with_extracted_metadata',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        {
+          _id: testingDB.id(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
         {
           _id: propertyA.toString(),
@@ -48,7 +91,7 @@ describe('updateExtractedMetadataProperties()', () => {
       ],
     };
 
-    await templates.save(templateToUpdate, 'en');
+    await updateTemplate(templateToUpdate, 'en', featureFlags.v2UpdateTemplateUseCase);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
@@ -76,7 +119,15 @@ describe('updateExtractedMetadataProperties()', () => {
     const templateWithRenamedProps: TemplateSchema = {
       _id: templateWithExtractedMetadata,
       name: 'template_with_extracted_metadata',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        {
+          _id: testingDB.id(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
         {
           _id: propertyA.toString(),
@@ -105,7 +156,7 @@ describe('updateExtractedMetadataProperties()', () => {
       ],
     };
 
-    await templates.save(templateWithRenamedProps, 'en');
+    await updateTemplate(templateWithRenamedProps, 'en', featureFlags.v2UpdateTemplateUseCase);
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
@@ -134,6 +185,4 @@ describe('updateExtractedMetadataProperties()', () => {
       extractedMetadata: [],
     });
   });
-
-  afterAll(async () => testingEnvironment.tearDown());
 });
