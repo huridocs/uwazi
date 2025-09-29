@@ -7,6 +7,9 @@ on:
         description: Whether downstream jobs should run
         value: ${{ jobs.precheck.outputs.should_run }}
 
+permissions:
+  contents: read
+
 jobs:
   precheck:
     runs-on: ubuntu-24.04
@@ -21,13 +24,43 @@ jobs:
             const eventName = context.eventName;
             let shouldRun = false;
 
+            async function getHeadCommitMessage() {
+              try {
+                if (eventName === 'pull_request') {
+                  const sha = context.payload.pull_request.head.sha;
+                  const { data } = await github.repos.getCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: sha,
+                  });
+                  return (data && data.commit && data.commit.message) || '';
+                } else if (eventName === 'push') {
+                  return (context.payload.head_commit && context.payload.head_commit.message) || '';
+                }
+              } catch (e) {
+                return '';
+              }
+              return '';
+            }
+
+            const headMessage = await getHeadCommitMessage();
+            const hasRunTests = /\[run tests\]/i.test(headMessage || '');
+
             if (eventName === 'workflow_dispatch') {
               shouldRun = true;
             } else if (eventName === 'push') {
-              shouldRun = context.ref === 'refs/heads/development';
+              if (context.ref === 'refs/heads/development') {
+                shouldRun = true;
+              } else if (hasRunTests) {
+                shouldRun = true;
+              }
             } else if (eventName === 'pull_request') {
-              // Always run CI for PRs, including drafts
-              shouldRun = true;
+              const isDraft = Boolean(context.payload.pull_request && context.payload.pull_request.draft);
+              if (!isDraft) {
+                shouldRun = true;
+              } else if (hasRunTests) {
+                shouldRun = true;
+              }
             }
 
             core.setOutput('should_run', String(shouldRun));
