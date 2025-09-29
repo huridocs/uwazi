@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   precheck:
@@ -42,9 +43,39 @@ jobs:
               }
               return '';
             }
+            function containsRunTests(text) {
+              if (!text || typeof text !== 'string') return false;
+              return /\[run tests\]/i.test(text);
+            }
 
             const headMessage = await getHeadCommitMessage();
-            const hasRunTests = /\[run tests\]/i.test(headMessage || '');
+            let hasRunTests = containsRunTests(headMessage);
+
+            if (!hasRunTests && eventName === 'push') {
+              const commits = Array.isArray(context.payload.commits) ? context.payload.commits : [];
+              hasRunTests = commits.some(c => containsRunTests((c && c.message) || ''));
+            }
+
+            if (!hasRunTests && eventName === 'pull_request') {
+              const pr = context.payload.pull_request || {};
+              const prTitle = pr.title || '';
+              const prBody = pr.body || '';
+              if (containsRunTests(prTitle) || containsRunTests(prBody)) {
+                hasRunTests = true;
+              } else {
+                try {
+                  const commits = await github.paginate(github.pulls.listCommits, {
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    per_page: 100,
+                  });
+                  hasRunTests = commits.some(c => containsRunTests((c && c.commit && c.commit.message) || ''));
+                } catch (e) {
+                  // ignore and fall back to headMessage result
+                }
+              }
+            }
 
             if (eventName === 'workflow_dispatch') {
               shouldRun = true;
