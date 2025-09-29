@@ -128,12 +128,13 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     const newGeneratedIdProps = newProperties.filter(
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
+
     if (
       relationshipPropsWithChangedRelData.length ||
       newRelationshipProps.length ||
       newGeneratedIdProps.length ||
-      renamedProperties ||
-      deletedProperties
+      Object.keys(renamedProperties).length ||
+      deletedProperties.length
     ) {
       const limit = 50;
       const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(updatedTemplate.id);

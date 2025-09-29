@@ -8,8 +8,18 @@ const factory = getFixturesFactory();
 
 const fixtures = {
   files: [
-    factory.document('file1', { entity: 'entity1' }),
-    factory.document('file2', { entity: 'entity2' }),
+    factory.document('file1', {
+      entity: 'entity1',
+      extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'property1' }],
+    }),
+    factory.document('file2', {
+      entity: 'entity2',
+      extractedMetadata: [
+        { name: 'to_be_deleted' },
+        { name: 'to_be_deleted_2' },
+        { name: 'property2' },
+      ],
+    }),
     factory.document('file3', { entity: 'entity3' }),
     factory.document('file4', { entity: 'entity1', language: 'en' }),
     factory.document('file5', { entity: 'entity1', language: 'es' }),
@@ -26,6 +36,88 @@ afterAll(async () => {
 });
 
 describe('MongoFilesDataSource', () => {
+  describe('deleteExtractedMetadata', () => {
+    it('should delete extractedMetadata by name for files belonging to specified entities', async () => {
+      const extractedMetadataToDelete = ['to_be_deleted', 'to_be_deleted_2'];
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity1']);
+
+      let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
+        f => f.extractedMetadata?.length
+      );
+
+      expect(dbFiles).toMatchObject([
+        { entity: 'entity1', extractedMetadata: [{ name: 'property1' }] },
+        {
+          entity: 'entity2',
+          extractedMetadata: [
+            { name: 'to_be_deleted' },
+            { name: 'to_be_deleted_2' },
+            { name: 'property2' },
+          ],
+        },
+      ]);
+
+      await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity2']);
+
+      dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
+        f => f.extractedMetadata?.length
+      );
+
+      expect(dbFiles).toMatchObject([
+        { entity: 'entity1', extractedMetadata: [{ name: 'property1' }] },
+        { entity: 'entity2', extractedMetadata: [{ name: 'property2' }] },
+      ]);
+    });
+  });
+
+  describe('renameExtractedMetadata', () => {
+    it('should rename extractedMetadata names based on a oldName:newName map for specified entities', async () => {
+      const toRenameProperties = { property1: 'renamed1', property2: 'renamed2' };
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      await ds.renameExtractedMetadata(toRenameProperties, ['entity1']);
+
+      let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
+        f => f.extractedMetadata?.length
+      );
+
+      expect(dbFiles).toMatchObject([
+        {
+          entity: 'entity1',
+          extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
+        },
+        {
+          entity: 'entity2',
+          extractedMetadata: [
+            { name: 'to_be_deleted' },
+            { name: 'to_be_deleted_2' },
+            { name: 'property2' },
+          ],
+        },
+      ]);
+
+      await ds.renameExtractedMetadata(toRenameProperties, ['entity2']);
+
+      dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
+        f => f.extractedMetadata?.length
+      );
+
+      expect(dbFiles).toMatchObject([
+        {
+          entity: 'entity1',
+          extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'renamed1' }],
+        },
+        {
+          entity: 'entity2',
+          extractedMetadata: [
+            { name: 'to_be_deleted' },
+            { name: 'to_be_deleted_2' },
+            { name: 'renamed2' },
+          ],
+        },
+      ]);
+    });
+  });
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
       const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
