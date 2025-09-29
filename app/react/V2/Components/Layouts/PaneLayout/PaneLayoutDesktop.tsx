@@ -12,6 +12,9 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
   return undefined;
 };
 
+const percentWidthToPixel = (percentWidths: number[], containerWidth: number) =>
+  percentWidths.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
+
 const getPercentagesFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
     try {
@@ -34,7 +37,13 @@ const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: s
   }
 };
 
-const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLayoutProps) => {
+// eslint-disable-next-line max-statements
+const PaneLayoutDesktop = ({
+  children,
+  localStorageKey,
+  defaultWidthsPercents,
+  className = '',
+}: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
@@ -46,7 +55,6 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
       if (draggingIndex.current === null || !containerRef.current) return;
 
       const xValue = getClientXValue(event);
-
       if (xValue === undefined) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -77,45 +85,47 @@ const PaneLayoutDesktop = ({ children, localStorageKey, className = '' }: PaneLa
     widthsRef.current = widths;
   }, [widths]);
 
+  // eslint-disable-next-line max-statements
   useEffect(() => {
-    // eslint-disable-next-line max-statements
-    const handleScreenResize = () => {
-      if (!containerRef.current) return;
+    if (!containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const containerWidth = containerRect.width || 1;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const containerWidth = containerRect.width || 1;
+    const separatorCount = children.length - 1;
 
-      const separatorCount = children.length - 1;
+    const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
+
+    if (savedPercentages.length === children.length) {
+      const fromStorage = percentWidthToPixel(savedPercentages, containerWidth);
+      const total = fromStorage.reduce((a, b) => a + b, 0);
+      if (total > containerWidth) {
+        const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
+        setWidths(fromStorage.map(width => width * scale));
+      } else {
+        setWidths(fromStorage);
+      }
+    } else if (defaultWidthsPercents?.length) {
+      setWidths(percentWidthToPixel(defaultWidthsPercents, containerWidth));
+    } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
       const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
+      setWidths(initials);
+    }
+  }, [children, localStorageKey, defaultWidthsPercents]);
 
-      const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
-
-      if (savedPercentages.length === children.length) {
-        const fromStorage = savedPercentages.map(percentage =>
-          Math.max(percentage * containerWidth, MIN_WIDTH)
-        );
-        const total = fromStorage.reduce((a, b) => a + b, 0);
-        if (total > containerWidth) {
-          const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
-          setWidths(fromStorage.map(width => width * scale));
-        } else {
-          setWidths(fromStorage);
-        }
-      } else {
-        setWidths(initials);
-        const percents = initials.map(width => width / containerWidth);
-        setPercentagesToLocalStorage(percents, localStorageKey);
-      }
+  useEffect(() => {
+    const handleScreenResize = () => {
+      if (!containerRef.current) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width || 1;
+      const percentages = widthsRef.current.map(w => w / containerWidth);
+      setWidths(percentWidthToPixel(percentages, containerWidth));
     };
 
-    handleScreenResize();
-
     window.addEventListener('resize', handleScreenResize);
-
     return () => window.removeEventListener('resize', handleScreenResize);
-  }, [children, localStorageKey]);
+  }, []);
 
   const onMouseDown = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
     const onMouseUp = () => {

@@ -7,7 +7,12 @@ import { PaneLayoutMobile } from './PaneLayout/PaneLayoutMobile';
 
 const MOBILE_VIEW_MAX_WIDTH = 768;
 
-const PaneLayout = ({ children, localStorageKey, className = '' }: PaneLayoutProps) => {
+const PaneLayout = ({
+  children,
+  localStorageKey,
+  defaultWidthsPercents,
+  className = '',
+}: PaneLayoutProps) => {
   const [isMobile, setIsMobile] = useState<boolean>();
 
   useEffect(() => {
@@ -37,7 +42,11 @@ const PaneLayout = ({ children, localStorageKey, className = '' }: PaneLayoutPro
   }
 
   return (
-    <PaneLayoutDesktop localStorageKey={localStorageKey} className={className}>
+    <PaneLayoutDesktop
+      localStorageKey={localStorageKey}
+      className={className}
+      defaultWidthsPercents={defaultWidthsPercents}
+    >
       {children}
     </PaneLayoutDesktop>
   );

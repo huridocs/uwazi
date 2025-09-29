@@ -7,8 +7,16 @@ import * as stories from 'app/stories/Layouts/PaneLayout.stories';
 const { Basic } = composeStories(stories);
 
 describe('PaneLayout', () => {
-  const render = (localStorageKey?: string) => {
-    mount(<Basic localStorageKey={localStorageKey} />);
+  const render = ({
+    localStorageKey,
+    defaultWidthsPercents,
+  }: {
+    localStorageKey?: string;
+    defaultWidthsPercents?: number[];
+  } = {}) => {
+    mount(
+      <Basic localStorageKey={localStorageKey} defaultWidthsPercents={defaultWidthsPercents} />
+    );
   };
 
   describe('Desktop', () => {
@@ -38,7 +46,7 @@ describe('PaneLayout', () => {
     });
 
     it('should save pane setup to the localStorage', () => {
-      render('cypressComponentTest');
+      render({ localStorageKey: 'cypressComponentTest' });
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
       cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
@@ -56,14 +64,22 @@ describe('PaneLayout', () => {
       cy.window().then(window => {
         window.localStorage.setItem('cypressComponentTest', '[0.2,0.2,0.6]');
       });
-      render('cypressComponentTest');
+      render({ localStorageKey: 'cypressComponentTest' });
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
+      cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+      cy.clearAllLocalStorage();
+    });
+
+    it('should allow passing default widths for panes', () => {
+      render({ defaultWidthsPercents: [0.2, 0.2, 0.6] });
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
     });
   });
 
-  describe.only('mobile', { viewportWidth: 450, viewportHeight: 650 }, () => {
+  describe('mobile', { viewportWidth: 450, viewportHeight: 650 }, () => {
     it('should pass the accessibility check', () => {
       render();
       cy.injectAxe();
