@@ -161,28 +161,26 @@ jobs:
                 const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
                 const inputHeadSha = (process.env.INPUT_HEAD_SHA || '').trim();
                 const apiHeadSha = (pr && pr.head && pr.head.sha) || '';
-                const headSha = inputHeadSha || payloadHeadSha || apiHeadSha || '';
+                const resolvedHeadSha = (process.env.RESOLVED_HEAD_SHA || '').trim();
+                const headSha = resolvedHeadSha || inputHeadSha || payloadHeadSha || apiHeadSha || '';
                 const headMsg = (process.env.HEAD_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
                 debug.headMatch = containsRunTests(headMsg);
-                if (headSha) {
-              core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
-            }
-                core.info(`precheck debug: headSha candidates input=${inputHeadSha || '-'} payload=${payloadHeadSha || '-'} api=${apiHeadSha || '-'}`);
+                core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
+                core.info(`precheck debug: headSha candidates resolved=${resolvedHeadSha || '-'} input=${inputHeadSha || '-'} payload=${payloadHeadSha || '-'} api=${apiHeadSha || '-'}`);
                 // Also check the merge commit for PR runs
                 const payloadMergeSha = (payloadPR && payloadPR.merge_commit_sha) || '';
                 const inputSha = (process.env.INPUT_SHA || '').trim();
-                const mergeSha = inputSha || context.sha || payloadMergeSha || '';
+                const resolvedMergeSha = (process.env.RESOLVED_MERGE_SHA || '').trim();
+                const mergeSha = resolvedMergeSha || inputSha || context.sha || payloadMergeSha || '';
                 debug.mergeSha = mergeSha;
                 const mergeMsg = (process.env.MERGE_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(mergeSha);
                 if (containsRunTests(mergeMsg)) {
                   hasRunTests = true;
                   debug.mergeMatch = true;
                 }
-                if (mergeSha) {
-                  core.info(`precheck debug: mergeMsg[0:140]=${(mergeMsg || '').slice(0,140).replace(/\n/g,' ')}`);
-                }
+                core.info(`precheck debug: mergeMsg[0:140]=${(mergeMsg || '').slice(0,140).replace(/\n/g,' ')}`);
                 if (!hasRunTests) {
                   try {
                     const commits = await github.paginate(github.pulls.listCommits, {
