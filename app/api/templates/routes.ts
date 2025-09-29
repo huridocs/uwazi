@@ -50,7 +50,7 @@ export default (app: Application) => {
     }
   );
 
-  GetTemplatesController.register(app);
+  app.get('/api/templates', GetTemplatesController.createHandler());
 
   app.delete(
     '/api/templates',

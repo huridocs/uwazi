@@ -1,7 +1,6 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
-import { Application } from 'express';
-import { TemplatesQueryService } from '../../mongodb/template/TemplatesQueryService';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type RequestDto = void;
@@ -11,14 +10,11 @@ type ResponseDto = {
 };
 
 class GetTemplatesController extends AbstractController {
-  static register(app: Application): void {
-    app.get('/api/templates', this.createHandler());
-  }
-
   protected async handle(): Promise<void> {
-    const queryService = new TemplatesQueryService();
+    const db = getConnection();
+    const templatesCol = db.collection<TemplateDBO>('templates');
 
-    const templates = await queryService.collection.find().toArray();
+    const templates = await templatesCol.find().toArray();
 
     const response: ResponseDto = { rows: templates };
 
