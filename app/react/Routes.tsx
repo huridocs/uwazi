@@ -72,7 +72,6 @@ import { PageView } from './Pages/PageView';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
-import { EntityViewPlaceholder } from './V2/Routes/Entity/EntityViewPlaceholder';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -106,10 +105,6 @@ const getRoutesLayout = (
     <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
-    <Route
-      path="entity/v2ViewerPlaceholder"
-      element={privateRoute(<EntityViewPlaceholder />, settings)}
-    />
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
