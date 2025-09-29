@@ -9,7 +9,6 @@ import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
-  TemplateDoesNotExistError,
 } from '../errors';
 
 type Deps = {
@@ -30,10 +29,9 @@ class RelationshipPropertyCreatorService extends AbstractPropertyCreatorService<
     }
 
     if (property.content && property.inherit) {
-      const targetTemplate = await this.deps.templatesDS.getById(property.content);
-      if (!targetTemplate) {
-        throw new TemplateDoesNotExistError(property.content);
-      }
+      const targetTemplate = (
+        await this.deps.templatesDS.getById(property.content)
+      ).getDataOrThrow();
 
       const targetProperty = targetTemplate.getPropertyById(property.inherit.property);
       if (!targetProperty) {

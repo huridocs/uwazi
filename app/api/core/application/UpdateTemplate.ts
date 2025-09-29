@@ -37,11 +37,11 @@ type Deps = {
   transactionManager: TransactionManager;
 };
 
-class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
+class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
   private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
-  constructor(private deps: Deps) {
-    super();
+  constructor(deps: Deps) {
+    super(deps);
 
     this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
   }
@@ -51,10 +51,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     language: LanguageISO6391,
     fullReindex = false
   ): Promise<Output> {
-    const currentTemplate = await this.deps.templatesDS.getById(input._id);
-    if (!currentTemplate) {
-      throw new Error(`Trying to update an unexistant Template: ${input._id}`);
-    }
+    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
     if (currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
