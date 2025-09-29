@@ -59,6 +59,7 @@ type IXSuggestionsLoaderResponse = {
 type IXFilters = {
   labeled: boolean;
   nonLabeled: boolean;
+  useForTraining: boolean;
   match: boolean;
   mismatch: boolean;
   obsolete: boolean;
