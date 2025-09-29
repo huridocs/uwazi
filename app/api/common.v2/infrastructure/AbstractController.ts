@@ -1,7 +1,7 @@
 import util from 'util';
 import { ValidationError } from 'ajv';
 import { ZodError } from 'zod';
-import { Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { tenants } from 'api/tenants';
@@ -48,6 +48,14 @@ export abstract class AbstractController<RequestBody = any> {
     return async (request: Request, response: Response) =>
       // @ts-ignore - 'this' is a constructor, so 'new' is valid
       new this({ request, response }).handleAsync();
+  }
+
+  /**
+   * Registers the controller's route with the Express application.
+   * This method must be implemented by subclasses.
+   */
+  static register(_app: Application): void {
+    throw new Error('Controllers must implement the static register method.');
   }
 
   protected get request() {
