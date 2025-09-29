@@ -53,6 +53,7 @@ jobs:
             let hasRunTests = false;
             let isDraft = false;
             let branch = '';
+            let debug = { eventName, ref, isPR: false, prNumber: '', branch: '', isDraft: false, headSha: '', headMatch: false, mergeSha: '', mergeMatch: false, matchedCommitSha: '', shouldRun: false };
 
             if (isPR && prNumber) {
               try {
@@ -62,14 +63,27 @@ jobs:
                   pull_number: prNumber,
                 });
                 isDraft = Boolean(pr && pr.draft);
+                debug.isPR = true;
+                debug.prNumber = String(prNumber);
+                debug.isDraft = isDraft;
                 const prTitle = (pr && pr.title) || '';
                 const prBody = (pr && pr.body) || '';
                 if (containsRunTests(prTitle) || containsRunTests(prBody)) {
                   hasRunTests = true;
                 }
-                const headSha = pr && pr.head && pr.head.sha;
+                const headSha = (pr && pr.head && pr.head.sha) || '';
                 const headMsg = await getCommitMessageBySha(headSha);
+                debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
+                debug.headMatch = containsRunTests(headMsg);
+                // Also check the merge commit for PR runs
+                const mergeSha = context.sha || '';
+                debug.mergeSha = mergeSha;
+                const mergeMsg = await getCommitMessageBySha(mergeSha);
+                if (containsRunTests(mergeMsg)) {
+                  hasRunTests = true;
+                  debug.mergeMatch = true;
+                }
                 if (!hasRunTests) {
                   try {
                     const commits = await github.paginate(github.pulls.listCommits, {
@@ -78,7 +92,14 @@ jobs:
                       pull_number: prNumber,
                       per_page: 100,
                     });
-                    hasRunTests = commits.some(c => containsRunTests((c && c.commit && c.commit.message) || ''));
+                    for (const c of commits) {
+                      const msg = (c && c.commit && c.commit.message) || '';
+                      if (containsRunTests(msg)) {
+                        hasRunTests = true;
+                        debug.matchedCommitSha = c.sha || '';
+                        break;
+                      }
+                    }
                   } catch (e) {
                     // ignore
                   }
@@ -120,7 +141,9 @@ jobs:
               }
             }
 
-            core.info(`precheck debug: eventName=${eventName}, ref=${ref}, isPR=${isPR}, prNumber=${prNumber || ''}, branch=${branch}, isDraft=${isDraft}, hasRunTests=${hasRunTests}, shouldRun=${shouldRun}`);
+            debug.branch = branch;
+            debug.shouldRun = shouldRun;
+            core.info(`precheck debug: eventName=${eventName}, ref=${ref}, isPR=${debug.isPR}, prNumber=${debug.prNumber}, branch=${debug.branch}, isDraft=${debug.isDraft}, headSha=${debug.headSha}, headMatch=${debug.headMatch}, mergeSha=${debug.mergeSha}, mergeMatch=${debug.mergeMatch}, matchedCommitSha=${debug.matchedCommitSha}, hasRunTests=${hasRunTests}, shouldRun=${shouldRun}`);
 
             core.setOutput('should_run', String(shouldRun));
 
