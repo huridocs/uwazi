@@ -51,6 +51,37 @@ jobs:
     outputs:
       should_run: ${{ steps.compute.outputs.should_run }}
     steps:
+      - name: Checkout (for commit message resolution)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+
+      - name: Resolve commit messages
+        id: resolve_msgs
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_SHA="${{ inputs.head_sha || github.event.pull_request.head.sha || '' }}"
+          MERGE_SHA="${{ inputs.sha || github.sha }}"
+          HEAD_MSG=""
+          MERGE_MSG=""
+          if [ -n "$HEAD_SHA" ]; then
+            git fetch --no-tags --depth=1 origin "$HEAD_SHA" 2>/dev/null || true
+            HEAD_MSG=$(git log -1 --pretty=%B "$HEAD_SHA" 2>/dev/null || echo "")
+          fi
+          if [ -n "$MERGE_SHA" ]; then
+            git fetch --no-tags --depth=1 origin "$MERGE_SHA" 2>/dev/null || true
+            MERGE_MSG=$(git log -1 --pretty=%B "$MERGE_SHA" 2>/dev/null || echo "")
+          fi
+          {
+            echo "HEAD_COMMIT_MESSAGE<<EOF"; echo "$HEAD_MSG"; echo "EOF";
+            echo "MERGE_COMMIT_MESSAGE<<EOF"; echo "$MERGE_MSG"; echo "EOF";
+            echo "HEAD_SHA=$HEAD_SHA";
+            echo "MERGE_SHA=$MERGE_SHA";
+          } >> "$GITHUB_ENV"
+
       - name: Compute should_run
         id: compute
         uses: actions/github-script@v7
@@ -66,6 +97,10 @@ jobs:
           INPUT_EVENT_NAME: ${{ inputs.event_name }}
           INPUT_IS_PROTECTED_PUSH: ${{ inputs.is_protected_push }}
           INPUT_SHA: ${{ inputs.sha }}
+          HEAD_COMMIT_MESSAGE: ${{ env.HEAD_COMMIT_MESSAGE }}
+          MERGE_COMMIT_MESSAGE: ${{ env.MERGE_COMMIT_MESSAGE }}
+          RESOLVED_HEAD_SHA: ${{ env.HEAD_SHA }}
+          RESOLVED_MERGE_SHA: ${{ env.MERGE_SHA }}
         with:
           script: |
             const eventName = process.env.INPUT_EVENT_NAME || context.eventName;
@@ -127,11 +162,11 @@ jobs:
                 const inputHeadSha = (process.env.INPUT_HEAD_SHA || '').trim();
                 const apiHeadSha = (pr && pr.head && pr.head.sha) || '';
                 const headSha = inputHeadSha || payloadHeadSha || apiHeadSha || '';
-            const headMsg = await getCommitMessageBySha(headSha);
+                const headMsg = (process.env.HEAD_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
                 debug.headMatch = containsRunTests(headMsg);
-            if (headSha) {
+                if (headSha) {
               core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
             }
                 core.info(`precheck debug: headSha candidates input=${inputHeadSha || '-'} payload=${payloadHeadSha || '-'} api=${apiHeadSha || '-'}`);
@@ -140,7 +175,7 @@ jobs:
                 const inputSha = (process.env.INPUT_SHA || '').trim();
                 const mergeSha = inputSha || context.sha || payloadMergeSha || '';
                 debug.mergeSha = mergeSha;
-                const mergeMsg = await getCommitMessageBySha(mergeSha);
+                const mergeMsg = (process.env.MERGE_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(mergeSha);
                 if (containsRunTests(mergeMsg)) {
                   hasRunTests = true;
                   debug.mergeMatch = true;
