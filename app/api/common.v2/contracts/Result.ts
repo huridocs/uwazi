@@ -37,6 +37,10 @@ class Result<Data, ErrorType> {
   getData<Fallback = undefined>(fallback?: Fallback) {
     return fallback || this.data;
   }
+
+  getError<Fallback = undefined>(fallback?: Fallback) {
+    return fallback || this.error;
+  }
 }
 
 export { Result };
