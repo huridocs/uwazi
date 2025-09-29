@@ -76,13 +76,15 @@ jobs:
                 if (containsRunTests(prTitle) || containsRunTests(prBody)) {
                   hasRunTests = true;
                 }
-                const headSha = (pr && pr.head && pr.head.sha) || '';
+                const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
+                const headSha = payloadHeadSha || (pr && pr.head && pr.head.sha) || '';
                 const headMsg = await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
                 debug.headMatch = containsRunTests(headMsg);
                 // Also check the merge commit for PR runs
-                const mergeSha = context.sha || '';
+                const payloadMergeSha = (payloadPR && payloadPR.merge_commit_sha) || '';
+                const mergeSha = context.sha || payloadMergeSha || '';
                 debug.mergeSha = mergeSha;
                 const mergeMsg = await getCommitMessageBySha(mergeSha);
                 if (containsRunTests(mergeMsg)) {
