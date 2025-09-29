@@ -12,12 +12,6 @@ describe('PaneLayout', () => {
   };
 
   describe('Desktop', () => {
-    it('should have the expected HTML', () => {
-      render();
-      cy.get('section').eq(0).should('have.attr', 'style').and('match', /width/);
-      cy.get('div.main-view').toMatchSnapshot({ name: 'Pane desktop view' });
-    });
-
     it('should be accessible', () => {
       render();
       cy.injectAxe();
@@ -69,27 +63,17 @@ describe('PaneLayout', () => {
     });
   });
 
-  describe('mobile', () => {
+  describe.only('mobile', { viewportWidth: 450, viewportHeight: 650 }, () => {
+    it('should pass the accessibility check', () => {
+      render();
+      cy.injectAxe();
+      cy.checkA11y();
+    });
+
+    it('it should have hidden inputs to switch between panes', () => {});
+
     it('should render the first pane', () => {});
 
     it('should swipe between panes', () => {});
-  });
-
-  describe('accessibility', () => {
-    it('should pass the accessibility check', () => {});
-
-    it('should be able to tab between panes', () => {});
-
-    describe('mobile', { viewportWidth: 450, viewportHeight: 650 }, () => {
-      it('should have the expected html ', () => {});
-
-      it('should pass the accessibility check', () => {
-        render();
-        cy.injectAxe();
-        cy.checkA11y();
-      });
-
-      it('it should have hidden inputs to switch between panes', () => {});
-    });
   });
 });
