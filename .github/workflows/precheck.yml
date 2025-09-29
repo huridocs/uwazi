@@ -48,15 +48,19 @@ jobs:
             // Detect PR using payload and ref
             const payloadPR = (context.payload && context.payload.pull_request) || null;
             const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
-            const isPR = Boolean(payloadPR) || Boolean(prMatch);
-            const prNumber = (payloadPR && payloadPR.number) || (prMatch ? Number(prMatch[1]) : undefined);
+            const prNumberFromRef = prMatch ? Number(prMatch[1]) : undefined;
+            const prNumber = prNumberFromRef || (payloadPR && payloadPR.number) || undefined;
+            const isPR = typeof prNumber === 'number' && !Number.isNaN(prNumber);
 
             let hasRunTests = false;
             let isDraft = false;
             let branch = '';
             let debug = { eventName, ref, isPR: false, prNumber: '', branch: '', isDraft: false, headSha: '', headMatch: false, mergeSha: '', mergeMatch: false, matchedCommitSha: '', shouldRun: false };
 
-            if (isPR && prNumber) {
+            debug.isPR = isPR;
+            debug.prNumber = prNumber ? String(prNumber) : '';
+
+            if (isPR) {
               try {
                 const { data: pr } = await github.pulls.get({
                   owner: context.repo.owner,
