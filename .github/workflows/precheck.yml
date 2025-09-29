@@ -126,6 +126,14 @@ jobs:
               }
             }
 
+            // Seed hasRunTests from pre-resolved env messages
+            let hasRunTests = false;
+            const envHeadMsg = (process.env.HEAD_COMMIT_MESSAGE || '').trim();
+            const envMergeMsg = (process.env.MERGE_COMMIT_MESSAGE || '').trim();
+            const envHeadMatch = containsRunTests(envHeadMsg);
+            const envMergeMatch = containsRunTests(envMergeMsg);
+            hasRunTests = envHeadMatch || envMergeMatch;
+
             // Detect PR using inputs, payload and ref
             const payloadPR = (context.payload && context.payload.pull_request) || null;
             const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
@@ -134,10 +142,9 @@ jobs:
             const prNumber = prNumberFromInput || prNumberFromRef || (payloadPR && payloadPR.number) || undefined;
             const isPR = (String(process.env.INPUT_IS_PR || '') === 'true') || (typeof prNumber === 'number' && !Number.isNaN(prNumber));
 
-            let hasRunTests = false;
             let isDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true';
             let branch = process.env.INPUT_BRANCH || '';
-            let debug = { eventName, ref, isPR: false, prNumber: '', branch, isDraft: isDraft, headSha: '', headMatch: false, mergeSha: '', mergeMatch: false, matchedCommitSha: '', shouldRun: false };
+            let debug = { eventName, ref, isPR: false, prNumber: '', branch, isDraft: isDraft, headSha: '', headMatch: envHeadMatch, mergeSha: '', mergeMatch: envMergeMatch, matchedCommitSha: '', shouldRun: false };
 
             debug.isPR = isPR;
             debug.prNumber = prNumber ? String(prNumber) : '';
