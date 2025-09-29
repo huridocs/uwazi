@@ -23,76 +23,104 @@ jobs:
         with:
           script: |
             const eventName = context.eventName;
+            const ref = context.ref || '';
             let shouldRun = false;
 
-            async function getHeadCommitMessage() {
-              try {
-                if (eventName === 'pull_request') {
-                  const sha = context.payload.pull_request.head.sha;
-                  const { data } = await github.repos.getCommit({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    ref: sha,
-                  });
-                  return (data && data.commit && data.commit.message) || '';
-                } else if (eventName === 'push') {
-                  return (context.payload.head_commit && context.payload.head_commit.message) || '';
-                }
-              } catch (e) {
-                return '';
-              }
-              return '';
-            }
             function containsRunTests(text) {
               if (!text || typeof text !== 'string') return false;
               return /\[run tests\]/i.test(text);
             }
 
-            const headMessage = await getHeadCommitMessage();
-            let hasRunTests = containsRunTests(headMessage);
-
-            if (!hasRunTests && eventName === 'push') {
-              const commits = Array.isArray(context.payload.commits) ? context.payload.commits : [];
-              hasRunTests = commits.some(c => containsRunTests((c && c.message) || ''));
+            async function getCommitMessageBySha(sha) {
+              try {
+                if (!sha) return '';
+                const { data } = await github.repos.getCommit({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: sha,
+                });
+                return (data && data.commit && data.commit.message) || '';
+              } catch (e) {
+                return '';
+              }
             }
 
-            if (!hasRunTests && eventName === 'pull_request') {
-              const pr = context.payload.pull_request || {};
-              const prTitle = pr.title || '';
-              const prBody = pr.body || '';
-              if (containsRunTests(prTitle) || containsRunTests(prBody)) {
-                hasRunTests = true;
+            // Detect PR by ref (since eventName is workflow_call for reusables)
+            const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
+            const isPR = Boolean(prMatch);
+            const prNumber = prMatch ? Number(prMatch[1]) : undefined;
+
+            let hasRunTests = false;
+            let isDraft = false;
+            let branch = '';
+
+            if (isPR && prNumber) {
+              try {
+                const { data: pr } = await github.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                });
+                isDraft = Boolean(pr && pr.draft);
+                const prTitle = (pr && pr.title) || '';
+                const prBody = (pr && pr.body) || '';
+                if (containsRunTests(prTitle) || containsRunTests(prBody)) {
+                  hasRunTests = true;
+                }
+                const headSha = pr && pr.head && pr.head.sha;
+                const headMsg = await getCommitMessageBySha(headSha);
+                hasRunTests = hasRunTests || containsRunTests(headMsg);
+                if (!hasRunTests) {
+                  try {
+                    const commits = await github.paginate(github.pulls.listCommits, {
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      pull_number: prNumber,
+                      per_page: 100,
+                    });
+                    hasRunTests = commits.some(c => containsRunTests((c && c.commit && c.commit.message) || ''));
+                  } catch (e) {
+                    // ignore
+                  }
+                }
+              } catch (e) {
+                // If PR fetch fails, fall back to strict skip unless explicitly overridden by head payload
+                isDraft = true;
+              }
+            } else {
+              // Treat as push-like: derive branch from ref
+              const m = /^refs\/heads\/(.+)$/.exec(ref || '');
+              branch = m ? m[1] : '';
+              const isProtectedBranch = branch === 'development' || branch === 'production';
+              if (isProtectedBranch) {
+                shouldRun = true; // always run on direct pushes to protected branches
               } else {
-                try {
-                  const commits = await github.paginate(github.pulls.listCommits, {
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr.number,
-                    per_page: 100,
-                  });
-                  hasRunTests = commits.some(c => containsRunTests((c && c.commit && c.commit.message) || ''));
-                } catch (e) {
-                  // ignore and fall back to headMessage result
+                // Try context.sha first, fall back to payload
+                const headSha = context.sha || (context.payload && context.payload.head_commit && context.payload.head_commit.id) || '';
+                const headMsg = await getCommitMessageBySha(headSha);
+                hasRunTests = containsRunTests(headMsg);
+                if (!hasRunTests && context.payload && Array.isArray(context.payload.commits)) {
+                  hasRunTests = context.payload.commits.some(c => containsRunTests((c && c.message) || ''));
                 }
               }
             }
 
-            if (eventName === 'workflow_dispatch') {
-              shouldRun = true;
-            } else if (eventName === 'push') {
-              if (context.ref === 'refs/heads/development') {
-                shouldRun = true;
-              } else if (hasRunTests) {
-                shouldRun = true;
-              }
-            } else if (eventName === 'pull_request') {
-              const isDraft = Boolean(context.payload.pull_request && context.payload.pull_request.draft);
+            // Decide shouldRun for PRs (draft gating) and for non-protected pushes
+            if (isPR) {
               if (!isDraft) {
                 shouldRun = true;
               } else if (hasRunTests) {
                 shouldRun = true;
+              } else {
+                shouldRun = false;
+              }
+            } else {
+              if (shouldRun !== true) {
+                shouldRun = hasRunTests === true;
               }
             }
+
+            core.info(`precheck debug: eventName=${eventName}, ref=${ref}, isPR=${isPR}, prNumber=${prNumber || ''}, branch=${branch}, isDraft=${isDraft}, hasRunTests=${hasRunTests}, shouldRun=${shouldRun}`);
 
             core.setOutput('should_run', String(shouldRun));
 
