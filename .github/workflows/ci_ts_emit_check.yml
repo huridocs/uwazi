@@ -1,5 +1,8 @@
 name: check-emitted-types
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -15,8 +18,9 @@ concurrency:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
-  check-  emitted-types:
+  check-emitted-types:
     needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04

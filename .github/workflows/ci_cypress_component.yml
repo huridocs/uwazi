@@ -13,6 +13,7 @@ concurrency:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
   cypress-run:
     name: Component testing

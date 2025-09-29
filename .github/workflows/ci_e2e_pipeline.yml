@@ -16,6 +16,7 @@ permissions:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
   build:
     needs: precheck

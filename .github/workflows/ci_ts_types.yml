@@ -15,6 +15,7 @@ concurrency:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
   check-types:
     needs: precheck

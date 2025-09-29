@@ -23,6 +23,7 @@ env:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
   build_ci_image:
     name: build_ci_image

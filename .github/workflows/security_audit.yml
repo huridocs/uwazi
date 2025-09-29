@@ -11,6 +11,7 @@ on:
 jobs:
   precheck:
     uses: ./.github/workflows/precheck.yml
+    secrets: inherit
 
   yarn-audit:
     needs: precheck
