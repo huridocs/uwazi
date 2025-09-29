@@ -3,6 +3,7 @@ import { Application, Request } from 'express';
 import { inspect } from 'util';
 import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
 import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController';
+import { GetTemplatesController } from 'api/core/infrastructure/express/template/GetTemplatesController';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, validation } from '../utils';
 import templates from './templates';
@@ -39,12 +40,7 @@ export default (app: Application) => {
     SetTemplateAsDefaultController.createHandler()
   );
 
-  app.get('/api/templates', (_req, res, next) => {
-    templates
-      .get()
-      .then(response => res.json({ rows: response }))
-      .catch(next);
-  });
+  app.get('/api/templates', GetTemplatesController.createHandler());
 
   app.delete(
     '/api/templates',
