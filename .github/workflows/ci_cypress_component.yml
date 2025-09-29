@@ -29,6 +29,7 @@ jobs:
       branch: ${{ github.ref_name }}
       event_name: ${{ github.event_name }}
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
+      sha: ${{ github.sha }}
 
   cypress-run:
     name: Component testing

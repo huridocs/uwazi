@@ -33,6 +33,9 @@ on:
       is_protected_push:
         required: false
         type: boolean
+      sha:
+        required: false
+        type: string
     outputs:
       should_run:
         description: Whether downstream jobs should run
@@ -62,6 +65,7 @@ jobs:
           INPUT_BRANCH: ${{ inputs.branch }}
           INPUT_EVENT_NAME: ${{ inputs.event_name }}
           INPUT_IS_PROTECTED_PUSH: ${{ inputs.is_protected_push }}
+          INPUT_SHA: ${{ inputs.sha }}
         with:
           script: |
             const eventName = process.env.INPUT_EVENT_NAME || context.eventName;
@@ -120,8 +124,9 @@ jobs:
                   hasRunTests = true;
                 }
                 const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
-                const inputHeadSha = process.env.INPUT_HEAD_SHA || '';
-                const headSha = inputHeadSha || payloadHeadSha || (pr && pr.head && pr.head.sha) || '';
+                const inputHeadSha = (process.env.INPUT_HEAD_SHA || '').trim();
+                const apiHeadSha = (pr && pr.head && pr.head.sha) || '';
+                const headSha = inputHeadSha || payloadHeadSha || apiHeadSha || '';
             const headMsg = await getCommitMessageBySha(headSha);
                 debug.headSha = headSha;
                 hasRunTests = hasRunTests || containsRunTests(headMsg);
@@ -129,9 +134,11 @@ jobs:
             if (headSha) {
               core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
             }
+                core.info(`precheck debug: headSha candidates input=${inputHeadSha || '-'} payload=${payloadHeadSha || '-'} api=${apiHeadSha || '-'}`);
                 // Also check the merge commit for PR runs
                 const payloadMergeSha = (payloadPR && payloadPR.merge_commit_sha) || '';
-                const mergeSha = context.sha || payloadMergeSha || '';
+                const inputSha = (process.env.INPUT_SHA || '').trim();
+                const mergeSha = inputSha || context.sha || payloadMergeSha || '';
                 debug.mergeSha = mergeSha;
                 const mergeMsg = await getCommitMessageBySha(mergeSha);
                 if (containsRunTests(mergeMsg)) {
