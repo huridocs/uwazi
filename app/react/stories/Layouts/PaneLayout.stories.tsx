@@ -9,8 +9,8 @@ const meta: Meta<typeof PaneLayout> = {
 
 type Story = StoryObj<typeof PaneLayout>;
 
-const Component = () => (
-  <PaneLayout className="main-view">
+const Component = ({ localStorageKey }: { localStorageKey?: string }) => (
+  <PaneLayout localStorageKey={localStorageKey} className="main-view">
     <PaneLayout.Pane key="pane-1">
       <div>
         <p>
@@ -89,7 +89,7 @@ const Component = () => (
 );
 
 const Primary: Story = {
-  render: () => (
+  render: args => (
     <div className="tw-content" style={{ height: '768px', maxHeight: '768px' }}>
       <div className="flex flex-col gap-4 h-full">
         <div className="w-full bg-primary-700">
@@ -100,7 +100,7 @@ const Primary: Story = {
         </div>
 
         <div className="w-full flex-1 min-h-0">
-          <Component />
+          <Component localStorageKey={args.localStorageKey} />
         </div>
 
         <footer className="w-full border-t-2">General app footer</footer>
@@ -111,7 +111,9 @@ const Primary: Story = {
 
 const Basic: Story = {
   ...Primary,
-  args: {},
+  args: {
+    localStorageKey: undefined,
+  },
 };
 
 export { Basic };

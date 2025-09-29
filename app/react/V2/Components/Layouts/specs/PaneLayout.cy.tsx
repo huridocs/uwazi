@@ -7,8 +7,8 @@ import * as stories from 'app/stories/Layouts/PaneLayout.stories';
 const { Basic } = composeStories(stories);
 
 describe('PaneLayout', () => {
-  const render = () => {
-    mount(<Basic />);
+  const render = (localStorageKey?: string) => {
+    mount(<Basic localStorageKey={localStorageKey} />);
   };
 
   describe('Desktop', () => {
@@ -43,7 +43,30 @@ describe('PaneLayout', () => {
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
     });
 
-    it('should save panel setup to the localStorage', () => {});
+    it('should save pane setup to the localStorage', () => {
+      render('cypressComponentTest');
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 407px;');
+      cy.realDrag(cy.get('div[role="separator"]'), 50, 0);
+      cy.getAllLocalStorage().then(result => {
+        expect(result).to.deep.equal({
+          'http://localhost:8080': {
+            cypressComponentTest: '[0.3799837266069976,0.2823433685923515,0.33116354759967453]',
+          },
+        });
+      });
+      cy.clearAllLocalStorage();
+    });
+
+    it('should restore pane configuration from localstorage', () => {
+      cy.window().then(window => {
+        window.localStorage.setItem('cypressComponentTest', '[0.2,0.2,0.6]');
+      });
+      render('cypressComponentTest');
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
+      cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+    });
   });
 
   describe('mobile', () => {
