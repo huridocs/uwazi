@@ -1,6 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { ResultType } from 'api/common.v2/contracts/Result';
+import { ResultType } from 'api/core/application/common/Result';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,

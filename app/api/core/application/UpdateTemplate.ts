@@ -37,11 +37,11 @@ type Deps = {
   transactionManager: TransactionManager;
 };
 
-class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
+class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
   private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
-  constructor(private deps: Deps) {
-    super();
+  constructor(deps: Deps) {
+    super(deps);
 
     this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
   }

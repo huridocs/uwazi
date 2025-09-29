@@ -12,7 +12,7 @@ import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
-import { Result, ResultType } from 'api/common.v2/contracts/Result';
+import { Result, ResultType } from 'api/core/application/common/Result';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
