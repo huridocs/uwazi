@@ -5,7 +5,11 @@ interface UseCase<Input, Output> {
   execute(input: Input, ...args: any): Promise<Output>;
 }
 
-abstract class AbstractUseCase<Input, Output> implements UseCase<Input, Output> {
+type Deps<ExtendedDeps> = {} & ExtendedDeps;
+
+abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseCase<Input, Output> {
+  constructor(protected deps: Deps<ExtendedDeps>) {}
+
   async execute(input: Input, ...args: any): Promise<Output> {
     try {
       const output = await this.executeAsync(input, ...args);

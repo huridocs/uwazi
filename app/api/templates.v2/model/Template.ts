@@ -1,6 +1,7 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
+import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -161,6 +162,24 @@ class Template {
 
   getRelationshipProperties(): V1RelationshipProperty[] {
     return this.properties.filter((p): p is V1RelationshipProperty => p.type === 'relationship');
+  }
+
+  setAsDefault(currentDefault?: Template) {
+    if (currentDefault && !currentDefault.isDefault) {
+      throw new DefaultTemplateConflictError(
+        `The provided template (ID: ${currentDefault.id}) is not the current default.`
+      );
+    }
+
+    if (this.isDefault) {
+      throw new DefaultTemplateConflictError(`Template (ID: ${this.id}) is already the default.`);
+    }
+
+    if (currentDefault) {
+      currentDefault.isDefault = false;
+    }
+
+    this.isDefault = true;
   }
 }
 
