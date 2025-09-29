@@ -30,6 +30,56 @@ export type SegmentationDBO = SegmentationType & {
 export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
   protected collectionName = 'files';
 
+  async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
+    await this.getCollection().updateMany(
+      { entity: { $in: entitySharedIds }, extractedMetadata: { $exists: true, $ne: [] } },
+      { $pull: { extractedMetadata: { name: { $in: entityPropertyNames } } } }
+    );
+  }
+
+  async renameExtractedMetadata(
+    renamedPropertyNames: { [previousName: string]: string },
+    entitySharedIds: string[]
+  ) {
+    const branches = Object.entries(renamedPropertyNames).map(([oldVal, newVal]) => ({
+      case: { $eq: ['$$item.name', oldVal] },
+      then: newVal,
+    }));
+
+    const pipeline = [
+      {
+        $set: {
+          extractedMetadata: {
+            $map: {
+              input: '$extractedMetadata',
+              as: 'item',
+              in: {
+                $mergeObjects: [
+                  '$$item',
+                  {
+                    name: {
+                      $switch: {
+                        branches,
+                        default: '$$item.name',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ];
+    await this.getCollection().updateMany(
+      {
+        'extractedMetadata.name': { $in: Object.keys(renamedPropertyNames) },
+        entity: { $in: entitySharedIds },
+      },
+      pipeline
+    );
+  }
+
   getSegmentations(filesId: string[]): ResultSet<Segmentation> {
     const cursor = this.getCollection<SegmentationDBO>('segmentations').find({
       fileID: { $in: filesId.map(id => new ObjectId(id)) },

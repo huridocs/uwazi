@@ -85,6 +85,7 @@ export const config = {
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
+      v2UpdateTemplateUseCase: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
