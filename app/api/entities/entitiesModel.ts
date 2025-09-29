@@ -33,8 +33,8 @@ const mongoSchema = new mongoose.Schema(
 
 //mongodb types not updated yet for language_override?
 //@ts-ignore
-mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 mongoSchema.index({ template: 1, language: 1, published: 1 });
+mongoSchema.index({ title: 'hashed' });
 
 const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema, {
   optimisticLock: true,
