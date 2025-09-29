@@ -45,6 +45,11 @@ export default {
               return;
             }
 
+            // Skip unknown property types to avoid calling undefined mappings
+            if (property.type !== 'newRelationship' && !propertyMappings[property.type]) {
+              return;
+            }
+
             baseMappingObject.properties.metadata.properties[property.name] = {
               properties:
                 newRelationshipMappingFactory && property.type === 'newRelationship'
@@ -52,11 +57,13 @@ export default {
                   : propertyMappings[property.type](),
             };
             if (property.inherit?.type && property.inherit.type !== 'preview') {
-              baseMappingObject.properties.metadata.properties[
-                property.name
-              ].properties.inheritedValue = {
-                properties: propertyMappings[property.inherit.type](),
-              };
+              if (propertyMappings[property.inherit.type]) {
+                baseMappingObject.properties.metadata.properties[
+                  property.name
+                ].properties.inheritedValue = {
+                  properties: propertyMappings[property.inherit.type](),
+                };
+              }
             }
           })
         )

@@ -39,9 +39,12 @@ export default defineConfig({
         }
       });
       on('before:browser:launch', (browser, launchOptions) => {
-        if (browser.name === 'chrome' && browser.isHeadless) {
+        if (browser.name === 'chrome' || browser.name === 'chromium' || browser.name === 'edge') {
+          // Ensure consistent viewport and stable CI runs for Chromium-family browsers in both headed and headless modes
           launchOptions.args.push('--window-size=1280,768');
           launchOptions.args.push('--force-device-scale-factor=1');
+          launchOptions.args.push('--disable-dev-shm-usage');
+          launchOptions.args.push('--no-sandbox');
         }
 
         if (browser.name === 'electron' && browser.isHeadless) {

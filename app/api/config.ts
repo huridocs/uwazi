@@ -87,7 +87,7 @@ export const config = {
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
     },
   },
-  externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
+  externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
   },

@@ -89,7 +89,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
           },
         },
       ],
-      { sort: { createdAt: 1 }, returnDocument: 'after' }
+      { sort: { createdAt: 1, _id: 1 }, returnDocument: 'after' }
     );
 
     if (result) {

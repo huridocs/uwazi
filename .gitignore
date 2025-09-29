@@ -61,3 +61,5 @@ app/react/App/styles/globals.css
 .github/logs
 segmentation/*
 tenants/*
+.cursor/*
+.browsers/*

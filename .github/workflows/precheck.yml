@@ -1,0 +1,34 @@
+name: CI Precheck
+
+on:
+  workflow_call:
+    outputs:
+      should_run:
+        description: Whether downstream jobs should run
+        value: ${{ jobs.precheck.outputs.should_run }}
+
+jobs:
+  precheck:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run: ${{ steps.compute.outputs.should_run }}
+    steps:
+      - name: Compute should_run
+        id: compute
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const eventName = context.eventName;
+            let shouldRun = false;
+
+            if (eventName === 'workflow_dispatch') {
+              shouldRun = true;
+            } else if (eventName === 'push') {
+              shouldRun = context.ref === 'refs/heads/development';
+            } else if (eventName === 'pull_request') {
+              // Always run CI for PRs, including drafts
+              shouldRun = true;
+            }
+
+            core.setOutput('should_run', String(shouldRun));
+

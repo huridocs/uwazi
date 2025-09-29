@@ -5,13 +5,20 @@ on:
     branches:
       - development
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  precheck:
+    uses: ./.github/workflows/precheck.yml
+
   eslint:
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

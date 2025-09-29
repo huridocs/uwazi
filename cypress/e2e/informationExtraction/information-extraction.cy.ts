@@ -413,6 +413,7 @@ describe('Information Extraction', () => {
       cy.contains('tr', 'A title (en)').contains('label', 'Select').click();
       cy.contains('button', 'Process selected').click();
       cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Auto-accept suggestions').click();
         cy.contains('For all entities').click();
         cy.contains('button', 'Process').click();
       });
@@ -429,6 +430,7 @@ describe('Information Extraction', () => {
     it('should auto accept for all', () => {
       cy.contains('button', 'Process extractor').click();
       cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Auto-accept suggestions').click();
         cy.contains('From all suggestions').click();
         cy.contains('For all entities').click();
         cy.contains('button', 'Process').click();

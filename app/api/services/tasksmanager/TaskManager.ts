@@ -47,6 +47,8 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
 
   redisClient: RedisClient;
 
+  private queuesReady: Promise<void>;
+
   constructor(service: Service<R>) {
     this.service = service;
     this.taskQueue = `${config.ENVIRONMENT}_${service.serviceName}_tasks`;
@@ -54,23 +56,31 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
     this.redisClient = Redis.redisClient;
     this.redisSMQ = new RedisSMQ({ client: this.redisClient });
 
-    this.subscribeToEvents();
+    this.queuesReady = this.ensureQueues();
   }
 
-  subscribeToEvents() {
-    this.redisSMQ.createQueue({ qname: this.taskQueue, maxsize: -1 }, (err: Error | undefined) => {
-      if (err && err.name !== 'queueExists') {
-        throw err;
-      }
-    });
-    this.redisSMQ.createQueue(
-      { qname: this.resultsQueue, maxsize: -1 },
-      (err: Error | undefined) => {
-        if (err && err.name !== 'queueExists') {
-          throw err;
+  private async ensureQueues(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.redisSMQ.createQueue(
+        { qname: this.taskQueue, maxsize: -1 },
+        (err1: Error | undefined) => {
+          if (err1 && (err1 as any).name !== 'queueExists') {
+            reject(err1);
+            return;
+          }
+          this.redisSMQ.createQueue(
+            { qname: this.resultsQueue, maxsize: -1 },
+            (err2: Error | undefined) => {
+              if (err2 && (err2 as any).name !== 'queueExists') {
+                reject(err2);
+                return;
+              }
+              resolve();
+            }
+          );
         }
-      }
-    );
+      );
+    });
   }
 
   async countPendingTasks(): Promise<number> {
@@ -81,9 +91,13 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
   }
 
   subscribeToResults(interval = 500): void {
-    this.repeater = new Repeater(this.checkForResults.bind(this), interval);
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.repeater.start();
+    this.queuesReady
+      .then(() => {
+        this.repeater = new Repeater(this.checkForResults.bind(this), interval);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.repeater.start();
+      })
+      .catch(e => handleError(e, { useContext: false }));
   }
 
   private async checkForResults() {
