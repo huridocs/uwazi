@@ -1,5 +1,6 @@
 import { TextProperty } from 'api/core/domain/template/TextProperty';
 import {
+  DefaultTemplateConflictError,
   TemplateWithDuplicatedPropertyError,
   TemplateWithMissingCommonProperty,
 } from 'api/core/domain/template/errors';
@@ -611,4 +612,44 @@ xit('should throw if there are no CommonProperties', () => {
         'template'
       )
   ).not.toThrow();
+});
+
+it('should set as default Template', () => {
+  const existingDefault = TemplateBuilder.aTemplate({
+    name: 'Existing Default',
+    isDefault: true,
+  }).build();
+
+  const toDefault = TemplateBuilder.aTemplate({
+    name: 'To Default',
+    isDefault: false,
+  }).build();
+
+  toDefault.setAsDefault(existingDefault);
+
+  expect(toDefault.isDefault).toBe(true);
+  expect(existingDefault.isDefault).toBe(false);
+});
+
+it('should throw when trying to swap default with a non-default Template', () => {
+  const nonDefault = TemplateBuilder.aTemplate({
+    name: 'Non Default',
+    isDefault: false,
+  }).build();
+
+  const toDefault = TemplateBuilder.aTemplate({
+    name: 'To Default',
+    isDefault: false,
+  }).build();
+
+  expect(() => toDefault.setAsDefault(nonDefault)).toThrow(DefaultTemplateConflictError);
+});
+
+it('should throw if Template is already default', () => {
+  const existingDefault = TemplateBuilder.aTemplate({
+    name: 'existingDefault',
+    isDefault: true,
+  }).build();
+
+  expect(() => existingDefault.setAsDefault(existingDefault)).toThrow(DefaultTemplateConflictError);
 });

@@ -753,70 +753,104 @@ describe('formatSuggestion', () => {
     ]);
     expect(suggestion.segment).toBe('new context');
   });
+});
 
-    it('should preserve segment_text in multiselect suggestions from text source', () => {
-      const rawSuggestion = {
-        tenant: 'tenant',
-        id: 'suggestion_id',
-        xml_file_name: 'document.pdf',
-        segment_text: 'Overall context',
-        values: [
-          {
-            id: 'value_1_id',
-            label: 'Value 1 Label',
-            segment_text: 'Context for value 1'
-          }
-        ]
-      };
-  
-      const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
-        properties.multiselect,
-        rawSuggestion,
-        currentSuggestions.multiselect,
-        successMessage
-      );
-  
-      expect(suggestion.suggestedValue).toEqual([
+describe('Text Source Formatters - Segment Text Support', () => {
+  it('should preserve segment_text in multiselect suggestions', () => {
+    const rawSuggestion = {
+      tenant: 'tenant',
+      id: 'suggestion_id',
+      xml_file_name: 'document.pdf',
+      segment_text: 'Overall context',
+      values: [
         {
           id: 'value_1_id',
           label: 'Value 1 Label',
-          segment: 'Context for value 1'
-        }
-      ]);
-      expect(suggestion.segment).toBe('Overall context');
-    });
-  
-    it('should preserve segment_text in relationship suggestions', () => {
-      const rawSuggestion = {
-        tenant: 'tenant',
-        id: 'suggestion_id',
-        xml_file_name: 'document.pdf',
-        segment_text: 'Overall context',
-        values: [
-          {
-            id: 'related_1_id',
-            label: 'Related Entity 1',
-            segment_text: 'Context for related entity 1'
-          }
-        ]
-      };
-  
-      const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
-        properties.relationship,
-        rawSuggestion,
-        currentSuggestions.relationship,
-        successMessage
-      );
-  
-      expect(suggestion.suggestedValue).toEqual([
+          segment_text: 'Context for value 1',
+        },
+      ],
+    };
+
+    const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+      properties.multiselect,
+      rawSuggestion,
+      currentSuggestions.multiselect,
+      successMessage
+    );
+
+    expect(suggestion.suggestedValue).toEqual([
+      {
+        id: 'value_1_id',
+        label: 'Value 1 Label',
+        segment: 'Context for value 1',
+      },
+    ]);
+    expect(suggestion.segment).toBe('Overall context');
+  });
+
+  it('should preserve segment_text in relationship suggestions', () => {
+    const rawSuggestion = {
+      tenant: 'tenant',
+      id: 'suggestion_id',
+      xml_file_name: 'document.pdf',
+      segment_text: 'Overall context',
+      values: [
         {
           id: 'related_1_id',
           label: 'Related Entity 1',
-          segment: 'Context for related entity 1'
-        }
-      ]);
-      expect(suggestion.segment).toBe('Overall context');
-    });
+          segment_text: 'Context for related entity 1',
+        },
+      ],
+    };
+
+    const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+      properties.relationship,
+      rawSuggestion,
+      currentSuggestions.relationship,
+      successMessage
+    );
+
+    expect(suggestion.suggestedValue).toEqual([
+      {
+        id: 'related_1_id',
+        label: 'Related Entity 1',
+        segment: 'Context for related entity 1',
+      },
+    ]);
+    expect(suggestion.segment).toBe('Overall context');
+  });
+
+  it('should fix issue #8411 - textProperties suggestions preserve segment information', () => {
+    const rawSuggestion = {
+      tenant: 'tenant',
+      id: 'suggestion_id',
+      xml_file_name: 'document.pdf',
+      segment_text: 'Guided by the purposes and principles',
+      values: [
+        {
+          id: 'fe08f3ab-3928-4ffe-b8a5-50f4fcd7dba0',
+          label: 'Guided by',
+          segment_text:
+            'Guided by the purposes and principles of the Charter of the United Nations',
+        },
+      ],
+    };
+
+    const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+      properties.multiselect,
+      rawSuggestion,
+      currentSuggestions.multiselect,
+      successMessage
+    );
+
+    // Before fix: would only contain ID
+    // After fix: contains full object with segment
+    expect(suggestion.suggestedValue).toEqual([
+      {
+        id: 'fe08f3ab-3928-4ffe-b8a5-50f4fcd7dba0',
+        label: 'Guided by',
+        segment: 'Guided by the purposes and principles of the Charter of the United Nations',
+      },
+    ]);
+  });
 });
-
-

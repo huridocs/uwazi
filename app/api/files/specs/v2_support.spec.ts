@@ -28,6 +28,7 @@ const fixtures: DBFixture = {
   templates: [
     factory.template('template1', [
       {
+        _id: factory.id('relProp'),
         name: 'relProp',
         label: 'relProp',
         type: 'newRelationship',
