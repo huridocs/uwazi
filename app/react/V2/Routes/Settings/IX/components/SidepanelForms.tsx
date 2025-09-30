@@ -16,24 +16,18 @@ import {
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { ClientIXExtractorType } from 'V2/shared/types';
-<<<<<<< HEAD
 import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
-=======
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { DateTime } from 'luxon';
->>>>>>> origin/production
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
 import { escapeLucene, searchRelatedEntities } from '../helpers';
 
-<<<<<<< HEAD
-=======
 const dateStringToSeconds = (dateString: string) =>
   DateTime.fromISO(dateString).setZone('UTC').toSeconds();
 
->>>>>>> origin/production
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
