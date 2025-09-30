@@ -292,7 +292,11 @@ class SuggestionTextSourceFormatter {
   }
 
   private static multiselect({ segment_text, values }: RawSuggestion) {
-    const suggestedValue = (values as any[]).map(value => value.id);
+    const suggestedValue = (values as any[]).map(value => ({
+      id: value.id,
+      label: value.label,
+      ...(value.segment_text && { segment: value.segment_text }),
+    }));
 
     return {
       suggestedValue,
@@ -301,7 +305,11 @@ class SuggestionTextSourceFormatter {
   }
 
   private static relationship({ segment_text, values }: RawSuggestion) {
-    const suggestedValue = (values as any[]).map(value => value.id);
+    const suggestedValue = (values as any[]).map(value => ({
+      id: value.id,
+      label: value.label,
+      ...(value.segment_text && { segment: value.segment_text }),
+    }));
 
     return {
       suggestedValue,

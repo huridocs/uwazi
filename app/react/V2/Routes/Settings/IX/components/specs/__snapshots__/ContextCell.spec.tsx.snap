@@ -1,44 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ContextCell should not render script tags 1`] = `
-<div
-  class="pointer-events-auto cursor-pointer"
+exports[`ContextCell Truncation Logic should truncate html with multiple matching paragraphs and only show relevant paragraphs 1`] = `
+<span
+  class="ix_matching_paragraph text-black px-1"
 >
-   
-  <p
-    class=""
-  >
-    Text 1
-  </p>
-   
-</div>
-`;
-
-exports[`ContextCell should not render script tags when nested on valid tags 1`] = `
-<p
-  class=""
->
-  Text 1 
-</p>
-`;
-
-exports[`ContextCell should truncate html with multiple matching paragraphs and only show relevant paragraphs 1`] = `
-<p
-  class="ix_matching_paragraph text-black"
->
-  ... matching paragraph  
+  ...thats part of the matching paragraph 
   <span
     class="ix_match bg-[#FFE29A] text-black"
   >
     Praesent sed molestie risus, vitae laoreet elit.
   </span>
-  ...
-</p>
+</span>
 `;
 
-exports[`ContextCell should truncate html with single matching paragraph and only show relevant paragraphs 1`] = `
-<p
-  class="ix_matching_paragraph text-black"
+exports[`ContextCell Truncation Logic should truncate html with single matching paragraph and only show relevant paragraphs 1`] = `
+<span
+  class="ix_matching_paragraph text-black px-1"
 >
   ...cus dapibus euismod. 
   <span
@@ -46,20 +23,54 @@ exports[`ContextCell should truncate html with single matching paragraph and onl
   >
      Praesent sed molestie risus, vitae laoreet elit.
   </span>
-    Cras dapibus, neque...
-</p>
+   Cras dapibus, neque a eleifend...
+</span>
 `;
 
-exports[`ContextCell should work when a matching paragraph has multiple match words 1`] = `
-<p
-  class="ix_matching_paragraph text-black"
+exports[`ContextCell Truncation Logic should work when a matching paragraph has multiple match words 1`] = `
+<span
+  class="ix_matching_paragraph text-black px-1"
 >
-  ...arterly report shows 
+  The quarterly report shows 
   <span
     class="ix_match bg-[#FFE29A] text-black"
   >
     Revenue: $1.2M
   </span>
-   ,...
-</p>
+  ,
+  <span
+    class="ix_match bg-[#FFE29A] text-black"
+  >
+    Expenses: $800K
+  </span>
+  ,and a net profit of 
+  <span
+    class="ix_match bg-[#FFE29A] text-black"
+  >
+    $400K
+  </span>
+   .
+</span>
+`;
+
+exports[`ContextCell should not render script tags 1`] = `
+<div
+  class="pointer-events-auto cursor-pointer"
+>
+   
+  <span
+    class=""
+  >
+    Text 1
+  </span>
+   
+</div>
+`;
+
+exports[`ContextCell should not render script tags when nested on valid tags 1`] = `
+<span
+  class=""
+>
+  Text 1
+</span>
 `;
