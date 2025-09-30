@@ -18,7 +18,7 @@ jest.mock('V2/api/entities', () => ({
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
   save: jest.fn().mockResolvedValue({ success: true }),
-  coerceValue: jest.fn() ,
+  coerceValue: jest.fn(),
 }));
 
 const mockEntity: ClientEntitySchema = {
@@ -304,7 +304,6 @@ describe('sidepanelFunctions', () => {
         expect(result).toBeUndefined();
       });
     });
-    
 
     describe('unsupported property types', () => {
       it('should return undefined for unsupported property types', async () => {

@@ -30,11 +30,15 @@ const truncateMatching = (matchingParagraph: React.ReactElement) => {
   }
 
   const firstMatchIndex = matchIndex;
-  const lastMatchIndex = childrenArray.findLastIndex(
-    child =>
-      React.isValidElement(child) &&
-      (child.props as { className?: string }).className === ixContextClassnames.ix_match
-  );
+  const lastMatchIndex =
+    childrenArray
+      .map((child, index) => ({ child, index }))
+      .reverse()
+      .find(
+        ({ child }) =>
+          React.isValidElement(child) &&
+          (child.props as { className?: string }).className === ixContextClassnames.ix_match
+      )?.index ?? firstMatchIndex;
 
   const beforeNodes = childrenArray.slice(0, firstMatchIndex);
   const afterNodes = childrenArray.slice(lastMatchIndex + 1);
