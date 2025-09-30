@@ -5,6 +5,7 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
@@ -22,8 +23,8 @@ import { TrainModelForText } from 'api/services/informationextraction/TrainModel
 import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
 import settings from 'api/settings';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
+import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
@@ -141,6 +142,7 @@ export function registerJobs(
           transactionManager,
           DefaultTemplatesDataSource(transactionManager)
         ),
+        filesDS: DefaultFilesDataSource(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: DefaultTemplatesDataSource(transactionManager),
         transactionManager,
