@@ -5,6 +5,7 @@ import { InputField } from 'V2/Components/Forms';
 import * as relationshipTypesAPI from 'V2/api/relationshiptypes';
 import { useSetAtom, useAtom } from 'jotai';
 import { notificationAtom, relationshipTypesAtom } from 'V2/atoms';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;
@@ -45,10 +46,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
     try {
       await save();
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error creating relationship type.</Translate>,
-      });
+      handleUnexpectedError(error, 'Error saving relationship type');
     } finally {
       setIsSaving(false);
       handleClose();
