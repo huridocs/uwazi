@@ -9,7 +9,6 @@ import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion } from '../types';
 import {
@@ -77,7 +76,7 @@ const PropertySidepanel = ({
 
   const formContext = useForm({
     values: {
-      field: getFormValue(suggestion, entity, property?.type),
+      field: getFormValue(suggestion, entity, property?.type) || '',
     },
   });
 
@@ -113,13 +112,11 @@ const PropertySidepanel = ({
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
         } else {
-          const value =
-            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
+          setValue('field', coercedValue.value, { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
-        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
+        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ') || '';
         setValue('field', sanitizedText, { shouldDirty: true });
       }
     }

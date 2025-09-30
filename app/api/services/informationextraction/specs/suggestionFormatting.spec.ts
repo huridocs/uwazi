@@ -754,3 +754,69 @@ describe('formatSuggestion', () => {
     expect(suggestion.segment).toBe('new context');
   });
 });
+
+describe('Text Source Formatters - Segment Text Support', () => {
+  it('should preserve segment_text in multiselect suggestions', () => {
+    const rawSuggestion = {
+      tenant: 'tenant',
+      id: 'suggestion_id',
+      xml_file_name: 'document.pdf',
+      segment_text: 'Overall context',
+      values: [
+        {
+          id: 'value_1_id',
+          label: 'Value 1 Label',
+          segment_text: 'Context for value 1',
+        },
+      ],
+    };
+
+    const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+      properties.multiselect,
+      rawSuggestion,
+      currentSuggestions.multiselect,
+      successMessage
+    );
+
+    expect(suggestion.suggestedValue).toEqual([
+      {
+        id: 'value_1_id',
+        label: 'Value 1 Label',
+        segment: 'Context for value 1',
+      },
+    ]);
+    expect(suggestion.segment).toBe('Overall context');
+  });
+
+  it('should preserve segment_text in relationship suggestions', () => {
+    const rawSuggestion = {
+      tenant: 'tenant',
+      id: 'suggestion_id',
+      xml_file_name: 'document.pdf',
+      segment_text: 'Overall context',
+      values: [
+        {
+          id: 'related_1_id',
+          label: 'Related Entity 1',
+          segment_text: 'Context for related entity 1',
+        },
+      ],
+    };
+
+    const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+      properties.relationship,
+      rawSuggestion,
+      currentSuggestions.relationship,
+      successMessage
+    );
+
+    expect(suggestion.suggestedValue).toEqual([
+      {
+        id: 'related_1_id',
+        label: 'Related Entity 1',
+        segment: 'Context for related entity 1',
+      },
+    ]);
+    expect(suggestion.segment).toBe('Overall context');
+  });
+});

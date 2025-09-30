@@ -11,7 +11,6 @@ import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '
 import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion } from '../types';
 import {
@@ -99,7 +98,7 @@ const PDFSidepanel = ({
 
   const formContext = useForm({
     values: {
-      field: getFormValue(suggestion, entity, property?.type),
+      field: getFormValue(suggestion, entity, property?.type) || '',
     },
   });
 
@@ -161,13 +160,11 @@ const PDFSidepanel = ({
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
         } else {
-          const value =
-            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
+          setValue('field', coercedValue.value, { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
-        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
+        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ') || '';
         setValue('field', sanitizedText, { shouldDirty: true });
       }
     }

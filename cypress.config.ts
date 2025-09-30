@@ -29,7 +29,6 @@ export default defineConfig({
     testIsolation: false,
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     setupNodeEvents(on, config) {
-      // implement node event listeners here
       initPlugin(on, config);
       cypressFailFast(on, config);
       on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
@@ -74,5 +73,8 @@ export default defineConfig({
       webpackConfig: cypressWebpackConfig,
     },
     specPattern: 'app/react/**/*.cy.tsx',
+    setupNodeEvents(on, config) {
+      initPlugin(on, config);
+    },
   },
 });
