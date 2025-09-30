@@ -191,7 +191,7 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
       const matches = allProperties.find(
         p =>
           p.name === property.name &&
-          (p.content !== property.content ||
+          ((p.content || '') !== (property.content || '') ||
             !getCompatibleTypes(property.type).includes(p.type) ||
             p.relationType !== property.relationType ||
             p.inherit?.type !== property.inherit?.type)

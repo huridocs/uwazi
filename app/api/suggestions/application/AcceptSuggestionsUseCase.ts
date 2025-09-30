@@ -71,13 +71,24 @@ export class AcceptSuggestionsUseCase {
     if (typeof total !== 'number') {
       total = await IXSuggestionsModel.db.countDocuments(match);
       await ixmodels.setAutoAcceptProgress(extractorId, { total, processed: 0 });
+    } else {
+      /* empty */
     }
 
+    // Fetch first page; rely on state recompute to shrink the set between batches
+    // Decide pagination strategy:
+    // - source === 'all': dataset may not shrink → use stable sort + skip = processed
+    // - source !== 'all' (previous): dataset shrinks via state recompute → always take first page
     const alreadyProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
+    // Use skip paging for non-shrinking sets: overwrite_all (regardless of source)
+    const useSkipPaging = overwriteAll === true;
+
     const suggestions = await IXSuggestionsModel.get(
       match,
       '_id entityId entityLanguageId state modelData',
-      { skip: alreadyProcessed, limit: batchSize, sort: { _id: 1 } } as any
+      useSkipPaging
+        ? ({ skip: alreadyProcessed, limit: batchSize, sort: { _id: 1 } } as any)
+        : ({ limit: batchSize, sort: { _id: 1 } } as any)
     );
     const toAccept = suggestions.map(s => ({
       _id: s._id,
@@ -109,6 +120,8 @@ export class AcceptSuggestionsUseCase {
 
     const previousProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
     const newProcessed = Math.min(total, previousProcessed + toAccept.length);
+    // Update progress persisted value for next iteration readers
+    await ixmodels.setAutoAcceptProgress(extractorId, { processed: newProcessed });
 
     return { processed: toAccept.length, progress: { total, processed: newProcessed } };
   }

@@ -22,6 +22,10 @@ const update = (
   }
 
   if (properties?.length) {
+    if (!updatedEntity.metadata) {
+      updatedEntity.metadata = {};
+    }
+
     properties.forEach(property => {
       const [propertyName] = Object.keys(property);
       const propertyValue = property[propertyName];

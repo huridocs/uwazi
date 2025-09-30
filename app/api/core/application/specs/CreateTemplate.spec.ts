@@ -53,6 +53,7 @@ const fixtures: DBFixture = {
   settings: [
     {
       newNameGeneration: true,
+      project: 'cejil',
     },
   ],
 
@@ -143,9 +144,9 @@ describe('CreateTemplateUseCase', () => {
             type: 'date',
           },
         },
+        { label: 'Nested', type: 'nested' },
 
         // { label: 'New Relationship', type: 'newRelationship' }, // missing
-        // { label: 'Nested', type: 'nested' }, // missing
       ],
       commonProperties: [
         { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
@@ -382,7 +383,7 @@ describe('CreateTemplateUseCase', () => {
           type: 'relationship',
           name: 'relationship_to_any',
           label: 'Relationship to any',
-          content: null,
+          content: '',
           relationType: factory.id('relationTypeId').toHexString(),
           inherit: null,
 
@@ -393,7 +394,6 @@ describe('CreateTemplateUseCase', () => {
           required: false,
           showInCard: false,
         },
-
         {
           _id: expect.any(ObjectId),
           type: 'relationship',
@@ -411,6 +411,19 @@ describe('CreateTemplateUseCase', () => {
           prioritySorting: false,
           required: false,
           showInCard: false,
+        },
+
+        {
+          _id: expect.any(ObjectId),
+          defaultfilter: false,
+          filter: false,
+          label: 'Nested',
+          name: 'nested_nested',
+          noLabel: false,
+          prioritySorting: false,
+          required: false,
+          showInCard: false,
+          type: 'nested',
         },
       ],
     });

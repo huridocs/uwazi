@@ -10,6 +10,11 @@ type GetDocumentsForEntityOptions = {
 };
 
 interface FilesDataSource {
+  deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
+  renameExtractedMetadata(
+    renamedPropertyNames: { [previousName: string]: string },
+    entitySharedIds: string[]
+  ): Promise<void>;
   filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean>;
   getAll(): ResultSet<UwaziFile>;
   getSegmentations(fileId: string[]): ResultSet<Segmentation>;

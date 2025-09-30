@@ -4,15 +4,20 @@ import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
 import { Tooltip } from 'flowbite-react';
+import {
+  BASE_CONTEXT,
+  extractTextContent,
+  optimizeTextForDisplay,
+  calculateOptimalContextLength,
+  analyzeContentForTruncation,
+} from '../helpers/contextHelpers';
 
 const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-gray-500',
   ix_adjacent_paragraph: 'ix_adjacent_paragraph text-gray-700',
-  ix_matching_paragraph: 'ix_matching_paragraph text-black',
+  ix_matching_paragraph: 'ix_matching_paragraph text-black px-1',
   ix_match: 'ix_match bg-[#FFE29A] text-black',
 };
-
-const MAX_CONTEXT = 20;
 
 const truncateMatching = (matchingParagraph: React.ReactElement) => {
   const childrenArray = React.Children.toArray(matchingParagraph.props.children);
@@ -24,19 +29,41 @@ const truncateMatching = (matchingParagraph: React.ReactElement) => {
     return matchingParagraph;
   }
 
-  const before = childrenArray
-    .slice(0, matchIndex)
-    .reverse()
-    .find(child => typeof child === 'string' && child.trim()) as string | undefined;
+  const firstMatchIndex = matchIndex;
+  const lastMatchIndex =
+    childrenArray
+      .map((child, index) => ({ child, index }))
+      .reverse()
+      .find(
+        ({ child }) =>
+          React.isValidElement(child) &&
+          (child.props as { className?: string }).className === ixContextClassnames.ix_match
+      )?.index ?? firstMatchIndex;
 
-  const after = childrenArray
-    .slice(matchIndex + 1)
-    .find(child => typeof child === 'string' && child.trim()) as string | undefined;
+  const beforeNodes = childrenArray.slice(0, firstMatchIndex);
+  const afterNodes = childrenArray.slice(lastMatchIndex + 1);
+
+  const beforeText = optimizeTextForDisplay(beforeNodes.map(extractTextContent).join(''));
+  const afterText = optimizeTextForDisplay(afterNodes.map(extractTextContent).join(''));
+  const matchingText = optimizeTextForDisplay(
+    childrenArray
+      .slice(firstMatchIndex, lastMatchIndex + 1)
+      .map(extractTextContent)
+      .join('')
+  );
+
+  const maxContext = calculateOptimalContextLength(matchingText, beforeText, afterText);
+
+  const beforeContext = Math.min(beforeText.length, Math.floor(maxContext * 0.4));
+  const afterContext = Math.min(afterText.length, Math.floor(maxContext * 0.6));
+
+  const beforeEllipsis = beforeText.length > beforeContext ? '...' : '';
+  const afterEllipsis = afterText.length > afterContext ? '...' : '';
 
   return [
-    before ? `...${before.slice(-MAX_CONTEXT)} ` : '...',
-    childrenArray[matchIndex],
-    after ? ` ${after.slice(0, MAX_CONTEXT)}...` : '...',
+    beforeText.length > 0 ? `${beforeEllipsis}${beforeText.slice(-beforeContext)} ` : '',
+    ...childrenArray.slice(firstMatchIndex, lastMatchIndex + 1), // Include all match spans
+    afterText.length > 0 ? ` ${afterText.slice(0, afterContext)}${afterEllipsis}` : '',
   ];
 };
 
@@ -44,32 +71,140 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
   const matchingParagraph = nodes.find(
     node =>
       React.isValidElement(node) &&
-      node.props.className === ixContextClassnames.ix_matching_paragraph
+      (node.props as { className?: string }).className === ixContextClassnames.ix_matching_paragraph
   );
 
   if (!matchingParagraph || !React.isValidElement(matchingParagraph)) {
     const [firstNode] = nodes;
-    const [text] = React.isValidElement(firstNode) ? (firstNode.props.children as string) : [''];
-
-    if (text) {
-      return React.cloneElement(
-        firstNode as React.ReactElement,
-        {},
-        `${text.slice(0, MAX_CONTEXT)}...`
-      );
+    if (React.isValidElement(firstNode)) {
+      const textContent = extractTextContent(firstNode);
+      if (textContent) {
+        const optimizedText = optimizeTextForDisplay(textContent);
+        const truncatedText =
+          optimizedText.length > BASE_CONTEXT
+            ? `${optimizedText.slice(0, BASE_CONTEXT)}...`
+            : optimizedText;
+        // Convert to span if it's a p element for better horizontal space usage
+        const elementType =
+          (firstNode as React.ReactElement).type === 'p'
+            ? 'span'
+            : (firstNode as React.ReactElement).type;
+        return React.createElement(
+          elementType,
+          { className: (firstNode as React.ReactElement).props.className },
+          truncatedText
+        );
+      }
     }
 
     return nodes;
   }
 
-  const trucatedHTML = truncateMatching(matchingParagraph);
-  return React.cloneElement(matchingParagraph, {}, trucatedHTML);
+  const matchingIndex = nodes.findIndex(
+    node =>
+      React.isValidElement(node) &&
+      (node.props as { className?: string }).className === ixContextClassnames.ix_matching_paragraph
+  );
+
+  const adjacentBefore = nodes
+    .slice(0, matchingIndex)
+    .filter(
+      node =>
+        React.isValidElement(node) &&
+        (node.props as { className?: string }).className ===
+          ixContextClassnames.ix_adjacent_paragraph
+    )
+    .slice(-1);
+
+  const adjacentAfter = nodes
+    .slice(matchingIndex + 1)
+    .filter(
+      node =>
+        React.isValidElement(node) &&
+        (node.props as { className?: string }).className ===
+          ixContextClassnames.ix_adjacent_paragraph
+    )
+    .slice(0, 1);
+
+  const matchingText = optimizeTextForDisplay(extractTextContent(matchingParagraph));
+  const beforeText =
+    adjacentBefore.length > 0 ? optimizeTextForDisplay(extractTextContent(adjacentBefore[0])) : '';
+  const afterText =
+    adjacentAfter.length > 0 ? optimizeTextForDisplay(extractTextContent(adjacentAfter[0])) : '';
+  const contentAnalysis = analyzeContentForTruncation(extractTextContent(matchingParagraph));
+  const maxContext = contentAnalysis.hasLongContent
+    ? contentAnalysis.optimalLength
+    : calculateOptimalContextLength(matchingText, beforeText, afterText);
+  const shouldIncludeBefore = adjacentBefore.length > 0;
+  const shouldIncludeAfter = adjacentAfter.length > 0;
+  const contextNodes = [
+    ...(shouldIncludeBefore ? adjacentBefore : []),
+    matchingParagraph,
+    ...(shouldIncludeAfter ? adjacentAfter : []),
+  ];
+  if (contextNodes.length > 1) {
+    return contextNodes.map((node, index) => {
+      if (
+        React.isValidElement(node) &&
+        (node.props as { className?: string }).className ===
+          ixContextClassnames.ix_matching_paragraph
+      ) {
+        const truncatedHTML = truncateMatching(node);
+        const elementType = node.type === 'p' ? 'span' : node.type;
+        return React.createElement(
+          elementType,
+          { key: index, className: (node.props as { className?: string }).className },
+          truncatedHTML
+        );
+      }
+      if (
+        React.isValidElement(node) &&
+        (node.props as { className?: string }).className ===
+          ixContextClassnames.ix_adjacent_paragraph
+      ) {
+        const textContent = extractTextContent(node);
+        const optimizedText = optimizeTextForDisplay(textContent);
+        const maxAdjacentLength = Math.floor(maxContext * 0.5);
+
+        if (optimizedText.length > maxAdjacentLength) {
+          const truncatedText = `${optimizedText.slice(0, maxAdjacentLength)}...`;
+          const elementType = node.type === 'p' ? 'span' : node.type;
+          return React.createElement(
+            elementType,
+            { key: index, className: (node.props as { className?: string }).className },
+            truncatedText
+          );
+        }
+
+        if (optimizedText !== textContent) {
+          const elementType = node.type === 'p' ? 'span' : node.type;
+          return React.createElement(
+            elementType,
+            { key: index, className: (node.props as { className?: string }).className },
+            optimizedText
+          );
+        }
+      }
+
+      return node;
+    });
+  }
+
+  const truncatedHTML = truncateMatching(matchingParagraph);
+  const elementType = matchingParagraph.type === 'p' ? 'span' : matchingParagraph.type;
+  return React.createElement(
+    elementType,
+    { className: matchingParagraph.props.className },
+    truncatedHTML
+  );
 };
 
 const filterNodes = (nodes: React.ReactNode[]) => {
   const hasMatches = Boolean(
     nodes.find(
-      node => React.isValidElement(node) && node.props.className === ixContextClassnames.ix_match
+      node =>
+        React.isValidElement(node) &&
+        (node.props as { className?: string }).className === ixContextClassnames.ix_match
     )
   );
 
@@ -77,8 +212,9 @@ const filterNodes = (nodes: React.ReactNode[]) => {
     return nodes.filter(node => {
       if (
         React.isValidElement(node) &&
-        (node.props.className === ixContextClassnames.ix_adjacent_paragraph ||
-          node.props.className === ixContextClassnames.ix_paragraph)
+        ((node.props as { className?: string }).className ===
+          ixContextClassnames.ix_adjacent_paragraph ||
+          (node.props as { className?: string }).className === ixContextClassnames.ix_paragraph)
       ) {
         return false;
       }
@@ -99,10 +235,33 @@ const createNode = (node: ChildNode, key: number): React.ReactNode => {
     const classNames = ixContextClassnames[element.attribs.class] || '';
     const props: { key: number; className: string } = { key, className: classNames };
 
+    // Convert p tags to span tags for better horizontal space usage
+    const tagName = element.name === 'p' ? 'span' : element.name;
+
+    return React.createElement(
+      tagName,
+      props,
+      element.children && element.children.map((child, i) => createNode(child, i))
+    );
+  }
+
+  return undefined;
+};
+
+const createOriginalNode = (node: ChildNode, key: number): React.ReactNode => {
+  if (node.type === 'text') {
+    return node.data;
+  }
+
+  if (node.type === 'tag') {
+    const element = node;
+    const classNames = ixContextClassnames[element.attribs.class] || '';
+    const props: { key: number; className: string } = { key, className: classNames };
+
     return React.createElement(
       element.name,
       props,
-      element.children && element.children.map((child, i) => createNode(child, i))
+      element.children && element.children.map((child, i) => createOriginalNode(child, i))
     );
   }
 
@@ -123,7 +282,8 @@ const ContextCell = ({ text }: { text: string }) => {
 
   const { fullHTML, truncatedHTML } = useMemo(() => {
     const nodes = document.children.map((node, i) => createNode(node, i));
-    return { fullHTML: nodes, truncatedHTML: truncateNodes(filterNodes(nodes)) };
+    const originalNodes = document.children.map((node, i) => createOriginalNode(node, i));
+    return { fullHTML: originalNodes, truncatedHTML: truncateNodes(filterNodes(nodes)) };
   }, [document]);
 
   const isHTML = useMemo(

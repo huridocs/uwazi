@@ -36,7 +36,7 @@ describe('V1RelationshipProperty', () => {
       relationType: 'relationType',
       type: 'relationship',
 
-      content: undefined,
+      content: '',
       inherit: undefined,
       inheritedPropertyId: undefined,
 

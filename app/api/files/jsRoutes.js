@@ -99,7 +99,10 @@ const routes = app => {
         if (email) {
           await mailer.send(email);
         }
+
+        return savedEntity;
       }, 'POST /api/public');
+
       res.json(result);
     }
   );

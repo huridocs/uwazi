@@ -652,8 +652,28 @@ describe('templates', () => {
     });
   });
 
-  describe('setAsDefault()', () => {
-    it('should set the given ID as the default template and return the afected templates', async () => {
+  describe.each([
+    {
+      title: 'setAsDefault() v1',
+      featureFlags: { v2SetTemplateAsDefaultUseCase: false },
+    },
+    { title: 'setAsDefault() v2', featureFlags: { v2SetTemplateAsDefaultUseCase: true } },
+  ])('$title', ({ featureFlags }) => {
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
+      testingTenants.mockCurrentTenant({
+        name: testingDB.dbName,
+        dbName: testingDB.dbName,
+        indexName: elasticIndex,
+        featureFlags,
+      });
+    });
+
+    afterEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    it('should set the given ID as the default template and return the affected templates', async () => {
       const [newDefault, oldDefault] = await templates.setAsDefault(
         templateWithContents.toString()
       );
@@ -669,7 +689,9 @@ describe('templates', () => {
         await templates.setAsDefault(propertyToBeInherited);
         fail('it should not pass');
       } catch (err) {
-        expect(err.message).toContain('Invalid ID');
+        expect(err.message).toContain(
+          featureFlags.v2SetTemplateAsDefaultUseCase ? 'The Template with Id' : 'Invalid ID'
+        );
       }
     });
   });

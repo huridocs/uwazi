@@ -1026,15 +1026,31 @@ describe('search', () => {
     );
   });
 
-  it('sort by metadata values', async () => {
+  it('sort by select metadata values', async () => {
+    userFactory.mock(undefined);
+    const entities = await search.search(
+      { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.select2' },
+      'en'
+    );
+
+    expect(entities.rows).toMatchObject([
+      { metadata: { select2: [{ value: 'C select3' }] } },
+      { metadata: { select2: [{ value: 'B select2' }] } },
+      { metadata: { select2: [{ value: 'A select1' }] } },
+    ]);
+  });
+
+  it('sort by date metadata values', async () => {
     userFactory.mock(undefined);
     const entities = await search.search(
       { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.date' },
       'en'
     );
-    expect(entities.rows[2].title).toBe('metadata1');
-    expect(entities.rows[1].title).toBe('Metadata2');
-    expect(entities.rows[0].title).toBe('metádata3');
+    expect(entities.rows).toMatchObject([
+      { metadata: { date: [{ value: 30000 }] } },
+      { metadata: { date: [{ value: 20000 }] } },
+      { metadata: { date: [{ value: 10000 }] } },
+    ]);
   });
 
   it('sort by denormalized values', async () => {

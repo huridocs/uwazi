@@ -221,11 +221,10 @@ const ProcessSelectedForm = ({ submit }: { submit: (values: FormData) => Promise
         control={control}
         render={({ field }) => (
           <Checkbox
+            onChange={() => undefined}
             name={field.name}
-            onChange={field.onChange}
             label={<Translate>Find suggestions for selected</Translate>}
             checked
-            disabled
           />
         )}
       />
@@ -301,7 +300,7 @@ const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorMod
       shouldFind: true,
       filters: { nonProcessed: true, obsolete: true, error: true },
       amount: 1000,
-      shouldAccept: true,
+      shouldAccept: false,
       acceptFor: 'previous',
       overwrite: 'blank_only',
     },

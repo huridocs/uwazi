@@ -746,7 +746,9 @@ const buildQuery = async (query, language, user, resources) => {
       sortingProp &&
       (sortingProp.type === 'select' ||
         (sortingProp.inherit && sortingProp.inherit.type === 'select'));
-    queryBuilder.sort(query.sort, query.order, sortByLabel);
+    const typesWithoutSortFields = ['date'];
+    const sortField = typesWithoutSortFields.includes(sortingProp?.type) ? '' : undefined;
+    queryBuilder.sort(query.sort, query.order, sortByLabel, sortField);
   }
 
   const allTemplates = templates.map(t => t._id);

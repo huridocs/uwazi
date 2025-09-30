@@ -61,7 +61,7 @@ class V1RelationshipProperty extends FilterableProperty {
       },
       context
     );
-    this.content = content;
+    this.content = content || '';
     this.relationType = relationType;
     this.inheritedPropertyId = inheritedPropertyId;
     this.inherit = inherit;

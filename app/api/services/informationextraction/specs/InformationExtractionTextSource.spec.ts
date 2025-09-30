@@ -839,8 +839,8 @@ describe('Information Extraction: Extracting from text source', () => {
           segment_text: 'any_text_segment_english',
           entity_name: extractionKeyEn.key,
           values: [
-            { id: 'A', label: 'A label' },
-            { id: 'B', label: 'B label' },
+            { id: 'A', label: 'A label', segment_text: 'any_text_segment_english' },
+            { id: 'B', label: 'B label', segment_text: 'any_text_segment_english' },
           ],
         },
       ]);
@@ -861,7 +861,10 @@ describe('Information Extraction: Extracting from text source', () => {
         extractorId,
         entityId: extractionKeyEn.entitySharedId,
         language: 'en',
-        suggestedValue: ['A', 'B'],
+        suggestedValue: [
+          { id: 'A', label: 'A label', segment: 'any_text_segment_english' },
+          { id: 'B', label: 'B label', segment: 'any_text_segment_english' },
+        ],
         segment: 'any_text_segment_english',
         status: 'ready',
         error: '',
@@ -890,8 +893,8 @@ describe('Information Extraction: Extracting from text source', () => {
           segment_text: 'any_text_segment_english',
           entity_name: extractionKeyEn.key,
           values: [
-            { id: 'P1sharedId', label: 'P1' },
-            { id: 'P2sharedId', label: 'P2' },
+            { id: 'P1sharedId', label: 'P1', segment_text: 'any_text_segment_english' },
+            { id: 'P2sharedId', label: 'P2', segment_text: 'any_text_segment_english' },
           ],
         },
       ]);
@@ -912,7 +915,10 @@ describe('Information Extraction: Extracting from text source', () => {
         extractorId,
         entityId: extractionKeyEn.entitySharedId,
         language: 'en',
-        suggestedValue: ['P1sharedId', 'P2sharedId'],
+        suggestedValue: [
+          { id: 'P1sharedId', label: 'P1', segment: 'any_text_segment_english' },
+          { id: 'P2sharedId', label: 'P2', segment: 'any_text_segment_english' },
+        ],
         segment: 'any_text_segment_english',
         status: 'ready',
         error: '',

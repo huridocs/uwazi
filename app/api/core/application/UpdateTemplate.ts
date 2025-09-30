@@ -43,23 +43,13 @@ type Deps = {
   transactionManager: TransactionManager;
 };
 
-class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
+class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
   private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
-  constructor(private deps: Deps) {
-    super();
+  constructor(deps: Deps) {
+    super(deps);
 
-    this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
-      default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
-      relationship: new RelationshipPropertyCreatorService({
-        templatesDS: this.deps.templatesDS,
-        relationshipTypesDS: this.deps.relationshipTypesDS,
-      }),
-      select: new SelectPropertyCreatorService({
-        templatesDS: this.deps.templatesDS,
-        thesauriDS: this.deps.thesauriDS,
-      }),
-    });
+    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
   }
 
   protected async executeAsync(
@@ -67,10 +57,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     language: LanguageISO6391,
     fullReindex = false
   ): Promise<Output> {
-    const currentTemplate = await this.deps.templatesDS.getById(input._id);
-    if (!currentTemplate) {
-      throw new Error(`Trying to update an unexistant Template: ${input._id}`);
-    }
+    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
     if (currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
@@ -144,12 +131,13 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     const newGeneratedIdProps = newProperties.filter(
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
+
     if (
       relationshipPropsWithChangedRelData.length ||
       newRelationshipProps.length ||
       newGeneratedIdProps.length ||
-      renamedProperties ||
-      deletedProperties
+      Object.keys(renamedProperties).length ||
+      deletedProperties.length
     ) {
       const limit = 50;
       const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(updatedTemplate.id);

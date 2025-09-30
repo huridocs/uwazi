@@ -292,6 +292,7 @@ export const fixtures = {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'bane' }],
         select1: [{ value: 'EgyptID', label: 'Egypt' }],
+        select2: [{ value: 'B select2', label: 'B select2' }],
         rich_text: [{ value: 'rich' }],
         multiselect1: [
           { value: 'EgyptID', label: 'Egypt' },
@@ -341,6 +342,7 @@ export const fixtures = {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
         select1: [{ value: 'EgyptID', label: 'Awesome Egypt' }],
+        select2: [{ value: 'C select3', label: 'C select3' }],
         multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
         groupedDictionary: [
           { value: 'GermanyID', parent: { value: 'EuropeID' } },
@@ -360,6 +362,7 @@ export const fixtures = {
       published: true,
       user: userId,
       metadata: {
+        select2: [{ value: 'A select1', label: 'A select1' }],
         select1: [{ value: 'SpainID', label: 'Cool Spain' }],
         multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
@@ -556,6 +559,13 @@ export const fixtures = {
         {
           _id: select1,
           name: 'select1',
+          type: 'select',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
+        {
+          _id: db.id(),
+          name: 'select2',
           type: 'select',
           filter: true,
           content: countriesDictionaryID.toString(),

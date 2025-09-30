@@ -199,6 +199,20 @@ Cypress.Commands.add('realDragAndDrop', (subject, target) => {
   target.realMouseMove(0, 0, { position: 'center' }).realMouseUp().wait(100);
 });
 
+Cypress.Commands.add('realDrag', (subject, distanceX, distanceY) => {
+  subject.then($el => {
+    const rect = $el[0].getBoundingClientRect();
+    const startX = rect.x + rect.width / 2;
+    const startY = rect.y + rect.height / 2;
+
+    cy.wrap($el).realMouseDown({ button: 'left', position: 'center' });
+
+    cy.get('body').realMouseMove(startX + distanceX, startY + distanceY, { position: 'topLeft' });
+
+    cy.get('body').realMouseUp({ button: 'left' });
+  });
+});
+
 Cypress.Commands.add('waitForLegacyNotifications', () => {
   cy.get('.alert-wrapper').each(element => {
     cy.wrap(element).should('be.empty');
