@@ -70,54 +70,41 @@ ENV NODE_PATH=/usr/local/lib/node_modules
 RUN npm i -g yarn@1.22.22 --force \
     && yarn --version
 
-# Create startup script for MongoDB with replica set
+# Create startup script for MongoDB with replica set (available for manual use)
 RUN echo '#!/bin/bash\n\
 set -e\n\
+echo "Starting MongoDB with replica set..."\n\
 \n\
-# Function to start MongoDB\n\
-start_mongodb() {\n\
-  echo "Starting MongoDB..."\n\
-  # Create data directory\n\
-  mkdir -p /tmp/mongodb-data\n\
-  \n\
-  # Start MongoDB with replica set in background\n\
-  mongod --dbpath /tmp/mongodb-data --replSet uwazi_replica_set --bind_ip_all --port 27017 --fork --logpath /tmp/mongod.log\n\
-  \n\
-  # Wait for MongoDB to start\n\
-  echo "Waiting for MongoDB to start..."\n\
-  for i in {1..30}; do\n\
-    if mongosh --host localhost --port 27017 --quiet --eval "db.runCommand({ ping: 1 })" >/dev/null 2>&1; then\n\
-      echo "MongoDB is up"; break\n\
-    fi\n\
-    echo "Waiting for MongoDB to start... (attempt $i/30)"\n\
-    sleep 2\n\
-  done\n\
-  \n\
-  # Initialize replica set if not already initialized\n\
-  echo "Initializing replica set..."\n\
-  mongosh --host localhost --port 27017 --quiet --eval "try { rs.status() } catch(e) { rs.initiate({_id: \"uwazi_replica_set\", members: [{_id: 0, host: \"localhost:27017\"}]}) }"\n\
-  \n\
-  # Wait for replica set to be ready\n\
-  echo "Waiting for replica set to be ready..."\n\
-  for i in {1..60}; do\n\
-    if mongosh --host localhost --port 27017 --quiet --eval "try { rs.status().myState } catch (e) { print(0) }" | tail -n 1 | grep -q "1"; then\n\
-      echo "Mongo replica set is PRIMARY and ready"; break\n\
-    fi\n\
-    echo "Waiting for Mongo replica set... (attempt $i/60)"\n\
-    sleep 2\n\
-  done\n\
-}\n\
+# Create data directory\n\
+mkdir -p /tmp/mongodb-data\n\
 \n\
-# Start MongoDB in background\n\
-start_mongodb &\n\
+# Start MongoDB with replica set\n\
+mongod --dbpath /tmp/mongodb-data --replSet uwazi_replica_set --bind_ip_all --port 27017 --fork --logpath /tmp/mongod.log\n\
 \n\
-# Wait a moment for MongoDB to start\n\
-sleep 5\n\
+# Wait for MongoDB to start\n\
+echo "Waiting for MongoDB to start..."\n\
+for i in {1..30}; do\n\
+  if mongosh --host localhost --port 27017 --quiet --eval "db.runCommand({ ping: 1 })" >/dev/null 2>&1; then\n\
+    echo "MongoDB is up"; break\n\
+  fi\n\
+  echo "Waiting for MongoDB to start... (attempt $i/30)"\n\
+  sleep 2\n\
+done\n\
 \n\
-# Execute the command passed to the container\n\
-exec "$@"' > /usr/local/bin/start-mongo.sh \
-    && chmod +x /usr/local/bin/start-mongo.sh
-
-# Set the startup script as entrypoint
-ENTRYPOINT ["/usr/local/bin/start-mongo.sh"]
+# Initialize replica set if not already initialized\n\
+echo "Initializing replica set..."\n\
+mongosh --host localhost --port 27017 --quiet --eval "try { rs.status() } catch(e) { rs.initiate({_id: \"uwazi_replica_set\", members: [{_id: 0, host: \"localhost:27017\"}]}) }"\n\
+\n\
+# Wait for replica set to be ready\n\
+echo "Waiting for replica set to be ready..."\n\
+for i in {1..60}; do\n\
+  if mongosh --host localhost --port 27017 --quiet --eval "try { rs.status().myState } catch (e) { print(0) }" | tail -n 1 | grep -q "1"; then\n\
+    echo "Mongo replica set is PRIMARY and ready"; break\n\
+  fi\n\
+  echo "Waiting for Mongo replica set... (attempt $i/60)"\n\
+  sleep 2\n\
+done\n\
+\n\
+echo "MongoDB replica set setup complete!"' > /usr/local/bin/setup-mongo-replica.sh \
+    && chmod +x /usr/local/bin/setup-mongo-replica.sh
 

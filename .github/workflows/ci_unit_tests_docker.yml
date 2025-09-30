@@ -145,6 +145,9 @@ jobs:
       - name: install dependencies
         run: yarn install
 
+      - name: Start MongoDB replica set
+        run: /usr/local/bin/setup-mongo-replica.sh
+
       - name: Wait for MongoDB replica set to be ready
         run: |
           for i in {1..60}; do
