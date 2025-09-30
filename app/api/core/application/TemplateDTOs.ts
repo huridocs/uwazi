@@ -26,7 +26,7 @@ const BasePropertySchema = z.object({
   type: z.enum(types),
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),
-  content: z.string().optional(), // Is the target template Id or thesaurus Id.
+  content: z.string().optional().nullable(), // Is the target template Id or thesaurus Id.
   relationType: z.string().optional(), // Only for relationship type properties
   inherit: z
     .object({
