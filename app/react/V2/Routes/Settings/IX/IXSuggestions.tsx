@@ -211,6 +211,7 @@ const IXSuggestions = () => {
           suggestionIds,
           useForTraining: true,
         });
+        await revalidate();
       } catch (e) {
         handleUnexpectedError(e, 'An error has ocurred');
       }

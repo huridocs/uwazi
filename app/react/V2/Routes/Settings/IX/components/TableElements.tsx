@@ -379,6 +379,7 @@ const suggestionsTableColumnsBuilder = ({
       header: UsedForTrainingHeader,
       cell: ({ cell }) => <UsedForTrainingCell cell={cell} action={markForTraining} />,
       meta: { headerClassName: valueWidth },
+      enableSorting: false,
     }),
     suggestionColumnHelper.display({
       id: 'accept-actions',
