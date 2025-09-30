@@ -46,6 +46,7 @@ import {
   getRelationshipInfo,
   updateSuggestionValues,
 } from './helpers/loaderHelper';
+import { setForTraining } from 'V2/api/ix/suggestions';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -204,6 +205,14 @@ const IXSuggestions = () => {
     }
   };
 
+  const markForTraining = async (suggestionIds: string[]) => {
+    if (extractor._id) {
+      try {
+        await setForTraining({ extractorId: extractor._id, suggestionIds, useForTraining: true });
+      } catch {}
+    }
+  };
+
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
@@ -278,11 +287,12 @@ const IXSuggestions = () => {
           <Table
             data={currentSuggestions}
             enableSelections
-            columns={suggestionsTableColumnsBuilder(
-              filteredTemplates(),
+            columns={suggestionsTableColumnsBuilder({
+              templates: filteredTemplates(),
               acceptSuggestions,
-              openSidepanel
-            )}
+              openPdfSidepanel: openSidepanel,
+              markForTraining,
+            })}
             onSelect={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)

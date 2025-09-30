@@ -106,6 +106,11 @@ describe('IX suggestions', () => {
     await testCheckboxes();
   });
 
+  describe('Used for training', () => {
+    it('should display if the entity is used for training', () => {});
+    it('should allow marking an entity as used for training', () => {});
+  });
+
   describe('Train model modal', () => {
     describe('form', () => {
       beforeEach(async () => {

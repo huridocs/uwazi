@@ -33,6 +33,7 @@ interface SingleValueSuggestion extends EntitySuggestion {
   disableRowSelection?: boolean;
   isChild?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
+  usedForTraining?: boolean;
 }
 
 interface MultiValueSuggestion extends EntitySuggestion {
@@ -40,6 +41,7 @@ interface MultiValueSuggestion extends EntitySuggestion {
   disableRowSelection?: boolean;
   subRows?: SingleValueSuggestion[];
   isChild?: boolean;
+  usedForTraining?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
 }
 

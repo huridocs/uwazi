@@ -1,8 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
-import { calculateOptimalProportions } from '../helpers/contextHelpers';
-
+import React, { useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
@@ -25,6 +23,7 @@ import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { acceptedSuggestions } from './atoms';
 import { ContextCell } from './ContextCell';
+import { calculateOptimalProportions } from '../helpers/contextHelpers';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -78,6 +77,9 @@ const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Name</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
+);
+const UsedForTrainingHeader = () => (
+  <Translate className="whitespace-nowrap">Used for training</Translate>
 );
 const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
@@ -276,6 +278,39 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
   return <ContextCell text={segment} />;
 };
 
+const UsedForTrainingCell = ({
+  cell,
+  action,
+}: {
+  cell: Cell<TableSuggestion, boolean | undefined>;
+  action: (suggestions: string[]) => Promise<void>;
+}) => {
+  const usedForTraining = cell.getValue();
+  const [used, setUsed] = useState(usedForTraining);
+
+  if (used) {
+    return (
+      <div className="w-6 h-6 m-auto">
+        {getIcon('green')}
+        <Translate className="sr-only">Used for training</Translate>
+      </div>
+    );
+  }
+
+  return (
+    <EmbededButton
+      icon={getIcon('orange')}
+      color="orange"
+      onClick={async () => {
+        setUsed(true);
+        await action([cell.row.original._id]);
+      }}
+    >
+      <Translate>Use for training</Translate>
+    </EmbededButton>
+  );
+};
+
 const extractorsTableColumns = [
   extractorColumnHelper.accessor('name', {
     header: ExtractorHeader,
@@ -306,18 +341,23 @@ const extractorsTableColumns = [
 
 type Color = 'red' | 'green' | 'orange';
 
-const suggestionsTableColumnsBuilder = (
-  templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
-  openPdfSidepanel: (suggestion: TableSuggestion) => void,
-  suggestions?: TableSuggestion[]
-) => {
+const suggestionsTableColumnsBuilder = ({
+  templates,
+  acceptSuggestions,
+  openPdfSidepanel,
+  markForTraining,
+}: {
+  templates: ClientTemplateSchema[];
+  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>;
+  openPdfSidepanel: (suggestion: TableSuggestion) => void;
+  markForTraining: (suggestions: string[]) => Promise<void>;
+}) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
     ...(templates[0].properties || []),
   ];
 
-  const { titleWidth, contextWidth, valueWidth } = calculateOptimalProportions(suggestions || []);
+  const { titleWidth, contextWidth, valueWidth } = calculateOptimalProportions([]);
 
   return [
     suggestionColumnHelper.accessor('entityTitle', {
@@ -333,6 +373,11 @@ const suggestionsTableColumnsBuilder = (
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
+      meta: { headerClassName: valueWidth },
+    }),
+    suggestionColumnHelper.accessor('usedForTraining', {
+      header: UsedForTrainingHeader,
+      cell: ({ cell }) => <UsedForTrainingCell cell={cell} action={markForTraining} />,
       meta: { headerClassName: valueWidth },
     }),
     suggestionColumnHelper.display({

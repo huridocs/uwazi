@@ -25,6 +25,12 @@ type ProcessParameters = {
   };
 };
 
+type MarkForTrainingParams = {
+  extractorId: string;
+  suggestionIds: string[];
+  useForTraining?: boolean;
+};
+
 const get = async (
   parameters: {
     page: { number: number; size: number };
@@ -104,5 +110,13 @@ const process = async (
   return response;
 };
 
+const setForTraining = async (
+  parameters: MarkForTrainingParams,
+  headers?: IncomingHttpHeaders
+): Promise<{ updated: string[]; useForTraining: Boolean }> => {
+  const params = new RequestParams(parameters, headers);
+  return api.post('suggestions/training-set', params);
+};
+
 export type { ProcessParameters };
-export { get, accept, aggregation, findSuggestions, status, cancel, process };
+export { get, accept, aggregation, findSuggestions, status, cancel, process, setForTraining };
