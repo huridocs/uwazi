@@ -102,15 +102,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache,mode=max
 
-      - name: Build and push mongo7-rs image
-        uses: docker/build-push-action@v6
-        if: steps.changes.outputs.should_build == 'true'
-        with:
-          context: .
-          file: .github/ci/Dockerfile
-          target: mongo7-rs
-          push: true
-          tags: ghcr.io/${{ github.repository }}-mongo7-rs:latest
 
   api_unit_tests_shards:
     needs: [precheck, build_ci_image]
@@ -139,11 +130,6 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-      mongo:
-        image: ghcr.io/${{ github.repository }}-mongo7-rs:latest
-        ports:
-          - 27017:27017
-        options: --name=mongo
     steps:
       - uses: actions/checkout@v4
 
@@ -159,22 +145,15 @@ jobs:
       - name: install dependencies
         run: yarn install
 
-      - name: Wait for Mongo healthy
+      - name: Wait for MongoDB replica set to be ready
         run: |
-          for i in {1..30}; do
-            if mongosh --host mongo --port 27017 --quiet --eval 'db.runCommand({ ping: 1 })' >/dev/null 2>&1; then
-              echo "Mongo is up"; break; fi; sleep 2; done
-
-      - name: Initialize Mongo replica set
-        run: |
-          set +e
-          mongosh --host mongo --port 27017 --quiet --eval 'try { rs.initiate({_id: "uwazi_replica_set", members: [{_id: 0, host: "mongo:27017"}]}) } catch (e) { if (/not running with --replSet/.test(e)) { print("Mongo not started with --replSet; skipping rs.initiate") } else if (!/already initialized/.test(e)) { throw e } }'
-          set -e
-          for i in {1..30}; do if [ "$(mongosh --host mongo --port 27017 --quiet --eval 'try { rs.status().myState } catch (e) { print(0) }' | tail -n 1)" = "1" ]; then echo "Replica set PRIMARY"; break; fi; sleep 2; done
-
-      - name: Check replica set status
-        run: |
-          mongosh --host mongo --port 27017 --quiet --eval 'rs.status()' || true
+          for i in {1..60}; do
+            if mongosh --host localhost --port 27017 --quiet --eval 'try { rs.status().myState } catch (e) { print(0) }' | tail -n 1 | grep -q "1"; then
+              echo "Mongo replica set is PRIMARY and ready"; break
+            fi
+            echo "Waiting for Mongo replica set... (attempt $i/60)"
+            sleep 2
+          done
 
       - name: Start MinIO (from CI image)
         env:
@@ -193,7 +172,7 @@ jobs:
       - name: Run tests (shard ${{ matrix.shard }}/3)
         env:
           ELASTICSEARCH_URL: http://elasticsearch:9200
-          DBHOST: mongo:27017
+          DBHOST: localhost:27017
           REDIS_HOST: redis
           REDIS_PORT: 6379
         run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/3

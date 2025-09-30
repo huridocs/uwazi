@@ -43,11 +43,11 @@ RUN install -m 0755 -d /etc/apt/keyrings \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
-# Install mongosh and database tools (mongorestore, etc.) from the official MongoDB apt repository for Debian 12 (bookworm)
+# Install MongoDB server, mongosh and database tools from the official MongoDB apt repository for Debian 12 (bookworm)
 RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg \
     && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" > /etc/apt/sources.list.d/mongodb-org-7.0.list \
     && apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mongodb-mongosh mongodb-database-tools \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mongodb-org mongodb-mongosh mongodb-database-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Add MinIO server binary (pinned release)
@@ -70,7 +70,39 @@ ENV NODE_PATH=/usr/local/lib/node_modules
 RUN npm i -g yarn@1.22.22 --force \
     && yarn --version
 
-# MongoDB 7 single-node replica set image (build target: mongo7-rs)
-FROM mongo:7.0 AS mongo7-rs
-EXPOSE 27017
-CMD ["mongod", "--replSet", "uwazi_replica_set", "--bind_ip_all"]
+# Create startup script for MongoDB with replica set
+RUN echo '#!/bin/bash\n\
+# Create data directory\n\
+mkdir -p /tmp/mongodb-data\n\
+\n\
+# Start MongoDB with replica set\n\
+mongod --dbpath /tmp/mongodb-data --replSet uwazi_replica_set --bind_ip_all --port 27017 --fork --logpath /tmp/mongod.log\n\
+\n\
+# Wait for MongoDB to start\n\
+for i in {1..30}; do\n\
+  if mongosh --host localhost --port 27017 --quiet --eval "db.runCommand({ ping: 1 })" >/dev/null 2>&1; then\n\
+    echo "MongoDB is up"; break\n\
+  fi\n\
+  echo "Waiting for MongoDB to start... (attempt $i/30)"\n\
+  sleep 2\n\
+done\n\
+\n\
+# Initialize replica set\n\
+mongosh --host localhost --port 27017 --quiet --eval "rs.initiate({_id: \"uwazi_replica_set\", members: [{_id: 0, host: \"localhost:27017\"}]})"\n\
+\n\
+# Wait for replica set to be ready\n\
+for i in {1..60}; do\n\
+  if mongosh --host localhost --port 27017 --quiet --eval "try { rs.status().myState } catch (e) { print(0) }" | tail -n 1 | grep -q "1"; then\n\
+    echo "Mongo replica set is PRIMARY and ready"; break\n\
+  fi\n\
+  echo "Waiting for Mongo replica set... (attempt $i/60)"\n\
+  sleep 2\n\
+done\n\
+\n\
+# Keep container running\n\
+exec "$@"' > /usr/local/bin/start-mongo.sh \
+    && chmod +x /usr/local/bin/start-mongo.sh
+
+# Set the startup script as entrypoint
+ENTRYPOINT ["/usr/local/bin/start-mongo.sh"]
+
