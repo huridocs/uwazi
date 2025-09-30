@@ -1,7 +1,6 @@
 import { captureException } from '@sentry/react';
 import { isClient } from 'app/utils';
-import { notificationAtom } from 'app/V2/atoms';
-import { createStore } from 'jotai';
+import { notificationAtom, atomStore } from 'app/V2/atoms';
 import { Translate } from 'app/I18N';
 import React from 'react';
 
@@ -43,8 +42,7 @@ const reportErrorToSentry = (error: Error, key: string) => {
 
 const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   reportErrorToSentry(error, key);
-  const store = createStore();
-  store.set(notificationAtom, () => ({
+  atomStore.set(notificationAtom, () => ({
     type: 'error',
     text: <Translate>An error occurred</Translate>,
     details:
