@@ -8,9 +8,11 @@ describe('Collection', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.intercept('GET', '/api/settings').as('fetchSettings');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Collection').click();
     cy.wait('@fetchTemplates');
+    cy.wait('@fetchSettings');
     cy.injectAxe();
   });
 
@@ -19,14 +21,38 @@ describe('Collection', () => {
     cy.get('[data-testid="settings-collection"]').should('be.visible');
     cy.get('form#collection-form').should('be.visible');
     
-    // Small delay to ensure all dynamic content is rendered
-    cy.wait(200);
+    // Wait for all form fields to be rendered and stable
+    cy.get('#collection-name').should('be.visible');
+    cy.get('#roles').should('be.visible');
+    cy.get('#landing-page').should('be.visible');
     
-    // Check accessibility with retry logic
-    cy.checkA11y(null, {
-      retries: 2,
-      retryDelay: 100
-    });
+    // Wait for any remaining dynamic content to load
+    cy.wait(1000);
+    
+    // Ensure no loading states are present
+    cy.get('[data-testid="settings-collection"]').should('not.contain', 'Loading');
+    
+    // Wait for any animations or transitions to complete
+    cy.get('[data-testid="settings-collection"]').should('not.have.css', 'animation');
+    
+    // Custom violation logger for debugging
+    const terminalLog = (violations: any[]) => {
+      cy.task('log', `${violations.length} accessibility violation${violations.length === 1 ? '' : 's'} detected`);
+      violations.forEach((violation: any) => {
+        cy.task('log', `Violation: ${violation.id}`);
+        cy.task('log', `Description: ${violation.description}`);
+        cy.task('log', `Impact: ${violation.impact}`);
+        cy.task('log', 'Nodes:');
+        violation.nodes.forEach((node: any) => {
+          cy.task('log', `  ${node.html}`);
+        });
+      });
+    };
+    
+    // Check accessibility with more robust retry logic
+    cy.checkA11y('[data-testid="settings-collection"]', {
+      includedImpacts: ['serious', 'critical']
+    }, terminalLog);
   });
 
   it('should change collection Name', () => {

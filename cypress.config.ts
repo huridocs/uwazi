@@ -31,6 +31,19 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       initPlugin(on, config);
       cypressFailFast(on, config);
+      
+      // Add logging tasks for accessibility violations
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        },
+      });
+      
       on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
         if (results && results.video) {
           // Do we have failures for any retry attempts?
