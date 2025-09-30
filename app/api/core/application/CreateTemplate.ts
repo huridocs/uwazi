@@ -26,11 +26,11 @@ type Deps = {
   pageService: PageService;
 };
 
-class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output> {
+class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, Deps> {
   private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
-  constructor(private deps: Deps) {
-    super();
+  constructor(deps: Deps) {
+    super(deps);
 
     this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
   }

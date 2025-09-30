@@ -4,6 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
+import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { search } from 'api/search';
@@ -30,6 +31,7 @@ type Dependencies = {
   entitiesDS: MultiLanguageEntityDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
+  filesDS: FilesDataSource;
   transactionManager: TransactionManager;
 };
 
@@ -52,8 +54,14 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
       await search.indexEntities({ sharedId: { $in: entitiesIds } }, '+fullText', 10);
     }
     await this.dependencies.transactionManager.run(async () => {
-      await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
-      await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
+      if (Object.keys(renamedProperties).length) {
+        await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
+        await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
+      }
+      if (deletedProperties.length) {
+        await this.dependencies.filesDS.deleteExtractedMetadata(deletedProperties, entitiesIds);
+        await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
+      }
 
       if (modifiedRelationshipsProps.length || newGeneratedIdProps.length) {
         const entities = await (

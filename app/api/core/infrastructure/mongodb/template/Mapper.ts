@@ -16,14 +16,18 @@ import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDatePrope
 import { MultiDateProperty } from 'api/core/domain/template/MultiDateProperty';
 import { MultiDateRangeProperty } from 'api/core/domain/template/MultiDateRangeProperty';
 import { MultiSelectProperty } from 'api/core/domain/template/MultiSelectProperty';
+import { NestedProperty } from 'api/core/domain/template/NestedProperty';
 import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
 import { SelectProperty } from 'api/core/domain/template/SelectProperty';
 import { TextProperty } from 'api/core/domain/template/TextProperty';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
+import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
+import { TraverseQueryDBO } from 'api/templates.v2/database/schemas/RelationshipsQueryDBO';
 import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { Template } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { ObjectId } from 'mongodb';
@@ -230,6 +234,9 @@ class PropertyMapper {
         return new SelectProperty({ ...baseProps, ...filterableProps, ...selectProps });
       }
 
+      case 'nested':
+        return new NestedProperty({ ...baseProps, ...filterableProps });
+
       case 'relationship':
         return V1RelationshipProperty.create({
           ...baseProps,
@@ -238,6 +245,16 @@ class PropertyMapper {
           content: schema.content,
           inherit: schema.inherit as any,
         });
+
+      case 'newRelationship':
+        return new RelationshipProperty(
+          baseProps.id,
+          baseProps.name,
+          baseProps.label,
+          mapPropertyQuery(schema.query as TraverseQueryDBO[]),
+          template,
+          schema.denormalizedProperty
+        );
 
       default:
         throw new Error(
@@ -266,7 +283,7 @@ class TemplateMapper {
   static toDomain(schema: TemplateDBO): Template {
     const templateId = schema._id.toHexString();
 
-    return new Template(
+    const template = new Template(
       templateId,
       schema.name,
       schema.properties.map(item => PropertyMapper.toDomain(item, templateId)),
@@ -275,6 +292,10 @@ class TemplateMapper {
       schema.default,
       schema.entityViewPage
     );
+
+    template.processing = schema.processing;
+
+    return template;
   }
 }
 
