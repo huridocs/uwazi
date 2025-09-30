@@ -8,6 +8,7 @@ import { notificationAtom, templatesAtom } from 'V2/atoms';
 import type { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
@@ -58,10 +59,7 @@ const PXEntityDashboard = () => {
         await revalidator.revalidate();
       }
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      handleUnexpectedError(error, 'Error extracting paragraphs');
     }
 
     setIsSaving(false);
