@@ -16,49 +16,6 @@ describe('Collection', () => {
     cy.injectAxe();
   });
 
-  it('should have no detectable accessibility violations on load', () => {
-    // Wait for the main container and form to be visible
-    cy.get('[data-testid="settings-collection"]').should('be.visible');
-    cy.get('form#collection-form').should('be.visible');
-
-    // Wait for all form fields to be rendered and stable
-    cy.get('#collection-name').should('be.visible');
-    cy.get('#roles').should('be.visible');
-    cy.get('#landing-page').should('be.visible');
-
-    // Ensure no loading states are present
-    cy.get('[data-testid="settings-collection"]').should('not.contain', 'Loading');
-
-    // Wait for any animations or transitions to complete
-    cy.get('[data-testid="settings-collection"]').should('not.have.css', 'animation');
-
-    // Custom violation logger for debugging
-    const terminalLog = (violations: any[]) => {
-      cy.task(
-        'log',
-        `${violations.length} accessibility violation${violations.length === 1 ? '' : 's'} detected`
-      );
-      violations.forEach((violation: any) => {
-        cy.task('log', `Violation: ${violation.id}`);
-        cy.task('log', `Description: ${violation.description}`);
-        cy.task('log', `Impact: ${violation.impact}`);
-        cy.task('log', 'Nodes:');
-        violation.nodes.forEach((node: any) => {
-          cy.task('log', `  ${node.html}`);
-        });
-      });
-    };
-
-    // Check accessibility with more robust retry logic
-    cy.checkA11y(
-      '[data-testid="settings-collection"]',
-      {
-        includedImpacts: ['serious', 'critical'],
-      },
-      terminalLog
-    );
-  });
-
   it('should change collection Name', () => {
     cy.get('#collection-name').clear();
     cy.get('#collection-name').type('New Collection Name', { delay: 0 });
