@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { calculateOptimalProportions } from '../helpers/contextHelpers';
+
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
@@ -307,28 +309,31 @@ type Color = 'red' | 'green' | 'orange';
 const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
   acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
-  openPdfSidepanel: (suggestion: TableSuggestion) => void
+  openPdfSidepanel: (suggestion: TableSuggestion) => void,
+  suggestions?: TableSuggestion[]
 ) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
     ...(templates[0].properties || []),
   ];
 
+  const { titleWidth, contextWidth, valueWidth } = calculateOptimalProportions(suggestions || []);
+
   return [
     suggestionColumnHelper.accessor('entityTitle', {
       header: TitleHeader,
       cell: TitleCell,
-      meta: { headerClassName: 'w-1/5' },
+      meta: { headerClassName: titleWidth },
     }),
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
-      meta: { headerClassName: 'w-1/5' },
+      meta: { headerClassName: contextWidth },
     }),
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
-      meta: { headerClassName: 'w-2/5' },
+      meta: { headerClassName: valueWidth },
     }),
     suggestionColumnHelper.display({
       id: 'accept-actions',
