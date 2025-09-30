@@ -60,7 +60,7 @@ import {
   templatesLoader,
   TemplatesEditor,
   templatesEditorLoader,
-} from 'app/V2/Routes/Settings/Templates';
+} from 'V2/Routes/Settings/Templates';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
