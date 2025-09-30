@@ -6,6 +6,7 @@ import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 import { Button, ConfirmationModal } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 
 const ExtractEntitiesDialog = ({
   setIsProcessing,
@@ -50,10 +51,7 @@ const ExtractEntitiesDialog = ({
         onSuccess();
       }
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-      });
+      handleUnexpectedError(error, 'Error extracting paragraphs');
     }
 
     setIsOpen(false);

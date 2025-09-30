@@ -6,6 +6,7 @@ import { save as saveThesauri } from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 
 interface AddThesaurusModalProps {
   onClose: () => void;
@@ -51,10 +52,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
     try {
       await save();
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error creating thesaurus.</Translate>,
-      });
+      handleUnexpectedError(error, 'Error creating thesaurus');
     } finally {
       setIsSaving(false);
       handleClose();

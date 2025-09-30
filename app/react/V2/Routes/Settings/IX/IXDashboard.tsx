@@ -11,6 +11,7 @@ import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { ClientIXExtractorType } from 'V2/shared/types';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { ExtractorModal } from './components/ExtractorModal';
 import { extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
@@ -92,11 +93,7 @@ const IXDashboard = () => {
         text: <Translate>Extractor/s deleted</Translate>,
       });
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
+      handleUnexpectedError(error, 'Error deleting extractors');
     } finally {
       setIsSaving(false);
     }
@@ -113,11 +110,7 @@ const IXDashboard = () => {
         text: <Translate>Saved successfully.</Translate>,
       });
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
+      handleUnexpectedError(error, 'Error saving extractor');
     } finally {
       setIsSaving(false);
     }

@@ -11,6 +11,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { ColumnDef } from '@tanstack/react-table';
 import { Template } from 'app/apiResponseTypes';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
 import { TemplateRow } from './types';
@@ -70,10 +71,7 @@ const Templates = () => {
       });
       await revalidator.revalidate();
     } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error setting default template</Translate>,
-      });
+      handleUnexpectedError(e, 'Error setting default template');
     }
   };
 
@@ -96,10 +94,7 @@ const Templates = () => {
       });
       await revalidator.revalidate();
     } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error deleting template(s)</Translate>,
-      });
+      handleUnexpectedError(e, 'Error deleting template(s)');
     }
   };
 
