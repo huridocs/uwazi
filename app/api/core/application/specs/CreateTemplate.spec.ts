@@ -374,7 +374,7 @@ describe('CreateTemplateUseCase', () => {
           type: 'relationship',
           name: 'relationship_to_any',
           label: 'Relationship to any',
-          content: null,
+          content: '',
           relationType: factory.id('relationTypeId').toHexString(),
           inherit: null,
 
