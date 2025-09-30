@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { defineConfig } from 'cypress';
 import webpackConfig from './webpack.config';
+import cypressFailFast from 'cypress-fail-fast/plugin';
 
 const cypressWebpackConfig = {
   ...webpackConfig,
@@ -16,6 +17,10 @@ export default defineConfig({
   viewportHeight: 768,
   defaultCommandTimeout: 12000,
   requestTimeout: 30000,
+  env: {
+    FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'true',
+    FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'spec',
+  },
   e2e: {
     baseUrl: 'http://localhost:3000',
     video: true,
@@ -26,6 +31,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
       initPlugin(on, config);
+      cypressFailFast(on, config);
       on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
         if (results && results.video) {
           // Do we have failures for any retry attempts?
