@@ -11,6 +11,7 @@ import { Template } from 'app/apiResponseTypes';
 import { notificationAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms';
 import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 
@@ -86,11 +87,7 @@ const RelationshipTypes = () => {
       });
       setIsSidepanelOpen(false);
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.error,
-      });
+      handleUnexpectedError(error, 'Error saving relationship type');
       setIsSidepanelOpen(false);
     }
     await revalidator.revalidate();
@@ -105,11 +102,7 @@ const RelationshipTypes = () => {
       });
       setShowConfirmationModal(false);
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.error,
-      });
+      handleUnexpectedError(error, 'Error deleting relationship type');
       setShowConfirmationModal(false);
     }
     await revalidator.revalidate();
