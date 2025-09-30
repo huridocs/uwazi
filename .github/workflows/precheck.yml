@@ -107,6 +107,15 @@ jobs:
             const ref = process.env.INPUT_REF || context.ref || '';
             let shouldRun = false;
 
+            // Fast-path: if caller says this is a non-draft PR, always run
+            const inputIsPr = String(process.env.INPUT_IS_PR || '') === 'true';
+            const inputIsDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true';
+            if (inputIsPr && !inputIsDraft) {
+              core.info('precheck: fast-path non-draft PR -> run');
+              core.setOutput('should_run', 'true');
+              return;
+            }
+
             function containsRunTests(text) {
               if (!text || typeof text !== 'string') return false;
               return /\[run tests\]/i.test(text);
