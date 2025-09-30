@@ -234,6 +234,7 @@ jobs:
             // Decide shouldRun for PRs (draft gating) and for non-protected pushes
             if (isPR) {
               if (!isDraft) {
+                // Force-run for non-draft PRs
                 shouldRun = true;
               } else if (hasRunTests) {
                 shouldRun = true;
