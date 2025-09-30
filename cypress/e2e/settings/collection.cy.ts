@@ -18,13 +18,14 @@ describe('Collection', () => {
     // Wait for the main container and form to be visible
     cy.get('[data-testid="settings-collection"]').should('be.visible');
     cy.get('form#collection-form').should('be.visible');
-    
+
     // Small delay to ensure all dynamic content is rendered
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(200);
-    
+
     // Check accessibility with retry logic
     cy.checkA11y(undefined, {
-      retries: 2
+      retries: 2,
     });
   });
 
