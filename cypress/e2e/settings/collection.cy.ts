@@ -15,7 +15,18 @@ describe('Collection', () => {
   });
 
   it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
+    // Wait for the main container and form to be visible
+    cy.get('[data-testid="settings-collection"]').should('be.visible');
+    cy.get('form#collection-form').should('be.visible');
+    
+    // Small delay to ensure all dynamic content is rendered
+    cy.wait(200);
+    
+    // Check accessibility with retry logic
+    cy.checkA11y(null, {
+      retries: 2,
+      retryDelay: 100
+    });
   });
 
   it('should change collection Name', () => {
