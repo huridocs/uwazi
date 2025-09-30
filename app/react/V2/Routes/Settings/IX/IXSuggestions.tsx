@@ -38,7 +38,6 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
-
 import { TrainModelModal } from './components/TrainModelModal';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal';
 import {
@@ -46,7 +45,6 @@ import {
   getRelationshipInfo,
   updateSuggestionValues,
 } from './helpers/loaderHelper';
-import { setForTraining } from 'V2/api/ix/suggestions';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -208,7 +206,11 @@ const IXSuggestions = () => {
   const markForTraining = async (suggestionIds: string[]) => {
     if (extractor._id) {
       try {
-        await setForTraining({ extractorId: extractor._id, suggestionIds, useForTraining: true });
+        await suggestionsAPI.setForTraining({
+          extractorId: extractor._id,
+          suggestionIds,
+          useForTraining: true,
+        });
       } catch (e) {
         handleUnexpectedError(e, 'An error has ocurred');
       }
