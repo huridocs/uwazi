@@ -209,7 +209,9 @@ const IXSuggestions = () => {
     if (extractor._id) {
       try {
         await setForTraining({ extractorId: extractor._id, suggestionIds, useForTraining: true });
-      } catch {}
+      } catch (e) {
+        handleUnexpectedError(e, 'An error has ocurred');
+      }
     }
   };
 
