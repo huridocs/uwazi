@@ -3,12 +3,11 @@
 import React from 'react';
 import { Button } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { isClient } from 'app/utils';
-import { captureException } from '@sentry/react';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import { notificationAtom } from 'V2/atoms';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 
 const Footer = () => {
@@ -51,10 +50,7 @@ const Footer = () => {
         text: <Translate>Paragraph Extractor added</Translate>,
       });
     } catch (e) {
-      if (isClient) {
-        const error = new Error('Error saving extractor', { cause: e });
-        captureException(error);
-      }
+      handleUnexpectedError(e, 'Error creating paragraph extractor');
     }
   };
 

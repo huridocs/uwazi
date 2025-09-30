@@ -4,10 +4,8 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { get, isEmpty, uniqBy } from 'lodash';
-import { captureException } from '@sentry/react';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { isClient } from 'app/utils';
 import {
   defaultSearch,
   InputField,
@@ -18,11 +16,13 @@ import {
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { ClientIXExtractorType } from 'V2/shared/types';
+import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
 import { escapeLucene, searchRelatedEntities } from '../helpers';
+
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
@@ -198,7 +198,7 @@ const Relationships = ({
         const escapedText = escapeLucene(searchTextRef.current.trim());
         const fieldName = extractor?.inheritedProperty?.name;
 
-        let searchField = ['select', 'multiselect'].includes(
+        const searchField = ['select', 'multiselect'].includes(
           extractor?.inheritedProperty?.type || ''
         )
           ? '.label'
@@ -250,10 +250,7 @@ const Relationships = ({
         .catch(e => {
           initialOptionsRef.current = [];
           setOptions([]);
-          if (isClient) {
-            const error = new Error('Lookup search error', { cause: e });
-            captureException(error);
-          }
+          handleUnexpectedError(e, 'Error looking up search');
         });
     }
   }, [property, suggestion, extractor]);
@@ -265,7 +262,9 @@ const Relationships = ({
       const escapedText = escapeLucene(searchTerm.trim());
       const fieldName = extractor?.inheritedProperty?.name;
 
-      let searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
+      const searchField = ['select', 'multiselect'].includes(
+        extractor?.inheritedProperty?.type || ''
+      )
         ? '.label'
         : '.value';
 

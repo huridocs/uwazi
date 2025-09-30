@@ -21,6 +21,7 @@ import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
+import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -122,11 +123,7 @@ const IXSuggestions = () => {
         text: <Translate>Suggestions sent</Translate>,
       });
     } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
+      handleUnexpectedError(error, 'Error accepting suggestions');
     }
   };
 
@@ -139,7 +136,9 @@ const IXSuggestions = () => {
             suggestionsToFind: findAmount,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
-        } catch (error) {}
+        } catch (error) {
+          handleUnexpectedError(error, 'Error training model');
+        }
       }
     }
   };
@@ -155,7 +154,9 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      } catch (error) {}
+      } catch (error) {
+        handleUnexpectedError(error, 'Error canceling model train');
+      }
     }
   };
 
@@ -194,11 +195,7 @@ const IXSuggestions = () => {
           setStatus({ status: ixStatus.ready });
         }
       } catch (error) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-        });
+        handleUnexpectedError(error, 'Error processing extractor');
       }
     }
   };
