@@ -1,10 +1,13 @@
 import { appContext } from 'api/utils/AppContext';
+import { DB } from 'api/odm';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { setupTestUploadedPaths } from 'api/files';
 import { UserSchema } from 'shared/types/userType';
+import path from 'path';
+import uniqueID from 'shared/uniqueID';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
@@ -21,10 +24,16 @@ const testingEnvironment = {
   },
 
   async setTenant(name?: string, subPath = '') {
+    const testPath = expect.getState().testPath || '';
+    const sanitizedTestPath = path.basename(testPath).replace(/[.-]/g, '_');
+    const defaultIndexName = `index_${uniqueID()}_${sanitizedTestPath}`
+      .substring(0, 63)
+      .toLowerCase();
+
     testingTenants.mockCurrentTenant({
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
-      indexName: 'index',
+      indexName: defaultIndexName,
     });
     await setupTestUploadedPaths(subPath);
   },
@@ -65,7 +74,23 @@ const testingEnvironment = {
   async setElastic(elasticIndex?: string) {
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
-      await elasticTesting.reindex();
+      if (DB.getConnection()) {
+        await elasticTesting.reindex();
+      }
+      return;
+    }
+
+    // Ensure a unique default test index exists (guard against testingDB.connect() overriding tenant index)
+    const testPath = expect.getState().testPath || '';
+    const sanitizedTestPath = path.basename(testPath).replace(/[.-]/g, '_');
+    const defaultIndexName = `index_${uniqueID()}_${sanitizedTestPath}`
+      .substring(0, 63)
+      .toLowerCase();
+    testingTenants.changeCurrentTenant({ indexName: defaultIndexName });
+
+    // Create/reset mappings for the (now unique) index
+    if (DB.getConnection()) {
+      await elasticTesting.resetIndex();
     }
   },
 

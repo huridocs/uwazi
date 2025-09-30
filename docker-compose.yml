@@ -18,7 +18,7 @@ services:
       - xpack.security.enabled=false
 
   mongo:
-    image: "mongo:6.0"
+    image: "mongo:7.0"
     container_name: uwazi-mongo
     command: mongod --replSet "uwazi_replica_set"
     volumes:
@@ -31,7 +31,7 @@ services:
         hard: "65536"
 
   mongoreplicaset_start_script:
-    image: "mongo:6.0"
+    image: "mongo:7.0"
     restart: "no"
     container_name: mongoreplicaset_start_script
     depends_on:
@@ -48,7 +48,7 @@ services:
         '
 
   redis:
-    image: 'redis:5.0.14'
+    image: 'redis:6.0.19'
     container_name: uwazi-redis
     command: redis-server
     ports:

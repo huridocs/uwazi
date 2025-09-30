@@ -347,6 +347,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "cypress": "13.17.0",
     "cypress-axe": "^1.6.0",
+    "cypress-fail-fast": "^7.1.1",
     "cypress-plugin-snapshots": "^1.4.4",
     "cypress-real-events": "^1.14.0",
     "enzyme": "3.11.0",

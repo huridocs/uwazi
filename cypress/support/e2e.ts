@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import 'cypress-plugin-snapshots/commands';
+import 'cypress-fail-fast';
 import './commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

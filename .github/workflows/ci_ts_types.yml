@@ -5,13 +5,37 @@ on:
     branches:
       - development
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
+  precheck:
+    uses: ./.github/workflows/precheck.yml
+    secrets: inherit
+    with:
+      is_pr: ${{ github.event_name == 'pull_request' }}
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_body: ${{ github.event.pull_request.body }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      ref: ${{ github.ref }}
+      branch: ${{ github.ref_name }}
+      event_name: ${{ github.event_name }}
+      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
+      sha: ${{ github.sha }}
+
   check-types:
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
