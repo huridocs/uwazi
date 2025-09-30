@@ -32,6 +32,7 @@ declare global {
       ): Chainable<Element>;
       checkAccessibility(components: React.ReactNode[]);
       realDragAndDrop(subject: Chainable, target: Chainable): void;
+      realDrag(subject: Chainable, targetX: number, targetY: number): void;
       waitForLegacyNotifications();
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
