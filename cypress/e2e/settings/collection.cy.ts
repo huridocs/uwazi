@@ -23,9 +23,8 @@ describe('Collection', () => {
     cy.wait(200);
     
     // Check accessibility with retry logic
-    cy.checkA11y(null, {
-      retries: 2,
-      retryDelay: 100
+    cy.checkA11y(undefined, {
+      retries: 2
     });
   });
 
