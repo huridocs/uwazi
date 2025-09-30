@@ -64,10 +64,21 @@ const accept = async (
 };
 
 const findSuggestions = async (
-  { extractorId, suggestionsToFind = 0 }: { extractorId: string; suggestionsToFind: number },
+  {
+    extractorId,
+    suggestionsToFind = 0,
+    samplePolicy,
+  }: {
+    extractorId: string;
+    suggestionsToFind: number;
+    samplePolicy: 'only_marked' | 'marked_plus_labeled';
+  },
   headers?: IncomingHttpHeaders
 ) => {
-  const params = new RequestParams({ extractorId, suggestionsToFind }, headers);
+  const params = new RequestParams(
+    { extractorId, suggestionsToFind, options: { samplePolicy } },
+    headers
+  );
   const response = await api.post('suggestions/train', params);
   return response.json;
 };

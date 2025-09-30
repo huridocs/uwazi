@@ -2,15 +2,22 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
-import { Checkbox, InputField } from 'V2/Components/Forms';
+import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
 
 type TrainModelModalProps = {
   close: () => void;
-  onTrain: (findAmount: number) => Promise<void>;
+  onTrain: (
+    findAmount: number,
+    samplePolicy: 'only_marked' | 'marked_plus_labeled'
+  ) => Promise<void>;
 };
 
 type FormData = {
-  find: { shouldFind: boolean; amount: number };
+  find: {
+    shouldFind: boolean;
+    amount: number;
+    samplePolicy: 'only_marked' | 'marked_plus_labeled';
+  };
 };
 
 const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
@@ -21,12 +28,12 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
     formState: { isSubmitting },
   } = useForm<FormData>({
     mode: 'onSubmit',
-    defaultValues: { find: { shouldFind: false, amount: 1000 } },
+    defaultValues: { find: { shouldFind: false, amount: 1000, samplePolicy: 'only_marked' } },
   });
 
   const submit = async ({ find }: FormData) => {
     const findAmount: number = find.shouldFind && find.amount > 0 ? find.amount : 0;
-    await onTrain(findAmount);
+    await onTrain(findAmount, find.samplePolicy);
     close();
   };
 
@@ -47,6 +54,35 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         </div>
         <hr className="my-4" />
         <form id="train-form" onSubmit={handleSubmit(submit)}>
+          <div>
+            <Controller
+              name="find.samplePolicy"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label htmlFor={field.name} className="text-gray-900 pb-4">
+                    <Translate>Sample policy</Translate>:
+                  </label>
+                  <RadioSelect
+                    name={field.name}
+                    onChange={field.onChange}
+                    options={[
+                      {
+                        label: <Translate>Only marked</Translate>,
+                        value: 'only_marked',
+                        checked: true,
+                      },
+                      {
+                        label: <Translate>Marked and labeled</Translate>,
+                        value: 'marked_plus_labeled',
+                      },
+                    ]}
+                  />
+                </div>
+              )}
+            />
+          </div>
+          <hr className="my-4" />
           <div className="flex gap-2 flex-wrap">
             <Controller
               name="find.shouldFind"

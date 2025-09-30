@@ -127,13 +127,17 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModel = async (findAmount: number) => {
+  const trainModel = async (
+    findAmount: number,
+    samplePolicy: 'only_marked' | 'marked_plus_labeled'
+  ) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
         try {
           await suggestionsAPI.findSuggestions({
             extractorId: extractor._id,
             suggestionsToFind: findAmount,
+            samplePolicy,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
         } catch (error) {

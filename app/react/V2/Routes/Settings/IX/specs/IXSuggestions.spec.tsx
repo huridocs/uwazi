@@ -5,6 +5,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
+import api from 'app/utils/api';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
@@ -109,7 +110,7 @@ describe('IX suggestions', () => {
     describe('form', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
-        jest.spyOn(suggestionsAPI, 'findSuggestions');
+        jest.spyOn(api, 'post');
         jest.spyOn(suggestionsAPI, 'cancel');
         render(<Component />);
         const openModalButton = await screen.findByText('Train model');
@@ -130,9 +131,13 @@ describe('IX suggestions', () => {
         await act(async () => {
           await fireEvent.click(submit);
         });
-        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
-          extractorId: 'extractor1',
-          suggestionsToFind: '1500',
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'only_marked' },
+            suggestionsToFind: '1500',
+          },
+          headers: {},
         });
       });
 
@@ -143,9 +148,29 @@ describe('IX suggestions', () => {
         await act(async () => {
           await fireEvent.click(submit);
         });
-        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
-          extractorId: 'extractor1',
-          suggestionsToFind: 0,
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'only_marked' },
+            suggestionsToFind: 0,
+          },
+          headers: {},
+        });
+      });
+
+      it('should submit with the selected sample policy', async () => {
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        (await screen.findByLabelText('Marked and labeled')).click();
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'marked_plus_labeled' },
+            suggestionsToFind: 0,
+          },
+          headers: {},
         });
       });
     });
