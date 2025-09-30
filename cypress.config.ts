@@ -19,7 +19,7 @@ export default defineConfig({
   requestTimeout: 30000,
   env: {
     FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'true',
-    FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'spec',
+    FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
   },
   e2e: {
     baseUrl: 'http://localhost:3000',
