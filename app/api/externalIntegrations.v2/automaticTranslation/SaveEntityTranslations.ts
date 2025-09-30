@@ -82,10 +82,8 @@ export class SaveEntityTranslations {
   }
 
   private async getTemplate(entity: Entity) {
-    const template = await this.templatesDS.getById(entity.template);
-    if (!template) {
-      throw new Error('Template does not exist');
-    }
+    const template = (await this.templatesDS.getById(entity.template)).getDataOrThrow();
+
     return template;
   }
 }

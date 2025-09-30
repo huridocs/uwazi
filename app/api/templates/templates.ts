@@ -1,10 +1,28 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
+import {
+  DefaultIdGenerator,
+  DefaultTransactionManager,
+} from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
+import {
+  CreateTemplateDTOSchema,
+  UpdateTemplateDTOSchema,
+} from 'api/core/application/TemplateDTOs';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import { search } from 'api/search';
@@ -22,46 +40,31 @@ import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { tenants } from 'api/tenants';
-import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
-import {
-  CreateTemplateDTOSchema,
-  UpdateTemplateDTOSchema,
-} from 'api/core/application/TemplateDTOs';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { checkIfReindex } from './reindex';
+import model from './templatesModel';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
-import { TemplateValidationService } from './validation/TemplateValidationService';
-import * as v2 from './v2_support';
 import {
-  setInheritedPropertiesType,
   generateNames,
   getDeletedProperties,
   getRenamedTitle,
   getUpdatedNames,
+  setInheritedPropertiesType,
   updateExtractedMetadataProperties,
 } from './utils';
-import model from './templatesModel';
-import { checkIfReindex } from './reindex';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
+import * as v2 from './v2_support';
+import { TemplateValidationService } from './validation/TemplateValidationService';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -205,6 +208,7 @@ export default {
         })),
       });
       const transactionManager = DefaultTransactionManager();
+      const filesDS = DefaultFilesDataSource(transactionManager);
       const templatesDS = DefaultTemplatesDataSource(transactionManager);
       const entitiesDS = new MongoMultiLanguageEntityDataSource(
         getConnection(),
@@ -223,6 +227,7 @@ export default {
               relationshipsV1DS,
               templatesDS,
               transactionManager,
+              filesDS,
             }),
             templatesDS,
           }),
@@ -474,6 +479,21 @@ export default {
   },
 
   async setAsDefault(_id: string) {
+    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2SetTemplateAsDefaultUseCase;
+    if (v2CreateTemplateUseCase) {
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+
+      const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
+
+      const output = await useCase.execute({ templateId: _id.toString() });
+
+      return [
+        TemplateMapper.toSchema(output.current),
+        output.previous && TemplateMapper.toSchema(output.previous),
+      ];
+    }
+
     const [templateToBeDefault] = await this.get({ _id });
     const [currentDefault] = await this.get({ _id: { $nin: [_id] }, default: true });
 

@@ -5,6 +5,7 @@ import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipPro
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
 import { AbstractSelectProperty } from './AbstractSelectProperty';
+import { NestedPropertyProps } from './NestedProperty';
 
 class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -196,6 +197,14 @@ class TemplateDoesNotExistError extends DomainError {
     );
   }
 }
+class DefaultTemplateNotFoundError extends DomainError {
+  constructor() {
+    super(
+      'A default template is required, but none is configured in the system.',
+      'template.default_not_found'
+    );
+  }
+}
 
 class RelationshipTargetPropertyNotFoundError extends DomainError {
   constructor(propertyId: string, templateId: string) {
@@ -212,6 +221,21 @@ class RelationshipTargetTypeMismatchError extends DomainError {
       `The provided Target Property type "${providedType}" does not match with the Target Template type "${existingType}"`,
       'template.property.relationship_target_type_mismatch_error'
     );
+  }
+}
+
+class NestedPropertyNotAvailableError extends DomainError {
+  constructor(props: NestedPropertyProps) {
+    super(
+      `The nested Property type is not available for your organization ${JSON.stringify(props)}`,
+      'template.property.nested_property_type_not_available_error'
+    );
+  }
+}
+
+export class DefaultTemplateConflictError extends DomainError {
+  constructor(message: string) {
+    super(message, 'template.default_template_conflict');
   }
 }
 
@@ -237,4 +261,6 @@ export {
   PropertyThesaurusMismatchError,
   PropertyRelationTypeMismatchError,
   PropertyInheritedTypeMismatchError,
+  NestedPropertyNotAvailableError,
+  DefaultTemplateNotFoundError,
 };

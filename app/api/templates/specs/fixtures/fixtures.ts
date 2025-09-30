@@ -246,7 +246,29 @@ const fixtures: DBFixture = {
     {
       _id: templateWithExtractedMetadata,
       name: 'template_with_extracted_metadata',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        {
+          _id: db.id(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          name: 'creationDate',
+          label: 'Creation Date',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          name: 'editDate',
+          label: 'Modified Date',
+          type: 'date',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
         {
           _id: propertyA,
@@ -292,6 +314,7 @@ const fixtures: DBFixture = {
   ],
   files: [
     {
+      entity: 'templateDeletingProperties-sharedId',
       filename: 'file1.pdf',
       extractedMetadata: [
         {
@@ -312,6 +335,7 @@ const fixtures: DBFixture = {
       ],
     },
     {
+      entity: 'templateDeletingProperties-sharedId',
       filename: 'file2.pdf',
       extractedMetadata: [
         {
@@ -357,6 +381,11 @@ const fixtures: DBFixture = {
       relationshipToBeDeleted: [],
     }),
     ...createEntitiesInAllLanguages('templateChangingNames', templateChangingNamesId, {
+      property1: [{ value: 'value1' }],
+      property2: [{ value: 'value2' }],
+      property3: [{ value: 'value3' }],
+    }),
+    ...createEntitiesInAllLanguages('templateDeletingProperties', templateWithExtractedMetadata, {
       property1: [{ value: 'value1' }],
       property2: [{ value: 'value2' }],
       property3: [{ value: 'value3' }],

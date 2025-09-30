@@ -53,10 +53,8 @@ export class EntityRelationshipsUpdateService {
   private async findTemplate(currentTemplate: Template | undefined, id: string) {
     if (currentTemplate?.id === id) return currentTemplate;
 
-    const foundTemplate = await this.templatesDataSource.getById(id);
-    if (!foundTemplate) {
-      throw new Error('Template does not exist');
-    }
+    const foundTemplate = (await this.templatesDataSource.getById(id)).getDataOrThrow();
+
     return foundTemplate;
   }
 
