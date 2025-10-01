@@ -109,16 +109,13 @@ jobs:
           google-chrome --version
           echo "Verifying Xvfb..."
           which xvfb-run
+          echo "Verifying Python..."
+          python3.11 --version
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
           name: prod
           path: ./prod
-      - name: Set up Python 3.11
-        if: matrix.needs_setup
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
       - name: Clone dummy services
         if: matrix.needs_setup
         uses: actions/checkout@v4
@@ -128,7 +125,7 @@ jobs:
       - name: Setup dummy services
         if: matrix.needs_setup
         run: |
-          python3 -m venv .venv
+          python3.11 -m venv .venv
           make install_venv
           make start > logs.log &
           sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info

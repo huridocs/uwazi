@@ -37,9 +37,14 @@ RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-
     && rm /tmp/chrome.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install poppler-utils for PDF processing
+# Install poppler-utils and Python for PDF processing and dummy services
 RUN apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends poppler-utils \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+       poppler-utils \
+       python3.11 \
+       python3.11-venv \
+       python3-pip \
+       make \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MongoDB server, mongosh and database tools from official MongoDB repository
@@ -53,6 +58,7 @@ RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/sh
 RUN google-chrome --version \
     && mongosh --version \
     && pdftotext -v \
+    && python3.11 --version \
     && node --version \
     && npm --version
 
