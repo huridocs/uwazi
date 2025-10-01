@@ -597,13 +597,15 @@ jobs:
               "pageLoadTimeout": 30000,
               "video": true,
               "screenshotOnRunFailure": true,
-              "trashAssetsBeforeRuns": false
+              "trashAssetsBeforeRuns": false,
+              "failFast": false
             }
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
+          CYPRESS_FAIL_FAST_ENABLED: false
           # DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
           # CYPRESS_DEBUG: false
           
