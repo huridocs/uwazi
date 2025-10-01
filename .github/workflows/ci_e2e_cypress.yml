@@ -183,7 +183,7 @@ jobs:
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
-          browser: chrome
+          browser: /usr/bin/google-chrome
           component: false
           config-file: cypress.config.ts
           spec: ${{ matrix.spec }}
