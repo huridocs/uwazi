@@ -106,7 +106,7 @@ jobs:
   api_unit_tests_shards:
     needs: [precheck, build_ci_image]
     if: needs.precheck.outputs.should_run == 'true'
-    name: api_unit_tests (shard ${{ matrix.shard }}/3)
+    name: api_unit_tests (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}-ci:latest
@@ -114,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
@@ -178,7 +178,7 @@ jobs:
           DBHOST: localhost:27017
           REDIS_HOST: redis
           REDIS_PORT: 6379
-        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/3
+        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=2 --shard=${{ matrix.shard }}/4
 
   api_unit_tests_aggregate:
     name: api_unit_tests
@@ -220,6 +220,6 @@ jobs:
       - name: install dependencies
         run: yarn install
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=3
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --forceExit --maxWorkers=2
 
   
