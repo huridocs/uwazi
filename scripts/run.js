@@ -1,9 +1,10 @@
 /* eslint-disable global-require */
 require('dotenv').config();
 
-if (process.env.NODE_ENV !== 'production') {
-  require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
-}
+require('@babel/register')({
+  extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  plugins: ['@babel/plugin-transform-modules-commonjs'],
+});
 
 const cwd = process.env.USE_CWD ? process.cwd() : undefined;
 
