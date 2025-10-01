@@ -41,8 +41,8 @@ RUN apt-get update -qq \
 RUN npm install -g @puppeteer/browsers \
     && npx @puppeteer/browsers install chrome@140 \
     && CHROME_DIR=$(find /root/.cache/puppeteer/chrome -type d -name "linux-*" 2>/dev/null | head -1) \
-    && ln -sf "$CHROME_DIR/chrome" /usr/local/bin/google-chrome \
     && chmod +x "$CHROME_DIR/chrome" \
+    && ln -sf "$CHROME_DIR/chrome" /usr/local/bin/google-chrome \
     && npm cache clean --force
 
 # Install MongoDB server, mongosh and database tools from official MongoDB repository
