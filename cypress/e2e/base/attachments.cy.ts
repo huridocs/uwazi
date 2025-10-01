@@ -56,7 +56,7 @@ describe('attachments', () => {
 
       cy.contains(
         'h2.item-name',
-        'Artavia Murillo y otros. Resolución de la CorteIDH de 31 de marzo de 2014'
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
@@ -142,7 +142,7 @@ describe('attachments', () => {
       cy.contains('a', 'Library').click();
       cy.contains(
         'h2.item-name',
-        'Artavia Murillo y otros. Resolución de la CorteIDH de 31 de marzo de 2014'
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       );
       cy.get('.menuNav-language').click();
       cy.get('ul.dropdown-menu.expanded').within(() => {
@@ -151,7 +151,7 @@ describe('attachments', () => {
 
       cy.contains(
         'h2.item-name',
-        'Artavia Murillo y otros. Resolución de la CorteIDH de 31 de marzo de 2014'
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
 
       cy.get('.side-panel.is-active').within(() => {
