@@ -32,7 +32,7 @@ const elasticTesting = {
       });
     } catch (error) {
       // Ignore connection errors during cleanup - ES might be unavailable or index might not exist
-      console.warn(`Failed to delete Elasticsearch index ${indexName}:`, error.message);
+      // Failed to delete Elasticsearch index - this is expected during cleanup
     }
   },
 
