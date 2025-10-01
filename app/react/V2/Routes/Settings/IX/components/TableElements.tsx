@@ -5,7 +5,7 @@ import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-tabl
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
 import { Link } from 'react-router';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from 'V2/Components/UI';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
@@ -79,7 +79,7 @@ const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
 );
 const UsedForTrainingHeader = () => (
-  <Translate className="whitespace-nowrap">Used for training</Translate>
+  <Translate className="whitespace-nowrap">Use for training</Translate>
 );
 const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
@@ -280,34 +280,53 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
 
 const UsedForTrainingCell = ({
   cell,
+  row,
   action,
 }: {
   cell: Cell<TableSuggestion, boolean | undefined>;
-  action: (suggestions: string[]) => Promise<void>;
+  row: Row<TableSuggestion>;
+  action: (suggestions: string[], use: boolean) => Promise<void>;
 }) => {
   const usedForTraining = cell.getValue();
   const [used, setUsed] = useState(usedForTraining);
+  const [disabled, setDisabled] = useState(false);
+
+  if (row.depth > 0) {
+    return undefined;
+  }
 
   if (used) {
     return (
-      <div className="w-6 h-6 m-auto">
-        {getIcon('green')}
-        <Translate className="sr-only">Used for training</Translate>
-      </div>
+      <button
+        className="w-full flex justify-center"
+        disabled={disabled}
+        type="button"
+        onClick={async () => {
+          setUsed(false);
+          setDisabled(true);
+          await action([cell.row.original._id], false);
+        }}
+      >
+        <CheckCircleIcon className="w-6 h-6 text-gray-900" />
+        <Translate className="sr-only">Remove from training set</Translate>
+      </button>
     );
   }
 
   return (
-    <EmbededButton
-      icon={getIcon('orange')}
-      color="orange"
+    <button
+      className="w-full flex justify-center"
+      disabled={disabled}
+      type="button"
       onClick={async () => {
         setUsed(true);
-        await action([cell.row.original._id]);
+        setDisabled(true);
+        await action([cell.row.original._id], true);
       }}
     >
-      <Translate>Use for training</Translate>
-    </EmbededButton>
+      <XCircleIcon className="w-6 h-6 text-orange-500" />
+      <Translate className="sr-only">Add to training set</Translate>
+    </button>
   );
 };
 
@@ -350,7 +369,7 @@ const suggestionsTableColumnsBuilder = ({
   templates: ClientTemplateSchema[];
   acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>;
   openPdfSidepanel: (suggestion: TableSuggestion) => void;
-  markForTraining: (suggestions: string[]) => Promise<void>;
+  markForTraining: (suggestions: string[], use: boolean) => Promise<void>;
 }) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
@@ -377,7 +396,9 @@ const suggestionsTableColumnsBuilder = ({
     }),
     suggestionColumnHelper.accessor('usedForTraining', {
       header: UsedForTrainingHeader,
-      cell: ({ cell }) => <UsedForTrainingCell cell={cell} action={markForTraining} />,
+      cell: ({ cell, row }) => (
+        <UsedForTrainingCell cell={cell} row={row} action={markForTraining} />
+      ),
       meta: { headerClassName: valueWidth },
       enableSorting: false,
     }),

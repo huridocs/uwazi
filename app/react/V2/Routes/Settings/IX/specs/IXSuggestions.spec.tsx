@@ -9,8 +9,9 @@ import api from 'app/utils/api';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
-import { loaderData, thesauri, entity1, entity2 } from './fixtures';
+import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
+import { waitFor } from '@storybook/test';
 
 jest.mock('V2/api/entities', () => ({
   ...jest.requireActual('V2/api/entities'),
@@ -116,18 +117,44 @@ describe('IX suggestions', () => {
       render(<Component />);
       const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
       const row2 = (await screen.findByText('Entity 2 (en)')).closest('tr');
-      expect(within(row1!).getByText('Used for training')).toBeInTheDocument();
-      expect(within(row2!).getByText('Use for training')).toBeInTheDocument();
+      expect(within(row1!).getByText('Remove from training set')).toBeInTheDocument();
+      expect(within(row2!).getByText('Add to training set')).toBeInTheDocument();
     });
 
     it('should allow marking an entity as used for training', async () => {
       render(<Component />);
-      const row2 = (await screen.findByText('Entity 2 (en)')).closest('tr');
-      within(row2!).getByText('Use for training').click();
+      const row = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      within(row!).getByText('Add to training set').click();
       expect(api.post).toHaveBeenCalledWith('suggestions/training-set', {
         data: { extractorId: 'extractor1', suggestionIds: ['suggestion2'], useForTraining: true },
         headers: {},
       });
+    });
+
+    it('should allow removing an entity from the training set', async () => {
+      render(<Component />);
+      const row = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      within(row!).getByText('Remove from training set').click();
+      expect(api.post).toHaveBeenCalledWith('suggestions/training-set', {
+        data: { extractorId: 'extractor1', suggestionIds: ['suggestion1'], useForTraining: false },
+        headers: {},
+      });
+    });
+
+    it('should update the button and disable it after clicking', async () => {
+      render(<Component />);
+      const row = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      await waitFor(async () => {
+        within(row!).getByText('Add to training set').click();
+      });
+      expect(within(row!).getByText('Remove from training set').closest('button')).toBeDisabled();
+    });
+
+    xit('should only allow accepting parent elements', async () => {
+      render(<Component data={nestedSuggestions} />);
+      const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      expect(within(row1!).getByText('Use for training')).toBeInTheDocument();
+      within(row1!).getByText('Group').click();
     });
   });
 

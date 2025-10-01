@@ -203,13 +203,13 @@ const IXSuggestions = () => {
     }
   };
 
-  const markForTraining = async (suggestionIds: string[]) => {
+  const markForTraining = async (suggestionIds: string[], use: boolean) => {
     if (extractor._id) {
       try {
         await suggestionsAPI.setForTraining({
           extractorId: extractor._id,
           suggestionIds,
-          useForTraining: true,
+          useForTraining: use,
         });
         await revalidate();
       } catch (e) {
