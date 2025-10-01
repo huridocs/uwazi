@@ -615,6 +615,7 @@ describe('getSuggestionsForTableQuery', () => {
         error: false,
         match: true,
       },
+      useForTraining: false,
     });
 
     expect(suggestions[2]).toMatchObject({
@@ -642,6 +643,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         processing: false,
       },
+      useForTraining: false,
     });
   });
 
@@ -681,6 +683,27 @@ describe('getSuggestionsForTableQuery', () => {
         processing: false,
       },
     });
+  });
+
+  it('should include useForTraining per suggestion from the DB (mixed values)', async () => {
+    const { sut } = createSut();
+    const extractorId = factory.id('extractor_source_pdf_target_text');
+
+    const collection = testingEnvironment.db.getCollection('ixsuggestions')!;
+    const one = await collection.find({ extractorId }).limit(1).project({ _id: 1 }).toArray();
+
+    await collection.updateOne({ _id: one[0]._id }, { $set: { useForTraining: true } });
+
+    const { suggestions } = await sut.execute({
+      extractorId: extractorId.toString(),
+      pagination: { size: 10, number: 1 },
+    });
+
+    const flagged = suggestions.find(s => s._id.toString() === one[0]._id.toString());
+    expect(flagged?.useForTraining).toBe(true);
+
+    const others = suggestions.filter(s => s._id.toString() !== one[0]._id.toString());
+    expect(others.some(s => s.useForTraining === false)).toBe(true);
   });
 
   it('should filter by status state', async () => {
@@ -974,6 +997,7 @@ describe('getSuggestionsForTableQuery', () => {
 
     expect(filtered.total).toBe(2);
     expect(filtered.suggestions).toHaveLength(2);
+    expect(filtered.suggestions.every(s => s.useForTraining === true)).toBe(true);
   });
 
   it('should handle nonProcessed filter correctly', async () => {
