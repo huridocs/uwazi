@@ -86,6 +86,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
+      usedForTraining: true,
     },
     {
       _id: 'suggestion2',
@@ -116,6 +117,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
+      usedForTraining: false,
     },
   ],
   totalPages: 1,

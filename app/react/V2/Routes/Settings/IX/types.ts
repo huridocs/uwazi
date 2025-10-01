@@ -12,6 +12,7 @@ type EntitySuggestion = Omit<EntitySuggestionType, '_id' | 'suggestedValue' | 'c
   suggestedValue: SuggestionValue | SuggestionValue[];
   currentValue?: SuggestionValue | SuggestionValue[];
   extractorSource: { pdf?: boolean; property?: string };
+  usedForTraining: boolean;
 };
 
 interface IXProperty extends PropertySchema {
@@ -33,7 +34,6 @@ interface SingleValueSuggestion extends EntitySuggestion {
   disableRowSelection?: boolean;
   isChild?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
-  usedForTraining?: boolean;
 }
 
 interface MultiValueSuggestion extends EntitySuggestion {
@@ -41,7 +41,6 @@ interface MultiValueSuggestion extends EntitySuggestion {
   disableRowSelection?: boolean;
   subRows?: SingleValueSuggestion[];
   isChild?: boolean;
-  usedForTraining?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
 }
 

@@ -68,6 +68,11 @@ const closeSidepanel = async (text: string = 'Cancel') => {
 };
 
 describe('IX suggestions', () => {
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    jest.spyOn(api, 'post');
+  });
+
   const Component = ({ data = loaderData }: { data?: IXSuggestionsLoaderResponse }) => (
     <TestRouterContext loaderData={data}>
       <TestAtomStoreProvider initialValues={[[thesauriAtom, thesauri]]}>
@@ -107,8 +112,23 @@ describe('IX suggestions', () => {
   });
 
   describe('Used for training', () => {
-    it('should display if the entity is used for training', () => {});
-    it('should allow marking an entity as used for training', () => {});
+    it('should display if the entity is used for training', async () => {
+      render(<Component />);
+      const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      const row2 = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      expect(within(row1!).getByText('Used for training')).toBeInTheDocument();
+      expect(within(row2!).getByText('Use for training')).toBeInTheDocument();
+    });
+
+    it('should allow marking an entity as used for training', async () => {
+      render(<Component />);
+      const row2 = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      within(row2!).getByText('Use for training').click();
+      expect(api.post).toHaveBeenCalledWith('suggestions/training-set', {
+        data: { extractorId: 'extractor1', suggestionIds: ['suggestion2'], useForTraining: true },
+        headers: {},
+      });
+    });
   });
 
   describe('Train model modal', () => {
