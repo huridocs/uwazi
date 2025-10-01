@@ -150,11 +150,15 @@ describe('IX suggestions', () => {
       expect(within(row!).getByText('Remove from training set').closest('button')).toBeDisabled();
     });
 
-    xit('should only allow accepting parent elements', async () => {
-      render(<Component data={nestedSuggestions} />);
-      const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
-      expect(within(row1!).getByText('Use for training')).toBeInTheDocument();
-      within(row1!).getByText('Group').click();
+    it('should only allow accepting parent elements', async () => {
+      await waitFor(async () => {
+        render(<Component data={nestedSuggestions} />);
+        const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+        expect(within(row1!).getByText('Add to training set')).toBeInTheDocument();
+        within(row1!).getByText('Group').click();
+      });
+      const subrow = (await screen.findByText('Blue')).closest('tr');
+      expect(within(subrow!).queryByText('Add to training set')).not.toBeInTheDocument();
     });
   });
 
