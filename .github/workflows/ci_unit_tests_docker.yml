@@ -172,7 +172,7 @@ jobs:
         run: |
           nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
 
-      - name: Run tests (shard ${{ matrix.shard }}/3)
+      - name: Run tests (shard ${{ matrix.shard }}/4)
         env:
           ELASTICSEARCH_URL: http://elasticsearch:9200
           DBHOST: localhost:27017
