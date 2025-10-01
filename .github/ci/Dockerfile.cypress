@@ -30,9 +30,8 @@ RUN apt-get update -qq \
        xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome (pinned to version 140)
-# Using a specific version to avoid compatibility issues with Cypress
-RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_140.0.6778.69-1_amd64.deb \
+# Install Google Chrome stable
+RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get update -qq \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chrome.deb \
     && rm /tmp/chrome.deb \
