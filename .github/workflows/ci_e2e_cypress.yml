@@ -550,8 +550,8 @@ jobs:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
-          DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
-          CYPRESS_DEBUG: false
+          # DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
+          # CYPRESS_DEBUG: false
           
       - name: Debug - Post-test environment analysis
         if: always()
