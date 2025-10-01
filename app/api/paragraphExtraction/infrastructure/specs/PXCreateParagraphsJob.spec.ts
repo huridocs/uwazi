@@ -4,7 +4,7 @@ import { PXCreateParagraphs } from 'api/paragraphExtraction/application/PXCreate
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';

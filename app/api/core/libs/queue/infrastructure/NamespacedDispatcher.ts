@@ -1,6 +1,6 @@
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { QueueAdapter } from '../infrastructure/QueueAdapter';
+import { QueueAdapter } from './QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
