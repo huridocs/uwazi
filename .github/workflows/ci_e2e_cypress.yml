@@ -172,6 +172,13 @@ jobs:
           echo "NPM version:"
           npm --version
           echo ""
+          echo "Checking Node.js versions in container:"
+          which node
+          ls -la /usr/bin/node* 2>/dev/null || echo "No additional node binaries found"
+          echo ""
+          echo "Node.js environment:"
+          node -e "console.log('Node version:', process.version); console.log('Platform:', process.platform); console.log('Arch:', process.arch);"
+          echo ""
           echo "Installing network tools for debugging..."
           apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools dnsutils socat
           echo ""
@@ -543,8 +550,8 @@ jobs:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
-          DEBUG: cypress:*
-          CYPRESS_DEBUG: true
+          DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
+          CYPRESS_DEBUG: false
           
       - name: Debug - Post-test environment analysis
         if: always()
