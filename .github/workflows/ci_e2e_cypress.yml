@@ -159,14 +159,42 @@ jobs:
           TRANSPILED: true
       - name: Debug - Check MongoDB and Elasticsearch status
         run: |
+          echo "=== CONTAINER ENVIRONMENT DEBUG ==="
+          echo "Container OS:"
+          cat /etc/os-release
+          echo ""
+          echo "Chrome version:"
+          google-chrome --version
+          echo ""
+          echo "Node version:"
+          node --version
+          echo ""
+          echo "NPM version:"
+          npm --version
+          echo ""
+          echo "Network interfaces:"
+          ip addr show
+          echo ""
+          echo "Environment variables:"
+          env | grep -E "(DBHOST|ELASTICSEARCH|REDIS|DATABASE|INDEX)" | sort
+          echo ""
+          echo "=== SERVICE STATUS ==="
           echo "Checking MongoDB status..."
           mongosh --host localhost --port 27017 --quiet --eval 'rs.status().myState'
           echo "MongoDB databases:"
           mongosh --host localhost --port 27017 --quiet --eval 'db.adminCommand("listDatabases")'
+          echo ""
           echo "Checking Elasticsearch..."
-          curl -s http://elasticsearch:9200 || echo "Elasticsearch not reachable"
+          curl -s http://elasticsearch:9200/_cluster/health || echo "Elasticsearch not reachable"
+          echo ""
+          echo "Checking Redis..."
+          redis-cli -h redis -p 6379 ping || echo "Redis not reachable"
+          echo ""
           echo "Checking production build:"
           ls -la prod/ | head -20
+          echo ""
+          echo "=== CONTAINER PROCESSES ==="
+          ps aux | grep -E "(mongod|elasticsearch|redis)" || echo "No matching processes found"
           
       - name: start Uwazi
         env:
@@ -180,6 +208,132 @@ jobs:
           REDIS_HOST: redis
           REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
+      
+      - name: Debug - Check Uwazi startup and application state
+        run: |
+          echo "=== UWAZI STARTUP DEBUG ==="
+          echo "Checking if Uwazi process is running:"
+          ps aux | grep -E "(node|uwazi|server\.js)" | grep -v grep || echo "No Uwazi process found"
+          echo ""
+          echo "Checking Uwazi health endpoint:"
+          for i in {1..10}; do
+            echo "Attempt $i/10..."
+            if curl -s http://localhost:3000/api/version; then
+              echo "✅ Uwazi is responding"
+              break
+            else
+              echo "❌ Uwazi not responding yet"
+              sleep 3
+            fi
+          done
+          echo ""
+          echo "Checking application logs:"
+          if [ -f .github/logs/start-uwazi-logs.txt ]; then
+            echo "=== UWAZI STARTUP LOGS (last 50 lines) ==="
+            tail -50 .github/logs/start-uwazi-logs.txt
+          else
+            echo "No startup log file found"
+          fi
+          echo ""
+          echo "=== NETWORK CONNECTIVITY TEST ==="
+          echo "Testing localhost connectivity:"
+          curl -s http://localhost:3000/api/version | head -1 || echo "localhost:3000 not reachable"
+          echo ""
+          echo "Testing container networking:"
+          ping -c 1 elasticsearch || echo "elasticsearch hostname not reachable"
+          ping -c 1 redis || echo "redis hostname not reachable"
+          echo ""
+          echo "=== BROWSER ENVIRONMENT ==="
+          echo "Chrome binary location:"
+          which google-chrome
+          echo ""
+          echo "Chrome permissions:"
+          ls -la /usr/bin/google-chrome
+          echo ""
+          echo "Display environment:"
+          echo "DISPLAY=$DISPLAY"
+          echo "XDG_SESSION_TYPE=$XDG_SESSION_TYPE"
+          
+      - name: Debug - Capture network and application state before tests
+        run: |
+          echo "=== PRE-TEST STATE CAPTURE ==="
+          echo "Creating debug directory..."
+          mkdir -p .github/debug
+          
+          echo "Capturing network connections..."
+          netstat -tulpn > .github/debug/network-connections.txt
+          
+          echo "Capturing process tree..."
+          ps auxf > .github/debug/process-tree.txt
+          
+          echo "Capturing system load..."
+          uptime > .github/debug/system-load.txt
+          cat /proc/loadavg >> .github/debug/system-load.txt
+          
+          echo "Capturing memory usage..."
+          free -h > .github/debug/memory-usage.txt
+          
+          echo "Testing application endpoints..."
+          {
+            echo "=== ENDPOINT TESTS ==="
+            echo "API Version:"
+            curl -s -w "HTTP %{http_code} - Time: %{time_total}s\n" http://localhost:3000/api/version
+            echo ""
+            echo "Health Check:"
+            curl -s -w "HTTP %{http_code} - Time: %{time_total}s\n" http://localhost:3000/api/health || echo "Health endpoint not available"
+            echo ""
+            echo "Main App:"
+            curl -s -w "HTTP %{http_code} - Time: %{time_total}s\n" -o /dev/null http://localhost:3000/
+          } > .github/debug/endpoint-tests.txt
+          
+          echo "Capturing environment variables..."
+          env | sort > .github/debug/environment-vars.txt
+          
+          echo "Debug files created in .github/debug/"
+          ls -la .github/debug/
+          
+      - name: Debug - Test-specific environment checks
+        run: |
+          echo "=== TEST-SPECIFIC DEBUG ==="
+          echo "Test matrix name: ${{ matrix.name }}"
+          echo "Test spec: ${{ matrix.spec }}"
+          echo ""
+          
+          # Check specific conditions for each test type
+          if [[ "${{ matrix.name }}" == "entities" ]]; then
+            echo "=== ENTITY TEST DEBUG ==="
+            echo "Checking form state management..."
+            echo "MongoDB collections in uwazi_e2e:"
+            mongosh --host localhost --port 27017 --quiet --eval 'db.getCollectionNames()' uwazi_e2e
+            echo ""
+            echo "Elasticsearch templates:"
+            curl -s http://elasticsearch:9200/_cat/templates?v || echo "Could not list templates"
+          fi
+          
+          if [[ "${{ matrix.name }}" == "base" ]]; then
+            echo "=== LOGIN TEST DEBUG ==="
+            echo "Checking authentication system..."
+            echo "MongoDB users collection:"
+            mongosh --host localhost --port 27017 --quiet --eval 'db.users.find({}, {username: 1, email: 1}).limit(5)' uwazi_e2e
+            echo ""
+            echo "Redis authentication keys:"
+            redis-cli -h redis -p 6379 keys "*session*" || echo "No session keys found"
+            redis-cli -h redis -p 6379 keys "*auth*" || echo "No auth keys found"
+          fi
+          
+          if [[ "${{ matrix.name }}" == "pages" ]]; then
+            echo "=== PUBLIC FORM TEST DEBUG ==="
+            echo "Checking public form configuration..."
+            echo "MongoDB settings:"
+            mongosh --host localhost --port 27017 --quiet --eval 'db.settings.findOne({}, {allowedPublicTemplates: 1})' uwazi_e2e
+            echo ""
+            echo "Templates available:"
+            mongosh --host localhost --port 27017 --quiet --eval 'db.templates.find({}, {name: 1, properties: 1}).limit(3)' uwazi_e2e
+            echo ""
+            echo "Redis notification keys:"
+            redis-cli -h redis -p 6379 keys "*notification*" || echo "No notification keys found"
+          fi
+          
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
@@ -189,11 +343,54 @@ jobs:
           spec: ${{ matrix.spec }}
           install: false
           # node_modules already installed, binary is cached
+          record: false
+          parallel: false
+          config: |
+            {
+              "defaultCommandTimeout": 15000,
+              "requestTimeout": 30000,
+              "responseTimeout": 30000,
+              "pageLoadTimeout": 30000,
+              "video": true,
+              "screenshotOnRunFailure": true,
+              "trashAssetsBeforeRuns": false
+            }
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://elasticsearch:9200
           TRANSPILED: true
+          DEBUG: cypress:*
+          CYPRESS_DEBUG: true
+          
+      - name: Debug - Post-test environment analysis
+        if: always()
+        run: |
+          echo "=== POST-TEST DEBUG ==="
+          echo "Test exit code: $?"
+          echo ""
+          echo "Uwazi process status:"
+          ps aux | grep -E "(node|uwazi|server\.js)" | grep -v grep || echo "No Uwazi process found"
+          echo ""
+          echo "Database state:"
+          mongosh --host localhost --port 27017 --quiet --eval 'db.adminCommand("listCollections")' uwazi_e2e || echo "Could not list collections"
+          echo ""
+          echo "Elasticsearch indices:"
+          curl -s http://elasticsearch:9200/_cat/indices?v || echo "Could not list indices"
+          echo ""
+          echo "Redis keys:"
+          redis-cli -h redis -p 6379 keys "*" || echo "Could not list Redis keys"
+          echo ""
+          echo "System resources:"
+          free -h
+          df -h
+          echo ""
+          echo "Container memory usage:"
+          cat /proc/meminfo | head -10
+          echo ""
+          echo "Container CPU info:"
+          cat /proc/cpuinfo | grep -E "(processor|model name)" | head -5
+          
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
@@ -204,6 +401,16 @@ jobs:
         with:
           name: video-${{ matrix.name }}
           path: cypress/videos/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: debug-info-${{ matrix.name }}
+          path: .github/debug/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: logs-${{ matrix.name }}
+          path: .github/logs/
       - name: Print server output
         run: |
           echo "📁 Startup logs:"
