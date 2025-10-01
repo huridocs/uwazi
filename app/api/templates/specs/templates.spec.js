@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import documents from 'api/documents/documents.js';
-import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
 import * as setupSockets from 'api/socketio/setupSockets';
 import db, { testingDB } from 'api/utils/testing_db';
@@ -515,15 +514,39 @@ describe('templates', () => {
     });
   });
 
-  describe('delete', () => {
+  describe.each([
+    {
+      title: 'delete v1',
+      featureFlags: {
+        v2DeleteTemplateUseCase: false,
+      },
+    },
+    {
+      title: 'delete v2',
+      featureFlags: {
+        v2DeleteTemplateUseCase: true,
+      },
+    },
+  ])('$title', ({ featureFlags }) => {
     beforeEach(async () => {
+      testingTenants.mockCurrentTenant({
+        name: testingDB.dbName,
+        dbName: testingDB.dbName,
+        indexName: elasticIndex,
+        featureFlags,
+      });
+    });
+
+    afterEach(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
+      jest.resetAllMocks();
     });
 
     it('should delete properties of other templates using this template as select/relationship', async () => {
       await templates.delete({ _id: templateToBeDeleted });
 
       const [template1] = await templates.get({ name: 'thesauri template' });
+
       expect(template1.properties.length).toBe(1);
       expect(template1.properties[0].label).toBe('select');
 
@@ -573,6 +596,66 @@ describe('templates', () => {
       });
     });
 
+    it('should update translations of other templates using this template as relationship', async () => {
+      await templates.delete({ _id: templateToBeDeleted });
+
+      const translations = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      expect(
+        translations.filter(
+          t => t.context.id === thesaurusTemplateId.toHexString() && t.key === 'other property'
+        )
+      ).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Entity',
+            label: 'thesauri template',
+            id: thesaurusTemplateId.toHexString(),
+          },
+          key: 'other property',
+          language: 'en',
+          value: 'other property',
+        },
+      ]);
+
+      expect(
+        translations.filter(
+          t => t.context.id === thesaurusTemplate2Id.toHexString() && t.key === 'other property'
+        )
+      ).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Entity',
+            label: 'thesauri template 2',
+            id: thesaurusTemplate2Id.toHexString(),
+          },
+          key: 'other property',
+          language: 'en',
+          value: 'other property',
+        },
+      ]);
+
+      expect(
+        translations.filter(
+          t => t.context.id === thesaurusTemplate3Id.toHexString() && t.key === 'other property'
+        )
+      ).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: {
+            type: 'Entity',
+            label: 'thesauri template 3',
+            id: thesaurusTemplate3Id.toHexString(),
+          },
+          key: 'other property',
+          language: 'en',
+          value: 'other property',
+        },
+      ]);
+    });
+
     it('should delete a template when no document is using it', async () => {
       jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
 
@@ -587,10 +670,13 @@ describe('templates', () => {
 
     it('should delete the template translation', async () => {
       jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-      jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
 
       await templates.delete({ _id: templateToBeDeleted });
-      expect(translations.deleteContext).toHaveBeenCalledWith(templateToBeDeleted);
+      const translation = await testingEnvironment.db
+        .getCollection('translationsV2')
+        .findOne({ 'context.id': templateToBeDeleted });
+
+      expect(translation).toBeNull();
     });
 
     it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
@@ -633,7 +719,9 @@ describe('templates', () => {
         );
       } catch (error) {
         expect(error.message).toEqual(
-          'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
+          featureFlags.v2DeleteTemplateUseCase
+            ? 'Default template cannot be deleted'
+            : 'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
         );
       }
     });

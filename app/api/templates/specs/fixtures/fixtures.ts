@@ -77,6 +77,89 @@ const templateNotChangingNames = {
 };
 
 const fixtures: DBFixture = {
+  translationsV2: [
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+  ],
+
   templates: [
     templateChangingNames,
     templateNotChangingNames,
@@ -85,12 +168,10 @@ const fixtures: DBFixture = {
       color: '',
       entityViewPage: '',
     }),
-    {
+    factory.template('', [], {
       _id: db.id(templateToBeDeleted),
       name: 'to be deleted',
-      properties: [],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
+    }),
     {
       _id: db.id(),
       name: 'duplicated name',
@@ -121,10 +202,9 @@ const fixtures: DBFixture = {
         name: 'thesauri template',
       }
     ),
-    {
-      _id: thesaurusTemplate2Id,
-      name: 'thesauri template 2',
-      properties: [
+    factory.template(
+      '',
+      [
         {
           _id: db.id(),
           type: propertyTypes.select,
@@ -141,14 +221,16 @@ const fixtures: DBFixture = {
           name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
-    {
-      _id: thesaurusTemplate3Id,
-      name: 'thesauri template 3',
-      properties: [
-        { _id: db.id(), type: propertyTypes.text, label: 'text' },
-        { _id: db.id(), type: propertyTypes.text, label: 'text2' },
+      {
+        name: 'thesauri template 2',
+        _id: thesaurusTemplate2Id,
+      }
+    ),
+    factory.template(
+      '',
+      [
+        { _id: db.id(), type: propertyTypes.text, label: 'text', name: 'text' },
+        { _id: db.id(), type: propertyTypes.text, label: 'text2', name: 'text2' },
         {
           _id: db.id(),
           type: propertyTypes.relationship,
@@ -158,8 +240,11 @@ const fixtures: DBFixture = {
           name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
+      {
+        _id: thesaurusTemplate3Id,
+        name: 'thesauri template 3',
+      }
+    ),
     {
       _id: templateWithContents,
       name: 'content template',

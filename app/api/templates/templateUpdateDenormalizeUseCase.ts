@@ -56,7 +56,7 @@ export const denormalizeTemplateEntities = async (
 
   const resultSet = await entitiesDS.getSharedIdsByTemplateId(template.id);
   const totalJobs = Math.ceil((await entitiesDS.countByTemplateId(template.id)) / limit);
-  await templatesDS.setProcessingTotalJobs(template.id, totalJobs);
+  await templatesDS.addJobsToProcessingCount(template.id, totalJobs);
 
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {

@@ -139,7 +139,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
         (await this.deps.entitiesDS.countByTemplateId(updatedTemplate.id)) / limit
       );
       if (totalJobs > 0) {
-        await this.deps.templatesDS.setProcessingTotalJobs(updatedTemplate.id, totalJobs);
+        await this.deps.templatesDS.addJobsToProcessingCount(updatedTemplate.id, totalJobs);
       }
 
       const userId = permissionsContext.getUserInContext()?._id?.toString();
@@ -186,7 +186,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(templateId);
     const totalJobs = Math.ceil((await this.deps.entitiesDS.countByTemplateId(templateId)) / limit);
     if (totalJobs > 0) {
-      await this.deps.templatesDS.setProcessingTotalJobs(templateId, totalJobs);
+      await this.deps.templatesDS.addJobsToProcessingCount(templateId, totalJobs);
     }
 
     const userId = permissionsContext.getUserInContext()?._id?.toString();
