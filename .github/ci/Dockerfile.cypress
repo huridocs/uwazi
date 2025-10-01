@@ -1,0 +1,60 @@
+# Cypress E2E runner image: Node 20 + Chrome + Cypress + poppler-utils + mongosh
+FROM node:20-bookworm
+
+# Install Chrome and dependencies
+RUN apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+       ca-certificates \
+       curl \
+       gnupg \
+       wget \
+       fonts-liberation \
+       libasound2 \
+       libatk-bridge2.0-0 \
+       libatk1.0-0 \
+       libatspi2.0-0 \
+       libcups2 \
+       libdbus-1-3 \
+       libdrm2 \
+       libgbm1 \
+       libgtk-3-0 \
+       libnspr4 \
+       libnss3 \
+       libwayland-client0 \
+       libxcomposite1 \
+       libxdamage1 \
+       libxfixes3 \
+       libxkbcommon0 \
+       libxrandr2 \
+       xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Google Chrome
+RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chrome.deb \
+    && rm /tmp/chrome.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install poppler-utils for PDF processing
+RUN apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MongoDB mongosh and database tools from official MongoDB repository
+RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" > /etc/apt/sources.list.d/mongodb-org-7.0.list \
+    && apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mongodb-mongosh mongodb-database-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify installations
+RUN google-chrome --version \
+    && mongosh --version \
+    && pdftotext -v \
+    && node --version \
+    && npm --version
+
+# Set working directory
+WORKDIR /workspace
+

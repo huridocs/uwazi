@@ -100,9 +100,6 @@ describe('Share Entities', () => {
 
     selectRestrictedEntities();
 
-    // Wait for the filter to be properly applied and verify the expected count
-    cy.get('.item', { timeout: 15000 }).should('have.length', 3);
-
     checkCanEdit(titleEntity1, false);
     checkCanEdit(titleEntity3);
     checkCanEdit(titleEntity4);

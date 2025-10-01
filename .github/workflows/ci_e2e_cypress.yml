@@ -3,9 +3,16 @@ name: E2E Cypress Tests
 on:
   workflow_call:
 
+env:
+  REGISTRY: ghcr.io
+  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+
 jobs:
   e2e-cypress:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-cypress-e2e:latest
+      options: --ipc=host
     name: ${{ matrix.name }}
     strategy:
       fail-fast: false
@@ -50,39 +57,6 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Cache MongoDB tools
-        id: cache-mongodb
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/bin
-          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-7.0
-
-      - name: Install MongoDB tools if not cached
-        run: |
-          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
-            echo "MongoDB tools found in cache"
-            export PATH="$HOME/.local/bin:$PATH"
-          else
-            echo "Installing MongoDB tools..."
-            # Add MongoDB repo if not already present
-            if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
-              sudo apt-get update -qq
-              sudo apt-get install -y wget gnupg
-              wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-            fi
-
-            # Install MongoDB tools
-            sudo apt-get update -qq
-            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
-            
-            # Copy to cache location for next run
-            mkdir -p ~/.local/bin
-            sudo cp /usr/bin/mongosh ~/.local/bin/
-            sudo cp /usr/bin/mongorestore ~/.local/bin/
-            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
-          fi
-
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
@@ -90,10 +64,6 @@ jobs:
           mongodb-replica-set: test-rs
 
       - uses: actions/checkout@v4
-      - name: Setup Nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
       - name: Cache node modules
         uses: actions/cache@v4
         with:
@@ -105,29 +75,26 @@ jobs:
         id: cypress-version
         run: |
           echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Get Cypress from cache
+      - name: Cache Cypress binary
         id: cypress-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
-      - name: Install Cypress
+      - name: Install Cypress binary
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Install poppler-utils
+      - name: Verify pre-installed tools
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y poppler-utils
-
-      - name: Set PATH for poppler-utils
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Verify poppler-utils installation
-        run: |
+          echo "Verifying mongosh..."
+          mongosh --version
+          echo "Verifying poppler-utils..."
           pdftotext -v
           pdftoppm -v
           pdfinfo -v
+          echo "Verifying Chrome..."
+          google-chrome --version
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
@@ -196,6 +163,8 @@ jobs:
           component: false
           config-file: cypress.config.ts
           spec: ${{ matrix.spec }}
+          install: false
+          # Cypress is already installed in node_modules and binary is cached
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
