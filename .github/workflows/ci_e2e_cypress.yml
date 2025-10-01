@@ -173,7 +173,7 @@ jobs:
           npm --version
           echo ""
           echo "Installing network tools for debugging..."
-          apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools
+          apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools dnsutils
           echo ""
           echo "Network interfaces:"
           ip addr show
@@ -207,6 +207,12 @@ jobs:
           nslookup elasticsearch || echo "   elasticsearch hostname not resolvable"
           echo "   redis hostname:"
           nslookup redis || echo "   redis hostname not resolvable"
+          echo ""
+          echo "   Testing IP resolution:"
+          echo "   elasticsearch IP:"
+          getent hosts elasticsearch || echo "   elasticsearch IP not found"
+          echo "   redis IP:"
+          getent hosts redis || echo "   redis IP not found"
           echo ""
           echo "2. Direct container connectivity:"
           echo "   Testing elasticsearch:9200 directly:"
@@ -249,6 +255,12 @@ jobs:
           nc -z localhost 6379 && echo "  ✅ localhost:6379 is now open" || echo "  ❌ localhost:6379 still closed"
           echo "  localhost:9200 (should forward to elasticsearch:9200):"
           curl -s --connect-timeout 5 http://localhost:9200/_cluster/health && echo "  ✅ localhost:9200 is now accessible" || echo "  ❌ localhost:9200 still not accessible"
+          echo ""
+          echo "Testing socat connectivity:"
+          echo "  Testing if socat can reach redis:6379:"
+          nc -z redis 6379 && echo "  ✅ redis:6379 reachable from socat" || echo "  ❌ redis:6379 not reachable from socat"
+          echo "  Testing if socat can reach elasticsearch:9200:"
+          nc -z elasticsearch 9200 && echo "  ✅ elasticsearch:9200 reachable from socat" || echo "  ❌ elasticsearch:9200 not reachable from socat"
           echo ""
           echo "Checking socat logs for errors:"
           if [ -f socat-redis.log ]; then
