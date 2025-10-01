@@ -57,13 +57,20 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: 7.0
-          mongodb-replica-set: test-rs
-
       - uses: actions/checkout@v4
+      
+      - name: Start MongoDB replica set
+        run: /usr/local/bin/setup-mongo-replica.sh
+
+      - name: Wait for MongoDB replica set to be ready
+        run: |
+          for i in {1..60}; do
+            if mongosh --host localhost --port 27017 --quiet --eval 'try { rs.status().myState } catch (e) { print(0) }' | tail -n 1 | grep -q "1"; then
+              echo "Mongo replica set is PRIMARY and ready"; break
+            fi
+            echo "Waiting for Mongo replica set... (attempt $i/60)"
+            sleep 2
+          done
       - name: Cache node modules
         uses: actions/cache@v4
         with:
@@ -133,7 +140,7 @@ jobs:
         continue-on-error: true
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
@@ -142,7 +149,7 @@ jobs:
         if: steps.blank-state-attempt1.outcome == 'failure'
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
@@ -150,7 +157,7 @@ jobs:
         env:
           NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
@@ -168,7 +175,7 @@ jobs:
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           TRANSPILED: true
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
