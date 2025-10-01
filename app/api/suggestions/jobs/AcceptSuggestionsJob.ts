@@ -1,12 +1,12 @@
 import { emitToTenant } from 'api/socketio/setupSockets';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { ObjectId } from 'mongodb';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { HeartbeatCallback } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
 
 type CustomParams = UserAwareDispatchableParams & {

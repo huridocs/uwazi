@@ -45,9 +45,9 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';

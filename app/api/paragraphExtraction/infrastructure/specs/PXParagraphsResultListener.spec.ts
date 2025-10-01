@@ -2,7 +2,7 @@ import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey'
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 

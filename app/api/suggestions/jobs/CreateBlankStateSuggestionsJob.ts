@@ -2,7 +2,7 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/queue.v2/application/contracts/Dispatchable';
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { tenants } from 'api/tenants';
 import { BatchRange } from '../batchProcessing';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions';

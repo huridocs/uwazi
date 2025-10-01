@@ -1,5 +1,5 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
