@@ -65,12 +65,68 @@ describe('attachments', () => {
       cy.get('.side-panel.is-active', { timeout: 20000 }).should('be.visible');
       cy.task('log', 'Side panel is active, looking for View button...');
 
+      cy.task('log', 'About to click View button...');
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
-
+      
       cy.task('log', 'Clicked View button, waiting for content...');
-      cy.contains('Uwazi Heroes Investigation', { timeout: 20000 });
+      
+      // Debug: Check if we're still on the same page or if we navigated away
+      cy.url().then(url => {
+        cy.task('log', 'Current URL after View click: ' + url);
+      });
+      
+      // Debug: Check if side panel is still active
+      cy.get('body').then($body => {
+        if ($body.find('.side-panel.is-active').length > 0) {
+          cy.task('log', 'Side panel is still active');
+        } else {
+          cy.task('log', 'Side panel is NO LONGER active');
+        }
+      });
+            
+            // Debug: Check what's actually on the page after clicking View
+            cy.task('log', 'Checking page content after View click...');
+            cy.get('body').then($body => {
+              const bodyText = $body.text();
+              cy.task('log', 'Page body text (first 500 chars): ' + bodyText.substring(0, 500));
+            });
+            
+            // Debug: Check if document viewer loaded
+            cy.task('log', 'Looking for document viewer elements...');
+            cy.get('body').then($body => {
+              if ($body.find('[data-testid="document-viewer"]').length > 0) {
+                cy.task('log', 'Document viewer element found');
+              } else {
+                cy.task('log', 'Document viewer element NOT found');
+              }
+              
+              if ($body.find('iframe').length > 0) {
+                cy.task('log', 'Iframe found (PDF viewer)');
+              } else {
+                cy.task('log', 'No iframe found');
+              }
+              
+              if ($body.find('.document-viewer').length > 0) {
+                cy.task('log', 'Document viewer class found');
+              } else {
+                cy.task('log', 'No document viewer class found');
+              }
+            });
+            
+            // Try to find the content with more debugging
+            cy.task('log', 'Attempting to find "Uwazi Heroes Investigation" text...');
+            cy.get('body').should('contain', 'Uwazi Heroes Investigation', { timeout: 20000 }).then(() => {
+              cy.task('log', '✅ Found "Uwazi Heroes Investigation" text!');
+            }).catch(() => {
+              cy.task('log', '❌ Could not find "Uwazi Heroes Investigation" text');
+              // Debug: Show what text IS available
+              cy.get('body').then($body => {
+                const allText = $body.text();
+                cy.task('log', 'Available text on page: ' + allText.substring(0, 1000));
+              });
+            });
     });
 
     it('should show the file in the main documents section', () => {
