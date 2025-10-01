@@ -9,18 +9,10 @@ mongoose.Promise = Promise;
 mongoose.set('autoIndex', false);
 
 afterAll(async () => {
-  try {
-    await elasticClient.close();
-  } catch (e) {
-    // ignore
-  }
+  await elasticClient.close();
 
-  try {
-    const client = Redis.redisClient;
-    if (client && client.connected) {
-      await Redis.disconnect();
-    }
-  } catch (e) {
-    // ignore
+  const client = Redis.redisClient;
+  if (client && client.connected) {
+    await Redis.disconnect();
   }
 });
