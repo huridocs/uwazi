@@ -153,12 +153,16 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      - name: Debug - Check MongoDB status
+      - name: Debug - Check MongoDB and Elasticsearch status
         run: |
           echo "Checking MongoDB status..."
           mongosh --host localhost --port 27017 --quiet --eval 'rs.status().myState'
           echo "MongoDB databases:"
           mongosh --host localhost --port 27017 --quiet --eval 'db.adminCommand("listDatabases")'
+          echo "Checking Elasticsearch..."
+          curl -s http://elasticsearch:9200 || echo "Elasticsearch not reachable"
+          echo "Checking production build:"
+          ls -la prod/ | head -20
           
       - name: start Uwazi
         env:

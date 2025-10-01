@@ -15,14 +15,27 @@ mkdir -p "$LOG_DIR"
 # Change to prod directory where the production build is
 cd prod
 
+echo "Starting Uwazi from $(pwd)"
+echo "Contents of prod directory:"
+ls -la
+
 yarn run-production > "../$START_UWAZI_LOG" 2>&1 &
-sleep 2
-cd ..  
+sleep 3
+cd ..
 
 uwazi_pid=$(pgrep -f "server.js")
 
 echo "⏳ Waiting for Uwazi to start..."
 echo "⏳ uwazi pid: $uwazi_pid"
+echo
+
+# Check if process is still running
+if ! kill -0 $uwazi_pid 2>/dev/null; then
+  echo "❌ Uwazi process died immediately after starting"
+  echo "📁 Startup logs:"
+  cat "$START_UWAZI_LOG"
+  exit 1
+fi
 echo
 
 timeout 60s bash -c "
