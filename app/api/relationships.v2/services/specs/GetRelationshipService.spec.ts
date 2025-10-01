@@ -15,6 +15,8 @@ import { GetRelationshipService } from '../GetRelationshipService';
 
 const fixtureFactory = getFixturesFactory();
 
+let currentIndexName: string;
+
 const fixtures: DBFixture = {
   templates: [fixtureFactory.template('template1')],
   entities: [
@@ -74,11 +76,13 @@ const createService = (_user?: User) => {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  // Use unique index name to avoid conflicts in parallel test execution
+  currentIndexName = `get_relationship_test_${process.pid}_${Date.now()}`;
+  await testingEnvironment.setUp(fixtures, currentIndexName);
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDown();
+  await testingEnvironment.tearDownWithIndex(currentIndexName);
 });
 
 describe('getByEntity()', () => {

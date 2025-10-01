@@ -5,6 +5,8 @@ import { CreateRelationshipService, DeleteRelationshipService } from '../service
 
 const factory = getFixturesFactory();
 
+let currentIndexName: string;
+
 const fixtures: DBFixture = {
   entities: [
     ...factory.entityInMultipleLanguages(
@@ -137,11 +139,13 @@ const fixtures: DBFixture = {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  // Use unique index name to avoid conflicts in parallel test execution
+  currentIndexName = `integration_relationship_test_${process.pid}_${Date.now()}`;
+  await testingEnvironment.setUp(fixtures, currentIndexName);
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDown();
+  await testingEnvironment.tearDownWithIndex(currentIndexName);
 });
 
 describe('create relationships', () => {

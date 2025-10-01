@@ -91,6 +91,13 @@ const testingEnvironment = {
     await testingDB.disconnect();
   },
 
+  async tearDownWithIndex(indexName?: string) {
+    await testingDB.disconnect();
+    if (indexName) {
+      await elasticTesting.deleteIndex(indexName);
+    }
+  },
+
   db: {
     async getAllFrom(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName).find().toArray();

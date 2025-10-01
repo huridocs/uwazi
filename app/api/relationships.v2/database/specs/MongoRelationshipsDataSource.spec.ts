@@ -85,14 +85,17 @@ const fixtures = {
 };
 
 let ds: MongoRelationshipsDataSource;
+let currentIndexName: string;
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  // Use unique index name to avoid conflicts in parallel test execution
+  currentIndexName = `mongo_relationships_test_${process.pid}_${Date.now()}`;
+  await testingEnvironment.setUp(fixtures, currentIndexName);
   ds = new MongoRelationshipsDataSource(testingDB.mongodb!, DefaultTransactionManager());
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDown();
+  await testingEnvironment.tearDownWithIndex(currentIndexName);
 });
 
 describe('When getting by query', () => {

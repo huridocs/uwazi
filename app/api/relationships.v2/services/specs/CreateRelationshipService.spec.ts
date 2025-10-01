@@ -20,6 +20,8 @@ import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
 
+let currentIndexName: string;
+
 const collectionInDb = (collection = 'relationships') => testingDB.mongodb?.collection(collection)!;
 
 const entityInLanguages = (langs: string[], id: string, template?: string) =>
@@ -112,11 +114,13 @@ const fixtures: DBFixture = {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  // Use unique index name to avoid conflicts in parallel test execution
+  currentIndexName = `create_relationship_test_${process.pid}_${Date.now()}`;
+  await testingEnvironment.setUp(fixtures, currentIndexName);
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDown();
+  await testingEnvironment.tearDownWithIndex(currentIndexName);
 });
 
 describe('create()', () => {
