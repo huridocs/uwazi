@@ -173,6 +173,8 @@ jobs:
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6

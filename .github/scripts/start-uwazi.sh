@@ -19,9 +19,26 @@ echo "Starting Uwazi from $(pwd)"
 echo "Contents of prod directory:"
 ls -la
 
+echo "Environment variables:"
+echo "DBHOST=$DBHOST"
+echo "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+echo "DATABASE_NAME=$DATABASE_NAME"
+echo "REDIS_HOST=$REDIS_HOST"
+echo "REDIS_PORT=$REDIS_PORT"
+
 yarn run-production > "../$START_UWAZI_LOG" 2>&1 &
-sleep 3
+uwazi_background_pid=$!
+sleep 5
 cd ..
+
+echo "Checking if Uwazi process is still running..."
+if ! kill -0 $uwazi_background_pid 2>/dev/null; then
+  echo "❌ Uwazi process ($uwazi_background_pid) died immediately!"
+  echo "📁 Full startup logs:"
+  cat "$START_UWAZI_LOG"
+  exit 1
+fi
+echo "✓ Uwazi process ($uwazi_background_pid) is running"
 
 uwazi_pid=$(pgrep -f "server.js")
 
