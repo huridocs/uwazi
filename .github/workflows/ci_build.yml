@@ -23,16 +23,36 @@ jobs:
         run: |
           set -euo pipefail
           SHOULD_BUILD=false
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "Event name: ${{ github.event_name }}"
+          echo "Base ref: ${{ github.base_ref }}"
+          echo "Head ref: ${{ github.head_ref }}"
+          echo "Current branch: ${{ github.ref_name }}"
+          
+          # Force build for improve_ci branch during development
+          if [ "${{ github.ref_name }}" = "improve_ci" ]; then
             SHOULD_BUILD=true
+            echo "improve_ci branch detected - forcing image build"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SHOULD_BUILD=true
+            echo "Manual workflow dispatch - building image"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Pull request detected, checking for Dockerfile changes..."
             git fetch --quiet origin "${{ github.base_ref }}":"refs/remotes/origin/${{ github.base_ref }}" || true
+            echo "Files changed:"
+            git diff --name-only "origin/${{ github.base_ref }}...HEAD" || echo "No diff output"
             if git diff --name-only "origin/${{ github.base_ref }}...HEAD" 2>/dev/null | grep -q "^\\.github/ci/Dockerfile\\.cypress$"; then
               SHOULD_BUILD=true
+              echo "Dockerfile.cypress changed - building image"
+            else
+              echo "No changes to Dockerfile.cypress - skipping build"
             fi
           elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "Push event detected, checking for Dockerfile changes..."
             if git diff --name-only HEAD^ HEAD 2>/dev/null | grep -q "^\\.github/ci/Dockerfile\\.cypress$"; then
               SHOULD_BUILD=true
+              echo "Dockerfile.cypress changed - building image"
+            else
+              echo "No changes to Dockerfile.cypress - skipping build"
             fi
           fi
           echo "should_build=${SHOULD_BUILD}" >> "$GITHUB_OUTPUT"
