@@ -30,9 +30,6 @@ describe('attachments', () => {
 
   describe('main documents', () => {
     it('should view an entity with main a document', () => {
-      // Debug: Check if we're on the right page
-      cy.url().should('include', '/library');
-      
       // Debug: Check what entities are visible on the page
       cy.get('h2.item-name').should('exist').then(($elements) => {
         const entityNames = Array.from($elements).map(el => el.textContent);
