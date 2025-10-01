@@ -12,8 +12,12 @@ mkdir -p "$LOG_DIR"
 > "$START_UWAZI_LOG"
 > "$HEALTH_CHECK_LOG"
 
-yarn run-production > "$START_UWAZI_LOG" 2>&1 &
-sleep 2  
+# Change to prod directory where the production build is
+cd prod
+
+yarn run-production > "../$START_UWAZI_LOG" 2>&1 &
+sleep 2
+cd ..  
 
 uwazi_pid=$(pgrep -f "server.js")
 
