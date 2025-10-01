@@ -1,13 +1,14 @@
 # Cypress E2E runner image: Node 20 + Chrome + Cypress + poppler-utils + mongosh
 FROM node:20-bookworm
 
-# Install Chrome and dependencies
+# Install Chrome, Xvfb and dependencies
 RUN apt-get update -qq \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
        ca-certificates \
        curl \
        gnupg \
        wget \
+       xvfb \
        fonts-liberation \
        libasound2 \
        libatk-bridge2.0-0 \
@@ -57,6 +58,12 @@ RUN google-chrome --version \
 
 # Set working directory
 WORKDIR /workspace
+
+# Install Cypress binary globally so it's cached in the image
+# This matches the version in package.json
+RUN npm install -g cypress@13.16.1 \
+    && cypress verify \
+    && cypress info
 
 # Create startup script for MongoDB with replica set
 RUN echo '#!/bin/bash\n\
