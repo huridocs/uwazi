@@ -555,6 +555,29 @@ jobs:
           echo "Checking uwazi-fixtures uploaded_documents source:"
           ls -la ./uwazi-fixtures/uploaded_documents/ || echo "uwazi-fixtures uploaded_documents not found"
           
+      - name: Debug - Capture Uwazi logs before tests
+        run: |
+          echo "=== UWAZI LOGS BEFORE TESTS ==="
+          echo "Current Uwazi process status:"
+          ps aux | grep -E "(node|uwazi)" | grep -v grep || echo "No Uwazi processes found"
+          echo ""
+          echo "Uwazi startup logs (last 50 lines):"
+          if [ -f .github/logs/start-uwazi-logs.txt ]; then
+            tail -50 .github/logs/start-uwazi-logs.txt
+          else
+            echo "Startup log file not found"
+          fi
+          echo ""
+          echo "Health check logs:"
+          if [ -f .github/logs/health-check-logs.txt ]; then
+            cat .github/logs/health-check-logs.txt
+          else
+            echo "Health check log file not found"
+          fi
+          echo ""
+          echo "Checking if Uwazi is responding:"
+          curl -s http://localhost:3000/api/version || echo "Uwazi not responding"
+          
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
@@ -584,6 +607,33 @@ jobs:
           # DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
           # CYPRESS_DEBUG: false
           
+          
+      - name: Debug - Capture Uwazi logs after tests
+        if: always()
+        run: |
+          echo "=== UWAZI LOGS AFTER TESTS ==="
+          echo "Current Uwazi process status:"
+          ps aux | grep -E "(node|uwazi)" | grep -v grep || echo "No Uwazi processes found"
+          echo ""
+          echo "Uwazi startup logs (full file):"
+          if [ -f .github/logs/start-uwazi-logs.txt ]; then
+            cat .github/logs/start-uwazi-logs.txt
+          else
+            echo "Startup log file not found"
+          fi
+          echo ""
+          echo "Health check logs:"
+          if [ -f .github/logs/health-check-logs.txt ]; then
+            cat .github/logs/health-check-logs.txt
+          else
+            echo "Health check log file not found"
+          fi
+          echo ""
+          echo "Checking if Uwazi is still responding:"
+          curl -s http://localhost:3000/api/version || echo "Uwazi not responding"
+          echo ""
+          echo "Checking for any error logs in the container:"
+          find /var/log -name "*.log" -exec grep -l "error\|Error\|ERROR" {} \; 2>/dev/null | head -5 || echo "No error logs found in /var/log"
           
       - name: Debug - Post-test environment analysis
         if: always()
