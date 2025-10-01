@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
-import { Link } from 'react-router';
+import { Link, useRevalidator } from 'react-router';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from 'V2/Components/UI';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
@@ -287,45 +287,37 @@ const UsedForTrainingCell = ({
   row: Row<TableSuggestion>;
   action: (suggestions: string[], use: boolean) => Promise<void>;
 }) => {
+  const { state } = useRevalidator();
   const usedForTraining = cell.getValue();
-  const [used, setUsed] = useState(usedForTraining);
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(state === 'loading');
+
+  const handleClick = useCallback(async () => {
+    setDisabled(true);
+    await action([cell.row.original._id], !usedForTraining);
+  }, [action, cell.row.original._id, usedForTraining]);
 
   if (row.depth > 0) {
     return undefined;
   }
 
-  if (used) {
-    return (
-      <button
-        className="w-full flex justify-center"
-        disabled={disabled}
-        type="button"
-        onClick={async () => {
-          setDisabled(true);
-          await action([cell.row.original._id], false);
-          setUsed(false);
-        }}
-      >
-        <CheckCircleIcon className="w-6 h-6 text-gray-900" />
-        <Translate className="sr-only">Remove from training set</Translate>
-      </button>
-    );
-  }
-
   return (
     <button
-      className="w-full flex justify-center"
+      className="w-full flex justify-center disabled:cursor-not-allowed"
       disabled={disabled}
       type="button"
-      onClick={async () => {
-        setDisabled(true);
-        await action([cell.row.original._id], true);
-        setUsed(true);
-      }}
+      onClick={handleClick}
     >
-      <XCircleIcon className="w-6 h-6 text-orange-500" />
-      <Translate className="sr-only">Add to training set</Translate>
+      {usedForTraining ? (
+        <>
+          <CheckCircleIcon className={`w-6 h-6 ${disabled ? 'text-gray-500' : 'text-gray-900'}`} />
+          <Translate className="sr-only">Remove from training set</Translate>
+        </>
+      ) : (
+        <>
+          <XCircleIcon className={`w-6 h-6 ${disabled ? 'text-orange-300' : 'text-orange-500'}`} />
+          <Translate className="sr-only">Add to training set</Translate>
+        </>
+      )}
     </button>
   );
 };
