@@ -173,7 +173,7 @@ jobs:
           npm --version
           echo ""
           echo "Installing network tools for debugging..."
-          apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools dnsutils
+          apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools dnsutils socat
           echo ""
           echo "Network interfaces:"
           ip addr show
@@ -214,6 +214,18 @@ jobs:
           echo "   redis IP:"
           getent hosts redis || echo "   redis IP not found"
           echo ""
+          echo "   Docker network IPs:"
+          echo "   Scanning Docker network 172.18.0.0/16 for services:"
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              echo "   Testing $test_ip:6379 (Redis)..."
+              nc -z $test_ip 6379 && echo "   ✅ Redis found at $test_ip:6379" || true
+              echo "   Testing $test_ip:9200 (Elasticsearch)..."
+              nc -z $test_ip 9200 && echo "   ✅ Elasticsearch found at $test_ip:9200" || true
+            fi
+          done
+          echo ""
           echo "2. Direct container connectivity:"
           echo "   Testing elasticsearch:9200 directly:"
           curl -s --connect-timeout 5 http://elasticsearch:9200/_cluster/health || echo "   ❌ elasticsearch:9200 not reachable"
@@ -239,10 +251,64 @@ jobs:
       - name: Forward ports for container networking
         run: |
           echo "Setting up port forwarding for container networking..."
-          # Forward localhost:6379 to redis:6379
-          nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
-          # Forward localhost:9200 to elasticsearch:9200  
-          nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+          
+          # Check if socat is available
+          if ! command -v socat >/dev/null 2>&1; then
+            echo "ERROR: socat is not installed. Cannot set up port forwarding."
+            echo "Installing socat now..."
+            apt-get update -qq && apt-get install -y socat
+          fi
+          
+          # Try to find the actual IP addresses of the services
+          echo "Finding service IP addresses..."
+          REDIS_IP=""
+          ELASTICSEARCH_IP=""
+          
+          # Scan for Redis IP
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 6379 2>/dev/null; then
+                REDIS_IP="$test_ip"
+                echo "Found Redis at $REDIS_IP:6379"
+                break
+              fi
+            fi
+          done
+          
+          # Scan for Elasticsearch IP
+          for ip in $(seq 1 10); do
+            test_ip="172.18.0.$ip"
+            if [ "$test_ip" != "172.18.0.2" ]; then
+              if nc -z $test_ip 9200 2>/dev/null; then
+                ELASTICSEARCH_IP="$test_ip"
+                echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
+                break
+              fi
+            fi
+          done
+          
+          # Set up port forwarding with IP addresses if found, otherwise use hostnames
+          if [ -n "$REDIS_IP" ]; then
+            echo "Forwarding localhost:6379 to $REDIS_IP:6379"
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
+            echo "Redis socat command started with PID: $!"
+          else
+            echo "Using hostname for Redis forwarding: localhost:6379 to redis:6379"
+            nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+            echo "Redis socat command started with PID: $!"
+          fi
+          
+          if [ -n "$ELASTICSEARCH_IP" ]; then
+            echo "Forwarding localhost:9200 to $ELASTICSEARCH_IP:9200"
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
+            echo "Elasticsearch socat command started with PID: $!"
+          else
+            echo "Using hostname for Elasticsearch forwarding: localhost:9200 to elasticsearch:9200"
+            nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+            echo "Elasticsearch socat command started with PID: $!"
+          fi
+          
           sleep 2
           echo "Port forwarding setup complete"
           echo ""
