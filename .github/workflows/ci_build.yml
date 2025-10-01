@@ -119,6 +119,7 @@ jobs:
             ./prod/database
             ./prod/scripts
             ./prod/public
+            ./prod/node_modules
             ./prod/package.json
             ./prod/server.js
             ./prod/message.js
