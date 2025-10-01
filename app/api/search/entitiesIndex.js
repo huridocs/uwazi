@@ -11,7 +11,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
 import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
-import elasticMapFactory from '#api/database/elastic_mapping/elasticMapFactory.js';
+import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.ts';
 import { elastic } from './elastic.js';
 
 class IndexError extends Error {}

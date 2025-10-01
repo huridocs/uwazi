@@ -6,20 +6,20 @@ import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import entities from '../entities/index.js';
+import entities from '#api/entities/index.js';
 
-import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { PXExtractor } from '../domain/PXExtractor';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor';
 import {
   DeleteParagraphsInput,
   ExistsInput,
   PXExtractorsDataSource,
-} from '../domain/PXExtractorDataSource';
+} from '#api/paragraphExtraction/domain/PXExtractorDataSource';
 import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError';
+import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
