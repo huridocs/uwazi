@@ -88,7 +88,7 @@ export const config = {
       v2UpdateTemplateUseCase: false,
     },
   },
-  externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
+  externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
   },

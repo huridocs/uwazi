@@ -1,9 +1,9 @@
+import { setupTestUploadedPaths } from 'api/files';
 import { appContext } from 'api/utils/AppContext';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
-import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { setupTestUploadedPaths } from 'api/files';
 import { UserSchema } from 'shared/types/userType';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;

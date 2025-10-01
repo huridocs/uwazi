@@ -1,0 +1,264 @@
+name: CI Precheck
+
+on:
+  workflow_call:
+    inputs:
+      is_pr:
+        required: false
+        type: boolean
+      pr_number:
+        required: false
+        type: number
+      is_draft:
+        required: false
+        type: boolean
+      pr_title:
+        required: false
+        type: string
+      pr_body:
+        required: false
+        type: string
+      head_sha:
+        required: false
+        type: string
+      ref:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      event_name:
+        required: false
+        type: string
+      is_protected_push:
+        required: false
+        type: boolean
+      sha:
+        required: false
+        type: string
+    outputs:
+      should_run:
+        description: Whether downstream jobs should run
+        value: ${{ jobs.precheck.outputs.should_run }}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  precheck:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run: ${{ steps.compute.outputs.should_run }}
+    steps:
+      - name: Checkout (for commit message resolution)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+
+      - name: Resolve commit messages
+        id: resolve_msgs
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_SHA="${{ inputs.head_sha || github.event.pull_request.head.sha || '' }}"
+          MERGE_SHA="${{ inputs.sha || github.sha }}"
+          HEAD_MSG=""
+          MERGE_MSG=""
+          if [ -n "$HEAD_SHA" ]; then
+            git fetch --no-tags --depth=1 origin "$HEAD_SHA" 2>/dev/null || true
+            HEAD_MSG=$(git log -1 --pretty=%B "$HEAD_SHA" 2>/dev/null || echo "")
+          fi
+          if [ -n "$MERGE_SHA" ]; then
+            git fetch --no-tags --depth=1 origin "$MERGE_SHA" 2>/dev/null || true
+            MERGE_MSG=$(git log -1 --pretty=%B "$MERGE_SHA" 2>/dev/null || echo "")
+          fi
+          {
+            echo "HEAD_COMMIT_MESSAGE<<EOF"; echo "$HEAD_MSG"; echo "EOF";
+            echo "MERGE_COMMIT_MESSAGE<<EOF"; echo "$MERGE_MSG"; echo "EOF";
+            echo "HEAD_SHA=$HEAD_SHA";
+            echo "MERGE_SHA=$MERGE_SHA";
+          } >> "$GITHUB_ENV"
+
+      - name: Compute should_run
+        id: compute
+        uses: actions/github-script@v7
+        env:
+          INPUT_IS_PR: ${{ inputs.is_pr }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          INPUT_IS_DRAFT: ${{ inputs.is_draft }}
+          INPUT_PR_TITLE: ${{ inputs.pr_title }}
+          INPUT_PR_BODY: ${{ inputs.pr_body }}
+          INPUT_HEAD_SHA: ${{ inputs.head_sha }}
+          INPUT_REF: ${{ inputs.ref }}
+          INPUT_BRANCH: ${{ inputs.branch }}
+          INPUT_EVENT_NAME: ${{ inputs.event_name }}
+          INPUT_IS_PROTECTED_PUSH: ${{ inputs.is_protected_push }}
+          INPUT_SHA: ${{ inputs.sha }}
+          HEAD_COMMIT_MESSAGE: ${{ env.HEAD_COMMIT_MESSAGE }}
+          MERGE_COMMIT_MESSAGE: ${{ env.MERGE_COMMIT_MESSAGE }}
+          RESOLVED_HEAD_SHA: ${{ env.HEAD_SHA }}
+          RESOLVED_MERGE_SHA: ${{ env.MERGE_SHA }}
+        with:
+          script: |
+            const eventName = process.env.INPUT_EVENT_NAME || context.eventName;
+            const ref = process.env.INPUT_REF || context.ref || '';
+            let shouldRun = false;
+
+            // Fast-path: if caller says this is a non-draft PR, always run
+            const inputIsPr = String(process.env.INPUT_IS_PR || '') === 'true';
+            const inputIsDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true';
+            if (inputIsPr && !inputIsDraft) {
+              core.info('precheck: fast-path non-draft PR -> run');
+              core.setOutput('should_run', 'true');
+              return;
+            }
+
+            function containsRunTests(text) {
+              if (!text || typeof text !== 'string') return false;
+              return /\[run tests\]/i.test(text);
+            }
+
+            async function getCommitMessageBySha(sha) {
+              try {
+                if (!sha) return '';
+                const { data } = await github.repos.getCommit({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: sha,
+                });
+                return (data && data.commit && data.commit.message) || '';
+              } catch (e) {
+                return '';
+              }
+            }
+
+            // Seed hasRunTests from pre-resolved env messages
+            let hasRunTests = false;
+            const envHeadMsg = (process.env.HEAD_COMMIT_MESSAGE || '').trim();
+            const envMergeMsg = (process.env.MERGE_COMMIT_MESSAGE || '').trim();
+            const envHeadMatch = containsRunTests(envHeadMsg);
+            const envMergeMatch = containsRunTests(envMergeMsg);
+            hasRunTests = envHeadMatch || envMergeMatch;
+
+            // Detect PR using inputs, payload and ref
+            const payloadPR = (context.payload && context.payload.pull_request) || null;
+            const prMatch = /^refs\/pull\/(\d+)\//.exec(ref || '');
+            const prNumberFromRef = prMatch ? Number(prMatch[1]) : undefined;
+            const prNumberFromInput = Number(process.env.INPUT_PR_NUMBER || '') || undefined;
+            const prNumber = prNumberFromInput || prNumberFromRef || (payloadPR && payloadPR.number) || undefined;
+            const isPR = (String(process.env.INPUT_IS_PR || '') === 'true') || (typeof prNumber === 'number' && !Number.isNaN(prNumber));
+
+            let isDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true';
+            let branch = process.env.INPUT_BRANCH || '';
+            let debug = { eventName, ref, isPR: false, prNumber: '', branch, isDraft: isDraft, headSha: '', headMatch: envHeadMatch, mergeSha: '', mergeMatch: envMergeMatch, matchedCommitSha: '', shouldRun: false };
+
+            debug.isPR = isPR;
+            debug.prNumber = prNumber ? String(prNumber) : '';
+
+            if (isPR) {
+              try {
+                const { data: pr } = await github.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                });
+                isDraft = String(process.env.INPUT_IS_DRAFT || '') === 'true' ? true : Boolean(pr && pr.draft);
+                debug.isPR = isPR;
+                debug.prNumber = String(prNumber);
+                debug.isDraft = isDraft;
+                const prTitle = process.env.INPUT_PR_TITLE || (pr && pr.title) || '';
+                const prBody = process.env.INPUT_PR_BODY || (pr && pr.body) || '';
+                if (containsRunTests(prTitle) || containsRunTests(prBody)) {
+                  hasRunTests = true;
+                }
+                const payloadHeadSha = (payloadPR && payloadPR.head && payloadPR.head.sha) || '';
+                const inputHeadSha = (process.env.INPUT_HEAD_SHA || '').trim();
+                const apiHeadSha = (pr && pr.head && pr.head.sha) || '';
+                const resolvedHeadSha = (process.env.RESOLVED_HEAD_SHA || '').trim();
+                const headSha = resolvedHeadSha || inputHeadSha || payloadHeadSha || apiHeadSha || '';
+                const headMsg = (process.env.HEAD_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(headSha);
+                debug.headSha = headSha;
+                hasRunTests = hasRunTests || containsRunTests(headMsg);
+                debug.headMatch = containsRunTests(headMsg);
+                core.info(`precheck debug: headMsg[0:140]=${(headMsg || '').slice(0,140).replace(/\n/g,' ')}`);
+                core.info(`precheck debug: headSha candidates resolved=${resolvedHeadSha || '-'} input=${inputHeadSha || '-'} payload=${payloadHeadSha || '-'} api=${apiHeadSha || '-'}`);
+                // Also check the merge commit for PR runs
+                const payloadMergeSha = (payloadPR && payloadPR.merge_commit_sha) || '';
+                const inputSha = (process.env.INPUT_SHA || '').trim();
+                const resolvedMergeSha = (process.env.RESOLVED_MERGE_SHA || '').trim();
+                const mergeSha = resolvedMergeSha || inputSha || context.sha || payloadMergeSha || '';
+                debug.mergeSha = mergeSha;
+                const mergeMsg = (process.env.MERGE_COMMIT_MESSAGE || '').trim() || await getCommitMessageBySha(mergeSha);
+                if (containsRunTests(mergeMsg)) {
+                  hasRunTests = true;
+                  debug.mergeMatch = true;
+                }
+                core.info(`precheck debug: mergeMsg[0:140]=${(mergeMsg || '').slice(0,140).replace(/\n/g,' ')}`);
+                if (!hasRunTests) {
+                  try {
+                    const commits = await github.paginate(github.pulls.listCommits, {
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      pull_number: prNumber,
+                      per_page: 100,
+                    });
+                    for (const c of commits) {
+                      const msg = (c && c.commit && c.commit.message) || '';
+                      if (containsRunTests(msg)) {
+                        hasRunTests = true;
+                        debug.matchedCommitSha = c.sha || '';
+                        core.info(`precheck debug: matched commit ${debug.matchedCommitSha} msg[0:140]=${msg.slice(0,140).replace(/\n/g,' ')}`);
+                        break;
+                      }
+                    }
+                  } catch (e) {
+                    // ignore
+                  }
+                }
+              } catch (e) {
+                // If PR fetch fails, fall back to strict skip unless explicitly overridden by head payload
+                isDraft = true;
+              }
+            } else {
+              // Treat as push-like: derive branch from ref
+              const m = /^refs\/heads\/(.+)$/.exec(ref || '');
+              branch = branch || (m ? m[1] : '');
+              const isProtectedBranch = String(process.env.INPUT_IS_PROTECTED_PUSH || '') === 'true' || branch === 'development' || branch === 'production';
+              if (isProtectedBranch) {
+                shouldRun = true; // always run on direct pushes to protected branches
+              } else {
+                // Try context.sha first, fall back to payload
+                const headSha = process.env.INPUT_HEAD_SHA || context.sha || (context.payload && context.payload.head_commit && context.payload.head_commit.id) || '';
+                const headMsg = await getCommitMessageBySha(headSha);
+                hasRunTests = containsRunTests(headMsg);
+                if (!hasRunTests && context.payload && Array.isArray(context.payload.commits)) {
+                  hasRunTests = context.payload.commits.some(c => containsRunTests((c && c.message) || ''));
+                }
+              }
+            }
+
+            // Decide shouldRun for PRs (draft gating) and for non-protected pushes
+            if (isPR) {
+              if (!isDraft) {
+                // Force-run for non-draft PRs
+                shouldRun = true;
+              } else if (hasRunTests) {
+                shouldRun = true;
+              } else {
+                shouldRun = false;
+              }
+            } else {
+              if (shouldRun !== true) {
+                shouldRun = hasRunTests === true;
+              }
+            }
+
+            debug.branch = branch;
+            debug.shouldRun = shouldRun;
+            core.info(`precheck debug: eventName=${eventName}, ref=${ref}, isPR=${debug.isPR}, prNumber=${debug.prNumber}, branch=${debug.branch}, isDraft=${debug.isDraft}, headSha=${debug.headSha}, headMatch=${debug.headMatch}, mergeSha=${debug.mergeSha}, mergeMatch=${debug.mergeMatch}, matchedCommitSha=${debug.matchedCommitSha}, hasRunTests=${hasRunTests}, shouldRun=${shouldRun}`);
+
+            core.setOutput('should_run', String(shouldRun));
+

@@ -6,8 +6,8 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/queue.v2/application/contracts/Dispatchable';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';

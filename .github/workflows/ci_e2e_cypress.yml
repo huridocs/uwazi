@@ -16,6 +16,11 @@ jobs:
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
+          - name: entities
+            spec: 'cypress/e2e/entities/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
           - name: information-extraction
             spec: 'cypress/e2e/informationExtraction/*.cy.ts'
             needs_setup: true
@@ -50,7 +55,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
-          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-6.0
+          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-7.0
 
       - name: Install MongoDB tools if not cached
         run: |
@@ -60,11 +65,11 @@ jobs:
           else
             echo "Installing MongoDB tools..."
             # Add MongoDB repo if not already present
-            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
               sudo apt-get update -qq
               sudo apt-get install -y wget gnupg
-              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+              wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
             fi
 
             # Install MongoDB tools
@@ -81,7 +86,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 6.0
+          mongodb-version: 7.0
           mongodb-replica-set: test-rs
 
       - uses: actions/checkout@v4

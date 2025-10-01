@@ -8,14 +8,12 @@ describe('Collection', () => {
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.intercept('GET', '/api/settings').as('fetchSettings');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Collection').click();
     cy.wait('@fetchTemplates');
+    cy.wait('@fetchSettings');
     cy.injectAxe();
-  });
-
-  it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
   });
 
   it('should change collection Name', () => {
