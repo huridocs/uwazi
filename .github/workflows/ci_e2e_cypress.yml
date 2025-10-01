@@ -190,14 +190,14 @@ jobs:
           mongosh --host localhost --port 27017 --quiet --eval 'db.adminCommand("listDatabases")'
           echo ""
           echo "Checking Elasticsearch..."
-          curl -s http://elasticsearch:9200/_cluster/health || echo "Elasticsearch not reachable"
+          curl -s http://localhost:9200/_cluster/health || echo "Elasticsearch not reachable"
           echo ""
           echo "Checking Redis..."
           if command -v redis-cli >/dev/null 2>&1; then
-            redis-cli -h redis -p 6379 ping || echo "Redis not reachable"
+            redis-cli -h localhost -p 6379 ping || echo "Redis not reachable"
           else
-            echo "redis-cli not available, testing with nc:"
-            nc -z redis 6379 && echo "Redis:6379 reachable" || echo "Redis:6379 not reachable"
+            echo "redis-cli not available, testing with curl:"
+            curl -s --connect-timeout 5 telnet://localhost:6379 && echo "Redis:6379 reachable" || echo "Redis:6379 not reachable"
           fi
           echo ""
           echo "Checking production build:"
@@ -210,12 +210,12 @@ jobs:
         env:
           NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://elasticsearch:9200
+          ELASTICSEARCH_URL: http://localhost:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
-          REDIS_HOST: redis
+          REDIS_HOST: localhost
           REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
       
@@ -257,14 +257,10 @@ jobs:
           curl -s http://localhost:3000/api/version | head -1 || echo "localhost:3000 not reachable"
           echo ""
           echo "Testing container networking:"
-          if command -v ping >/dev/null 2>&1; then
-            ping -c 1 elasticsearch || echo "elasticsearch hostname not reachable"
-            ping -c 1 redis || echo "redis hostname not reachable"
-          else
-            echo "ping not available, testing with nc:"
-            nc -z elasticsearch 9200 && echo "elasticsearch:9200 reachable" || echo "elasticsearch:9200 not reachable"
-            nc -z redis 6379 && echo "redis:6379 reachable" || echo "redis:6379 not reachable"
-          fi
+          echo "Testing localhost:9200 (elasticsearch)..."
+          curl -s --connect-timeout 5 http://localhost:9200/_cluster/health && echo "✅ localhost:9200 reachable" || echo "❌ localhost:9200 not reachable"
+          echo "Testing localhost:6379 (redis)..."
+          curl -s --connect-timeout 5 telnet://localhost:6379 && echo "✅ localhost:6379 reachable" || echo "❌ localhost:6379 not reachable"
           echo ""
           echo "=== BROWSER ENVIRONMENT ==="
           echo "Chrome binary location:"
@@ -328,7 +324,7 @@ jobs:
           echo ""
           
           # Check specific conditions for each test type
-          if [[ "${{ matrix.name }}" == "entities" ]]; then
+          if [ "${{ matrix.name }}" = "entities" ]; then
             echo "=== ENTITY TEST DEBUG ==="
             echo "Checking form state management..."
             echo "MongoDB collections in uwazi_e2e:"
@@ -338,7 +334,7 @@ jobs:
             curl -s http://elasticsearch:9200/_cat/templates?v || echo "Could not list templates"
           fi
           
-          if [[ "${{ matrix.name }}" == "base" ]]; then
+          if [ "${{ matrix.name }}" = "base" ]; then
             echo "=== LOGIN TEST DEBUG ==="
             echo "Checking authentication system..."
             echo "MongoDB users collection:"
@@ -353,7 +349,7 @@ jobs:
             fi
           fi
           
-          if [[ "${{ matrix.name }}" == "pages" ]]; then
+          if [ "${{ matrix.name }}" = "pages" ]; then
             echo "=== PUBLIC FORM TEST DEBUG ==="
             echo "Checking public form configuration..."
             echo "MongoDB settings:"
@@ -394,7 +390,7 @@ jobs:
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://elasticsearch:9200
+          ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
           DEBUG: cypress:*
           CYPRESS_DEBUG: true
