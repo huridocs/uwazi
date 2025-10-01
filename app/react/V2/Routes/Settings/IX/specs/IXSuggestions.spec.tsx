@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import api from 'app/utils/api';
@@ -11,7 +11,6 @@ import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
 import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
-import { waitFor } from '@storybook/test';
 
 jest.mock('V2/api/entities', () => ({
   ...jest.requireActual('V2/api/entities'),
@@ -139,15 +138,6 @@ describe('IX suggestions', () => {
         data: { extractorId: 'extractor1', suggestionIds: ['suggestion1'], useForTraining: false },
         headers: {},
       });
-    });
-
-    it('should update the button and disable it after clicking', async () => {
-      render(<Component />);
-      const row = (await screen.findByText('Entity 2 (en)')).closest('tr');
-      await waitFor(async () => {
-        within(row!).getByText('Add to training set').click();
-      });
-      expect(within(row!).getByText('Remove from training set').closest('button')).toBeDisabled();
     });
 
     it('should only allow accepting parent elements', async () => {

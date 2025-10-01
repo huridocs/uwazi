@@ -12,7 +12,7 @@ type EntitySuggestion = Omit<EntitySuggestionType, '_id' | 'suggestedValue' | 'c
   suggestedValue: SuggestionValue | SuggestionValue[];
   currentValue?: SuggestionValue | SuggestionValue[];
   extractorSource: { pdf?: boolean; property?: string };
-  usedForTraining: boolean;
+  useForTraining: boolean;
 };
 
 interface IXProperty extends PropertySchema {

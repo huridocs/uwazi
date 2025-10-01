@@ -302,9 +302,9 @@ const UsedForTrainingCell = ({
         disabled={disabled}
         type="button"
         onClick={async () => {
-          setUsed(false);
           setDisabled(true);
           await action([cell.row.original._id], false);
+          setUsed(false);
         }}
       >
         <CheckCircleIcon className="w-6 h-6 text-gray-900" />
@@ -319,9 +319,9 @@ const UsedForTrainingCell = ({
       disabled={disabled}
       type="button"
       onClick={async () => {
-        setUsed(true);
         setDisabled(true);
         await action([cell.row.original._id], true);
+        setUsed(true);
       }}
     >
       <XCircleIcon className="w-6 h-6 text-orange-500" />
@@ -394,7 +394,7 @@ const suggestionsTableColumnsBuilder = ({
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: valueWidth },
     }),
-    suggestionColumnHelper.accessor('usedForTraining', {
+    suggestionColumnHelper.accessor('useForTraining', {
       header: UsedForTrainingHeader,
       cell: ({ cell, row }) => (
         <UsedForTrainingCell cell={cell} row={row} action={markForTraining} />

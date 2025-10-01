@@ -93,7 +93,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
-      usedForTraining: true,
+      useForTraining: true,
     },
     {
       _id: 'suggestion2',
@@ -124,7 +124,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
-      usedForTraining: false,
+      useForTraining: false,
     },
   ],
   totalPages: 1,
@@ -184,7 +184,7 @@ const nestedSuggestions: IXSuggestionsLoaderResponse = {
       sharedId: 'shared1',
       entityId: '_id1',
       entityTemplateId: 'template1',
-      usedForTraining: false,
+      useForTraining: false,
       rowId: 'nested1',
       extractorSource: {
         pdf: true,
@@ -215,7 +215,7 @@ const nestedSuggestions: IXSuggestionsLoaderResponse = {
       sharedId: 'shared2',
       entityId: '_id2',
       entityTemplateId: 'template1',
-      usedForTraining: true,
+      useForTraining: true,
       rowId: 'nested2',
       extractorSource: {
         pdf: true,
