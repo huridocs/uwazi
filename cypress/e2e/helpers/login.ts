@@ -1,4 +1,5 @@
 const clearCookiesAndLogin = (username?: string, password?: string) => {
+  cy.task('log', '=== LOGIN HELPER STARTING ===');
   cy.clearAllCookies();
   cy.visit('http://localhost:3000/login');
   cy.contains('Login');
@@ -7,8 +8,8 @@ const clearCookiesAndLogin = (username?: string, password?: string) => {
   cy.intercept('POST', '/api/login').as('login');
   cy.get('button[type="submit"').click();
   cy.wait('@login').then((interception) => {
-    console.log('Login response status:', interception.response?.statusCode);
-    console.log('Login response body:', interception.response?.body);
+    cy.task('log', 'Login response status: ' + interception.response?.statusCode);
+    cy.task('log', 'Login response body: ' + JSON.stringify(interception.response?.body));
   });
   
   // Wait for redirect to library after successful login

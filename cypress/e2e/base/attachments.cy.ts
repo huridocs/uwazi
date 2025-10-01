@@ -2,27 +2,28 @@ import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('attachments', () => {
   before(() => {
+    cy.task('log', '=== ATTACHMENTS TEST BEFORE HOOK STARTING ===');
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     
     // Debug: Check database state before fixtures
     cy.exec('mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e', { failOnNonZeroExit: false }).then((result) => {
-      console.log('Entities before fixtures:', result.stdout);
+      cy.task('log', 'Entities before fixtures: ' + result.stdout);
     });
     
     // Run fixtures and capture output
     cy.exec('yarn e2e-fixtures', { env, failOnNonZeroExit: false }).then((result) => {
-      console.log('Fixtures command exit code:', result.code);
-      console.log('Fixtures stdout:', result.stdout);
-      console.log('Fixtures stderr:', result.stderr);
+      cy.task('log', 'Fixtures command exit code: ' + result.code);
+      cy.task('log', 'Fixtures stdout: ' + result.stdout);
+      cy.task('log', 'Fixtures stderr: ' + result.stderr);
       
       if (result.code !== 0) {
-        console.error('Fixtures command failed with exit code:', result.code);
+        cy.task('log', 'ERROR: Fixtures command failed with exit code: ' + result.code);
       }
     });
     
     // Debug: Check database state after fixtures
     cy.exec('mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e', { failOnNonZeroExit: false }).then((result) => {
-      console.log('Entities after fixtures:', result.stdout);
+      cy.task('log', 'Entities after fixtures: ' + result.stdout);
     });
     
     clearCookiesAndLogin();
@@ -30,17 +31,18 @@ describe('attachments', () => {
 
   describe('main documents', () => {
     it('should view an entity with main a document', () => {
+      cy.task('log', '=== TEST EXECUTION STARTING ===');
       // Debug: Check what entities are visible on the page
       cy.get('h2.item-name').should('exist').then(($elements) => {
         const entityNames = Array.from($elements).map(el => el.textContent);
-        console.log('Available entities on page:', entityNames);
+        cy.task('log', 'Available entities on page: ' + JSON.stringify(entityNames));
       });
       
       // Debug: Look for any entities containing "Artavia"
       cy.get('h2.item-name').each(($el) => {
         const text = $el.text();
         if (text.includes('Artavia')) {
-          console.log('Found Artavia entity:', text);
+          cy.task('log', 'Found Artavia entity: ' + text);
         }
       });
       

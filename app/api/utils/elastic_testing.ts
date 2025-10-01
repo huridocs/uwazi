@@ -1,4 +1,5 @@
 import { elastic, search } from 'api/search';
+import { elasticClient } from 'api/search/elastic';
 import { IndicesPutMapping } from 'api/search/elasticTypes';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
@@ -25,7 +26,7 @@ const elasticTesting = {
   },
 
   async deleteIndex(indexName: string) {
-    await elastic.indices.delete({ index: indexName, ignore_unavailable: true });
+    await elasticClient.indices.delete({ index: indexName, ignore_unavailable: true });
   },
 
   async getIndexedEntities(sort = 'title.sort') {
