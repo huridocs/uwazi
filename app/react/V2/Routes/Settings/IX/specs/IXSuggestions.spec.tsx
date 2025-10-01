@@ -165,7 +165,7 @@ describe('IX suggestions', () => {
 
       it('should submit with the selected sample policy', async () => {
         const submit = await within(screen.getByRole('dialog')).findByText('Train');
-        (await screen.findByLabelText('Marked and labeled')).click();
+        (await screen.findByLabelText('Marked for training + all labeled entries')).click();
         await act(async () => {
           await fireEvent.click(submit);
         });

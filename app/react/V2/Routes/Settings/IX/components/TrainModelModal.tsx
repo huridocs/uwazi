@@ -1,5 +1,7 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Tooltip } from 'flowbite-react';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
 import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
@@ -61,19 +63,48 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
               render={({ field }) => (
                 <div>
                   <label htmlFor={field.name} className="text-gray-900 pb-4">
-                    <Translate>Sample policy</Translate>:
+                    <Tooltip
+                      // eslint-disable-next-line react/style-prop-object
+                      style="light"
+                      content={
+                        <div>
+                          <Translate>Choose which data to use for training</Translate> :
+                          <ul className="list-inside list-disc">
+                            <li>
+                              <Translate translationKey="marked for training">
+                                Marked for training only: Uses only entries you marked as &quot;Use
+                                for training&quot;, including those with empty values
+                              </Translate>
+                            </li>
+                            <li>
+                              <Translate translationKey="marked and labeled">
+                                Marked for training + all labeled entries: Includes entries marked
+                                for training plus any other entries that have values
+                              </Translate>
+                            </li>
+                          </ul>
+                        </div>
+                      }
+                    >
+                      <div className="flex flex-row items-center gap-2">
+                        <span>
+                          <Translate>Training sample</Translate> :
+                        </span>
+                        <InformationCircleIcon className="w-4 h-4" />
+                      </div>
+                    </Tooltip>
                   </label>
                   <RadioSelect
                     name={field.name}
                     onChange={field.onChange}
                     options={[
                       {
-                        label: <Translate>Only marked</Translate>,
+                        label: <Translate>Marked for training only</Translate>,
                         value: 'only_marked',
                         checked: true,
                       },
                       {
-                        label: <Translate>Marked and labeled</Translate>,
+                        label: <Translate>Marked for training + all labeled entries</Translate>,
                         value: 'marked_plus_labeled',
                       },
                     ]}
