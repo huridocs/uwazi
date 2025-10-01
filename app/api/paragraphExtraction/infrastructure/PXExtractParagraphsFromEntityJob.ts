@@ -1,10 +1,10 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '../queue.v2/application/contracts/UserAwareDispatchable.js';
+} from '#api/queue.v2/application/contracts/UserAwareDispatchable.js';
 
-import { HeartbeatCallback, JobInfo } from '../queue.v2/application/contracts/Dispatchable.js';
-import { PXExtractParagraphsFromEntityInput } from '../application/PXExtractParagraphsFromEntity';
+import { HeartbeatCallback, JobInfo } from '#api/queue.v2/application/contracts/Dispatchable.js';
+import { PXExtractParagraphsFromEntityInput } from '#api/paragraphExtraction/application/PXExtractParagraphsFromEntity';
 import { PXExtractParagraphsFromEntityFactory } from './PXExtractParagraphsFromEntityFactory';
 
 type Params = UserAwareDispatchableParams & PXExtractParagraphsFromEntityInput;

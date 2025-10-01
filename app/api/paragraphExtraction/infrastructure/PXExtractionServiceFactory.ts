@@ -1,6 +1,6 @@
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
-import { HttpClientFactory } from '../common.v2/infrastructure/HttpClientFactory.js';
+import { HttpClientFactory } from '#api/common.v2/infrastructure/HttpClientFactory.js';
 
 import { PXExternalExtractionService } from './ExternalExtractionService/ExternalExtractionService.js';
 import { PXExtractionService } from '../domain/PXExtractionService.js';

@@ -1,5 +1,5 @@
 import { detectLanguage } from '#shared/detectLanguage.js';
-import entities from '../entities/index.js';
+import entities from '#api/entities/index.js';
 import { legacyLogger } from '../log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import PromisePool from '@supercharge/promise-pool';
@@ -10,7 +10,7 @@ import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettings
 import { LanguageUtils } from '#shared/language/index.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
-import { getTenantESMapping } from '../tenants/tenantESMapping.js';
+import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '#api/database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
 

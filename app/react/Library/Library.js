@@ -10,7 +10,7 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { routes as appRoutes } from '#app/App/appRoutes.js';
+import { routes as appRoutes } from '#app/appRoutes.js';
 
 class LibraryRootComponent extends RouteHandler {
   constructor(props, context) {

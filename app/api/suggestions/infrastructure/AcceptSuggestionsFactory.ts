@@ -1,10 +1,10 @@
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
 
 import { tenants } from '#api/tenants/index.js';
-import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
-import { AcceptSuggestionsJob } from '../jobs/AcceptSuggestionsJob';
+import { AcceptSuggestionsUseCase } from '#api/suggestions/application/AcceptSuggestionsUseCase';
+import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob';
 
 type Props = { tenantName?: string; batchSize?: number };
 

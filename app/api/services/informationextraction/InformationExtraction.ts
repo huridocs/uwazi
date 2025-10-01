@@ -8,17 +8,17 @@ import { storage } from '#api/files/index.js';
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 
-import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 
-import { EnforcedWithId } from '../odm/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
-import { emitToTenant } from '../socketio/setupSockets.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
 
-import { filesModel } from '../files/filesModel.js';
+import { filesModel } from '#api/files/filesModel.js';
 
 import entities from '#api/entities/entities.js';
 
@@ -44,9 +44,9 @@ import {
   getEntitiesForSuggestions,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-} from '../services/informationextraction/ixMaterials.js';
+} from '#api/services/informationextraction/ixMaterials.js';
 
-import { Suggestions } from '../suggestions/suggestions.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
@@ -57,30 +57,30 @@ import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
 import moment from 'moment';
 
-import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
 
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
 
-import { SuggestionFactory } from '../suggestions/suggestionFactory.js';
+import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 
-import { AcceptSuggestionsFactory } from '../suggestions/infrastructure/AcceptSuggestionsFactory.js';
+import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import ixmodels from './ixmodels.js';
-import { IXModelsModel } from './IXModelsModel.js';
-import { Extractors } from './ixextractors.js';
+import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import {
   CommonSuggestion,
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
   formatSuggestionFacade,
-} from './suggestionFormatting.js';
-import { ExtractionKey } from './ExtractionKey.js';
-import { IXTrainModelJob } from './TrainModelJob.js';
-import { IXServices } from './IXServices.js';
+} from '#api/services/informationextraction/suggestionFormatting.js';
+import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey.js';
+import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
+import { IXServices } from '#api/services/informationextraction/IXServices.js';
 
 const defaultTrainingLanguage = 'en';
 

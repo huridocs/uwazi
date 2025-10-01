@@ -192,15 +192,15 @@ module.exports = production => {
               if (resolveData.request && resolveData.request.startsWith('#')) {
                 const request = resolveData.request;
                 if (request.startsWith('#app/')) {
-                  resolveData.request = request.replace('#app/', './app/react/');
+                  resolveData.request = request.replace('#app/', path.join(rootPath, 'app/react/'));
                 } else if (request.startsWith('#api/')) {
-                  resolveData.request = request.replace('#api/', './app/api/');
+                  resolveData.request = request.replace('#api/', path.join(rootPath, 'app/api/'));
                 } else if (request.startsWith('#shared/')) {
-                  resolveData.request = request.replace('#shared/', './app/shared/');
+                  resolveData.request = request.replace('#shared/', path.join(rootPath, 'app/shared/'));
                 } else if (request.startsWith('#UI/')) {
-                  resolveData.request = request.replace('#UI/', './app/react/UI/');
+                  resolveData.request = request.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
                 } else if (request.startsWith('#V2/')) {
-                  resolveData.request = request.replace('#V2/', './app/react/V2/');
+                  resolveData.request = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
                 }
               }
             });

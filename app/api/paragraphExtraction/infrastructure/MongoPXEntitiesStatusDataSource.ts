@@ -11,7 +11,7 @@ import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 
-import { OperationalError } from '../common.v2/errors/OperationalError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import {
   CreateInput,
   GetExistingInput,

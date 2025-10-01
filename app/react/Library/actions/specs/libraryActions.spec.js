@@ -12,7 +12,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { documentsApi } from '#app/Documents.js';
+import { documentsApi } from '#app/Documents/index.js';
 import { mockID } from '#shared/uniqueID.js.js';
 
 import { api } from '#app/Entities.js';

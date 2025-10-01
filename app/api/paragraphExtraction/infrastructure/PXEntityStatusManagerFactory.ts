@@ -4,11 +4,11 @@ import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTe
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXEntityStatusManager } from '../application/PXEntityStatusManager';
+import { PXEntityStatusManager } from '#api/paragraphExtraction/application/PXEntityStatusManager';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXEntityStatusManagerFactory {

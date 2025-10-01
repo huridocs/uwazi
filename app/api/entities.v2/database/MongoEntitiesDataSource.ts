@@ -12,7 +12,7 @@ import entities from '#api/entities/entities.js';
 
 import v1EntitiesModel from '#api/entities/entitiesModel.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
 

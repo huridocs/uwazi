@@ -9,7 +9,7 @@ import Immutable from 'immutable';
 import api from '#app/utils/api.js';
 
 import { mockID } from '#shared/uniqueID.js.js';
-import { documentsApi } from '#app/Documents.js';
+import { documentsApi } from '#app/Documents/index.js';
 import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import { actions as formActions } from 'react-redux-form';

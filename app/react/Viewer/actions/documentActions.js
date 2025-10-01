@@ -12,7 +12,7 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js.js';
+import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
 import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';

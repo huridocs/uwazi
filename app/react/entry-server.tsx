@@ -29,7 +29,7 @@ import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js'
 import settingsApi from '#api/settings/settings.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import CustomProvider from './App/Provider';
-import Root from './App/Root';
+import Root from './App/Root.tsx';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { ClientFeatureFlags } from './V2/shared/types';
@@ -154,13 +154,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   ] =
     !settings.private || req.user
       ? await Promise.all([
-          api.get('user', requestParams),
-          api.get('settings', requestParams),
-          api.get('templates', requestParams),
-          api.get('dictionaries', requestParams),
-          api.get('relationTypes', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
-        ])
+        api.get('user', requestParams),
+        api.get('settings', requestParams),
+        api.get('templates', requestParams),
+        api.get('dictionaries', requestParams),
+        api.get('relationTypes', requestParams),
+        Promise.resolve({ json: { rows: translations } }),
+      ])
       : [];
 
   const reduxData = {
