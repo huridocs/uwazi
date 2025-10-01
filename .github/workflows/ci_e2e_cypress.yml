@@ -206,6 +206,35 @@ jobs:
           echo "=== CONTAINER PROCESSES ==="
           ps aux | grep -E "(mongod|elasticsearch|redis)" || echo "No matching processes found"
           
+      - name: Debug - Check services before Uwazi startup
+        run: |
+          echo "=== PRE-STARTUP SERVICE CHECK ==="
+          echo "Checking MongoDB connection..."
+          mongosh --host localhost --port 27017 --quiet --eval 'db.runCommand({ ping: 1 })' || echo "MongoDB not responding"
+          echo ""
+          echo "Checking Redis connection..."
+          if command -v redis-cli >/dev/null 2>&1; then
+            redis-cli -h localhost -p 6379 ping || echo "Redis not responding"
+          else
+            echo "redis-cli not available, testing with curl..."
+            timeout 5 bash -c 'exec 3<>/dev/tcp/localhost/6379 && echo "Redis port 6379 is open" || echo "Redis port 6379 is closed"' 2>/dev/null || echo "Redis port test failed"
+          fi
+          echo ""
+          echo "Checking Elasticsearch connection..."
+          curl -s http://localhost:9200/_cluster/health || echo "Elasticsearch not responding"
+          echo ""
+          echo "All services should be running before starting Uwazi"
+          
+      - name: Forward ports for container networking
+        run: |
+          echo "Setting up port forwarding for container networking..."
+          # Forward localhost:6379 to redis:6379
+          nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+          # Forward localhost:9200 to elasticsearch:9200  
+          nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+          sleep 2
+          echo "Port forwarding setup complete"
+          
       - name: start Uwazi
         env:
           NOTIFICATION_DELAY: 50
