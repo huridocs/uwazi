@@ -3,7 +3,7 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import relationshipTypeDS from 'api/relationtypes';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
 
 import { PXExtractor } from '../domain/PXExtractor';

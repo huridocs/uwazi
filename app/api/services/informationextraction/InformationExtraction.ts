@@ -39,7 +39,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
 import moment from 'moment';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';

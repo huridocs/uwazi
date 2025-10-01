@@ -6,7 +6,7 @@ import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { ocrManager } from 'api/services/ocr/OcrManager';

@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import templates from 'api/templates';
 import { tenants } from 'api/tenants';

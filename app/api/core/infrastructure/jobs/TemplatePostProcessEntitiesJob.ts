@@ -3,7 +3,7 @@ import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PX
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 

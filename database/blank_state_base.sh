@@ -7,6 +7,7 @@ parent_path=$(
   pwd -P
 )
 cd "$parent_path" || exit
+repo_root=$(cd "$parent_path/.." && pwd -P)
 
 FORCE_FLAG=false
 
@@ -46,8 +47,13 @@ recreate_database() {
     mongorestore -h "$HOST" "${AUTH[@]}" blank_state/uwazi_shared_db/ --db="$DB"
   else
     mongorestore -h "$HOST" "${AUTH[@]}" blank_state/uwazi_development/ --db="$DB"
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
-    INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+    if [ "$TRANSPILED" = true ]; then
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" ./migrate.js
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" node "$repo_root/prod/scripts/run.js" ../database/reindex_elastic.js
+    else
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn migrate
+      INDEX_NAME="$DB" DATABASE_NAME="$DB" yarn reindex
+    fi
   fi
 
   exit 0

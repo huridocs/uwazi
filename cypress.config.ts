@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { defineConfig } from 'cypress';
 import webpackConfig from './webpack.config';
+import cypressFailFast from 'cypress-fail-fast/plugin';
 
 const cypressWebpackConfig = {
   ...webpackConfig,
@@ -16,6 +17,10 @@ export default defineConfig({
   viewportHeight: 768,
   defaultCommandTimeout: 12000,
   requestTimeout: 30000,
+  env: {
+    FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'true',
+    FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
+  },
   e2e: {
     baseUrl: 'http://localhost:3000',
     video: true,
@@ -25,6 +30,20 @@ export default defineConfig({
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     setupNodeEvents(on, config) {
       initPlugin(on, config);
+      cypressFailFast(on, config);
+      
+      // Add logging tasks for accessibility violations
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        },
+      });
+      
       on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
         if (results && results.video) {
           // Do we have failures for any retry attempts?
@@ -38,9 +57,12 @@ export default defineConfig({
         }
       });
       on('before:browser:launch', (browser, launchOptions) => {
-        if (browser.name === 'chrome' && browser.isHeadless) {
+        if (browser.name === 'chrome' || browser.name === 'chromium' || browser.name === 'edge') {
+          // Ensure consistent viewport and stable CI runs for Chromium-family browsers in both headed and headless modes
           launchOptions.args.push('--window-size=1280,768');
           launchOptions.args.push('--force-device-scale-factor=1');
+          launchOptions.args.push('--disable-dev-shm-usage');
+          launchOptions.args.push('--no-sandbox');
         }
 
         if (browser.name === 'electron' && browser.isHeadless) {

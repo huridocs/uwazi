@@ -1,5 +1,5 @@
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { tenants } from 'api/tenants';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
 import { AcceptSuggestionsJob } from '../jobs/AcceptSuggestionsJob';

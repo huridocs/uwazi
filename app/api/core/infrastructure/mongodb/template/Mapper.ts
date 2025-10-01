@@ -154,6 +154,10 @@ class PropertyMapper {
       schema.inherit = domain.inherit;
     }
 
+    if (domain instanceof NestedProperty) {
+      schema.nestedProperties = domain.nestedProperties;
+    }
+
     return schema as PropertySchema;
   }
 
@@ -235,7 +239,11 @@ class PropertyMapper {
       }
 
       case 'nested':
-        return new NestedProperty({ ...baseProps, ...filterableProps });
+        return new NestedProperty({
+          ...baseProps,
+          ...filterableProps,
+          nestedProperties: schema.nestedProperties,
+        });
 
       case 'relationship':
         return V1RelationshipProperty.create({
