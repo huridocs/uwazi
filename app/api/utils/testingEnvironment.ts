@@ -94,7 +94,12 @@ const testingEnvironment = {
   async tearDownWithIndex(indexName?: string) {
     await testingDB.disconnect();
     if (indexName) {
-      await elasticTesting.deleteIndex(indexName);
+      try {
+        await elasticTesting.deleteIndex(indexName);
+      } catch (error) {
+        // Silently ignore cleanup errors - ES connection might be closed or index might not exist
+        console.warn(`Failed to cleanup Elasticsearch index ${indexName}:`, error.message);
+      }
     }
   },
 

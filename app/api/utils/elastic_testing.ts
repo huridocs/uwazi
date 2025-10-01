@@ -1,5 +1,4 @@
 import { elastic, search } from 'api/search';
-import { elasticClient } from 'api/search/elastic';
 import { IndicesPutMapping } from 'api/search/elasticTypes';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
@@ -26,7 +25,15 @@ const elasticTesting = {
   },
 
   async deleteIndex(indexName: string) {
-    await elasticClient.indices.delete({ index: indexName, ignore_unavailable: true });
+    try {
+      await (elastic.indices as any).delete({ 
+        index: indexName, 
+        ignore_unavailable: true
+      });
+    } catch (error) {
+      // Ignore connection errors during cleanup - ES might be unavailable or index might not exist
+      console.warn(`Failed to delete Elasticsearch index ${indexName}:`, error.message);
+    }
   },
 
   async getIndexedEntities(sort = 'title.sort') {
