@@ -1,7 +1,10 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { Template } from 'api/templates.v2/model/Template';
-import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
 
 export class UpdateTemplateRelationshipPropertiesJob implements Dispatchable {
