@@ -26,7 +26,7 @@ const suggestion1: TableSuggestion = {
   date: Date.now(),
   rowId: 'row1',
   extractorSource: { pdf: true },
-  usedForTraining: false,
+  useForTraining: false,
 };
 
 const textProperty: ClientPropertySchema = {

@@ -403,7 +403,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -459,7 +459,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -515,7 +515,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -564,7 +564,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -620,7 +620,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -682,7 +682,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
-        usedForTraining: false,
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -819,7 +819,7 @@ describe('helpers', () => {
             processing: false,
             error: false,
           },
-          usedForTraining: false,
+          useForTraining: false,
         },
 
         {
@@ -849,7 +849,7 @@ describe('helpers', () => {
             processing: false,
             error: false,
           },
-          usedForTraining: false,
+          useForTraining: false,
         },
       ];
 
