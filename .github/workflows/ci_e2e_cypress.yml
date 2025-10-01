@@ -52,7 +52,12 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
       redis:
-        image: redis:5.0.14
+        image: redis:6.0-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 6379:6379
 
@@ -78,6 +83,19 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      
+      - name: Cache Cypress binary
+        id: cypress-cache
+        uses: actions/cache@v4
+        with:
+          path: /github/home/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+      
+      - name: Install Cypress binary if not cached
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
+        run: npx cypress install
 
       - name: Verify pre-installed tools
         run: |
@@ -89,8 +107,6 @@ jobs:
           pdfinfo -v
           echo "Verifying Chrome..."
           google-chrome --version
-          echo "Verifying Cypress..."
-          cypress --version
           echo "Verifying Xvfb..."
           which xvfb-run
       - name: Download production build artifact
@@ -175,7 +191,7 @@ jobs:
           config-file: cypress.config.ts
           spec: ${{ matrix.spec }}
           install: false
-          # Cypress is already installed in node_modules and binary is cached
+          # node_modules already installed, binary is cached
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017

@@ -59,12 +59,6 @@ RUN google-chrome --version \
 # Set working directory
 WORKDIR /workspace
 
-# Install Cypress binary globally so it's cached in the image
-# This matches the version in package.json
-RUN npm install -g cypress@13.16.1 \
-    && cypress verify \
-    && cypress info
-
 # Create startup script for MongoDB with replica set
 RUN echo '#!/bin/bash\n\
 set -e\n\
