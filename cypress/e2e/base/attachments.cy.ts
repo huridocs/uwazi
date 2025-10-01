@@ -58,10 +58,19 @@ describe('attachments', () => {
         'h2.item-name',
         'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
+      
+      cy.task('log', 'Clicked entity, waiting for side panel...');
+      
+      // Wait for side panel to appear with longer timeout
+      cy.get('.side-panel.is-active', { timeout: 20000 }).should('be.visible');
+      cy.task('log', 'Side panel is active, looking for View button...');
+      
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
-      cy.contains('Uwazi Heroes Investigation');
+      
+      cy.task('log', 'Clicked View button, waiting for content...');
+      cy.contains('Uwazi Heroes Investigation', { timeout: 20000 });
     });
 
     it('should show the file in the main documents section', () => {
