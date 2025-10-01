@@ -18,7 +18,7 @@ import { UserRole } from 'shared/types/userSchema';
 
 import { tenants } from 'api/tenants';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories';
 import {

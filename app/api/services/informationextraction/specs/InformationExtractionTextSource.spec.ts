@@ -18,11 +18,11 @@ import { getEntitiesForTraining } from '../ixMaterials';
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
-jest.mock('api/queue.v2/configuration/factories', () => ({
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
     } = require('api/services/informationextraction/InformationExtraction');

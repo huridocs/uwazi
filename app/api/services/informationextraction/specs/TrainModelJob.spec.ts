@@ -1,5 +1,5 @@
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { IXTrainModelJob } from '../TrainModelJob';
 import { TrainModelForPDF } from '../TrainModelForPDF';

@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
