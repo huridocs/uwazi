@@ -10,11 +10,7 @@ import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import {
-  ClientEntitySchema,
-  ClientPropertySchema,
-  ClientTemplateSchema,
-} from '#app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,

@@ -50,7 +50,7 @@ const LMap = ({
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
 
-  const clickHandler = markerPoint => {
+  const clickHandler = (markerPoint: any) => {
     if (!map.dragging.enabled()) {
       map.dragging.enable();
       return;

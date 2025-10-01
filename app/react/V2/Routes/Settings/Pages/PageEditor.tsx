@@ -18,7 +18,7 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#app/V2/api/pages/index.js';
-import { Page } from '#app/V2/shared/types.js';
+import { Page } from '#app/istore.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import {
   Button,

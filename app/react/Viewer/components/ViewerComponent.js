@@ -8,7 +8,7 @@ import EntityView from '#app/Viewer/EntityView.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
-import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
+import { ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorBoundary.js';
 import { PDFView } from '../PDFView';
 
 class EntityViewerComponent extends Component {

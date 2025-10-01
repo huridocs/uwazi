@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Map } from 'immutable';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { saveConnection, selectRangedTarget } from '../actions/actions';
 

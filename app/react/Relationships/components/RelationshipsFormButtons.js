@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t } from '#app/I18N/index.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import * as actions from '../actions/actions';
 

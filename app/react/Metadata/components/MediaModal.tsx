@@ -6,19 +6,18 @@ import { actions as formActions } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/UI/Icon/Icon.js';
-import { ClientFile, IStore } from '#app/V2/shared/types.js';
-
 import uniqueID from '#shared/uniqueID.js';
 
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
 
-import { mimeTypeFromUrl } from '#app/files/extensionHelper.js';
 import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.js';
 import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 import { validImageFile, validMediaFile } from '../helpers/validator';
+import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import { ClientFile, IStore } from '#app/istore.js';
+import { Icon } from '#app/UI/index.js';
 
 enum MediaModalType {
   Image,

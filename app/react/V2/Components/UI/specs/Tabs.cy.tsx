@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/V2/stories/Tabs.stories.js';
+import * as stories from '#app/stories/Tabs.stories.js';
 
 const { Basic } = composeStories(stories);
 

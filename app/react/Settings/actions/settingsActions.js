@@ -1,4 +1,4 @@
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import SettingsAPI from '#app/Settings/SettingsAPI.js';

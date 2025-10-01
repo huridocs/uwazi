@@ -23,7 +23,7 @@ import * as templatesAPI from '#app/V2/api/templates/index.js';
 import * as pagesAPI from '#app/V2/api/pages/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from '#shared/types.js';
+import { Page, ClientTemplateSchema } from '#app/V2/shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';

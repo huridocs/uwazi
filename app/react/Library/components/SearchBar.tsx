@@ -4,19 +4,19 @@ import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
 } from '#app/Library/actions/libraryActions.js';
 import { t, Translate } from '#app/I18N/index.js';
 
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import ModalTips from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 import { Form } from '#app/Forms/Form.js';
 
 interface SearchBarOwnProps {}
@@ -75,7 +75,7 @@ const SearchBarComponent = ({
     semanticSearch(search);
   };
 
-  const doSearch = newSearch => {
+  const doSearch = (newSearch: any) => {
     change('library.search.searchTerm', searchTerm);
     searchDocuments({ search: { ...newSearch, searchTerm }, location, navigate });
   };

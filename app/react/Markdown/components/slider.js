@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const normalizeIndex = (index, length) => (index >= 0 ? index % length : length + index);
 

@@ -16,8 +16,8 @@ import {
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import { TableViewColumn, IStore } from '#app/istore.js';
 import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
+import { TableViewColumn, IStore } from '#app/istore.js';
 
 interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;

@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { Translate, t } from '#app/I18N/index.js';
 
-import { InputField, Select, OptionSchema } from '#app/V2/Components/Forms.js';
+import { InputField, Select, OptionSchema } from '#app/V2/Components/Forms/index.js';
 import { useForm } from 'react-hook-form';
 
 import { Button, Card } from '#app/V2/Components/UI/index.js';

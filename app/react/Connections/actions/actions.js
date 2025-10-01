@@ -1,6 +1,6 @@
 import qs from 'qs';
 import { actions } from '#app/BasicReducer/index.js';
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import api from '#app/utils/api.js';
 import { debounce } from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

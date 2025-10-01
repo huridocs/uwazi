@@ -4,19 +4,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { deleteEntities } from '#app/Entities/actions/actions.js';
 import * as metadataActions from '#app/Metadata/actions/actions.js';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { ShareButton } from '#app/Permissions/components/ShareButton.js';
 import TemplateLabel from '#app/Layout/TemplateLabel.js';
 import SidePanel from '#app/Layout/SidePanel.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import MetadataForm from './MetadataForm';
-import comonTemplate from '../helpers/comonTemplate';
+import { withContext } from '#app/componentWrappers.js';
+import MetadataForm from './MetadataForm.js';
+import comonTemplate from '../helpers/comonTemplate.js';
 
 const sortedTemplates = createSelector(
   s => s.templates,

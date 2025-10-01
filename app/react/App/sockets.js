@@ -1,6 +1,6 @@
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { documentProcessed } from '#app/Uploads/actions/uploadsActions.js';
 import {
   atomStore,

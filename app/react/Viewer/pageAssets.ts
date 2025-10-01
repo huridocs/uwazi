@@ -1,6 +1,6 @@
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
-import { formater as formatter } from '#app/Metadata.js';
+import { formater as formatter } from '#app/Metadata/index.js';
 import {
   pick,
   isArray,

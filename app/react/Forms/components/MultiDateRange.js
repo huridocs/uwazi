@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import DatePicker from './DatePicker';
 

@@ -9,15 +9,15 @@ import { useSetAtom } from 'jotai';
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { validEmailFormat } from '#shared/formatHelpers.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { updateUser, getCurrentUser } from '#app/users/index.js';
 import { notificationAtom } from '#app/V2/atoms/index.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
+import { getCurrentUser, updateUser } from '#app/V2/api/users/index.js';
+import { validEmailFormat } from '#app/V2/shared/formatHelpers.js';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

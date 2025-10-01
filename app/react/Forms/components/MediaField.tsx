@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/UI/Icon/Icon.js';
-import { ClientFile } from '#app/V2/shared/types.js';
+import { Icon } from '#app/UI/index.js';
+import { ClientFile } from '#app/istore.js';
 
 import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
 import {

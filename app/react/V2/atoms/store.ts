@@ -4,11 +4,6 @@ import { sortBy } from 'lodash';
 import { isClient } from '#app/utils/index.js';
 import { store } from '#app/store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
-import {
-  ClientTemplateSchema,
-  ClientTranslationSchema,
-  RelationshipTypesType,
-} from '#app/V2/shared/types.js';
 import { globalMatomoAtom } from './globalMatomoAtom.js';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
 import { relationshipTypesAtom } from './relationshipTypes.js';
@@ -19,6 +14,11 @@ import { userAtom } from './userAtom.js';
 import { thesauriAtom } from './thesauriAtom.js';
 import { pdfScaleAtom } from './pdfScaleAtom.js';
 import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
+import {
+  ClientTemplateSchema,
+  RelationshipTypesType,
+  ClientTranslationSchema,
+} from '#app/istore.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };

@@ -1,4 +1,4 @@
-import { ClientTranslationSchema } from '#app/V2/shared/types.js';
+import { ClientTranslationSchema } from '#app/istore.js';
 
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 

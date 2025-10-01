@@ -13,9 +13,7 @@ import {
   Legend,
 } from 'recharts';
 
-import arrayUtils from '#app/utils/arrayUtils';
-
-import colorScheme from '#app/utils/colorScheme';
+import { colorScheme, arrayUtils } from '#app/Charts/index.js';
 
 class ExtendedTooltip extends React.Component {
   render() {

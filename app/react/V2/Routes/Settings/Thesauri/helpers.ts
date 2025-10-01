@@ -5,7 +5,7 @@ import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { get as getThesauri } from '#app/thesauri/index.js';
+import { get as getThesauri } from '#app/V2/api/thesauri/index.js';
 
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 
@@ -40,11 +40,12 @@ const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =
     return values ? assign(item, { values }) : item;
   });
 
-const addSelection = (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => item => {
-  if (item.rowId in selectedRows) {
-    selection.push(item);
-  }
-};
+const addSelection =
+  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item: ThesaurusRow) => {
+    if (item.rowId in selectedRows) {
+      selection.push(item);
+    }
+  };
 
 const sanitizeThesauri = (thesaurus: ThesaurusSchema) => {
   const sanitizedThesauri = { ...thesaurus };

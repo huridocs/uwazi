@@ -90,7 +90,7 @@ import { PageView } from './Pages/PageView.js';
 import ResetPassword from './Users/ResetPassword.js';
 import ConnectedUnlockAccount from './Users/UnlockAccount.js';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
-import { LibraryMap } from './Library/LibraryMap.js';
+import { LibraryMap } from '#app/Library/LibraryMap.js';
 import { App } from './App/App.js';
 
 const getRoutesLayout = (

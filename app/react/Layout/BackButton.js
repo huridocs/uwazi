@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { I18NLink, t } from '#app/I18N/index.js';
 
 const BackButton = ({ to, className }) => (

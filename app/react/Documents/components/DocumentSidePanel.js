@@ -4,23 +4,25 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { withContext, withRouter } from '#app/componentWrappers.js';
-import { MetadataFormButtons, ShowMetadata } from '#app/Metadata.js';
+import { MetadataFormButtons, ShowMetadata } from '#app/Metadata/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { I18NLinkV2 as I18NLink, t, Translate } from '#app/I18N/index.js';
-import { AttachmentsList } from '#app/Attachments.js';
-import { FileList } from '#app/Attachments/components/FileList.js';
-import Connections from '#app/Viewer/components/ConnectionsList.js';
-import { ConnectionsGroups } from '#app/ConnectionsList.js';
+import { FileList, AttachmentsList } from '#app/Attachments/index.js';
+import Connections from '#app/Viewer/components/Connection.js';
+import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
 import ShowIf from '#app/App/ShowIf.js';
 import SidePanel from '#app/Layout/SidePanel.js';
 import DocumentSemanticSearchResults from '#app/SemanticSearch/components/DocumentResults.js';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
-import { TocGeneratedLabel, ReviewTocButton } from '#app/ToggledFeatures/tocGeneration.js';
+import {
+  TocGeneratedLabel,
+  ReviewTocButton,
+} from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { Item } from '#app/Layout.js';
-import * as viewerModule from '#app/Viewer.js';
+import { Item } from '#app/Layout/index.js';
+import * as viewerModule from '#app/Viewer/index.js';
 import * as viewerActions from '#app/Viewer/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import ViewDocButton from '#app/Library/components/ViewDocButton.js';

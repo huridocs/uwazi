@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions, MetadataForm } from '#app/Metadata.js';
+import { actions, MetadataForm } from '#app/Metadata/index.js';
 import { actions as relationshipActions } from '#app/Relationships.js';
 import { saveDocument } from '../actions/documentActions';
 

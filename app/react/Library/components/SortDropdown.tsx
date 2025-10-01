@@ -4,11 +4,11 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { I18NLink, t } from '#app/I18N/index.js';
 
-import { wrapDispatch } from '#app/Multireducer.js';
-import { IStore } from '#app/V2/shared/types.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { IStore } from '#app/istore.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';

@@ -5,10 +5,10 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { ClientFile } from '#app/V2/shared/types.js';
+import { ClientFile } from '#app/istore.js';
 
 const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);

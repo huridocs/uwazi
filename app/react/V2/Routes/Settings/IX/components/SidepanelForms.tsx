@@ -23,7 +23,7 @@ import { SuggestionValue, TableSuggestion } from '../types.js';
 import { MultiselectItemLabel } from './MultiselectItemLabel.js';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 import { escapeLucene, searchRelatedEntities } from '../helpers/index.js';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
+import { ClientIXExtractorType } from '#app/istore.js';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 
 const updateOptionsWithSelection = (

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { scrollToToc } from '#app/Viewer/actions/uiActions.js';
 import ShowIf from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 import './scss/showToc.scss';
 

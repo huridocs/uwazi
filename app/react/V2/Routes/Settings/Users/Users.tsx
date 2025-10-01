@@ -15,8 +15,8 @@ import {
   getGroupsColumns,
   ListOfItems,
 } from './components/index.js';
-import { useHandleNotifications } from './useHandleNotifications.js';
 import { FormIntent, User, Group } from './types.js';
+import { useHandleNotifications } from './useHandleNotifications.js';
 
 type ActiveTab = 'Groups' | 'Users';
 

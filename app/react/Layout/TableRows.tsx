@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { TableRow } from '#app/Library/components/TableRow.js';
 
-import { IStore, TableViewColumn } from '#app/V2/shared/types.js';
+import { IStore, TableViewColumn } from '#app/istore.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 interface TableRowsProps {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from '#app/V2/Components/UI/index.js';
-import { TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
+import { TablePXEntityRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
 
 import { Template } from '#app/apiResponseTypes.js';
 import { TableTitle } from '../TableTitle.js';

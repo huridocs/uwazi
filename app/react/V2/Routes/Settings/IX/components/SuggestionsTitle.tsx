@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Translate, t } from '#app/I18N/index.js';
 import { Pill } from '#app/V2/Components/UI/index.js';
-import { ClientTemplateSchema } from '#shared/types.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,

@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 
-import { Geolocation } from '#app/V2/Components/Forms.js';
+import { Geolocation } from '#app/V2/Components/Forms/index.js';
 import { LEGACY_createStore as createStore } from '#app/V2/testing/index.js';
 import { Provider } from 'react-redux';
 

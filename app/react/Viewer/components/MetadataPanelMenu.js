@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { actions } from '#app/Metadata.js';
-import { MenuButtons } from '#app/ContextMenu.js';
+import { actions } from '#app/Metadata/index.js';
+import { MenuButtons } from '#app/ContextMenu/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 export class MetadataPanelMenu extends Component {
   render() {

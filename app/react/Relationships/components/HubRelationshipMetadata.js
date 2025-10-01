@@ -5,7 +5,7 @@ import { Map, List } from 'immutable';
 
 import { t } from '#app/I18N/index.js';
 import formater from '#app/Metadata/helpers/formater.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const conformQuote = text => (
   <div className="relationship-quote">

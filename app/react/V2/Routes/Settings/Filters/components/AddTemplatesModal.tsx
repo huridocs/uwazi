@@ -4,9 +4,13 @@ import { Translate } from '#app/I18N/index.js';
 
 import { Button, Modal } from '#app/V2/Components/UI/index.js';
 
-import { defaultSearch, MultiselectList, MultiselectListOption } from '#app/V2/Components/Forms.js';
+import {
+  defaultSearch,
+  MultiselectList,
+  MultiselectListOption,
+} from '#app/V2/Components/Forms/index.js';
 
-import { ClientTemplateSchema } from '#app/V2/shared/types.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;

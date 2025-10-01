@@ -14,7 +14,7 @@ import ReferencesAPI from '#app/Viewer/referencesAPI.js';
 import formater from '#app/Metadata/helpers/formater.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import moment from 'moment';
 

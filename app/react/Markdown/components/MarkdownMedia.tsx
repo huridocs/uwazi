@@ -4,7 +4,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { validMediaFile } from '#app/Metadata/helpers/validator.js';
 
@@ -91,7 +91,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     setVideoPlaying(playingStatus);
   };
 
-  const timeLinks = _timelinks => {
+  const timeLinks = (_timelinks: any) => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
       const linkIndex = index;

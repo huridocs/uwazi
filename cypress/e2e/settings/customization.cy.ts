@@ -1,4 +1,5 @@
 import 'cypress-axe';
+// @ts-ignore
 import { SinonSpy } from 'cypress/types/sinon';
 import { clearCookiesAndLogin } from '../helpers/login';
 

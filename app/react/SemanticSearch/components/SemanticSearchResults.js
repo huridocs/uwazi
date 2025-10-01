@@ -9,7 +9,7 @@ import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
 import Immutable from 'immutable';
 import { Translate, t } from '#app/I18N/index.js';
 import SearchDescription from '#app/Library/components/SearchDescription.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import ResultsSidePanel from './ResultsSidePanel';
 import SemanticSearchMultieditPanel from './SemanticSearchMultieditPanel';
 

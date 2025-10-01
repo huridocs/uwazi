@@ -4,7 +4,7 @@ import { isValidUrl, sanitizeUrl, isValidUrlLength } from '#shared/urlValidation
 import { FormGroup } from '#app/Forms/index.js';
 import { LocalForm } from '#app/Forms/Form.js';
 import { Translate, t } from '#app/I18N/index.js';
-import Icon from '#app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
 interface WebMediaResourceFormProps {
   handleSubmit: (args: any) => void;
@@ -39,7 +39,7 @@ const WebMediaResourceForm = ({
     return 'btn hover:bg-blue-600';
   };
 
-  const handleFormSubmit = formData => {
+  const handleFormSubmit = (formData: any) => {
     if (formData.url && typeof formData.url === 'string' && formData.url.trim() !== '') {
       const sanitized = sanitizeUrl(formData.url);
       const isValid = isValidUrl(sanitized) && isValidUrlLength(sanitized);
@@ -66,7 +66,7 @@ const WebMediaResourceForm = ({
     ...(hasName && { name: { required: (val: any) => !!val && val.trim() !== '' } }),
     url: {
       required: (val: any) => !!val && val.trim() !== '',
-      validUrl: val => {
+      validUrl: (val: any) => {
         if (!val || typeof val !== 'string') return false;
         const sanitized = sanitizeUrl(val);
         return isValidUrl(sanitized) && isValidUrlLength(sanitized);

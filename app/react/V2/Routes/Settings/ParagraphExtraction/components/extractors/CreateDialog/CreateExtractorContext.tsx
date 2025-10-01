@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo, useState } from 'react';
 import { templatesAtom } from '#app/V2/atoms/index.js';
 import { useAtomValue } from 'jotai';
 
-import { MultiselectListOption } from '#app/V2/Components/Forms.js';
+import { MultiselectListOption } from '#app/V2/Components/Forms/index.js';
 import { AddExtractorSteps } from './steps/index.js';
 import { formatTemplatesToOptions } from '#app/utils/formatters.js';
 import { filterPXQualifiedTemplates } from '#app/utils/filterPXQualifiedTemplates.js';

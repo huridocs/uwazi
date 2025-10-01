@@ -40,7 +40,7 @@ const AddThesauriValueModal = ({
     reset,
   } = useForm<FormInputs>({ defaultValues: { group: 'root' } });
 
-  const onSubmitted = submittedValues => {
+  const onSubmitted = (submittedValues: any) => {
     // Sanitize the value before accepting
     const sanitizedValues = {
       ...submittedValues,

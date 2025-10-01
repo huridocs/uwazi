@@ -6,8 +6,8 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientPropertySchema, ClientTemplateSchema } from '#app/V2/shared/types.js';
-import { ClientIXExtractorType } from '#shared/types.js';
+import { ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 import { InputField } from '#app/V2/Components/Forms/InputField.js';
 import { defaultSearch, MultiselectList, RadioSelect } from '#app/V2/Components/Forms/index.js';
 import { Modal, Button, Pill } from '#app/V2/Components/UI/index.js';

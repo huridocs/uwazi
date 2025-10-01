@@ -11,8 +11,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import * as SettingsAPI from '#app/V2/api/settings.js';
 
-import { notificationAtom } from '#app/V2/atoms.js';
-
+import { notificationAtom } from '#app/V2/atoms/index.js';
 import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
 
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';

@@ -2,9 +2,9 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { I18NLink } from '#app/I18N/index.js';
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
-import { Icon } from '#app/Layout.js';
+import { Icon } from '#app/Layout/index.js';
 import * as actions from '#app/Relationships/actions/actions';
 
 interface RelationshipLinkProps {

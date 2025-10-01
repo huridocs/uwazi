@@ -1,8 +1,8 @@
 import { actions as formActions, getModel } from 'react-redux-form';
 
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { api } from '#app/Entities.js';
-import { notificationActions } from '#app/Notifications.js';
+import { api } from '#app/V2/api/entities/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
 import { removeDocuments, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';

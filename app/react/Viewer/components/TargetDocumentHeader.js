@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { addReference, saveTargetRangedReference } from '../actions/referencesActions';
 import { cancelTargetDocument } from '../actions/documentActions';
 import { toggleReferences } from '../actions/uiActions';

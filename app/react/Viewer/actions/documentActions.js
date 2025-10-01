@@ -7,8 +7,8 @@ import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
-import { documentsApi } from '#app/Documents.js';
-import { notificationActions } from '#app/Notifications.js';
+import { documentsApi } from '#app/Documents/index.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

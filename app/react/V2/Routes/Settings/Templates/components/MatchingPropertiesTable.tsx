@@ -10,7 +10,7 @@ import { Translate, t } from '#app/I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { ClientTemplateSchema } from '#shared/types.js';
+import { ClientTemplateSchema } from '#app/V2/shared/types.js';
 import { translationsKeys } from '../helpers.js';
 
 type MatchingPropRow = {

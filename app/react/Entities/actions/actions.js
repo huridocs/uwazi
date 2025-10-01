@@ -8,8 +8,8 @@ import {
   unselectDocument,
 } from '#app/Library/actions/libraryActions.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
-import { notificationActions } from '#app/Notifications.js';
-import { actions as relationshipActions } from '#app/Relationships.js';
+import { notificationActions } from '#app/Notifications/index.js';
+import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.js';

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const Warning = ({ children, inline }) =>
   inline ? (

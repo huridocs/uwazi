@@ -3,15 +3,15 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Icon } from '#app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
-import { Item } from '#app/Layout.js';
 import { Collapsible } from '#app/App/Collapsible.js';
 import { StickyHeader } from '#app/App/StickyHeader.js';
 import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
 import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
-import { IStore } from '#app/V2/shared/types.js';
 import * as actions from '#app/Relationships/actions/actions';
+import { IStore } from '#app/istore.js';
+import Item from '#app/Layout/Item.js';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;

@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
-import { isClient } from 'app/utils';
+import { isClient } from '#app/utils/index.js';
 import { PaneLayoutProps } from './types';
 
 const MIN_WIDTH = 100;

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.js';
@@ -16,7 +16,7 @@ import {
   selectReference,
   toggleReferences,
 } from '#app/Viewer/actions/uiActions.js';
-import { Item } from '#app/Layout.js';
+import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
 
 const selectDoc = createSelector(

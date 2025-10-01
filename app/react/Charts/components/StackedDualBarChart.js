@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'recharts';
 
-import arrayUtils from '#app/utils/arrayUtils';
+import { arrayUtils } from '#app/Charts/index.js';
 
 import ExtendedTooltip from './ExtendedTooltip';
 import ColoredBar from './ColoredBar';

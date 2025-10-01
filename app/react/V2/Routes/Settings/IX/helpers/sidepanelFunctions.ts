@@ -1,4 +1,4 @@
-import { ClientEntitySchema, ClientPropertySchema } from '#app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 
 import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
 

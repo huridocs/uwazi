@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import { handledErrors } from '#shared/errorUtils.js';
-import type { RequestError } from '#shared/errorUtils.js';
+import { handledErrors } from '#app/V2/shared/errorUtils.js';
+import type { RequestError } from '#app/V2/shared/errorUtils.js';
 import { ErrorFallback } from './ErrorFallback.js';
 
 interface ErrorBoundaryProps {

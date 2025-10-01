@@ -4,10 +4,10 @@ import ShowIf from '#app/App/ShowIf.js';
 
 import { filterOptions } from '#shared/optionsUtils.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { TriStateSelectValue } from '#app/V2/shared/types.js';
+import { TriStateSelectValue } from '#app/istore.js';
 import { Icon as CustomIcon } from '#app/Layout/Icon.js';
 import React, { Component, createRef, RefObject } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: any };
 enum SelectStates {
@@ -56,7 +56,7 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  onChange: _v => {},
+  onChange: (_v: any) => {},
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 import { logError } from '../utils';
 import { Section } from './Section';
 
@@ -30,7 +30,7 @@ const getPropertyValue = (property: any, metadataProperty: any) => {
       return metadataProperty.map((v: any) => v.label || v.value);
     case 'relationship': {
       let value: any[] = [];
-      metadataProperty.forEach(v => {
+      metadataProperty.forEach((v: any) => {
         if (v.inheritedType && v.inheritedValue) {
           const properties = getPropertyValue({ type: v.inheritedType }, v.inheritedValue);
           value = Array.isArray(properties) ? [...value, ...properties] : [...value, properties];

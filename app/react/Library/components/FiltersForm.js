@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import Immutable, { is, fromJS } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import { debounce } from '#app/utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
 import { searchDocuments } from '#app/Library/actions/libraryActions.js';
 import { Translate } from '#app/I18N/index.js';
-import { wrapDispatch } from '#app/Multireducer.js';
-import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 import { TemplatesFilter } from '#app/Library/components/TemplatesFilter.js';
 import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.js';
 import { withRouter } from '#app/componentWrappers.js';

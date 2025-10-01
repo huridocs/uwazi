@@ -3,10 +3,10 @@ import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
 
-import { ClientTemplateSchema } from '#app/V2/shared/types.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { secondsToDate } from '#shared/dateHelpers.js';
+import { secondsToDate } from '#app/V2/shared/dateHelpers.js';
 import { Truncate } from '#app/V2/Components/UI/index.js';
 import { thesauriAtom } from '#app/V2/atoms/index.js';
 

@@ -4,14 +4,14 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { Map, Markers } from '#app/Map.js';
-import { TemplateLabel } from '#app/Layout.js';
+import { Map, Markers } from '#app/Map/index.js';
+import { TemplateLabel } from '#app/Layout/index.js';
 import {
   getAndSelectDocument,
   selectDocuments,
   unselectAllDocuments,
 } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { Loader } from '#app/components/Elements/Loader.js';
 import markdownDatasets from '../markdownDatasets';

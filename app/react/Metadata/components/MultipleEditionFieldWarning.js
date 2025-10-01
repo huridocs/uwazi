@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getField } from 'react-redux-form';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 // exported for testing.
 export class MultipleEditionFieldWarningBase extends Component {

@@ -3,7 +3,7 @@ import React from 'react';
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/V2/Components/UI/NeedAuthorization.js';
 
-import { Icon } from '#app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { FeatureToggle } from '#app/V2/Components/UI/FeatureToggle.js';

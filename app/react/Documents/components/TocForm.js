@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Form, Field } from 'react-redux-form';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 class TocForm extends Component {
   constructor(props) {

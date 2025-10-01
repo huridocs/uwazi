@@ -14,16 +14,11 @@ import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipPr
 import { TemplateUpdatedEvent } from '../../templates/events/TemplateUpdatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
 
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
 import { GenerateIdProperty } from '../domain/template/GenerateIdProperty.js';
-import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService.js';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy.js';
-import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService.js';
-import {
-  SelectPropertyCreatorService,
-  ThesauriDataSource,
-} from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
+import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
 import { TranslationService } from '../domain/template/TranslationService.js';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper.js';
@@ -57,7 +52,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     language: LanguageISO6391,
     fullReindex = false
   ): Promise<Output> {
-    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
+    const currentTemplate = (await this.deps.templatesDS.getById(input._id))?.getDataOrThrow();
     if (currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
@@ -116,11 +111,19 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       currentTemplate.selectRelationshipPropsWithRelationshipChanges(updatedTemplate);
     const deletedProperties = currentTemplate
       .selectDeletedProperties(updatedTemplate)
-      .map(property => property.name);
+      .map((property: PropertySchema) => property.name);
     const renamedProperties = Object.fromEntries(
       currentTemplate
         .selectPropertiesWhereNameHasChanged(updatedTemplate)
-        .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
+        .map(
+          ({
+            oldProperty,
+            newProperty,
+          }: {
+            oldProperty: PropertySchema;
+            newProperty: PropertySchema;
+          }) => [oldProperty.name, newProperty.name]
+        )
     );
 
     const newProperties = currentTemplate.selectNewProperties(updatedTemplate);

@@ -11,7 +11,7 @@ import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
 import { Icon } from '#app/Layout/Icon.js';
-import { TemplateLabel, DocumentLanguage } from '#app/Layout.js';
+import { TemplateLabel, DocumentLanguage } from '#app/Layout/index.js';
 
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);

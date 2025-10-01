@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import { Icon } from '#app/UI/Icon/Icon.js';
+import { Icon } from '#app/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
 
 import { User } from '#app/users/usersModel.js';

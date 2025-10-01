@@ -8,7 +8,7 @@ import {
   zoomIn,
   zoomOut,
 } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { routes as appRoutes } from '#app/App/appRoutes.js';
 

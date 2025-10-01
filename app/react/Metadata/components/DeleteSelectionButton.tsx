@@ -6,7 +6,7 @@ import { uniqBy } from 'lodash';
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-import { ClientFile, IStore } from '#app/V2/shared/types.js';
+import { ClientFile, IStore } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
 import { deleteSelection } from '../actions/metadataExtractionActions';
 

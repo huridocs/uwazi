@@ -22,7 +22,7 @@ import { notificationAtom } from '#app/V2/atoms/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientPropertySchema } from '#app/V2/shared/types.js';
+import { ClientPropertySchema } from '#app/istore.js';
 import { SuggestionsTitle } from './components/SuggestionsTitle.js';
 import { FiltersSidepanel } from './components/FiltersSidepanel.js';
 import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
@@ -281,7 +281,8 @@ const IXSuggestions = () => {
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
-              openSidepanel
+              openSidepanel,
+              suggestions
             )}
             onSelect={({ selectedRows }) => {
               setSelected(() =>

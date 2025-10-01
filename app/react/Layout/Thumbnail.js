@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
 

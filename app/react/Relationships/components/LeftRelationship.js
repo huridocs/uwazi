@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '../actions/actions';

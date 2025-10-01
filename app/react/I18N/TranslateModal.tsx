@@ -13,8 +13,8 @@ import {
 
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Button } from '#app/V2/Components/UI/Button.js';
-import { TranslationValue } from '#app/V2/shared/types.js';
 import { postV2 } from '#app/V2/api/translations/index.js';
+import { TranslationValue } from '#app/V2/shared/types.js';
 import { t } from './translateFunction.js';
 
 const TranslateModal = () => {

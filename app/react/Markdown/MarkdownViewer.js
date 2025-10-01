@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { atomStore, userAtom } from '#app/V2/atoms.js';
+import { atomStore, userAtom } from '#app/V2/atoms/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { store } from '#app/store.js';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components/index.js';

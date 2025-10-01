@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { isEmpty } from 'lodash';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { uploadDocument } from '#app/Uploads/actions/uploadsActions.js';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import { socket } from '#app/socket.js';
 import { Translate } from '#app/I18N/index.js';
 

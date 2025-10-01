@@ -12,7 +12,7 @@ import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
-import { Page } from '#app/V2/shared/types.js';
+import { Page } from '#app/istore.js';
 
 import { notificationAtom, notificationAtomType } from '#app/V2/atoms/index.js';
 

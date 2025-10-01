@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { List } from 'immutable';
 import './scss/stackTrace.scss';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const conformValidations = (expand, validations) => {
   if (!expand || !validations) {

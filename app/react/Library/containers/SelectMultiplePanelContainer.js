@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import {
   unselectAllDocuments,
@@ -8,7 +8,7 @@ import {
   updateEntities,
   getAndSelectDocument,
 } from '#app/Library/actions/libraryActions.js';
-import { SelectMultiplePanel } from '#app/Metadata.js';
+import { SelectMultiplePanel } from '#app/Metadata/index.js';
 
 function mapStateToProps(state, props) {
   return {

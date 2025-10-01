@@ -1,4 +1,4 @@
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import {
   addDocuments,
   setDocuments,

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './scss/feedback.scss';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 class Feedback extends Component {
   render() {

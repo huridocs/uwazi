@@ -1,7 +1,7 @@
 // TEST!!! Entire file is untested
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 const List = ({ children }) => <div className="item-group">{children}</div>;
 

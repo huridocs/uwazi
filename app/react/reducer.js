@@ -12,7 +12,7 @@ import contextMenu from '#app/ContextMenu/reducers/contextMenuReducer.js';
 import connections from '#app/Connections/reducers/reducer.js';
 import relationships from '#app/Relationships/reducers/reducer.js';
 import ConnectionsList from '#app/ConnectionsList/reducers/reducer.js';
-import { reducer as attachments } from '#app/Attachments.js';
+import { reducer as attachments } from '#app/Attachments/index.js';
 import semanticSearch from '#app/SemanticSearch/reducers/reducer.js';
 
 import library from '#app/Library/reducers/reducer.js';

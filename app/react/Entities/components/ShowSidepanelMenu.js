@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import ShowIf from '#app/App/ShowIf.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 export class ShowSidepanelMenu extends Component {
   render() {

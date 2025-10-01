@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
 import ShowIf from '#app/App/ShowIf.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import { setFilter } from '../actions/actions';
 

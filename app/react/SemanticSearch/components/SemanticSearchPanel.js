@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
 import { socket } from '#app/socket.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import ShowIf from '#app/App/ShowIf.js';
 
 import SidePanel from '#app/Layout/SidePanel.js';

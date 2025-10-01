@@ -1,6 +1,6 @@
 import { ClientSettingsFilterSchema } from '#app/apiResponseTypes.js';
 
-import { ClientTemplateSchema } from '#app/V2/shared/types.js';
+import { ClientTemplateSchema } from '#app/istore.js';
 
 type Filter = ClientSettingsFilterSchema & {
   rowId: string;

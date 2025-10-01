@@ -1,6 +1,6 @@
 import { actions } from '#app/BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { fromJS as Immutable } from 'immutable';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';

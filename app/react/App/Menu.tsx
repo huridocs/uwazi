@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
 
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 
@@ -16,13 +16,11 @@ import { processFilters, encodeSearch } from '#app/Library/actions/libraryAction
 import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
 
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import { actions } from '#app/BasicReducer/index.js';
-
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu';

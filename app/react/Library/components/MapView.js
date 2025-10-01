@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Map, Markers } from '#app/Map.js';
+import { Map, Markers } from '#app/Map/index.js';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from '#app/Multireducer.js';
+import { wrapDispatch } from '#app/Multireducer/index.js';
 import {
   getAndSelectDocument,
   selectDocuments,

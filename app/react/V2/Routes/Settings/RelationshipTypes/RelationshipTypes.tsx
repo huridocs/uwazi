@@ -8,11 +8,11 @@ import { useSetAtom, useAtomValue } from 'jotai';
 
 import { t, Translate } from '#app/I18N/index.js';
 
-import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes.js';
+import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes/index.js';
 
 import { Template } from '#app/apiResponseTypes.js';
 
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms.js';
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
 
 import { Button, Table, Sidepanel, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 

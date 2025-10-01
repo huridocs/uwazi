@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { I18NLink } from '#app/I18N/index.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 import api from '#app/Search/SearchAPI.js';
 

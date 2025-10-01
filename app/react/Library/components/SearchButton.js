@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
 
 import { showFilters, hideFilters } from '#app/Library/actions/libraryActions.js';
-import { wrapDispatch } from '#app/Multireducer.js';
-import { Icon } from 'UI';
+import { wrapDispatch } from '#app/Multireducer/index.js';
+import { Icon } from '#app/UI/index.js';
 import { unselectAllDocuments } from '../actions/libraryActions';
 
 export class SearchButton extends Component {

@@ -8,8 +8,7 @@ import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import * as activityLogAPI from '#app/V2/api/activityLog/index.js';
-import type { ActivityLogResponse } from '#app/activityLog/index.js';
-
+import type { ActivityLogResponse } from '#app/V2/api/activityLog/index.js';
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
 const ITEMS_PER_PAGE = 100;

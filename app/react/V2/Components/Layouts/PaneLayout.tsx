@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { isClient } from 'app/utils';
+import { isClient } from '#app/utils/index.js';
 import { PaneLayoutProps } from './PaneLayout/types';
 import { PaneLayoutDesktop } from './PaneLayout/PaneLayoutDesktop';
 import { Pane } from './PaneLayout/Pane';

@@ -7,7 +7,7 @@ import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import qs from 'qs';
 
 import { Loader } from '#app/components/Elements/Loader.js';
-import { arrayUtils } from '#app/Charts.js';
+import { arrayUtils } from '#app/Charts/index.js';
 import MarkdownLink from './MarkdownLink.js';
 import markdownDatasets from '../markdownDatasets.js';
 

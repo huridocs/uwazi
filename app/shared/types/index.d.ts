@@ -1,10 +1,9 @@
 import { Store } from 'redux';
-import { AtomStoreData } from '#app/V2/atoms.js';
 import { ClientFeatureFlags } from './V2/shared/types.js';
-import { RequestError } from './V2/shared/errorUtils.js';
-import { IStore } from '#app/V2/shared/types.js';
+import { RequestError } from '#app/V2/shared/errorUtils.js';
+import { IStore } from '#app/istore.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
-
+import { AtomStoreData } from '#app/V2/atoms/index.js';
 declare global {
   namespace jest {
     interface Matchers<R> {

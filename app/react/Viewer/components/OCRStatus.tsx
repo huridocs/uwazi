@@ -7,8 +7,8 @@ import { Translate } from '#app/I18N/index.js';
 import { socket } from '#app/socket.js';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
-import { ocrStatusTips } from '#app/utils/ocrStatusTips';
 import { reloadDocument } from '../actions/documentActions';
+import { ocrStatusTips } from '../utils/ocrStatusTips';
 
 type OCRStatusProps = {
   file: FileType;

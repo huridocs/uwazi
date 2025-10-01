@@ -7,7 +7,7 @@ import { t } from '#app/I18N/index.js';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import ModalTips from '#app/App/ModalTips.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';

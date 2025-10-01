@@ -5,12 +5,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { IconSelector } from '#app/ReactReduxForms/index.js';
-import { actions } from '#app/Metadata.js';
+import { actions } from '#app/Metadata/index.js';
 import { FormValue } from '#app/Forms/index.js';
 import ToggleDisplay from '#app/Layout/ToggleDisplay.js';
 import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 
 export const IconFieldBase = ({ model, removeIcon }) => (
   <FormValue model={`${model}.icon`}>

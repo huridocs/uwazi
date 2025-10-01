@@ -5,14 +5,14 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import comonProperties from '#shared/commonProperties.js';
-import { Icon } from 'UI';
-import { ClientEntitySchema } from '#app/V2/shared/types.js';
+import { Icon } from '#app/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
-import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata.js';
+import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata/index.js';
 import { store } from '#app/store.js';
 
 import { SearchEntities } from './SearchEntities';
+import { ClientEntitySchema } from '#app/istore.js';
 
 type CopyFromEntityProps = {
   isVisible: boolean;

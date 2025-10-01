@@ -2,7 +2,7 @@ import util from 'util';
 import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
-import { ClientBlobFile } from '#app/V2/shared/types.js';
+import { ClientBlobFile } from '#app/istore.js';
 
 export type Subset<K, T extends K> = T;
 
@@ -19,7 +19,7 @@ export function ensure<T>(argument: T | undefined | null | any, message?: string
 }
 
 export function wrapValidator(validator: any) {
-  return async value => {
+  return async (value: any) => {
     try {
       return validator(value);
     } catch (error) {
@@ -35,7 +35,7 @@ export function wrapValidator(validator: any) {
 }
 
 export function syncWrapValidator(validator: any) {
-  return value => {
+  return (value: any) => {
     const valid = validator(value);
 
     if (!valid) {

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
-import { t } from 'app/I18N';
+import { t } from '#app/I18N/index.js';
 import { PaneLayoutProps } from './types';
 
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {

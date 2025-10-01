@@ -12,11 +12,7 @@ import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import {
-  ClientEntitySchema,
-  ClientPropertySchema,
-  ClientTemplateSchema,
-} from '#app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
@@ -26,8 +22,8 @@ import {
 } from '#app/V2/Components/UI/index.js';
 import { PDF, selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 import { notificationAtom, pdfScaleAtom } from '#app/V2/atoms/index.js';
-import { secondsToISODate } from '#shared/dateHelpers.js';
-import { ClientIXExtractorType } from '#shared/types.js';
+import { secondsToISODate } from '#app/V2/shared/dateHelpers.js';
+import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 import { TableSuggestion } from '../types.js';
 import {
   coerceValue,

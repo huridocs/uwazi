@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import { Loader } from '#app/components/Elements/Loader.js';
-import { arrayUtils } from '#app/Charts.js';
+import { arrayUtils } from '#app/Charts/index.js';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 

@@ -1,9 +1,9 @@
 import superagent from 'superagent';
 
 import { actions as basicActions } from '#app/BasicReducer/index.js';
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
-import * as metadata from '#app/Metadata.js';
+import * as metadata from '#app/Metadata/index.js';
 import * as types from '#app/Uploads/actions/actionTypes.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

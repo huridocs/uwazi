@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { createSelector } from 'reselect';

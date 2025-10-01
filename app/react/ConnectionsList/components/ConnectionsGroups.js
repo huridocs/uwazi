@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
 import ConnectionsGroup from './ConnectionsGroup';

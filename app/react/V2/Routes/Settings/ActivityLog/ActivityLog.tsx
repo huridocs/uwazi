@@ -15,8 +15,6 @@ import { Button, PaginationState, Paginator, Pill, Table } from '#app/V2/Compone
 
 import { useIsFirstRender } from '#app/V2/CustomHooks/useIsFirstRender.js';
 
-import { settingsAtom } from '#app/V2/atoms.js';
-
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
@@ -29,6 +27,7 @@ import {
   ITEMS_PER_PAGE,
   buildPageURL,
 } from './ActivityLogLoader';
+import { settingsAtom } from '#app/V2/atoms/index.js';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

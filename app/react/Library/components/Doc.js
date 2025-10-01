@@ -7,10 +7,10 @@ import ShowIf from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
 import UploadEntityStatus from '#app/Library/components/UploadEntityStatus.js';
 import ViewDocButton from '#app/Library/components/ViewDocButton.js';
-import { Icon } from 'UI';
+import { Icon } from '#app/UI/index.js';
 import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.js';
 
-import { Item } from '#app/Layout.js';
+import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
 
 class Doc extends Component {

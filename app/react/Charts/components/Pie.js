@@ -5,7 +5,7 @@ import { ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector } from 'rechar
 
 import Immutable from 'immutable';
 
-import colorScheme from '#app/utils/colorScheme';
+import { colorScheme } from '#app/Charts/index.js';
 
 function ellipsisString(string, maxLength) {
   if (string.length <= maxLength) {

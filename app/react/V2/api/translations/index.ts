@@ -7,10 +7,10 @@ import { I18NApi } from '#app/I18N/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { ClientTranslationSchema, ClientTranslationContextSchema } from '#app/V2/shared/types.js';
+import { ClientTranslationSchema, ClientTranslationContextSchema } from '#app/istore.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { TranslationValue } from '#shared/types.js';
+import { TranslationValue } from '#app/V2/shared/types.js';
 
 import { httpRequest } from '#shared/superagent.js';
 

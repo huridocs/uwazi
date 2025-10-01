@@ -19,9 +19,9 @@ import { Translate } from '#app/I18N/index.js';
 
 import { advancedSort } from '#app/utils/advancedSort.js';
 
-import { ClientTranslationSchema } from '#app/V2/shared/types.js';
+import { ClientTranslationSchema } from '#app/istore.js';
 
-import { InputField } from '#app/V2/Components/Forms.js';
+import { InputField } from '#app/V2/Components/Forms/index.js';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
