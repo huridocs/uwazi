@@ -30,11 +30,10 @@ RUN apt-get update -qq \
        xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome stable
-RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/chrome.deb \
-    && rm /tmp/chrome.deb \
+# Install Google Chrome (pinned to version 140 for Cypress compatibility)
+# Using @puppeteer/browsers for reliable Chrome 140 installation
+RUN npm install -g @puppeteer/browsers \
+    && npx @puppeteer/browsers install chrome@140 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install poppler-utils and Python for PDF processing and dummy services
@@ -55,7 +54,7 @@ RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/sh
     && rm -rf /var/lib/apt/lists/*
 
 # Verify installations
-RUN google-chrome --version \
+RUN google-chrome --version | grep -q "140" \
     && mongosh --version \
     && pdftotext -v \
     && python3.11 --version \

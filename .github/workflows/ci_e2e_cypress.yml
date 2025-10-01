@@ -105,8 +105,8 @@ jobs:
           pdftotext -v
           pdftoppm -v
           pdfinfo -v
-          echo "Verifying Chrome..."
-          google-chrome --version
+          echo "Verifying Chrome 140..."
+          google-chrome --version | grep -q "140" && echo "✓ Chrome 140 detected" || echo "❌ Chrome 140 not found"
           echo "Verifying Xvfb..."
           which xvfb-run
           echo "Verifying Python..."
