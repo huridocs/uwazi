@@ -38,6 +38,7 @@ const mongoSchema = new mongoose.Schema({
     v2CreateTemplateUseCase: Boolean,
     v2SetTemplateAsDefaultUseCase: Boolean,
     v2UpdateTemplateUseCase: Boolean,
+    v2DeleteTemplateUseCase: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
