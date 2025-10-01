@@ -61,6 +61,7 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 } from 'V2/Routes/Settings/Templates';
+import { Entity, entityLoader } from 'V2/Routes/Entity/Entity';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -106,6 +107,7 @@ const getRoutesLayout = (
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader()} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
