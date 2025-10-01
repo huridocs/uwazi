@@ -87,8 +87,16 @@ describe('Share Entities', () => {
     cy.visit('http://localhost:3000/logout');
     clearCookiesAndLogin('colla', 'borator');
     cy.contains('Ordenes del presidente', { timeout: 300 });
+    
+    // Ensure we're on the library page and wait for it to load
+    cy.url().should('include', '/library');
+    cy.get('aside.library-filters').should('be.visible');
+    
     selectRestrictedEntities();
-    cy.get('.item').should('have.length', 3);
+    
+    // Wait for the filter to be properly applied and verify the expected count
+    cy.get('.item', { timeout: 15000 }).should('have.length', 3);
+    
     checkCanEdit(titleEntity1, false);
     checkCanEdit(titleEntity3);
     checkCanEdit(titleEntity4);
