@@ -553,6 +553,25 @@ jobs:
           # DEBUG: cypress:server:reporter,cypress:server:specs,cypress:server:project
           # CYPRESS_DEBUG: false
           
+      - name: Debug - Base test fixtures check
+        if: matrix.name == 'base'
+        run: |
+          echo "=== BASE TEST FIXTURES DEBUG ==="
+          echo "Checking if e2e-fixtures command exists:"
+          yarn e2e-fixtures --help || echo "e2e-fixtures command not found or failed"
+          echo ""
+          echo "Checking MongoDB entities before fixtures:"
+          mongosh --host localhost --port 27017 --quiet --eval 'db.entities.countDocuments()' uwazi_e2e || echo "Could not count entities"
+          echo ""
+          echo "Running e2e-fixtures manually to check for errors:"
+          DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn e2e-fixtures || echo "e2e-fixtures failed"
+          echo ""
+          echo "Checking MongoDB entities after fixtures:"
+          mongosh --host localhost --port 27017 --quiet --eval 'db.entities.countDocuments()' uwazi_e2e || echo "Could not count entities"
+          echo ""
+          echo "Looking for the specific entity:"
+          mongosh --host localhost --port 27017 --quiet --eval 'db.entities.findOne({title: /Artavia Murillo/}, {title: 1, _id: 1})' uwazi_e2e || echo "Could not find Artavia Murillo entity"
+          
       - name: Debug - Post-test environment analysis
         if: always()
         run: |
