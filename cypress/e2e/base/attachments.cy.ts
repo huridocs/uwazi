@@ -10,17 +10,17 @@ describe('attachments', () => {
       'mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e',
       { failOnNonZeroExit: false }
     ).then(result => {
-      cy.task('log', 'Entities before fixtures: ' + result.stdout);
+      cy.task('log', `Entities before fixtures: ${result.stdout}`);
     });
 
     // Run fixtures and capture output
     cy.exec('yarn e2e-fixtures', { env, failOnNonZeroExit: false }).then(result => {
-      cy.task('log', 'Fixtures command exit code: ' + result.code);
-      cy.task('log', 'Fixtures stdout: ' + result.stdout);
-      cy.task('log', 'Fixtures stderr: ' + result.stderr);
+      cy.task('log', `Fixtures command exit code: ${result.code}`);
+      cy.task('log', `Fixtures stdout: ${result.stdout}`);
+      cy.task('log', `Fixtures stderr: ${result.stderr}`);
 
       if (result.code !== 0) {
-        cy.task('log', 'ERROR: Fixtures command failed with exit code: ' + result.code);
+        cy.task('log', `ERROR: Fixtures command failed with exit code: ${result.code}`);
       }
     });
 
@@ -29,7 +29,7 @@ describe('attachments', () => {
       'mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e',
       { failOnNonZeroExit: false }
     ).then(result => {
-      cy.task('log', 'Entities after fixtures: ' + result.stdout);
+      cy.task('log', `Entities after fixtures: ${result.stdout}`);
     });
 
     clearCookiesAndLogin();
@@ -43,14 +43,14 @@ describe('attachments', () => {
         .should('exist')
         .then($elements => {
           const entityNames = Array.from($elements).map(el => el.textContent);
-          cy.task('log', 'Available entities on page: ' + JSON.stringify(entityNames));
+          cy.task('log', `Available entities on page: ${JSON.stringify(entityNames)}`);
         });
 
       // Debug: Look for any entities containing "Artavia"
       cy.get('h2.item-name').each($el => {
         const text = $el.text();
         if (text.includes('Artavia')) {
-          cy.task('log', 'Found Artavia entity: ' + text);
+          cy.task('log', `Found Artavia entity: ${text}`);
         }
       });
 
@@ -58,17 +58,17 @@ describe('attachments', () => {
         'h2.item-name',
         'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
-      
+
       cy.task('log', 'Clicked entity, waiting for side panel...');
-      
+
       // Wait for side panel to appear with longer timeout
       cy.get('.side-panel.is-active', { timeout: 20000 }).should('be.visible');
       cy.task('log', 'Side panel is active, looking for View button...');
-      
+
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
-      
+
       cy.task('log', 'Clicked View button, waiting for content...');
       cy.contains('Uwazi Heroes Investigation', { timeout: 20000 });
     });

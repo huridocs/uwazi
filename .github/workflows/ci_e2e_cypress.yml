@@ -571,6 +571,16 @@ jobs:
           echo ""
           echo "Looking for the specific entity:"
           mongosh --host localhost --port 27017 --quiet --eval 'db.entities.findOne({title: /Artavia Murillo/}, {title: 1, _id: 1})' uwazi_e2e || echo "Could not find Artavia Murillo entity"
+          echo ""
+          echo "=== FILE STORAGE DEBUG ==="
+          echo "Checking uploaded_documents directory:"
+          ls -la ./uploaded_documents/ || echo "uploaded_documents directory not found"
+          echo ""
+          echo "Checking for MockPDF files:"
+          ls -la ./uploaded_documents/MockPDF* || echo "No MockPDF files found"
+          echo ""
+          echo "Checking uwazi-fixtures uploaded_documents source:"
+          ls -la ./uwazi-fixtures/uploaded_documents/ || echo "uwazi-fixtures uploaded_documents not found"
           
       - name: Debug - Post-test environment analysis
         if: always()
