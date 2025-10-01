@@ -173,7 +173,12 @@ jobs:
           npm --version
           echo ""
           echo "Network interfaces:"
-          ip addr show
+          if command -v ip >/dev/null 2>&1; then
+            ip addr show
+          else
+            echo "ip command not available, using ifconfig:"
+            ifconfig || echo "ifconfig also not available"
+          fi
           echo ""
           echo "Environment variables:"
           env | grep -E "(DBHOST|ELASTICSEARCH|REDIS|DATABASE|INDEX)" | sort
@@ -188,7 +193,12 @@ jobs:
           curl -s http://elasticsearch:9200/_cluster/health || echo "Elasticsearch not reachable"
           echo ""
           echo "Checking Redis..."
-          redis-cli -h redis -p 6379 ping || echo "Redis not reachable"
+          if command -v redis-cli >/dev/null 2>&1; then
+            redis-cli -h redis -p 6379 ping || echo "Redis not reachable"
+          else
+            echo "redis-cli not available, testing with nc:"
+            nc -z redis 6379 && echo "Redis:6379 reachable" || echo "Redis:6379 not reachable"
+          fi
           echo ""
           echo "Checking production build:"
           ls -la prod/ | head -20
@@ -228,11 +238,18 @@ jobs:
           done
           echo ""
           echo "Checking application logs:"
+          echo "Current directory: $(pwd)"
+          echo "Looking for log files..."
+          find . -name "*start-uwazi*" -o -name "*health-check*" 2>/dev/null || echo "No log files found"
+          echo ""
           if [ -f .github/logs/start-uwazi-logs.txt ]; then
             echo "=== UWAZI STARTUP LOGS (last 50 lines) ==="
             tail -50 .github/logs/start-uwazi-logs.txt
           else
-            echo "No startup log file found"
+            echo "Startup log file not found at .github/logs/start-uwazi-logs.txt"
+            echo "Checking if startup script has run yet..."
+            ls -la .github/ 2>/dev/null || echo ".github directory not found"
+            ls -la .github/logs/ 2>/dev/null || echo ".github/logs directory not found"
           fi
           echo ""
           echo "=== NETWORK CONNECTIVITY TEST ==="
@@ -240,8 +257,14 @@ jobs:
           curl -s http://localhost:3000/api/version | head -1 || echo "localhost:3000 not reachable"
           echo ""
           echo "Testing container networking:"
-          ping -c 1 elasticsearch || echo "elasticsearch hostname not reachable"
-          ping -c 1 redis || echo "redis hostname not reachable"
+          if command -v ping >/dev/null 2>&1; then
+            ping -c 1 elasticsearch || echo "elasticsearch hostname not reachable"
+            ping -c 1 redis || echo "redis hostname not reachable"
+          else
+            echo "ping not available, testing with nc:"
+            nc -z elasticsearch 9200 && echo "elasticsearch:9200 reachable" || echo "elasticsearch:9200 not reachable"
+            nc -z redis 6379 && echo "redis:6379 reachable" || echo "redis:6379 not reachable"
+          fi
           echo ""
           echo "=== BROWSER ENVIRONMENT ==="
           echo "Chrome binary location:"
@@ -261,7 +284,12 @@ jobs:
           mkdir -p .github/debug
           
           echo "Capturing network connections..."
-          netstat -tulpn > .github/debug/network-connections.txt
+          if command -v netstat >/dev/null 2>&1; then
+            netstat -tulpn > .github/debug/network-connections.txt
+          else
+            echo "netstat not available, using ss:" 
+            ss -tulpn > .github/debug/network-connections.txt || echo "ss also not available" > .github/debug/network-connections.txt
+          fi
           
           echo "Capturing process tree..."
           ps auxf > .github/debug/process-tree.txt
@@ -317,8 +345,12 @@ jobs:
             mongosh --host localhost --port 27017 --quiet --eval 'db.users.find({}, {username: 1, email: 1}).limit(5)' uwazi_e2e
             echo ""
             echo "Redis authentication keys:"
-            redis-cli -h redis -p 6379 keys "*session*" || echo "No session keys found"
-            redis-cli -h redis -p 6379 keys "*auth*" || echo "No auth keys found"
+            if command -v redis-cli >/dev/null 2>&1; then
+              redis-cli -h redis -p 6379 keys "*session*" || echo "No session keys found"
+              redis-cli -h redis -p 6379 keys "*auth*" || echo "No auth keys found"
+            else
+              echo "redis-cli not available, skipping Redis key inspection"
+            fi
           fi
           
           if [[ "${{ matrix.name }}" == "pages" ]]; then
@@ -331,7 +363,11 @@ jobs:
             mongosh --host localhost --port 27017 --quiet --eval 'db.templates.find({}, {name: 1, properties: 1}).limit(3)' uwazi_e2e
             echo ""
             echo "Redis notification keys:"
-            redis-cli -h redis -p 6379 keys "*notification*" || echo "No notification keys found"
+            if command -v redis-cli >/dev/null 2>&1; then
+              redis-cli -h redis -p 6379 keys "*notification*" || echo "No notification keys found"
+            else
+              echo "redis-cli not available, skipping Redis key inspection"
+            fi
           fi
           
       - name: Cypress run - ${{ matrix.name }}
@@ -379,7 +415,12 @@ jobs:
           curl -s http://elasticsearch:9200/_cat/indices?v || echo "Could not list indices"
           echo ""
           echo "Redis keys:"
-          redis-cli -h redis -p 6379 keys "*" || echo "Could not list Redis keys"
+          if command -v redis-cli >/dev/null 2>&1; then
+            redis-cli -h redis -p 6379 keys "*" || echo "Could not list Redis keys"
+          else
+            echo "redis-cli not available, testing Redis connectivity with nc:"
+            nc -z redis 6379 && echo "Redis:6379 is reachable" || echo "Redis:6379 not reachable"
+          fi
           echo ""
           echo "System resources:"
           free -h
@@ -414,8 +455,18 @@ jobs:
       - name: Print server output
         run: |
           echo "📁 Startup logs:"
-          cat .github/logs/start-uwazi-logs.txt || echo "Startup log file not found"
+          if [ -f .github/logs/start-uwazi-logs.txt ]; then
+            cat .github/logs/start-uwazi-logs.txt
+          else
+            echo "Startup log file not found"
+            echo "Checking for log files in current directory:"
+            find . -name "*log*" -type f 2>/dev/null | head -10 || echo "No log files found"
+          fi
           echo
           echo "📁 Health-check logs:"
-          cat .github/logs/health-check-logs.txt || echo "Health-check log file not found"
+          if [ -f .github/logs/health-check-logs.txt ]; then
+            cat .github/logs/health-check-logs.txt
+          else
+            echo "Health-check log file not found"
+          fi
         if: failure()
