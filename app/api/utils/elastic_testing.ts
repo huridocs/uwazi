@@ -26,9 +26,9 @@ const elasticTesting = {
 
   async deleteIndex(indexName: string) {
     try {
-      await (elastic.indices as any).delete({ 
-        index: indexName, 
-        ignore_unavailable: true
+      await (elastic.indices as any).delete({
+        index: indexName,
+        ignore_unavailable: true,
       });
     } catch (error) {
       // Ignore connection errors during cleanup - ES might be unavailable or index might not exist
