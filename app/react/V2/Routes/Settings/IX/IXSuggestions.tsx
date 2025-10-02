@@ -38,7 +38,6 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
-
 import { TrainModelModal } from './components/TrainModelModal';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal';
 import {
@@ -127,13 +126,17 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModel = async (findAmount: number) => {
+  const trainModel = async (
+    findAmount: number,
+    samplePolicy: 'only_marked' | 'marked_plus_labeled'
+  ) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
         try {
           await suggestionsAPI.findSuggestions({
             extractorId: extractor._id,
             suggestionsToFind: findAmount,
+            samplePolicy,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
         } catch (error) {
@@ -196,6 +199,21 @@ const IXSuggestions = () => {
         }
       } catch (error) {
         handleUnexpectedError(error, 'Error processing extractor');
+      }
+    }
+  };
+
+  const markForTraining = async (suggestionIds: string[], use: boolean) => {
+    if (extractor._id) {
+      try {
+        await suggestionsAPI.setForTraining({
+          extractorId: extractor._id,
+          suggestionIds,
+          useForTraining: use,
+        });
+        await revalidate();
+      } catch (e) {
+        handleUnexpectedError(e, 'An error has ocurred');
       }
     }
   };
@@ -274,11 +292,12 @@ const IXSuggestions = () => {
           <Table
             data={currentSuggestions}
             enableSelections
-            columns={suggestionsTableColumnsBuilder(
-              filteredTemplates(),
+            columns={suggestionsTableColumnsBuilder({
+              templates: filteredTemplates(),
               acceptSuggestions,
-              openSidepanel
-            )}
+              openPdfSidepanel: openSidepanel,
+              markForTraining,
+            })}
             onSelect={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)

@@ -55,6 +55,7 @@ export interface IXSuggestionAggregation {
   error: number;
   noContext: number;
   nonProcessed: number;
+  useForTraining?: number;
 }
 
 export interface IXSuggestionType {
@@ -83,6 +84,7 @@ export interface IXSuggestionType {
     page?: string;
   }[];
   trainingSample?: boolean;
+  useForTraining?: boolean;
   entityTitle?: string;
   currentValue?: PropertyValueSchema | PropertyValueSchema[];
 }
@@ -124,6 +126,7 @@ export interface SuggestionCustomFilter {
   error: boolean;
   noContext: boolean;
   nonProcessed: boolean;
+  useForTraining: boolean;
 }
 
 export interface IXSuggestionsFilter {

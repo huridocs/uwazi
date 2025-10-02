@@ -1225,6 +1225,7 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'en',
         suggestedValue: 'test-labeled-match',
+        useForTraining: true,
         state: {
           labeled: true,
           withValue: true,
@@ -1272,7 +1273,8 @@ const stateFilterFixtures: DBFixture = {
         status: 'ready',
         date: 1001,
         language: 'en',
-        suggestedValue: 'test-labeled-mismatch-mismatch',
+        suggestedValue: 'test-labeled-mismatch',
+        useForTraining: true,
         state: {
           labeled: true,
           withValue: true,

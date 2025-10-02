@@ -104,6 +104,7 @@ interface CommonMaterialsData {
   xml_segments_boxes?: ParagraphSchema[];
   page_width?: number;
   page_height?: number;
+  useForTraining?: boolean;
 }
 
 interface LabeledMaterialsData extends CommonMaterialsData {
@@ -136,6 +137,7 @@ interface PropertySourceMaterials {
   source_text: string;
   label_text?: any;
   values?: { id: string; label: string }[];
+  useForTraining?: boolean;
 }
 
 type IXTaskManager = TaskManager<TaskMessage, IXResultsMessage>;
@@ -832,9 +834,20 @@ class InformationExtraction {
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
-  trainModel = async (extractorId: ObjectIdSchema, suggestionsToFind?: number) => {
+  // eslint-disable-next-line max-params
+  trainModel = async (
+    extractorId: ObjectIdSchema,
+    suggestionsToFind?: number,
+    options?: { samplePolicy?: 'only_marked' | 'marked_plus_labeled' }
+  ) => {
     const tenant = tenants.current();
     await ixmodels.startTraining(extractorId, { suggestionsToFind });
+
+    if (options?.samplePolicy) {
+      await ixmodels.setProcessRun(extractorId.toString(), {
+        samplePolicy: options.samplePolicy,
+      });
+    }
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
