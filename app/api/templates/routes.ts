@@ -4,6 +4,7 @@ import { inspect } from 'util';
 import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
 import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController';
 import { GetTemplatesController } from 'api/core/infrastructure/express/template/GetTemplatesController';
+import { CountTemplatesByThesaurusController } from 'api/core/infrastructure/express/template/CountTemplatesByThesaurusController';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, validation } from '../utils';
 import templates from './templates';
@@ -71,25 +72,5 @@ export default (app: Application) => {
     }
   );
 
-  app.get(
-    '/api/templates/count_by_thesauri',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['_id'],
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-    (req: Request<{}, {}, {}, { _id: string }>, res, next) => {
-      templates
-        .countByThesauri(req.query._id)
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
+  app.get('/api/templates/count_by_thesauri', CountTemplatesByThesaurusController.createHandler());
 };
