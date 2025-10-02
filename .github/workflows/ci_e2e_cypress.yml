@@ -96,8 +96,8 @@ jobs:
           pdftotext -v
           pdftoppm -v
           pdfinfo -v
-          echo "Verifying Chrome 140..."
-          google-chrome --version | grep -q "140" && echo "✓ Chrome 140 detected" || echo "❌ Chrome 140 not found"
+          echo "Verifying Chrome..."
+          google-chrome --version && echo "✓ Chrome detected" || echo "❌ Chrome not found"
           echo "Verifying Xvfb..."
           which xvfb-run
           echo "Verifying Python..."
@@ -309,7 +309,7 @@ jobs:
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
-          browser: /usr/bin/google-chrome
+          browser: chrome
           component: false
           config-file: cypress.config.ts
           spec: ${{ matrix.spec }}
