@@ -108,7 +108,6 @@ export class MongoTranslationsDataSource
   }
 
   async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
-    console.log('props', props);
     await this.getCollection().bulkWrite(
       props.map(({ contextId, keysToDelete }) => ({
         deleteMany: { filter: { 'context.id': contextId, key: { $in: keysToDelete } } },

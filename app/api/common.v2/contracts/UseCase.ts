@@ -1,7 +1,7 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ValidationError } from 'api/core/domain/error/ValidationError';
 import { EventsBus } from 'api/eventsbus';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { TransactionManager } from './TransactionManager';
 
 interface UseCase<Input, Output> {

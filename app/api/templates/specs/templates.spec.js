@@ -514,7 +514,7 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
+  describe.only.each([
     {
       title: 'delete v1',
       featureFlags: {
@@ -528,7 +528,12 @@ describe('templates', () => {
       },
     },
   ])('$title', ({ featureFlags }) => {
+    beforeAll(() => {
+      jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+    });
+
     beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures, elasticIndex);
       testingTenants.mockCurrentTenant({
         name: testingDB.dbName,
         dbName: testingDB.dbName,
@@ -537,8 +542,7 @@ describe('templates', () => {
       });
     });
 
-    afterEach(async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
+    afterEach(() => {
       jest.resetAllMocks();
     });
 

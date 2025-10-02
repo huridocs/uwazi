@@ -10,6 +10,7 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { tenants } from 'api/tenants';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { TranslationService } from '../domain/template/TranslationService';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
@@ -32,20 +33,20 @@ type Deps = {
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
   // eslint-disable-next-line max-statements
   protected async executeAsync({ templateId }: Input): Promise<Output> {
-    const template = (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
+    const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
 
-    if (template.isDefault) {
+    if (templateToBeDeleted.isDefault) {
       throw new Error('Default template cannot be deleted');
     }
 
-    const hasEntities = await this.deps.entitiesDS.anyExistsForTemplate(templateId);
+    const hasEntities = await this.deps.entitiesDS.anyExistsForTemplate(templateToBeDeleted.id);
 
     if (hasEntities) {
       throw new Error('Cannot delete template with entities');
     }
 
-    const templates = await this.deps.templatesDS.findTemplatesReferencing(templateId);
-    const editedTemplates = templates.map(t => t.onTemplateDeleted(template));
+    const templates = await this.deps.templatesDS.findTemplatesReferencing(templateToBeDeleted.id);
+    const editedTemplates = templates.map(t => t.onTemplateDeleted(templateToBeDeleted));
 
     await this.transactionManger.run(async () => {
       if (templates.length) {
@@ -61,23 +62,22 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
         );
       }
 
-      await this.deps.translationsDS.deleteByContextId(templateId);
-      await this.deps.templatesDS.delete(templateId);
+      await this.deps.translationsDS.deleteByContextId(templateToBeDeleted.id);
+      await this.deps.templatesDS.delete(templateToBeDeleted.id);
     });
 
     await this.eventBus.emit(new TemplateDeletedEvent({ templateId }));
-    await Promise.all(
-      templates.map(async t =>
-        this.eventBus.emit(
-          new TemplateUpdatedEvent({
-            before: TemplateMapper.toSchema(t),
-            after: TemplateMapper.toSchema(editedTemplates.find(tt => tt.id === t.id)!),
-          })
-        )
+
+    await ArrayUtils.sequentialFor(templates, async template =>
+      this.eventBus.emit(
+        new TemplateUpdatedEvent({
+          before: TemplateMapper.toSchema(template),
+          after: TemplateMapper.toSchema(editedTemplates.find(t => t.id === template.id)!),
+        })
       )
     );
 
-    // await this.bulkCreateTemplatePostProcessingJobs(templates, editedTemplates);
+    await this.bulkCreateTemplatePostProcessingJobs(templates, editedTemplates);
   }
 
   private async bulkCreateTemplatePostProcessingJobs(
@@ -86,13 +86,11 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
   ) {
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
-    await Promise.all(
-      templates.map(async t =>
-        this.createTranslationPostProcessingJobs(
-          t,
-          editedTemplates.find(tt => tt.id === t.id)!,
-          defaultLanguage
-        )
+    await ArrayUtils.sequentialFor(templates, async template =>
+      this.createTranslationPostProcessingJobs(
+        template,
+        editedTemplates.find(t => t.id === template.id)!,
+        defaultLanguage
       )
     );
   }
