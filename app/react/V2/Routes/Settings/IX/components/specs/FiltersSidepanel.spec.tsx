@@ -25,6 +25,7 @@ const mockAggregation: FiltersSidepanelProps['aggregation'] = {
   noContext: 2,
   nonProcessed: 1,
   accuracy: 23,
+  useForTraining: 5,
 };
 
 const renderComponent = (showSidepanel = true, aggregation = mockAggregation) => {
@@ -54,6 +55,7 @@ describe('FiltersSidepanel', () => {
     expect(options).toEqual([
       'Labeled5',
       'Non-labeled5',
+      'Use for training5',
       'Non processed1',
       'Obsolete1',
       'Error0',
@@ -102,6 +104,7 @@ describe('FiltersSidepanel', () => {
       JSON.stringify({
         labeled: true,
         nonLabeled: false,
+        useForTraining: false,
         match: false,
         mismatch: false,
         obsolete: false,

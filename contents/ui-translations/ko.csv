@@ -52,6 +52,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,모든 언어에 추가
 Add to table of contents,목차에 추가
+Add to training set,Add to training set
 Add user,사용자 추가
 add value,add value
 Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
@@ -129,6 +130,7 @@ Character support description,This option enhances support for non-Latin languag
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
@@ -476,6 +478,10 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,지도
 Mark as Reviewed,검토 완료로 표시
 Markdown,Markdown
+marked and labeled,marked and labeled
+marked for training,marked for training
+Marked for training + all labeled entries,Marked for training + all labeled entries
+Marked for training only,Marked for training only
 Match,Match
 Matching,Matching
 matching,matching
@@ -693,6 +699,7 @@ RelationType saved,연결 유형 저장 완료
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
+Remove from training set,Remove from training set
 remove icon,아이콘 제거
 Removed language,Removed language
 Rename,이름 재설정
@@ -913,6 +920,7 @@ Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
 Training model...,Training model...
+Training sample,Training sample
 Translate,번역
 Translation,Translation
 Translations,번역
@@ -964,6 +972,7 @@ Uploads,업로드
 URL,URL
 Use,사용
 Use as filter,Use as filter
+Use for training,Use for training
 User,사용자
 User Action,User Action
 User Role,User Role

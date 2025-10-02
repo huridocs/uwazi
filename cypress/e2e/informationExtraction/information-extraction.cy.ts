@@ -265,6 +265,7 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Train model').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Find suggestions after training').click();
+        cy.get('label[for="find.samplePolicy_marked_plus_labeled"]').click();
         cy.contains('button', 'Train').click();
       });
       cy.wait('@trainSuggestions');
@@ -389,12 +390,34 @@ describe('Information Extraction', () => {
     });
   });
 
-  describe('auto accept', () => {
+  describe('Training set', () => {
     it('should navigate to another extractor', () => {
       cy.contains('a', 'Metadata Extraction').click();
       cy.contains('tr', 'Fechas from relevant templates').contains('a', 'Review').click();
     });
 
+    it('should mark entities for training', () => {
+      cy.intercept('POST', 'api/suggestions/training-set').as('addToSet');
+      cy.contains('tr', 'A title (en)').contains('button', 'Add to training set').click();
+      cy.wait('@addToSet');
+      cy.contains('tr', 'Spider-Man: Shattered Dimensions (en)')
+        .contains('button', 'Add to training set')
+        .click();
+      cy.wait('@addToSet');
+      cy.contains('tr', 'The Amazing Spider-Man (en)')
+        .contains('button', 'Add to training set')
+        .click();
+      cy.wait('@addToSet');
+    });
+
+    it('should remove one of the added entities', () => {
+      cy.intercept('POST', 'api/suggestions/training-set').as('removeFromSet');
+      cy.contains('button', 'Remove from training set').click();
+      cy.wait('@removeFromSet');
+    });
+  });
+
+  describe('auto accept', () => {
     it('should train a find suggestions', () => {
       cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
 
