@@ -16,12 +16,14 @@ import { applicationEventsBus } from 'api/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
+import { TemplateInUseError } from 'api/core/domain/template/errors';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import templates from '../templates';
 import templatesModel from '../templatesModel';
 import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
 import fixtures, {
+  createEntitiesInAllLanguages,
   factory,
   propertyToBeInherited,
   relatedTo,
@@ -514,7 +516,7 @@ describe('templates', () => {
     });
   });
 
-  describe.only.each([
+  describe.each([
     {
       title: 'delete v1',
       featureFlags: {
@@ -600,66 +602,6 @@ describe('templates', () => {
       });
     });
 
-    it('should update translations of other templates using this template as relationship', async () => {
-      await templates.delete({ _id: templateToBeDeleted });
-
-      const translations = await testingEnvironment.db.getAllFrom('translationsV2');
-
-      expect(
-        translations.filter(
-          t => t.context.id === thesaurusTemplateId.toHexString() && t.key === 'other property'
-        )
-      ).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Entity',
-            label: 'thesauri template',
-            id: thesaurusTemplateId.toHexString(),
-          },
-          key: 'other property',
-          language: 'en',
-          value: 'other property',
-        },
-      ]);
-
-      expect(
-        translations.filter(
-          t => t.context.id === thesaurusTemplate2Id.toHexString() && t.key === 'other property'
-        )
-      ).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Entity',
-            label: 'thesauri template 2',
-            id: thesaurusTemplate2Id.toHexString(),
-          },
-          key: 'other property',
-          language: 'en',
-          value: 'other property',
-        },
-      ]);
-
-      expect(
-        translations.filter(
-          t => t.context.id === thesaurusTemplate3Id.toHexString() && t.key === 'other property'
-        )
-      ).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Entity',
-            label: 'thesauri template 3',
-            id: thesaurusTemplate3Id.toHexString(),
-          },
-          key: 'other property',
-          language: 'en',
-          value: 'other property',
-        },
-      ]);
-    });
-
     it('should delete a template when no document is using it', async () => {
       jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
 
@@ -693,15 +635,31 @@ describe('templates', () => {
 
     it('should throw an error when there is documents using it', async () => {
       jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          ...fixtures.entities,
+          ...createEntitiesInAllLanguages(
+            'templateToBeDeleted entity',
+            db.id(templateToBeDeleted),
+            {}
+          ),
+        ],
+      });
+
       try {
         await templates.delete({ _id: templateToBeDeleted });
         throw new Error(
           'should not delete the template and throw an error because there is some documents associated with the template'
         );
       } catch (error) {
-        expect(error.message).toBeUndefined();
-        expect(error.key).toEqual('documents_using_template');
-        expect(error.value).toEqual(1);
+        if (featureFlags.v2DeleteTemplateUseCase) {
+          expect(error).toBeInstanceOf(TemplateInUseError);
+        } else {
+          expect(error.message).toBeUndefined();
+          expect(error.key).toEqual('documents_using_template');
+          expect(error.value).toEqual(1);
+        }
       }
     });
 
@@ -724,7 +682,7 @@ describe('templates', () => {
       } catch (error) {
         expect(error.message).toEqual(
           featureFlags.v2DeleteTemplateUseCase
-            ? 'Default template cannot be deleted'
+            ? 'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
             : 'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
         );
       }

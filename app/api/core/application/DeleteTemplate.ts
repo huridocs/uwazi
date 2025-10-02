@@ -34,7 +34,10 @@ type Deps = {
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
   // eslint-disable-next-line max-statements
   protected async executeAsync({ templateId }: Input): Promise<Output> {
-    const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
+    const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getData();
+    if (!templateToBeDeleted) {
+      return;
+    }
 
     if (templateToBeDeleted.isDefault) {
       throw new DefaultTemplateDeletionError();

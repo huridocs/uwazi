@@ -158,6 +158,168 @@ const fixtures: DBFixture = {
       language: 'en',
       value: 'other property',
     },
+
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
   ],
 
   templates: [
@@ -475,11 +637,6 @@ const fixtures: DBFixture = {
       property2: [{ value: 'value2' }],
       property3: [{ value: 'value3' }],
     }),
-    ...createEntitiesInAllLanguages('templateNotChangingNames', templateNotChangingNames._id, {
-      property1: [{ value: 'value1' }],
-      property2: [{ value: 'value2' }],
-      property3: [{ value: 'value3' }],
-    }),
   ],
 };
 
@@ -513,4 +670,5 @@ export {
   pageSharedId,
   thesaurusTemplateRelationshipPropId,
   factory,
+  createEntitiesInAllLanguages,
 };
