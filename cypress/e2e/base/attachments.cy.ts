@@ -2,126 +2,21 @@ import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('attachments', () => {
   before(() => {
-    cy.task('log', '=== ATTACHMENTS TEST BEFORE HOOK STARTING ===');
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-
-    // Debug: Check database state before fixtures
-    cy.exec(
-      'mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e',
-      { failOnNonZeroExit: false }
-    ).then(result => {
-      cy.task('log', `Entities before fixtures: ${result.stdout}`);
-    });
-
-    // Run fixtures and capture output
-    cy.exec('yarn e2e-fixtures', { env, failOnNonZeroExit: false }).then(result => {
-      cy.task('log', `Fixtures command exit code: ${result.code}`);
-      cy.task('log', `Fixtures stdout: ${result.stdout}`);
-      cy.task('log', `Fixtures stderr: ${result.stderr}`);
-
-      if (result.code !== 0) {
-        cy.task('log', `ERROR: Fixtures command failed with exit code: ${result.code}`);
-      }
-    });
-
-    // Debug: Check database state after fixtures
-    cy.exec(
-      'mongosh --host localhost --port 27017 --quiet --eval "db.entities.countDocuments()" uwazi_e2e',
-      { failOnNonZeroExit: false }
-    ).then(result => {
-      cy.task('log', `Entities after fixtures: ${result.stdout}`);
-    });
-
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 
   describe('main documents', () => {
     it('should view an entity with main a document', () => {
-      cy.task('log', '=== TEST EXECUTION STARTING ===');
-      // Debug: Check what entities are visible on the page
-      cy.get('h2.item-name')
-        .should('exist')
-        .then($elements => {
-          const entityNames = Array.from($elements).map(el => el.textContent);
-          cy.task('log', `Available entities on page: ${JSON.stringify(entityNames)}`);
-        });
-
-      // Debug: Look for any entities containing "Artavia"
-      cy.get('h2.item-name').each($el => {
-        const text = $el.text();
-        if (text.includes('Artavia')) {
-          cy.task('log', `Found Artavia entity: ${text}`);
-        }
-      });
-
       cy.contains(
         'h2.item-name',
         'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
-
-      cy.task('log', 'Clicked entity, waiting for side panel...');
-
-      // Wait for side panel to appear with longer timeout
-      cy.get('.side-panel.is-active', { timeout: 20000 }).should('be.visible');
-      cy.task('log', 'Side panel is active, looking for View button...');
-
-      cy.task('log', 'About to click View button...');
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('a.edit-metadata', 'View').click();
       });
-
-      cy.task('log', 'Clicked View button, waiting for content...');
-
-      // Debug: Check if we're still on the same page or if we navigated away
-      cy.url().then(url => {
-        cy.task('log', `Current URL after View click: ${url}`);
-      });
-
-      // Debug: Check if side panel is still active
-      cy.get('body').then($body => {
-        if ($body.find('.side-panel.is-active').length > 0) {
-          cy.task('log', 'Side panel is still active');
-        } else {
-          cy.task('log', 'Side panel is NO LONGER active');
-        }
-      });
-
-      // Debug: Check what's actually on the page after clicking View
-      cy.task('log', 'Checking page content after View click...');
-      cy.get('body').then($body => {
-        const bodyText = $body.text();
-        cy.task('log', `Page body text (first 500 chars): ${bodyText.substring(0, 500)}`);
-      });
-
-      // Debug: Check if document viewer loaded
-      cy.task('log', 'Looking for document viewer elements...');
-      cy.get('body').then($body => {
-        if ($body.find('[data-testid="document-viewer"]').length > 0) {
-          cy.task('log', 'Document viewer element found');
-        } else {
-          cy.task('log', 'Document viewer element NOT found');
-        }
-
-        if ($body.find('iframe').length > 0) {
-          cy.task('log', 'Iframe found (PDF viewer)');
-        } else {
-          cy.task('log', 'No iframe found');
-        }
-
-        if ($body.find('.document-viewer').length > 0) {
-          cy.task('log', 'Document viewer class found');
-        } else {
-          cy.task('log', 'No document viewer class found');
-        }
-      });
-
-      // Try to find the content with more debugging
-      cy.task('log', 'Attempting to find "Uwazi Heroes Investigation" text...');
-      cy.get('body')
-        .should('contain', 'Uwazi Heroes Investigation', { timeout: 20000 })
-        .then(() => {
-          cy.task('log', '✅ Found "Uwazi Heroes Investigation" text!');
-        });
+      cy.contains('Uwazi Heroes Investigation');
     });
 
     it('should show the file in the main documents section', () => {
