@@ -16,8 +16,8 @@ jobs:
         ports:
           - 9200/tcp
         options: >-
-          --memory=1g
-          --memory-swap=1g
+          --memory=2g
+          --memory-swap=2g
           --memory-swappiness=0
           -e="discovery.type=single-node"
           -e="xpack.security.enabled=false"
