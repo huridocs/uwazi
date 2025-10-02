@@ -36,6 +36,7 @@ export interface IXModelType {
       processed?: number;
       [k: string]: unknown | undefined;
     };
+    samplePolicy?: 'only_marked' | 'marked_plus_labeled';
     findSuggestionsSharedIds?: string[];
     findSuggestionsInitialSharedIdsCount?: number;
     selectedSharedIdsForAutoAccept?: string[];
