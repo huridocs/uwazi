@@ -1,9 +1,9 @@
-import settings from 'api/settings';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
 import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
 import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController';
 import { GetTemplatesController } from 'api/core/infrastructure/express/template/GetTemplatesController';
+import { DeleteTemplateController } from 'api/core/infrastructure/express/template/DeleteTemplateController';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, validation } from '../utils';
 import templates from './templates';
@@ -42,34 +42,7 @@ export default (app: Application) => {
 
   app.get('/api/templates', GetTemplatesController.createHandler());
 
-  app.delete(
-    '/api/templates',
-    needsAuthorization(),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['_id'],
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-    (req: Request<{}, {}, {}, { _id: string }>, res, next) => {
-      const template = { _id: req.query._id };
-      templates
-        .delete(template)
-        .then(async () => settings.removeTemplateFromFilters(template._id))
-        .then(newSettings => {
-          res.json(template);
-          req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-          req.sockets.emitToCurrentTenant('templateDelete', template);
-        })
-        .catch(next);
-    }
-  );
+  app.delete('/api/templates', needsAuthorization(), DeleteTemplateController.createHandler());
 
   app.get(
     '/api/templates/count_by_thesauri',
