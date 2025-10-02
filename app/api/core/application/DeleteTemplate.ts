@@ -14,6 +14,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { TranslationService } from '../domain/template/TranslationService';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
 
 type Input = {
   templateId: string;
@@ -36,13 +37,13 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
     const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
 
     if (templateToBeDeleted.isDefault) {
-      throw new Error('Default template cannot be deleted');
+      throw new DefaultTemplateDeletionError();
     }
 
     const hasEntities = await this.deps.entitiesDS.anyExistsForTemplate(templateToBeDeleted.id);
 
     if (hasEntities) {
-      throw new Error('Cannot delete template with entities');
+      throw new TemplateInUseError();
     }
 
     const templates = await this.deps.templatesDS.findTemplatesReferencing(templateToBeDeleted.id);
@@ -53,10 +54,10 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
         await this.deps.templatesDS.bulkUpdate(editedTemplates);
 
         await this.deps.translationsDS.bulkDeleteKeysByContext(
-          templates.map(t => ({
-            contextId: t.id,
-            keysToDelete: t
-              .selectDeletedProperties(editedTemplates.find(tt => tt.id === t.id)!)
+          templates.map(template => ({
+            contextId: template.id,
+            keysToDelete: template
+              .selectDeletedProperties(editedTemplates.find(t => t.id === template.id)!)
               .map(p => p.name),
           }))
         );
