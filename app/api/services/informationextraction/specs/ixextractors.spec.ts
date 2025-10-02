@@ -12,12 +12,12 @@ import { IXValidationError } from '../IXValidationError';
 
 const fixtureFactory = getFixturesFactory();
 
-jest.mock('api/queue.v2/configuration/factories', () => ({
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: jest.fn().mockImplementation(() => {
     const {
       SyncDispatcherForTests,
       // eslint-disable-next-line global-require
-    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       CreateBlankStateSuggestionsJob,
       // eslint-disable-next-line global-require

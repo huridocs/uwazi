@@ -32,8 +32,8 @@ import {
 const mockDispatchMethod = jest.fn();
 
 // Mock DefaultDispatcher from the factories module
-jest.mock('api/queue.v2/configuration/factories', () => ({
-  ...jest.requireActual('api/queue.v2/configuration/factories'), // Preserve other exports
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'), // Preserve other exports
   DefaultDispatcher: jest.fn().mockResolvedValue({
     // Mock DefaultDispatcher export
     // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError

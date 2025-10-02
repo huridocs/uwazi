@@ -3,7 +3,7 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import relationshipTypeDS from 'api/relationtypes';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';

@@ -26,7 +26,7 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
           },
         },
       ],
-      { sort: { createdAt: 1 }, returnDocument: 'after' }
+      { sort: { createdAt: 1, _id: 1 }, returnDocument: 'after' }
     );
   }
 

@@ -5,9 +5,9 @@ import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/Tem
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { Template } from 'api/templates.v2/model/Template';

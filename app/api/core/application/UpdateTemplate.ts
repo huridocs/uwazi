@@ -5,7 +5,7 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
