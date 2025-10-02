@@ -15,7 +15,20 @@ jobs:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" -e="ES_JAVA_OPTS=-Xms512m -Xmx512m" -e="cluster.routing.allocation.disk.threshold_enabled=false" -e="logger.level=WARN" -e="ingest.geoip.downloader.enabled=false" --health-cmd="curl -f http://localhost:9200" --health-interval=10s --health-timeout=10s --health-retries=10
+        options: >-
+          --memory=1g
+          --memory-swap=1g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms512m -Xmx512m"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
       redis:
         image: redis:5.0.14
         ports:
