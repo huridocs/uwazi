@@ -67,15 +67,6 @@ jobs:
       - name: Start MongoDB replica set
         run: /usr/local/bin/setup-mongo-replica.sh
 
-      - name: Wait for MongoDB replica set to be ready
-        run: |
-          for i in {1..60}; do
-            if mongosh --host localhost --port 27017 --quiet --eval 'try { rs.status().myState } catch (e) { print(0) }' | tail -n 1 | grep -q "1"; then
-              echo "Mongo replica set is PRIMARY and ready"; break
-            fi
-            echo "Waiting for Mongo replica set... (attempt $i/60)"
-            sleep 2
-          done
       - name: Cache node modules
         uses: actions/cache@v4
         with:
@@ -157,103 +148,6 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      - name: Debug - Check MongoDB and Elasticsearch status
-        run: |
-          echo "=== CONTAINER ENVIRONMENT DEBUG ==="
-          echo "Container OS:"
-          cat /etc/os-release
-          echo ""
-          echo "Chrome version:"
-          google-chrome --version
-          echo ""
-          echo "Node version:"
-          node --version
-          echo ""
-          echo "NPM version:"
-          npm --version
-          echo ""
-          echo "Checking Node.js versions in container:"
-          which node
-          ls -la /usr/bin/node* 2>/dev/null || echo "No additional node binaries found"
-          echo ""
-          echo "Node.js environment:"
-          node -e "console.log('Node version:', process.version); console.log('Platform:', process.platform); console.log('Arch:', process.arch);"
-          echo ""
-          echo "Installing network tools for debugging..."
-          apt-get update -qq && apt-get install -y iproute2 net-tools netcat-openbsd redis-tools dnsutils socat
-          echo ""
-          echo "Network interfaces:"
-          ip addr show
-          echo ""
-          echo "Environment variables:"
-          env | grep -E "(DBHOST|ELASTICSEARCH|REDIS|DATABASE|INDEX)" | sort
-          echo ""
-          echo "=== SERVICE STATUS ==="
-          echo "Checking MongoDB status..."
-          mongosh --host localhost --port 27017 --quiet --eval 'rs.status().myState'
-          echo "MongoDB databases:"
-          mongosh --host localhost --port 27017 --quiet --eval 'db.adminCommand("listDatabases")'
-          echo ""
-          echo "Checking Elasticsearch..."
-          curl -s http://localhost:9200/_cluster/health || echo "Elasticsearch not reachable"
-          echo ""
-          echo "Checking Redis..."
-          redis-cli -h localhost -p 6379 ping || echo "Redis not reachable"
-          echo ""
-          echo "Checking production build:"
-          ls -la prod/ | head -20
-          echo ""
-          echo "=== CONTAINER PROCESSES ==="
-          ps aux | grep -E "(mongod|elasticsearch|redis)" || echo "No matching processes found"
-          
-      - name: Debug - Container networking analysis
-        run: |
-          echo "=== CONTAINER NETWORKING ANALYSIS ==="
-          echo "1. Container hostname resolution:"
-          echo "   elasticsearch hostname:"
-          nslookup elasticsearch || echo "   elasticsearch hostname not resolvable"
-          echo "   redis hostname:"
-          nslookup redis || echo "   redis hostname not resolvable"
-          echo ""
-          echo "   Testing IP resolution:"
-          echo "   elasticsearch IP:"
-          getent hosts elasticsearch || echo "   elasticsearch IP not found"
-          echo "   redis IP:"
-          getent hosts redis || echo "   redis IP not found"
-          echo ""
-          echo "   Docker network IPs:"
-          echo "   Scanning Docker network 172.18.0.0/16 for services:"
-          for ip in $(seq 1 10); do
-            test_ip="172.18.0.$ip"
-            if [ "$test_ip" != "172.18.0.2" ]; then
-              echo "   Testing $test_ip:6379 (Redis)..."
-              nc -z $test_ip 6379 && echo "   ✅ Redis found at $test_ip:6379" || true
-              echo "   Testing $test_ip:9200 (Elasticsearch)..."
-              nc -z $test_ip 9200 && echo "   ✅ Elasticsearch found at $test_ip:9200" || true
-            fi
-          done
-          echo ""
-          echo "2. Direct container connectivity:"
-          echo "   Testing elasticsearch:9200 directly:"
-          curl -s --connect-timeout 5 http://elasticsearch:9200/_cluster/health || echo "   ❌ elasticsearch:9200 not reachable"
-          echo "   Testing redis:6379 directly:"
-          nc -z redis 6379 && echo "   ✅ redis:6379 reachable" || echo "   ❌ redis:6379 not reachable"
-          echo ""
-          echo "3. Port scanning localhost:"
-          echo "   Scanning localhost ports 6379, 9200, 3000:"
-          for port in 6379 9200 3000; do
-            nc -z localhost $port && echo "   ✅ localhost:$port is open" || echo "   ❌ localhost:$port is closed"
-          done
-          echo ""
-          echo "4. Container networking info:"
-          echo "   /etc/hosts contents:"
-          cat /etc/hosts
-          echo ""
-          echo "   Docker network info:"
-          cat /proc/net/route || echo "   Route table not accessible"
-          echo ""
-          echo "5. Process network connections:"
-          netstat -tulpn 2>/dev/null | grep -E "(6379|9200|3000)" || echo "   No processes listening on target ports"
           
       - name: Forward ports for container networking
         run: |
@@ -344,25 +238,6 @@ jobs:
             echo "Elasticsearch socat log:"
             cat socat-elasticsearch.log
           fi
-          
-      - name: Debug - Check services before Uwazi startup (after port forwarding)
-        run: |
-          echo "=== PRE-STARTUP SERVICE CHECK (AFTER PORT FORWARDING) ==="
-          echo "Checking MongoDB connection..."
-          mongosh --host localhost --port 27017 --quiet --eval 'db.runCommand({ ping: 1 })' || echo "MongoDB not responding"
-          echo ""
-          echo "Checking Redis connection (via localhost:6379 -> redis:6379):"
-          if command -v redis-cli >/dev/null 2>&1; then
-            redis-cli -h localhost -p 6379 ping || echo "Redis not responding via localhost"
-          else
-            echo "redis-cli not available, testing with nc:"
-            nc -z localhost 6379 && echo "Redis:6379 reachable via localhost" || echo "Redis:6379 not reachable via localhost"
-          fi
-          echo ""
-          echo "Checking Elasticsearch connection (via localhost:9200 -> elasticsearch:9200):"
-          curl -s http://localhost:9200/_cluster/health || echo "Elasticsearch not responding via localhost"
-          echo ""
-          echo "All services should be running before starting Uwazi"
           
       - name: start Uwazi
         env:
