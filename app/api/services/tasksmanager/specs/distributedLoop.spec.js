@@ -98,12 +98,12 @@ describe('DistributedLoopLock', () => {
     });
 
     await nodeOne.start();
-    
+
     // Wait for the first node to acquire the lock and start its task
     await waitForExpect(async () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
-    
+
     const firstFinishTask = finishTask;
     await nodeTwo.start();
 

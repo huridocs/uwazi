@@ -121,14 +121,6 @@ describe('attachments', () => {
         .should('contain', 'Uwazi Heroes Investigation', { timeout: 20000 })
         .then(() => {
           cy.task('log', '✅ Found "Uwazi Heroes Investigation" text!');
-        })
-        .catch(() => {
-          cy.task('log', '❌ Could not find "Uwazi Heroes Investigation" text');
-          // Debug: Show what text IS available
-          cy.get('body').then($body => {
-            const allText = $body.text();
-            cy.task('log', `Available text on page: ${allText.substring(0, 1000)}`);
-          });
         });
     });
 
