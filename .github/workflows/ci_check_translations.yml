@@ -17,7 +17,7 @@ jobs:
           --memory-swappiness=0
           -e="discovery.type=single-node"
           -e="xpack.security.enabled=false"
-          -e="ES_JAVA_OPTS=-Xms512m -Xmx512m"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
           -e="cluster.routing.allocation.disk.threshold_enabled=false"
           -e="logger.level=WARN"
           -e="ingest.geoip.downloader.enabled=false"
