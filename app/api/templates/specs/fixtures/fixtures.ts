@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
@@ -451,12 +452,17 @@ const fixtures: DBFixture = {
         },
       ],
       properties: [
-        { _id: factory.id('text_id'), type: propertyTypes.text, name: 'text', label: 'Text' },
+        {
+          _id: factory.id('text_id'),
+          type: propertyTypes.text,
+          name: 'name_to_be_swapped',
+          label: 'Name to be swapped',
+        },
         {
           _id: factory.id('select_id'),
           type: propertyTypes.select,
-          name: 'select5',
-          label: 'Select5',
+          name: 'select_to_be_swapped',
+          label: 'Select to be swapped',
           content: thesauriId1.toString(),
         },
       ],

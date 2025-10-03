@@ -167,12 +167,12 @@ describe('templates', () => {
           },
         ],
         properties: [
-          { _id: factory.id('text_id'), type: 'text', name: 'text', label: 'Select5' },
+          { _id: factory.id('text_id'), type: 'text', name: 'text', label: 'Select to be swapped' },
           {
             _id: factory.id('select_id'),
             type: 'select',
             name: 'select5',
-            label: 'Text',
+            label: 'Name to be swapped',
             content: thesauriId1.toString(),
           },
         ],
