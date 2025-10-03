@@ -11,8 +11,20 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
     <Title
       title={entity.title}
       label="placeholder"
-      templateId="placeholder"
+      translationContext="placeholder"
       iconId={entity.icon._id}
+    />
+    <Date
+      timestamps={[entity.creationDate]}
+      label="Creation date"
+      translationContext="System"
+      locale="en"
+    />
+    <Date
+      timestamps={[entity.editDate]}
+      label="Edit date"
+      translationContext="System"
+      locale="en"
     />
     {entity.metadata.map(data => {
       if (
@@ -22,7 +34,12 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
         data.type === 'multidaterange'
       ) {
         return (
-          <Date timestamps={data.values} label={data.label} locale="en" templateId="placeholder" />
+          <Date
+            timestamps={data.values}
+            label={data.label}
+            locale="en"
+            translationContext="placeholder"
+          />
         );
       }
     })}
@@ -49,6 +66,8 @@ const Basic = {
   args: {
     entity: {
       title: 'Simple title',
+      creationDate: 1659438982222,
+      editDate: 1663758775194,
       icon: { _id: 'SMR' },
       metadata: [
         {

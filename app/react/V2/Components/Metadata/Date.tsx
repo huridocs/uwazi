@@ -10,10 +10,10 @@ type DateProps = MetadataFieldProps & {
   locale: string;
 };
 
-const Date = ({ timestamps, locale = 'en', label, templateId, hideLabel }: DateProps) => (
+const Date = ({ timestamps, locale = 'en', label, translationContext, hideLabel }: DateProps) => (
   <div>
     <dt className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>
-      <Translate context={templateId}>{label}</Translate>
+      <Translate context={translationContext}>{label}</Translate>
     </dt>
     {timestamps.map(stamp => {
       if (typeof stamp === 'number') {

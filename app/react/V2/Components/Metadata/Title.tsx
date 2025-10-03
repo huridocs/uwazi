@@ -8,10 +8,10 @@ type TitleProps = MetadataFieldProps & {
   iconId?: string;
 };
 
-const Title = ({ title, label, iconId, templateId }: TitleProps) => (
+const Title = ({ title, label, iconId, translationContext }: TitleProps) => (
   <div>
     <dt className="sr-only">
-      <Translate context={templateId}>{label}</Translate>
+      <Translate context={translationContext}>{label}</Translate>
     </dt>
     <span className="flex flex-row flex-nowrap gap-2 align-middle">
       {iconId && <CountryFlag id={iconId} />}

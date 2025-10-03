@@ -1,6 +1,6 @@
 type MetadataFieldProps = {
   label: string;
-  templateId: string;
+  translationContext: string;
   hideLabel?: boolean;
 };
 
