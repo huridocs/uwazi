@@ -13,7 +13,7 @@ type ResponseDto = { _id: string };
 
 class DeleteTemplateController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    const requestDto = RequestSchema.parse(this.request.body);
+    const requestDto = RequestSchema.parse(this.request.query);
 
     await templates.delete(requestDto);
 

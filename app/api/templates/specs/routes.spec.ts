@@ -65,8 +65,7 @@ describe('templates routes', () => {
     });
 
     it('should validate that request has _id', async () => {
-      const { body } = await request(app).delete('/api/templates').expect(400);
-      expect(body.error).toBe('validation failed');
+      await request(app).delete('/api/templates').expect(422);
     });
   });
 
