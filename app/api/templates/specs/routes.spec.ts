@@ -106,14 +106,15 @@ describe('templates routes', () => {
   describe('/templates/count_by_thesauri', () => {
     it('should return the number of templates using a thesauri', async () => {
       const { body } = await request(app)
-        .get('/api/templates/count_by_thesauri?_id=123456789')
+        .get(`/api/templates/count_by_thesauri?_id=${fixtureFactory.id('123456789')}`)
         .expect(200);
 
       expect(body).toBe(1);
     });
     it('should have a validation schema', async () => {
       const { body } = await request(app).get('/api/templates/count_by_thesauri');
-      expect(body.error).toBe('validation failed');
+
+      expect(body.error).toContain('ValidationError');
     });
   });
 
