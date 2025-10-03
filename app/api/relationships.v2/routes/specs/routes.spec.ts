@@ -15,8 +15,6 @@ const factory = getFixturesFactory();
 
 const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
 
-let currentIndexName: string;
-
 const fixtures: DBFixture = {
   templates: [factory.template('template1')],
   entities: [
@@ -56,13 +54,11 @@ const fixtures: DBFixture = {
 };
 
 beforeEach(async () => {
-  // Use unique index name to avoid conflicts in parallel test execution
-  currentIndexName = `relationships_routes_test_${process.pid}_${Date.now()}`;
-  await testingEnvironment.setUp(fixtures, currentIndexName);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDownWithIndex(currentIndexName);
+  await testingEnvironment.tearDown();
 });
 
 describe('GET relationships', () => {

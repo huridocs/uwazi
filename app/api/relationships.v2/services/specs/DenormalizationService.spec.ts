@@ -327,14 +327,10 @@ let service: DenormalizationService;
 let indexMock: jest.Mock;
 let updateMock: jest.Mock;
 let updateByTemplateMock: jest.Mock;
-let currentIndexName: string;
-
 let triggerCommit: () => Promise<unknown>;
 
 beforeEach(async () => {
-  // Use unique index name to avoid conflicts in parallel test execution
-  currentIndexName = `denormalization_test_${process.pid}_${Date.now()}`;
-  await testingEnvironment.setUp(fixtures, currentIndexName);
+  await testingEnvironment.setUp(fixtures, true);
 
   indexMock = jest.fn();
   updateMock = jest.fn();
@@ -366,7 +362,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDownWithIndex(currentIndexName);
+  await testingEnvironment.tearDown();
 });
 
 describe('denormalizeAfterCreatingRelationships()', () => {

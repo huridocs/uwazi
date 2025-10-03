@@ -25,15 +25,10 @@ const elasticTesting = {
   },
 
   async deleteIndex(indexName: string) {
-    try {
-      await (elastic.indices as any).delete({
-        index: indexName,
-        ignore_unavailable: true,
-      });
-    } catch (error) {
-      // Ignore connection errors during cleanup - ES might be unavailable or index might not exist
-      // Failed to delete Elasticsearch index - this is expected during cleanup
-    }
+    await (elastic.indices as any).delete({
+      index: indexName,
+      ignore_unavailable: true,
+    });
   },
 
   async getIndexedEntities(sort = 'title.sort') {

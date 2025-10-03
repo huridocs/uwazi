@@ -16,8 +16,6 @@ import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
 
-let currentIndexName: string;
-
 const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 
 const mockUser = new User(MongoIdHandler.generate(), 'admin', []);
@@ -66,13 +64,11 @@ const fixtures = {
 };
 
 beforeEach(async () => {
-  // Use unique index name to avoid conflicts in parallel test execution
-  currentIndexName = `delete_relationship_test_${process.pid}_${Date.now()}`;
-  await testingEnvironment.setUp(fixtures, currentIndexName);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {
-  await testingEnvironment.tearDownWithIndex(currentIndexName);
+  await testingEnvironment.tearDown();
 });
 
 describe('delete()', () => {
