@@ -7,8 +7,13 @@ type StoryProps = {
 };
 
 const MetadataDisplay = ({ entity }: StoryProps) => (
-  <dt className="flex flex-col gap-4">
-    <Title title={entity.title} label="placeholder" templateId="placeholder" />
+  <dl className="flex flex-col gap-4">
+    <Title
+      title={entity.title}
+      label="placeholder"
+      templateId="placeholder"
+      iconId={entity.icon._id}
+    />
     {entity.metadata.map(data => {
       if (
         data.type === 'date' ||
@@ -21,11 +26,11 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
         );
       }
     })}
-  </dt>
+  </dl>
 );
 
 const meta: Meta<StoryProps> = {
-  title: 'Metadata',
+  title: 'Components/Metadata',
   component: MetadataDisplay,
 };
 
@@ -44,6 +49,7 @@ const Basic = {
   args: {
     entity: {
       title: 'Simple title',
+      icon: { _id: 'SMR' },
       metadata: [
         {
           name: 'single_date',

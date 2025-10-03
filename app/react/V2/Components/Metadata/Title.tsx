@@ -1,18 +1,22 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
 import { MetadataFieldProps } from './types';
+import { CountryFlag } from '../CustomIcons';
 
 type TitleProps = MetadataFieldProps & {
   title: string;
-  icon?: { _id: string; label: string; type: string };
+  iconId?: string;
 };
 
-const Title = ({ title, label, icon, templateId }: TitleProps) => (
+const Title = ({ title, label, iconId, templateId }: TitleProps) => (
   <div>
     <dt className="sr-only">
       <Translate context={templateId}>{label}</Translate>
     </dt>
-    <dd className="font-bold text-gray-900">{title}</dd>
+    <span className="flex flex-row flex-nowrap gap-2 align-middle">
+      {iconId && <CountryFlag id={iconId} />}
+      <dd className="font-bold text-gray-900">{title}</dd>
+    </span>
   </div>
 );
 
