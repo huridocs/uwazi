@@ -2,6 +2,11 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { DeleteResult, UpdateResult } from 'mongodb';
 import { Translation } from '../model/Translation';
 
+export type BulkDeleteKeysByContext = {
+  contextId: string;
+  keysToDelete: string[];
+}[];
+
 export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
   upsert(translations: Translation[]): Promise<Translation[]>;
@@ -14,6 +19,7 @@ export interface TranslationsDataSource {
   deleteByContextId(contextId: string): Promise<DeleteResult>;
   deleteByLanguage(language: string): Promise<DeleteResult>;
   deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<DeleteResult>;
+  bulkDeleteKeysByContext(props: BulkDeleteKeysByContext): Promise<void>;
 
   updateContextLabel(contextId: string, contextLabel: string): Promise<UpdateResult<Translation>>;
   updateKeysByContext(contextId: string, keyChanges: { [k: string]: string }): Promise<void>;

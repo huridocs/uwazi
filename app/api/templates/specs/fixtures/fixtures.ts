@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
@@ -77,6 +78,251 @@ const templateNotChangingNames = {
 };
 
 const fixtures: DBFixture = {
+  translationsV2: [
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'en',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'en',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'pt',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'pt',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'templateToBeDeleted',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeDeleted',
+        id: templateToBeDeleted,
+      },
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template',
+        id: thesaurusTemplateId.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 2',
+        id: thesaurusTemplate2Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
+
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'relationshipToBeDeleted',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'relationshipToBeDeleted',
+      language: 'es',
+      value: 'relationshipToBeDeleted',
+    },
+    {
+      _id: db.id(),
+      context: {
+        type: 'Entity',
+        label: 'thesauri template 3',
+        id: thesaurusTemplate3Id.toHexString(),
+      },
+      key: 'other property',
+      language: 'es',
+      value: 'other property',
+    },
+  ],
+
   templates: [
     templateChangingNames,
     templateNotChangingNames,
@@ -85,12 +331,10 @@ const fixtures: DBFixture = {
       color: '',
       entityViewPage: '',
     }),
-    {
+    factory.template('', [], {
       _id: db.id(templateToBeDeleted),
       name: 'to be deleted',
-      properties: [],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
+    }),
     {
       _id: db.id(),
       name: 'duplicated name',
@@ -121,10 +365,9 @@ const fixtures: DBFixture = {
         name: 'thesauri template',
       }
     ),
-    {
-      _id: thesaurusTemplate2Id,
-      name: 'thesauri template 2',
-      properties: [
+    factory.template(
+      '',
+      [
         {
           _id: db.id(),
           type: propertyTypes.select,
@@ -141,14 +384,16 @@ const fixtures: DBFixture = {
           name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
-    {
-      _id: thesaurusTemplate3Id,
-      name: 'thesauri template 3',
-      properties: [
-        { _id: db.id(), type: propertyTypes.text, label: 'text' },
-        { _id: db.id(), type: propertyTypes.text, label: 'text2' },
+      {
+        name: 'thesauri template 2',
+        _id: thesaurusTemplate2Id,
+      }
+    ),
+    factory.template(
+      '',
+      [
+        { _id: db.id(), type: propertyTypes.text, label: 'text', name: 'text' },
+        { _id: db.id(), type: propertyTypes.text, label: 'text2', name: 'text2' },
         {
           _id: db.id(),
           type: propertyTypes.relationship,
@@ -158,8 +403,11 @@ const fixtures: DBFixture = {
           name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
+      {
+        _id: thesaurusTemplate3Id,
+        name: 'thesauri template 3',
+      }
+    ),
     {
       _id: templateWithContents,
       name: 'content template',
@@ -204,12 +452,17 @@ const fixtures: DBFixture = {
         },
       ],
       properties: [
-        { _id: factory.id('text_id'), type: propertyTypes.text, name: 'text', label: 'Text' },
+        {
+          _id: factory.id('text_id'),
+          type: propertyTypes.text,
+          name: 'name_to_be_swapped',
+          label: 'Name to be swapped',
+        },
         {
           _id: factory.id('select_id'),
           type: propertyTypes.select,
-          name: 'select5',
-          label: 'Select5',
+          name: 'select_to_be_swapped',
+          label: 'Select to be swapped',
           content: thesauriId1.toString(),
         },
       ],
@@ -390,11 +643,6 @@ const fixtures: DBFixture = {
       property2: [{ value: 'value2' }],
       property3: [{ value: 'value3' }],
     }),
-    ...createEntitiesInAllLanguages('templateNotChangingNames', templateNotChangingNames._id, {
-      property1: [{ value: 'value1' }],
-      property2: [{ value: 'value2' }],
-      property3: [{ value: 'value3' }],
-    }),
   ],
 };
 
@@ -428,4 +676,5 @@ export {
   pageSharedId,
   thesaurusTemplateRelationshipPropId,
   factory,
+  createEntitiesInAllLanguages,
 };
