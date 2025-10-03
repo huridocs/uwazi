@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Title, Date } from 'V2/Components/Metadata';
+import { Title, Date, Geolocation } from 'V2/Components/Metadata';
 
 type StoryProps = {
   entity: any;
@@ -26,6 +26,10 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
         return (
           <Date timestamps={data.values} label={data.label} translationContext="placeholder" />
         );
+      }
+
+      if (data.type === 'geolocation') {
+        <Geolocation data={data.values} label={data.label} translationContext="placeholder" />;
       }
     })}
   </dl>
@@ -82,6 +86,12 @@ const Basic = {
             { from: 1664982774900, to: 1665673974900 },
             { from: 1667588374900, to: 1668193174900 },
           ],
+        },
+        {
+          name: 'location_of_interes',
+          label: 'Location of interest',
+          type: 'geolocation',
+          values: [{ lat: 44, lon: 26 }],
         },
       ],
     },
