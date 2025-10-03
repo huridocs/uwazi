@@ -106,7 +106,7 @@ jobs:
   api_unit_tests_shards:
     needs: [precheck, build_ci_image]
     if: needs.precheck.outputs.should_run == 'true'
-    name: api_unit_tests (shard ${{ matrix.shard }}/3)
+    name: api_unit_tests (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}-ci:latest
@@ -114,13 +114,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
       redis:
         image: redis:6.0-alpine
         options: >-
@@ -172,13 +185,13 @@ jobs:
         run: |
           nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 &
 
-      - name: Run tests (shard ${{ matrix.shard }}/3)
+      - name: Run tests (shard ${{ matrix.shard }}/4)
         env:
           ELASTICSEARCH_URL: http://elasticsearch:9200
           DBHOST: localhost:27017
           REDIS_HOST: redis
           REDIS_PORT: 6379
-        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/3
+        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --logHeapUsage --forceExit --maxWorkers=3 --shard=${{ matrix.shard }}/4
 
   api_unit_tests_aggregate:
     name: api_unit_tests
