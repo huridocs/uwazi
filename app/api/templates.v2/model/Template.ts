@@ -8,12 +8,21 @@ import { CommonProperty } from './CommonProperty';
 
 type TemplateProperty = Property | V1RelationshipProperty;
 
+type CloneProps = {
+  name: string;
+  properties: Property[];
+  commonProperties: CommonProperty[];
+  color?: string;
+  isDefault?: boolean;
+  entityViewPage?: string;
+};
+
 class Template {
   readonly id: string;
 
   readonly name: string;
 
-  readonly properties: TemplateProperty[] = [];
+  properties: TemplateProperty[] = [];
 
   readonly commonProperties: CommonProperty[] = [];
 
@@ -180,6 +189,34 @@ class Template {
     }
 
     this.isDefault = true;
+  }
+
+  onTemplateDeleted(template: Template) {
+    const properties = this.properties.filter(p => {
+      if (p instanceof V1RelationshipProperty) {
+        return p.content !== template.id;
+      }
+
+      return true;
+    });
+
+    return this.clone({ ...this, properties });
+  }
+
+  private clone(props: CloneProps) {
+    const template = new Template(
+      this.id,
+      props.name,
+      props.properties,
+      props.commonProperties,
+      props.color,
+      props.isDefault,
+      props.entityViewPage
+    );
+
+    template.processing = this.processing;
+
+    return template;
   }
 }
 

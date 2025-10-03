@@ -8,7 +8,7 @@ import v1EntitiesModel from 'api/entities/entitiesModel';
 import { search } from 'api/search';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
@@ -215,5 +215,16 @@ export class MongoEntitiesDataSource
       sharedId: result.sharedId,
       obsoleteMetadata: result.obsoleteMetadata ?? [],
     }));
+  }
+
+  async anyExistsForTemplate(templateId: string): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        template: ObjectId.createFromHexString(templateId),
+      },
+      { limit: 1 }
+    );
+
+    return count > 0;
   }
 }

@@ -262,10 +262,14 @@ export class MongoTemplatesDataSource
     };
   }
 
-  async setProcessingTotalJobs(id: Template['id'], totalJobs: number) {
+  async addJobsToProcessingCount(id: Template['id'], totalJobs: number) {
     await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: { 'processing.totalJobs': totalJobs, 'processing.active': true } }
+      {
+        $set: { 'processing.active': true },
+        // @ts-ignore when updating nested objects ts cant infer the proper type
+        $inc: { 'processing.totalJobs': totalJobs },
+      }
     );
   }
 
@@ -338,5 +342,34 @@ export class MongoTemplatesDataSource
     }
 
     return Result.ok(TemplateMapper.toDomain(schema));
+  }
+
+  async findTemplatesReferencing(templateId: string): Promise<Template[]> {
+    const schemas = await this.getCollection()
+      .find({
+        'properties.content': templateId,
+      })
+      .toArray();
+
+    return schemas.map(TemplateMapper.toDomain);
+  }
+
+  async delete(templateId: string): Promise<void> {
+    await this.getCollection().deleteOne({ _id: new ObjectId(templateId) });
+  }
+
+  async bulkUpdate(template: Template[]): Promise<void> {
+    const schemas = template.map(TemplateMapper.toSchema);
+
+    await this.getCollection().bulkWrite(
+      schemas.map(schema => ({
+        updateOne: {
+          filter: { _id: schema._id },
+          update: { $set: schema },
+        },
+      }))
+    );
+
+    schemas.forEach(schema => this.templatesMutated.set(schema._id, schema));
   }
 }
