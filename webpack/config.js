@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const os = require('os');
 const AssetsPlugin = require('assets-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -12,6 +13,10 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
+
+// Parallelization configuration
+const numCpus = os.cpus().length;
+const maxWorkers = Math.max(1, numCpus - 1); // Leave one core free for system processes
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -35,6 +40,10 @@ module.exports = production => {
       buildDependencies: {
         config: [__filename],
       },
+      cacheDirectory: path.resolve(rootPath, '.webpack-cache'),
+      compression: 'gzip',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      profile: true,
     },
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
@@ -56,6 +65,7 @@ module.exports = production => {
     },
     optimization: {
       splitChunks: {
+        chunks: 'all',
         cacheGroups: {
           commons: {
             test: /[\\/]node_modules[\\/]/,
@@ -66,6 +76,9 @@ module.exports = production => {
           },
         },
       },
+      // Enable parallel module resolution
+      moduleIds: 'deterministic',
+      chunkIds: 'deterministic',
     },
     module: {
       rules: [
@@ -74,6 +87,15 @@ module.exports = production => {
           include: path.join(rootPath, 'app'),
           exclude: /node_modules/,
           use: [
+            {
+              loader: 'thread-loader',
+              options: {
+                workers: maxWorkers,
+                workerParallelJobs: 50,
+                poolTimeout: 2000,
+                name: 'js-pool',
+              },
+            },
             {
               loader: 'babel-loader?cacheDirectory',
               options: {
@@ -172,6 +194,12 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
+      // Build performance monitoring
+      new webpack.ProgressPlugin((percentage, message, ...args) => {
+        if (percentage === 1) {
+          console.log(`\n✅ Build completed using ${maxWorkers} workers on ${numCpus} CPU cores`);
+        }
+      }),
     ],
   };
 };

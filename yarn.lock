@@ -11298,6 +11298,11 @@ json-joy@^9.2.0:
     arg "^5.0.2"
     hyperdyperid "^1.2.0"
 
+json-parse-better-errors@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
+  integrity sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==
+
 json-parse-even-better-errors@^2.3.0, json-parse-even-better-errors@^2.3.1:
   version "2.3.1"
   resolved "https://registry.npmjs.org/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz"
@@ -11563,7 +11568,7 @@ load-script@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/load-script/-/load-script-1.0.0.tgz"
 
-loader-runner@^4.2.0:
+loader-runner@^4.1.0, loader-runner@^4.2.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.3.0.tgz#c1b4a163b99f614830353b16755e7149ac2314e1"
   integrity sha512-3R/1M+yS3j5ou80Me59j7F9IMs4PXs3VqRrm0TU3AbKPxlmpoY1TNscJV/oGJXo8qCatFGTfDbY6W6ipGOYXfg==
@@ -15675,6 +15680,16 @@ thirty-two@1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/thirty-two/-/thirty-two-1.0.2.tgz"
   integrity sha1-TKL//AKlEpDSdEueP1V2k8prYno=
+
+thread-loader@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/thread-loader/-/thread-loader-4.0.4.tgz#954141f6ce6c472b513737252b4729ecad2e4902"
+  integrity sha512-tXagu6Hivd03wB2tiS1bqvw345sc7mKei32EgpYpq31ZLes9FN0mEK2nKzXLRFgwt3PsBB0E/MZDp159rDoqwg==
+  dependencies:
+    json-parse-better-errors "^1.0.2"
+    loader-runner "^4.1.0"
+    neo-async "^2.6.2"
+    schema-utils "^4.2.0"
 
 throttleit@^1.0.0:
   version "1.0.0"

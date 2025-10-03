@@ -1,7 +1,12 @@
 process.env.NODE_ENV = 'production';
 const webpack = require('webpack');
+const os = require('os');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
+
+// Parallelization configuration
+const numCpus = os.cpus().length;
+const maxWorkers = Math.max(1, numCpus - 1); // Leave one core free for system processes
 
 const production = true;
 const config = require('./webpack/config')(production);
@@ -20,9 +25,25 @@ config.plugins = config.plugins.concat([
 
 config.optimization.minimize = true;
 config.optimization.minimizer = [
-  new CssMinimizerPlugin(),
+  new CssMinimizerPlugin({
+    parallel: maxWorkers,
+  }),
   new TerserWebpackPlugin({
-    parallel: true,
+    parallel: maxWorkers,
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.log in production
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+      },
+      mangle: {
+        safari10: true,
+      },
+      format: {
+        comments: false,
+      },
+    },
+    extractComments: false, // Don't extract comments to separate files
   }),
 ];
 
