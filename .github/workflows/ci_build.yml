@@ -97,6 +97,51 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-cache-
 
+      - name: Cache Webpack filesystem cache
+        uses: actions/cache@v4
+        with:
+          path: .webpack-cache
+          key: ${{ runner.os }}-webpack-fs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-fs-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-fs-
+
+      - name: Cache TypeScript
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/typescript
+          key: ${{ runner.os }}-ts-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ts-${{ github.base_ref }}-
+            ${{ runner.os }}-ts-
+
+      - name: Cache PostCSS
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/postcss
+          key: ${{ runner.os }}-postcss-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-postcss-${{ github.base_ref }}-
+            ${{ runner.os }}-postcss-
+
+      - name: Cache Tailwind CSS
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/tailwindcss
+          key: ${{ runner.os }}-tailwind-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-tailwind-${{ github.base_ref }}-
+            ${{ runner.os }}-tailwind-
+
+      - name: Cache thread-loader
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/thread-loader
+          key: ${{ runner.os }}-thread-loader-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-thread-loader-${{ github.base_ref }}-
+            ${{ runner.os }}-thread-loader-
+
       - name: install dependencies
         run: yarn install
       - name: build production
