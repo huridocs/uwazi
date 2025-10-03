@@ -445,5 +445,21 @@ describe('suggestions with CustomFilters', () => {
         accuracy: 0,
       });
     });
+
+    describe('filter by useForTraining', () => {
+      it('should return suggestions marked as useForTraining for the extractor', async () => {
+        await testingDB.setupFixturesAndContext({
+          ixsuggestions: [
+            f.ixSuggestion({ extractorId: f.id('test_extractor'), useForTraining: true }),
+            f.ixSuggestion({ extractorId: f.id('test_extractor'), useForTraining: true }),
+            f.ixSuggestion({ extractorId: f.id('test_extractor'), useForTraining: false }),
+            f.ixSuggestion({ extractorId: f.id('another_extractor'), useForTraining: true }),
+          ],
+        });
+
+        const result = await Suggestions.aggregate(f.id('test_extractor').toString());
+        expect(result.useForTraining).toBe(2);
+      });
+    });
   });
 });

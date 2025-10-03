@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable camelcase */
-import moment from 'moment';
 import {
   ExtractedMetadataSchema,
   LanguageISO6391,
@@ -18,7 +17,6 @@ import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ensure } from 'shared/tsUtils';
 import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { IXModelType } from 'shared/types/IXModelType';
@@ -29,6 +27,7 @@ import { ObjectId } from 'mongodb';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;
@@ -69,6 +68,7 @@ interface FileWithAggregation {
   extractedMetadata: ExtractedMetadataSchema[];
   propertyType: PropertyTypeSchema;
   propertyValue?: PropertyValue;
+  useForTraining?: boolean;
 }
 
 type FileEnforcedNotUndefined = {
@@ -379,22 +379,14 @@ async function getFilesForTraining(extractor: IXExtractorType) {
   ) => {
     await cursor.eachAsync(
       async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
-        let propertyValue;
-
-        if (propertyTypeIsWithoutExtractedMetadata(targetProperty.type)) {
-          propertyValue = entityLanguage.metadata.map(({ value, label }: any) => ({
-            value: ensure<string>(value),
-            label: ensure<string>(label),
-          }));
-        } else {
-          propertyValue = currentValue.toString();
-
-          if (targetProperty.type === 'date') {
-            propertyValue = moment(currentValue * 1000)
-              .utc()
-              .format('YYYY-MM-DD');
-          }
-        }
+        const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
+          currentValue,
+          selectionText: file?.extractedMetadata?.[0]?.selection?.text,
+          entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
+            value,
+            label,
+          })),
+        });
         const parsed = {
           _id: fileId,
           language,
@@ -667,6 +659,8 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
 export {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
+  MAX_TRAINING_FILES_NUMBER,
+  MAX_TRAINING_ENTITIES_NUMBER,
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,
@@ -680,4 +674,4 @@ export {
   NoSegmentedFiles,
   NoFilesForTraining,
 };
-export type { FileWithAggregation };
+export type { FileWithAggregation, PropertyValue };

@@ -27,6 +27,13 @@ const template1: ClientTemplateSchema = {
       type: 'select',
       label: 'Select Property',
     },
+    {
+      content: 'thesauri1',
+      _id: '1.2',
+      name: 'multi_select_property',
+      type: 'multiselect',
+      label: 'Multiselect Property',
+    },
   ],
   commonProperties: [
     {
@@ -86,6 +93,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
+      useForTraining: true,
     },
     {
       _id: 'suggestion2',
@@ -116,6 +124,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
       extractorSource: {
         pdf: true,
       },
+      useForTraining: false,
     },
   ],
   totalPages: 1,
@@ -145,4 +154,99 @@ const loaderData: IXSuggestionsLoaderResponse = {
   total: 2,
 };
 
-export { loaderData, thesauri, entity1, entity2 };
+const nestedSuggestions: IXSuggestionsLoaderResponse = {
+  suggestions: [
+    {
+      _id: 'nested1',
+      status: 'ready',
+      extractorId: 'extractor2',
+      fileId: 'file1',
+      propertyName: 'multi_select_property',
+      language: 'en',
+      suggestedValue: [
+        { id: '2', label: 'Blue' },
+        { id: '3', label: 'Green' },
+      ],
+      date: 1,
+      segment: '',
+      currentValue: [{ id: '1', label: 'Red' }],
+      entityTitle: 'Entity 1',
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      },
+      sharedId: 'shared1',
+      entityId: '_id1',
+      entityTemplateId: 'template1',
+      useForTraining: false,
+      rowId: 'nested1',
+      extractorSource: {
+        pdf: true,
+      },
+    },
+    {
+      _id: 'nested2',
+      status: 'ready',
+      extractorId: 'extractor2',
+      fileId: '2',
+      propertyName: 'multi_select_property',
+      language: 'en',
+      suggestedValue: [{ id: '2', label: 'Blue' }],
+      date: 1,
+      segment: '',
+      currentValue: [{ id: '3', label: 'Green' }],
+      entityTitle: 'Entity 2',
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      },
+      sharedId: 'shared2',
+      entityId: '_id2',
+      entityTemplateId: 'template1',
+      useForTraining: true,
+      rowId: 'nested2',
+      extractorSource: {
+        pdf: true,
+      },
+    },
+  ],
+  total: 2,
+  totalPages: 1,
+  extractor: {
+    _id: 'extractor2',
+    name: 'Extractor 2',
+    property: 'multi_select_property',
+    templates: [template1._id],
+    source: {
+      pdf: true,
+    },
+  },
+  templates: [template1],
+  aggregation: {
+    total: 2,
+    labeled: 0,
+    nonLabeled: 0,
+    match: 0,
+    mismatch: 0,
+    obsolete: 0,
+    error: 0,
+    noContext: 0,
+    nonProcessed: 0,
+  },
+  currentStatus: ixStatus.ready,
+  activeFilters: 0,
+};
+
+export { nestedSuggestions, loaderData, thesauri, entity1, entity2 };

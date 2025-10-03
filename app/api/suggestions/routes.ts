@@ -17,6 +17,7 @@ import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
+import { TrainingSetController } from './adapters/TrainingSetController';
 
 const IX = new InformationExtraction();
 
@@ -143,17 +144,32 @@ export const suggestionsRoutes = (app: Application) => {
           properties: {
             extractorId: { type: 'string' },
             suggestionsToFind: { type: 'number', minimum: 0 },
+            options: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                samplePolicy: {
+                  type: 'string',
+                  enum: ['only_marked', 'marked_plus_labeled'],
+                },
+              },
+            },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const { extractorId, suggestionsToFind } = req.body;
-      const output = await IX.trainModel(
-        ObjectId.createFromHexString(extractorId),
-        suggestionsToFind
-      );
-      res.status(202).json(output);
+      try {
+        const { extractorId, suggestionsToFind, options } = req.body;
+        const output = await IX.trainModel(
+          ObjectId.createFromHexString(extractorId),
+          suggestionsToFind,
+          options
+        );
+        res.status(202).json(output);
+      } catch (e: any) {
+        res.status(500).json({ error: e?.message || 'Internal Server Error' });
+      }
     }
   );
 
@@ -162,6 +178,13 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     ProcessSuggestionsController.createHandler()
+  );
+
+  app.post(
+    '/api/suggestions/training-set',
+    serviceMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    TrainingSetController.createHandler()
   );
 
   app.post(
