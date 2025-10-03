@@ -10,7 +10,8 @@ import { emitToTenant } from 'api/socketio/setupSockets';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { getEntitiesForTraining } from './ixMaterials';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { getPropertyTrainingEntities } from './FetchMaterialsForTraining';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
 import { IXServices } from './IXServices';
@@ -43,11 +44,7 @@ class TrainModelForText implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
-      const entities = await getEntitiesForTraining(
-        extractor.templates,
-        extractor.property,
-        extractor.source.property!
-      );
+      const entities = await getPropertyTrainingEntities(extractor);
 
       if (!entities.length) {
         throw new NoEntitiesForTraining();
@@ -74,13 +71,28 @@ class TrainModelForText implements UseCase<Input, Output> {
           data.source_text = entity.title || '';
         }
 
+        // Attach useForTraining flag for this entity-language if any suggestion is marked
+        const [marked] = await IXSuggestionsModel.db
+          .find({
+            extractorId: extractor._id,
+            entityId: entity.sharedId,
+            language: entity.language,
+            useForTraining: true,
+          })
+          .limit(1)
+          .select({ _id: 1 })
+          .lean();
+        if (marked) {
+          data.useForTraining = true;
+        }
+
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {
           const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
             id: String(value),
             label,
           }));
 
-          const hasValue = !!values?.filter(v => !!v.id)?.length;
+          const hasValue = !!values?.filter((v: { id: string }) => !!v.id)?.length;
           if (!values || !hasValue) {
             return;
           }

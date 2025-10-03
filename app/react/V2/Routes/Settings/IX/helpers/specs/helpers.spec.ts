@@ -403,6 +403,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -458,6 +459,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -513,6 +515,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -561,6 +564,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -616,6 +620,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -677,6 +682,7 @@ describe('helpers', () => {
         date: 1234567890,
         rowId: 'suggestion1',
         extractorSource: { pdf: true },
+        useForTraining: false,
       };
 
       const result = generateChildrenRows(suggestion);
@@ -813,7 +819,9 @@ describe('helpers', () => {
             processing: false,
             error: false,
           },
+          useForTraining: false,
         },
+
         {
           _id: 'suggestion2',
           sharedId: 'shared2',
@@ -841,6 +849,7 @@ describe('helpers', () => {
             processing: false,
             error: false,
           },
+          useForTraining: false,
         },
       ];
 
