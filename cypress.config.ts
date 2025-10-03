@@ -6,6 +6,40 @@ import cypressFailFast from 'cypress-fail-fast/plugin';
 const cypressWebpackConfig = {
   ...webpackConfig,
   cache: false, // disable cache for Cypress component testing
+  optimization: {
+    ...webpackConfig.optimization,
+    minimize: false, // disable minification for Cypress (keeps debugging easier)
+    moduleIds: 'named', // CRITICAL FIX: use named module IDs instead of deterministic for cypress-axe
+    chunkIds: 'named', // CRITICAL FIX: use named chunk IDs instead of deterministic for cypress-axe
+    // Keep other optimizations like splitChunks for better performance
+  },
+  module: {
+    ...webpackConfig.module,
+    rules: webpackConfig.module.rules.map(rule => {
+      // Remove thread-loader from Cypress builds (can cause module resolution issues)
+      if (rule.use && Array.isArray(rule.use)) {
+        return {
+          ...rule,
+          use: rule.use.filter(loader => {
+            if (typeof loader === 'object' && loader.loader === 'thread-loader') {
+              return false;
+            }
+            return true;
+          })
+        };
+      }
+      return rule;
+    })
+  },
+  resolve: {
+    ...webpackConfig.resolve,
+    // Ensure cypress-axe can resolve its files properly
+    fallback: {
+      ...webpackConfig.resolve.fallback,
+      fs: false, // disable fs fallback for cypress-axe
+      path: false, // disable path fallback for cypress-axe
+    }
+  }
 };
 
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
