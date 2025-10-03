@@ -10,9 +10,10 @@ let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
 const testingEnvironment = {
+  elasticIndex: '',
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string) {
+  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
@@ -62,9 +63,15 @@ const testingEnvironment = {
     }
   },
 
-  async setElastic(elasticIndex?: string) {
-    if (elasticIndex) {
-      testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+  async setElastic(elasticIndex?: string | boolean) {
+    if (elasticIndex && !this.elasticIndex) {
+      this.elasticIndex =
+        elasticIndex === true
+          ? `elasticsearch_test_index${process.pid}_${Date.now()}`
+          : elasticIndex;
+    }
+    if (this.elasticIndex) {
+      testingTenants.changeCurrentTenant({ indexName: this.elasticIndex });
       await elasticTesting.reindex();
     }
   },
@@ -88,6 +95,14 @@ const testingEnvironment = {
   },
 
   async tearDown() {
+    if (this.elasticIndex) {
+      try {
+        await elasticTesting.deleteIndex(this.elasticIndex);
+        this.elasticIndex = '';
+      } catch (error) {
+        console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
+      }
+    }
     await testingDB.disconnect();
   },
 

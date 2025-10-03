@@ -327,11 +327,10 @@ let service: DenormalizationService;
 let indexMock: jest.Mock;
 let updateMock: jest.Mock;
 let updateByTemplateMock: jest.Mock;
-
 let triggerCommit: () => Promise<unknown>;
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 
   indexMock = jest.fn();
   updateMock = jest.fn();

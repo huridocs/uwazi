@@ -2,7 +2,7 @@
 # Base on Debian Bookworm and install official MongoDB mongosh
 FROM node:20-bookworm AS ci
 
-# Install poppler-utils and dependencies
+# Install essential utilities (poppler-utils for PDF processing)
 RUN apt-get update -qq \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
        ca-certificates \
@@ -10,37 +10,6 @@ RUN apt-get update -qq \
        gnupg \
        poppler-utils \
        socat \
-       xvfb \
-       libgtk-3-0 \
-       libgbm1 \
-       libnss3 \
-       libxss1 \
-       libasound2 \
-       libxtst6 \
-       xauth \
-       libx11-xcb1 \
-       libxcomposite1 \
-       libxrandr2 \
-       libxi6 \
-       libatk1.0-0 \
-       libatk-bridge2.0-0 \
-       libcairo2 \
-       libcups2 \
-       libdrm2 \
-       libxdamage1 \
-       libxshmfence1 \
-       libpango-1.0-0 \
-       libpangocairo-1.0-0 \
-       fonts-liberation \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Google Chrome Stable
-RUN install -m 0755 -d /etc/apt/keyrings \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
-    && chmod a+r /etc/apt/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
 # Install MongoDB server, mongosh and database tools from the official MongoDB apt repository for Debian 12 (bookworm)
