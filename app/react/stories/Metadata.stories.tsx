@@ -14,18 +14,8 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
       translationContext="placeholder"
       iconId={entity.icon._id}
     />
-    <Date
-      timestamps={[entity.creationDate]}
-      label="Creation date"
-      translationContext="System"
-      locale="en"
-    />
-    <Date
-      timestamps={[entity.editDate]}
-      label="Edit date"
-      translationContext="System"
-      locale="en"
-    />
+    <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
+    <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
     {entity.metadata.map(data => {
       if (
         data.type === 'date' ||
@@ -34,12 +24,7 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
         data.type === 'multidaterange'
       ) {
         return (
-          <Date
-            timestamps={data.values}
-            label={data.label}
-            locale="en"
-            translationContext="placeholder"
-          />
+          <Date timestamps={data.values} label={data.label} translationContext="placeholder" />
         );
       }
     })}
