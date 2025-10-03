@@ -50,6 +50,9 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
+import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -545,6 +548,59 @@ export default {
   },
 
   async delete(template: Partial<TemplateSchema>) {
+    const v2DeleteTemplateUseCase = tenants.current().featureFlags?.v2DeleteTemplateUseCase;
+    if (v2DeleteTemplateUseCase) {
+      const eventBus = applicationEventsBus;
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+      const settingsDS = DefaultSettingsDataSource(transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const translationService = new LegacyTranslationService();
+      const multiLanguageEntityDataSourceDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager,
+        templatesDS
+      );
+
+      let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
+        TemplatePostProcessEntitiesJob: async () =>
+          new TemplatePostProcessEntitiesJob({
+            useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+              entitiesDS: multiLanguageEntityDataSourceDS,
+              templatesDS,
+              transactionManager,
+              relationshipsV1DS: new MongoRelationshipsV1DataSource(
+                getConnection(),
+                transactionManager
+              ),
+              filesDS: DefaultFilesDataSource(transactionManager),
+            }),
+            templatesDS,
+          }),
+      });
+
+      if (process.env.NODE_ENV !== 'test') {
+        jobsDispatcher = await DefaultDispatcher(tenants.current().name);
+      }
+
+      const useCase = new DeleteTemplateUseCase({
+        eventBus,
+        jobsDispatcher,
+        transactionManger: transactionManager,
+        entitiesDS,
+        templatesDS,
+        multiLanguageEntityDataSourceDS,
+        settingsDS,
+        translationsDS,
+        translationService,
+      });
+
+      await useCase.execute({ templateId: template._id!.toString() });
+
+      return template;
+    }
+
     const _id = ensure<string>(template._id);
     const [templateToDelete] = await this.get({ _id });
 

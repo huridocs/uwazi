@@ -23,6 +23,7 @@ type Tenant = {
     v2CreateTemplateUseCase?: boolean;
     v2SetTemplateAsDefaultUseCase?: boolean;
     v2UpdateTemplateUseCase?: boolean;
+    v2DeleteTemplateUseCase?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

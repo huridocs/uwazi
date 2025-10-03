@@ -28,4 +28,5 @@ export interface EntitiesDataSource {
     title: string,
     propertiesToNewValues: { propertyName: string; value?: any }[]
   ): Promise<void>;
+  anyExistsForTemplate(templateId: string): Promise<boolean>;
 }

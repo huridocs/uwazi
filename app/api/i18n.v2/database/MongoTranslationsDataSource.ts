@@ -3,7 +3,10 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
+import {
+  BulkDeleteKeysByContext,
+  TranslationsDataSource,
+} from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
@@ -102,6 +105,14 @@ export class MongoTranslationsDataSource
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
     return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
+  }
+
+  async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
+    await this.getCollection().bulkWrite(
+      props.map(({ contextId, keysToDelete }) => ({
+        deleteMany: { filter: { 'context.id': contextId, key: { $in: keysToDelete } } },
+      }))
+    );
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
