@@ -233,9 +233,27 @@ class NestedPropertyNotAvailableError extends DomainError {
   }
 }
 
-export class DefaultTemplateConflictError extends DomainError {
+class DefaultTemplateConflictError extends DomainError {
   constructor(message: string) {
     super(message, 'template.default_template_conflict');
+  }
+}
+
+class DefaultTemplateDeletionError extends DomainError {
+  constructor() {
+    const message =
+      'The default template cannot be deleted. Please set a different template as the default before deleting this one.';
+    const code = 'template.cannot_delete_default';
+    super(message, code);
+  }
+}
+
+class TemplateInUseError extends DomainError {
+  constructor() {
+    const message =
+      'Cannot delete a template that has existing entities. Please remove the related entities first.';
+    const code = 'template.in_use';
+    super(message, code);
   }
 }
 
@@ -263,4 +281,7 @@ export {
   PropertyInheritedTypeMismatchError,
   NestedPropertyNotAvailableError,
   DefaultTemplateNotFoundError,
+  DefaultTemplateDeletionError,
+  DefaultTemplateConflictError,
+  TemplateInUseError,
 };
