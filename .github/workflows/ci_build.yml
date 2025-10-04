@@ -2,6 +2,7 @@ name: Build production artifact
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
