@@ -1,0 +1,62 @@
+name: Test Optimized Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      # Test the optimized chunked caching strategy
+      - name: Cache node modules (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-optimized-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-optimized-
+
+      - name: Cache Yarn (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-optimized-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-optimized-
+
+      - name: Cache static assets (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: |
+            public
+            contents
+          key: ${{ runner.os }}-static-optimized-${{ hashFiles('public/**', 'contents/**') }}
+          restore-keys: |
+            ${{ runner.os }}-static-optimized-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Test optimized build
+        id: build-test
+        run: |
+          echo "🚀 Testing optimized build strategy..."
+          START_TIME=$(date +%s)
+          yarn production-build
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "✅ Optimized build completed in ${BUILD_TIME}s"
+
+      - name: Build Results
+        run: |
+          echo "📊 Build Results:"
+          echo "Build Time: ${{ steps.build-test.outputs.build_time }}s"
+          echo "✅ Optimized build strategy is working!"
