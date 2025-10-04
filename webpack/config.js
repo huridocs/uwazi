@@ -66,7 +66,23 @@ module.exports = production => {
     optimization: {
       splitChunks: {
         chunks: 'all',
+        maxInitialRequests: 30,
+        maxAsyncRequests: 30,
         cacheGroups: {
+          // Separate Monaco Editor into its own chunk for better caching
+          monaco: {
+            test: /[\\/]node_modules[\\/]monaco-editor[\\/]/,
+            name: 'monaco',
+            chunks: 'all',
+            priority: 20,
+          },
+          // Separate large UI libraries
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router)[\\/]/,
+            name: 'react-vendor',
+            chunks: 'all',
+            priority: 15,
+          },
           commons: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor',
@@ -113,7 +129,17 @@ module.exports = production => {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
-            { loader: 'sass-loader', options: { sourceMap: true } },
+            {
+              loader: 'sass-loader', 
+              options: { 
+                sourceMap: true,
+                // Enable parallel processing for Sass
+                implementation: require('sass'),
+                sassOptions: {
+                  outputStyle: production ? 'compressed' : 'expanded',
+                },
+              },
+            },
           ],
         },
         {
@@ -191,8 +217,11 @@ module.exports = production => {
       }),
       new MonacoWebpackPlugin({
         languages: ['typescript', 'html', 'css'],
+        // Optimize Monaco for production builds
+        filename: production ? 'monaco-[name].worker.[contenthash].js' : '[name].worker.js',
       }),
-      new BundleAnalyzerPlugin({ analyzerMode }),
+      // Only enable bundle analyzer in development or when explicitly requested
+      (!production || analyzerMode === 'static') && new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
       // Build performance monitoring
       new webpack.ProgressPlugin((percentage, message, ...args) => {
