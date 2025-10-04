@@ -1,0 +1,413 @@
+name: Build A/B Test (Current vs Optimized)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_ab_test:
+        description: 'Run A/B test between current and optimized build strategies'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+
+jobs:
+  # Build Cypress image (shared)
+  build_cypress_image:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if Docker image needs rebuilding
+        id: changes
+        run: |
+          echo "should_build=true" >> "$GITHUB_OUTPUT"
+          echo "Building image for A/B test"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Cypress Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./.github/ci/Dockerfile.cypress
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}:cache,mode=max
+
+  # Current Build Strategy (Baseline)
+  build_current:
+    runs-on: ubuntu-24.04
+    needs: build_cypress_image
+    if: github.event.inputs.run_ab_test != 'false'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      # Current caching strategy (basic)
+      - name: Cache node modules (Current)
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-current-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-current-
+
+      - name: Cache Webpack and build tools (Current)
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache
+          key: ${{ runner.os }}-webpack-current-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-current-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-current-
+
+      - name: Cache Yarn (Current)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-current-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-current-
+
+      - name: Cache Webpack filesystem cache (Current)
+        uses: actions/cache@v4
+        with:
+          path: .webpack-cache
+          key: ${{ runner.os }}-webpack-fs-current-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-fs-current-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-fs-current-
+
+      - name: Install dependencies (Current)
+        run: yarn install
+
+      - name: Build production (Current Strategy)
+        id: build-current
+        run: |
+          echo "🚀 Starting CURRENT build strategy..."
+          START_TIME=$(date +%s)
+          yarn production-build
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "✅ Current build completed in ${BUILD_TIME}s"
+
+      - name: Upload current build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-current
+          path: |
+            ./prod/dist
+            ./prod/app
+            ./prod/database
+            ./prod/scripts
+            ./prod/public
+            ./prod/package.json
+            ./prod/server.js
+            ./prod/message.js
+            ./prod/contents
+            ./prod/uploaded_documents
+            ./prod/temporal_files
+            ./prod/custom_uploads
+            ./prod/log
+          compression-level: 9
+
+  # Optimized Build Strategy (New)
+  build_optimized:
+    runs-on: ubuntu-24.04
+    needs: build_cypress_image
+    if: github.event.inputs.run_ab_test != 'false'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      # ===== OPTIMIZED CHUNKED CACHING STRATEGY =====
+      
+      # Chunk 1: Node Modules (Most Stable, Highest Cache Hit Rate)
+      - name: Cache node modules (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-optimized-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-optimized-
+
+      # Chunk 2: Yarn Cache (Stable, High Cache Hit Rate)
+      - name: Cache Yarn (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-optimized-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-optimized-
+
+      # Chunk 3: Static Assets (Very Stable, Very High Cache Hit Rate)
+      - name: Cache static assets (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: |
+            public
+            contents
+          key: ${{ runner.os }}-static-optimized-${{ hashFiles('public/**', 'contents/**') }}
+          restore-keys: |
+            ${{ runner.os }}-static-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-static-optimized-
+
+      # Chunk 4: Shared Code (Medium Stability, Medium Cache Hit Rate)
+      - name: Cache shared code (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: prod/app/shared
+          key: ${{ runner.os }}-shared-optimized-${{ hashFiles('app/shared/**') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-shared-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-shared-optimized-
+
+      # Chunk 5: Backend API (Low Stability, Low Cache Hit Rate)
+      - name: Cache backend API (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: prod/app/api
+          key: ${{ runner.os }}-api-optimized-${{ hashFiles('app/api/**') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-api-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-api-optimized-
+
+      # Chunk 6: Frontend Assets (Medium Stability, High Cache Hit Rate with Webpack)
+      - name: Cache Webpack build (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: |
+            .webpack-cache
+            node_modules/.cache
+            prod/dist
+          key: ${{ runner.os }}-webpack-optimized-${{ hashFiles('app/react/**', 'webpack/**', 'package.json', 'yarn.lock') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-optimized-
+
+      # Chunk 7: Database & Scripts (High Stability, High Cache Hit Rate)
+      - name: Cache database and scripts (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: |
+            prod/database
+            prod/scripts
+            prod/message.js
+          key: ${{ runner.os }}-db-scripts-optimized-${{ hashFiles('database/**', 'scripts/**', 'message.js') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-db-scripts-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-db-scripts-optimized-
+
+      # Chunk 8: Server Files (Medium Stability, Medium Cache Hit Rate)
+      - name: Cache server files (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: prod/app
+          key: ${{ runner.os }}-server-optimized-${{ hashFiles('app/server.js', 'app/initSentry.ts', 'app/*.ts', 'app/*.js') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-server-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-server-optimized-
+
+      # Chunk 9: Production Dependencies (Very Stable, Very High Cache Hit Rate)
+      - name: Cache production dependencies (Optimized)
+        uses: actions/cache@v4
+        with:
+          path: prod/node_modules
+          key: ${{ runner.os }}-prod-deps-optimized-${{ hashFiles('package.json', 'yarn.lock') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-prod-deps-optimized-${{ github.base_ref }}-
+            ${{ runner.os }}-prod-deps-optimized-
+
+      - name: Install dependencies (Optimized)
+        run: yarn install
+
+      - name: Build production (Optimized Strategy)
+        id: build-optimized
+        run: |
+          echo "🚀 Starting OPTIMIZED build strategy..."
+          START_TIME=$(date +%s)
+          yarn production-build
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "✅ Optimized build completed in ${BUILD_TIME}s"
+
+      - name: Upload optimized build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-optimized
+          path: |
+            ./prod/dist
+            ./prod/app
+            ./prod/database
+            ./prod/scripts
+            ./prod/public
+            ./prod/package.json
+            ./prod/server.js
+            ./prod/message.js
+            ./prod/contents
+            ./prod/uploaded_documents
+            ./prod/temporal_files
+            ./prod/custom_uploads
+            ./prod/log
+          compression-level: 9
+
+  # Comparison and Results
+  compare_results:
+    runs-on: ubuntu-24.04
+    needs: [build_current, build_optimized]
+    if: always() && github.event.inputs.run_ab_test != 'false'
+    steps:
+      - name: Compare Build Results
+        run: |
+          echo "📊 A/B Test Results Summary"
+          echo "=========================="
+          
+          if [ "${{ needs.build_current.result }}" = "success" ]; then
+            echo "✅ Current Build: SUCCESS"
+            echo "   Build Time: ${{ needs.build_current.outputs.build_time }}s"
+          else
+            echo "❌ Current Build: FAILED"
+          fi
+          
+          if [ "${{ needs.build_optimized.result }}" = "success" ]; then
+            echo "✅ Optimized Build: SUCCESS"
+            echo "   Build Time: ${{ needs.build_optimized.outputs.build_time }}s"
+          else
+            echo "❌ Optimized Build: FAILED"
+          fi
+          
+          echo ""
+          echo "🎯 Recommendations:"
+          
+          if [ "${{ needs.build_current.result }}" = "success" ] && [ "${{ needs.build_optimized.result }}" = "success" ]; then
+            CURRENT_TIME="${{ needs.build_current.outputs.build_time }}"
+            OPTIMIZED_TIME="${{ needs.build_optimized.outputs.build_time }}"
+            
+            if [ "$OPTIMIZED_TIME" -lt "$CURRENT_TIME" ]; then
+              IMPROVEMENT=$((CURRENT_TIME - OPTIMIZED_TIME))
+              PERCENTAGE=$((IMPROVEMENT * 100 / CURRENT_TIME))
+              echo "✅ Optimized build is $IMPROVEMENT seconds faster ($PERCENTAGE% improvement)"
+              echo "🚀 Recommendation: Adopt optimized build strategy"
+            elif [ "$OPTIMIZED_TIME" -gt "$CURRENT_TIME" ]; then
+              SLOWER=$((OPTIMIZED_TIME - CURRENT_TIME))
+              echo "⚠️  Optimized build is $SLOWER seconds slower"
+              echo "🔍 Recommendation: Investigate optimizations or keep current strategy"
+            else
+              echo "⚖️  Both builds completed in the same time"
+              echo "🔍 Recommendation: Optimized strategy provides better organization"
+            fi
+          elif [ "${{ needs.build_current.result }}" = "success" ]; then
+            echo "❌ Optimized build failed - keep current strategy"
+          elif [ "${{ needs.build_optimized.result }}" = "success" ]; then
+            echo "🚀 Optimized build succeeded while current failed - adopt optimized strategy"
+          else
+            echo "❌ Both builds failed - investigate issues"
+          fi
+
+  # Single build (when A/B test is disabled)
+  build_single:
+    runs-on: ubuntu-24.04
+    needs: build_cypress_image
+    if: github.event.inputs.run_ab_test == 'false'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Webpack and build tools
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache
+          key: ${{ runner.os }}-webpack-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+
+      - name: Cache Webpack filesystem cache
+        uses: actions/cache@v4
+        with:
+          path: .webpack-cache
+          key: ${{ runner.os }}-webpack-fs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-fs-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-fs-
+
+      - name: install dependencies
+        run: yarn install
+        
+      - name: build production
+        run: yarn production-build
+        
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod
+          path: |
+            ./prod/dist
+            ./prod/app
+            ./prod/database
+            ./prod/scripts
+            ./prod/public
+            ./prod/package.json
+            ./prod/server.js
+            ./prod/message.js
+            ./prod/contents
+            ./prod/uploaded_documents
+            ./prod/temporal_files
+            ./prod/custom_uploads
+            ./prod/log
+          compression-level: 9
