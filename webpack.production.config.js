@@ -6,7 +6,7 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 // Parallelization configuration
 const numCpus = os.cpus().length;
-const maxWorkers = Math.max(1, numCpus - 1); // Leave one core free for system processes
+const maxWorkers = numCpus <= 4 ? Math.max(1, Math.floor(numCpus / 2)) : Math.max(1, numCpus - 1);
 
 const production = true;
 const config = require('./webpack/config')(production);

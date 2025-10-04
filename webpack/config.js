@@ -16,7 +16,7 @@ const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
 
 // Parallelization configuration
 const numCpus = os.cpus().length;
-const maxWorkers = Math.max(1, numCpus - 1); // Leave one core free for system processes
+const maxWorkers = numCpus <= 4 ? Math.max(1, Math.floor(numCpus / 2)) : Math.max(1, numCpus - 1);
 
 module.exports = production => {
   let stylesName = '[name].css';
