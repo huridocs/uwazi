@@ -20,13 +20,10 @@ jobs:
       - name: Check if Docker image needs rebuilding
         id: changes
         run: |
-          # Always build for manual workflow dispatch
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "should_build=true" >> "$GITHUB_OUTPUT"
             echo "Manual workflow dispatch - building image"
           else
-            # For other events, the Docker cache will handle whether to rebuild
-            # based on the Dockerfile content hash in the cache key
             echo "should_build=true" >> "$GITHUB_OUTPUT"
             echo "Building image (Docker cache will determine if rebuild is needed)"
           fi
@@ -68,10 +65,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+
+      # ===== OPTIMIZED CHUNKED CACHING STRATEGY =====
+      
+      # Chunk 1: Node Modules (Most Stable, Highest Cache Hit Rate)
       - name: Cache node modules
         uses: actions/cache@v4
         with:
@@ -80,15 +82,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Cache Webpack and build tools
-        uses: actions/cache@v4
-        with:
-          path: node_modules/.cache
-          key: ${{ runner.os }}-webpack-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-webpack-${{ github.base_ref }}-
-            ${{ runner.os }}-webpack-
-
+      # Chunk 2: Yarn Cache (Stable, High Cache Hit Rate)
       - name: Cache Yarn
         uses: actions/cache@v4
         with:
@@ -97,19 +91,92 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-cache-
 
-      - name: Cache Webpack filesystem cache
+      # Chunk 3: Static Assets (Very Stable, Very High Cache Hit Rate)
+      - name: Cache static assets
         uses: actions/cache@v4
         with:
-          path: .webpack-cache
-          key: ${{ runner.os }}-webpack-fs-${{ github.sha }}
+          path: |
+            public
+            contents
+          key: ${{ runner.os }}-static-${{ hashFiles('public/**', 'contents/**') }}
           restore-keys: |
-            ${{ runner.os }}-webpack-fs-${{ github.base_ref }}-
-            ${{ runner.os }}-webpack-fs-
+            ${{ runner.os }}-static-${{ github.base_ref }}-
+            ${{ runner.os }}-static-
 
-      - name: install dependencies
+      # Chunk 4: Shared Code (Medium Stability, Medium Cache Hit Rate)
+      - name: Cache shared code
+        uses: actions/cache@v4
+        with:
+          path: prod/app/shared
+          key: ${{ runner.os }}-shared-${{ hashFiles('app/shared/**') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-shared-${{ github.base_ref }}-
+            ${{ runner.os }}-shared-
+
+      # Chunk 5: Backend API (Low Stability, Low Cache Hit Rate)
+      - name: Cache backend API
+        uses: actions/cache@v4
+        with:
+          path: prod/app/api
+          key: ${{ runner.os }}-api-${{ hashFiles('app/api/**') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-api-${{ github.base_ref }}-
+            ${{ runner.os }}-api-
+
+      # Chunk 6: Frontend Assets (Medium Stability, High Cache Hit Rate with Webpack)
+      - name: Cache Webpack build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .webpack-cache
+            node_modules/.cache
+            prod/dist
+          key: ${{ runner.os }}-webpack-${{ hashFiles('app/react/**', 'webpack/**', 'package.json', 'yarn.lock') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-
+
+      # Chunk 7: Database & Scripts (High Stability, High Cache Hit Rate)
+      - name: Cache database and scripts
+        uses: actions/cache@v4
+        with:
+          path: |
+            prod/database
+            prod/scripts
+            prod/message.js
+          key: ${{ runner.os }}-db-scripts-${{ hashFiles('database/**', 'scripts/**', 'message.js') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-db-scripts-${{ github.base_ref }}-
+            ${{ runner.os }}-db-scripts-
+
+      # Chunk 8: Server Files (Medium Stability, Medium Cache Hit Rate)
+      - name: Cache server files
+        uses: actions/cache@v4
+        with:
+          path: prod/app
+          key: ${{ runner.os }}-server-${{ hashFiles('app/server.js', 'app/initSentry.ts', 'app/*.ts', 'app/*.js') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-server-${{ github.base_ref }}-
+            ${{ runner.os }}-server-
+
+      # Chunk 9: Production Dependencies (Very Stable, Very High Cache Hit Rate)
+      - name: Cache production dependencies
+        uses: actions/cache@v4
+        with:
+          path: prod/node_modules
+          key: ${{ runner.os }}-prod-deps-${{ hashFiles('package.json', 'yarn.lock') }}-${{ github.base_ref }}
+          restore-keys: |
+            ${{ runner.os }}-prod-deps-${{ github.base_ref }}-
+            ${{ runner.os }}-prod-deps-
+
+      # ===== BUILD PROCESS =====
+      
+      - name: Install dependencies
         run: yarn install
-      - name: build production
+
+      - name: Build production (chunked)
         run: yarn production-build
+
       - name: Upload production build artifact
         uses: actions/upload-artifact@v4
         with:
