@@ -131,8 +131,7 @@ jobs:
           path: |
             .webpack-cache
             node_modules/.cache
-            prod/dist
-          key: ${{ runner.os }}-webpack-${{ hashFiles('app/react/**', 'webpack/**', 'package.json', 'yarn.lock') }}-${{ github.base_ref }}
+          key: ${{ runner.os }}-webpack-${{ hashFiles('webpack/**', 'package.json', 'yarn.lock') }}-${{ github.base_ref }}
           restore-keys: |
             ${{ runner.os }}-webpack-${{ github.base_ref }}-
             ${{ runner.os }}-webpack-
