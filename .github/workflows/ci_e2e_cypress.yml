@@ -60,17 +60,8 @@ jobs:
           -e="cluster.routing.allocation.disk.threshold_enabled=false"
           -e="logger.level=WARN"
           -e="ingest.geoip.downloader.enabled=false"
-          --health-cmd="curl -f http://localhost:9200"
-          --health-interval=10s
-          --health-timeout=10s
-          --health-retries=10
       redis:
         image: redis:6.0-alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
           - 6379:6379
 
