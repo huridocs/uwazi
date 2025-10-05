@@ -124,16 +124,17 @@ jobs:
             ${{ runner.os }}-api-${{ github.base_ref }}-
             ${{ runner.os }}-api-
 
-      # Chunk 6: Frontend Assets (Medium Stability, High Cache Hit Rate with Webpack)
+      # Chunk 6: Frontend Assets (High Stability, Very High Cache Hit Rate with Webpack)
       - name: Cache Webpack build
         uses: actions/cache@v4
         with:
           path: |
             .webpack-cache
             node_modules/.cache
-          key: ${{ runner.os }}-webpack-${{ hashFiles('webpack/**', 'package.json', 'yarn.lock') }}-${{ github.base_ref }}
+            prod/dist
+          key: ${{ runner.os }}-webpack-${{ hashFiles('webpack/**', 'package.json', 'yarn.lock', 'app/react/**', 'app/shared/**', 'babel.config.json', 'tailwind.config.js', 'postcss.config.js') }}
           restore-keys: |
-            ${{ runner.os }}-webpack-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-${{ hashFiles('webpack/**', 'package.json', 'yarn.lock') }}
             ${{ runner.os }}-webpack-
 
       # Chunk 7: Database & Scripts (High Stability, High Cache Hit Rate)

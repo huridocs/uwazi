@@ -39,11 +39,18 @@ module.exports = production => {
       type: 'filesystem',
       buildDependencies: {
         config: [__filename],
+        // Include all config files that affect the build
+        tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
+        babel: [path.resolve(rootPath, 'babel.config.json')],
+        tailwind: [path.resolve(rootPath, 'tailwind.config.js')],
+        postcss: [path.resolve(rootPath, 'postcss.config.js')],
       },
       cacheDirectory: path.resolve(rootPath, '.webpack-cache'),
       compression: 'gzip',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       profile: true,
+      // Ensure cache is invalidated when source files change
+      allowCollectingMemory: true,
     },
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
