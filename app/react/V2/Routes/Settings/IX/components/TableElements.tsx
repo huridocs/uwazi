@@ -5,7 +5,7 @@ import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-tabl
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
 import { Link, useRevalidator } from 'react-router';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from 'V2/Components/UI';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
@@ -314,7 +314,9 @@ const UsedForTrainingCell = ({
         </>
       ) : (
         <>
-          <XCircleIcon className={`w-6 h-6 ${disabled ? 'text-orange-300' : 'text-orange-500'}`} />
+          <PlusCircleIcon
+            className={`w-6 h-6 ${disabled ? 'text-primary-300' : 'text-primary-900'}`}
+          />
           <Translate className="sr-only">Add to training set</Translate>
         </>
       )}
