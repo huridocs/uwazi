@@ -18,6 +18,12 @@ class MultiDateRangeProperty extends FilterableProperty {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiDateRangeProperty');
     }
   }
+
+  protected isTypeEqual(type: PropertyTypes): boolean {
+    const compatibleTypes: PropertyTypes[] = ['multidaterange', 'daterange'];
+
+    return compatibleTypes.includes(type);
+  }
 }
 
 export { MultiDateRangeProperty };

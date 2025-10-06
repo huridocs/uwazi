@@ -18,6 +18,12 @@ class MarkdownProperty extends FilterableProperty {
       throw new PropertyTypeInvalidTypeError(this.type, 'MarkdownProperty');
     }
   }
+
+  protected isTypeEqual(type: PropertyTypes): boolean {
+    const compatibleTypes: PropertyTypes[] = ['markdown', 'text'];
+
+    return compatibleTypes.includes(type);
+  }
 }
 
 export { MarkdownProperty };

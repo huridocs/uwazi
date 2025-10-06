@@ -23,6 +23,12 @@ class TextProperty extends FilterableProperty {
       throw new PropertyTypeInvalidTypeError(this.type, 'TextProperty');
     }
   }
+
+  protected isTypeEqual(type: PropertyTypes): boolean {
+    const compatibleTypes: PropertyTypes[] = ['text', 'markdown'];
+
+    return compatibleTypes.includes(type);
+  }
 }
 
 export { TextProperty };

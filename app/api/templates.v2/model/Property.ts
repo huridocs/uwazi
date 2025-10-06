@@ -72,8 +72,16 @@ class Property {
     return this.discriminator === other.discriminator;
   }
 
+  protected isTypeEqual(type: PropertyTypes): boolean {
+    return this.type === type;
+  }
+
+  protected isNameEqual(name: string): boolean {
+    return this.name === name;
+  }
+
   ensurePropertyIsConsistent(property: Property) {
-    if (this.name === property.name && this.type !== property.type) {
+    if (this.isNameEqual(property.name) && !this.isTypeEqual(property.type)) {
       throw new PropertyTypeMismatchError(this, property);
     }
   }

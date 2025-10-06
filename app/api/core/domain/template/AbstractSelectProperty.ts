@@ -1,4 +1,4 @@
-import { Context } from 'api/templates.v2/model/Property';
+import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 
@@ -22,8 +22,15 @@ class AbstractSelectProperty extends FilterableProperty {
     }
   }
 
+  protected isTypeEqual(type: PropertyTypes): boolean {
+    const compatibleTypes: PropertyTypes[] = ['select', 'multiselect'];
+
+    return compatibleTypes.includes(type);
+  }
+
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
     super.ensurePropertyIsConsistent(property);
+
     if (this.content !== property.content) {
       throw new PropertyThesaurusMismatchError(this, property);
     }
