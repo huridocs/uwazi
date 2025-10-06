@@ -62,7 +62,7 @@ const getIcon = (color: Color) => {
   switch (color) {
     case 'orange':
     case 'green':
-      return <CheckCircleIcon />;
+      return <CheckCircleIcon className="text-green-500" />;
     case 'red':
       return <Dot color={color} />;
     default:
@@ -309,7 +309,9 @@ const UsedForTrainingCell = ({
     >
       {usedForTraining ? (
         <>
-          <CheckCircleIcon className={`w-6 h-6 ${disabled ? 'text-gray-500' : 'text-gray-900'}`} />
+          <CheckCircleIcon
+            className={`w-6 h-6 ${disabled ? 'text-green-300' : 'text-green-500'}`}
+          />
           <Translate className="sr-only">Remove from training set</Translate>
         </>
       ) : (
