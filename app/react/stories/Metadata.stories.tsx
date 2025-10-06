@@ -1,6 +1,11 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Title, Date, Geolocation } from 'V2/Components/Metadata';
+import { createStore, Provider } from 'jotai';
+import { settingsAtom } from 'app/V2/atoms';
+
+const store = createStore();
+store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
 
 type StoryProps = {
   entity: any;
@@ -29,7 +34,9 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
       }
 
       if (data.type === 'geolocation') {
-        <Geolocation data={data.values} label={data.label} translationContext="placeholder" />;
+        return (
+          <Geolocation data={data.values[0]} label={data.label} translationContext="placeholder" />
+        );
       }
     })}
   </dl>
@@ -45,7 +52,9 @@ type Story = StoryObj<StoryProps>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <MetadataDisplay entity={args.entity} />
+      <Provider store={store}>
+        <MetadataDisplay entity={args.entity} />
+      </Provider>
     </div>
   ),
 };

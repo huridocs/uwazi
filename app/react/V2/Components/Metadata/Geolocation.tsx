@@ -28,8 +28,11 @@ const Geolocation = ({
       </dd>
     </div>
 
-    {/* {this uses the redux store} */}
-    {/* <Map height={height} markers={[{ latitude: data.lat, longitude: data.lon }]} showControls /> */}
+    <Map
+      height={height}
+      markers={[{ latitude: data.lat, longitude: data.lon, properties: {} }]}
+      showControls
+    />
   </div>
 );
 
