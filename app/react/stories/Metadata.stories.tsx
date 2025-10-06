@@ -2,10 +2,18 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Title, Date, Geolocation } from 'V2/Components/Metadata';
 import { createStore, Provider } from 'jotai';
-import { settingsAtom } from 'app/V2/atoms';
+import { settingsAtom, templatesAtom } from 'app/V2/atoms';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
+store.set(templatesAtom, [
+  {
+    _id: '1',
+    name: 'template1',
+    label: 'Template 1',
+    color: '#00000',
+  },
+]);
 
 type StoryProps = {
   entity: any;
@@ -41,24 +49,7 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
       if (data.type === 'geolocation') {
         return (
           <Geolocation
-            markers={[
-              {
-                latitude: data.values[0].lat,
-                longitude: data.values[0].lon,
-                label: data.label,
-                properties: {
-                  entity: {
-                    sharedId: entity.sharedId,
-                    title: entity.title,
-                    template: entity.template,
-                  },
-                  templateInfo: {
-                    color: entity.template.color,
-                    name: entity.template.label,
-                  },
-                },
-              },
-            ]}
+            markers={data.values}
             label={data.label}
             translationContext={entity.template.name}
           />
@@ -134,7 +125,7 @@ const Basic = {
           name: 'location_of_interes',
           label: 'Location of interest',
           type: 'geolocation',
-          values: [{ value: { latitude: 44, longitud: 26 } }],
+          values: [{ value: { latitude: 44, longitude: 26 } }],
         },
         {
           name: 'related_people',
@@ -162,8 +153,8 @@ const Basic = {
           inherited: true,
           relationshipName: 'Incident nearby',
           values: [
-            { value: { latitude: 40, longitud: 22 } },
-            { value: { latitude: 46, longitud: 26 } },
+            { value: { latitude: 40, longitude: 22 } },
+            { value: { latitude: 46, longitude: 26 } },
           ],
           properties: {
             template: {

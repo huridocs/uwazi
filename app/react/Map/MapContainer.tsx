@@ -75,4 +75,4 @@ const Map = ({ ...props }: MapProps) => {
 };
 
 export { Map };
-export type { Layer };
+export type { Layer, MapProps };
