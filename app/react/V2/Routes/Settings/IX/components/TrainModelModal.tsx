@@ -101,7 +101,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
                       {
                         label: <Translate>Marked for training only</Translate>,
                         value: 'only_marked',
-                        checked: true,
+                        checked: field.value === 'only_marked',
                       },
                       {
                         label: <Translate>Marked for training + all labeled entries</Translate>,
