@@ -13,10 +13,11 @@ type StoryProps = {
 
 const MetadataDisplay = ({ entity }: StoryProps) => (
   <dl className="flex flex-col gap-4">
+    {/* <Translate translationContext={entity.template.name}>{entity.template.label}</Translate> */}
     <Title
       title={entity.title}
       label="placeholder"
-      translationContext="placeholder"
+      translationContext={entity.template.name}
       iconId={entity.icon._id}
     />
     <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
@@ -29,13 +30,38 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
         data.type === 'multidaterange'
       ) {
         return (
-          <Date timestamps={data.values} label={data.label} translationContext="placeholder" />
+          <Date
+            timestamps={data.values}
+            label={data.label}
+            translationContext={entity.template.name}
+          />
         );
       }
 
       if (data.type === 'geolocation') {
         return (
-          <Geolocation data={data.values[0]} label={data.label} translationContext="placeholder" />
+          <Geolocation
+            markers={[
+              {
+                latitude: data.values[0].lat,
+                longitude: data.values[0].lon,
+                label: data.label,
+                properties: {
+                  entity: {
+                    sharedId: entity.sharedId,
+                    title: entity.title,
+                    template: entity.template,
+                  },
+                  templateInfo: {
+                    color: entity.template.color,
+                    name: entity.template.label,
+                  },
+                },
+              },
+            ]}
+            label={data.label}
+            translationContext={entity.template.name}
+          />
         );
       }
     })}
@@ -63,44 +89,95 @@ const Basic = {
   ...Primary,
   args: {
     entity: {
+      _id: '1',
       title: 'Simple title',
-      creationDate: 1659438982222,
-      editDate: 1663758775194,
+      sharedId: 'entity1',
+      creationDate: { value: 1659438982222 },
+      editDate: { value: 1663758775194 },
       icon: { _id: 'SMR' },
+      template: {
+        _id: '1',
+        name: 'template1',
+        label: 'Template 1',
+        color: '#00000',
+      },
       metadata: [
         {
           name: 'single_date',
           label: 'Single date',
           type: 'date',
-          values: [1662380774900],
+          values: [{ value: 1662380774900 }],
         },
         {
           name: 'multiple_date',
           label: 'Multiple dates',
           type: 'multidate',
-          values: [1662380774900, 1664982774900, 1667588374900],
+          values: [{ value: 1662380774900 }, { value: 1664982774900 }, { value: 1667588374900 }],
         },
         {
           name: 'date_range',
           label: 'Single date range',
           type: 'daterange',
-          values: [{ from: 1662380774900, to: 1662985574900 }],
+          values: [{ value: { from: 1662380774900, to: 1662985574900 } }],
         },
         {
           name: 'multi_range',
           label: 'Multiple date ranges',
           type: 'multidaterange',
           values: [
-            { from: 1662380774900, to: 1662985574900 },
-            { from: 1664982774900, to: 1665673974900 },
-            { from: 1667588374900, to: 1668193174900 },
+            { value: { from: 1662380774900, to: 1662985574900 } },
+            { value: { from: 1664982774900, to: 1665673974900 } },
+            { value: { from: 1667588374900, to: 1668193174900 } },
           ],
         },
         {
           name: 'location_of_interes',
           label: 'Location of interest',
           type: 'geolocation',
-          values: [{ lat: 44, lon: 26 }],
+          values: [{ value: { latitude: 44, longitud: 26 } }],
+        },
+        {
+          name: 'related_people',
+          label: 'Related people',
+          type: 'relationship',
+          inherited: false,
+          relationshipName: 'People related to event',
+          values: [
+            { value: 'entityShared1', label: 'Person 1', icon: '', url: '/entity/entityShared1' },
+            { value: 'entityShared2', label: 'Perons 2', icon: '', url: '/entity/entityShared2' },
+          ],
+          properties: {
+            template: {
+              _id: '2',
+              name: 'template2',
+              label: 'Template 2',
+              color: '#11011',
+            },
+          },
+        },
+        {
+          name: 'nearby_incidents',
+          label: 'Nearby incidents',
+          type: 'relationship',
+          inherited: true,
+          relationshipName: 'Incident nearby',
+          values: [
+            { value: { latitude: 40, longitud: 22 } },
+            { value: { latitude: 46, longitud: 26 } },
+          ],
+          properties: {
+            template: {
+              _id: '3',
+              name: 'template3',
+              label: 'Template 3',
+              color: '#1AE15',
+            },
+            inheritedProperty: {
+              type: 'geolocation',
+              name: 'place_of_incident',
+              label: 'Location of incident',
+            },
+          },
         },
       ],
     },
