@@ -71,8 +71,6 @@ module.exports = production => {
       mainFields: ['loader', 'main'],
     },
     optimization: {
-      usedExports: true,
-      sideEffects: false,
       splitChunks: {
         chunks: 'all',
         cacheGroups: {

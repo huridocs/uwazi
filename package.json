@@ -16,7 +16,6 @@
   "license": "MIT",
   "author": "huridocs.org",
   "main": "server.js",
-  "sideEffects": false,
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
@@ -141,7 +140,6 @@
     "connect-mongo": "5.1.0",
     "cookie": "1.0.2",
     "cookie-parser": "1.4.7",
-    "core-js": "3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "csvtojson": "^2.0.10",
