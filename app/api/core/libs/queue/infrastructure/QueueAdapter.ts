@@ -14,7 +14,8 @@ export interface Job {
 }
 
 export interface QueueAdapter {
-  pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt'>): Promise<string>;
+  pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>): Promise<string>;
+  pushJobs(jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]): Promise<string[]>;
   pickJob(queueName: string): Promise<Job | null>;
   renewJobLock(job: Job): Promise<void>;
   markJobAsFailed(job: Job): Promise<Job>;

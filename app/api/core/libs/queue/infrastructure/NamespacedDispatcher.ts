@@ -1,6 +1,6 @@
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { QueueAdapter } from './QueueAdapter';
+import { Job, QueueAdapter } from './QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
@@ -45,12 +45,44 @@ export class NamespacedDispatcher implements JobsDispatcher {
       name: dispatchable.name,
       params,
       namespace: this.namespace,
-      retryCount: 0,
       options: {
         lockWindow: this.options.lockWindow,
         maxRetries: this.options.maxRetries,
       },
     });
+  }
+
+  async dispatchMany(
+    callback: (
+      dispatch: <T extends Dispatchable>(
+        dispatchable: DispatchableClass<T>,
+        params: Parameters<T['handleDispatch']>[1]
+      ) => void
+    ) => Promise<void>
+  ): Promise<void> {
+    const jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[] = [];
+
+    const dispatch = <T extends Dispatchable>(
+      dispatchable: DispatchableClass<T>,
+      params: Parameters<T['handleDispatch']>[1]
+    ) => {
+      jobs.push({
+        queue: this.queueName,
+        name: dispatchable.name,
+        params,
+        namespace: this.namespace,
+        options: {
+          lockWindow: this.options.lockWindow,
+          maxRetries: this.options.maxRetries,
+        },
+      });
+    };
+
+    await callback(dispatch);
+
+    if (jobs.length > 0) {
+      await this.adapter.pushJobs(jobs);
+    }
   }
 }
 
