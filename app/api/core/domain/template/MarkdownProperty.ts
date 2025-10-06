@@ -7,6 +7,8 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MarkdownProperty extends FilterableProperty {
+  private static COMPATIBLE_TYPES: PropertyTypes[] = ['markdown', 'text'];
+
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'markdown' }, context);
 
@@ -20,9 +22,7 @@ class MarkdownProperty extends FilterableProperty {
   }
 
   protected isTypeEqual(type: PropertyTypes): boolean {
-    const compatibleTypes: PropertyTypes[] = ['markdown', 'text'];
-
-    return compatibleTypes.includes(type);
+    return MarkdownProperty.COMPATIBLE_TYPES.includes(type);
   }
 }
 

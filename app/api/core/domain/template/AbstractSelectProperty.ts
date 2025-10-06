@@ -7,6 +7,8 @@ type Props = {
 } & FilterablePropertyProps;
 
 class AbstractSelectProperty extends FilterableProperty {
+  private static COMPATIBLE_TYPES: PropertyTypes[] = ['select', 'multiselect'];
+
   content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
 
   constructor(props: Props, context?: Context) {
@@ -23,9 +25,7 @@ class AbstractSelectProperty extends FilterableProperty {
   }
 
   protected isTypeEqual(type: PropertyTypes): boolean {
-    const compatibleTypes: PropertyTypes[] = ['select', 'multiselect'];
-
-    return compatibleTypes.includes(type);
+    return AbstractSelectProperty.COMPATIBLE_TYPES.includes(type);
   }
 
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
