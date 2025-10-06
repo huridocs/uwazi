@@ -25,6 +25,7 @@ const resultMessage: ResultMessage = {
 const createSut = () => {
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
+    dispatchMany: jest.fn(),
   };
 
   const listener = new PXParagraphsResultListener(async () => dispatcher);
