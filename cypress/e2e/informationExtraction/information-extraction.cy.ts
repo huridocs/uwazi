@@ -361,7 +361,7 @@ describe('Information Extraction', () => {
       });
     });
 
-    it('should manually edit the field and save', () => {
+    it('should manually edit the field, save, and mark the suggestion as used for training', () => {
       cy.get('aside').within(() => {
         cy.get('input').clear();
         cy.get('input').type('A title', { delay: 0 });
@@ -370,7 +370,7 @@ describe('Information Extraction', () => {
       cy.contains('Saved successfully');
       cy.contains('button', 'Dismiss').click();
       cy.get('aside').should('not.exist');
-      cy.contains('tr', '2023 (en)');
+      cy.contains('tr', 'A title (en)').contains('Remove from training set');
     });
 
     it('should open the pdf on the page of the selection', () => {

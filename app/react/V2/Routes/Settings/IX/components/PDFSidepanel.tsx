@@ -28,7 +28,7 @@ interface PDFSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion?: TableSuggestion;
-  onEntitySave: () => any;
+  onEntitySave: (suggestionId: string[]) => any;
   property?: ClientPropertySchema;
   extractor?: ClientIXExtractorType;
 }
@@ -123,7 +123,9 @@ const PDFSidepanel = ({
     } else if (savedEntity) {
       if (savedEntity) {
         setEntity(savedEntity);
-        onEntitySave();
+        if (suggestion?._id) {
+          onEntitySave([suggestion?._id]);
+        }
       }
 
       setNotifications({ type: 'success', text: 'Saved successfully.' });
