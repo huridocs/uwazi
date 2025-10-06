@@ -74,7 +74,7 @@ const createService = (_user?: User) => {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {

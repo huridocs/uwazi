@@ -50,6 +50,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     await testingEnvironment.setUp(createBaseFixtures());
     mockDispatcher = {
       dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
     };
   });
 
