@@ -7,10 +7,9 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MarkdownProperty extends FilterableProperty {
-  private static COMPATIBLE_TYPES: PropertyTypes[] = ['markdown', 'text'];
-
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'markdown' }, context);
+    this.compatibleTypes = ['text'];
 
     this.validate();
   }
@@ -19,10 +18,6 @@ class MarkdownProperty extends FilterableProperty {
     if (this.type !== 'markdown') {
       throw new PropertyTypeInvalidTypeError(this.type, 'MarkdownProperty');
     }
-  }
-
-  protected isTypeEqual(type: PropertyTypes): boolean {
-    return MarkdownProperty.COMPATIBLE_TYPES.includes(type);
   }
 }
 

@@ -28,6 +28,7 @@ describe('V1RelationshipProperty', () => {
         template: 'template',
       })
     ).toEqual({
+      _compatibleTypes: [],
       _name: {
         value: 'label',
       },
@@ -60,6 +61,7 @@ describe('V1RelationshipProperty', () => {
         inherit: { property: 'property', type: 'date' },
       })
     ).toEqual({
+      _compatibleTypes: [],
       _name: {
         value: 'label',
       },

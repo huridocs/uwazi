@@ -7,10 +7,9 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MultiDateProperty extends FilterableProperty {
-  protected static COMPATIBLE_TYPES: PropertyTypes[] = ['multidate', 'date'];
-
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'multidate' }, context);
+    this.compatibleTypes = ['date'];
 
     this.validate();
   }
@@ -19,10 +18,6 @@ class MultiDateProperty extends FilterableProperty {
     if (this.type !== 'multidate') {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiDateProperty');
     }
-  }
-
-  protected isTypeEqual(type: PropertyTypes): boolean {
-    return MultiDateProperty.COMPATIBLE_TYPES.includes(type);
   }
 }
 

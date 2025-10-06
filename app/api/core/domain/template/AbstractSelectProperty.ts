@@ -1,4 +1,4 @@
-import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context } from 'api/templates.v2/model/Property';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 
@@ -7,8 +7,6 @@ type Props = {
 } & FilterablePropertyProps;
 
 class AbstractSelectProperty extends FilterableProperty {
-  private static COMPATIBLE_TYPES: PropertyTypes[] = ['select', 'multiselect'];
-
   content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
 
   constructor(props: Props, context?: Context) {
@@ -22,10 +20,6 @@ class AbstractSelectProperty extends FilterableProperty {
     if (!this?.content?.toString()?.length) {
       throw new FieldIsRequiredError('content');
     }
-  }
-
-  protected isTypeEqual(type: PropertyTypes): boolean {
-    return AbstractSelectProperty.COMPATIBLE_TYPES.includes(type);
   }
 
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
