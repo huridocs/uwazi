@@ -2,10 +2,13 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import {
+  DispatchableClass,
+  JobsDispatcher,
+} from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
@@ -22,6 +25,7 @@ import { TranslationService } from '../domain/template/TranslationService';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
+import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
 
 type Output = Template;
 
@@ -126,62 +130,83 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
 
-    if (
-      relationshipPropsWithChangedRelData.length ||
-      newRelationshipProps.length ||
-      newGeneratedIdProps.length ||
-      Object.keys(renamedProperties).length ||
-      deletedProperties.length
-    ) {
-      const limit = 50;
-      const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(updatedTemplate.id);
-      const totalJobs = Math.ceil(
-        (await this.deps.entitiesDS.countByTemplateId(updatedTemplate.id)) / limit
-      );
-      if (totalJobs > 0) {
-        await this.deps.templatesDS.addJobsToProcessingCount(updatedTemplate.id, totalJobs);
+    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+      if (
+        relationshipPropsWithChangedRelData.length ||
+        newRelationshipProps.length ||
+        newGeneratedIdProps.length ||
+        Object.keys(renamedProperties).length ||
+        deletedProperties.length
+      ) {
+        const userId = permissionsContext.getUserInContext()?._id?.toString();
+        if (!userId) {
+          throw new Error('This process can not be started without a user');
+        }
+        await this.dispatchPostProcessJob(
+          {
+            templateId: updatedTemplate.id,
+            language,
+            fullReindex: false,
+            modifiedRelationshipsProps: relationshipPropsWithChangedRelData
+              .concat(newRelationshipProps)
+              .map(p => p.id),
+            newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
+            deletedProperties,
+            renamedProperties,
+          },
+          dispatch
+        );
       }
 
-      const userId = permissionsContext.getUserInContext()?._id?.toString();
-      if (!userId) {
-        throw new Error('This process can not be started without a user');
+      if (fullReindex) {
+        await (
+          await this.deps.templatesDS.getAll().all()
+        )
+          .filter(t => t.id !== currentTemplate.id)
+          .reduce(async (previous, t) => {
+            await previous;
+            await this.dispatchPostProcessJob(
+              {
+                templateId: t.id,
+                language,
+                fullReindex: true,
+                newGeneratedIdProps: [],
+                deletedProperties: [],
+                modifiedRelationshipsProps: [],
+                renamedProperties: {},
+              },
+              dispatch
+            );
+          }, Promise.resolve());
       }
-      // eslint-disable-next-line no-await-in-loop
-      while (await resultSet.hasNext()) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.deps.jobsDispatcher.dispatch(TemplatePostProcessEntitiesJob, {
-          // eslint-disable-next-line no-await-in-loop
-          entitiesIds: await resultSet.nextBatch(limit),
-          templateId: updatedTemplate.id,
-          language,
-          modifiedRelationshipsProps: relationshipPropsWithChangedRelData
-            .concat(newRelationshipProps)
-            .map(p => p.id),
-          newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
-          deletedProperties,
-          renamedProperties,
-          fullReindex: false,
-          tenantName: tenants.current().name,
-          userId,
-        });
-      }
-    }
-
-    if (fullReindex) {
-      await (
-        await this.deps.templatesDS.getAll().all()
-      )
-        .filter(t => t.id !== currentTemplate.id)
-        .reduce(async (previous, t) => {
-          await previous;
-          await this.dispatchPostProcessJob(t.id, language);
-        }, Promise.resolve());
-    }
+    });
 
     return updatedTemplate;
   }
 
-  private async dispatchPostProcessJob(templateId: string, language: LanguageISO6391) {
+  private async dispatchPostProcessJob(
+    {
+      templateId,
+      language,
+      fullReindex,
+      newGeneratedIdProps,
+      deletedProperties,
+      modifiedRelationshipsProps,
+      renamedProperties,
+    }: {
+      templateId: string;
+      language: LanguageISO6391;
+      fullReindex: boolean;
+      newGeneratedIdProps: string[];
+      deletedProperties: string[];
+      modifiedRelationshipsProps: string[];
+      renamedProperties: { [k: string]: string };
+    },
+    dispatch: <T extends Dispatchable>(
+      dispatchable: DispatchableClass<T>,
+      params: Parameters<T['handleDispatch']>[1]
+    ) => void
+  ) {
     const limit = 50;
     const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(templateId);
     const totalJobs = Math.ceil((await this.deps.entitiesDS.countByTemplateId(templateId)) / limit);
@@ -196,16 +221,16 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     // eslint-disable-next-line no-await-in-loop
     while (await resultSet.hasNext()) {
       // eslint-disable-next-line no-await-in-loop
-      await this.deps.jobsDispatcher.dispatch(TemplatePostProcessEntitiesJob, {
+      dispatch(TemplatePostProcessEntitiesJob, {
         // eslint-disable-next-line no-await-in-loop
         entitiesIds: await resultSet.nextBatch(limit),
         templateId,
         language,
-        modifiedRelationshipsProps: [],
-        newGeneratedIdProps: [],
-        deletedProperties: [],
-        renamedProperties: {},
-        fullReindex: true,
+        modifiedRelationshipsProps,
+        newGeneratedIdProps,
+        deletedProperties,
+        renamedProperties,
+        fullReindex,
         tenantName: tenants.current().name,
         userId,
       });

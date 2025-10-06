@@ -87,7 +87,7 @@ const fixtures = {
 let ds: MongoRelationshipsDataSource;
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
   ds = new MongoRelationshipsDataSource(testingDB.mongodb!, DefaultTransactionManager());
 });
 

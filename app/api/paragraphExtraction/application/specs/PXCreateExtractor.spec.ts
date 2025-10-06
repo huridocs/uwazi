@@ -31,6 +31,7 @@ const setUpUseCase = () => {
 
   const mockDispatcher: jest.Mocked<JobsDispatcher> = {
     dispatch: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest.fn().mockResolvedValue(undefined),
   };
 
   const createExtractor = new PXCreateExtractor({
