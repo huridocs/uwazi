@@ -186,12 +186,6 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
-      // Build performance monitoring
-      new webpack.ProgressPlugin((percentage, message, ...args) => {
-        if (percentage === 1) {
-          console.log(`\n✅ Build completed using ${maxWorkers} workers on ${numCpus} CPU cores`);
-        }
-      }),
-    ],
+    ].filter(Boolean),
   };
 };
