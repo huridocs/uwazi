@@ -97,7 +97,7 @@ jobs:
         id: wait-for-build-job
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: 'build'
+          checkName: 'build / build'
 
       - name: Download production build artifact
         uses: actions/download-artifact@v4
