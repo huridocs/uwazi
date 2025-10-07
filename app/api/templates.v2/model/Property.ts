@@ -43,7 +43,7 @@ class Property {
 
   showInCard: boolean;
 
-  private _compatibleTypes: PropertyTypes[] = [];
+  protected compatibleTypes: PropertyTypes[] = [];
 
   constructor(props: Props, context?: Context) {
     this.id = props.id;
@@ -72,14 +72,6 @@ class Property {
 
   equals(other: Property) {
     return this.discriminator === other.discriminator;
-  }
-
-  protected get compatibleTypes(): PropertyTypes[] {
-    return this._compatibleTypes;
-  }
-
-  protected set compatibleTypes(types: PropertyTypes[]) {
-    this._compatibleTypes = types;
   }
 
   protected isTypeEqual(type: PropertyTypes): boolean {
