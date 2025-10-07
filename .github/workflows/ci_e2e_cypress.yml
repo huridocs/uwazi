@@ -92,28 +92,33 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Install jq
-        run: apt-get update && apt-get install -y jq
-
-      - name: 'Debug: List Check Runs'
+      - name: Wait For and Download Artifact
         run: |
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" \
-               | jq '.check_runs[] | {name: .name, status: .status, conclusion: .conclusion}'
-      
-      # - name: Wait for production build job
-      #   uses: fountainhead/action-wait-for-check@v1.1.0
-      #   id: wait-for-build-job
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     checkName: 'build / build'
+          apt-get update && apt-get install -y jq wget unzip
 
-      - name: Download production build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: prod
-          path: ./prod
+          for i in {1..60}; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+
+            if [[ -n "$ARTIFACT_URL" ]]; then
+              echo "Artifact found. Downloading..."
+              wget -q --header="Authorization: token ${{ secrets.GITHUB_TOKEN }}" -O artifact.zip "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+
+            echo "Artifact not yet found. Waiting 20 seconds..."
+            sleep 20
+          done
+
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 20
+
       - name: Clone dummy services
         if: matrix.needs_setup
         uses: actions/checkout@v4
