@@ -107,7 +107,8 @@ const getRoutesLayout = (
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader()} />
+    {/* Uncomment this to work on v2 */}
+    {/*<Route path="entityv2/:sharedId/:tabView?" element={<Entity />} loader={entityLoader()} />*/}
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />

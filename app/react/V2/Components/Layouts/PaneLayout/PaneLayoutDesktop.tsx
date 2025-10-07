@@ -4,7 +4,7 @@ import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
 
 const MIN_WIDTH = 100;
-const SEPARATOR_PX = 4;
+const SEPARATOR_PX = 6;
 
 const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undefined => {
   if ('clientX' in event && typeof event.clientX === 'number') return event.clientX;
@@ -167,9 +167,14 @@ const PaneLayoutDesktop = ({
               role="separator"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="cursor-col-resize flex-shrink-0 bg-gray-200"
+              className="cursor-col-resize flex-shrink-0 group"
               style={{ width: SEPARATOR_PX }}
-            />
+            >
+              <div
+                className="h-full border-r border-gray-300 group-hover:border-gray-400"
+                style={{ width: SEPARATOR_PX / 2 }}
+              />
+            </div>
           )}
         </Fragment>
       ))}
