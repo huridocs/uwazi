@@ -231,7 +231,7 @@ jobs:
 
           echo "Timed out waiting for artifact."
           exit 1
-        timeout-minutes: 20
+        timeout-minutes: 6
       
       - name: Configure IX settings
         if: matrix.needs_ix_config

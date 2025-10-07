@@ -19,56 +19,31 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      # ===== OPTIMIZED CONSOLIDATED CACHING STRATEGY =====
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Webpack
+        uses: actions/cache@v4
+        with:
+          path: ./.webpack-cache
+          key: ${{ runner.os }}-webpack-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
       
-      # Cache 1: Dependencies (Most Stable, Highest Cache Hit Rate)
-      # Combines: node_modules + yarn cache + production dependencies (~1.1GB)
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ./node_modules
-            ~/.cache/yarn
-            prod/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/yarn.lock', 'package.json') }}-${{ github.base_ref }}
-          restore-keys: |
-            ${{ runner.os }}-deps-${{ github.base_ref }}-
-            ${{ runner.os }}-deps-
-
-      # Cache 2: Build Artifacts (High Stability, High Cache Hit Rate)
-      # Combines: webpack cache + backend API + shared code + server files (~244MB)
-      - name: Cache build artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            .webpack
-            .babel-cache
-            prod/dist
-            prod/app/api
-            prod/app/shared
-            prod/app
-          key: ${{ runner.os }}-build-${{ hashFiles('webpack/**', 'app/**', 'package.json', 'yarn.lock', 'babel.config.json', 'tailwind.config.js', 'postcss.config.js') }}-${{ github.base_ref }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ hashFiles('webpack/**', 'package.json', 'yarn.lock') }}
-            ${{ runner.os }}-build-${{ github.base_ref }}-
-            ${{ runner.os }}-build-
-
-      # Cache 3: Static Assets (Very Stable, Very High Cache Hit Rate)
-      # Combines: static assets + database & scripts (~0.2MB)
-      - name: Cache static assets
-        uses: actions/cache@v4
-        with:
-          path: |
-            public
-            contents
-            prod/database
-            prod/scripts
-            prod/message.js
-          key: ${{ runner.os }}-static-${{ hashFiles('public/**', 'contents/**', 'database/**', 'scripts/**', 'message.js') }}-${{ github.base_ref }}
-          restore-keys: |
-            ${{ runner.os }}-static-${{ github.base_ref }}-
-            ${{ runner.os }}-static-
-
       # ===== BUILD PROCESS =====
       
       - name: Install dependencies
