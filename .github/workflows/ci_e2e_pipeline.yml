@@ -1,13 +1,17 @@
 name: E2E Pipeline
 
 on:
-  push:
-    branches: [development]
-  pull_request:
-    branches: [development, staging, production]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The ref to checkout'
+        required: true
+      sha:
+        description: 'The sha to checkout'
+        required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -16,38 +20,17 @@ permissions:
   packages: write
 
 jobs:
-  precheck:
-    uses: ./.github/workflows/precheck.yml
-    secrets: inherit
-    with:
-      is_pr: ${{ github.event_name == 'pull_request' }}
-      pr_number: ${{ github.event.pull_request.number }}
-      is_draft: ${{ github.event.pull_request.draft }}
-      pr_title: ${{ github.event.pull_request.title }}
-      pr_body: ${{ github.event.pull_request.body }}
-      head_sha: ${{ github.event.pull_request.head.sha }}
-      ref: ${{ github.ref }}
-      branch: ${{ github.ref_name }}
-      event_name: ${{ github.event_name }}
-      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
-      sha: ${{ github.sha }}
-
   build:
-    needs: precheck
-    if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_build.yml
 
   e2e_cypress:
-    needs: [precheck, build]
-    if: needs.precheck.outputs.should_run == 'true'
+    needs: [build]
     uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
-    needs: [precheck, build]
-    if: needs.precheck.outputs.should_run == 'true'
+    needs: [build]
     uses: ./.github/workflows/ci_e2e_puppeteer.yml
 
   check_translations:
-    needs: [precheck, build]
-    if: needs.precheck.outputs.should_run == 'true'
+    needs: [build]
     uses: ./.github/workflows/ci_check_translations.yml

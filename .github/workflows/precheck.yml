@@ -1,70 +1,39 @@
-name: CI Precheck
+name: Precheck Gatekeeper
 
 on:
-  workflow_call:
-    inputs:
-      is_pr:
-        required: false
-        type: boolean
-      pr_number:
-        required: false
-        type: number
-      is_draft:
-        required: false
-        type: boolean
-      pr_title:
-        required: false
-        type: string
-      pr_body:
-        required: false
-        type: string
-      head_sha:
-        required: false
-        type: string
-      ref:
-        required: false
-        type: string
-      branch:
-        required: false
-        type: string
-      event_name:
-        required: false
-        type: string
-      is_protected_push:
-        required: false
-        type: boolean
-      sha:
-        required: false
-        type: string
-    outputs:
-      should_run:
-        description: Whether downstream jobs should run
-        value: ${{ jobs.precheck.outputs.should_run }}
+  push:
+    branches: [development, staging, production]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [development, staging, production]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
   pull-requests: read
+  actions: write
 
 jobs:
   precheck:
     runs-on: ubuntu-24.04
-    outputs:
-      should_run: ${{ steps.compute.outputs.should_run }}
     steps:
       - name: Checkout (for commit message resolution)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           repository: ${{ github.repository }}
-          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Resolve commit messages
         id: resolve_msgs
         shell: bash
         run: |
           set -euo pipefail
-          HEAD_SHA="${{ inputs.head_sha || github.event.pull_request.head.sha || '' }}"
-          MERGE_SHA="${{ inputs.sha || github.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha || '' }}"
+          MERGE_SHA="${{ github.sha }}"
           HEAD_MSG=""
           MERGE_MSG=""
           if [ -n "$HEAD_SHA" ]; then
@@ -86,17 +55,17 @@ jobs:
         id: compute
         uses: actions/github-script@v7
         env:
-          INPUT_IS_PR: ${{ inputs.is_pr }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
-          INPUT_IS_DRAFT: ${{ inputs.is_draft }}
-          INPUT_PR_TITLE: ${{ inputs.pr_title }}
-          INPUT_PR_BODY: ${{ inputs.pr_body }}
-          INPUT_HEAD_SHA: ${{ inputs.head_sha }}
-          INPUT_REF: ${{ inputs.ref }}
-          INPUT_BRANCH: ${{ inputs.branch }}
-          INPUT_EVENT_NAME: ${{ inputs.event_name }}
-          INPUT_IS_PROTECTED_PUSH: ${{ inputs.is_protected_push }}
-          INPUT_SHA: ${{ inputs.sha }}
+          INPUT_IS_PR: ${{ github.event_name == 'pull_request' }}
+          INPUT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          INPUT_IS_DRAFT: ${{ github.event.pull_request.draft }}
+          INPUT_PR_TITLE: ${{ github.event.pull_request.title }}
+          INPUT_PR_BODY: ${{ github.event.pull_request.body }}
+          INPUT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          INPUT_REF: ${{ github.ref }}
+          INPUT_BRANCH: ${{ github.ref_name }}
+          INPUT_EVENT_NAME: ${{ github.event_name }}
+          INPUT_IS_PROTECTED_PUSH: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
+          INPUT_SHA: ${{ github.sha }}
           HEAD_COMMIT_MESSAGE: ${{ env.HEAD_COMMIT_MESSAGE }}
           MERGE_COMMIT_MESSAGE: ${{ env.MERGE_COMMIT_MESSAGE }}
           RESOLVED_HEAD_SHA: ${{ env.HEAD_SHA }}
@@ -261,4 +230,54 @@ jobs:
             core.info(`precheck debug: eventName=${eventName}, ref=${ref}, isPR=${debug.isPR}, prNumber=${debug.prNumber}, branch=${debug.branch}, isDraft=${debug.isDraft}, headSha=${debug.headSha}, headMatch=${debug.headMatch}, mergeSha=${debug.mergeSha}, mergeMatch=${debug.mergeMatch}, matchedCommitSha=${debug.matchedCommitSha}, hasRunTests=${hasRunTests}, shouldRun=${shouldRun}`);
 
             core.setOutput('should_run', String(shouldRun));
+
+  trigger_workflows:
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Trigger E2E Pipeline, ESLint, Unit Tests and Security Audit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci_e2e_pipeline.yml',
+              ref: context.ref,
+              inputs: {
+                ref: context.ref,
+                sha: context.sha
+              }
+            });
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci_eslint.yml',
+              ref: context.ref,
+              inputs: {
+                ref: context.ref,
+                sha: context.sha
+              }
+            });
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci_unit_tests_docker.yml',
+              ref: context.ref,
+              inputs: {
+                ref: context.ref,
+                sha: context.sha
+              }
+            });
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'security_audit.yml',
+              ref: context.ref,
+              inputs: {
+                ref: context.ref,
+                sha: context.sha
+              }
+            });
 
