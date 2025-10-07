@@ -1,11 +1,7 @@
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
+/* eslint-disable max-statements */
+import { AbstractUseCase, BaseDeps } from 'api/common.v2/contracts/UseCase';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import {
-  DispatchableClass,
-  JobsDispatcher,
-} from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -31,20 +27,17 @@ type Output = Template;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
-  jobsDispatcher: JobsDispatcher;
-  transactionManager: TransactionManager;
 };
 
 class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
   private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
-  constructor(deps: Deps) {
+  constructor(deps: BaseDeps<Deps>) {
     super(deps);
 
     this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
@@ -65,7 +58,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
 
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create(
-        { ...p, id: p._id || this.deps.idGenerator.generate(), template: currentTemplate.id },
+        { ...p, id: p._id || this.idGenerator.generate(), template: currentTemplate.id },
         { newNameGeneration }
       )
     );
@@ -75,7 +68,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
           .create(
-            { ...p, id: p._id || this.deps.idGenerator.generate(), template: currentTemplate.id },
+            { ...p, id: p._id || this.idGenerator.generate(), template: currentTemplate.id },
             { newNameGeneration }
           )
       ) || []
@@ -94,7 +87,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     if (swappedNameProp) {
       throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
     }
-    await this.deps.transactionManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
       await this.deps.translationService.updateTemplateTranslation(
         currentTemplate,
@@ -130,7 +123,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
 
-    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+    await this.jobsDispatcher.dispatchMany(async dispatch => {
       if (
         relationshipPropsWithChangedRelData.length ||
         newRelationshipProps.length ||

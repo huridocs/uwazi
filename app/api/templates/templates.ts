@@ -587,7 +587,7 @@ export default {
       const useCase = new DeleteTemplateUseCase({
         eventBus,
         jobsDispatcher,
-        transactionManger: transactionManager,
+        transactionManager,
         entitiesDS,
         templatesDS,
         multiLanguageEntityDataSourceDS,

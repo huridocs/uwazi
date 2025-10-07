@@ -52,7 +52,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
     const templates = await this.deps.templatesDS.findTemplatesReferencing(templateToBeDeleted.id);
     const editedTemplates = templates.map(t => t.onTemplateDeleted(templateToBeDeleted));
 
-    await this.transactionManger.run(async () => {
+    await this.transactionManager.run(async () => {
       if (templates.length) {
         await this.deps.templatesDS.bulkUpdate(editedTemplates);
 

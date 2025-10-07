@@ -3,26 +3,36 @@ import { ValidationError } from 'api/core/domain/error/ValidationError';
 import { EventsBus } from 'api/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { TransactionManager } from './TransactionManager';
+import { IdGenerator } from './IdGenerator';
 
 interface UseCase<Input, Output> {
   execute(input: Input, ...args: any): Promise<Output>;
 }
 
 type Deps<ExtendedDeps> = {
-  transactionManger?: TransactionManager;
+  transactionManager?: TransactionManager;
   eventBus?: EventsBus;
   jobsDispatcher?: JobsDispatcher;
+  idGenerator?: IdGenerator;
 } & ExtendedDeps;
 
 abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseCase<Input, Output> {
   constructor(protected deps: Deps<ExtendedDeps>) {}
 
-  get transactionManger(): TransactionManager {
-    if (!this.deps.transactionManger) {
+  get idGenerator(): IdGenerator {
+    if (!this.deps.idGenerator) {
+      throw new Error('Id Generator dependency not provided');
+    }
+
+    return this.deps.idGenerator;
+  }
+
+  get transactionManager(): TransactionManager {
+    if (!this.deps.transactionManager) {
       throw new Error('TransactionManager dependency not provided');
     }
 
-    return this.deps.transactionManger;
+    return this.deps.transactionManager;
   }
 
   get eventBus(): EventsBus {
@@ -59,4 +69,4 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
 }
 
 export { AbstractUseCase };
-export type { UseCase };
+export type { UseCase, Deps as BaseDeps };
