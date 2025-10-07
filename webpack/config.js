@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const os = require('os');
 const AssetsPlugin = require('assets-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -13,10 +12,6 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
-
-// Parallelization configuration
-const numCpus = os.cpus().length;
-const maxWorkers = numCpus <= 4 ? Math.max(1, Math.floor(numCpus / 2)) : Math.max(1, numCpus - 1);
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -39,18 +34,7 @@ module.exports = production => {
       type: 'filesystem',
       buildDependencies: {
         config: [__filename],
-        // Include all config files that affect the build
-        tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
-        babel: [path.resolve(rootPath, 'babel.config.json')],
-        tailwind: [path.resolve(rootPath, 'tailwind.config.js')],
-        postcss: [path.resolve(rootPath, 'postcss.config.js')],
       },
-      cacheDirectory: path.resolve(rootPath, '.webpack'),
-      compression: 'gzip',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      profile: true,
-      // Ensure cache is invalidated when source files change
-      allowCollectingMemory: true,
     },
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
