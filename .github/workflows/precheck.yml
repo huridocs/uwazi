@@ -1,4 +1,4 @@
-name: Precheck Gatekeeper
+name: Precheck
 
 on:
   push:
