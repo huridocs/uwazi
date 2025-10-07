@@ -45,7 +45,7 @@ module.exports = production => {
         tailwind: [path.resolve(rootPath, 'tailwind.config.js')],
         postcss: [path.resolve(rootPath, 'postcss.config.js')],
       },
-      cacheDirectory: path.resolve(rootPath, '.webpack-cache'),
+      cacheDirectory: path.resolve(rootPath, '.webpack'),
       compression: 'gzip',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       profile: true,
@@ -104,8 +104,10 @@ module.exports = production => {
               },
             },
             {
-              loader: 'babel-loader?cacheDirectory',
+              loader: 'babel-loader',
               options: {
+                cacheDirectory: path.resolve(rootPath, '.babel-cache'),
+                cacheCompression: false,
                 sourceMap: process.env.BABEL_ENV === 'debug',
               },
             },
