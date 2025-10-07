@@ -6,14 +6,15 @@ permissions:
   packages: write
 
 on:
+  push:
+    branches:
+      - development
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
-    inputs:
-      sha:
-        description: 'The sha to checkout'
-        required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.sha }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -21,14 +22,30 @@ env:
   IMAGE_NAME: ${{ github.repository }}-ci
 
 jobs:
+  precheck:
+    uses: ./.github/workflows/precheck.yml
+    secrets: inherit
+    with:
+      is_pr: ${{ github.event_name == 'pull_request' }}
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_body: ${{ github.event.pull_request.body }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      ref: ${{ github.ref }}
+      branch: ${{ github.ref_name }}
+      event_name: ${{ github.event_name }}
+      is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
+      sha: ${{ github.sha }}
+
   build_ci_image:
     name: build_ci_image
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
 
       - name: Detect CI Dockerfile change
@@ -87,7 +104,8 @@ jobs:
 
 
   api_unit_tests_shards:
-    needs: [build_ci_image]
+    needs: [precheck, build_ci_image]
+    if: needs.precheck.outputs.should_run == 'true'
     name: api_unit_tests (shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     container:
@@ -127,8 +145,6 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.sha }}
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -180,29 +196,33 @@ jobs:
   api_unit_tests_aggregate:
     name: api_unit_tests
     needs:
+      - precheck
       - build_ci_image
       - api_unit_tests_shards
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     steps:
       - name: Aggregate shards result
+        if: ${{ needs.precheck.outputs.should_run == 'true' }}
         run: |
           if [ "${{ needs.api_unit_tests_shards.result }}" != "success" ]; then
             echo "One or more shards failed"
             exit 1
           fi
           echo "All api_unit_tests shards succeeded"
+      - name: Mark skipped by precheck
+        if: ${{ needs.precheck.outputs.should_run != 'true' }}
+        run: echo "api_unit_tests skipped by precheck"
 
   app_unit_tests:
-    needs: [build_ci_image]
+    needs: [precheck, build_ci_image]
+    if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}-ci:latest
       options: --ipc=host
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.sha }}
       - name: Cache node modules
         uses: actions/cache@v4
         with:
