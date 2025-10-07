@@ -52,6 +52,7 @@ Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
+Add to training set,Add to training set
 Add user,Añadir usuario
 add value,añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
@@ -127,6 +128,7 @@ Character support description,"Esta opción mejora la compatibilidad con idiomas
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Choose which data to use for training,Choose which data to use for training
 Clear,Limpiar
 Clear all,Clear all
 Clear All,Clear All
@@ -474,6 +476,10 @@ Mapping conflict error,"Es necesaria una reindexación de su colección. El moti
 Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
+marked and labeled,marked and labeled
+marked for training,marked for training
+Marked for training + all labeled entries,Marked for training + all labeled entries
+Marked for training only,Marked for training only
 Match,Match
 Matching,Coincidencia
 matching,matching
@@ -691,6 +697,7 @@ RelationType saved,Tipo de Relación guardada
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
+Remove from training set,Remove from training set
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
 Rename,Renombrar
@@ -910,6 +917,7 @@ Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Entrenando
 Training model...,Entrenando el modelo…
+Training sample,Training sample
 Translate,Traducir
 Translation,Translation
 Translations,Traducciones
@@ -961,6 +969,7 @@ Uploads,Subir archivos
 URL,URL
 Use,Usar
 Use as filter,Usar como filtro
+Use for training,Use for training
 User,Usuario
 User Action,User Action
 User Role,User Role

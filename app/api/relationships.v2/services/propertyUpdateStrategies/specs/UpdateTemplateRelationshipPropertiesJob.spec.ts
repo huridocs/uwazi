@@ -3,10 +3,10 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
-import { QueueAdapter } from 'api/queue.v2/infrastructure/QueueAdapter';
+import { QueueAdapter } from 'api/core/libs/queue/infrastructure/QueueAdapter';
 import testingDB from 'api/utils/testing_db';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { NamespacedDispatcher } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { NamespacedDispatcher } from 'api/core/libs/queue/infrastructure/NamespacedDispatcher';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 

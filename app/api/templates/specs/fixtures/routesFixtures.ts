@@ -43,7 +43,7 @@ const fixtures: DBFixture = {
     fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
     {
       name: 'select_thesaurus_2',
-      _id: '123456789',
+      _id: fixtureFactory.id('123456789'),
       values: [
         {
           _id: 'abc',
@@ -81,7 +81,7 @@ const fixtures: DBFixture = {
           label: 'select_property',
           name: 'select_property',
           type: 'select',
-          content: '123456789',
+          content: fixtureFactory.id('123456789').toHexString(),
         },
       ],
     },

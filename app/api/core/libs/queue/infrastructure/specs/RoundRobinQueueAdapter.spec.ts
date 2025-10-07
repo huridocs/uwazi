@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { TestingRoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { TestingRoundRobinQueueAdapter } from 'api/core/libs/queue/configuration/factories';
 import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures';
 import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter';
 

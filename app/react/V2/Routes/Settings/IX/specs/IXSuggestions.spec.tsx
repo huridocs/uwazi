@@ -2,13 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
+import api from 'app/utils/api';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
-import { loaderData, thesauri, entity1, entity2 } from './fixtures';
+import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
 
 jest.mock('V2/api/entities', () => ({
@@ -67,6 +68,11 @@ const closeSidepanel = async (text: string = 'Cancel') => {
 };
 
 describe('IX suggestions', () => {
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    jest.spyOn(api, 'post');
+  });
+
   const Component = ({ data = loaderData }: { data?: IXSuggestionsLoaderResponse }) => (
     <TestRouterContext loaderData={data}>
       <TestAtomStoreProvider initialValues={[[thesauriAtom, thesauri]]}>
@@ -105,11 +111,52 @@ describe('IX suggestions', () => {
     await testCheckboxes();
   });
 
+  describe('Used for training', () => {
+    it('should display if the entity is used for training', async () => {
+      render(<Component />);
+      const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      const row2 = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      expect(within(row1!).getByText('Remove from training set')).toBeInTheDocument();
+      expect(within(row2!).getByText('Add to training set')).toBeInTheDocument();
+    });
+
+    it('should allow marking an entity as used for training', async () => {
+      render(<Component />);
+      const row = (await screen.findByText('Entity 2 (en)')).closest('tr');
+      within(row!).getByText('Add to training set').click();
+      expect(api.post).toHaveBeenCalledWith('suggestions/training-set', {
+        data: { extractorId: 'extractor1', suggestionIds: ['suggestion2'], useForTraining: true },
+        headers: {},
+      });
+    });
+
+    it('should allow removing an entity from the training set', async () => {
+      render(<Component />);
+      const row = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      within(row!).getByText('Remove from training set').click();
+      expect(api.post).toHaveBeenCalledWith('suggestions/training-set', {
+        data: { extractorId: 'extractor1', suggestionIds: ['suggestion1'], useForTraining: false },
+        headers: {},
+      });
+    });
+
+    it('should only allow accepting parent elements', async () => {
+      await waitFor(async () => {
+        render(<Component data={nestedSuggestions} />);
+        const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+        expect(within(row1!).getByText('Add to training set')).toBeInTheDocument();
+        within(row1!).getByText('Group').click();
+      });
+      const subrow = (await screen.findByText('Blue')).closest('tr');
+      expect(within(subrow!).queryByText('Add to training set')).not.toBeInTheDocument();
+    });
+  });
+
   describe('Train model modal', () => {
     describe('form', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
-        jest.spyOn(suggestionsAPI, 'findSuggestions');
+        jest.spyOn(api, 'post');
         jest.spyOn(suggestionsAPI, 'cancel');
         render(<Component />);
         const openModalButton = await screen.findByText('Train model');
@@ -130,9 +177,13 @@ describe('IX suggestions', () => {
         await act(async () => {
           await fireEvent.click(submit);
         });
-        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
-          extractorId: 'extractor1',
-          suggestionsToFind: '1500',
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'only_marked' },
+            suggestionsToFind: '1500',
+          },
+          headers: {},
         });
       });
 
@@ -143,9 +194,29 @@ describe('IX suggestions', () => {
         await act(async () => {
           await fireEvent.click(submit);
         });
-        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
-          extractorId: 'extractor1',
-          suggestionsToFind: 0,
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'only_marked' },
+            suggestionsToFind: 0,
+          },
+          headers: {},
+        });
+      });
+
+      it('should submit with the selected sample policy', async () => {
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        (await screen.findByLabelText('Marked for training + all labeled entries')).click();
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(api.post).toHaveBeenCalledWith('suggestions/train', {
+          data: {
+            extractorId: 'extractor1',
+            options: { samplePolicy: 'marked_plus_labeled' },
+            suggestionsToFind: 0,
+          },
+          headers: {},
         });
       });
     });

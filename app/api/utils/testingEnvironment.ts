@@ -1,21 +1,19 @@
+import { setupTestUploadedPaths } from 'api/files';
 import { appContext } from 'api/utils/AppContext';
-import { DB } from 'api/odm';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
-import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { setupTestUploadedPaths } from 'api/files';
 import { UserSchema } from 'shared/types/userType';
-import path from 'path';
-import uniqueID from 'shared/uniqueID';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
 const testingEnvironment = {
+  elasticIndex: '',
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string) {
+  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
@@ -24,16 +22,10 @@ const testingEnvironment = {
   },
 
   async setTenant(name?: string, subPath = '') {
-    const testPath = expect.getState().testPath || '';
-    const sanitizedTestPath = path.basename(testPath).replace(/[.-]/g, '_');
-    const defaultIndexName = `index_${uniqueID()}_${sanitizedTestPath}`
-      .substring(0, 63)
-      .toLowerCase();
-
     testingTenants.mockCurrentTenant({
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
-      indexName: defaultIndexName,
+      indexName: 'index',
     });
     await setupTestUploadedPaths(subPath);
   },
@@ -71,26 +63,16 @@ const testingEnvironment = {
     }
   },
 
-  async setElastic(elasticIndex?: string) {
-    if (elasticIndex) {
-      testingTenants.changeCurrentTenant({ indexName: elasticIndex });
-      if (DB.getConnection()) {
-        await elasticTesting.reindex();
-      }
-      return;
+  async setElastic(elasticIndex?: string | boolean) {
+    if (elasticIndex && !this.elasticIndex) {
+      this.elasticIndex =
+        elasticIndex === true
+          ? `elasticsearch_test_index${process.pid}_${Date.now()}`
+          : elasticIndex;
     }
-
-    // Ensure a unique default test index exists (guard against testingDB.connect() overriding tenant index)
-    const testPath = expect.getState().testPath || '';
-    const sanitizedTestPath = path.basename(testPath).replace(/[.-]/g, '_');
-    const defaultIndexName = `index_${uniqueID()}_${sanitizedTestPath}`
-      .substring(0, 63)
-      .toLowerCase();
-    testingTenants.changeCurrentTenant({ indexName: defaultIndexName });
-
-    // Create/reset mappings for the (now unique) index
-    if (DB.getConnection()) {
-      await elasticTesting.resetIndex();
+    if (this.elasticIndex) {
+      testingTenants.changeCurrentTenant({ indexName: this.elasticIndex });
+      await elasticTesting.reindex();
     }
   },
 
@@ -113,6 +95,14 @@ const testingEnvironment = {
   },
 
   async tearDown() {
+    if (this.elasticIndex) {
+      try {
+        await elasticTesting.deleteIndex(this.elasticIndex);
+        this.elasticIndex = '';
+      } catch (error) {
+        console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
+      }
+    }
     await testingDB.disconnect();
   },
 

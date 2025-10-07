@@ -27,10 +27,13 @@ export interface TemplatesDataSource {
   getTemplatesByPropertyName(property: Property): Promise<Template[]>;
   incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
   completeProcessing(templateId: string): Promise<void>;
-  setProcessingTotalJobs(templateId: string, totalJobs: number): Promise<void>;
+  addJobsToProcessingCount(templateId: string, totalJobs: number): Promise<void>;
   create(template: Template): Promise<void>;
   update(template: Template): Promise<void>;
+  bulkUpdate(template: Template[]): Promise<void>;
   isPropertyUnique(property: Property): Promise<boolean>;
   isTemplateUnique(template: Template): Promise<boolean>;
   getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>>;
+  findTemplatesReferencing(templateId: string): Promise<Template[]>;
+  delete(templateId: string): Promise<void>;
 }
