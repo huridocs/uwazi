@@ -168,4 +168,21 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
 
     return result.insertedId.toHexString();
   }
+
+  async pushJobs(
+    jobs: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>[]
+  ): Promise<string[]> {
+    const jobsToInsert = jobs.map(job => ({
+      _id: new ObjectId(),
+      lockedUntil: 0,
+      createdAt: Date.now(),
+      retryCount: 0,
+      failed: false,
+      ...job,
+    }));
+
+    const result = await this.getCollection().insertMany(jobsToInsert);
+
+    return Object.values(result.insertedIds).map(id => id.toHexString());
+  }
 }

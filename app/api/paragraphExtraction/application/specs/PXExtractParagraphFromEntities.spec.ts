@@ -50,6 +50,7 @@ const setUpUseCase = () => {
   });
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
+    dispatchMany: jest.fn(),
   };
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({

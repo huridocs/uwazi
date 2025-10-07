@@ -9,4 +9,12 @@ export interface JobsDispatcher {
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]
   ): Promise<void>;
+  dispatchMany(
+    callback: (
+      dispatch: <T extends Dispatchable>(
+        dispatchable: DispatchableClass<T>,
+        params: Parameters<T['handleDispatch']>[1]
+      ) => void
+    ) => Promise<void>
+  ): Promise<void>;
 }
