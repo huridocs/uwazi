@@ -92,6 +92,9 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
+      - name: Install jq
+        run: apt-get update && apt-get install -y jq
+
       - name: 'Debug: List Check Runs'
         run: |
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
