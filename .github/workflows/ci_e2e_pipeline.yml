@@ -16,6 +16,7 @@ permissions:
   pull-requests: read
   packages: write
   checks: read
+  actions: read
 
 jobs:
   precheck:
