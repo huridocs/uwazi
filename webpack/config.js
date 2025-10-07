@@ -95,19 +95,8 @@ module.exports = production => {
           exclude: /node_modules/,
           use: [
             {
-              loader: 'thread-loader',
+              loader: 'babel-loader?cacheDirectory',
               options: {
-                workers: maxWorkers,
-                workerParallelJobs: 50,
-                poolTimeout: 2000,
-                name: 'js-pool',
-              },
-            },
-            {
-              loader: 'babel-loader',
-              options: {
-                cacheDirectory: path.resolve(rootPath, '.babel-cache'),
-                cacheCompression: false,
                 sourceMap: process.env.BABEL_ENV === 'debug',
               },
             },
