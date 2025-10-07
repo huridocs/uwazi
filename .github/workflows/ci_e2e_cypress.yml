@@ -92,12 +92,14 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Wait for production build artifact
-        uses: lee-dohm/wait-for-artifact-action@v1
+      - name: Wait for production build job
+        uses: WyriHaximus/github-action-wait-for-status@v1
+        id: wait-for-build-job
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: 'prod'
-          workflow_run_id: ${{ github.run_id }}
+          ignoreFailures: 'false'
+          checkInterval: '30'
+          checkName: 'build'
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download production build artifact
         uses: actions/download-artifact@v4
