@@ -93,13 +93,11 @@ jobs:
         run: npx cypress install
 
       - name: Wait for production build job
-        uses: WyriHaximus/github-action-wait-for-status@v1
+        uses: fountainhead/action-wait-for-check@v1.1.0
         id: wait-for-build-job
         with:
-          ignoreFailures: 'false'
-          checkInterval: '30'
+          token: ${{ secrets.GITHUB_TOKEN }}
           checkName: 'build'
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download production build artifact
         uses: actions/download-artifact@v4
