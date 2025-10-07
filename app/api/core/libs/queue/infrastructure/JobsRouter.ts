@@ -26,4 +26,16 @@ export class JobsRouter implements JobsDispatcher {
     const dispactcher = this.routeJob();
     return dispactcher.dispatch(dispatchable, params);
   }
+
+  async dispatchMany(
+    callback: (
+      dispatch: <T extends Dispatchable>(
+        dispatchable: DispatchableClass<T>,
+        params: Parameters<T['handleDispatch']>[1]
+      ) => void
+    ) => Promise<void>
+  ): Promise<void> {
+    const dispactcher = this.routeJob();
+    await dispactcher.dispatchMany(callback);
+  }
 }

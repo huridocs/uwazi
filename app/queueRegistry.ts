@@ -13,8 +13,11 @@ import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PX
 import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
-import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
-import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { IXTaskService } from 'api/services/informationextraction/TaskService';
@@ -28,7 +31,7 @@ import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob'
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
+import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included

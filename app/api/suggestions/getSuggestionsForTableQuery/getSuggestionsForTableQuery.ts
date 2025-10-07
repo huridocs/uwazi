@@ -104,6 +104,7 @@ export class GetSuggestionsForTableQuery {
         error: 1,
         fileId: 1,
         status: 1,
+        useForTraining: { $ifNull: ['$useForTraining', false] },
       },
     });
   }

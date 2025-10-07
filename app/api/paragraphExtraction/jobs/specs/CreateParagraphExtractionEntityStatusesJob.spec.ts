@@ -8,8 +8,8 @@ import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
 } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
@@ -50,6 +50,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     await testingEnvironment.setUp(createBaseFixtures());
     mockDispatcher = {
       dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
     };
   });
 

@@ -2,10 +2,13 @@
 const { spawn } = require('child_process');
 const url = require('url');
 
-require('@babel/register')({
-  extensions: ['.js', '.jsx', '.ts', '.tsx'],
-  plugins: ['@babel/plugin-transform-modules-commonjs'],
-});
+if (process.env.NODE_ENV !== 'production') {
+  require('@babel/register')({
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    plugins: ['@babel/plugin-transform-modules-commonjs'],
+  });
+}
+
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 
 const { config } = require('../app/api/config');

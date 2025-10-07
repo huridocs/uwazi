@@ -39,15 +39,11 @@ describe.each([
     featureFlags: { v2UpdateTemplateUseCase: false },
   },
   { title: 'v2', featureFlags: { v2UpdateTemplateUseCase: true } },
-])('updateExtractedMetadataProperties $title', ({ title, featureFlags }) => {
+])('updateExtractedMetadataProperties $title', ({ featureFlags }) => {
   beforeEach(async () => {
-    const elasticIndex = `uwazi_test_index_${title}`;
-    await testingEnvironment.setUp(fixtures, elasticIndex);
+    await testingEnvironment.setUp(fixtures, true);
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    testingTenants.mockCurrentTenant({
-      name: testingDB.dbName,
-      dbName: testingDB.dbName,
-      indexName: elasticIndex,
+    testingTenants.changeCurrentTenant({
       featureFlags,
     });
   });

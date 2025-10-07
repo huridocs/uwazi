@@ -15,7 +15,7 @@ let IXExternalService: ExternalDummyService;
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
-jest.mock('api/queue.v2/configuration/factories', () => ({
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => ({
     dispatch: jest.fn(),
   }),

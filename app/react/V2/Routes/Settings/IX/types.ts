@@ -12,6 +12,7 @@ type EntitySuggestion = Omit<EntitySuggestionType, '_id' | 'suggestedValue' | 'c
   suggestedValue: SuggestionValue | SuggestionValue[];
   currentValue?: SuggestionValue | SuggestionValue[];
   extractorSource: { pdf?: boolean; property?: string };
+  useForTraining: boolean;
 };
 
 interface IXProperty extends PropertySchema {
@@ -59,6 +60,7 @@ type IXSuggestionsLoaderResponse = {
 type IXFilters = {
   labeled: boolean;
   nonLabeled: boolean;
+  useForTraining: boolean;
   match: boolean;
   mismatch: boolean;
   obsolete: boolean;

@@ -6,8 +6,8 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/queue.v2/application/contracts/Dispatchable';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
@@ -329,4 +329,43 @@ it('should double the lockWindow time on every retry', async () => {
   TestJob.shouldFail = false;
 
   expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
+});
+
+describe('dispatchMany', () => {
+  it('should process jobs dispatched in batch efficiently', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+
+    const { worker, signals, jobArguments } = await setUpWorker();
+
+    await dispatcher.dispatchMany(async dispatch => {
+      const entities = await Promise.resolve([
+        { id: 1, data: 'first' },
+        { id: 2, data: 'second' },
+        { id: 3, data: 'third' },
+      ]);
+
+      entities.forEach(entity => {
+        dispatch(TestJob, { aNumber: entity.id });
+      });
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    worker.start();
+
+    await signals.signaled('ending-3');
+    await worker.stop();
+
+    expect(jobArguments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ namespace: 'namespace', params: { aNumber: 1 } }),
+        expect.objectContaining({ namespace: 'namespace', params: { aNumber: 2 } }),
+        expect.objectContaining({ namespace: 'namespace', params: { aNumber: 3 } }),
+      ])
+    );
+
+    expect(jobArguments).toHaveLength(3);
+
+    expect(await adapter.pickJob('name')).toBeNull();
+  });
 });

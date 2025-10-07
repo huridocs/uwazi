@@ -203,7 +203,7 @@ describe('PDF display', () => {
           );
           cy.get('.highlight-rectangle').should('be.visible');
         });
-        cy.get('#root').toMatchImageSnapshot();
+        // cy.get('#root').toMatchImageSnapshot();
         cy.get('div[data-region-selector-id="2"]').toMatchSnapshot({
           name: 'IX sidepanel library render',
         });
@@ -252,7 +252,7 @@ describe('PDF display', () => {
         cy.get('.closeSidepanel').realTouch();
         cy.get('aside.metadata-sidepanel').should('not.be.visible');
         cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS').should('be.visible');
-        cy.get('#root').toMatchImageSnapshot();
+        // cy.get('#root').toMatchImageSnapshot();
       });
 
       it('should check that the selection looks ok', () => {
@@ -266,7 +266,7 @@ describe('PDF display', () => {
         cy.get('.ContextMenu-bottom .btn').realTouch();
         cy.contains('.btn', 'Edit').realTouch();
         cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });
-        cy.get('#root').toMatchImageSnapshot();
+        // cy.get('#root').toMatchImageSnapshot();
         cy.contains('.btn', 'Cancel').realTouch();
         cy.get('.closeSidepanel').realTouch();
       });

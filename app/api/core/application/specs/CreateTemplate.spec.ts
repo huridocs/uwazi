@@ -407,6 +407,7 @@ describe('CreateTemplateUseCase', () => {
         {
           _id: expect.any(ObjectId),
           defaultfilter: false,
+          nestedProperties: [],
           filter: false,
           label: 'Nested',
           name: 'nested_nested',

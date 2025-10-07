@@ -65,6 +65,11 @@ export const IXModelSchema = {
             processed: { type: 'number', optional: true },
           },
         },
+        samplePolicy: {
+          type: 'string',
+          enum: ['only_marked', 'marked_plus_labeled'],
+          optional: true,
+        },
         // per-run queue storage (selected mode)
         findSuggestionsSharedIds: { type: 'array', items: { type: 'string' }, optional: true },
         findSuggestionsInitialSharedIdsCount: { type: 'number', optional: true },
