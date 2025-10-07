@@ -96,7 +96,8 @@ jobs:
         run: |
           apt-get update && apt-get install -y jq wget unzip
 
-          for i in {1..60}; do
+          i=1
+          while [ $i -le 60 ]; do
             echo "Attempt $i: Checking for artifact..."
             ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
@@ -113,6 +114,7 @@ jobs:
 
             echo "Artifact not yet found. Waiting 20 seconds..."
             sleep 20
+            i=$(expr $i + 1)
           done
 
           echo "Timed out waiting for artifact."
