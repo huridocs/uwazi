@@ -8,15 +8,12 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'The ref to checkout'
-        required: true
       sha:
         description: 'The sha to checkout'
         required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.sha }}
   cancel-in-progress: true
 
 env:
@@ -31,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
 
       - name: Detect CI Dockerfile change
@@ -131,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: ${{ github.event.inputs.sha }}
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -205,7 +202,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: ${{ github.event.inputs.sha }}
       - name: Cache node modules
         uses: actions/cache@v4
         with:
