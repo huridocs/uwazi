@@ -79,6 +79,25 @@ jobs:
       - name: install dependencies
         run: yarn install
       
+      - name: Clone dummy services
+        if: matrix.needs_setup
+        uses: actions/checkout@v4
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
+
+      - name: Setup dummy services
+        if: matrix.needs_setup
+        run: |
+          python3.11 -m venv .venv
+          make install_venv
+          make start > logs.log &
+          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+        working-directory: dummy_extractor_services
+      - name: Log dummy services on failure
+        if: matrix.needs_setup && failure()
+        run: cat dummy_extractor_services/logs.log
+
       - name: Cache Cypress binary
         id: cypress-cache
         uses: actions/cache@v4
@@ -92,80 +111,6 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Wait For and Download Artifact
-        run: |
-          apt-get update && apt-get install -y jq unzip
-
-          i=1
-          while [ $i -le 60 ]; do
-            echo "Attempt $i: Checking for artifact..."
-            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
-              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
-
-            if [ -n "$ARTIFACT_URL" ]; then
-              echo "Artifact found. Downloading with curl..."
-              curl -s -L -o artifact.zip \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "$ARTIFACT_URL"
-              unzip -q artifact.zip -d ./prod
-              echo "Artifact downloaded and unzipped successfully."
-              exit 0
-            fi
-
-            echo "Artifact not yet found. Waiting 20 seconds..."
-            sleep 20
-            i=$(expr $i + 1)
-          done
-
-          echo "Timed out waiting for artifact."
-          exit 1
-        timeout-minutes: 20
-
-      - name: Clone dummy services
-        if: matrix.needs_setup
-        uses: actions/checkout@v4
-        with:
-          repository: huridocs/dummy_extractor_services
-          path: dummy_extractor_services
-      - name: Setup dummy services
-        if: matrix.needs_setup
-        run: |
-          python3.11 -m venv .venv
-          make install_venv
-          make start > logs.log &
-          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
-        working-directory: dummy_extractor_services
-      - name: Log dummy services on failure
-        if: matrix.needs_setup && failure()
-        run: cat dummy_extractor_services/logs.log
-      - name: Configure IX settings
-        if: matrix.needs_ix_config
-        run: yarn ix-config
-        env:
-          DBHOST: localhost:27017
-          DATABASE_NAME: uwazi_e2e
-      - run: yarn blank-state
-        id: blank-state-attempt1
-        continue-on-error: true
-        env:
-          DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://elasticsearch:9200
-          DATABASE_NAME: uwazi_e2e
-          INDEX_NAME: uwazi_e2e
-          TRANSPILED: true
-      - run: yarn blank-state --force
-        id: blank-state-attempt2
-        if: steps.blank-state-attempt1.outcome == 'failure'
-        env:
-          DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://elasticsearch:9200
-          DATABASE_NAME: uwazi_e2e
-          INDEX_NAME: uwazi_e2e
-          TRANSPILED: true
-          
       - name: Forward ports for container networking
         run: |
             echo "Setting up port forwarding for container networking..."
@@ -255,6 +200,65 @@ jobs:
               echo "Elasticsearch socat log:"
               cat socat-elasticsearch.log
             fi  
+
+      - name: Wait For and Download Artifact
+        run: |
+          apt-get update && apt-get install -y jq unzip
+
+          i=1
+          while [ $i -le 60 ]; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+
+            if [ -n "$ARTIFACT_URL" ]; then
+              echo "Artifact found. Downloading with curl..."
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+
+            echo "Artifact not yet found. Waiting 20 seconds..."
+            sleep 20
+            i=$(expr $i + 1)
+          done
+
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 20
+      
+      - name: Configure IX settings
+        if: matrix.needs_ix_config
+        run: yarn ix-config
+        env:
+          DBHOST: localhost:27017
+          DATABASE_NAME: uwazi_e2e
+
+      - run: yarn blank-state
+        id: blank-state-attempt1
+        continue-on-error: true
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://elasticsearch:9200
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+
+      - run: yarn blank-state --force
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://elasticsearch:9200
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
 
       - name: start Uwazi
         env:

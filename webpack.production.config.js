@@ -4,10 +4,6 @@ const os = require('os');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 
-// Parallelization configuration
-const numCpus = os.cpus().length;
-const maxWorkers = numCpus <= 4 ? Math.max(1, Math.floor(numCpus / 2)) : Math.max(1, numCpus - 1);
-
 const production = true;
 const config = require('./webpack/config')(production);
 
@@ -44,25 +40,9 @@ config.plugins = config.plugins.concat([
 
 config.optimization.minimize = true;
 config.optimization.minimizer = [
-  new CssMinimizerPlugin({
-    parallel: maxWorkers,
-  }),
+  new CssMinimizerPlugin(),
   new TerserWebpackPlugin({
-    parallel: maxWorkers,
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console.log in production
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-      },
-      mangle: {
-        safari10: true,
-      },
-      format: {
-        comments: false,
-      },
-    },
-    extractComments: false, // Don't extract comments to separate files
+    parallel: true,
   }),
 ];
 
