@@ -233,12 +233,8 @@ jobs:
 
             core.setOutput('should_run', String(shouldRun));
 
-  trigger_workflows:
-    needs: precheck
-    if: needs.precheck.outputs.should_run == 'true'
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Trigger E2E Pipeline, ESLint, Unit Tests and Security Audit
+      - name: Trigger Workflows
+        if: steps.compute.outputs.should_run == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -255,6 +251,7 @@ jobs:
               'ci_eslint.yml',
               'ci_unit_tests_docker.yml',
               'security_audit.yml',
+              'ci_ts_types.yml',
             ]) {
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
