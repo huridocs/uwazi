@@ -24,7 +24,7 @@
     "emit-types": "node --no-experimental-fetch scripts/emitSchemaTypes.js",
     "emitSocketEvent": "node --no-experimental-fetch ./scripts/run.js ./emitSocketEvent.js",
     "preproduction-build": "yarn run tailwind",
-    "production-build": "./webpack/build-simple.sh",
+    "production-build": "./webpack/build.sh",
     "build-production": "yarn production-build",
     "run-production": "NODE_ENV=production node --no-experimental-fetch server.js",
     "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
