@@ -103,7 +103,7 @@ jobs:
               "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
               | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
 
-            if [[ -n "$ARTIFACT_URL" ]]; then
+            if [ -n "$ARTIFACT_URL" ]; then
               echo "Artifact found. Downloading..."
               wget -q --header="Authorization: token ${{ secrets.GITHUB_TOKEN }}" -O artifact.zip "$ARTIFACT_URL"
               unzip -q artifact.zip -d ./prod
