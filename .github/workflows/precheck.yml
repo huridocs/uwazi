@@ -19,6 +19,8 @@ permissions:
 jobs:
   precheck:
     runs-on: ubuntu-24.04
+    outputs:
+      should_run: ${{ steps.compute.outputs.should_run }}
     steps:
       - name: Checkout (for commit message resolution)
         uses: actions/checkout@v4
