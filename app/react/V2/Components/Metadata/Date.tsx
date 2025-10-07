@@ -4,14 +4,16 @@ import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
 import { MetadataFieldProps } from './types';
 
-type DateValue = number | { from: number; to: number };
+type DateValue = { value: number } | { value: { from: number; to: number } };
 
 type DateProps = MetadataFieldProps & {
   timestamps: DateValue[];
 };
 
 const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) => {
-  const locale = useParams().lang || 'en';
+  const locale = useParams()?.lang || 'en';
+
+  console.log(timestamps);
 
   return (
     <div>
@@ -19,20 +21,22 @@ const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) =
         <Translate context={translationContext}>{label}</Translate>
       </dt>
       {timestamps.map(stamp => {
-        if (typeof stamp === 'number') {
-          return <dd className="font-medium text-gray-900">{secondsToDate(stamp, locale)}</dd>;
+        if (typeof stamp.value === 'number') {
+          return (
+            <dd className="font-medium text-gray-900">{secondsToDate(stamp.value, locale)}</dd>
+          );
         }
         return (
           <dd className="font-medium text-gray-900">
             <span className="sr-only">
               <Translate>From</Translate>
             </span>
-            <span>{secondsToDate(stamp.from, locale)}</span>
-            <span aria-hidden="true">-</span>
+            <span>{secondsToDate(stamp.value.from, locale)}</span>
+            <span aria-hidden="true"> - </span>
             <span className="sr-only">
               <Translate>To</Translate>
             </span>
-            <span>{secondsToDate(stamp.to, locale)}</span>
+            <span>{secondsToDate(stamp.value.to, locale)}</span>
           </dd>
         );
       })}

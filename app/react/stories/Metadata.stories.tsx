@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Title, Date, Geolocation } from 'V2/Components/Metadata';
+import { Title, Date, Geolocation, Relationship } from 'V2/Components/Metadata';
 import { createStore, Provider } from 'jotai';
 import { settingsAtom, templatesAtom } from 'app/V2/atoms';
+import { BrowserRouter } from 'react-router';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
@@ -19,18 +20,10 @@ type StoryProps = {
   entity: any;
 };
 
-const MetadataDisplay = ({ entity }: StoryProps) => (
-  <dl className="flex flex-col gap-4">
-    {/* <Translate translationContext={entity.template.name}>{entity.template.label}</Translate> */}
-    <Title
-      title={entity.title}
-      label="placeholder"
-      translationContext={entity.template.name}
-      iconId={entity.icon._id}
-    />
-    <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
-    <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
-    {entity.metadata.map(data => {
+const MetadataDisplay = ({ entity }: StoryProps) => {
+  const renderMetadataProperty = useCallback(
+    // eslint-disable-next-line max-statements
+    data => {
       if (
         data.type === 'date' ||
         data.type === 'daterange' ||
@@ -41,7 +34,7 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
           <Date
             timestamps={data.values}
             label={data.label}
-            translationContext={entity.template.name}
+            translationContext={entity.template._id}
           />
         );
       }
@@ -51,13 +44,52 @@ const MetadataDisplay = ({ entity }: StoryProps) => (
           <Geolocation
             markers={data.values}
             label={data.label}
-            translationContext={entity.template.name}
+            translationContext={entity.template._id}
           />
         );
       }
-    })}
-  </dl>
-);
+
+      if (data.type === 'relationship') {
+        if (data.inherited === true) {
+          const inheritedProperty = data.properties?.inheritedProperty;
+          if (!inheritedProperty) return null;
+          const reformattedData = {
+            values: data.values,
+            label: data.label,
+            name: data.name,
+            type: inheritedProperty.type,
+          };
+          return renderMetadataProperty(reformattedData);
+        }
+        return (
+          <Relationship
+            values={data.values}
+            label={data.label}
+            translationContext={entity.template._id}
+          />
+        );
+      }
+
+      return undefined;
+    },
+    [entity]
+  );
+
+  return (
+    <dl className="flex flex-col gap-4">
+      <Title
+        title={entity.title}
+        label={entity.template.label}
+        translationContext={entity.template._id}
+        iconId={entity.icon._id}
+      />
+      <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
+      <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
+
+      <div>{entity.metadata.map(renderMetadataProperty)}</div>
+    </dl>
+  );
+};
 
 const meta: Meta<StoryProps> = {
   title: 'Components/Metadata',
@@ -69,9 +101,11 @@ type Story = StoryObj<StoryProps>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Provider store={store}>
-        <MetadataDisplay entity={args.entity} />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={store}>
+          <MetadataDisplay entity={args.entity} />
+        </Provider>
+      </BrowserRouter>
     </div>
   ),
 };
