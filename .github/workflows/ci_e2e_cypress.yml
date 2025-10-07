@@ -92,6 +92,17 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
+      - name: Install GitHub CLI
+        run: |
+          apt-get update
+          apt-get install -y gpg
+          mkdir -p -m 755 /etc/apt/keyrings
+          wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg
+          chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
+          apt-get update
+          apt-get install -y gh
+
       - name: 'Debug: List Check Runs'
         run: |
           gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" --jq '.check_runs[] | {name: .name, status: .status, conclusion: .conclusion}'
