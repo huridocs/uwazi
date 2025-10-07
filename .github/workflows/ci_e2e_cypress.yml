@@ -94,7 +94,7 @@ jobs:
 
       - name: Wait For and Download Artifact
         run: |
-          apt-get update && apt-get install -y jq wget unzip
+          apt-get update && apt-get install -y jq unzip
 
           i=1
           while [ $i -le 60 ]; do
@@ -105,8 +105,11 @@ jobs:
               | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
 
             if [ -n "$ARTIFACT_URL" ]; then
-              echo "Artifact found. Downloading..."
-              wget -q --header="Authorization: token ${{ secrets.GITHUB_TOKEN }}" -O artifact.zip "$ARTIFACT_URL"
+              echo "Artifact found. Downloading with curl..."
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
               unzip -q artifact.zip -d ./prod
               echo "Artifact downloaded and unzipped successfully."
               exit 0
