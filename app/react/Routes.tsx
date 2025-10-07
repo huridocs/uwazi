@@ -61,7 +61,7 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 } from 'V2/Routes/Settings/Templates';
-import { Entity, entityLoader } from 'V2/Routes/Entity/Entity';
+//import { Entity, entityLoader } from 'V2/Routes/Entity/Entity';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,

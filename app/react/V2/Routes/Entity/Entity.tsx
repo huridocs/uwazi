@@ -50,12 +50,8 @@ const Entity = () => {
         controls: 'metadata',
         icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
         content: (
-          <div>
+          <div no-translate>
             <h1>{entity.title}</h1>
-            <p>Metadata</p>
-            <span>Colors: red, blue, green</span>
-            <span>Size: 100px</span>
-            <span>Weight: 100kg</span>
           </div>
         ),
       },
@@ -66,15 +62,7 @@ const Entity = () => {
         icon: <DocumentTextIcon className="w-5 h-5" />,
         content: (
           <div>
-            <h1>Document</h1>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua.
-            </p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua.
-            </p>
+            <h1>{entity.title}</h1>
           </div>
         ),
       },
@@ -86,16 +74,7 @@ const Entity = () => {
         count: 14,
         content: (
           <div>
-            <h1>Relationships</h1>
-            <ul>
-              <li>Relationship 1</li>
-              <li>Relationship 2</li>
-              <li>Relationship 3</li>
-              <li>Relationship 4</li>
-              <li>Relationship 5</li>
-              <li>Relationship 6</li>
-              <li>Relationship 7</li>
-            </ul>
+            <h1>{entity.title}</h1>
           </div>
         ),
       },
@@ -104,7 +83,11 @@ const Entity = () => {
         label: 'Files',
         controls: 'files',
         icon: <FolderIcon className="w-5 h-5" />,
-        content: <h1>Files placeholder</h1>,
+        content: (
+          <div>
+            <h1>{entity.title}</h1>
+          </div>
+        ),
         count: 3,
       },
     ],
@@ -119,14 +102,14 @@ const Entity = () => {
             id: 'side-metadata',
             label: 'Metadata',
             controls: 'side-panel-metadata',
-            content: <div>Metadata placeholder</div>,
+            content: <div />,
             icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
           },
           {
             id: 'toc',
             label: 'Table of Contents',
             controls: 'side-panel-annotations',
-            content: <div>Table of Contents placeholder</div>,
+            content: <div />,
             icon: <ListBulletIcon className="w-5 h-5" />,
           },
         ];
@@ -136,14 +119,14 @@ const Entity = () => {
             id: 'filters',
             label: 'Filters',
             controls: 'side-panel-filter',
-            content: <div>Filters placeholder</div>,
+            content: <div />,
             icon: <FunnelIcon className="w-5 h-5" />,
           },
           {
             id: 'graphs',
             label: 'Suggestions',
             controls: 'side-panel-suggestions',
-            content: <div>Graphs placeholder</div>,
+            content: <div />,
             icon: <ChartBarIcon className="w-5 h-5" />,
           },
         ];
@@ -153,14 +136,14 @@ const Entity = () => {
             id: 'file',
             label: 'File',
             controls: 'side-panel-file',
-            content: <div>Files placeholder</div>,
+            content: <div />,
             icon: <DocumentTextIcon className="w-5 h-5" />,
           },
           {
             id: 'translations',
             label: 'Translations',
             controls: 'side-panel-translations',
-            content: <div>Translations placeholder</div>,
+            content: <div />,
             icon: <FlagIcon className="w-5 h-5" />,
           },
         ];
@@ -171,7 +154,7 @@ const Entity = () => {
             id: 'side-metadata',
             label: 'Metadata',
             controls: 'side-panel-metadata',
-            content: <div>Metadata placeholder</div>,
+            content: <div />,
             icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
           },
         ];

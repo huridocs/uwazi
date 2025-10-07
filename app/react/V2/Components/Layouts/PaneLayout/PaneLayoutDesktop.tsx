@@ -4,7 +4,7 @@ import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
 
 const MIN_WIDTH = 100;
-const SEPARATOR_PX = 6;
+const SEPARATOR_PX = 4;
 
 const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undefined => {
   if ('clientX' in event && typeof event.clientX === 'number') return event.clientX;
