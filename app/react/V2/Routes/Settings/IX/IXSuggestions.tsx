@@ -100,8 +100,20 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const onEntitySave = async () => {
-    await revalidate();
+  const markForTraining = async (suggestionIds: string[], use: boolean) => {
+    if (extractor._id) {
+      try {
+        await suggestionsAPI.setForTraining({
+          extractorId: extractor._id,
+          suggestionIds,
+          useForTraining: use,
+        });
+      } catch (e) {
+        handleUnexpectedError(e, 'An error has ocurred');
+      } finally {
+        await revalidate();
+      }
+    }
   };
 
   const acceptSuggestions = async (suggestionsToAccept: TableSuggestion[]) => {
@@ -115,7 +127,6 @@ const IXSuggestions = () => {
         newAcceptedIds.forEach(id => newSet.add(id));
         return newSet;
       });
-
       setSelected([]);
       setNotifications({
         type: 'info',
@@ -203,19 +214,8 @@ const IXSuggestions = () => {
     }
   };
 
-  const markForTraining = async (suggestionIds: string[], use: boolean) => {
-    if (extractor._id) {
-      try {
-        await suggestionsAPI.setForTraining({
-          extractorId: extractor._id,
-          suggestionIds,
-          useForTraining: use,
-        });
-        await revalidate();
-      } catch (e) {
-        handleUnexpectedError(e, 'An error has ocurred');
-      }
-    }
+  const onEntitySave = async (suggestionIds: string[]) => {
+    await markForTraining(suggestionIds, true);
   };
 
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
