@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { AbstractUseCase, BaseDeps } from 'api/common.v2/contracts/UseCase';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -40,7 +39,10 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
   constructor(deps: BaseDeps<Deps>) {
     super(deps);
 
-    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
+    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
+      ...this.deps,
+      idGenerator: this.idGenerator,
+    });
   }
 
   protected async executeAsync(
@@ -49,11 +51,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     fullReindex = false
   ): Promise<Output> {
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
-    if (currentTemplate.processing?.active) {
-      throw new ValidationError([
-        { path: 'processing', message: 'template is being processed you can not update it yet' },
-      ]);
-    }
+
     const { newNameGeneration } = await this.deps.settingsDS.get();
 
     const commonProperties = input.commonProperties.map(p =>
@@ -63,30 +61,13 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       )
     );
 
-    const properties = await Promise.all(
-      input?.properties?.map(async p =>
-        this.propertyCreatorServiceStrategy
-          .getStrategy(p.type)
-          .create(
-            { ...p, id: p.id || this.idGenerator.generate(), template: currentTemplate.id },
-            { newNameGeneration }
-          )
-      ) || []
-    );
+    const properties = await this.propertyCreatorServiceStrategy.bulkCreate(input.properties, {
+      newNameGeneration,
+      template: currentTemplate.id,
+    });
 
-    const updatedTemplate = new Template(
-      input.id,
-      input.name,
-      properties,
-      commonProperties,
-      input.color,
-      input.default
-    );
+    const updatedTemplate = currentTemplate.update({ ...input, properties, commonProperties });
 
-    const swappedNameProp = currentTemplate.selectSwappedNameProperties(updatedTemplate);
-    if (swappedNameProp) {
-      throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
-    }
     await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
       await this.deps.translationService.updateTemplateTranslation(
