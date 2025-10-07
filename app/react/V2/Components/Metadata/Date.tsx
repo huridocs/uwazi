@@ -13,8 +13,6 @@ type DateProps = MetadataFieldProps & {
 const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) => {
   const locale = useParams()?.lang || 'en';
 
-  console.log(timestamps);
-
   return (
     <div>
       <dt className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>

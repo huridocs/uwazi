@@ -5,7 +5,7 @@ import { MapProps } from 'app/Map/MapContainer';
 import { MetadataFieldProps } from './types';
 
 type GeolocationProps = MetadataFieldProps & {
-  markers: { latitude: number; longitude: number }[];
+  markers: { value: { latitude: number; longitude: number } }[];
   height?: MapProps['height'];
   clickOnMarker?: MapProps['clickOnMarker'];
   onClick?: MapProps['onClick'];
@@ -15,21 +15,12 @@ type GeolocationProps = MetadataFieldProps & {
   zoom?: MapProps['zoom'];
 };
 
-const formatMarkers = (points: GeolocationProps['markers']): MapProps['markers'] =>
+const formatMarkers = (points: GeolocationProps['markers'], label: string): MapProps['markers'] =>
   points.map(point => ({
-    latitude: point.latitude,
-    longitude: point.longitude,
-    properties: {
-      entity: {
-        sharedId: 'placeholder',
-        title: 'placeholder',
-        template: 'placeholder',
-      },
-      templateInfo: {
-        color: 'placeholder',
-        name: 'placeholder',
-      },
-    },
+    latitude: point.value.latitude,
+    longitude: point.value.longitude,
+    label,
+    properties: {},
   }));
 
 const Geolocation = ({
@@ -52,7 +43,7 @@ const Geolocation = ({
 
     <Map
       height={height}
-      markers={formatMarkers(markers)}
+      markers={formatMarkers(markers, label)}
       clickOnMarker={clickOnMarker}
       onClick={onClick}
       showControls={showControls}
@@ -64,3 +55,36 @@ const Geolocation = ({
 );
 
 export { Geolocation };
+
+// {
+//   "properties": {
+//     "entity": {
+//       "title": "Brazil",
+//       "metadata": {
+//         "geolocation_geolocation": [
+//           {
+//             "value": {
+//               "lat": -10.092900239396712,
+//               "lon": -49.39453125000001,
+//               "label": ""
+//             }
+//           }
+//         ]
+//       },
+//       "template": "58ada34c299e826748545059",
+//       "language": "en",
+//       "sharedId": "t8plml296d23mcxr",
+//       "snippets": {
+//         "count": 0,
+//         "metadata": [],
+//         "fullText": []
+//       },
+//       "_id": "58ada350299e826748545787"
+//     },
+//     "color": "#CDDC39",
+//     "info": ""
+//   },
+//   "latitude": -10.092900239396712,
+//   "longitude": -49.39453125000001,
+//   "label": "Geolocation"
+// }
