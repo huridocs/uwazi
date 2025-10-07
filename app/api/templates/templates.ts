@@ -203,11 +203,11 @@ export default {
     if (v2UpdateTemplateUseCase && template._id) {
       const input = UpdateTemplateDTOSchema.parse({
         ...template,
-        _id: template._id.toString(),
-        properties: (template.properties || []).map(p => ({ ...p, _id: p._id?.toString() })),
+        id: template._id.toString(),
+        properties: (template.properties || []).map(p => ({ ...p, id: p._id?.toString() })),
         commonProperties: (template.commonProperties || []).map(p => ({
           ...p,
-          _id: p._id?.toString(),
+          id: p._id?.toString(),
         })),
       });
       const transactionManager = DefaultTransactionManager();

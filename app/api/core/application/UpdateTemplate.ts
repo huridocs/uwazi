@@ -48,7 +48,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     language: LanguageISO6391,
     fullReindex = false
   ): Promise<Output> {
-    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
+    const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
     if (currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
@@ -58,7 +58,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
 
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create(
-        { ...p, id: p._id || this.idGenerator.generate(), template: currentTemplate.id },
+        { ...p, id: p.id || this.idGenerator.generate(), template: currentTemplate.id },
         { newNameGeneration }
       )
     );
@@ -68,14 +68,14 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
           .create(
-            { ...p, id: p._id || this.idGenerator.generate(), template: currentTemplate.id },
+            { ...p, id: p.id || this.idGenerator.generate(), template: currentTemplate.id },
             { newNameGeneration }
           )
       ) || []
     );
 
     const updatedTemplate = new Template(
-      input._id,
+      input.id,
       input.name,
       properties,
       commonProperties,
