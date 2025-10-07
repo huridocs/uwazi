@@ -92,20 +92,13 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Verify pre-installed tools
-        run: |
-          echo "Verifying mongosh..."
-          mongosh --version
-          echo "Verifying poppler-utils..."
-          pdftotext -v
-          pdftoppm -v
-          pdfinfo -v
-          echo "Verifying Chrome..."
-          google-chrome --version && echo "✓ Chrome detected" || echo "❌ Chrome not found"
-          echo "Verifying Xvfb..."
-          which xvfb-run
-          echo "Verifying Python..."
-          python3.11 --version
+      - name: Wait for production build artifact
+        uses: lee-dohm/wait-for-artifact-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          artifact_name: 'prod'
+          workflow_run_id: ${{ github.run_id }}
+
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
