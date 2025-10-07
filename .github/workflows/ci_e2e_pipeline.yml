@@ -3,15 +3,12 @@ name: E2E Pipeline
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'The ref to checkout'
-        required: true
       sha:
         description: 'The sha to checkout'
         required: true
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.sha }}
   cancel-in-progress: true
 
 permissions:
