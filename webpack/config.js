@@ -21,9 +21,9 @@ module.exports = production => {
 
   if (production) {
     outputPath = path.join(rootPath, 'prod/dist');
-    stylesName = '[name].[contenthash].css';
+    stylesName = '[name].[chunkhash].css';
     rtlStylesName = 'rtl-[name].[fullhash].css';
-    jsChunkHashName = '.[contenthash]';
+    jsChunkHashName = '.[chunkhash]';
   }
 
   return {
@@ -59,15 +59,14 @@ module.exports = production => {
       mainFields: ['loader', 'main'],
     },
     optimization: {
-      moduleIds: 'deterministic',
-      chunkIds: 'deterministic',
-      runtimeChunk: 'single',
       splitChunks: {
         cacheGroups: {
-          vendor: {
+          commons: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor',
-            chunks: 'initial',
+            chunks(chunk) {
+              return chunk.name && !chunk.name.match(/LazyLoad/);
+            },
           },
         },
       },
