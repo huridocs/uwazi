@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
 import { MetadataFieldProps } from './types';
+import { MetadataLabel } from './MetadataLabel';
 
 type DateValue = { value: number } | { value: { from: number; to: number } };
 
@@ -15,9 +16,7 @@ const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) =
 
   return (
     <div>
-      <dt className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>
-        <Translate context={translationContext}>{label}</Translate>
-      </dt>
+      <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
       {timestamps.map(stamp => {
         if (typeof stamp.value === 'number') {
           return (

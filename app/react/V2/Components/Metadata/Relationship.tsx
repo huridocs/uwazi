@@ -1,17 +1,16 @@
 import React from 'react';
-import { I18NLinkV2, Translate } from 'app/I18N';
+import { I18NLinkV2 } from 'app/I18N';
 import { MetadataFieldProps } from './types';
 import { CountryFlag } from '../CustomIcons';
+import { MetadataLabel } from './MetadataLabel';
 
 type RelationshipProps = MetadataFieldProps & {
   values: { label: string; url: string; icon?: string }[];
 };
 
-const Relationship = ({ label, translationContext, values }: RelationshipProps) => (
+const Relationship = ({ label, translationContext, hideLabel, values }: RelationshipProps) => (
   <div>
-    <dt className="sr-only">
-      <Translate context={translationContext}>{label}</Translate>
-    </dt>
+    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     {values.map(value => (
       <span className="flex flex-row flex-nowrap gap-2 align-middle">
         <dd className="font-medium text-gray-900">

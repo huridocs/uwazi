@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Title, Date, Geolocation, Relationship } from 'V2/Components/Metadata';
+import { Title, Date, Geolocation, Relationship, Media } from 'V2/Components/Metadata';
 import { createStore, Provider } from 'jotai';
 import { settingsAtom, templatesAtom } from 'app/V2/atoms';
 import { BrowserRouter } from 'react-router';
@@ -67,6 +67,12 @@ const MetadataDisplay = ({ entity }: StoryProps) => {
             label={data.label}
             translationContext={entity.template._id}
           />
+        );
+      }
+
+      if (data.type === 'media') {
+        return (
+          <Media values={data.values} label={data.label} translationContext={entity.template._id} />
         );
       }
 
@@ -203,6 +209,12 @@ const Basic = {
               label: 'Location of incident',
             },
           },
+        },
+        {
+          name: 'video_of_event',
+          label: 'Media file',
+          type: 'media',
+          values: [{ value: '/short-video.mp4', alt: 'Alternative text' }],
         },
       ],
     },

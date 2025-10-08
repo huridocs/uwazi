@@ -1,8 +1,8 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
 import { Map } from 'app/Map';
 import { MapProps } from 'app/Map/MapContainer';
 import { MetadataFieldProps } from './types';
+import { MetadataLabel } from './MetadataLabel';
 
 type GeolocationProps = MetadataFieldProps & {
   markers: { value: { latitude: number; longitude: number } }[];
@@ -37,9 +37,7 @@ const Geolocation = ({
   height = 500,
 }: GeolocationProps) => (
   <div>
-    <dt className={`${hideLabel ? 'sr-only' : 'font-bold text-gray-900'}`}>
-      <Translate context={translationContext}>{label}</Translate>
-    </dt>
+    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
 
     <Map
       height={height}
