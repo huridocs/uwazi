@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const os = require('os');
 const AssetsPlugin = require('assets-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -13,10 +12,6 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
-
-// Parallelization configuration
-const numCpus = os.cpus().length;
-const maxWorkers = numCpus <= 4 ? Math.max(1, Math.floor(numCpus / 2)) : Math.max(1, numCpus - 1);
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -79,15 +74,6 @@ module.exports = production => {
           include: path.join(rootPath, 'app'),
           exclude: /node_modules/,
           use: [
-            {
-              loader: 'thread-loader',
-              options: {
-                workers: maxWorkers,
-                workerParallelJobs: 50,
-                poolTimeout: 2000,
-                name: 'js-pool',
-              },
-            },
             {
               loader: 'babel-loader?cacheDirectory',
               options: {
