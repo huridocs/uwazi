@@ -46,6 +46,9 @@ jobs:
       
       # ===== BUILD PROCESS =====
       
+      - name: Create cache directory
+        run: mkdir -p node_modules/.cache
+
       - name: Install dependencies
         run: yarn install
 
