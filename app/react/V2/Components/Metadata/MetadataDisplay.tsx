@@ -6,6 +6,7 @@ import { Geolocation } from './Geolocation';
 import { Relationship } from './Relationship';
 import { Media } from './Media';
 import { Image } from './Image';
+import { Text } from './Text';
 import { Title } from './Title';
 
 type MetadataDisplayProps = {
@@ -72,6 +73,13 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         );
       }
 
+      if (data.type === 'text') {
+        return <Text values={data.values} label={data.label} translationContext={templateId} />;
+      }
+
+      if (data.type === 'markdown') {
+      }
+
       return undefined;
     },
     [template, templateId]
@@ -80,8 +88,8 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
   return (
     <dl className="flex flex-col gap-4">
       <Title
+        label="Title"
         title={entity.title}
-        label={entity.template.label}
         translationContext={templateId}
         iconId={entity.icon._id}
       />

@@ -148,6 +148,12 @@ const Basic = {
           name: 'preview_document',
           values: [{ value: '/batman.jpg', alt: 'Alternative text pdf preview' }],
         },
+        {
+          type: 'text',
+          label: 'Simple text',
+          name: 'simple_text',
+          values: [{ value: 'Sample simple text' }],
+        },
       ],
     },
   },
