@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { MarkdownProperty } from '../MarkdownProperty';
+import { TextProperty } from '../TextProperty';
 
 describe('MarkdownProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -18,5 +19,21 @@ describe('MarkdownProperty', () => {
     expect(
       () => new MarkdownProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'MarkdownProperty'));
+  });
+
+  it('should ensure TextProperty is compatible to MarkdownProperty', () => {
+    const text = new TextProperty({
+      id: 'any_id',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    const markdown = new MarkdownProperty({
+      id: 'any_id_2',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    expect(() => markdown.ensurePropertyIsConsistent(text)).not.toThrow();
   });
 });

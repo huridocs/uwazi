@@ -24,6 +24,7 @@ class AbstractSelectProperty extends FilterableProperty {
 
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
     super.ensurePropertyIsConsistent(property);
+
     if (this.content !== property.content) {
       throw new PropertyThesaurusMismatchError(this, property);
     }
