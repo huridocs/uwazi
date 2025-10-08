@@ -1008,14 +1008,17 @@ describe('search', () => {
         'en'
       ),
     ]);
-    expect(asc.rows[0].title).toBe('metadata1');
-    expect(asc.rows[1].title).toBe('Metadata2');
-    expect(asc.rows[2].title).toBe('metádata3');
-    expect(asc.rows[3].title).toBe(' Metadáta4');
+    expect(asc.rows[0].title).toBe(' Metadáta4');
+    expect(asc.rows[1].title).toBe('metadata1');
+    expect(asc.rows[2].title).toBe('Metadata2');
+    expect(asc.rows[3].title).toBe('metádata3');
+    expect(asc.rows[4].title).toBe('metadata5');
+
     expect(desc.rows[0].title).toBe('metadata5');
-    expect(desc.rows[1].title).toBe(' Metadáta4');
-    expect(desc.rows[2].title).toBe('metádata3');
-    expect(desc.rows[3].title).toBe('Metadata2');
+    expect(desc.rows[1].title).toBe('metádata3');
+    expect(desc.rows[2].title).toBe('Metadata2');
+    expect(desc.rows[3].title).toBe('metadata1');
+    expect(desc.rows[4].title).toBe(' Metadáta4');
   });
 
   it('should throw a validation error if order is not asc or desc', async () => {

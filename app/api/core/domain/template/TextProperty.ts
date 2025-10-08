@@ -12,8 +12,8 @@ class TextProperty extends FilterableProperty {
 
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'text' }, context);
-
     this.generatedId = props.generatedId || false;
+    this.compatibleTypes = ['markdown'];
 
     this.validate();
   }

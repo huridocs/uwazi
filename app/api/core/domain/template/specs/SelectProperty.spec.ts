@@ -4,6 +4,7 @@ import {
   PropertyTypeInvalidTypeError,
   PropertyTypeMismatchError,
 } from '../errors';
+import { MultiSelectProperty } from '../MultiSelectProperty';
 import { SelectProperty } from '../SelectProperty';
 
 describe('SelectProperty', () => {
@@ -85,5 +86,24 @@ describe('SelectProperty', () => {
     );
 
     expect(() => select.ensurePropertyIsConsistent(select)).not.toThrow();
+  });
+
+  it('should ensure MultiSelectProperty and SelectProperty are compatible to each other', () => {
+    const select = new SelectProperty({
+      id: 'any_id',
+      label: 'A Title',
+      template: 'any',
+      content: 'any_content',
+    });
+
+    const multiSelect = new MultiSelectProperty({
+      id: 'any_id_2',
+      label: 'A Title',
+      template: 'any',
+      content: 'any_content',
+    });
+
+    expect(() => select.ensurePropertyIsConsistent(multiSelect)).not.toThrow();
+    expect(() => multiSelect.ensurePropertyIsConsistent(select)).not.toThrow();
   });
 });

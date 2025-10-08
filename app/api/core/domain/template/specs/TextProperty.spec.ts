@@ -1,4 +1,5 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
+import { MarkdownProperty } from '../MarkdownProperty';
 import { TextProperty } from '../TextProperty';
 
 describe('TextProperty', () => {
@@ -25,5 +26,21 @@ describe('TextProperty', () => {
           template: 'any',
         })
     ).toThrow(new PropertyTypeInvalidTypeError('date', 'TextProperty'));
+  });
+
+  it('should ensure MarkdownProperty is compatible to TextProperty', () => {
+    const text = new TextProperty({
+      id: 'any_id',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    const markdown = new MarkdownProperty({
+      id: 'any_id_2',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    expect(() => text.ensurePropertyIsConsistent(markdown)).not.toThrow();
   });
 });
