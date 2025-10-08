@@ -142,6 +142,12 @@ const Basic = {
           type: 'image',
           values: [{ value: '/short-video-thumbnail.jpg', alt: 'Alternative text for image' }],
         },
+        {
+          type: 'preview',
+          label: 'Preview of main document',
+          name: 'preview_document',
+          values: [{ value: '/batman.jpg', alt: 'Alternative text pdf preview' }],
+        },
       ],
     },
   },

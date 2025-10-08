@@ -60,7 +60,7 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         return <Media values={data.values} label={data.label} translationContext={templateId} />;
       }
 
-      if (data.type === 'image') {
+      if (data.type === 'image' || data.type === 'preview') {
         return <Image values={data.values} label={data.label} translationContext={templateId} />;
       }
 
