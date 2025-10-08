@@ -9,6 +9,7 @@ type Props = {
 class MarkdownProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'markdown' }, context);
+    this.compatibleTypes = ['text'];
 
     this.validate();
   }
