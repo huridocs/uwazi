@@ -56,7 +56,6 @@ module.exports = production => {
     },
     optimization: {
       splitChunks: {
-        chunks: 'all',
         cacheGroups: {
           commons: {
             test: /[\\/]node_modules[\\/]/,
@@ -67,9 +66,6 @@ module.exports = production => {
           },
         },
       },
-      // Enable parallel module resolution
-      moduleIds: 'deterministic',
-      chunkIds: 'deterministic',
     },
     module: {
       rules: [
@@ -95,17 +91,7 @@ module.exports = production => {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
-            {
-              loader: 'sass-loader', 
-              options: { 
-                sourceMap: true,
-                // Enable parallel processing for Sass
-                implementation: require('sass'),
-                sassOptions: {
-                  outputStyle: production ? 'compressed' : 'expanded',
-                },
-              },
-            },
+            { loader: 'sass-loader', options: { sourceMap: true } },
           ],
         },
         {
@@ -186,6 +172,6 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
-    ].filter(Boolean),
+    ],
   };
 };
