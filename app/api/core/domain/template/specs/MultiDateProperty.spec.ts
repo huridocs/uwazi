@@ -1,3 +1,4 @@
+import { DateProperty } from '../DateProperty';
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { MultiDateProperty } from '../MultiDateProperty';
 
@@ -18,5 +19,21 @@ describe('MultiDateProperty', () => {
     expect(
       () => new MultiDateProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'MultiDateProperty'));
+  });
+
+  it('should ensure DateProperty is compatible to MultiDateProperty', () => {
+    const date = new DateProperty({
+      id: 'any_id',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    const multiDate = new MultiDateProperty({
+      id: 'any_id_2',
+      label: 'A Title',
+      template: 'any',
+    });
+
+    expect(() => multiDate.ensurePropertyIsConsistent(date)).not.toThrow();
   });
 });

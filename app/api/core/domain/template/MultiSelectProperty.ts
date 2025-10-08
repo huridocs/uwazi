@@ -9,6 +9,7 @@ type Props = {
 class MultiSelectProperty extends AbstractSelectProperty {
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'multiselect' }, context);
+    this.compatibleTypes = ['select'];
 
     this.validateMultiSelectProperty();
   }
