@@ -34,6 +34,10 @@ module.exports = production => {
       type: 'filesystem',
       buildDependencies: {
         config: [__filename],
+        tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
+        babel: [path.resolve(rootPath, 'babel.config.json')],
+        tailwind: [path.resolve(rootPath, 'tailwind.config.js')],
+        postcss: [path.resolve(rootPath, 'postcss.config.js')],
       },
     },
     entry: {
