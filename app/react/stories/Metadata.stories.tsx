@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Title, Date, Geolocation, Relationship, Media, Image } from 'V2/Components/Metadata';
+import { MetadataDisplay } from 'V2/Components/Metadata';
 import { createStore, Provider } from 'jotai';
 import { settingsAtom, templatesAtom } from 'app/V2/atoms';
 import { BrowserRouter } from 'react-router';
@@ -16,106 +16,19 @@ store.set(templatesAtom, [
   },
 ]);
 
-type StoryProps = {
-  entity: any;
-};
-
-const MetadataDisplay = ({ entity }: StoryProps) => {
-  const renderMetadataProperty = useCallback(
-    // eslint-disable-next-line max-statements
-    data => {
-      if (
-        data.type === 'date' ||
-        data.type === 'daterange' ||
-        data.type === 'multidate' ||
-        data.type === 'multidaterange'
-      ) {
-        return (
-          <Date
-            timestamps={data.values}
-            label={data.label}
-            translationContext={entity.template._id}
-          />
-        );
-      }
-
-      if (data.type === 'geolocation') {
-        return (
-          <Geolocation
-            markers={data.values}
-            label={data.label}
-            translationContext={entity.template._id}
-          />
-        );
-      }
-
-      if (data.type === 'relationship') {
-        if (data.inherited === true) {
-          const inheritedProperty = data.properties?.inheritedProperty;
-          if (!inheritedProperty) return null;
-          const reformattedData = {
-            values: data.values,
-            label: data.label,
-            name: data.name,
-            type: inheritedProperty.type,
-          };
-          return renderMetadataProperty(reformattedData);
-        }
-        return (
-          <Relationship
-            values={data.values}
-            label={data.label}
-            translationContext={entity.template._id}
-          />
-        );
-      }
-
-      if (data.type === 'media') {
-        return (
-          <Media values={data.values} label={data.label} translationContext={entity.template._id} />
-        );
-      }
-
-      if (data.type === 'image') {
-        return (
-          <Image values={data.values} label={data.label} translationContext={entity.template._id} />
-        );
-      }
-
-      return undefined;
-    },
-    [entity]
-  );
-
-  return (
-    <dl className="flex flex-col gap-4">
-      <Title
-        title={entity.title}
-        label={entity.template.label}
-        translationContext={entity.template._id}
-        iconId={entity.icon._id}
-      />
-      <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
-      <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
-
-      <div>{entity.metadata.map(renderMetadataProperty)}</div>
-    </dl>
-  );
-};
-
-const meta: Meta<StoryProps> = {
+const meta: Meta<typeof MetadataDisplay> = {
   title: 'Components/Metadata',
   component: MetadataDisplay,
 };
 
-type Story = StoryObj<StoryProps>;
+type Story = StoryObj<typeof MetadataDisplay>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <MetadataDisplay entity={args.entity} />
+          <MetadataDisplay entity={args.entity} templateId={args.templateId} />
         </Provider>
       </BrowserRouter>
     </div>
@@ -125,6 +38,7 @@ const Primary: Story = {
 const Basic = {
   ...Primary,
   args: {
+    templateId: '1',
     entity: {
       _id: '1',
       title: 'Simple title',
