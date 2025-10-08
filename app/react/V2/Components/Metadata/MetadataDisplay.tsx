@@ -61,12 +61,20 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
       }
 
       if (data.type === 'image' || data.type === 'preview') {
-        return <Image values={data.values} label={data.label} translationContext={templateId} />;
+        const property = template?.properties?.find(prop => prop.name === data.name);
+        return (
+          <Image
+            values={data.values}
+            label={data.label}
+            translationContext={templateId}
+            imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+          />
+        );
       }
 
       return undefined;
     },
-    [templateId]
+    [template, templateId]
   );
 
   return (

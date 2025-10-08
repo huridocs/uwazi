@@ -8,9 +8,10 @@ type ImageProps = MetadataFieldProps & {
     value: string;
     alt?: string;
   }[];
+  imageStyle?: 'contain' | 'cover';
 };
 
-const Image = ({ label, hideLabel, translationContext, values }: ImageProps) => {
+const Image = ({ label, hideLabel, translationContext, values, imageStyle }: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
   return (
@@ -31,6 +32,9 @@ const Image = ({ label, hideLabel, translationContext, values }: ImageProps) => 
         return (
           <dd>
             <img
+              style={{
+                objectFit: imageStyle ?? 'fill',
+              }}
               src={image.value}
               alt={image.alt}
               onError={() => setErrorIndices(prevErrors => prevErrors.add(index))}
