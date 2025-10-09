@@ -8,6 +8,7 @@ import { Media } from './Media';
 import { Image } from './Image';
 import { Text } from './Text';
 import { Title } from './Title';
+import { Markdown } from './Markdown';
 
 type MetadataDisplayProps = {
   entity: unknown;
@@ -78,6 +79,7 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
       }
 
       if (data.type === 'markdown') {
+        return <Markdown values={data.values} label={data.label} translationContext={templateId} />;
       }
 
       return undefined;

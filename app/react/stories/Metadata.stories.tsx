@@ -154,6 +154,27 @@ const Basic = {
           name: 'simple_text',
           values: [{ value: 'Sample simple text' }],
         },
+        {
+          type: 'markdown',
+          label: 'Markdown (HTML example)',
+          name: 'markdown_html',
+          values: [
+            {
+              value:
+                '<p>This <b>Markdown</b> field includes <i>simple HTML</i> tags and a <a href="https://example.com">link</a>.</p>',
+            },
+          ],
+        },
+        {
+          type: 'markdown',
+          label: 'Markdown (syntax example)',
+          name: 'markdown_syntax',
+          values: [
+            {
+              value: '**Bold text**, *italic text*, and a [link](https://example.com)',
+            },
+          ],
+        },
       ],
     },
   },

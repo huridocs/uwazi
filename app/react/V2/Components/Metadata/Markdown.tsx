@@ -30,9 +30,11 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
   return (
     <div>
       <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-      {/* Allow inserting html since it's sanitized */}
-      {/* eslint-disable-next-line react/no-danger */}
-      <dd dangerouslySetInnerHTML={{ __html: safeHtml }} />
+      <dd>
+        {/* Allow inserting html since it's sanitized */}
+        {/* eslint-disable-next-line react/no-danger */}
+        <div className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+      </dd>
     </div>
   );
 };
