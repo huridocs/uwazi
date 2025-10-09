@@ -2,20 +2,11 @@
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
 import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from 'api/core/application/TemplateDTOs';
-import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
-import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
@@ -37,15 +28,10 @@ import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { tenants } from 'api/tenants';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
-import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/UpdateTemplateUseCaseFactory';
+import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';
+import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
+import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -178,20 +164,11 @@ export default {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
     if (v2CreateTemplateUseCase && !template._id) {
       const input = CreateTemplateDTOSchema.parse(template);
-      const transactionManager = DefaultTransactionManager();
-      const output = await new CreateTemplateUseCase({
-        idGenerator: DefaultIdGenerator,
-        templatesDS: DefaultTemplatesDataSource(transactionManager),
-        thesauriDS: new MongoThesauriDataSource(),
-        translationService: new LegacyTranslationService(),
-        settingsDS: DefaultSettingsDataSource(transactionManager),
-        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
-        transactionManager,
-        pageService: new LegacyPageService(),
-      }).execute(input);
+      const output = await CreateTemplateUseCaseFactory.create().execute(input);
 
       return TemplateMapper.toSchema(output);
     }
+
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
     if (v2UpdateTemplateUseCase && template._id) {
       const input = UpdateTemplateDTOSchema.parse({
@@ -203,25 +180,11 @@ export default {
           id: p._id?.toString(),
         })),
       });
-      const transactionManager = DefaultTransactionManager();
-      const templatesDS = DefaultTemplatesDataSource(transactionManager);
-      const entitiesDS = new MongoMultiLanguageEntityDataSource(
-        getConnection(),
-        transactionManager,
-        templatesDS
-      );
 
-      const output = await new UpdateTemplateUseCase({
-        idGenerator: DefaultIdGenerator,
-        templatesDS,
-        thesauriDS: new MongoThesauriDataSource(),
-        translationService: new LegacyTranslationService(),
-        settingsDS: DefaultSettingsDataSource(transactionManager),
-        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
-        entitiesDS,
-        transactionManager,
-        eventBus: applicationEventsBus,
-      }).execute(input, { language, fullReindex });
+      const output = await UpdateTemplateUseCaseFactory.create().execute(input, {
+        language,
+        fullReindex,
+      });
 
       return TemplateMapper.toSchema(output);
     }
@@ -456,12 +419,9 @@ export default {
   async setAsDefault(_id: string) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2SetTemplateAsDefaultUseCase;
     if (v2CreateTemplateUseCase) {
-      const transactionManager = DefaultTransactionManager();
-      const templatesDS = DefaultTemplatesDataSource(transactionManager);
-
-      const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
-
-      const output = await useCase.execute({ templateId: _id.toString() });
+      const output = await SetTemplateAsDefaultUseCaseFactory.create().execute({
+        templateId: _id.toString(),
+      });
 
       return [
         TemplateMapper.toSchema(output.current),
@@ -522,23 +482,7 @@ export default {
   async delete(template: Partial<TemplateSchema>) {
     const v2DeleteTemplateUseCase = tenants.current().featureFlags?.v2DeleteTemplateUseCase;
     if (v2DeleteTemplateUseCase) {
-      const eventBus = applicationEventsBus;
-      const transactionManager = DefaultTransactionManager();
-      const templatesDS = DefaultTemplatesDataSource(transactionManager);
-      const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-      const settingsDS = DefaultSettingsDataSource(transactionManager);
-      const translationsDS = DefaultTranslationsDataSource(transactionManager);
-
-      const useCase = new DeleteTemplateUseCase({
-        eventBus,
-        transactionManager,
-        entitiesDS,
-        templatesDS,
-        settingsDS,
-        translationsDS,
-      });
-
-      await useCase.execute({ templateId: template._id!.toString() });
+      await DeleteTemplateUseCaseFactory.create().execute({ templateId: template._id!.toString() });
 
       return template;
     }
