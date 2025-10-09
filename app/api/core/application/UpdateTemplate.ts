@@ -1,12 +1,10 @@
-import { AbstractUseCase, BaseDeps } from 'api/common.v2/contracts/UseCase';
+import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
-import { tenants } from 'api/tenants';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
@@ -32,21 +30,15 @@ type Context = {
 };
 
 class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
-  private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
-
-  constructor(deps: BaseDeps<Deps>) {
-    super(deps);
-
-    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
-      ...this.deps,
-      idGenerator: this.idGenerator,
-    });
-  }
-
   protected async executeAsync(
     input: UpdateTemplateDTO,
     { language, fullReindex }: Context
   ): Promise<Output> {
+    const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
+      ...this.deps,
+      idGenerator: this.idGenerator,
+    });
+
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
 
     const { newNameGeneration } = await this.deps.settingsDS.get();
@@ -58,7 +50,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       )
     );
 
-    const properties = await this.propertyCreatorServiceStrategy.bulkCreate(input.properties, {
+    const properties = await propertyCreatorServiceStrategy.bulkCreate(input.properties, {
       newNameGeneration,
       template: currentTemplate.id,
     });
@@ -81,8 +73,8 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
         context: {
           fullReindex,
           language,
-          tenantName: tenants.current().name,
-          userId: permissionsContext.getUserInContext()!._id!.toString(),
+          tenantName: this.tenant.name,
+          userId: this.actorId,
         },
       })
     );

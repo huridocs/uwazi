@@ -6,8 +6,6 @@ import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent'
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
 
@@ -75,8 +73,8 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
           context: {
             language: defaultLanguage,
             fullReindex: false,
-            tenantName: tenants.current().name,
-            userId: permissionsContext.getUserInContext()!._id!.toString(),
+            tenantName: this.tenant.name,
+            userId: this.actorId,
           },
         })
       )

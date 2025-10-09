@@ -9,6 +9,8 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/eventsbus';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 
@@ -28,17 +30,20 @@ class UpdateTemplateUseCaseFactory {
     const idGenerator = DefaultIdGenerator;
     const eventBus = applicationEventsBus;
 
-    const useCase = new UpdateTemplateUseCase({
-      idGenerator,
-      eventBus,
-      transactionManager,
-      templatesDS,
-      entitiesDS,
-      thesauriDS,
-      translationService,
-      settingsDS,
-      relationshipTypesDS,
-    });
+    const useCase = new UpdateTemplateUseCase(
+      {
+        idGenerator,
+        eventBus,
+        transactionManager,
+        templatesDS,
+        entitiesDS,
+        thesauriDS,
+        translationService,
+        settingsDS,
+        relationshipTypesDS,
+      },
+      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+    );
 
     return useCase;
   }

@@ -2,6 +2,8 @@ import { ValidationError as AJVValidationError } from 'ajv';
 import { ValidationError } from 'api/core/domain/error/ValidationError';
 import { EventsBus } from 'api/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { UserSchema } from 'shared/types/userType';
+import { Tenant } from 'api/tenants/tenantContext';
 import { TransactionManager } from './TransactionManager';
 import { IdGenerator } from './IdGenerator';
 
@@ -16,8 +18,32 @@ type Deps<ExtendedDeps> = {
   idGenerator?: IdGenerator;
 } & ExtendedDeps;
 
+type Context = {
+  actor: UserSchema; // Using legacy User for now.
+  tenant: Tenant; // Using legacy Tenant for now
+};
+
 abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseCase<Input, Output> {
-  constructor(protected deps: Deps<ExtendedDeps>) {}
+  constructor(
+    protected deps: Deps<ExtendedDeps>,
+    private context?: Context
+  ) {}
+
+  get actorId() {
+    if (!this.context?.actor._id) {
+      throw new Error(`Actor was not found. ${JSON.stringify(context)}`);
+    }
+
+    return this.context.actor._id.toString();
+  }
+
+  get tenant() {
+    if (!this.context?.tenant) {
+      throw new Error(`Tenant was not found. ${JSON.stringify(context)}`);
+    }
+
+    return this.context.tenant;
+  }
 
   get idGenerator(): IdGenerator {
     if (!this.deps.idGenerator) {
