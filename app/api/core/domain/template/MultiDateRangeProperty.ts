@@ -9,6 +9,7 @@ type Props = {
 class MultiDateRangeProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || 'multidaterange' }, context);
+    this.compatibleTypes = ['daterange'];
 
     this.validate();
   }

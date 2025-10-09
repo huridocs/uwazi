@@ -108,7 +108,7 @@ describe('PropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Text',
-          type: 'markdown',
+          type: 'date',
           template: new ObjectId().toString(),
         },
         {}

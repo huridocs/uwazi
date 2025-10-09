@@ -114,17 +114,6 @@ class PropertyThesaurusMismatchError extends DomainError {
   }
 }
 
-class PropertyRelationTypeMismatchError extends DomainError {
-  constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
-    // eslint-disable-next-line max-len
-    const message = `Property with the name "${existing.name}" must define a relationship type to "${existing.relationType}", but a relationship to "${attempted.relationType}" was provided.`;
-
-    const code = 'template.property.relation_type_mismatch_error';
-
-    super(message, code);
-  }
-}
-
 class PropertyInheritedTypeMismatchError extends DomainError {
   constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
     const formatInheritance = (property: V1RelationshipProperty) =>
@@ -277,7 +266,6 @@ export {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   PropertyThesaurusMismatchError,
-  PropertyRelationTypeMismatchError,
   PropertyInheritedTypeMismatchError,
   NestedPropertyNotAvailableError,
   DefaultTemplateNotFoundError,
