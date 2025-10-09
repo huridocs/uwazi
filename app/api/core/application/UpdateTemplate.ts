@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { AbstractUseCase, BaseDeps } from 'api/common.v2/contracts/UseCase';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';

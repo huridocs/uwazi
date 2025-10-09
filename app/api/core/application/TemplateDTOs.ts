@@ -75,7 +75,7 @@ const UpdatePropertySchema = BasePropertySchema.extend({
 });
 
 const UpdateCommonPropertySchema = BaseCommonPropertySchema.extend({
-  id: z.string({ message: 'Template id is required' }),
+  id: z.string({ message: 'Common property id is required' }),
 });
 
 const UpdateTemplateSchema = BaseTemplateSchema.extend({
