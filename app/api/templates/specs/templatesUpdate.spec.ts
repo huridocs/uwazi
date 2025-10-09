@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
@@ -11,6 +12,16 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { inspect } from 'util';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { TemplatePostProcessListener } from 'api/core/infrastructure/listeners/TemplatePostProcessListener';
 import templates from '../templates';
 
 const f = getFixturesFactory();
@@ -74,6 +85,10 @@ async function updateTemplate(template: TemplateSchema, updateV2 = false, fullRe
 const elasticIndex = 'templates_denorm_flow';
 
 describe('Templates Update', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, elasticIndex);
+  });
+
   async function setUpFixtures(_fixtures: DBFixture, featureFlag = false) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
     await Promise.all(
@@ -162,6 +177,7 @@ describe('Templates Update', () => {
       ),
     ],
   };
+
   describe.each([
     {
       title: 'V1',
@@ -169,8 +185,49 @@ describe('Templates Update', () => {
     },
     { title: 'V2', featureFlag: true },
   ])('$title', ({ featureFlag }) => {
+    beforeEach(async () => {
+      await setUpFixtures({}, featureFlag);
+
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const entitiesDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager,
+        templatesDS
+      );
+      const relationshipsV1DS = new MongoRelationshipsV1DataSource(
+        getConnection(),
+        transactionManager
+      );
+      const filesDS = DefaultFilesDataSource(transactionManager);
+
+      const jobsDispatcher = new SyncDispatcherForTests({
+        TemplatePostProcessEntitiesJob: async () =>
+          new TemplatePostProcessEntitiesJob({
+            useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+              entitiesDS,
+              relationshipsV1DS,
+              templatesDS,
+              transactionManager,
+              filesDS,
+            }),
+            templatesDS,
+          }),
+      });
+
+      new TemplatePostProcessListener(applicationEventsBus, async () => ({
+        entitiesDS,
+        jobsDispatcher,
+        templatesDS,
+      })).start();
+    });
+
+    afterEach(() => {
+      applicationEventsBus.clear();
+    });
+
     describe('templates denormalization scenarios', () => {
-      beforeAll(async () => {
+      beforeEach(async () => {
         await setUpFixtures(fixtures, featureFlag);
       });
 
@@ -815,6 +872,45 @@ describe('Templates Update', () => {
   });
 
   describe('Only v2 update', () => {
+    beforeEach(async () => {
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const entitiesDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager,
+        templatesDS
+      );
+      const relationshipsV1DS = new MongoRelationshipsV1DataSource(
+        getConnection(),
+        transactionManager
+      );
+      const filesDS = DefaultFilesDataSource(transactionManager);
+
+      const jobsDispatcher = new SyncDispatcherForTests({
+        TemplatePostProcessEntitiesJob: async () =>
+          new TemplatePostProcessEntitiesJob({
+            useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+              entitiesDS,
+              relationshipsV1DS,
+              templatesDS,
+              transactionManager,
+              filesDS,
+            }),
+            templatesDS,
+          }),
+      });
+
+      new TemplatePostProcessListener(applicationEventsBus, async () => ({
+        entitiesDS,
+        jobsDispatcher,
+        templatesDS,
+      })).start();
+    });
+
+    afterEach(() => {
+      applicationEventsBus.clear();
+    });
+
     it('should throw error when there is a mapping conflict, and not save the template', async () => {
       await setUpFixtures(
         {
