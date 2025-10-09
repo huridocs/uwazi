@@ -351,7 +351,6 @@
     "eslint-plugin-storybook": "^0.11.2",
     "fetch-mock": "^9.11.0",
     "flowbite-typography": "^1.0.3",
-    "html-webpack-plugin": "5.6.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
@@ -361,14 +360,12 @@
     "jest-puppeteer": "6.1.0",
     "jsdom-testing-mocks": "^1.13.1",
     "mini-css-extract-plugin": "^2.9.2",
-    "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "nodemon": "^3.1.9",
     "plop": "^4.0.1",
     "postcss": "8.5.2",
     "prettier": "3.5.0",
     "puppeteer": "^13.5.2",
-    "react-dnd-test-backend": "16.0.1",
     "redux-mock-store": "^1.5.5",
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "1.84.0",
@@ -385,10 +382,9 @@
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.97.1",
     "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "5.1.4",
+    "webpack-cli": "^6.0.1",
     "webpack-dev-middleware": "7.4.2",
-    "webpack-hot-middleware": "^2.26.1",
-    "worker-loader": "^3.0.8"
+    "webpack-hot-middleware": "^2.26.1"
   },
   "engines": {
     "node": ">=20.9.0"
