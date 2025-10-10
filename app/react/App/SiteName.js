@@ -1,36 +1,21 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useAtomValue } from 'jotai';
 import { Helmet } from 'react-helmet';
 import { I18NLink } from 'app/I18N';
-import { actions } from 'app/BasicReducer';
-import { store } from '../store';
+import { settingsAtom } from 'V2/atoms';
 
-export class SiteName extends Component {
-  render() {
-    return (
-      <div>
-        <Helmet
-          titleTemplate={`%s • ${this.props.siteName}`}
-          meta={[{ 'char-set': 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
-        />
-        <I18NLink
-          to="/"
-          onClick={() => store.dispatch(actions.set('library.sidepanel.view', 'library'))}
-        >
-          {this.props.siteName}
-        </I18NLink>
-      </div>
-    );
-  }
-}
+export const SiteName = () => {
+  const { site_name: siteName } = useAtomValue(settingsAtom);
 
-SiteName.propTypes = {
-  siteName: PropTypes.string,
+  return (
+    <div>
+      <Helmet
+        titleTemplate={`%s • ${siteName}`}
+        meta={[{ 'char-set': 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
+      />
+      <I18NLink to="/">{siteName}</I18NLink>
+    </div>
+  );
 };
 
-export function mapStateToProps(state) {
-  return { siteName: state.settings.collection.get('site_name') };
-}
-
-export default connect(mapStateToProps)(SiteName);
+export default SiteName;
