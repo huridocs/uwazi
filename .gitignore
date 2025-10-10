@@ -63,3 +63,8 @@ segmentation/*
 tenants/*
 .cursor/*
 .browsers/*
+
+# Webpack cache
+.webpack-cache/
+.webpack/
+.babel-cache/

@@ -77,3 +77,11 @@ updates:
         update-types: [major]
         patterns:
           - '*'
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: production
+    labels:
+      - dependencies
+    rebase-strategy: disabled
