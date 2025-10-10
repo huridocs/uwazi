@@ -5,7 +5,7 @@ on:
     branches: [development]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: [development, staging, production]
+    branches: [development, staging, production, 'dependabot/**']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
