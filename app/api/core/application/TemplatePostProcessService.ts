@@ -24,25 +24,29 @@ type Input = {
   context: TemplateUpdatedEventContext;
 };
 
+type DispatchPostProcessJobProps = {
+  diff: TemplateDiff;
+  tenantName: string;
+  userId: string;
+  language: LanguageISO6391;
+  fullReindex: boolean;
+};
+
 class TemplatePostProcessService {
   constructor(private deps: Deps) {}
 
-  async handle({ oldTemplate, newTemplate, context }: Input) {
-    const templateDiff = new TemplateDiff(oldTemplate, newTemplate);
+  async createJobsForEntities({ oldTemplate, newTemplate, context }: Input) {
+    const diff = new TemplateDiff(oldTemplate, newTemplate);
 
     await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-      if (templateDiff.hasAnyPostProcessChanges()) {
+      if (diff.hasAnyPostProcessChanges()) {
         await this.dispatchPostProcessJob(
           {
             tenantName: context!.tenantName,
             userId: context!.userId,
             language: context!.language,
-            templateId: newTemplate.id,
             fullReindex: false,
-            modifiedRelationshipsProps: templateDiff.modifiedRelationshipPropIds,
-            newGeneratedIdProps: templateDiff.newGeneratedIdPropIds,
-            deletedProperties: templateDiff.deletedPropertyNames,
-            renamedProperties: templateDiff.renamedProperties,
+            diff,
           },
           dispatch
         );
@@ -56,15 +60,11 @@ class TemplatePostProcessService {
         await ArrayUtils.sequentialFor(templates, async template =>
           this.dispatchPostProcessJob(
             {
-              templateId: template.id,
               language: context.language,
               fullReindex: true,
-              newGeneratedIdProps: [],
-              deletedProperties: [],
-              modifiedRelationshipsProps: [],
-              renamedProperties: {},
               userId: context.userId,
               tenantName: context.tenantName,
+              diff: new TemplateDiff(template, template),
             },
             dispatch
           )
@@ -74,37 +74,19 @@ class TemplatePostProcessService {
   }
 
   private async dispatchPostProcessJob(
-    {
-      templateId,
-      language,
-      fullReindex,
-      newGeneratedIdProps,
-      deletedProperties,
-      modifiedRelationshipsProps,
-      renamedProperties,
-      userId,
-      tenantName,
-    }: {
-      tenantName: string;
-      userId: string;
-      templateId: string;
-      language: LanguageISO6391;
-      fullReindex: boolean;
-      newGeneratedIdProps: string[];
-      deletedProperties: string[];
-      modifiedRelationshipsProps: string[];
-      renamedProperties: { [k: string]: string };
-    },
+    { diff, language, fullReindex, userId, tenantName }: DispatchPostProcessJobProps,
     dispatch: <T extends Dispatchable>(
       dispatchable: DispatchableClass<T>,
       params: Parameters<T['handleDispatch']>[1]
     ) => void
   ) {
     const limit = 50;
-    const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(templateId);
-    const totalJobs = Math.ceil((await this.deps.entitiesDS.countByTemplateId(templateId)) / limit);
+    const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(diff.templateId);
+    const totalJobs = Math.ceil(
+      (await this.deps.entitiesDS.countByTemplateId(diff.templateId)) / limit
+    );
     if (totalJobs > 0) {
-      await this.deps.templatesDS.addJobsToProcessingCount(templateId, totalJobs);
+      await this.deps.templatesDS.addJobsToProcessingCount(diff.templateId, totalJobs);
     }
 
     // eslint-disable-next-line no-await-in-loop
@@ -113,12 +95,12 @@ class TemplatePostProcessService {
       dispatch(TemplatePostProcessEntitiesJob, {
         // eslint-disable-next-line no-await-in-loop
         entitiesIds: await resultSet.nextBatch(limit),
-        templateId,
+        templateId: diff.templateId,
         language,
-        modifiedRelationshipsProps,
-        newGeneratedIdProps,
-        deletedProperties,
-        renamedProperties,
+        modifiedRelationshipsProps: diff.modifiedRelationshipPropIds,
+        newGeneratedIdProps: diff.newGeneratedIdPropIds,
+        deletedProperties: diff.deletedPropertyNames,
+        renamedProperties: diff.renamedProperties,
         fullReindex,
         tenantName,
         userId,

@@ -29,6 +29,10 @@ class TemplateDiff {
     this.newTemplate = newTemplate;
   }
 
+  get templateId() {
+    return this.oldTemplate.id;
+  }
+
   get newProperties() {
     if (this._newProperties === undefined) {
       const oldIdSet = new Set(this.oldTemplate.properties.map(p => p.id));

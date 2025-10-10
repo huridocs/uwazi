@@ -26,9 +26,9 @@ class TemplatePostProcessListener {
     const newTemplate = TemplateMapper.toDomain(after as TemplateDBO);
 
     const deps = await this.depsFactory();
-    const handler = new TemplatePostProcessService(deps);
+    const service = new TemplatePostProcessService(deps);
 
-    await handler.handle({ oldTemplate, newTemplate, context });
+    await service.createJobsForEntities({ oldTemplate, newTemplate, context });
   }
 }
 
