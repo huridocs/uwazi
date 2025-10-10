@@ -8,7 +8,6 @@ coverage
 /dist
 /prod
 /build
-.webpack-cache
 /uwazi-production
 /storybook-static
 *.log
