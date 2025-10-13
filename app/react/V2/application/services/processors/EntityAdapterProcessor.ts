@@ -125,27 +125,27 @@ export class EntityAdapterProcessor {
     const rootDateProperties = formattedEntities.flatMap(entity => [
       ...(entity.creationDate
         ? [
-            {
-              value: entity.creationDate,
-              type: 'date',
-              name: 'creationDate',
-              label: 'Creation date',
-              _entityId: entity._id,
-              entity,
-            },
-          ]
+          {
+            value: { value: Math.floor(entity.creationDate.value / 1000) },
+            type: 'date',
+            name: 'creationDate',
+            label: 'Creation date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
         : []),
       ...(entity.editDate
         ? [
-            {
-              value: entity.editDate,
-              type: 'date',
-              name: 'editDate',
-              label: 'Edit date',
-              _entityId: entity._id,
-              entity,
-            },
-          ]
+          {
+            value: { value: Math.floor(entity.editDate.value / 1000) },
+            type: 'date',
+            name: 'editDate',
+            label: 'Edit date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
         : []),
     ]);
 
@@ -156,8 +156,15 @@ export class EntityAdapterProcessor {
     batchResults.forEach((formattedProperty, key) => {
       const [entityId, propertyName] = key.split(':');
       const entity = formattedEntities.find(e => e._id === entityId);
-      if (entity && formattedProperty.values[0]) {
-        entity[propertyName] = { ...entity[propertyName], ...formattedProperty.values[0] };
+      if (entity) {
+        entity[propertyName] = {
+          name: propertyName,
+          type: 'date',
+          label: propertyName,
+          translatedLabel: propertyName,
+          values: formattedProperty.values,
+          dateObject: formattedProperty.values[0]?.dateObject
+        };
       }
     });
   }
@@ -191,6 +198,8 @@ export class EntityAdapterProcessor {
       formattedEntities = resultEntities.map(entity => ({
         _id: entity._id,
         title: entity.title,
+        sharedId: entity.sharedId,
+        language: entity.language,
         template: templatesById.get(entity.template as string),
         rawEntity: entity,
         metadata: [],
@@ -204,7 +213,9 @@ export class EntityAdapterProcessor {
       const batchResults = await this.processPropertiesByType(propertiesByType);
 
       batchResults.forEach(({ entity, rawEntity, ...property }) => {
-        entity.metadata.splice(property.index, 0, property);
+        if (entity && entity.metadata) {
+          entity.metadata.splice(property.index, 0, property);
+        }
       });
 
       await this.formatRootDateProperties(formattedEntities);
@@ -223,12 +234,12 @@ export class EntityAdapterProcessor {
         return {
           ...entity,
           template: restTemplate,
-        };
+        } as Entity;
       }
       return {
         ...entity,
         template: null,
-      };
+      } as Entity;
     });
     return {
       entities: composedEntities,

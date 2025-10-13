@@ -27,7 +27,7 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
 
     properties.forEach(property => {
       try {
-        const key = `${property._entityId}:${property._fieldName}`;
+        const key = `${property._entityId}:${property.name}`;
         const values = this.formatSelectProperty(property, selectFormatting, translations);
 
         const formattedProperty: FormattedProperty = { ...property, values };
@@ -46,7 +46,7 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
 
         results.set(key, formattedProperty);
       } catch (error) {
-        console.error(`Error processing select property ${property._fieldName}:`, error);
+        console.error(`Error processing select property ${property.name}:`, error);
       }
     });
 

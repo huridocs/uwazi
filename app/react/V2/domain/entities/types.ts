@@ -223,6 +223,7 @@ export interface DateMetadataProperty {
   readonly type: 'date';
   readonly values: Array<{ value: number; label?: string }>;
   readonly inherited?: boolean;
+  readonly dateObject?: Date;
   readonly properties?: {
     template?: {
       _id: string;
@@ -247,6 +248,7 @@ export interface MultiDateMetadataProperty {
   readonly type: 'multidate';
   readonly values: Array<{ value: number; label?: string }>;
   readonly inherited?: boolean;
+  readonly dateObject?: Date[];
   readonly properties?: {
     template?: {
       _id: string;

@@ -1134,7 +1134,7 @@ export const processingContext: ProcessingContext = {
     "includeFiles": true,
     "includeNavigation": true,
     "includePermissions": true,
-    "dateFormat": "YYYY-MM-DD",
+    "dateFormat": "MMM D, YYYY",
     "includePropertyMetadata": true,
     "translateLabels": true,
     "language": "en",
@@ -1514,7 +1514,7 @@ export const processingContext: ProcessingContext = {
                 {
                     "_id": "68ddecdbc9474e23bb5e914f",
                     "type": "multidate",
-                    "label": "Multidate",
+                    "label": "Multiple dates",
                     "noLabel": false,
                     "required": false,
                     "showInCard": false,
