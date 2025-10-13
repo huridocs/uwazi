@@ -16,15 +16,15 @@ import { MetadataCard } from './MetadataCard';
 
 type MetadataDisplayProps = {
   entity: Entity;
-  templateId: string;
 };
 
-const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
+const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const templates = useAtomValue(templatesAtom);
+  const templateId = entity.template?._id!;
 
   const template = useMemo(
-    () => templates.find(tpl => tpl._id === templateId),
-    [templateId, templates]
+    () => templates.find(tpl => tpl._id === entity.template?._id),
+    [entity.template?._id, templates]
   );
 
   const renderMetadataProperty = useCallback(
@@ -104,8 +104,8 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         </dt>
         <dd>
           <Pill color="primary">
-            <Translate className="font-medium" context={templateId}>
-              {template?.name}
+            <Translate className="font-medium text-base" context={templateId}>
+              {entity.template?.label}
             </Translate>
           </Pill>
         </dd>
@@ -113,7 +113,7 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
           label="Title"
           title={entity.title}
           translationContext={templateId}
-          iconId={entity.icon._id}
+          iconId={entity.icon?._id}
         />
       </MetadataCard>
 
