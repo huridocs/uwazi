@@ -24,7 +24,11 @@ export class FileProcessor extends BasePropertyProcessor {
         };
       }
 
-      const value = file.value || file;
+      let value = file.value;
+      if (value && typeof value === 'object' && value.value) {
+        value = value.value;
+      }
+
       const fileName =
         file.fileName ||
         file.originalname ||
@@ -67,9 +71,15 @@ export class FileProcessor extends BasePropertyProcessor {
         };
       }
 
+      // Handle nested value structures: { value: { value: "/api/files/..." } }
+      let actualValue = file.value;
+      if (actualValue && typeof actualValue === 'object' && actualValue.value) {
+        actualValue = actualValue.value;
+      }
+
       if (fileFormatting.maxFileSize && file.size && file.size > fileFormatting.maxFileSize) {
         return {
-          value: file,
+          value: actualValue,
           label: 'File too large',
           displayValue: 'File too large',
           error: 'File too large',
@@ -82,15 +92,15 @@ export class FileProcessor extends BasePropertyProcessor {
         !fileFormatting.allowedTypes.includes(file.type)
       ) {
         return {
-          value: file,
+          value: actualValue,
           label: 'File type not allowed',
           displayValue: 'File type not allowed',
           error: 'File type not allowed',
         };
       }
 
-      const fileName = file.fileName || file.originalname || 'Unknown';
-      const url = file.url || '';
+      const fileName = file.fileName || file.originalname || (typeof actualValue === 'string' ? actualValue.split('/').pop() : 'Unknown');
+      const url = file.url || actualValue || '';
       const type = file.type || 'unknown';
       const size = file.size || 0;
       const style = file.style || 'default';
@@ -115,7 +125,7 @@ export class FileProcessor extends BasePropertyProcessor {
       }
 
       return {
-        value: file,
+        value: actualValue, // Return the direct URL value, not nested object
         label: label || fileName,
         displayValue: label || fileName,
         formattedValue,

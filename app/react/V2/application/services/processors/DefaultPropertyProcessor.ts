@@ -24,7 +24,10 @@ export class DefaultPropertyProcessor extends BasePropertyProcessor {
       let label = value.label;
 
       if (!label) {
-        label = typeof stringValue === 'string' ? stringValue : stringValue?.label || stringValue?.toString() || '';
+        label =
+          typeof stringValue === 'string'
+            ? stringValue
+            : stringValue?.label || stringValue?.toString() || '';
       }
 
       return {
