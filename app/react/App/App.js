@@ -11,6 +11,7 @@ import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import { TranslateModal } from 'app/I18N';
 import { inlineEditAtom } from 'V2/atoms';
+import Header from 'V2/Components/Layouts/Header';
 import Confirm from './Confirm';
 import { AppMainContext } from './AppMainContext';
 import GoogleAnalytics from './GoogleAnalytics';
@@ -38,6 +39,10 @@ const App = ({ customParams }) => {
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
+  // Determine which header to show based on route
+  const shouldShowNewHeader =
+    location.pathname.includes('/settings') || location.pathname.includes('/v2');
+
   const confirm = options => {
     setConfirmOptions(options);
   };
@@ -54,8 +59,15 @@ const App = ({ customParams }) => {
   return (
     <div id="app" className={appClassName}>
       <Notifications />
+
       <div className="content">
-        <LegacyHeader />
+        {shouldShowNewHeader ? (
+          <div className="tw-content">
+            <Header />
+          </div>
+        ) : (
+          <LegacyHeader />
+        )}
         <main className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
             <Confirm {...confirmOptions} />
