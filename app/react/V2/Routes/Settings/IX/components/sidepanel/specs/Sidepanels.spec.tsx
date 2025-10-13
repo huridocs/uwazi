@@ -22,7 +22,7 @@ import {
 } from './SidepanelsFixtures';
 import { PDFSidepanel } from '../PDFSidepanel';
 import { PropertySidepanel } from '../PropertySidepanel';
-import * as sidepanelFunctions from '../../helpers/sidepanelFunctions';
+import * as sidepanelFunctions from '../../../helpers/sidepanelFunctions';
 
 const renderPDFSidepanel = (
   suggestion: any,

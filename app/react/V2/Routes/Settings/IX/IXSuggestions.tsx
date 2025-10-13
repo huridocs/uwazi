@@ -36,8 +36,8 @@ import {
 } from './types';
 import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
-import { PDFSidepanel } from './components/PDFSidepanel';
-import { PropertySidepanel } from './components/PropertySidepanel';
+import { PDFSidepanel } from './components/sidepanel/PDFSidepanel';
+import { PropertySidepanel } from './components/sidepanel/PropertySidepanel';
 import { TrainModelModal } from './components/TrainModelModal';
 import { ProcessExtractorModal } from './components/ProcessExtractorModal';
 import {
@@ -214,8 +214,12 @@ const IXSuggestions = () => {
     }
   };
 
-  const onEntitySave = async (suggestionIds: string[]) => {
-    await markForTraining(suggestionIds, true);
+  const onEntitySave = async (suggestionIds: string[], shouldUpdate: boolean) => {
+    if (shouldUpdate) {
+      await markForTraining(suggestionIds, true);
+    } else {
+      await revalidate();
+    }
   };
 
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
