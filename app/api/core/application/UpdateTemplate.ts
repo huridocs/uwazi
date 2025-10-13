@@ -12,6 +12,7 @@ import { ThesauriDataSource } from '../domain/template/propertyCreatorService/Se
 import { TranslationService } from '../domain/template/TranslationService';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
+import { TemplatePostProcessService } from './TemplatePostProcessService';
 
 type Output = Template;
 
@@ -37,6 +38,11 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,
+    });
+
+    const service = new TemplatePostProcessService({
+      ...this.deps,
+      jobsDispatcher: this.jobsDispatcher,
     });
 
     const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
@@ -66,18 +72,26 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       await this.deps.templatesDS.updateMapping(updatedTemplate, fullReindex);
     });
 
+    const context = {
+      fullReindex,
+      language,
+      tenantName: this.tenant.name,
+      userId: this.actorId,
+    };
+
     await this.eventBus.emit(
       new TemplateUpdatedEvent({
         before: TemplateMapper.toSchema(currentTemplate),
         after: TemplateMapper.toSchema(updatedTemplate),
-        context: {
-          fullReindex,
-          language,
-          tenantName: this.tenant.name,
-          userId: this.actorId,
-        },
+        context,
       })
     );
+
+    await service.createJobsForEntities({
+      after: updatedTemplate,
+      before: currentTemplate,
+      context,
+    });
 
     return updatedTemplate;
   }

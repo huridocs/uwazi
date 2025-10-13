@@ -181,7 +181,8 @@ export default {
         })),
       });
 
-      const output = await UpdateTemplateUseCaseFactory.create().execute(input, {
+      const useCase = await UpdateTemplateUseCaseFactory.create();
+      const output = await useCase.execute(input, {
         language,
         fullReindex,
       });
@@ -482,7 +483,9 @@ export default {
   async delete(template: Partial<TemplateSchema>) {
     const v2DeleteTemplateUseCase = tenants.current().featureFlags?.v2DeleteTemplateUseCase;
     if (v2DeleteTemplateUseCase) {
-      await DeleteTemplateUseCaseFactory.create().execute({ templateId: template._id!.toString() });
+      const useCase = await DeleteTemplateUseCaseFactory.create();
+
+      await useCase.execute({ templateId: template._id!.toString() });
 
       return template;
     }

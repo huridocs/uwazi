@@ -19,8 +19,8 @@ type Deps = {
 };
 
 type Input = {
-  oldTemplate: Template;
-  newTemplate: Template;
+  before: Template;
+  after: Template;
   context: TemplateUpdatedEventContext;
 };
 
@@ -35,8 +35,8 @@ type DispatchPostProcessJobProps = {
 class TemplatePostProcessService {
   constructor(private deps: Deps) {}
 
-  async createJobsForEntities({ oldTemplate, newTemplate, context }: Input) {
-    const diff = new TemplateDiff(oldTemplate, newTemplate);
+  async createJobsForEntities({ before, after, context }: Input) {
+    const diff = new TemplateDiff(before, after);
 
     await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
       if (diff.hasAnyPostProcessChanges()) {
@@ -54,7 +54,7 @@ class TemplatePostProcessService {
 
       if (context?.fullReindex) {
         const templates = (await this.deps.templatesDS.getAll().all()).filter(
-          t => t.id !== newTemplate.id
+          t => t.id !== after.id
         );
 
         await ArrayUtils.sequentialFor(templates, async template =>

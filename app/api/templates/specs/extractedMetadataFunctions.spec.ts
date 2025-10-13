@@ -7,16 +7,6 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
 import { inspect } from 'util';
 import { applicationEventsBus } from 'api/eventsbus';
-import { TemplatePostProcessListener } from 'api/core/infrastructure/listeners/TemplatePostProcessListener';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import fixtures, {
   propertyA,
   propertyB,
@@ -57,39 +47,6 @@ describe.each([
     testingTenants.changeCurrentTenant({
       featureFlags,
     });
-
-    const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager,
-      templatesDS
-    );
-    const relationshipsV1DS = new MongoRelationshipsV1DataSource(
-      getConnection(),
-      transactionManager
-    );
-    const filesDS = DefaultFilesDataSource(transactionManager);
-
-    const jobsDispatcher = new SyncDispatcherForTests({
-      TemplatePostProcessEntitiesJob: async () =>
-        new TemplatePostProcessEntitiesJob({
-          useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-            entitiesDS,
-            relationshipsV1DS,
-            templatesDS,
-            transactionManager,
-            filesDS,
-          }),
-          templatesDS,
-        }),
-    });
-
-    new TemplatePostProcessListener(applicationEventsBus, async () => ({
-      entitiesDS,
-      jobsDispatcher,
-      templatesDS,
-    })).start();
   });
 
   afterEach(() => {

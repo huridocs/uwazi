@@ -6,8 +6,10 @@ import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent'
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
+import { TemplatePostProcessService } from './TemplatePostProcessService';
 
 type Input = {
   templateId: string;
@@ -20,6 +22,7 @@ type Deps = {
   entitiesDS: EntitiesDataSource;
   translationsDS: TranslationsDataSource;
   settingsDS: SettingsDataSource;
+  multiLanguageEntitiesDS: MultiLanguageEntityDataSource;
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -39,6 +42,12 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
     if (hasEntities) {
       throw new TemplateInUseError();
     }
+
+    const service = new TemplatePostProcessService({
+      ...this.deps,
+      jobsDispatcher: this.jobsDispatcher,
+      entitiesDS: this.deps.multiLanguageEntitiesDS,
+    });
 
     const templates = await this.deps.templatesDS.findTemplatesReferencing(templateToBeDeleted.id);
     const editedTemplates = templates.map(t => t.onTemplateDeleted(templateToBeDeleted));
@@ -65,20 +74,25 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
-    await ArrayUtils.sequentialFor(templates, async template =>
-      this.eventBus.emit(
+    await ArrayUtils.sequentialFor(templates, async before => {
+      const after = editedTemplates.find(t => t.id === before.id)!;
+      const context = {
+        language: defaultLanguage,
+        fullReindex: false,
+        tenantName: this.tenant.name,
+        userId: this.actorId,
+      };
+
+      await this.eventBus.emit(
         new TemplateUpdatedEvent({
-          before: TemplateMapper.toSchema(template),
-          after: TemplateMapper.toSchema(editedTemplates.find(t => t.id === template.id)!),
-          context: {
-            language: defaultLanguage,
-            fullReindex: false,
-            tenantName: this.tenant.name,
-            userId: this.actorId,
-          },
+          before: TemplateMapper.toSchema(before),
+          after: TemplateMapper.toSchema(after),
+          context,
         })
-      )
-    );
+      );
+
+      await service.createJobsForEntities({ context, before, after });
+    });
   }
 }
 

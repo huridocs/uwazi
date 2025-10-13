@@ -11,11 +11,18 @@ import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/dat
 import { applicationEventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
+import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
+import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntitiesJob';
 
 class UpdateTemplateUseCaseFactory {
-  static create() {
+  static async create() {
     const transactionManager = DefaultTransactionManager();
     const templatesDS = DefaultTemplatesDataSource(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(
@@ -29,6 +36,29 @@ class UpdateTemplateUseCaseFactory {
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = DefaultIdGenerator;
     const eventBus = applicationEventsBus;
+    const filesDS = DefaultFilesDataSource(transactionManager);
+    const relationshipsV1DS = new MongoRelationshipsV1DataSource(
+      getConnection(),
+      transactionManager
+    );
+
+    let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
+      TemplatePostProcessEntitiesJob: async () =>
+        new TemplatePostProcessEntitiesJob({
+          useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+            entitiesDS,
+            relationshipsV1DS,
+            templatesDS,
+            transactionManager,
+            filesDS,
+          }),
+          templatesDS,
+        }),
+    });
+
+    if (process.env.NODE_ENV !== 'test') {
+      jobsDispatcher = await DefaultDispatcher(tenants.current().name);
+    }
 
     const useCase = new UpdateTemplateUseCase(
       {
@@ -41,6 +71,7 @@ class UpdateTemplateUseCaseFactory {
         translationService,
         settingsDS,
         relationshipTypesDS,
+        jobsDispatcher,
       },
       { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
     );
