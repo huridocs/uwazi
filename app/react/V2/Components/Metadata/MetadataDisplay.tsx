@@ -117,9 +117,17 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         />
       </MetadataCard>
 
-      <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
+      <Date
+        timestamps={entity.creationDate.values}
+        label={entity.creationDate.label}
+        translationContext="System"
+      />
 
-      <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
+      <Date
+        timestamps={entity.editDate.values}
+        label={entity.editDate.label}
+        translationContext="System"
+      />
 
       {entity.metadata.map(renderMetadataProperty)}
     </dl>
