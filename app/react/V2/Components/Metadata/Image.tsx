@@ -31,7 +31,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
         }
 
         return (
-          <dd>
+          <dd className="flex justify-center">
             <img
               style={{
                 objectFit: imageStyle ?? 'fill',
