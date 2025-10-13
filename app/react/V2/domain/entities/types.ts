@@ -236,9 +236,8 @@ export interface DateMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'date';
-  readonly values: Array<{ value: number; label?: string }>;
+  readonly values: Array<{ value: number; label?: string; dateObject?: Date }>;
   readonly inherited?: boolean;
-  readonly dateObject?: Date;
   readonly properties?: {
     template?: {
       _id: string;

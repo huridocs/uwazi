@@ -35,7 +35,7 @@ const Primary: Story = {
 
 const Basic = {
   ...Primary,
-  args: entity,
+  args: { entity },
 };
 
 export { Basic };

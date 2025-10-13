@@ -9,8 +9,8 @@ const rawEntity: EntitySchema = {
   sharedId: 'shared1',
   title: 'Emergency Incident Report - Downtown Traffic Accident',
   template: 'template1',
-  creationDate: 1759374706197,
-  editDate: 1760366924144,
+  creationDate: 1704067200, // Jan 1, 2024 (seconds)
+  editDate: 1704153600, // Jan 2, 2024 (seconds)
   metadata: {
     simple_text: [
       {
@@ -30,7 +30,7 @@ const rawEntity: EntitySchema = {
     ],
     single_date: [
       {
-        value: 1759363200,
+        value: 1704067200, // Jan 1, 2024
       },
     ],
     location_of_interest: [
@@ -44,34 +44,34 @@ const rawEntity: EntitySchema = {
     ],
     multiple_dates: [
       {
-        value: 1759276800,
+        value: 1704067200, // Jan 1, 2024
       },
       {
-        value: 1759363200,
+        value: 1704153600, // Jan 2, 2024
       },
       {
-        value: 1759449600,
+        value: 1704240000, // Jan 3, 2024
       },
     ],
     date_range: [
       {
         value: {
-          from: 1759276800,
-          to: 1761955199,
+          from: 1704067200, // Jan 1, 2024
+          to: 1704153600, // Jan 2, 2024
         },
       },
     ],
     multiple_date_ranges: [
       {
         value: {
-          from: 1759276800,
-          to: 1759449599,
+          from: 1704067200, // Jan 1, 2024
+          to: 1704153600, // Jan 2, 2024
         },
       },
       {
         value: {
-          from: 1759363200,
-          to: 1759535999,
+          from: 1704153600, // Jan 2, 2024
+          to: 1704240000, // Jan 3, 2024
         },
       },
     ],
@@ -908,7 +908,17 @@ const processingContext: ProcessingContext = {
       __v: 2,
     },
   ],
-  settings: {},
+  settings: {
+    dateFormat: 'MMM D, YYYY',
+    site_name: 'Uwazi',
+    languages: [
+      {
+        key: 'en',
+        label: 'English',
+        default: true,
+      },
+    ],
+  },
   thesauri: [
     {
       _id: '68d6ed4891b591b7432b276b',

@@ -9,8 +9,8 @@ export const rawEntity: EntitySchema = {
   title: 'Emergency Incident Report - Downtown Traffic Accident',
   template: '68ddecdbc9474e23bb5e914b',
   published: false,
-  creationDate: 1759374706197,
-  editDate: 1760366924144,
+  creationDate: 1704067200000, // 2024-01-01 00:00:00 UTC in milliseconds
+  editDate: 1704153600000, // 2024-01-02 00:00:00 UTC in milliseconds
   metadata: {
     simple_text: [
       {
@@ -904,7 +904,17 @@ export const processingContext: ProcessingContext = {
       __v: 2,
     },
   ],
-  settings: {},
+  settings: {
+    dateFormat: 'MMM D, YYYY',
+    site_name: 'Uwazi',
+    languages: [
+      {
+        key: 'en',
+        label: 'English',
+        default: true,
+      },
+    ],
+  },
   thesauri: [
     {
       _id: '68d6ed4891b591b7432b276b',

@@ -111,8 +111,8 @@ export class AdapterTemplateProcessor {
       type: property.type,
       ...(templateTranslations !== undefined
         ? {
-          translatedLabel: templateTranslations.values[property.label] || property.label,
-        }
+            translatedLabel: templateTranslations.values[property.label] || property.label,
+          }
         : {}),
     };
   }

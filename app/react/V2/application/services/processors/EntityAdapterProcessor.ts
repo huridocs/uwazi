@@ -117,15 +117,87 @@ export class EntityAdapterProcessor {
     return allResults;
   }
 
+  private processRootLevelDates(formattedEntities: Partial<Entity>[]): void {
+    const dateProcessor = this.processors.get('date') as DatePropertyProcessor;
+    if (!dateProcessor) return;
+
+    formattedEntities.forEach(entity => {
+      if (entity.rawEntity?.creationDate) {
+        const creationDateValue =
+          typeof entity.rawEntity.creationDate === 'object' &&
+            entity.rawEntity.creationDate !== null
+            ? entity.rawEntity.creationDate
+            : entity.rawEntity.creationDate;
+
+        const processedCreationDate = dateProcessor.processBatch(
+          [
+            {
+              value: creationDateValue,
+              name: 'creationDate',
+              label: 'Creation date',
+              type: 'date',
+              _entityId: entity._id,
+              entity,
+              refId: entity.rawEntity._id || entity._id,
+            },
+          ],
+          this.context
+        );
+
+        const creationDateResult = processedCreationDate.get(`${entity._id}:creationDate`);
+        if (creationDateResult) {
+          const { entity: _entityRef, ...dateWithoutEntity } = creationDateResult;
+          entity.creationDate = {
+            ...dateWithoutEntity,
+            translatedLabel: 'Creation date',
+            propertyMetadata: creationDateResult.propertyMetadata || {},
+          };
+        }
+      }
+
+      if (entity.rawEntity?.editDate) {
+        const editDateValue =
+          typeof entity.rawEntity.editDate === 'object' && entity.rawEntity.editDate !== null
+            ? entity.rawEntity.editDate
+            : entity.rawEntity.editDate;
+
+        const processedEditDate = dateProcessor.processBatch(
+          [
+            {
+              value: editDateValue,
+              name: 'editDate',
+              label: 'Edit date',
+              type: 'date',
+              _entityId: entity._id,
+              entity,
+              refId: entity.rawEntity._id || entity._id,
+            },
+          ],
+          this.context
+        );
+
+        const editDateResult = processedEditDate.get(`${entity._id}:editDate`);
+        if (editDateResult) {
+          const { entity: _entityRef, ...dateWithoutEntity } = editDateResult;
+          entity.editDate = {
+            ...dateWithoutEntity,
+            translatedLabel: 'Edit date',
+            propertyMetadata: editDateResult.propertyMetadata || {},
+          };
+        }
+      }
+    });
+  }
+
   private formatRootDateProperties(formattedEntities: any[]): void {
     const dateProcessor = this.processors.get('date') as DatePropertyProcessor;
     if (!dateProcessor) return;
 
     const rootDateProperties = formattedEntities.flatMap(entity => [
-      ...(entity.creationDate
+      ...(entity.creationDate && entity.creationDate.values && entity.creationDate.values[0]
         ? [
           {
-            value: { value: Math.floor(entity.creationDate.value / 1000) },
+            value: { value: entity.creationDate },
             type: 'date',
             name: 'creationDate',
             label: 'Creation date',
@@ -134,10 +206,10 @@ export class EntityAdapterProcessor {
           },
         ]
         : []),
-      ...(entity.editDate
+      ...(entity.editDate && entity.editDate.values && entity.editDate.values[0]
         ? [
           {
-            value: { value: Math.floor(entity.editDate.value / 1000) },
+            value: { value: entity.editDate },
             type: 'date',
             name: 'editDate',
             label: 'Edit date',
@@ -227,7 +299,7 @@ export class EntityAdapterProcessor {
         }
       });
 
-      this.formatRootDateProperties(formattedEntities);
+      this.processRootLevelDates(formattedEntities);
     } catch (error) {
       allErrors.push({
         entityId: 'batch',

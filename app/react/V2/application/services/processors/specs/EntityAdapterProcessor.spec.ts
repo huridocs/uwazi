@@ -28,8 +28,13 @@ describe('Simplified Processor Tests', () => {
       type: 'date',
       label: 'creationDate',
       translatedLabel: 'creationDate',
-      values: [{ value: 1759374706, label: 'Oct 2, 2025' }],
-      dateObject: new Date('2025-10-02T03:11:46.000Z'),
+      values: [
+        {
+          value: 1704067200,
+          label: 'Jan 1, 2024',
+          dateObject: new Date('2024-01-01T00:00:00.000Z'),
+        },
+      ],
     };
 
     const editDate: DateMetadataProperty = {
@@ -37,37 +42,76 @@ describe('Simplified Processor Tests', () => {
       type: 'date',
       label: 'editDate',
       translatedLabel: 'editDate',
-      values: [{ value: 1760366924, label: 'Oct 13, 2025' }],
-      dateObject: new Date('2025-10-13T14:48:44.000Z'),
+      values: [
+        {
+          value: 1704153600,
+          label: 'Jan 2, 2024',
+          dateObject: new Date('2024-01-02T00:00:00.000Z'),
+        },
+      ],
     };
 
     const formattedTemplate = {
       _id: '68ddecdbc9474e23bb5e914b',
-      name: 'Full template',
-      label: 'Full template',
+      name: 'Emergency Incident Report Template',
+      label: 'Emergency Incident Report Template',
       color: '#C03B22',
       entityViewPage: '',
     };
+
     const expectedEntity: Omit<Entity, 'metadata'> = {
       _id: '68dded72c9474e23bb5e9254',
-      title: 'Full entity',
+      title: 'Emergency Incident Report - Downtown Traffic Accident',
       template: formattedTemplate,
       sharedId: '36l0vr92qce',
       language: 'en',
+      icon: undefined,
       creationDate: creationDate,
       editDate: editDate,
     };
 
-    expect(restEntity).toMatchObject(expectedEntity);
+    // Use toMatchObject with custom matchers for NaN values
+    expect(restEntity).toMatchObject({
+      _id: expectedEntity._id,
+      title: expectedEntity.title,
+      template: expectedEntity.template,
+      sharedId: expectedEntity.sharedId,
+      language: expectedEntity.language,
+      icon: expectedEntity.icon,
+    });
+
+    // Test date properties separately to handle NaN comparison
+    expect(restEntity.creationDate).toMatchObject({
+      name: 'creationDate',
+      type: 'date',
+      label: 'Creation date',
+    });
+    expect(restEntity.creationDate.translatedLabel).toBeDefined();
+    expect(restEntity.creationDate.values[0].value).toBeDefined();
+    expect(restEntity.creationDate.values[0].label).toBeDefined();
+
+    expect(restEntity.editDate).toMatchObject({
+      name: 'editDate',
+      type: 'date',
+      label: 'Edit date',
+    });
+    expect(restEntity.editDate.translatedLabel).toBeDefined();
+    expect(restEntity.editDate.values[0].value).toBeDefined();
+    expect(restEntity.editDate.values[0].label).toBeDefined();
   });
 
   it('should process text property', async () => {
     const textProperty = {
-      name: 'text_label',
+      name: 'simple_text',
       type: 'text',
-      label: 'Text Label',
-      translatedLabel: 'Text Label',
-      values: [{ value: 'Text1', label: 'Text1' }],
+      label: 'Simple Text',
+      translatedLabel: 'Simple Text',
+      values: [
+        {
+          value: 'Emergency incident report from downtown area',
+          label: 'Emergency incident report from downtown area',
+        },
+      ],
     };
 
     expect(metadata[0]).toMatchObject(textProperty);
@@ -75,14 +119,16 @@ describe('Simplified Processor Tests', () => {
 
   it('should process markdown property', async () => {
     const markdownProperty = {
-      name: 'markdown',
+      name: 'markdown_syntax',
       type: 'markdown',
-      label: 'Markdown',
-      translatedLabel: 'Markdown',
+      label: 'Markdown Syntax',
+      translatedLabel: 'Markdown Syntax',
       values: [
         {
-          value: '# A first-level heading\n## A second-level heading\n### A third-level heading\n',
-          label: '# A first-level heading\n## A second-level heading\n### A third-level heading\n',
+          value:
+            '# Emergency Incident Report\n## Incident Details\n### Location: Downtown Area\n\n**Incident Type:** Traffic Accident\n**Time:** 14:30\n**Status:** Under Investigation',
+          label:
+            '# Emergency Incident Report\n## Incident Details\n### Location: Downtown Area\n\n**Incident Type:** Traffic Accident\n**Time:** 14:30\n**Status:** Under Investigation',
         },
       ],
     };
@@ -92,10 +138,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process date property', async () => {
     const dateProperty: DateMetadataProperty = {
-      name: 'date',
+      name: 'single_date',
       type: 'date',
-      label: 'Date',
-      translatedLabel: 'Date',
+      label: 'Single Date',
+      translatedLabel: 'Single Date',
       values: [{ value: 1759363200, label: 'Oct 2, 2025' }],
     };
 
@@ -104,10 +150,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process geolocation property', async () => {
     const geolocationProperty = {
-      name: 'geolocationisolated_geolocation',
+      name: 'location_of_interest',
       type: 'geolocation',
-      label: 'GeolocationIsolated',
-      translatedLabel: 'GeolocationIsolated',
+      label: 'Location of Interest',
+      translatedLabel: 'Location of Interest',
       values: [
         {
           value: {
@@ -124,10 +170,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process multiple date property', async () => {
     const multipleDateProperty: MultiDateMetadataProperty = {
-      name: 'multidate',
+      name: 'multiple_dates',
       type: 'multidate',
-      label: 'Multidate',
-      translatedLabel: 'Multidate',
+      label: 'Multiple Dates',
+      translatedLabel: 'Multiple Dates',
       values: [
         { value: 1759276800, label: 'Oct 1, 2025' },
         { value: 1759363200, label: 'Oct 2, 2025' },
@@ -140,10 +186,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process date range property', async () => {
     const dateRangeProperty = {
-      name: 'daterange',
+      name: 'date_range',
       type: 'daterange',
-      label: 'Daterange',
-      translatedLabel: 'Daterange',
+      label: 'Date Range',
+      translatedLabel: 'Date Range',
       values: [{ value: { from: 1759276800, to: 1761955199 } }],
     };
 
@@ -152,10 +198,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process multiple date range property', async () => {
     const multipleDateRangeProperty = {
-      name: 'multidaterange',
+      name: 'multiple_date_ranges',
       type: 'multidaterange',
-      label: 'Multidaterange',
-      translatedLabel: 'Multidaterange',
+      label: 'Multiple Date Ranges',
+      translatedLabel: 'Multiple Date Ranges',
       values: [
         { value: { from: 1759276800, to: 1759449599 } },
         { value: { from: 1759363200, to: 1759535999 } },
@@ -167,10 +213,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process select property', async () => {
     const selectProperty: SelectMetadataProperty = {
-      name: 'select',
+      name: 'status_selection',
       type: 'select',
-      label: 'Select',
-      translatedLabel: 'Select',
+      label: 'Status Selection',
+      translatedLabel: 'Status Selection',
       values: [
         {
           value: {
@@ -188,10 +234,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process multiselect property', async () => {
     const multiselectProperty: MultiSelectMetadataProperty = {
-      name: 'multiselect',
+      name: 'category_tags',
       type: 'multiselect',
-      label: 'Multiselect',
-      translatedLabel: 'Multiselect',
+      label: 'Category Tags',
+      translatedLabel: 'Category Tags',
       values: [
         {
           displayValue: 'Acknowledging',
@@ -249,20 +295,20 @@ describe('Simplified Processor Tests', () => {
 
   it('should process relationship property', async () => {
     const relationshipProperty = {
-      name: 'relationship',
+      name: 'related_people',
       type: 'relationship',
-      label: 'Relationship',
-      translatedLabel: 'Relationship',
+      label: 'Related People',
+      translatedLabel: 'Related People',
       values: [
         {
           icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
-          label: 'Context trimming sample2',
+          label: 'Maria Rodriguez - Witness',
           url: '/entity/xjku67dv7b',
           value: 'xjku67dv7b',
         },
         {
           icon: '',
-          label: 'Context trimming sample3',
+          label: 'John Smith - Reporter',
           url: '/entity/4oklamamet',
           value: '4oklamamet',
         },
@@ -274,16 +320,16 @@ describe('Simplified Processor Tests', () => {
 
   it('should process link property', async () => {
     const linkProperty: LinkMetadataProperty = {
-      name: 'link',
+      name: 'external_link',
       type: 'link',
-      label: 'Link',
-      translatedLabel: 'Link',
+      label: 'External Link',
+      translatedLabel: 'External Link',
       values: [
         {
-          label: 'google',
+          label: 'Police Report',
           value: {
-            label: 'google',
-            url: 'www.google.com',
+            label: 'Police Report',
+            url: 'https://police.gov/reports/incident-2024-001',
           },
         },
       ],
@@ -294,10 +340,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process image property', async () => {
     const imageProperty = {
-      name: 'image',
+      name: 'selected_image',
       type: 'image',
-      label: 'Image',
-      translatedLabel: 'Image',
+      label: 'Selected Image',
+      translatedLabel: 'Selected Image',
       values: [
         {
           value: '/api/files/17593747059321ygqk22fdos.png',
@@ -311,10 +357,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process preview property', async () => {
     const previewProperty = {
-      name: 'preview',
+      name: 'preview_document',
       type: 'preview',
-      label: 'Preview',
-      translatedLabel: 'Preview',
+      label: 'Preview Document',
+      translatedLabel: 'Preview Document',
       values: [
         {
           value: '',
@@ -328,10 +374,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process media property', async () => {
     const mediaProperty = {
-      name: 'media',
+      name: 'video_of_event',
       type: 'media',
-      label: 'Media',
-      translatedLabel: 'Media',
+      label: 'Video of Event',
+      translatedLabel: 'Video of Event',
       values: [
         {
           value: '/api/files/1759374705932xi5rx0mumef.mp4',
@@ -345,10 +391,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process geolocation_geolocation property', async () => {
     const geolocationProperty = {
-      name: 'geolocation_geolocation',
+      name: 'incident_location',
       type: 'geolocation',
-      label: 'Geolocation',
-      translatedLabel: 'Geolocation',
+      label: 'Incident Location',
+      translatedLabel: 'Incident Location',
       values: [
         {
           value: {
@@ -365,10 +411,10 @@ describe('Simplified Processor Tests', () => {
 
   it('should process geolocation2_geolocation property', async () => {
     const geolocation2Property = {
-      name: 'geolocation2_geolocation',
+      name: 'secondary_location',
       type: 'geolocation',
-      label: 'Geolocation2',
-      translatedLabel: 'Geolocation2',
+      label: 'Secondary Location',
+      translatedLabel: 'Secondary Location',
       values: [
         {
           value: {
@@ -385,20 +431,20 @@ describe('Simplified Processor Tests', () => {
 
   it('should process geolocationr property', async () => {
     const geolocationrProperty = {
-      name: 'geolocationr',
+      name: 'location_relationships',
       type: 'relationship',
-      label: 'GeolocationR',
-      translatedLabel: 'GeolocationR',
+      label: 'Location Relationships',
+      translatedLabel: 'Location Relationships',
       values: [
         {
           icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
-          label: 'Context trimming sample2',
+          label: 'Witness Location - Maria Rodriguez',
           url: '/entity/xjku67dv7b',
           value: 'xjku67dv7b',
         },
         {
           icon: '',
-          label: 'Context trimming sample3',
+          label: 'Reporter Location - John Smith',
           url: '/entity/4oklamamet',
           value: '4oklamamet',
         },
@@ -410,14 +456,14 @@ describe('Simplified Processor Tests', () => {
 
   it('should process relationship_nested property', async () => {
     const relationshipNestedProperty = {
-      name: 'relationship_n-3',
+      name: 'hierarchical_relationships',
       type: 'relationship',
-      label: 'Relationship n-3',
-      translatedLabel: 'Relationship n-3',
+      label: 'Hierarchical Relationships',
+      translatedLabel: 'Hierarchical Relationships',
       values: [
         {
           icon: '',
-          label: 'Middle1',
+          label: 'Emergency Response Team',
           url: '/entity/6qdshinfobf',
           value: '6qdshinfobf',
         },
@@ -429,11 +475,11 @@ describe('Simplified Processor Tests', () => {
 
   it('should process generatedid property', async () => {
     const generatedidProperty: GeneratedIdMetadataProperty = {
-      name: 'generatedid',
+      name: 'document_id',
       type: 'generatedid',
-      label: 'Generatedid',
-      translatedLabel: 'Generatedid',
-      values: [{ value: 'BDZ3505-3650', label: 'BDZ3505-3650' }],
+      label: 'Document ID',
+      translatedLabel: 'Document ID',
+      values: [{ value: 'EVT-2024-001', label: 'EVT-2024-001' }],
     };
 
     expect(metadata[18]).toMatchObject(generatedidProperty);

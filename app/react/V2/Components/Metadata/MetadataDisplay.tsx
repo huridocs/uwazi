@@ -17,28 +17,42 @@ type MetadataDisplayProps = {
 };
 
 const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
-  const templateId = entity.template?._id!;
+  const templateId = entity?.template?._id!;
 
   const renderMetadataProperty = useCallback(
     // eslint-disable-next-line max-statements
     (data: MetadataProperty) => {
+      const translationContext = templateId;
+
       if (
         data.type === 'date' ||
         data.type === 'daterange' ||
         data.type === 'multidate' ||
         data.type === 'multidaterange'
       ) {
-        return <Date timestamps={data.values} label={data.label} translationContext={templateId} />;
+        return (
+          <Date
+            timestamps={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
+        );
       }
 
       if (data.type === 'geolocation') {
         return (
-          <Geolocation markers={data.values} label={data.label} translationContext={templateId} />
+          <Geolocation
+            markers={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
         );
       }
 
       if (data.type === 'media') {
-        return <Media values={data.values} label={data.label} translationContext={templateId} />;
+        return (
+          <Media values={data.values} label={data.label} translationContext={translationContext} />
+        );
       }
 
       if (data.type === 'image' || data.type === 'preview') {
@@ -46,18 +60,26 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           <Image
             values={data.values}
             label={data.label}
-            translationContext={templateId}
-            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            translationContext={translationContext}
+          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
 
       if (data.type === 'text') {
-        return <Text values={data.values} label={data.label} translationContext={templateId} />;
+        return (
+          <Text values={data.values} label={data.label} translationContext={translationContext} />
+        );
       }
 
       if (data.type === 'markdown') {
-        return <Markdown values={data.values} label={data.label} translationContext={templateId} />;
+        return (
+          <Markdown
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
+        );
       }
 
       if (data.type === 'relationship') {
@@ -78,7 +100,11 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           return renderMetadataProperty(reformattedData as MetadataProperty);
         }
         return (
-          <Relationship values={data.values} label={data.label} translationContext={templateId} />
+          <Relationship
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
         );
       }
 
@@ -86,6 +112,10 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     },
     [templateId]
   );
+
+  if (!entity) {
+    return <div>No entity data available</div>;
+  }
 
   return (
     <dl className="flex flex-col gap-4">
@@ -96,7 +126,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         <TemplateLabel
           label={entity.template?.label || ''}
           color={entity.template?.color}
-          templateId={entity.template?._id}
+          templateId={templateId}
         />
         <Title
           label="Title"

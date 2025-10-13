@@ -40,13 +40,24 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
   private createRawSingleValues(property: any): PropertyValue[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
-    return values.map((propertyValue: PropertyValue) => {
+    return values.map((propertyValue: PropertyValue | number) => {
       if (!propertyValue) {
         return {
           value: propertyValue,
           displayValue: '',
         };
       }
+
+      if (typeof propertyValue === 'number') {
+        const dateObject = new Date(propertyValue * 1000);
+        return {
+          value: propertyValue,
+          label: propertyValue.toString(),
+          displayValue: propertyValue.toString(),
+          dateObject,
+        };
+      }
+
       const dateObject = propertyValue.value ? new Date(propertyValue.value * 1000) : null;
       return {
         ...propertyValue,
@@ -124,7 +135,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
     const { format, timezone, includeTime, relativeTime, locale } = dateFormatting;
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    return values.map((propertyValue: PropertyValue) => {
+    return values.map((propertyValue: PropertyValue | number) => {
       if (!propertyValue) {
         return {
           value: propertyValue,
@@ -136,14 +147,30 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         };
       }
 
-      let momentInstance = moment.utc(propertyValue.value, 'X');
+
+      const timestamp = typeof propertyValue === 'number' ? propertyValue : propertyValue.value;
+
+      let momentInstance = moment.utc(timestamp, 'X');
       momentInstance = momentInstance.locale(locale);
 
       if (timezone && typeof momentInstance.tz === 'function') {
         momentInstance = momentInstance.tz(timezone);
       }
 
-      const rawValue = propertyValue.value;
+      const rawValue = timestamp;
+
+      if (!momentInstance.isValid()) {
+        const baseObj = typeof propertyValue === 'number' ? {} : propertyValue;
+        return {
+          ...baseObj,
+          value: rawValue,
+          formattedValue: '',
+          localizedValue: '',
+          displayValue: '',
+          label: '',
+          dateObject: null,
+        };
+      }
 
       let formattedValue = '';
       if (relativeTime) {
@@ -155,8 +182,9 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
       const localizedValue = momentInstance.format('ll' + (includeTime ? ' HH:mm' : ''));
 
+      const baseObj = typeof propertyValue === 'number' ? {} : propertyValue;
       return {
-        ...propertyValue,
+        ...baseObj,
         value: rawValue,
         formattedValue,
         localizedValue,
