@@ -98,61 +98,59 @@ export class EntityAdapterProcessor {
     return propertiesByType;
   }
 
-  private async processPropertiesByType(
+  private processPropertiesByType(
     propertiesByType: Map<string, any[]>
-  ): Promise<Map<string, FormattedProperty>> {
+  ): Map<string, FormattedProperty> {
     const allResults = new Map<string, FormattedProperty>();
 
-    await Promise.all(
-      Array.from(propertiesByType.entries()).map(async ([propertyType, properties]) => {
-        const processor = this.processors.get(propertyType) || this.processors.get('any');
+    Array.from(propertiesByType.entries()).forEach(([propertyType, properties]) => {
+      const processor = this.processors.get(propertyType) || this.processors.get('any');
 
-        if (processor && properties.length > 0) {
-          const results = await processor.processBatch(properties, this.context);
-          results.forEach((property, key) => {
-            allResults.set(key, property);
-          });
-        }
-      })
-    );
+      if (processor && properties.length > 0) {
+        const results = processor.processBatch(properties, this.context);
+        results.forEach((property, key) => {
+          allResults.set(key, property);
+        });
+      }
+    });
 
     return allResults;
   }
 
-  private async formatRootDateProperties(formattedEntities: any[]): Promise<void> {
+  private formatRootDateProperties(formattedEntities: any[]): void {
     const dateProcessor = this.processors.get('date') as DatePropertyProcessor;
     if (!dateProcessor) return;
 
     const rootDateProperties = formattedEntities.flatMap(entity => [
       ...(entity.creationDate
         ? [
-            {
-              value: { value: Math.floor(entity.creationDate.value / 1000) },
-              type: 'date',
-              name: 'creationDate',
-              label: 'Creation date',
-              _entityId: entity._id,
-              entity,
-            },
-          ]
+          {
+            value: { value: Math.floor(entity.creationDate.value / 1000) },
+            type: 'date',
+            name: 'creationDate',
+            label: 'Creation date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
         : []),
       ...(entity.editDate
         ? [
-            {
-              value: { value: Math.floor(entity.editDate.value / 1000) },
-              type: 'date',
-              name: 'editDate',
-              label: 'Edit date',
-              _entityId: entity._id,
-              entity,
-            },
-          ]
+          {
+            value: { value: Math.floor(entity.editDate.value / 1000) },
+            type: 'date',
+            name: 'editDate',
+            label: 'Edit date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
         : []),
     ]);
 
     if (rootDateProperties.length === 0) return;
 
-    const batchResults = await dateProcessor.processBatch(rootDateProperties, this.context);
+    const batchResults = dateProcessor.processBatch(rootDateProperties, this.context);
 
     batchResults.forEach((formattedProperty, key) => {
       const [entityId, propertyName] = key.split(':');
@@ -170,20 +168,20 @@ export class EntityAdapterProcessor {
     });
   }
 
-  async processEntity(entity: any): Promise<{
+  processEntity(entity: EntitySchema): {
     entity: Entity;
     errors: ProcessingError[];
-  }> {
-    const result = await this.processAllEntities([entity]);
+  } {
+    const result = this.processAllEntities([entity]);
     return {
       entity: result.entities[0],
       errors: result.errors,
     };
   }
 
-  async processAllEntities(entities: EntitySchema[]): Promise<BatchCompositionResult> {
+  processAllEntities(entities: EntitySchema[]): BatchCompositionResult {
     const allErrors: ProcessingError[] = [];
-    let formattedEntities: any[] = [];
+    let formattedEntities: Partial<Entity>[] = [];
     const resultEntities = entities.map(entity => ({ ...entity }));
 
     let propertiesByType: Map<string, any[]> | null = new Map();
@@ -197,21 +195,21 @@ export class EntityAdapterProcessor {
       });
 
       formattedEntities = resultEntities.map(entity => ({
-        _id: entity._id,
+        _id: entity._id as string,
         title: entity.title,
         sharedId: entity.sharedId,
         language: entity.language,
         template: templatesById.get(entity.template as string),
         rawEntity: entity,
         metadata: [],
-        creationDate: { value: entity.creationDate || 0 },
-        editDate: { value: entity.editDate || 0 },
+        creationDate: { name: 'creationDate', label: 'Creation date', type: 'date', values: [{ value: Number(entity.creationDate) || 0 }] },
+        editDate: { name: 'editDate', label: 'Edit date', type: 'date', values: [{ value: Number(entity.editDate) || 0 }] },
         icon: entity.icon,
       }));
 
       propertiesByType = this.collectPropertiesByType(formattedEntities as Partial<Entity>[]);
 
-      const batchResults = await this.processPropertiesByType(propertiesByType);
+      const batchResults = this.processPropertiesByType(propertiesByType);
 
       batchResults.forEach(({ entity, rawEntity, ...property }) => {
         if (entity && entity.metadata) {
@@ -219,7 +217,7 @@ export class EntityAdapterProcessor {
         }
       });
 
-      await this.formatRootDateProperties(formattedEntities);
+      this.formatRootDateProperties(formattedEntities);
     } catch (error) {
       allErrors.push({
         entityId: 'batch',
@@ -234,12 +232,12 @@ export class EntityAdapterProcessor {
         const { properties, commonProperties, ...restTemplate } = template;
         return {
           ...entity,
-          template: restTemplate,
+          template: restTemplate as ComposedTemplate,
         } as Entity;
       }
       return {
         ...entity,
-        template: null,
+        template,
       } as Entity;
     });
     return {

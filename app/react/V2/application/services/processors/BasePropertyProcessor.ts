@@ -11,10 +11,10 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   abstract readonly name: string;
   abstract readonly propertyTypes: string[];
 
-  async processBatch(
+  processBatch(
     properties: any[],
     context: ProcessingContext
-  ): Promise<Map<string, FormattedProperty>> {
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {

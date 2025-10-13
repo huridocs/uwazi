@@ -11,10 +11,10 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'SelectPropertyProcessor';
   readonly propertyTypes: SelectPropertyTypes[] = ['select', 'multiselect'];
 
-  async processBatch(
+  processBatch(
     properties: any[],
     context: ProcessingContext
-  ): Promise<Map<string, FormattedProperty>> {
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     const { translations, thesauri } = context;

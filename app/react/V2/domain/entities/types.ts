@@ -587,9 +587,11 @@ export interface LinkMetadataProperty {
   readonly label: string;
   readonly type: 'link';
   readonly values: Array<{
-    value: string;
+    value: {
+      label: string;
+      url: string;
+    };
     label?: string;
-    url?: string;
   }>;
   readonly inherited?: boolean;
   readonly properties?: {

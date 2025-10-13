@@ -10,10 +10,10 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'MediaPropertyProcessor';
   readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
-  async processBatch(
+  processBatch(
     properties: any[],
     context: ProcessingContext
-  ): Promise<Map<string, FormattedProperty>> {
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {

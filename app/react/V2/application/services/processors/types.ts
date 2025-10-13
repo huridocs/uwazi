@@ -104,5 +104,5 @@ export interface PropertyTypeProcessor {
   processBatch(
     properties: any[],
     context: ProcessingContext
-  ): Promise<Map<string, FormattedProperty>>;
+  ): Map<string, FormattedProperty>;
 }

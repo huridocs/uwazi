@@ -1,13 +1,13 @@
 import { RelationshipPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValue, ProcessingContext } from './types';
+import { PropertyValue, ProcessingContext, FormattedProperty } from './types';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
   readonly propertyTypes: RelationshipPropertyTypes[] = ['relationship'];
 
-  async processBatch(properties: any[], context: ProcessingContext): Promise<Map<string, any>> {
-    const results = new Map<string, any>();
+  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
+    const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {
       try {

@@ -11,26 +11,24 @@ export class PermissionProcessor implements PropertyTypeProcessor {
   readonly name = 'PermissionProcessor';
   readonly propertyTypes: PermissionPropertyTypes[] = ['permissions'];
 
-  async processBatch(
+  processBatch(
     properties: ComposedProperty[],
     context: ProcessingContext
-  ): Promise<Map<string, FormattedProperty>> {
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
-    await Promise.all(
-      properties.map(async property => {
-        const formattedProperty = await this.processPermissionProperty(property, context);
-        results.set(property.name, formattedProperty);
-      })
-    );
+    properties.forEach(property => {
+      const formattedProperty = this.processPermissionProperty(property, context);
+      results.set(property.name, formattedProperty);
+    });
 
     return results;
   }
 
-  private async processPermissionProperty(
+  private processPermissionProperty(
     property: ComposedProperty,
     context: ProcessingContext
-  ): Promise<FormattedProperty> {
+  ): FormattedProperty {
     const entityPermissions = this.extractEntityPermissions(property, context);
 
     const formattedProperty: FormattedProperty = {
