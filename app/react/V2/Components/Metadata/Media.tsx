@@ -6,22 +6,24 @@ import { MetadataCard } from './MetadataCard';
 
 type MediaProps = MetadataFieldProps & { values: { value: string; alt?: string }[] };
 
-const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => (
-  <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    {values.map(value => (
-      <dd>
+const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => {
+  const { value, alt } = values[0];
+
+  return (
+    <MetadataCard>
+      <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+      <dd className="flex justify-center">
         <figure aria-labelledby={label}>
-          <MediaPlayer url={value.value} width={500} height={300} />
-          {value.alt && (
+          <MediaPlayer url={value} width={500} height={300} />
+          {alt && (
             <figcaption className="sr-only" id={label}>
-              {value.alt}
+              {alt}
             </figcaption>
           )}
         </figure>
       </dd>
-    ))}
-  </MetadataCard>
-);
+    </MetadataCard>
+  );
+};
 
 export { Media };
