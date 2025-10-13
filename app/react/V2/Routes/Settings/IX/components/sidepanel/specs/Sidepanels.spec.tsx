@@ -415,16 +415,29 @@ describe('Sidepanel forms', () => {
   });
 
   describe('form submit', () => {
-    it('should add to training set by default on save', async () => {
+    it('should not add to training set if no changes were made', async () => {
       const entitySaveSpy = jest.fn();
       renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
       const checkBox = await screen.findByLabelText('Use for training');
-      const input = await screen.findByRole('textbox');
       expect(checkBox).toBeInTheDocument();
-      expect(checkBox).toBeChecked();
+      expect(checkBox).not.toBeChecked();
 
       await waitFor(async () => {
-        await fireEvent.change(input, { target: { value: 'Some new value' } });
+        await fireEvent.click(screen.getByText('Accept'));
+      });
+
+      expect(entitySaveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should add to training set', async () => {
+      const entitySaveSpy = jest.fn();
+      renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
+      const checkBox = await screen.findByLabelText('Use for training');
+      expect(checkBox).toBeInTheDocument();
+      expect(checkBox).not.toBeChecked();
+
+      await waitFor(async () => {
+        await fireEvent.click(checkBox);
         await fireEvent.click(screen.getByText('Accept'));
       });
 
@@ -435,7 +448,44 @@ describe('Sidepanel forms', () => {
       const entitySaveSpy = jest.fn();
       renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
       const checkBox = await screen.findByLabelText('Use for training');
+      const input = await screen.findByRole('textbox');
       expect(checkBox).toBeInTheDocument();
+
+      await waitFor(async () => {
+        await fireEvent.change(input, { target: { value: 'Some new value' } });
+        await fireEvent.click(checkBox);
+        await fireEvent.click(screen.getByText('Accept'));
+      });
+
+      expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
+    });
+
+    it('should add to training set by default on save after chaning the entity', async () => {
+      const entitySaveSpy = jest.fn();
+      renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
+      const checkBox = await screen.findByLabelText('Use for training');
+      const input = await screen.findByRole('textbox');
+      expect(checkBox).toBeInTheDocument();
+      expect(checkBox).not.toBeChecked();
+
+      await waitFor(async () => {
+        await fireEvent.change(input, { target: { value: 'Some new value' } });
+        await fireEvent.click(screen.getByText('Accept'));
+      });
+
+      expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
+    });
+
+    it('should allow removing an already added suggestiong from training set', async () => {
+      const entitySaveSpy = jest.fn();
+      renderPropertySidepanel(
+        { ...suggestion1, useForTraining: true },
+        textProperty,
+        entitySaveSpy
+      );
+      const checkBox = await screen.findByLabelText('Use for training');
+      expect(checkBox).toBeInTheDocument();
+      expect(checkBox).toBeChecked();
 
       await waitFor(async () => {
         await fireEvent.click(checkBox);

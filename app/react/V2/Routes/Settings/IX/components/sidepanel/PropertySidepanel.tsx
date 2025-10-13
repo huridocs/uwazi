@@ -42,18 +42,6 @@ const PropertySidepanel = ({
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const setNotifications = useSetAtom(notificationAtom);
 
-  useEffect(() => {
-    if (showSidepanel && suggestion) {
-      loadSidepanelData(suggestion)
-        .then(({ entity: suggestionEntity }) => {
-          setEntity(suggestionEntity);
-        })
-        .catch(e => {
-          throw e;
-        });
-    }
-  }, [showSidepanel, suggestion]);
-
   const templateId = suggestion?.entityTemplateId;
   const template = templates.find(t => t._id.toString() === templateId);
 
@@ -68,12 +56,34 @@ const PropertySidepanel = ({
   const formContext = useForm({
     values: {
       field: getFormValue(suggestion, entity, property?.type) || '',
-      inTrainingSet: true,
+      inTrainingSet: suggestion?.useForTraining,
     },
   });
 
-  const { isSubmitting, isDirty } = formContext.formState;
-  const { handleSubmit, setValue, control } = formContext;
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isSubmitting, isDirty, dirtyFields },
+  } = formContext;
+
+  useEffect(() => {
+    if (showSidepanel && suggestion) {
+      loadSidepanelData(suggestion)
+        .then(({ entity: suggestionEntity }) => {
+          setEntity(suggestionEntity);
+        })
+        .catch(e => {
+          throw e;
+        });
+    }
+  }, [showSidepanel, suggestion]);
+
+  useEffect(() => {
+    if (dirtyFields.field) {
+      setValue('inTrainingSet', true);
+    }
+  }, [dirtyFields.field, setValue]);
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -88,7 +98,7 @@ const PropertySidepanel = ({
       if (savedEntity) {
         setEntity(savedEntity);
         if (suggestion?._id) {
-          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet);
+          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
         }
       }
 

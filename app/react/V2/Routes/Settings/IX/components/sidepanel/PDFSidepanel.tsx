@@ -49,6 +49,33 @@ const PDFSidepanel = ({
   const setNotifications = useSetAtom(notificationAtom);
   const setSelections = useSetAtom(selectionsAtom);
 
+  const templateId = suggestion?.entityTemplateId;
+  const template = templates.find(t => t._id.toString() === templateId);
+
+  const handleClose = () => {
+    setPdfFile(undefined);
+    setEntity(undefined);
+    setShowSidepanel(false);
+    setSelectAndSearch(false);
+    setSelectedText(undefined);
+    setSelectionError(undefined);
+    setHighlights(undefined);
+  };
+
+  const formContext = useForm({
+    values: {
+      field: getFormValue(suggestion, entity, property?.type) || '',
+      inTrainingSet: suggestion?.useForTraining,
+    },
+  });
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isSubmitting, isDirty, dirtyFields },
+  } = formContext;
+
   useEffect(() => {
     if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
@@ -74,32 +101,11 @@ const PDFSidepanel = ({
     }
   }, [pdfFile, setHighlights, showSidepanel, suggestion]);
 
-  const templateId = suggestion?.entityTemplateId;
-  const template = templates.find(t => t._id.toString() === templateId);
-
-  const handleClose = () => {
-    setPdfFile(undefined);
-    setEntity(undefined);
-    setShowSidepanel(false);
-    setSelectAndSearch(false);
-    setSelectedText(undefined);
-    setSelectionError(undefined);
-    setHighlights(undefined);
-  };
-
-  const formContext = useForm({
-    values: {
-      field: getFormValue(suggestion, entity, property?.type) || '',
-      inTrainingSet: true,
-    },
-  });
-
-  const {
-    handleSubmit,
-    setValue,
-    control,
-    formState: { isSubmitting, isDirty },
-  } = formContext;
+  useEffect(() => {
+    if (dirtyFields.field) {
+      setValue('inTrainingSet', true);
+    }
+  }, [dirtyFields.field, setValue]);
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -118,7 +124,7 @@ const PDFSidepanel = ({
       if (savedEntity) {
         setEntity(savedEntity);
         if (suggestion?._id) {
-          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet);
+          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
         }
       }
       setNotifications({ type: 'success', text: 'Saved successfully.' });
