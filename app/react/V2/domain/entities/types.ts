@@ -214,6 +214,9 @@ export type RelationshipPropertyTypes = 'relationship';
 export type FilePropertyTypes = 'image' | 'media' | 'file';
 export type PermissionPropertyTypes = 'permissions';
 export type DefaultPropertyTypes = 'text' | 'markdown' | 'preview' | 'any';
+export type LinkPropertyTypes = 'link';
+export type NumericPropertyTypes = 'numeric';
+export type GeneratedIdPropertyTypes = 'generatedid';
 
 // Union of all supported property types
 export type AllowedPropertyTypes =
@@ -223,7 +226,10 @@ export type AllowedPropertyTypes =
   | RelationshipPropertyTypes
   | FilePropertyTypes
   | PermissionPropertyTypes
-  | DefaultPropertyTypes;
+  | DefaultPropertyTypes
+  | LinkPropertyTypes
+  | NumericPropertyTypes
+  | GeneratedIdPropertyTypes;
 
 // Discriminated union types for each property type
 export interface DateMetadataProperty {
@@ -576,6 +582,88 @@ export interface MultiSelectMetadataProperty {
   readonly index?: number;
 }
 
+export interface LinkMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'link';
+  readonly values: Array<{
+    value: string;
+    label?: string;
+    url?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface NumericMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'numeric';
+  readonly values: Array<{
+    value: number;
+    label?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface GeneratedIdMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'generatedid';
+  readonly values: Array<{
+    value: string;
+    label?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
 // Discriminated union for all metadata property types
 export type MetadataProperty =
   | DateMetadataProperty
@@ -590,4 +678,7 @@ export type MetadataProperty =
   | TextMetadataProperty
   | MarkdownMetadataProperty
   | SelectMetadataProperty
-  | MultiSelectMetadataProperty;
+  | MultiSelectMetadataProperty
+  | LinkMetadataProperty
+  | NumericMetadataProperty
+  | GeneratedIdMetadataProperty;

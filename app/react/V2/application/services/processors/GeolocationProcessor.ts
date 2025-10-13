@@ -126,13 +126,13 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     const finalValues =
       geolocationFormatting.combineGeolocation && formattedValues.length > 1
         ? [
-          {
-            value: formattedValues.map((v: any) => v.value),
-            label: `Multiple locations (${formattedValues.length})`,
-            displayValue: `Multiple locations (${formattedValues.length})`,
-            formattedValue: formattedValues,
-          },
-        ]
+            {
+              value: formattedValues.map((v: any) => v.value),
+              label: `Multiple locations (${formattedValues.length})`,
+              displayValue: `Multiple locations (${formattedValues.length})`,
+              formattedValue: formattedValues,
+            },
+          ]
         : formattedValues;
 
     return finalValues;
