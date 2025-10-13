@@ -24,25 +24,7 @@ export class DefaultPropertyProcessor extends BasePropertyProcessor {
       let label = value.label;
 
       if (!label) {
-        if (typeof stringValue === 'string') {
-          label = stringValue;
-        } else if (stringValue && typeof stringValue === 'object') {
-          // Handle link objects with label and url
-          if (stringValue.label) {
-            label = stringValue.label;
-          } else if (stringValue.url) {
-            label = stringValue.url;
-          } else {
-            // For empty objects or objects without useful properties, show empty string
-            if (Object.keys(stringValue).length === 0) {
-              label = '';
-            } else {
-              label = stringValue.toString();
-            }
-          }
-        } else {
-          label = stringValue.toString();
-        }
+        label = typeof stringValue === 'string' ? stringValue : stringValue?.label || stringValue?.toString() || '';
       }
 
       return {

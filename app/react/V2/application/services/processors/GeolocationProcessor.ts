@@ -23,7 +23,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
         lat = geo.value.latitude || geo.value.lat;
         lon = geo.value.longitude || geo.value.lon;
-      } else if (geo.value && geo.value.value && (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)) {
+      } else if (
+        geo.value &&
+        geo.value.value &&
+        (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)
+      ) {
         // Handle nested structure: { value: { lat: X, lon: Y } }
         lat = geo.value.value.lat;
         lon = geo.value.value.lon;
@@ -40,7 +44,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         };
       }
 
-      const coordinateLabel = (lat !== undefined && lon !== undefined && lat !== null && lon !== null) ? `${lat}, ${lon}` : 'Invalid coordinates';
+      const coordinateLabel =
+        lat !== undefined && lon !== undefined && lat !== null && lon !== null
+          ? `${lat}, ${lon}`
+          : 'Invalid coordinates';
       return {
         value: { latitude: lat, longitude: lon },
         label: geo.label || coordinateLabel,
@@ -66,11 +73,18 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       let lat: number;
       let lon: number;
 
-      if (geo.value && geo.value.value && (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)) {
+      if (
+        geo.value &&
+        geo.value.value &&
+        (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)
+      ) {
         // Handle nested structure: { value: { lat: X, lon: Y } }
         lat = geo.value.value.lat;
         lon = geo.value.value.lon;
-      } else if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
+      } else if (
+        geo.value &&
+        (geo.value.latitude !== undefined || geo.value.longitude !== undefined)
+      ) {
         lat = geo.value.latitude || geo.value.lat;
         lon = geo.value.longitude || geo.value.lon;
       } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
@@ -97,10 +111,6 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       const latFormatted = Number(lat).toFixed(2);
       const lonFormatted = Number(lon).toFixed(2);
       const label = `${latFormatted}°N, ${lonFormatted}°E`;
-      const formattedValue = {
-        latitude: Number(latFormatted),
-        longitude: Number(lonFormatted),
-      };
 
       return {
         value: { latitude: lat, longitude: lon },
@@ -111,13 +121,13 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     const finalValues =
       geolocationFormatting.combineGeolocation && formattedValues.length > 1
         ? [
-          {
-            value: formattedValues.map((v: any) => v.value),
-            label: `Multiple locations (${formattedValues.length})`,
-            displayValue: `Multiple locations (${formattedValues.length})`,
-            formattedValue: formattedValues,
-          },
-        ]
+            {
+              value: formattedValues.map((v: any) => v.value),
+              label: `Multiple locations (${formattedValues.length})`,
+              displayValue: `Multiple locations (${formattedValues.length})`,
+              formattedValue: formattedValues,
+            },
+          ]
         : formattedValues;
 
     return finalValues;

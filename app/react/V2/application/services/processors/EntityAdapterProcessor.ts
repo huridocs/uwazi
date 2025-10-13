@@ -125,27 +125,27 @@ export class EntityAdapterProcessor {
     const rootDateProperties = formattedEntities.flatMap(entity => [
       ...(entity.creationDate
         ? [
-          {
-            value: entity.creationDate,
-            type: 'date',
-            name: 'creationDate',
-            label: 'Creation date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
+            {
+              value: entity.creationDate,
+              type: 'date',
+              name: 'creationDate',
+              label: 'Creation date',
+              _entityId: entity._id,
+              entity,
+            },
+          ]
         : []),
       ...(entity.editDate
         ? [
-          {
-            value: entity.editDate,
-            type: 'date',
-            name: 'editDate',
-            label: 'Edit date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
+            {
+              value: entity.editDate,
+              type: 'date',
+              name: 'editDate',
+              label: 'Edit date',
+              _entityId: entity._id,
+              entity,
+            },
+          ]
         : []),
     ]);
 

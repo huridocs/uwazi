@@ -22,18 +22,18 @@ export class RelationshipProcessor extends BasePropertyProcessor {
           properties: {
             template: property.template
               ? {
-                  _id: property.template._id,
-                  name: property.template.name,
-                  label: property.template.label,
-                  color: property.template.color,
-                }
+                _id: property.template._id,
+                name: property.template.name,
+                label: property.template.label,
+                color: property.template.color,
+              }
               : undefined,
             inheritedProperty: property.inheritedProperty
               ? {
-                  type: property.inheritedProperty.type,
-                  name: property.inheritedProperty.name,
-                  label: property.inheritedProperty.label,
-                }
+                type: property.inheritedProperty.type,
+                name: property.inheritedProperty.name,
+                label: property.inheritedProperty.label,
+              }
               : undefined,
           },
         };
@@ -108,17 +108,11 @@ export class RelationshipProcessor extends BasePropertyProcessor {
   }
 
   private formatRelationshipProperty(property: any, context: ProcessingContext): PropertyValue[] {
-    const { nestedLevel, includeEntityData, includeTemplates, maxRelationships } = {
-      nestedLevel: context.nestedLevel,
-      includeEntityData: context.includeEntityData,
-      includeTemplates: context.includeTemplates,
-      maxRelationships: context.maxRelationships,
-    };
-
     const values = Array.isArray(property.value) ? property.value : [property.value];
-    const isInherited = property.inherited === true;
 
-    const limitedValues = maxRelationships ? values.slice(0, maxRelationships) : values;
+    const limitedValues = context.maxRelationships
+      ? values.slice(0, context.maxRelationships)
+      : values;
 
     return limitedValues.map((rel: any): PropertyValue => {
       const label = rel.label || rel.displayValue || rel.toString();
