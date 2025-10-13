@@ -2,12 +2,9 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { EntitySchema } from 'shared/types/entityType';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { settingsAtom } from 'V2/atoms';
-import { Entity } from 'V2/domain';
 import { EntityAdapterProcessor } from 'V2/application/services/processors/EntityAdapterProcessor';
-import { ProcessingContext } from 'V2/application/services/processors/types';
 import { rawEntity, processingContext } from './fixtures/MetadataDisplayFixtures';
 
 const store = createStore();
@@ -19,25 +16,26 @@ const meta: Meta<typeof MetadataDisplay> = {
 };
 
 type Story = StoryObj<typeof MetadataDisplay>;
-
 const entityAdapterProcessor = new EntityAdapterProcessor(processingContext);
-const { entity } = await entityAdapterProcessor.processEntity(rawEntity);
+const { entity } = entityAdapterProcessor.processEntity(rawEntity);
 
 const Primary: Story = {
-  render: args => (
-    <div className="tw-content">
-      <BrowserRouter>
-        <Provider store={store}>
-          <MetadataDisplay entity={entity} />
-        </Provider>
-      </BrowserRouter>
-    </div>
-  ),
+  render: args => {
+    return (
+      <div className="tw-content">
+        <BrowserRouter>
+          <Provider store={store}>
+            <MetadataDisplay entity={args.entity} />
+          </Provider>
+        </BrowserRouter>
+      </div>
+    );
+  },
 };
 
 const Basic = {
   ...Primary,
-  args: {},
+  args: entity,
 };
 
 export { Basic };

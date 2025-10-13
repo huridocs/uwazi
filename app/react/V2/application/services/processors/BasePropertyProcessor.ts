@@ -11,10 +11,7 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   abstract readonly name: string;
   abstract readonly propertyTypes: string[];
 
-  processBatch(
-    properties: any[],
-    context: ProcessingContext
-  ): Map<string, FormattedProperty> {
+  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {

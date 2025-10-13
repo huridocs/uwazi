@@ -11,10 +11,7 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'SelectPropertyProcessor';
   readonly propertyTypes: SelectPropertyTypes[] = ['select', 'multiselect'];
 
-  processBatch(
-    properties: any[],
-    context: ProcessingContext
-  ): Map<string, FormattedProperty> {
+  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     const { translations, thesauri } = context;

@@ -202,8 +202,18 @@ export class EntityAdapterProcessor {
         template: templatesById.get(entity.template as string),
         rawEntity: entity,
         metadata: [],
-        creationDate: { name: 'creationDate', label: 'Creation date', type: 'date', values: [{ value: Number(entity.creationDate) || 0 }] },
-        editDate: { name: 'editDate', label: 'Edit date', type: 'date', values: [{ value: Number(entity.editDate) || 0 }] },
+        creationDate: {
+          name: 'creationDate',
+          label: 'Creation date',
+          type: 'date',
+          values: [{ value: Number(entity.creationDate) || 0 }],
+        },
+        editDate: {
+          name: 'editDate',
+          label: 'Edit date',
+          type: 'date',
+          values: [{ value: Number(entity.editDate) || 0 }],
+        },
         icon: entity.icon,
       }));
 
