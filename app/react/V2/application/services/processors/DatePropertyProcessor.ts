@@ -1,10 +1,16 @@
 import moment from 'moment';
+import { DatePropertyTypes } from 'app/V2/domain/entities/types';
 import { PropertyValue, ProcessingContext } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';
-  readonly propertyTypes = ['date', 'multidate', 'daterange', 'multidaterange'];
+  readonly propertyTypes: DatePropertyTypes[] = [
+    'date',
+    'multidate',
+    'daterange',
+    'multidaterange',
+  ];
 
   protected formatProperty(property: any, context: ProcessingContext): PropertyValue[] {
     if (this.shouldSkipFormatting(context, 'date')) {
@@ -38,15 +44,16 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
       if (!propertyValue) {
         return {
           value: propertyValue,
-          label: '',
           displayValue: '',
         };
       }
+      const dateObject = propertyValue.value ? new Date(propertyValue.value * 1000) : null;
       return {
         ...propertyValue,
         value: propertyValue.value,
-        label: propertyValue.value?.toString() || '',
+        label: propertyValue.label || propertyValue.value?.toString() || '',
         displayValue: propertyValue.value?.toString() || '',
+        dateObject,
       };
     });
   }
@@ -58,17 +65,21 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
       if (!from && !to) {
         return {
           ...propertyValue,
-          label: '',
           displayValue: '',
         };
       }
       const fromStr = from ? from.toString() : '';
       const toStr = to ? to.toString() : '';
       const rangeStr = fromStr && toStr ? `${fromStr} ~ ${toStr}` : fromStr || toStr;
+      const dateObject = {
+        from: from ? new Date(from * 1000) : null,
+        to: to ? new Date(to * 1000) : null,
+      };
       return {
         ...propertyValue,
-        label: rangeStr,
+        label: propertyValue.label || rangeStr,
         displayValue: rangeStr,
+        dateObject,
       };
     });
   }
@@ -121,6 +132,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
           displayValue: '',
           formattedValue: '',
           localizedValue: '',
+          dateObject: null,
         };
       }
 
@@ -150,6 +162,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         localizedValue,
         displayValue: localizedValue,
         label: formattedValue,
+        dateObject: momentInstance.toDate(),
       };
     });
   }
@@ -166,6 +179,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
           formattedValue: '',
           localizedValue: '',
           displayValue: '',
+          dateObject: { from: null, to: null },
         };
       }
 
@@ -176,6 +190,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
           formattedValue: toFormatted[0]?.formattedValue || '',
           localizedValue: toFormatted[0]?.localizedValue || '',
           displayValue: toFormatted[0]?.displayValue || '',
+          dateObject: { from: null, to: toFormatted[0]?.dateObject || null },
         };
       }
 
@@ -186,6 +201,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
           formattedValue: fromFormatted[0]?.formattedValue || '',
           localizedValue: fromFormatted[0]?.localizedValue || '',
           displayValue: fromFormatted[0]?.displayValue || '',
+          dateObject: { from: fromFormatted[0]?.dateObject || null, to: null },
         };
       }
 
@@ -205,6 +221,10 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         displayValue: {
           from: fromFormatted[0]?.localizedValue || '',
           to: toFormatted[0]?.localizedValue || '',
+        },
+        dateObject: {
+          from: fromFormatted[0]?.dateObject || null,
+          to: toFormatted[0]?.dateObject || null,
         },
       };
     });

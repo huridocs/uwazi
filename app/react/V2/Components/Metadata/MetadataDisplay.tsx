@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
+import { Entity, MetadataProperty } from 'app/V2/domain';
 import { Date } from './Date';
 import { Geolocation } from './Geolocation';
 import { Relationship } from './Relationship';
@@ -11,7 +12,7 @@ import { Title } from './Title';
 import { Markdown } from './Markdown';
 
 type MetadataDisplayProps = {
-  entity: unknown;
+  entity: Entity;
   templateId: string;
 };
 
@@ -25,7 +26,7 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
 
   const renderMetadataProperty = useCallback(
     // eslint-disable-next-line max-statements
-    data => {
+    (data: MetadataProperty) => {
       if (
         data.type === 'date' ||
         data.type === 'daterange' ||
@@ -50,8 +51,13 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
             label: data.label,
             name: data.name,
             type: inheritedProperty.type,
+            inherited: data.inherited,
+            properties: data.properties,
+            translatedLabel: data.translatedLabel,
+            propertyMetadata: data.propertyMetadata,
+            index: data.index,
           };
-          return renderMetadataProperty(reformattedData);
+          return renderMetadataProperty(reformattedData as MetadataProperty);
         }
         return (
           <Relationship values={data.values} label={data.label} translationContext={templateId} />

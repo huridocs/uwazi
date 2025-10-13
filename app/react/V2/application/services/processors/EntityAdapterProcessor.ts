@@ -68,7 +68,7 @@ export class EntityAdapterProcessor {
             value: property,
             _entityId: entity._id,
             entity,
-            ...(entity.template?.properties.get(name) || {}),
+            ...(entity.template?.properties?.get(name) || {}),
           };
         }
       );
@@ -118,6 +118,50 @@ export class EntityAdapterProcessor {
     return allResults;
   }
 
+  private async formatRootDateProperties(formattedEntities: any[]): Promise<void> {
+    const dateProcessor = this.processors.get('date') as DatePropertyProcessor;
+    if (!dateProcessor) return;
+
+    const rootDateProperties = formattedEntities.flatMap(entity => [
+      ...(entity.creationDate
+        ? [
+          {
+            value: entity.creationDate,
+            type: 'date',
+            name: 'creationDate',
+            label: 'Creation date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
+        : []),
+      ...(entity.editDate
+        ? [
+          {
+            value: entity.editDate,
+            type: 'date',
+            name: 'editDate',
+            label: 'Edit date',
+            _entityId: entity._id,
+            entity,
+          },
+        ]
+        : []),
+    ]);
+
+    if (rootDateProperties.length === 0) return;
+
+    const batchResults = await dateProcessor.processBatch(rootDateProperties, this.context);
+
+    batchResults.forEach((formattedProperty, key) => {
+      const [entityId, propertyName] = key.split(':');
+      const entity = formattedEntities.find(e => e._id === entityId);
+      if (entity && formattedProperty.values[0]) {
+        entity[propertyName] = { ...entity[propertyName], ...formattedProperty.values[0] };
+      }
+    });
+  }
+
   async processEntity(entity: any): Promise<{
     entity: Entity;
     errors: ProcessingError[];
@@ -150,6 +194,9 @@ export class EntityAdapterProcessor {
         template: templatesById.get(entity.template as string),
         rawEntity: entity,
         metadata: [],
+        creationDate: { value: entity.creationDate || 0 },
+        editDate: { value: entity.editDate || 0 },
+        icon: entity.icon,
       }));
 
       propertiesByType = this.collectPropertiesByType(formattedEntities as Partial<Entity>[]);
@@ -159,6 +206,8 @@ export class EntityAdapterProcessor {
       batchResults.forEach(({ entity, rawEntity, ...property }) => {
         entity.metadata.splice(property.index, 0, property);
       });
+
+      await this.formatRootDateProperties(formattedEntities);
     } catch (error) {
       allErrors.push({
         entityId: 'batch',

@@ -49,6 +49,22 @@ export interface FormattedProperty {
   propertyMetadata: PropertyMetadata;
   type: string;
   originalValue?: any;
+  inherited?: boolean;
+  relationshipName?: string;
+  properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: string;
+      name: string;
+      label: string;
+    };
+  };
+  index?: number;
   [key: string]: any;
 }
 

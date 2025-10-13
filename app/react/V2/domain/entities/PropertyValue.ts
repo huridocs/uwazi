@@ -1,9 +1,15 @@
 export interface PropertyValue<T = any> {
   readonly value: T;
-  readonly label: string;
+  readonly label?: string;
   readonly displayValue?: string;
   readonly formattedValue?: any;
   readonly metadata?: PropertyValueMetadata;
+  // Additional properties for specific types
+  readonly icon?: string;
+  readonly url?: string;
+  readonly alt?: string;
+  readonly dateObject?: Date | { from: Date | null; to: Date | null } | null;
+  readonly [key: string]: any;
 }
 
 export interface PropertyValueMetadata {
@@ -23,6 +29,7 @@ export interface DatePropertyValue extends PropertyValue<number | number[]> {
     readonly formattedValue: string | string[];
     readonly displayValue: string | string[];
   };
+  readonly dateObject: Date | null;
 }
 
 export interface DateRangePropertyValue
@@ -32,6 +39,7 @@ export interface DateRangePropertyValue
     readonly formattedValue: string | string[];
     readonly displayValue: string | string[];
   };
+  readonly dateObject: { from: Date | null; to: Date | null };
 }
 
 export interface SelectPropertyValue extends PropertyValue<string | string[]> {

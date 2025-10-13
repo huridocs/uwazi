@@ -96,8 +96,8 @@ export interface ComposedTemplate {
   readonly label?: string;
   readonly translatedLabel?: string;
   readonly color?: string;
-  readonly properties: Map<string, ComposedProperty>;
-  readonly commonProperties: Map<string, ComposedProperty>;
+  readonly properties?: Map<string, ComposedProperty>;
+  readonly commonProperties?: Map<string, ComposedProperty>;
   readonly entityViewPage?: string;
 }
 
@@ -196,3 +196,310 @@ export interface ComposedNavigationData {
   readonly copyFrom: boolean;
   readonly copyFromProps: string[];
 }
+
+// Define allowed property types for each processor
+export type DatePropertyTypes = 'date' | 'multidate' | 'daterange' | 'multidaterange';
+export type SelectPropertyTypes = 'select' | 'multiselect';
+export type GeolocationPropertyTypes = 'geolocation';
+export type RelationshipPropertyTypes = 'relationship';
+export type FilePropertyTypes = 'image' | 'media' | 'file';
+export type PermissionPropertyTypes = 'permissions';
+export type DefaultPropertyTypes = 'text' | 'markdown' | 'preview' | 'any';
+
+// Union of all supported property types
+export type AllowedPropertyTypes =
+  | DatePropertyTypes
+  | SelectPropertyTypes
+  | GeolocationPropertyTypes
+  | RelationshipPropertyTypes
+  | FilePropertyTypes
+  | PermissionPropertyTypes
+  | DefaultPropertyTypes;
+
+// Discriminated union types for each property type
+export interface DateMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'date';
+  readonly values: Array<{ value: number; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface MultiDateMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'multidate';
+  readonly values: Array<{ value: number; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface DateRangeMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'daterange';
+  readonly values: Array<{ value: { from: number; to: number }; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface MultiDateRangeMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'multidaterange';
+  readonly values: Array<{ value: { from: number; to: number }; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface GeolocationMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'geolocation';
+  readonly values: Array<{
+    value: { latitude: number; longitude: number };
+    label?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface RelationshipMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'relationship';
+  readonly values: Array<{
+    value: string | { sharedId: string; id?: string };
+    label: string;
+    url: string;
+    icon?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly relationshipName?: string;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface MediaMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'media';
+  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface ImageMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'image';
+  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface PreviewMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'preview';
+  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface TextMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'text';
+  readonly values: Array<{ value: string; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface MarkdownMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'markdown';
+  readonly values: Array<{ value: string; label?: string }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+// Discriminated union for all metadata property types
+export type MetadataProperty =
+  | DateMetadataProperty
+  | MultiDateMetadataProperty
+  | DateRangeMetadataProperty
+  | MultiDateRangeMetadataProperty
+  | GeolocationMetadataProperty
+  | RelationshipMetadataProperty
+  | MediaMetadataProperty
+  | ImageMetadataProperty
+  | PreviewMetadataProperty
+  | TextMetadataProperty
+  | MarkdownMetadataProperty;

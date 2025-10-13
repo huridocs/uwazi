@@ -1,3 +1,4 @@
+import { SelectPropertyTypes } from 'app/V2/domain/entities/types';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 import {
   FormattedProperty,
@@ -8,7 +9,7 @@ import {
 
 export class SelectPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'SelectPropertyProcessor';
-  readonly propertyTypes = ['select', 'multiselect'];
+  readonly propertyTypes: SelectPropertyTypes[] = ['select', 'multiselect'];
 
   async processBatch(
     properties: any[],
@@ -19,6 +20,9 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
     const { translations, thesauri } = context;
     const selectFormatting = {
       includeOptions: context.includeOptions,
+      showLabels: true,
+      showIcons: true,
+      showUrls: true,
     };
 
     properties.forEach(property => {

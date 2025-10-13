@@ -1,9 +1,10 @@
+import { FilePropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import { PropertyValue, ProcessingContext } from './types';
 
 export class FileProcessor extends BasePropertyProcessor {
   readonly name = 'FileProcessor';
-  readonly propertyTypes = ['image', 'media', 'file'];
+  readonly propertyTypes: FilePropertyTypes[] = ['image', 'media', 'file'];
 
   protected formatProperty(property: any, context: ProcessingContext): PropertyValue[] {
     if (this.shouldSkipFormatting(context, 'file')) {
@@ -19,14 +20,23 @@ export class FileProcessor extends BasePropertyProcessor {
       if (!file) {
         return {
           value: file,
-          label: '',
           displayValue: '',
         };
       }
+
+      const value = file.value || file;
+      const fileName =
+        file.fileName ||
+        file.originalname ||
+        (typeof value === 'string' ? value.split('/').pop() : 'Unknown');
+      const label = file.label || fileName;
+
       return {
-        value: file,
-        label: file.fileName || file.originalname || 'Unknown',
-        displayValue: file.fileName || file.originalname || 'Unknown',
+        value,
+        label,
+        displayValue: label,
+        alt: file.alt, // Preserve alt text for accessibility
+        ...file, // Preserve any additional properties
       };
     });
   }

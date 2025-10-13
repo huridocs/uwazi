@@ -5,6 +5,8 @@ import {
   ComposedRelationshipData,
   ComposedTemplate,
   EntityPermissions,
+  MetadataProperty,
+  DateMetadataProperty,
 } from './types';
 
 export interface Entity {
@@ -13,11 +15,11 @@ export interface Entity {
   readonly title: string;
   readonly language: string;
   readonly template?: ComposedTemplate;
-  readonly creationDate?: Date;
-  readonly editDate?: Date;
-  readonly icon?: any;
+  readonly creationDate: DateMetadataProperty['values'][0];
+  readonly editDate: DateMetadataProperty['values'][0];
+  readonly icon?: { _id: string } | any;
   readonly permissions?: EntityPermissions;
-  readonly metadata?: Record<string, any>;
+  readonly metadata: MetadataProperty[];
   readonly relationships?: ComposedRelationshipData;
   readonly files?: ComposedFileData;
   readonly navigation?: ComposedNavigationData;

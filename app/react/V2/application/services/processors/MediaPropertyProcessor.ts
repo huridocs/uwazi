@@ -1,3 +1,4 @@
+import { FilePropertyTypes } from 'app/V2/domain/entities/types';
 import {
   FormattedProperty,
   PropertyValue,
@@ -7,7 +8,7 @@ import {
 
 export class MediaPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'MediaPropertyProcessor';
-  readonly propertyTypes = ['media'];
+  readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
   async processBatch(
     properties: any[],
@@ -47,22 +48,58 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
       return [];
     }
 
-    return files.map((file, index) => ({
-      value: file._id || file.id,
-      label: file.originalname || file.filename || 'Unknown file',
-      displayValue: file.originalname || file.filename || 'Unknown file',
-      url: `/api/files/${file._id || file.id}`,
-      mimetype: file.mimetype,
-      size: file.size,
-      duration: file.duration,
-      dimensions: file.dimensions,
-      thumbnail: file.thumbnail,
-      selected: true,
-      filename: file.filename,
-      originalname: file.originalname,
-      fileType: this.getFileType(file.mimetype),
-      index,
-    }));
+    return files.map((file, index) => {
+      // Handle string format: "(/api/files/file.mp4, {\"timelinks\":{...}})"
+      if (typeof file.value === 'string' && file.value.startsWith('(')) {
+        try {
+          // Parse the tuple string format
+          const match = file.value.match(/^\(([^,]+),\s*({.*})\)$/);
+          if (match) {
+            const fileUrl = match[1];
+            const timelinksData = JSON.parse(match[2]);
+            const fileName = fileUrl.split('/').pop() || 'Unknown file';
+
+            return {
+              value: fileUrl,
+              label: fileName,
+              displayValue: fileName,
+              url: fileUrl,
+              mimetype: this.getMimetypeFromUrl(fileUrl),
+              size: 0,
+              duration: 0,
+              dimensions: null,
+              thumbnail: null,
+              selected: true,
+              filename: fileName,
+              originalname: fileName,
+              fileType: this.getFileType(this.getMimetypeFromUrl(fileUrl)),
+              index,
+              timelinks: timelinksData.timelinks || {},
+            };
+          }
+        } catch (error) {
+          console.error('Error parsing media file string:', error);
+        }
+      }
+
+      // Handle object format (legacy)
+      return {
+        value: file._id || file.id || file.value,
+        label: file.originalname || file.filename || file.label || 'Unknown file',
+        displayValue: file.originalname || file.filename || file.label || 'Unknown file',
+        url: file.url || `/api/files/${file._id || file.id || file.value}`,
+        mimetype: file.mimetype,
+        size: file.size || 0,
+        duration: file.duration || 0,
+        dimensions: file.dimensions,
+        thumbnail: file.thumbnail,
+        selected: true,
+        filename: file.filename,
+        originalname: file.originalname,
+        fileType: this.getFileType(file.mimetype),
+        index,
+      };
+    });
   }
 
   private processTimelines(timelines: any[], _context: ProcessingContext): PropertyValue[] {
@@ -110,6 +147,32 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
 
     const [type] = mimetype.split('/');
     return type === 'application' ? 'document' : type;
+  }
+
+  private getMimetypeFromUrl(url: string): string {
+    const extension = url.split('.').pop()?.toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      'mp4': 'video/mp4',
+      'avi': 'video/avi',
+      'mov': 'video/quicktime',
+      'wmv': 'video/x-ms-wmv',
+      'flv': 'video/x-flv',
+      'webm': 'video/webm',
+      'mp3': 'audio/mpeg',
+      'wav': 'audio/wav',
+      'ogg': 'audio/ogg',
+      'aac': 'audio/aac',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'gif': 'image/gif',
+      'svg': 'image/svg+xml',
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'txt': 'text/plain',
+    };
+    return mimeTypes[extension || ''] || 'application/octet-stream';
   }
 
   private calculateFileMetadata(mediaFiles: PropertyValue[], timelines: PropertyValue[]) {

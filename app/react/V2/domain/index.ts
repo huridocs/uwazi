@@ -5,6 +5,5 @@ export type {
   BatchCompositionResult,
 } from './entities/types';
 
-export { EntityUtils, EntityFactory } from './entities/utils';
-
+export type { MetadataProperty } from './entities/types';
 export type { Entity } from './entities/Entity';

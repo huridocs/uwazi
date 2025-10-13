@@ -1,3 +1,4 @@
+import { ComposedProperty, PermissionPropertyTypes } from 'app/V2/domain/entities/types';
 import { PermissionSchema } from 'shared/types/permissionType';
 import {
   PropertyTypeProcessor,
@@ -5,11 +6,10 @@ import {
   FormattedProperty,
   EntityPermissions,
 } from './types';
-import { ComposedProperty } from 'app/V2/domain/entities/types';
 
 export class PermissionProcessor implements PropertyTypeProcessor {
   readonly name = 'PermissionProcessor';
-  readonly propertyTypes = ['permissions'];
+  readonly propertyTypes: PermissionPropertyTypes[] = ['permissions'];
 
   async processBatch(
     properties: ComposedProperty[],
@@ -97,9 +97,9 @@ export class PermissionProcessor implements PropertyTypeProcessor {
       return userPermission.level === 'write' ? 'write' : 'read';
     }
 
-    const groupPermissions = (context.currentUser.groups || []).map(groupId =>
-      permissions.find(p => p.type === 'group' && p.refId === groupId._id)
-    ).filter(Boolean);
+    const groupPermissions = (context.currentUser.groups || [])
+      .map(groupId => permissions.find(p => p.type === 'group' && p.refId === groupId._id))
+      .filter(Boolean);
 
     if (groupPermissions.length > 0) {
       return groupPermissions[0]?.level === 'write' ? 'write' : 'read';

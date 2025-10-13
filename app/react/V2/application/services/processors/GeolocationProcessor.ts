@@ -1,11 +1,12 @@
+import { GeolocationPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import { PropertyValue, ProcessingContext } from './types';
 
 export class GeolocationProcessor extends BasePropertyProcessor {
   readonly name = 'GeolocationProcessor';
-  readonly propertyTypes = ['geolocation'];
+  readonly propertyTypes: GeolocationPropertyTypes[] = ['geolocation'];
 
-  protected createRawValues(property: any): PropertyValue[] {
+  protected createRawValues(property: PropertyValue): PropertyValue[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
     return values.map((geo: any) => {
       if (!geo) {
@@ -22,6 +23,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
         lat = geo.value.latitude || geo.value.lat;
         lon = geo.value.longitude || geo.value.lon;
+      } else if (geo.value && geo.value.value && (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)) {
+        // Handle nested structure: { value: { lat: X, lon: Y } }
+        lat = geo.value.value.lat;
+        lon = geo.value.value.lon;
       } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
         // Handle case where geo is the coordinate object directly
         lat = geo.latitude || geo.lat;
@@ -35,11 +40,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         };
       }
 
-      const label = lat && lon ? `${lat}, ${lon}` : 'Invalid coordinates';
+      const coordinateLabel = (lat !== undefined && lon !== undefined && lat !== null && lon !== null) ? `${lat}, ${lon}` : 'Invalid coordinates';
       return {
         value: { latitude: lat, longitude: lon },
-        label,
-        displayValue: label,
+        label: geo.label || coordinateLabel,
       };
     });
   }
@@ -62,7 +66,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       let lat: number;
       let lon: number;
 
-      if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
+      if (geo.value && geo.value.value && (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)) {
+        // Handle nested structure: { value: { lat: X, lon: Y } }
+        lat = geo.value.value.lat;
+        lon = geo.value.value.lon;
+      } else if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
         lat = geo.value.latitude || geo.value.lat;
         lon = geo.value.longitude || geo.value.lon;
       } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
@@ -77,7 +85,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         };
       }
 
-      if (!lat || !lon) {
+      if (lat === undefined || lon === undefined || lat === null || lon === null) {
         return {
           value: geo,
           label: 'Invalid coordinates',
@@ -90,28 +98,26 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       const lonFormatted = Number(lon).toFixed(2);
       const label = `${latFormatted}°N, ${lonFormatted}°E`;
       const formattedValue = {
-        lat: Number(latFormatted),
-        lon: Number(lonFormatted),
+        latitude: Number(latFormatted),
+        longitude: Number(lonFormatted),
       };
 
       return {
         value: { latitude: lat, longitude: lon },
         label,
-        displayValue: label,
-        formattedValue,
       };
     });
 
     const finalValues =
       geolocationFormatting.combineGeolocation && formattedValues.length > 1
         ? [
-            {
-              value: formattedValues.map((v: any) => v.value),
-              label: `Multiple locations (${formattedValues.length})`,
-              displayValue: `Multiple locations (${formattedValues.length})`,
-              formattedValue: formattedValues,
-            },
-          ]
+          {
+            value: formattedValues.map((v: any) => v.value),
+            label: `Multiple locations (${formattedValues.length})`,
+            displayValue: `Multiple locations (${formattedValues.length})`,
+            formattedValue: formattedValues,
+          },
+        ]
         : formattedValues;
 
     return finalValues;
