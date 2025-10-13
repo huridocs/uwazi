@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { useCallback } from 'react';
 import { Translate } from 'app/I18N';
-import { templatesAtom } from 'V2/atoms';
 import { Entity, MetadataProperty } from 'V2/domain';
 import { Date } from './Date';
 import { Geolocation } from './Geolocation';
@@ -11,21 +9,15 @@ import { Image } from './Image';
 import { Text } from './Text';
 import { Title } from './Title';
 import { Markdown } from './Markdown';
-import { Pill } from '../UI';
 import { MetadataCard } from './MetadataCard';
+import { TemplateLabel } from './TemplateLabel';
 
 type MetadataDisplayProps = {
   entity: Entity;
-  templateId: string;
 };
 
-const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
-  const templates = useAtomValue(templatesAtom);
-
-  const template = useMemo(
-    () => templates.find(tpl => tpl._id === templateId),
-    [templateId, templates]
-  );
+const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
+  const templateId = entity.template?._id!;
 
   const renderMetadataProperty = useCallback(
     // eslint-disable-next-line max-statements
@@ -50,13 +42,12 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
       }
 
       if (data.type === 'image' || data.type === 'preview') {
-        const property = template?.properties?.find(prop => prop.name === data.name);
         return (
           <Image
             values={data.values}
             label={data.label}
             translationContext={templateId}
-            imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -93,7 +84,7 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
 
       return undefined;
     },
-    [template, templateId]
+    [templateId]
   );
 
   return (
@@ -102,18 +93,16 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         <dt className="sr-only">
           <Translate>Template</Translate>
         </dt>
-        <dd>
-          <Pill color="primary">
-            <Translate className="font-medium" context={templateId}>
-              {template?.name}
-            </Translate>
-          </Pill>
-        </dd>
+        <TemplateLabel
+          label={entity.template?.label || ''}
+          color={entity.template?.color}
+          templateId={entity.template?._id}
+        />
         <Title
           label="Title"
           title={entity.title}
           translationContext={templateId}
-          iconId={entity.icon._id}
+          iconId={entity.icon?._id}
         />
       </MetadataCard>
 

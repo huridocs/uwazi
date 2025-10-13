@@ -2,20 +2,16 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
+import { EntitySchema } from 'shared/types/entityType';
 import { MetadataDisplay } from 'V2/Components/Metadata';
-import { settingsAtom, templatesAtom } from 'app/V2/atoms';
-import { Entity } from 'app/V2/domain';
+import { settingsAtom } from 'V2/atoms';
+import { Entity } from 'V2/domain';
+import { EntityAdapterProcessor } from 'V2/application/services/processors/EntityAdapterProcessor';
+import { ProcessingContext } from 'V2/application/services/processors/types';
+import { rawEntity, processingContext } from './fixtures/MetadataDisplayFixtures';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
-store.set(templatesAtom, [
-  {
-    _id: '1',
-    name: 'template1',
-    label: 'Template 1',
-    color: '#00000',
-  },
-]);
 
 const meta: Meta<typeof MetadataDisplay> = {
   title: 'Components/Metadata',
@@ -24,19 +20,31 @@ const meta: Meta<typeof MetadataDisplay> = {
 
 type Story = StoryObj<typeof MetadataDisplay>;
 
+const entityAdapterProcessor = new EntityAdapterProcessor(processingContext);
+const { entity } = await entityAdapterProcessor.processEntity(rawEntity);
+
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <MetadataDisplay entity={args.entity} templateId={args.templateId} />
+          <MetadataDisplay entity={entity} />
         </Provider>
       </BrowserRouter>
     </div>
   ),
 };
 
-const entity: Entity = {
+const Basic = {
+  ...Primary,
+  args: {},
+};
+
+export { Basic };
+
+export default meta;
+
+/* const entity: EntitySchema = {
   _id: '1',
   title: 'Simple title',
   sharedId: 'entity1',
@@ -184,16 +192,4 @@ const entity: Entity = {
       ],
     },
   ],
-};
-
-const Basic = {
-  ...Primary,
-  args: {
-    templateId: '1',
-    entity,
-  },
-};
-
-export { Basic };
-
-export default meta;
+}; */
