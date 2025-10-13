@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { useCallback } from 'react';
 import { Translate } from 'app/I18N';
-import { templatesAtom } from 'V2/atoms';
 import { Entity, MetadataProperty } from 'V2/domain';
 import { Date } from './Date';
 import { Geolocation } from './Geolocation';
@@ -11,21 +9,15 @@ import { Image } from './Image';
 import { Text } from './Text';
 import { Title } from './Title';
 import { Markdown } from './Markdown';
-import { Pill } from '../UI';
 import { MetadataCard } from './MetadataCard';
+import { TemplateLabel } from './TemplateLabel';
 
 type MetadataDisplayProps = {
   entity: Entity;
 };
 
 const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
-  const templates = useAtomValue(templatesAtom);
   const templateId = entity.template?._id!;
-
-  const template = useMemo(
-    () => templates.find(tpl => tpl._id === entity.template?._id),
-    [entity.template?._id, templates]
-  );
 
   const renderMetadataProperty = useCallback(
     // eslint-disable-next-line max-statements
@@ -50,13 +42,12 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       }
 
       if (data.type === 'image' || data.type === 'preview') {
-        const property = template?.properties?.find(prop => prop.name === data.name);
         return (
           <Image
             values={data.values}
             label={data.label}
             translationContext={templateId}
-            imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -93,7 +84,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
       return undefined;
     },
-    [template, templateId]
+    [templateId]
   );
 
   return (
@@ -102,13 +93,11 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         <dt className="sr-only">
           <Translate>Template</Translate>
         </dt>
-        <dd>
-          <Pill color="primary">
-            <Translate className="font-medium text-base" context={templateId}>
-              {entity.template?.label}
-            </Translate>
-          </Pill>
-        </dd>
+        <TemplateLabel
+          label={entity.template?.label || ''}
+          color={entity.template?.color}
+          templateId={entity.template?._id}
+        />
         <Title
           label="Title"
           title={entity.title}

@@ -302,7 +302,7 @@ const processingContext: ProcessingContext = {
       _id: '1',
       name: 'template1',
       label: 'Template 1',
-      color: '#00000',
+      color: '#f3c57a',
       commonProperties: [
         {
           _id: '11',
