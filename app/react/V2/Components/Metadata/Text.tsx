@@ -1,6 +1,7 @@
 import React from 'react';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataFieldProps } from './types';
+import { MetadataCard } from './MetadataCard';
 
 type TextProps = MetadataFieldProps & {
   values: {
@@ -9,10 +10,10 @@ type TextProps = MetadataFieldProps & {
 };
 
 const Text = ({ label, translationContext, values, hideLabel }: TextProps) => (
-  <div>
+  <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     <dd className="font-medium text-gray-900">{values?.[0]?.value}</dd>
-  </div>
+  </MetadataCard>
 );
 
 export { Text };

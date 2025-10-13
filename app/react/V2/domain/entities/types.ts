@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ProcessingError } from 'app/V2/application/services/processors/types';
 import { Entity } from './Entity';
 

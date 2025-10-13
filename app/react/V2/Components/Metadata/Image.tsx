@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
+import { MetadataCard } from './MetadataCard';
 
 type ImageProps = MetadataFieldProps & {
   values: {
@@ -15,7 +16,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
 
   return (
-    <div>
+    <MetadataCard>
       <MetadataLabel label={label} hideLabel={hideLabel} translationContext={translationContext} />
 
       {values.map((image, index) => {
@@ -42,7 +43,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
           </dd>
         );
       })}
-    </div>
+    </MetadataCard>
   );
 };
 

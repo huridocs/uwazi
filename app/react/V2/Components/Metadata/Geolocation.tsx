@@ -3,6 +3,7 @@ import { Map } from 'app/Map';
 import { MapProps } from 'app/Map/MapContainer';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
+import { MetadataCard } from './MetadataCard';
 
 type GeolocationProps = MetadataFieldProps & {
   markers: { value: { latitude: number; longitude: number } }[];
@@ -36,9 +37,8 @@ const Geolocation = ({
   zoom,
   height = 500,
 }: GeolocationProps) => (
-  <div>
+  <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-
     <Map
       height={height}
       markers={formatMarkers(markers, label)}
@@ -49,7 +49,7 @@ const Geolocation = ({
       layers={layers}
       zoom={zoom}
     />
-  </div>
+  </MetadataCard>
 );
 
 export { Geolocation };

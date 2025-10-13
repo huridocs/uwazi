@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { Translate } from 'app/I18N';
 import { templatesAtom } from 'V2/atoms';
-import { Entity, MetadataProperty } from 'app/V2/domain';
+import { Entity, MetadataProperty } from 'V2/domain';
 import { Date } from './Date';
 import { Geolocation } from './Geolocation';
 import { Relationship } from './Relationship';
@@ -10,6 +11,8 @@ import { Image } from './Image';
 import { Text } from './Text';
 import { Title } from './Title';
 import { Markdown } from './Markdown';
+import { Pill } from '../UI';
+import { MetadataCard } from './MetadataCard';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -42,28 +45,6 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         );
       }
 
-      if (data.type === 'relationship') {
-        if (data.inherited === true) {
-          const inheritedProperty = data.properties?.inheritedProperty;
-          if (!inheritedProperty) return null;
-          const reformattedData = {
-            values: data.values,
-            label: data.label,
-            name: data.name,
-            type: inheritedProperty.type,
-            inherited: data.inherited,
-            properties: data.properties,
-            translatedLabel: data.translatedLabel,
-            propertyMetadata: data.propertyMetadata,
-            index: data.index,
-          };
-          return renderMetadataProperty(reformattedData as MetadataProperty);
-        }
-        return (
-          <Relationship values={data.values} label={data.label} translationContext={templateId} />
-        );
-      }
-
       if (data.type === 'media') {
         return <Media values={data.values} label={data.label} translationContext={templateId} />;
       }
@@ -88,6 +69,28 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
         return <Markdown values={data.values} label={data.label} translationContext={templateId} />;
       }
 
+      if (data.type === 'relationship') {
+        if (data.inherited === true) {
+          const inheritedProperty = data.properties?.inheritedProperty;
+          if (!inheritedProperty) return null;
+          const reformattedData = {
+            values: data.values,
+            label: data.label,
+            name: data.name,
+            type: inheritedProperty.type,
+            inherited: data.inherited,
+            properties: data.properties,
+            translatedLabel: data.translatedLabel,
+            propertyMetadata: data.propertyMetadata,
+            index: data.index,
+          };
+          return renderMetadataProperty(reformattedData as MetadataProperty);
+        }
+        return (
+          <Relationship values={data.values} label={data.label} translationContext={templateId} />
+        );
+      }
+
       return undefined;
     },
     [template, templateId]
@@ -95,16 +98,30 @@ const MetadataDisplay = ({ entity, templateId }: MetadataDisplayProps) => {
 
   return (
     <dl className="flex flex-col gap-4">
-      <Title
-        label="Title"
-        title={entity.title}
-        translationContext={templateId}
-        iconId={entity.icon._id}
-      />
+      <MetadataCard>
+        <dt className="sr-only">
+          <Translate>Template</Translate>
+        </dt>
+        <dd>
+          <Pill color="primary">
+            <Translate className="font-medium" context={templateId}>
+              {template?.name}
+            </Translate>
+          </Pill>
+        </dd>
+        <Title
+          label="Title"
+          title={entity.title}
+          translationContext={templateId}
+          iconId={entity.icon._id}
+        />
+      </MetadataCard>
+
       <Date timestamps={[entity.creationDate]} label="Creation date" translationContext="System" />
+
       <Date timestamps={[entity.editDate]} label="Edit date" translationContext="System" />
 
-      <div>{entity.metadata.map(renderMetadataProperty)}</div>
+      {entity.metadata.map(renderMetadataProperty)}
     </dl>
   );
 };
