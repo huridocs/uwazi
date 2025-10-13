@@ -1,0 +1,62 @@
+name: Build Cypress Image
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+
+jobs:
+  build_cypress_image:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if Docker image needs rebuilding
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Manual workflow dispatch - building image"
+          else
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Building image (Docker cache will determine if rebuild is needed)"
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        if: steps.changes.outputs.should_build == 'true'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        if: steps.changes.outputs.should_build == 'true'
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+
+      - name: Set up Docker Buildx
+        if: steps.changes.outputs.should_build == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Cypress Docker image
+        if: steps.changes.outputs.should_build == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./.github/ci/Dockerfile.cypress
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.CYPRESS_IMAGE_NAME }}:cache,mode=max

@@ -1,6 +1,6 @@
-@import "../../App/scss/config/_colors.scss";
-@import "../../App/scss/config/_materials.scss";
-@import "../../App/scss/config/_typography.scss";
+@use "../../App/scss/config/_colors.scss" as *;
+@use "../../App/scss/config/_materials.scss" as *;
+@use "../../App/scss/config/_typography.scss" as *;
 
 .create-reference {
   z-index: 6;

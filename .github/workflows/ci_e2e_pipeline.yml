@@ -5,7 +5,7 @@ on:
     branches: [development]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: [development, staging, production]
+    branches: [development, staging, production, 'dependabot/**']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,6 +15,8 @@ permissions:
   contents: read
   pull-requests: read
   packages: write
+  checks: read
+  actions: read
 
 jobs:
   precheck:
@@ -33,22 +35,27 @@ jobs:
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
       sha: ${{ github.sha }}
 
+  build_cypress_image:
+    needs: precheck
+    if: needs.precheck.outputs.should_run == 'true'
+    uses: ./.github/workflows/ci_build_cypress_image.yml
+
   build:
     needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_build.yml
 
   e2e_cypress:
-    needs: [precheck, build]
+    needs: [precheck, build_cypress_image]
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
-    needs: [precheck, build]
+    needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_e2e_puppeteer.yml
 
   check_translations:
-    needs: [precheck, build]
+    needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     uses: ./.github/workflows/ci_check_translations.yml
