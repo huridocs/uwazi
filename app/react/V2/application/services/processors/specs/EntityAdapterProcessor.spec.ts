@@ -1,4 +1,4 @@
-import { processingContext, rawEntity } from './SimpleTestFixtures';
+import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
 import { EntityAdapterProcessor } from '../EntityAdapterProcessor';
 import { Entity, MetadataProperty } from 'app/V2/domain';
 import { DateMetadataProperty, MultiDateMetadataProperty } from 'app/V2/domain/entities/types';
@@ -31,8 +31,8 @@ describe('Simplified Processor Tests', () => {
             type: "date",
             label: 'editDate',
             translatedLabel: 'editDate',
-            values: [{ value: 1760320591, label: 'Oct 13, 2025' }],
-            dateObject: new Date('2025-10-13T01:56:31.000Z'),
+            values: [{ value: 1760366924, label: 'Oct 13, 2025' }],
+            dateObject: new Date('2025-10-13T14:48:44.000Z'),
         };
 
         const formattedTemplate = {
@@ -102,13 +102,10 @@ describe('Simplified Processor Tests', () => {
             translatedLabel: 'GeolocationIsolated',
             values: [{
                 value: {
-                    value: {
-                        label: "",
-                        lat: 46.3964365565104,
-                        lon: 3.6694335937500004
-                    }
+                    latitude: 46.3964365565104,
+                    longitude: 3.6694335937500004
                 },
-                label: 'Invalid coordinates'
+                label: '46.40°N, 3.67°E'
             }]
         };
 
@@ -119,8 +116,8 @@ describe('Simplified Processor Tests', () => {
         const multipleDateProperty: MultiDateMetadataProperty = {
             name: "multidate",
             type: "multidate",
-            label: 'Multiple dates',
-            translatedLabel: 'Multiple dates',
+            label: 'Multidate',
+            translatedLabel: 'Multidate',
             values: [
                 { value: 1759276800, label: 'Oct 1, 2025' },
                 { value: 1759363200, label: 'Oct 2, 2025' },
@@ -247,13 +244,13 @@ describe('Simplified Processor Tests', () => {
                 {
                     icon: { _id: "ECU", label: "Ecuador", type: "Flags" },
                     label: "Context trimming sample2",
-                    url: "#",
+                    url: "/entity/xjku67dv7b",
                     value: "xjku67dv7b"
                 },
                 {
                     icon: "",
                     label: "Context trimming sample3",
-                    url: "#",
+                    url: "/entity/4oklamamet",
                     value: "4oklamamet"
                 }
             ]
@@ -333,13 +330,10 @@ describe('Simplified Processor Tests', () => {
             translatedLabel: 'Geolocation',
             values: [{
                 value: {
-                    value: {
-                        label: "",
-                        lat: 44.33301685687683,
-                        lon: 5.998535156250001
-                    }
+                    latitude: 44.33301685687683,
+                    longitude: 5.998535156250001
                 },
-                label: 'Invalid coordinates'
+                label: "44.33°N, 6.00°E"
             }]
         };
 
@@ -354,15 +348,10 @@ describe('Simplified Processor Tests', () => {
             translatedLabel: 'Geolocation2',
             values: [{
                 value: {
-                    value: {
-                        label: "",
-                        lat: 62.58069554111894,
-                        lon: 15.468750000000002
-                    }
+                    latitude: 62.58069554111894,
+                    longitude: 15.468750000000002
                 },
-                label: 'Invalid coordinates',
-                displayValue: 'Invalid coordinates',
-                error: 'Invalid coordinates'
+                label: '62.58°N, 15.47°E'
             }]
         };
 
@@ -379,13 +368,13 @@ describe('Simplified Processor Tests', () => {
                 {
                     icon: { _id: "ECU", label: "Ecuador", type: "Flags" },
                     label: "Context trimming sample2",
-                    url: "#",
+                    url: "/entity/xjku67dv7b",
                     value: "xjku67dv7b"
                 },
                 {
                     icon: "",
                     label: "Context trimming sample3",
-                    url: "#",
+                    url: "/entity/4oklamamet",
                     value: "4oklamamet"
                 }
             ]
@@ -396,21 +385,21 @@ describe('Simplified Processor Tests', () => {
 
     it('should process relationship_nested property', async () => {
         const relationshipNestedProperty = {
-            name: "relationship_nested",
+            name: "relationship_n-3",
             type: "relationship",
-            label: 'Relationship Nested',
-            translatedLabel: 'Relationship Nested',
+            label: 'Relationship n-3',
+            translatedLabel: 'Relationship n-3',
             values: [
                 {
                     icon: "",
                     label: "Middle1",
-                    url: "#",
+                    url: "/entity/6qdshinfobf",
                     value: "6qdshinfobf"
                 }
             ]
         };
 
-        expect(metadata[18]).toMatchObject(relationshipNestedProperty);
+        expect(metadata[19]).toMatchObject(relationshipNestedProperty);
     });
 
     it('should process generatedid property', async () => {
@@ -422,7 +411,7 @@ describe('Simplified Processor Tests', () => {
             values: [{ value: 'BDZ3505-3650', label: 'BDZ3505-3650' }]
         };
 
-        expect(metadata[19]).toMatchObject(generatedidProperty);
+        expect(metadata[18]).toMatchObject(generatedidProperty);
     });
 
 

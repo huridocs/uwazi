@@ -12,7 +12,7 @@ export const rawEntity: EntitySchema = {
     "template": "68ddecdbc9474e23bb5e914b",
     "published": false,
     "creationDate": 1759374706197,
-    "editDate": 1760320591458,
+    "editDate": 1760366924144,
     "metadata": {
         "text_label": [
             {
@@ -223,18 +223,50 @@ export const rawEntity: EntitySchema = {
                 "inheritedType": "geolocation"
             }
         ],
-        "relationship_nested": [
+        "generatedid": [
+            {
+                "value": "BDZ3505-3650"
+            }
+        ],
+        "relationship_n-3": [
             {
                 "value": "6qdshinfobf",
                 "label": "Middle1",
                 "icon": "",
-                "inheritedValue": [],
+                "type": "entity",
+                "inheritedValue": [
+                    {
+                        "value": "7jdr88mnow6",
+                        "label": "EL1",
+                        "icon": "",
+                        "type": "entity",
+                        "inheritedValue": [
+                            {
+                                "value": "xjku67dv7b",
+                                "label": "Context trimming sample2",
+                                "icon": {
+                                    "_id": "ECU",
+                                    "label": "Ecuador",
+                                    "type": "Flags"
+                                },
+                                "type": "entity",
+                                "inheritedValue": [
+                                    {
+                                        "value": "9e22a1af-75d7-49a2-b9d8-9ec77939b630",
+                                        "label": "Again"
+                                    },
+                                    {
+                                        "value": "765ab6ca-56a1-4948-9dc9-17fc0aa30843",
+                                        "label": "Acknowledging"
+                                    }
+                                ],
+                                "inheritedType": "multiselect"
+                            }
+                        ],
+                        "inheritedType": "relationship"
+                    }
+                ],
                 "inheritedType": "relationship"
-            }
-        ],
-        "generatedid": [
-            {
-                "value": "BDZ3505-3650"
             }
         ]
     },
@@ -247,7 +279,7 @@ export const rawEntity: EntitySchema = {
         }
     ],
     "obsoleteMetadata": [],
-    "__v": 9
+    "__v": 11
 };
 
 const formattedMetadata: ComposedTemplate = {
@@ -1130,12 +1162,12 @@ const entity: Entity = {
 export const processingContext: ProcessingContext = {
     "includeTemplate": true,
     "includeMetadata": true,
-    "includeRelationships": true,
-    "includeFiles": true,
-    "includeNavigation": true,
+    "includeRelationships": false,
+    "includeFiles": false,
+    "includeNavigation": false,
     "includePermissions": true,
+    "onlyForCards": true,
     "dateFormat": "MMM D, YYYY",
-    "includePropertyMetadata": true,
     "translateLabels": true,
     "language": "en",
     "translations": [
@@ -1241,7 +1273,7 @@ export const processingContext: ProcessingContext = {
                         "Geolocation2": "Geolocation2",
                         "GeolocationR": "GeolocationR",
                         "GeolocationIsolated": "GeolocationIsolated",
-                        "Relationship Nested": "Relationship Nested"
+                        "Relationship n-3": "Relationship n-3"
                     }
                 },
                 {
@@ -1251,7 +1283,7 @@ export const processingContext: ProcessingContext = {
                     "values": {
                         "middle": "middle",
                         "Title": "Title",
-                        "Relationship many level": "Relationship many level"
+                        "Relationship n-2": "Relationship n-2"
                     }
                 },
                 {
@@ -1259,9 +1291,9 @@ export const processingContext: ProcessingContext = {
                     "label": "extra level",
                     "type": "Entity",
                     "values": {
-                        "Relationship": "Relationship",
                         "extra level": "extra level",
-                        "Title": "Title"
+                        "Title": "Title",
+                        "Relationship n-1": "Relationship n-1"
                     }
                 }
             ]
@@ -1514,7 +1546,7 @@ export const processingContext: ProcessingContext = {
                 {
                     "_id": "68ddecdbc9474e23bb5e914f",
                     "type": "multidate",
-                    "label": "Multiple dates",
+                    "label": "Multidate",
                     "noLabel": false,
                     "required": false,
                     "showInCard": false,
@@ -1724,26 +1756,6 @@ export const processingContext: ProcessingContext = {
                     "name": "geolocationr"
                 },
                 {
-                    "content": "68ec577980a3354966fb293c",
-                    "_id": "68ec57cf80a3354966fb29db",
-                    "type": "relationship",
-                    "label": "Relationship Nested",
-                    "noLabel": false,
-                    "required": false,
-                    "showInCard": true,
-                    "filter": false,
-                    "defaultfilter": false,
-                    "prioritySorting": false,
-                    "style": "",
-                    "relationType": "68da99b961bceda4fe0d6ddd",
-                    "generatedId": false,
-                    "name": "relationship_nested",
-                    "inherit": {
-                        "property": "68ec57a480a3354966fb2971",
-                        "type": "relationship"
-                    }
-                },
-                {
                     "_id": "68ddecdbc9474e23bb5e9159",
                     "type": "generatedid",
                     "label": "Generatedid",
@@ -1756,6 +1768,26 @@ export const processingContext: ProcessingContext = {
                     "style": "",
                     "generatedId": false,
                     "name": "generatedid"
+                },
+                {
+                    "content": "68ec577980a3354966fb293c",
+                    "_id": "68ed110f2bbc3dca9918f4bc",
+                    "type": "relationship",
+                    "label": "Relationship n-3",
+                    "noLabel": false,
+                    "required": false,
+                    "showInCard": true,
+                    "filter": false,
+                    "defaultfilter": false,
+                    "prioritySorting": false,
+                    "style": "",
+                    "relationType": "68da99b961bceda4fe0d6ddd",
+                    "inherit": {
+                        "property": "68ec57a480a3354966fb2971",
+                        "type": "relationship"
+                    },
+                    "generatedId": false,
+                    "name": "relationship_n-3"
                 }
             ],
             "commonProperties": [
@@ -1783,7 +1815,7 @@ export const processingContext: ProcessingContext = {
             ],
             "entityViewPage": "",
             "name": "Full template",
-            "__v": 8
+            "__v": 10
         },
         {
             "_id": "68ec577980a3354966fb293c",
@@ -1793,7 +1825,7 @@ export const processingContext: ProcessingContext = {
                     "content": "68ec5bf780a3354966fb2c25",
                     "_id": "68ec57a480a3354966fb2971",
                     "type": "relationship",
-                    "label": "Relationship many level",
+                    "label": "Relationship n-2",
                     "noLabel": false,
                     "required": false,
                     "showInCard": true,
@@ -1803,11 +1835,11 @@ export const processingContext: ProcessingContext = {
                     "style": "",
                     "relationType": "68da99b961bceda4fe0d6ddd",
                     "inherit": {
-                        "property": "68ec5bf780a3354966fb2c26",
+                        "property": "68ed10e32bbc3dca9918f3c7",
                         "type": "relationship"
                     },
                     "generatedId": false,
-                    "name": "relationship_many_level"
+                    "name": "relationship_n-2"
                 }
             ],
             "commonProperties": [
@@ -1835,7 +1867,7 @@ export const processingContext: ProcessingContext = {
             ],
             "entityViewPage": "",
             "name": "middle",
-            "__v": 2
+            "__v": 4
         },
         {
             "_id": "68ec5bf780a3354966fb2c25",
@@ -1843,9 +1875,9 @@ export const processingContext: ProcessingContext = {
             "properties": [
                 {
                     "content": "5bfbb1a0471dd0fc16ada146",
-                    "_id": "68ec5bf780a3354966fb2c26",
+                    "_id": "68ed10e32bbc3dca9918f3c7",
                     "type": "relationship",
-                    "label": "Relationship",
+                    "label": "Relationship n-1",
                     "noLabel": false,
                     "required": false,
                     "showInCard": true,
@@ -1859,7 +1891,7 @@ export const processingContext: ProcessingContext = {
                         "type": "multiselect"
                     },
                     "generatedId": false,
-                    "name": "relationship"
+                    "name": "relationship_n-1"
                 }
             ],
             "commonProperties": [
@@ -1887,7 +1919,7 @@ export const processingContext: ProcessingContext = {
             ],
             "entityViewPage": "",
             "name": "extra level",
-            "__v": 0
+            "__v": 2
         }
     ],
     "settings": {
