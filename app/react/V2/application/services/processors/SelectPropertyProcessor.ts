@@ -64,7 +64,7 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
       const values = Array.isArray(property.value) ? property.value : [property.value];
 
       return values.map((value: any): PropertyValue => {
-        const label = showLabels ? value.toString() : '';
+        const label = showLabels ? value.label || value.toString() : '';
         return {
           value,
           label: showLabels ? label : undefined,

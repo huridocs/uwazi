@@ -41,8 +41,18 @@ const entity: Entity = {
   title: 'Simple title',
   sharedId: 'entity1',
   language: 'en',
-  creationDate: { value: 1659438982222, label: 'August 2, 2022' },
-  editDate: { value: 1663758775194, label: 'September 20, 2022' },
+  creationDate: {
+    values: [{ value: 1659438982222, label: 'August 2, 2022' }],
+    name: 'creationDate',
+    type: 'date',
+    label: 'Creation Date',
+  },
+  editDate: {
+    values: [{ value: 1663758775194, label: 'September 20, 2022' }],
+    name: 'editDate',
+    type: 'date',
+    label: 'Edit Date',
+  },
   icon: { _id: 'SMR' },
   template: {
     _id: '1',

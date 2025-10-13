@@ -15,25 +15,24 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         const values = this.formatProperty(property, context);
         const isInherited = property.inherited === true;
 
-        // Build relationship-specific metadata
         const relationshipMetadata: any = {
           inherited: isInherited,
           relationshipName: property.relationshipName,
           properties: {
             template: property.template
               ? {
-                _id: property.template._id,
-                name: property.template.name,
-                label: property.template.label,
-                color: property.template.color,
-              }
+                  _id: property.template._id,
+                  name: property.template.name,
+                  label: property.template.label,
+                  color: property.template.color,
+                }
               : undefined,
             inheritedProperty: property.inheritedProperty
               ? {
-                type: property.inheritedProperty.type,
-                name: property.inheritedProperty.name,
-                label: property.inheritedProperty.label,
-              }
+                  type: property.inheritedProperty.type,
+                  name: property.inheritedProperty.name,
+                  label: property.inheritedProperty.label,
+                }
               : undefined,
           },
         };
@@ -74,16 +73,13 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       const label = rel.label || rel.displayValue || rel.toString();
       const sharedId = typeof value === 'string' ? value : value?.sharedId || value?.id;
 
-      // Construct URL if not provided
       const url = rel.url || (sharedId ? `/entity/${sharedId}` : undefined);
-
-      // Use provided icon or get from target entity info
       const icon = rel.icon || rel.targetIcon || '';
 
       return {
-        value: value, // Keep the original value
+        value: value,
         label,
-        url: url || '#', // Ensure url is always present
+        url: url || '#',
         icon,
       };
     });
@@ -110,9 +106,13 @@ export class RelationshipProcessor extends BasePropertyProcessor {
   private formatRelationshipProperty(property: any, context: ProcessingContext): PropertyValue[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
+    const allInheritedValues = this.collectAllInheritedValues(values);
+
+    const allValues = [...values, ...allInheritedValues];
+
     const limitedValues = context.maxRelationships
-      ? values.slice(0, context.maxRelationships)
-      : values;
+      ? allValues.slice(0, context.maxRelationships)
+      : allValues;
 
     return limitedValues.map((rel: any): PropertyValue => {
       const label = rel.label || rel.displayValue || rel.toString();
@@ -126,5 +126,18 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         icon,
       };
     });
+  }
+
+  private collectAllInheritedValues(values: any[]): any[] {
+    const allInherited: any[] = [];
+
+    values.forEach(value => {
+      if (value.inheritedValue && Array.isArray(value.inheritedValue)) {
+        allInherited.push(...value.inheritedValue);
+        allInherited.push(...this.collectAllInheritedValues(value.inheritedValue));
+      }
+    });
+
+    return allInherited;
   }
 }

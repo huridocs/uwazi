@@ -99,7 +99,10 @@ export class FileProcessor extends BasePropertyProcessor {
         };
       }
 
-      const fileName = file.fileName || file.originalname || (typeof actualValue === 'string' ? actualValue.split('/').pop() : 'Unknown');
+      const fileName =
+        file.fileName ||
+        file.originalname ||
+        (typeof actualValue === 'string' ? actualValue.split('/').pop() : 'Unknown');
       const url = file.url || actualValue || '';
       const type = file.type || 'unknown';
       const size = file.size || 0;

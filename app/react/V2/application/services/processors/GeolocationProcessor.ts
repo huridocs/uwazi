@@ -73,12 +73,14 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       let lat: number;
       let lon: number;
 
-      if (
+      if (geo.value && (geo.value.lat !== undefined || geo.value.lon !== undefined)) {
+        lat = geo.value.lat;
+        lon = geo.value.lon;
+      } else if (
         geo.value &&
         geo.value.value &&
         (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)
       ) {
-        // Handle nested structure: { value: { lat: X, lon: Y } }
         lat = geo.value.value.lat;
         lon = geo.value.value.lon;
       } else if (
@@ -90,6 +92,9 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
         lat = geo.latitude || geo.lat;
         lon = geo.longitude || geo.lon;
+      } else if (geo.lat !== undefined || geo.lon !== undefined) {
+        lat = geo.lat;
+        lon = geo.lon;
       } else {
         return {
           value: geo,
@@ -121,13 +126,13 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     const finalValues =
       geolocationFormatting.combineGeolocation && formattedValues.length > 1
         ? [
-            {
-              value: formattedValues.map((v: any) => v.value),
-              label: `Multiple locations (${formattedValues.length})`,
-              displayValue: `Multiple locations (${formattedValues.length})`,
-              formattedValue: formattedValues,
-            },
-          ]
+          {
+            value: formattedValues.map((v: any) => v.value),
+            label: `Multiple locations (${formattedValues.length})`,
+            displayValue: `Multiple locations (${formattedValues.length})`,
+            formattedValue: formattedValues,
+          },
+        ]
         : formattedValues;
 
     return finalValues;

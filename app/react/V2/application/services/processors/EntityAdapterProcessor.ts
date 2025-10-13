@@ -106,6 +106,7 @@ export class EntityAdapterProcessor {
     await Promise.all(
       Array.from(propertiesByType.entries()).map(async ([propertyType, properties]) => {
         const processor = this.processors.get(propertyType) || this.processors.get('any');
+
         if (processor && properties.length > 0) {
           const results = await processor.processBatch(properties, this.context);
           results.forEach((property, key) => {
@@ -125,27 +126,27 @@ export class EntityAdapterProcessor {
     const rootDateProperties = formattedEntities.flatMap(entity => [
       ...(entity.creationDate
         ? [
-          {
-            value: { value: Math.floor(entity.creationDate.value / 1000) },
-            type: 'date',
-            name: 'creationDate',
-            label: 'Creation date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
+            {
+              value: { value: Math.floor(entity.creationDate.value / 1000) },
+              type: 'date',
+              name: 'creationDate',
+              label: 'Creation date',
+              _entityId: entity._id,
+              entity,
+            },
+          ]
         : []),
       ...(entity.editDate
         ? [
-          {
-            value: { value: Math.floor(entity.editDate.value / 1000) },
-            type: 'date',
-            name: 'editDate',
-            label: 'Edit date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
+            {
+              value: { value: Math.floor(entity.editDate.value / 1000) },
+              type: 'date',
+              name: 'editDate',
+              label: 'Edit date',
+              _entityId: entity._id,
+              entity,
+            },
+          ]
         : []),
     ]);
 
@@ -163,7 +164,7 @@ export class EntityAdapterProcessor {
           label: propertyName,
           translatedLabel: propertyName,
           values: formattedProperty.values,
-          dateObject: formattedProperty.values[0]?.dateObject
+          dateObject: formattedProperty.values[0]?.dateObject,
         };
       }
     });

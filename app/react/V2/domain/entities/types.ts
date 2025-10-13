@@ -2,6 +2,14 @@
 import { ProcessingError } from 'app/V2/application/services/processors/types';
 import { Entity } from './Entity';
 
+export interface Timelink {
+  readonly time: string;
+  readonly hh: string;
+  readonly mm: string;
+  readonly ss: string;
+  readonly label: string;
+}
+
 export interface CompositionContext {
   readonly userId?: string;
   readonly userPermissions?: string[];
@@ -377,7 +385,12 @@ export interface MediaMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'media';
-  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly values: Array<{
+    value: string;
+    alt?: string;
+    label?: string;
+    timelinks?: Timelink[];
+  }>;
   readonly inherited?: boolean;
   readonly properties?: {
     template?: {
@@ -401,7 +414,12 @@ export interface ImageMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'image';
-  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly values: Array<{
+    value: string;
+    alt?: string;
+    label?: string;
+    timelinks?: Timelink[];
+  }>;
   readonly inherited?: boolean;
   readonly properties?: {
     template?: {
@@ -425,7 +443,12 @@ export interface PreviewMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'preview';
-  readonly values: Array<{ value: string; alt?: string; label?: string }>;
+  readonly values: Array<{
+    value: string;
+    alt?: string;
+    label?: string;
+    timelinks?: Timelink[];
+  }>;
   readonly inherited?: boolean;
   readonly properties?: {
     template?: {
@@ -493,6 +516,66 @@ export interface MarkdownMetadataProperty {
   readonly index?: number;
 }
 
+export interface SelectMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'select';
+  readonly values: Array<{
+    value: any;
+    label?: string;
+    displayValue?: string;
+    icon?: any;
+    url?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
+export interface MultiSelectMetadataProperty {
+  readonly name: string;
+  readonly label: string;
+  readonly type: 'multiselect';
+  readonly values: Array<{
+    value: any;
+    label?: string;
+    displayValue?: string;
+    icon?: any;
+    url?: string;
+  }>;
+  readonly inherited?: boolean;
+  readonly properties?: {
+    template?: {
+      _id: string;
+      name: string;
+      label: string;
+      color: string;
+    };
+    inheritedProperty?: {
+      type: AllowedPropertyTypes;
+      name: string;
+      label: string;
+    };
+  };
+  readonly translatedLabel?: string;
+  readonly propertyMetadata?: any;
+  readonly index?: number;
+}
+
 // Discriminated union for all metadata property types
 export type MetadataProperty =
   | DateMetadataProperty
@@ -505,4 +588,6 @@ export type MetadataProperty =
   | ImageMetadataProperty
   | PreviewMetadataProperty
   | TextMetadataProperty
-  | MarkdownMetadataProperty;
+  | MarkdownMetadataProperty
+  | SelectMetadataProperty
+  | MultiSelectMetadataProperty;
