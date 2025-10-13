@@ -3,24 +3,7 @@ import qs from 'qs';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SearchQuery } from 'shared/types/SearchQueryType';
-import { EntitySchema } from 'shared/types/entityType';
-
-type SearchResponse = {
-  data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];
-  links?: {
-    self: string;
-    first?: string | null;
-    last?: string | null;
-    next?: string | null;
-    prev?: string | null;
-  };
-};
-
-type Response = {
-  rows: SearchResponse['data'];
-  count: number;
-};
-
+import { EntityResponse, EntitySearchResponse } from 'app/V2/api/types';
 const lookup = async (
   {
     entityTitle,
@@ -32,7 +15,7 @@ const lookup = async (
     limit?: number;
   },
   headers?: IncomingHttpHeaders
-): Promise<Response> => {
+): Promise<EntityResponse> => {
   try {
     const searchQuery: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
@@ -49,7 +32,7 @@ const lookup = async (
       api.locale(headers['Content-Language']);
     }
 
-    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    const response: { json: EntitySearchResponse } = await api.get('v2/search', requestParams);
     return { rows: response.json.data, count: response.json.data.length };
   } catch (e) {
     return e;
@@ -63,7 +46,7 @@ const search = async (
     limit = 10,
   }: { filters: SearchQuery['filter']; fields: SearchQuery['fields']; limit?: number },
   headers?: IncomingHttpHeaders
-) => {
+): Promise<EntityResponse> => {
   try {
     const searchQuery: SearchQuery = {
       fields,
@@ -76,7 +59,7 @@ const search = async (
       api.locale(headers['Content-Language']);
     }
 
-    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    const response: { json: EntitySearchResponse } = await api.get('v2/search', requestParams);
     return { rows: response.json.data, count: response.json.data.length };
   } catch (e) {
     return e;
