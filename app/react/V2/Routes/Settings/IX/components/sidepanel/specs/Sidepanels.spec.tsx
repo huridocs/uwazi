@@ -5,6 +5,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { ClientPropertySchema } from 'app/istore';
+import api from 'app/utils/api';
 import { TestRouterContext } from 'V2/testing/TestRouterContext';
 import { TestAtomStoreProvider as AtomProvider } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
@@ -415,12 +416,34 @@ describe('Sidepanel forms', () => {
   });
 
   describe('form submit', () => {
-    it('should handle disabled state during form submission', async () => {
-      renderPDFSidepanel(suggestion1, textProperty);
+    it('should add to training set by default on save', async () => {
+      const entitySaveSpy = jest.fn();
+      renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
+      const checkBox = await screen.findByLabelText('Use for training');
+      const input = await screen.findByRole('textbox');
+      expect(checkBox).toBeInTheDocument();
+      expect(checkBox).toBeChecked();
 
-      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
-      const clickToFillButton = screen.getByText('Click to fill');
-      expect(clickToFillButton).toBeInTheDocument();
+      await waitFor(async () => {
+        await fireEvent.change(input, { target: { value: 'Some new value' } });
+        await fireEvent.click(screen.getByText('Accept'));
+      });
+
+      expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
+    });
+
+    it('should allow removing from training set', async () => {
+      const entitySaveSpy = jest.fn();
+      renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
+      const checkBox = await screen.findByLabelText('Use for training');
+      expect(checkBox).toBeInTheDocument();
+
+      await waitFor(async () => {
+        await fireEvent.click(checkBox);
+        await fireEvent.click(screen.getByText('Accept'));
+      });
+
+      expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
     });
 
     it('should save with extracted metadata', async () => {
@@ -432,6 +455,10 @@ describe('Sidepanel forms', () => {
       fireEvent.click(screen.getByTestId('selectable-text'));
       fireEvent.click(screen.getByText('Click to fill'));
       fireEvent.click(screen.getByText('Accept'));
+
+      expect(screen.getByText('Accept').parentElement).toBeDisabled();
+      expect(screen.getByText('Cancel').parentElement).toBeDisabled();
+      expect(screen.getByLabelText('Use for training')).toBeDisabled();
 
       await waitFor(() => {
         expect(handleEntitySaveSpy).toHaveBeenCalledWith(

@@ -88,7 +88,7 @@ const PropertySidepanel = ({
       if (savedEntity) {
         setEntity(savedEntity);
         if (suggestion?._id) {
-          onEntitySave([suggestion?._id]);
+          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet);
         }
       }
 
@@ -194,10 +194,12 @@ const PropertySidepanel = ({
                 <Controller
                   control={control}
                   name="inTrainingSet"
-                  render={({ field: { onChange, name } }) => (
+                  disabled={isSubmitting}
+                  render={({ field: { onChange, name, value } }) => (
                     <Checkbox
                       onChange={onChange}
-                      checked
+                      disabled={isSubmitting}
+                      checked={value}
                       name={name}
                       label={<Translate>Use for training</Translate>}
                     />

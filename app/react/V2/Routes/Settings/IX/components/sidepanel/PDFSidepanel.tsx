@@ -94,8 +94,12 @@ const PDFSidepanel = ({
     },
   });
 
-  const { isSubmitting, isDirty } = formContext.formState;
-  const { handleSubmit, setValue, control } = formContext;
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isSubmitting, isDirty },
+  } = formContext;
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -107,22 +111,18 @@ const PDFSidepanel = ({
       template,
       isDirty
     );
-
     if (savedEntity instanceof FetchResponseError) {
       const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
-
       setNotifications({ type: 'error', text: 'An error occurred', details });
     } else if (savedEntity) {
       if (savedEntity) {
         setEntity(savedEntity);
         if (suggestion?._id) {
-          onEntitySave([suggestion?._id]);
+          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet);
         }
       }
-
       setNotifications({ type: 'success', text: 'Saved successfully.' });
     }
-
     handleClose();
   };
 
@@ -257,10 +257,12 @@ const PDFSidepanel = ({
                 <Controller
                   control={control}
                   name="inTrainingSet"
-                  render={({ field: { onChange, name } }) => (
+                  disabled={isSubmitting}
+                  render={({ field: { onChange, name, value } }) => (
                     <Checkbox
                       onChange={onChange}
-                      checked
+                      disabled={isSubmitting}
+                      checked={value}
                       name={name}
                       label={<Translate>Use for training</Translate>}
                     />

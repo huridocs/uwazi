@@ -214,9 +214,10 @@ const IXSuggestions = () => {
     }
   };
 
-  const onEntitySave = async (suggestionIds: string[], shouldUpdate: boolean) => {
-    if (shouldUpdate) {
-      await markForTraining(suggestionIds, true);
+  const onEntitySave = async (suggestionIds: string[], inTrainingSet: boolean) => {
+    const suggestion = suggestions.find(sugg => sugg._id === suggestionIds[0]);
+    if (suggestion?.useForTraining !== inTrainingSet) {
+      await markForTraining(suggestionIds, inTrainingSet);
     } else {
       await revalidate();
     }
