@@ -15,8 +15,8 @@ export interface Entity {
   readonly title: string;
   readonly language: string;
   readonly template?: ComposedTemplate;
-  readonly creationDate: DateMetadataProperty['values'][0];
-  readonly editDate: DateMetadataProperty['values'][0];
+  readonly creationDate: DateMetadataProperty;
+  readonly editDate: DateMetadataProperty;
   readonly icon?: { _id: string } | any;
   readonly permissions?: EntityPermissions;
   readonly metadata: MetadataProperty[];
