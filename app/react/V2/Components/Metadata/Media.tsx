@@ -2,11 +2,12 @@ import React from 'react';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MediaPlayer } from '../UI';
+import { MetadataCard } from './MetadataCard';
 
 type MediaProps = MetadataFieldProps & { values: { value: string; alt?: string }[] };
 
 const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => (
-  <div>
+  <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     {values.map(value => (
       <dd>
@@ -20,7 +21,7 @@ const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => 
         </figure>
       </dd>
     ))}
-  </div>
+  </MetadataCard>
 );
 
 export { Media };

@@ -3,6 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 import MarkdownIt from 'markdown-it';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
+import { MetadataCard } from './MetadataCard';
 
 type MarkdownProps = MetadataFieldProps & {
   values: {
@@ -28,14 +29,14 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
   }, [value]);
 
   return (
-    <div>
+    <MetadataCard>
       <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
       <dd>
         {/* Allow inserting html since it's sanitized */}
         {/* eslint-disable-next-line react/no-danger */}
         <div className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
       </dd>
-    </div>
+    </MetadataCard>
   );
 };
 
