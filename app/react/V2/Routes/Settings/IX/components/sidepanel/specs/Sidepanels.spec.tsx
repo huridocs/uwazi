@@ -425,9 +425,8 @@ describe('Sidepanel forms', () => {
 
         await waitFor(async () => {
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).not.toHaveBeenCalled();
         });
-
-        expect(entitySaveSpy).not.toHaveBeenCalled();
       });
 
       it('should add to training set', async () => {
@@ -440,9 +439,8 @@ describe('Sidepanel forms', () => {
         await waitFor(async () => {
           await fireEvent.click(checkBox);
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
         });
-
-        expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
       });
 
       it('should allow removing from training set', async () => {
@@ -459,9 +457,8 @@ describe('Sidepanel forms', () => {
         await waitFor(async () => {
           await fireEvent.click(checkBox);
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
         });
-
-        expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
       });
 
       it('should add to training set by default on save after chaning the entity', async () => {
@@ -476,9 +473,8 @@ describe('Sidepanel forms', () => {
           await fireEvent.change(input, { target: { value: 'Some new value' } });
           expect(checkBox).toBeChecked();
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
         });
-
-        expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
       });
 
       it('should allow removing an already added suggestiong from training set', async () => {
@@ -494,12 +490,9 @@ describe('Sidepanel forms', () => {
 
         await waitFor(async () => {
           await fireEvent.click(checkBox);
-        });
-        await waitFor(async () => {
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
         });
-
-        expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], false);
       });
 
       it('should not save the entity if the only change is to the training set', async () => {
@@ -512,13 +505,10 @@ describe('Sidepanel forms', () => {
 
         await waitFor(async () => {
           await fireEvent.click(checkBox);
-        });
-        await waitFor(async () => {
           await fireEvent.click(screen.getByText('Accept'));
+          expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
+          expect(handleEntitySaveSpy).not.toHaveBeenCalled();
         });
-
-        expect(entitySaveSpy).toHaveBeenCalledWith(['suggestion1'], true);
-        expect(handleEntitySaveSpy).not.toHaveBeenCalled();
       });
     });
 
