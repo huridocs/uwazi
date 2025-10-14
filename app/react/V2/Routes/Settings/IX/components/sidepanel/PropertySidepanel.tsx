@@ -17,7 +17,7 @@ import {
   loadSidepanelData,
   SELECT_TYPES,
 } from '../../helpers';
-import { SidepanelForms } from '../SidepanelForms';
+import { SidepanelForms } from './SidepanelForms';
 import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms';
 import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
 import { SidepanelProps } from './types';
