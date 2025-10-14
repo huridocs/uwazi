@@ -19,7 +19,6 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    deactivateUpdateLogs?: boolean;
     v2CreateTemplateUseCase?: boolean;
     v2SetTemplateAsDefaultUseCase?: boolean;
     v2UpdateTemplateUseCase?: boolean;
