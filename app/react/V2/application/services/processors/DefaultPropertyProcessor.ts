@@ -4,6 +4,7 @@ import { PropertyValue } from './types';
 
 export class DefaultPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DefaultPropertyProcessor';
+
   readonly propertyTypes: DefaultPropertyTypes[] = ['any'];
 
   protected formatProperty(property: PropertyValue, _context: any): any[] {
@@ -21,7 +22,7 @@ export class DefaultPropertyProcessor extends BasePropertyProcessor {
       }
 
       const stringValue = value.value || value;
-      let label = value.label;
+      let { label } = value;
 
       if (!label) {
         label =

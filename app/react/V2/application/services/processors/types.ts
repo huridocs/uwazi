@@ -109,5 +109,9 @@ export interface PropertyTypeProcessor {
   readonly name: string;
   readonly propertyTypes: string[];
 
-  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty>;
+  processBatch(
+    properties: any[],
+    context: ProcessingContext,
+    processors?: Map<string, PropertyTypeProcessor>
+  ): Map<string, FormattedProperty>;
 }

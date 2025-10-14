@@ -16,7 +16,7 @@ export class FluentCompositionBuilder {
     private readonly processingContext: ProcessingContext,
     private readonly entityIdOrIds?: string | string[],
     private readonly useCase?: EntityCompositionUseCase
-  ) { }
+  ) {}
 
   static create(
     processingContext: ProcessingContext,

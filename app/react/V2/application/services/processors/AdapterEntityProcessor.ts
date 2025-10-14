@@ -63,14 +63,13 @@ export class AdapterEntityProcessor {
     const allProperties = flatMap(entities, entity => {
       const metadataProperties = map(
         Object.entries(entity.rawEntity?.metadata || {}),
-        ([name, property]) => {
-          return {
-            value: property,
-            _entityId: entity._id,
-            entity,
-            ...(entity.template?.properties?.get(name) || {}),
-          };
-        }
+        ([name, property]) => ({
+          value: property,
+          name,
+          _entityId: entity._id!,
+          entity,
+          ...(entity.template?.properties?.get(name) || {}),
+        })
       );
 
       const rootProperties = [];
@@ -80,24 +79,20 @@ export class AdapterEntityProcessor {
           name: 'permissions',
           label: 'Permissions',
           type: 'permissions',
-          _entityId: entity._id,
+          _entityId: entity._id!,
           entity,
-          refId: entity.rawEntity._id || entity._id,
+          refId: entity.rawEntity._id || entity._id!,
         });
       }
 
       return [...metadataProperties, ...rootProperties];
     });
 
-    if (this.context.combineGeolocation) {
-      allProperties.forEach(property => {
-        if (property.type === 'relationship' && property.inherit?.type === 'geolocation') {
-          (property as any)._originalRelationshipType = 'relationship';
-          (property as any)._isInheritedGeolocation = true;
-          property.type = 'geolocation';
-        }
-      });
-    }
+    allProperties.forEach(property => {
+      if (this.shouldConvertToInheritedType(property)) {
+        this.convertToInheritedType(property);
+      }
+    });
 
     const groupedProperties = groupBy(allProperties, 'type');
 
@@ -117,7 +112,7 @@ export class AdapterEntityProcessor {
       const processor = this.processors.get(propertyType) || this.processors.get('any');
 
       if (processor && properties.length > 0) {
-        const results = processor.processBatch(properties, this.context);
+        const results = processor.processBatch(properties, this.context, this.processors);
         results.forEach((property, key) => {
           allResults.set(key, property);
         });
@@ -133,11 +128,7 @@ export class AdapterEntityProcessor {
 
     formattedEntities.forEach(entity => {
       if (entity.rawEntity?.creationDate) {
-        const creationDateValue =
-          typeof entity.rawEntity.creationDate === 'object' &&
-            entity.rawEntity.creationDate !== null
-            ? entity.rawEntity.creationDate
-            : entity.rawEntity.creationDate;
+        const creationDateValue = Math.floor(Number(entity.rawEntity.creationDate) / 1000);
 
         const processedCreationDate = dateProcessor.processBatch(
           [
@@ -146,15 +137,15 @@ export class AdapterEntityProcessor {
               name: 'creationDate',
               label: 'Creation date',
               type: 'date',
-              _entityId: entity._id,
+              _entityId: entity._id!,
               entity,
-              refId: entity.rawEntity._id || entity._id,
+              refId: entity.rawEntity._id || entity._id!,
             },
           ],
           this.context
         );
 
-        const creationDateResult = processedCreationDate.get(`${entity._id}:creationDate`);
+        const creationDateResult = processedCreationDate.get(`${entity._id!}:creationDate`);
         if (creationDateResult) {
           const { entity: _entityRef, ...dateWithoutEntity } = creationDateResult;
           (entity as any).creationDate = {
@@ -167,10 +158,7 @@ export class AdapterEntityProcessor {
       }
 
       if (entity.rawEntity?.editDate) {
-        const editDateValue =
-          typeof entity.rawEntity.editDate === 'object' && entity.rawEntity.editDate !== null
-            ? entity.rawEntity.editDate
-            : entity.rawEntity.editDate;
+        const editDateValue = Math.floor(Number(entity.rawEntity.editDate) / 1000);
 
         const processedEditDate = dateProcessor.processBatch(
           [
@@ -179,15 +167,15 @@ export class AdapterEntityProcessor {
               name: 'editDate',
               label: 'Edit date',
               type: 'date',
-              _entityId: entity._id,
+              _entityId: entity._id!,
               entity,
-              refId: entity.rawEntity._id || entity._id,
+              refId: entity.rawEntity._id || entity._id!,
             },
           ],
           this.context
         );
 
-        const editDateResult = processedEditDate.get(`${entity._id}:editDate`);
+        const editDateResult = processedEditDate.get(`${entity._id!}:editDate`);
         if (editDateResult) {
           const { entity: _entityRef, ...dateWithoutEntity } = editDateResult;
           (entity as any).editDate = {
@@ -227,7 +215,7 @@ export class AdapterEntityProcessor {
       });
 
       formattedEntities = resultEntities.map(entity => ({
-        _id: entity._id as string,
+        _id: entity._id! as string,
         title: entity.title,
         sharedId: entity.sharedId,
         language: entity.language,
@@ -238,13 +226,13 @@ export class AdapterEntityProcessor {
           name: 'creationDate',
           label: 'Creation date',
           type: 'date',
-          values: [{ value: Number(entity.creationDate) || 0 }],
+          values: [{ value: Math.floor(Number(entity.creationDate) / 1000) || 0 }],
         },
         editDate: {
           name: 'editDate',
           label: 'Edit date',
           type: 'date',
-          values: [{ value: Number(entity.editDate) || 0 }],
+          values: [{ value: Math.floor(Number(entity.editDate) / 1000) || 0 }],
         },
         icon: entity.icon,
       }));
@@ -283,12 +271,71 @@ export class AdapterEntityProcessor {
       } as Entity;
     });
     return {
-      entities: composedEntities,
+      entities: composedEntities as Entity[],
       errors: allErrors,
       success: allErrors.length === 0,
       totalProcessed: entities.length,
       successCount: composedEntities.length,
       errorCount: allErrors.length,
+    };
+  }
+
+  private shouldConvertToInheritedType(property: any): boolean {
+    return (
+      property.type === 'relationship' &&
+      property.inherit?.type &&
+      property.inherit.type !== 'relationship'
+    );
+  }
+
+  private convertToInheritedType(property: any): void {
+    const inheritedType = property.inherit.type;
+    (property as any)._originalRelationshipType = 'relationship';
+    (property as any)._isInheritedProperty = true;
+    (property as any)._inheritedType = inheritedType;
+    property.type = inheritedType;
+
+    const transformedValues: any[] = [];
+    const values = Array.isArray(property.value) ? property.value : [property.value];
+
+    values.forEach((rel: any) => {
+      if (rel.inheritedValue && Array.isArray(rel.inheritedValue)) {
+        rel.inheritedValue.forEach((inheritedValue: any) => {
+          if (inheritedValue.value !== undefined) {
+            const transformedValue = this.createTransformedValue(
+              inheritedType,
+              inheritedValue,
+              rel
+            );
+            transformedValues.push(transformedValue);
+          }
+        });
+      }
+    });
+
+    property.value = transformedValues;
+  }
+
+  private createTransformedValue(inheritedType: string, inheritedValue: any, rel: any): any {
+    const value =
+      inheritedType === 'geolocation' && inheritedValue.value?.lat && inheritedValue.value?.lon
+        ? {
+          lat: inheritedValue.value.lat,
+          lon: inheritedValue.value.lon,
+          label: inheritedValue.value.label || '',
+        }
+        : inheritedValue.value;
+
+    return {
+      value,
+      _relationshipMetadata: {
+        entity: rel.value,
+        label: rel.label || '',
+        icon: rel.icon || '',
+        type: rel.type || '',
+        inheritedType: rel.inheritedType || '',
+        url: rel.url || `/entity/${rel.value}`,
+      },
     };
   }
 }

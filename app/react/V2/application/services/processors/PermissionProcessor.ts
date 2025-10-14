@@ -13,7 +13,8 @@ export class PermissionProcessor implements PropertyTypeProcessor {
 
   processBatch(
     properties: ComposedProperty[],
-    context: ProcessingContext
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
   ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 

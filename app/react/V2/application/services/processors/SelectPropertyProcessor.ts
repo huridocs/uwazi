@@ -6,12 +6,18 @@ import {
   PropertyTypeProcessor,
   ProcessingContext,
 } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
-export class SelectPropertyProcessor implements PropertyTypeProcessor {
+export class SelectPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'SelectPropertyProcessor';
+
   readonly propertyTypes: SelectPropertyTypes[] = ['select', 'multiselect'];
 
-  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
+  processBatch(
+    properties: any[],
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     const { translations, thesauri } = context;
@@ -56,6 +62,10 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
     translations: Record<string, any>
   ): PropertyValue[] {
     const { showLabels, showIcons, showUrls } = selectFormatting;
+
+    if (property._isInheritedProperty && property._inheritedType === 'multiselect') {
+      return this.formatInheritedSelectProperty(property, selectFormatting, translations);
+    }
 
     if (property.value !== undefined && !property.options) {
       const values = Array.isArray(property.value) ? property.value : [property.value];
@@ -159,5 +169,32 @@ export class SelectPropertyProcessor implements PropertyTypeProcessor {
     });
 
     return flattenedOptions;
+  }
+
+  private formatInheritedSelectProperty(
+    property: any,
+    selectFormatting: any,
+    _translations: Record<string, any>
+  ): PropertyValue[] {
+    const { showLabels, showIcons, showUrls } = selectFormatting;
+    const values = Array.isArray(property.value) ? property.value : [property.value];
+
+    return values.map((item: any): PropertyValue => {
+      const inheritedValue = item.value;
+      const relationshipMetadata = item._relationshipMetadata;
+
+      return {
+        value: inheritedValue,
+        label: showLabels
+          ? relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString()
+          : undefined,
+        displayValue: showLabels
+          ? relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString()
+          : '',
+        icon: showIcons ? relationshipMetadata?.icon : undefined,
+        url: showUrls ? relationshipMetadata?.url : undefined,
+        properties: relationshipMetadata,
+      };
+    });
   }
 }

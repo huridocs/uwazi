@@ -261,9 +261,16 @@ export interface MultiDateMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'multidate';
-  readonly values: Array<{ value: number; label?: string }>;
-  readonly inherited?: boolean;
-  readonly dateObject?: Date[];
+  readonly translatedLabel?: string;
+  readonly values: Array<{
+    value: number;
+    label?: string;
+    displayValue?: string;
+    properties?: {
+      dateObject?: Date;
+      [key: string]: any;
+    };
+  }>;
   readonly properties?: {
     template?: {
       _id: string;
@@ -271,23 +278,29 @@ export interface MultiDateMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface DateRangeMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'daterange';
-  readonly values: Array<{ value: { from: number; to: number }; label?: string }>;
-  readonly inherited?: boolean;
+  readonly translatedLabel?: string;
+  readonly values: Array<{
+    value: { from: number; to: number };
+    label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
+  }>;
   readonly properties?: {
     template?: {
       _id: string;
@@ -295,23 +308,29 @@ export interface DateRangeMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface MultiDateRangeMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'multidaterange';
-  readonly values: Array<{ value: { from: number; to: number }; label?: string }>;
-  readonly inherited?: boolean;
+  readonly translatedLabel?: string;
+  readonly values: Array<{
+    value: { from: number; to: number };
+    label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
+  }>;
   readonly properties?: {
     template?: {
       _id: string;
@@ -319,28 +338,36 @@ export interface MultiDateRangeMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface GeolocationMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'geolocation';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: { latitude: number; longitude: number };
     label?: string;
-    name?: string;
-    color?: string;
+    displayValue?: string;
+    properties?: {
+      color?: string;
+      entity?: {
+        id: string;
+        label: string;
+        icon?: string;
+        url?: string;
+      };
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -348,24 +375,25 @@ export interface GeolocationMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface RelationshipMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'relationship';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: string | { sharedId: string; id?: string };
     label: string;
+    displayValue?: string;
     url: string;
     icon?: string;
     inheritedValue?: Array<{
@@ -373,9 +401,16 @@ export interface RelationshipMetadataProperty {
       label: string;
     }>;
     inheritedType?: string;
+    properties?: {
+      entity?: {
+        _id: string;
+        label: string;
+        icon?: string;
+        url?: string;
+      };
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
-  readonly relationshipName?: string;
   readonly properties?: {
     template?: {
       _id: string;
@@ -383,28 +418,31 @@ export interface RelationshipMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface MediaMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'media';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: string;
-    alt?: string;
     label?: string;
-    timelinks?: Timelink[];
+    displayValue?: string;
+    properties?: {
+      alt?: string;
+      timelinks?: Timelink[];
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -412,28 +450,31 @@ export interface MediaMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface ImageMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'image';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: string;
-    alt?: string;
     label?: string;
-    timelinks?: Timelink[];
+    displayValue?: string;
+    properties?: {
+      alt?: string;
+      timelinks?: Timelink[];
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -441,28 +482,31 @@ export interface ImageMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface PreviewMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'preview';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: string;
-    alt?: string;
     label?: string;
-    timelinks?: Timelink[];
+    displayValue?: string;
+    properties?: {
+      alt?: string;
+      timelinks?: Timelink[];
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -470,23 +514,29 @@ export interface PreviewMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface TextMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'text';
-  readonly values: Array<{ value: string; label?: string }>;
-  readonly inherited?: boolean;
+  readonly translatedLabel?: string;
+  readonly values: Array<{
+    value: string;
+    label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
+  }>;
   readonly properties?: {
     template?: {
       _id: string;
@@ -494,23 +544,29 @@ export interface TextMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface MarkdownMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'markdown';
-  readonly values: Array<{ value: string; label?: string }>;
-  readonly inherited?: boolean;
+  readonly translatedLabel?: string;
+  readonly values: Array<{
+    value: string;
+    label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
+  }>;
   readonly properties?: {
     template?: {
       _id: string;
@@ -518,33 +574,35 @@ export interface MarkdownMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface SelectMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'select';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: any;
     label?: string;
     displayValue?: string;
-    icon?: any;
     url?: string;
+    icon?: any;
     parent?: {
       label: string;
       value: string;
     };
+    properties?: {
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -552,33 +610,35 @@ export interface SelectMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface MultiSelectMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'multiselect';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: any;
     label?: string;
     displayValue?: string;
-    icon?: any;
     url?: string;
+    icon?: any;
     parent?: {
       label: string;
       value: string;
     };
+    properties?: {
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -586,29 +646,32 @@ export interface MultiSelectMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface LinkMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'link';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: {
       label: string;
       url: string;
     };
     label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -616,26 +679,29 @@ export interface LinkMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface NumericMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'numeric';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: number;
     label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -643,26 +709,29 @@ export interface NumericMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 export interface GeneratedIdMetadataProperty {
   readonly name: string;
   readonly label: string;
   readonly type: 'generatedid';
+  readonly translatedLabel?: string;
   readonly values: Array<{
     value: string;
     label?: string;
+    displayValue?: string;
+    properties?: {
+      [key: string]: any;
+    };
   }>;
-  readonly inherited?: boolean;
   readonly properties?: {
     template?: {
       _id: string;
@@ -670,15 +739,14 @@ export interface GeneratedIdMetadataProperty {
       label: string;
       color: string;
     };
-    inheritedProperty?: {
+    inherited?: {
+      property: string;
       type: AllowedPropertyTypes;
       name: string;
       label: string;
     };
+    metadata?: Record<string, any>;
   };
-  readonly translatedLabel?: string;
-  readonly propertyMetadata?: any;
-  readonly index?: number;
 }
 
 // Discriminated union for all metadata property types

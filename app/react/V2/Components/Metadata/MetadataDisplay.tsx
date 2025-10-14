@@ -63,7 +63,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -91,19 +91,15 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       }
 
       if (data.type === 'relationship') {
-        if (data.inherited === true) {
-          const inheritedProperty = data.properties?.inheritedProperty;
-          if (!inheritedProperty) return null;
+        if (data.properties?.inherited) {
+          const inheritedType = data.properties.inherited.type;
           const reformattedData = {
             values: data.values,
             label: data.label,
             name: data.name,
-            type: inheritedProperty.type,
-            inherited: data.inherited,
-            properties: data.properties,
+            type: inheritedType,
             translatedLabel: data.translatedLabel,
-            propertyMetadata: data.propertyMetadata,
-            index: data.index,
+            properties: data.properties,
           };
           return renderMetadataProperty(reformattedData as MetadataProperty);
         }
@@ -155,17 +151,21 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         />
       </MetadataCard>
 
-      <Date
-        timestamps={entity.creationDate.values}
-        label={entity.creationDate.label}
-        translationContext="System"
-      />
+      {entity.creationDate && (
+        <Date
+          timestamps={[{ value: entity.creationDate.values[0].value }]}
+          label="Creation Date"
+          translationContext="System"
+        />
+      )}
 
-      <Date
-        timestamps={entity.editDate.values}
-        label={entity.editDate.label}
-        translationContext="System"
-      />
+      {entity.editDate && (
+        <Date
+          timestamps={[{ value: entity.editDate.values[0].value }]}
+          label="Edit Date"
+          translationContext="System"
+        />
+      )}
 
       {entity.metadata.map(renderMetadataProperty)}
     </dl>

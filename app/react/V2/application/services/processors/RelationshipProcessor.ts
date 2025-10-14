@@ -1,12 +1,21 @@
 import { RelationshipPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValue, ProcessingContext, FormattedProperty } from './types';
+import {
+  PropertyValue,
+  ProcessingContext,
+  FormattedProperty,
+  PropertyTypeProcessor,
+} from './types';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
   readonly propertyTypes: RelationshipPropertyTypes[] = ['relationship'];
 
-  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
+  processBatch(
+    properties: any[],
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {
@@ -50,7 +59,11 @@ export class RelationshipProcessor extends BasePropertyProcessor {
     return results;
   }
 
-  protected formatProperty(property: any, context: ProcessingContext): PropertyValue[] {
+  protected formatProperty(
+    property: any,
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
+  ): PropertyValue[] {
     if (this.shouldSkipFormatting(context, 'relationship')) {
       return this.createRawValues(property);
     }
@@ -61,7 +74,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       ? values.slice(0, context.maxRelationships)
       : values;
 
-    return limitedValues.map((rel: any): PropertyValue => {
+    const processedValues = limitedValues.map((rel: any): PropertyValue => {
       const label = rel.label || rel.displayValue || rel.toString();
       const url = rel.url || '#';
       const icon = rel.icon || '';
@@ -75,6 +88,8 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         inheritedType: rel.inheritedType,
       };
     });
+
+    return processedValues;
   }
 
   protected createRawValues(property: any): PropertyValue[] {
@@ -96,7 +111,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       const icon = rel.icon || rel.targetIcon || '';
 
       return {
-        value: value,
+        value,
         label,
         url: url || '#',
         icon,

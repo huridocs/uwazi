@@ -13,7 +13,7 @@ export class EntityCompositionUseCase {
   constructor(
     private repository: EntityRepository,
     private atomStore: ReturnType<typeof createStore>
-  ) { }
+  ) {}
 
   private createProcessingContext(options: CompositionOptions): ProcessingContext {
     return {

@@ -9,6 +9,7 @@ import {
 
 export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   abstract readonly name: string;
+
   abstract readonly propertyTypes: string[];
 
   processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {

@@ -4,6 +4,7 @@ import { PropertyValue, ProcessingContext } from './types';
 
 export class FileProcessor extends BasePropertyProcessor {
   readonly name = 'FileProcessor';
+
   readonly propertyTypes: FilePropertyTypes[] = ['image', 'media', 'file'];
 
   protected formatProperty(property: any, context: ProcessingContext): PropertyValue[] {
@@ -24,7 +25,7 @@ export class FileProcessor extends BasePropertyProcessor {
         };
       }
 
-      let value = file.value;
+      let { value } = file;
       if (value && typeof value === 'object' && value.value) {
         value = value.value;
       }

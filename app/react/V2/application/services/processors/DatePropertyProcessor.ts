@@ -5,6 +5,7 @@ import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';
+
   readonly propertyTypes: DatePropertyTypes[] = [
     'date',
     'multidate',

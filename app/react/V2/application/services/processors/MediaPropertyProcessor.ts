@@ -8,9 +8,14 @@ import {
 
 export class MediaPropertyProcessor implements PropertyTypeProcessor {
   readonly name = 'MediaPropertyProcessor';
+
   readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
-  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
+  processBatch(
+    properties: any[],
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
+  ): Map<string, FormattedProperty> {
     const results = new Map<string, FormattedProperty>();
 
     properties.forEach(property => {
