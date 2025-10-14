@@ -10,7 +10,9 @@ type SelectProps = MetadataFieldProps & {
 };
 
 const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
-  const formatSelectValue = (value: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'][0]) => {
+  const formatSelectValue = (
+    value: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'][0]
+  ) => {
     let displayValue = value.displayValue || value.label || value.value;
 
     if (value.value && typeof value.value === 'object' && value.value.parent) {

@@ -63,7 +63,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }

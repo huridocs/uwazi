@@ -15,6 +15,7 @@ export const fullDetailOptions: CompositionOptions = {
   includeTemplate: true,
   includeMetadata: true,
   includeRelationships: true,
+  combineGeolocation: true,
   includeFiles: true,
   includeNavigation: true,
   includePermissions: true,
