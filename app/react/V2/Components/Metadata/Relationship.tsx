@@ -1,10 +1,10 @@
 import React from 'react';
 import { I18NLinkV2 } from 'app/I18N';
+import { RelationshipMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { CountryFlag } from '../CustomIcons';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
-import { RelationshipMetadataProperty } from 'app/V2/domain/entities/types';
 
 type RelationshipProps = MetadataFieldProps & {
   values: RelationshipMetadataProperty['values'];

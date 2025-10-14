@@ -15,11 +15,12 @@ const TemplateLabel = ({
   }
 
   return (
-    <div className="py-1 px-2 w-fit rounded-md relative" style={{ backgroundColor: color }}>
-      <dd className="text-white mix-blend-difference">
-        <Translate context={templateId}>{label}</Translate>
-      </dd>
-    </div>
+    <dd
+      className="text-white mix-blend-difference py-1 px-2 w-fit rounded-md relative"
+      style={{ backgroundColor: color }}
+    >
+      <Translate context={templateId}>{label}</Translate>
+    </dd>
   );
 };
 

@@ -13,7 +13,7 @@ type DateProps = MetadataFieldProps & {
 const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) => (
   <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1" role="group">
       {timestamps.map(stamp => {
         if (typeof stamp.label === 'string') {
           return <dd className="font-medium text-gray-900">{stamp.label}</dd>;

@@ -53,36 +53,3 @@ const Geolocation = ({
 );
 
 export { Geolocation };
-
-// {
-//   "properties": {
-//     "entity": {
-//       "title": "Brazil",
-//       "metadata": {
-//         "geolocation_geolocation": [
-//           {
-//             "value": {
-//               "lat": -10.092900239396712,
-//               "lon": -49.39453125000001,
-//               "label": ""
-//             }
-//           }
-//         ]
-//       },
-//       "template": "58ada34c299e826748545059",
-//       "language": "en",
-//       "sharedId": "t8plml296d23mcxr",
-//       "snippets": {
-//         "count": 0,
-//         "metadata": [],
-//         "fullText": []
-//       },
-//       "_id": "58ada350299e826748545787"
-//     },
-//     "color": "#CDDC39",
-//     "info": ""
-//   },
-//   "latitude": -10.092900239396712,
-//   "longitude": -49.39453125000001,
-//   "label": "Geolocation"
-// }

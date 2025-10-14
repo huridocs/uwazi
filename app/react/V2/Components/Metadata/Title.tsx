@@ -9,7 +9,7 @@ type TitleProps = MetadataFieldProps & {
 };
 
 const Title = ({ title, label, iconId, translationContext }: TitleProps) => (
-  <div>
+  <div role="group">
     <MetadataLabel label={label} translationContext={translationContext} hideLabel />
     <span className="flex flex-row flex-nowrap gap-2 align-middle">
       {iconId && <CountryFlag id={iconId} />}

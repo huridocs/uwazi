@@ -6,13 +6,13 @@ import { Geolocation } from './Geolocation';
 import { Relationship } from './Relationship';
 import { Media } from './Media';
 import { Image } from './Image';
-import { Text } from './Text';
+import { SimpleValue } from './SimpleValue';
 import { Title } from './Title';
 import { Markdown } from './Markdown';
 import { Select } from './Select';
 import { MetadataCard } from './MetadataCard';
 import { TemplateLabel } from './TemplateLabel';
-import { Generic } from './Generic';
+import { LinkProperty } from './LinkProperty';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -25,6 +25,16 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
     // eslint-disable-next-line max-statements
     (data: MetadataProperty) => {
       const translationContext = templateId;
+
+      if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
+        return (
+          <SimpleValue
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
+        );
+      }
 
       if (
         data.type === 'date' ||
@@ -68,12 +78,6 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         );
       }
 
-      if (data.type === 'text') {
-        return (
-          <Text values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
-
       if (data.type === 'markdown') {
         return (
           <Markdown
@@ -87,6 +91,16 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       if (data.type === 'select' || data.type === 'multiselect') {
         return (
           <Select values={data.values} label={data.label} translationContext={translationContext} />
+        );
+      }
+
+      if (data.type === 'link') {
+        return (
+          <LinkProperty
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
         );
       }
 
@@ -105,17 +119,6 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         }
         return (
           <Relationship
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
-        );
-      }
-
-      const genericTypes = ['generatedid', 'link', 'numeric'];
-      if (genericTypes.includes(data.type)) {
-        return (
-          <Generic
             values={data.values}
             label={data.label}
             translationContext={translationContext}
