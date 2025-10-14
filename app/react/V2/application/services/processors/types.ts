@@ -11,6 +11,8 @@ export interface PropertyValue {
   icon?: string;
   url?: string;
   error?: string;
+  inheritedValue?: any[];
+  inheritedType?: string;
   [key: string]: any;
 }
 

@@ -3,42 +3,48 @@ import { I18NLinkV2 } from 'app/I18N';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
-
-type SelectValue = {
-  value: any;
-  label?: string;
-  displayValue?: string;
-  icon?: any;
-  url?: string;
-};
+import { SelectMetadataProperty, MultiSelectMetadataProperty } from 'V2/domain/entities/types';
 
 type SelectProps = MetadataFieldProps & {
-  values: SelectValue[];
+  values: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'];
 };
 
-const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => (
-  <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    <div className="flex flex-col gap-1">
-      {values.map((value, index) => (
-        <dd key={index} className="font-medium text-gray-900">
-          {value.url ? (
-            <I18NLinkV2
-              className="underline"
-              to={value.url}
-              target="_blank"
-              rel="noreferrer"
-              localized={false}
-            >
-              {value.displayValue || value.label || value.value}
-            </I18NLinkV2>
-          ) : (
-            <span>{value.displayValue || value.label || value.value}</span>
-          )}
-        </dd>
-      ))}
-    </div>
-  </MetadataCard>
-);
+const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => {
+  const formatSelectValue = (value: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'][0]) => {
+    let displayValue = value.displayValue || value.label || value.value;
+
+    if (value.value && typeof value.value === 'object' && value.value.parent) {
+      const parent = value.value.parent;
+      displayValue = `${value.value.label || value.value.value} (${parent.label})`;
+    }
+
+    return displayValue;
+  };
+
+  return (
+    <MetadataCard>
+      <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+      <div className="flex flex-col gap-1">
+        {values.map((value, index) => (
+          <dd key={index} className="font-medium text-gray-900">
+            {value.url ? (
+              <I18NLinkV2
+                className="underline"
+                to={value.url}
+                target="_blank"
+                rel="noreferrer"
+                localized={false}
+              >
+                {formatSelectValue(value)}
+              </I18NLinkV2>
+            ) : (
+              <span>{formatSelectValue(value)}</span>
+            )}
+          </dd>
+        ))}
+      </div>
+    </MetadataCard>
+  );
+};
 
 export { Select };

@@ -55,7 +55,26 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       return this.createRawValues(property);
     }
 
-    return this.formatRelationshipProperty(property, context);
+    const values = Array.isArray(property.value) ? property.value : [property.value];
+
+    const limitedValues = context.maxRelationships
+      ? values.slice(0, context.maxRelationships)
+      : values;
+
+    return limitedValues.map((rel: any): PropertyValue => {
+      const label = rel.label || rel.displayValue || rel.toString();
+      const url = rel.url || '#';
+      const icon = rel.icon || '';
+
+      return {
+        value: rel.value || rel,
+        label,
+        url,
+        icon,
+        inheritedValue: rel.inheritedValue,
+        inheritedType: rel.inheritedType,
+      };
+    });
   }
 
   protected createRawValues(property: any): PropertyValue[] {
@@ -81,6 +100,8 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         label,
         url: url || '#',
         icon,
+        inheritedValue: rel.inheritedValue,
+        inheritedType: rel.inheritedType,
       };
     });
   }
@@ -101,31 +122,6 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       return defaultFormat;
     }
     return defaultFormat;
-  }
-
-  private formatRelationshipProperty(property: any, context: ProcessingContext): PropertyValue[] {
-    const values = Array.isArray(property.value) ? property.value : [property.value];
-
-    const allInheritedValues = this.collectAllInheritedValues(values);
-
-    const allValues = [...values, ...allInheritedValues];
-
-    const limitedValues = context.maxRelationships
-      ? allValues.slice(0, context.maxRelationships)
-      : allValues;
-
-    return limitedValues.map((rel: any): PropertyValue => {
-      const label = rel.label || rel.displayValue || rel.toString();
-      const url = rel.url || '#';
-      const icon = rel.icon || '';
-
-      return {
-        value: rel.value || rel, // Keep the original value
-        label,
-        url,
-        icon,
-      };
-    });
   }
 
   private collectAllInheritedValues(values: any[]): any[] {

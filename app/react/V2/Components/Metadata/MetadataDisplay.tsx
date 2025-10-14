@@ -12,6 +12,7 @@ import { Markdown } from './Markdown';
 import { Select } from './Select';
 import { MetadataCard } from './MetadataCard';
 import { TemplateLabel } from './TemplateLabel';
+import { Generic } from './Generic';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -62,7 +63,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -108,6 +109,17 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         }
         return (
           <Relationship
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
+        );
+      }
+
+      const genericTypes = ['generatedid', 'link', 'numeric'];
+      if (genericTypes.includes(data.type)) {
+        return (
+          <Generic
             values={data.values}
             label={data.label}
             translationContext={translationContext}

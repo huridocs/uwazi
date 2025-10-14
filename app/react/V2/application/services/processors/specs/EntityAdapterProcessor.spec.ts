@@ -304,12 +304,25 @@ describe('Simplified Processor Tests', () => {
           label: 'Maria Rodriguez - Witness',
           url: '/entity/xjku67dv7b',
           value: 'xjku67dv7b',
+          inheritedValue: [
+            {
+              value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+              label: 'Again',
+            },
+            {
+              value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+              label: 'Acknowledging',
+            },
+          ],
+          inheritedType: 'multiselect',
         },
         {
           icon: '',
           label: 'John Smith - Reporter',
           url: '/entity/4oklamamet',
           value: '4oklamamet',
+          inheritedValue: [],
+          inheritedType: 'multiselect',
         },
       ],
     };
@@ -441,6 +454,39 @@ describe('Simplified Processor Tests', () => {
           label: 'Emergency Response Team',
           icon: '',
           url: '/entity/6qdshinfobf',
+          inheritedValue: [
+            {
+              value: '7jdr88mnow6',
+              label: 'First Responders',
+              icon: '',
+              type: 'entity',
+              inheritedValue: [
+                {
+                  value: 'xjku67dv7b',
+                  label: 'Police Officer - Maria Rodriguez',
+                  icon: {
+                    _id: 'ECU',
+                    label: 'Ecuador',
+                    type: 'Flags',
+                  },
+                  type: 'entity',
+                  inheritedValue: [
+                    {
+                      value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+                      label: 'Again',
+                    },
+                    {
+                      value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+                      label: 'Acknowledging',
+                    },
+                  ],
+                  inheritedType: 'multiselect',
+                },
+              ],
+              inheritedType: 'relationship',
+            },
+          ],
+          inheritedType: 'relationship',
         },
       ],
     };

@@ -368,6 +368,11 @@ export interface RelationshipMetadataProperty {
     label: string;
     url: string;
     icon?: string;
+    inheritedValue?: Array<{
+      value: string;
+      label: string;
+    }>;
+    inheritedType?: string;
   }>;
   readonly inherited?: boolean;
   readonly relationshipName?: string;
@@ -534,6 +539,10 @@ export interface SelectMetadataProperty {
     displayValue?: string;
     icon?: any;
     url?: string;
+    parent?: {
+      label: string;
+      value: string;
+    };
   }>;
   readonly inherited?: boolean;
   readonly properties?: {
@@ -564,6 +573,10 @@ export interface MultiSelectMetadataProperty {
     displayValue?: string;
     icon?: any;
     url?: string;
+    parent?: {
+      label: string;
+      value: string;
+    };
   }>;
   readonly inherited?: boolean;
   readonly properties?: {
