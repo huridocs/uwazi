@@ -1,5 +1,3 @@
-import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
-import { EntityAdapterProcessor } from '../EntityAdapterProcessor';
 import { Entity, MetadataProperty } from 'app/V2/domain';
 import {
   DateMetadataProperty,
@@ -9,6 +7,8 @@ import {
   LinkMetadataProperty,
   GeneratedIdMetadataProperty,
 } from 'app/V2/domain/entities/types';
+import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
+import { EntityAdapterProcessor } from '../EntityAdapterProcessor';
 
 describe('Simplified Processor Tests', () => {
   const entityAdapterProcessor = new EntityAdapterProcessor(processingContext);
@@ -16,8 +16,8 @@ describe('Simplified Processor Tests', () => {
   let restEntity: Omit<Entity, 'metadata'>;
   let metadata: MetadataProperty[];
 
-  beforeAll(async () => {
-    const result = await entityAdapterProcessor.processEntity(rawEntity);
+  beforeAll(() => {
+    const result = entityAdapterProcessor.processEntity(rawEntity);
     entity = result.entity;
     ({ metadata, ...restEntity } = entity);
   });
@@ -389,44 +389,27 @@ describe('Simplified Processor Tests', () => {
     expect(metadata[14]).toMatchObject(mediaProperty);
   });
 
-  it('should process geolocation_geolocation property', async () => {
-    const geolocationProperty = {
+  it('should process combined geolocation properties when combineGeolocation is true', async () => {
+    const combinedGeolocationProperty = {
       name: 'incident_location',
       type: 'geolocation',
       label: 'Incident Location',
       translatedLabel: 'Incident Location',
       values: [
         {
-          value: {
-            latitude: 44.33301685687683,
-            longitude: 5.998535156250001,
-          },
-          label: '44.33°N, 6.00°E',
+          value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
+          label: 'Incident Location',
+          name: 'incident_location',
         },
-      ],
-    };
-
-    expect(metadata[15]).toMatchObject(geolocationProperty);
-  });
-
-  it('should process geolocation2_geolocation property', async () => {
-    const geolocation2Property = {
-      name: 'secondary_location',
-      type: 'geolocation',
-      label: 'Secondary Location',
-      translatedLabel: 'Secondary Location',
-      values: [
         {
-          value: {
-            latitude: 62.58069554111894,
-            longitude: 15.468750000000002,
-          },
-          label: '62.58°N, 15.47°E',
+          value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
+          label: 'Secondary Location',
+          name: 'secondary_location',
         },
       ],
     };
 
-    expect(metadata[16]).toMatchObject(geolocation2Property);
+    expect(metadata[15]).toMatchObject(combinedGeolocationProperty);
   });
 
   it('should process geolocationr property', async () => {
@@ -437,21 +420,17 @@ describe('Simplified Processor Tests', () => {
       translatedLabel: 'Location Relationships',
       values: [
         {
-          icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
-          label: 'Witness Location - Maria Rodriguez',
-          url: '/entity/xjku67dv7b',
           value: 'xjku67dv7b',
+          label: 'Witness Location - Maria Rodriguez',
         },
         {
-          icon: '',
-          label: 'Reporter Location - John Smith',
-          url: '/entity/4oklamamet',
           value: '4oklamamet',
+          label: 'Reporter Location - John Smith',
         },
       ],
     };
 
-    expect(metadata[17]).toMatchObject(geolocationrProperty);
+    expect(metadata[16]).toMatchObject(geolocationrProperty);
   });
 
   it('should process relationship_nested property', async () => {
@@ -470,7 +449,7 @@ describe('Simplified Processor Tests', () => {
       ],
     };
 
-    expect(metadata[19]).toMatchObject(relationshipNestedProperty);
+    expect(metadata[17]).toMatchObject(relationshipNestedProperty);
   });
 
   it('should process generatedid property', async () => {
@@ -483,5 +462,83 @@ describe('Simplified Processor Tests', () => {
     };
 
     expect(metadata[18]).toMatchObject(generatedidProperty);
+  });
+
+  it('should not combine geolocation properties when combineGeolocation is false', async () => {
+    const nonCombiningContext = {
+      ...processingContext,
+      combineGeolocation: false,
+    };
+    const nonCombiningProcessor = new EntityAdapterProcessor(nonCombiningContext);
+    const result = nonCombiningProcessor.processEntity(rawEntity);
+    const nonCombiningMetadata = result.entity.metadata;
+
+    const incidentLocationProperty = {
+      name: 'incident_location',
+      type: 'geolocation',
+      label: 'Incident Location',
+      translatedLabel: 'Incident Location',
+      values: [
+        {
+          value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
+          label: '44.33°N, 6.00°E',
+        },
+      ],
+    };
+
+    const secondaryLocationProperty = {
+      name: 'secondary_location',
+      type: 'geolocation',
+      label: 'Secondary Location',
+      translatedLabel: 'Secondary Location',
+      values: [
+        {
+          value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
+          label: '62.58°N, 15.47°E',
+        },
+      ],
+    };
+
+    expect(nonCombiningMetadata[15]).toMatchObject(incidentLocationProperty);
+    expect(nonCombiningMetadata[16]).toMatchObject(secondaryLocationProperty);
+  });
+
+  it('should not combine geolocation properties in edition mode', async () => {
+    const editionContext = {
+      ...processingContext,
+      editionMode: true,
+    };
+    const editionProcessor = new EntityAdapterProcessor(editionContext);
+    const result = editionProcessor.processEntity(rawEntity);
+    const editionMetadata = result.entity.metadata;
+
+    const incidentLocationProperty = {
+      name: 'incident_location',
+      type: 'geolocation',
+      label: 'Incident Location',
+      translatedLabel: 'Incident Location',
+      values: [
+        {
+          value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
+          label: '44.33°N, 6.00°E',
+        },
+      ],
+    };
+
+    const secondaryLocationProperty = {
+      name: 'secondary_location',
+      type: 'geolocation',
+      label: 'Secondary Location',
+      translatedLabel: 'Secondary Location',
+      values: [
+        {
+          value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
+          label: '62.58°N, 15.47°E',
+        },
+      ],
+    };
+
+    expect(editionMetadata[15]).toMatchObject(incidentLocationProperty);
+    expect(editionMetadata[16]).toMatchObject(secondaryLocationProperty);
   });
 });

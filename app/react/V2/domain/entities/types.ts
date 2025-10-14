@@ -337,6 +337,8 @@ export interface GeolocationMetadataProperty {
   readonly values: Array<{
     value: { latitude: number; longitude: number };
     label?: string;
+    name?: string;
+    color?: string;
   }>;
   readonly inherited?: boolean;
   readonly properties?: {

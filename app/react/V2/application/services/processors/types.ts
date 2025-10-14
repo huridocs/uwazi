@@ -14,6 +14,12 @@ export interface PropertyValue {
   [key: string]: any;
 }
 
+export interface GeolocationPropertyValue extends PropertyValue {
+  value: { latitude: number; longitude: number };
+  name?: string;
+  label?: string;
+}
+
 export interface PropertyMetadata {
   showInCard: boolean;
   propertyType: string;

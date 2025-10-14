@@ -289,8 +289,10 @@ export const processingContext: ProcessingContext = {
   includeFiles: false,
   includeNavigation: false,
   includePermissions: true,
+  combineGeolocation: true,
   onlyForCards: true,
-  dateFormat: 'MMM D, YYYY',
+  formatDates: true,
+  dateFormat: 'MMM d, yyyy',
   translateLabels: true,
   language: 'en',
   translations: [
@@ -578,6 +580,7 @@ export const processingContext: ProcessingContext = {
           style: '',
           generatedId: false,
           name: 'location_of_interest',
+          indexInTemplate: 3,
         },
         {
           _id: '68ddecdbc9474e23bb5e914f',
@@ -720,6 +723,7 @@ export const processingContext: ProcessingContext = {
           style: '',
           generatedId: false,
           name: 'incident_location',
+          indexInTemplate: 14,
         },
         {
           _id: '68e5e0d9192fccdd100361d3',
@@ -731,6 +735,7 @@ export const processingContext: ProcessingContext = {
           style: '',
           generatedId: false,
           name: 'secondary_location',
+          indexInTemplate: 15,
         },
         {
           content: '5bfbb1a0471dd0fc16ada146',

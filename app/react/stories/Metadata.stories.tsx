@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { settingsAtom } from 'V2/atoms';
-import { EntityAdapterProcessor } from 'V2/application/services/processors/EntityAdapterProcessor';
 import { FluentCompositionBuilder } from 'V2/application/FluentCompositionBuilder';
 import { rawEntity, processingContext } from './fixtures/MetadataDisplayFixtures';
 

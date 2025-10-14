@@ -1,140 +1,139 @@
 import { GeolocationPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValue, ProcessingContext } from './types';
+import { PropertyValue, ProcessingContext, FormattedProperty, GeolocationPropertyValue } from './types';
 
 export class GeolocationProcessor extends BasePropertyProcessor {
   readonly name = 'GeolocationProcessor';
   readonly propertyTypes: GeolocationPropertyTypes[] = ['geolocation'];
 
-  protected createRawValues(property: PropertyValue): PropertyValue[] {
+  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
+    const results = new Map<string, FormattedProperty>();
+
+    if (context.combineGeolocation && !context.editionMode) {
+      this.processWithCombining(properties, context, results);
+    } else {
+      this.processIndividually(properties, context, results);
+    }
+
+    return results;
+  }
+
+  protected createRawValues(property: PropertyValue): GeolocationPropertyValue[] {
+    return this.processGeoValues(property, false);
+  }
+
+  protected formatProperty(property: any, context: ProcessingContext): GeolocationPropertyValue[] {
+    return this.processGeoValues(property, true);
+  }
+
+  private processGeoValues(property: any, format: boolean): GeolocationPropertyValue[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
+
     return values.map((geo: any) => {
-      if (!geo) {
-        return {
-          value: geo,
-          label: '',
-          displayValue: '',
-        };
+      if (!geo) return { value: geo, label: '' };
+
+      const lat = geo.value?.lat;
+      const lon = geo.value?.lon;
+
+      if (lat === undefined || lon === undefined || lat === null || lon === null) {
+        return { value: geo, label: '' };
       }
 
-      let lat: number;
-      let lon: number;
+      const coordinateLabel = format
+        ? `${Number(lat).toFixed(2)}°N, ${Number(lon).toFixed(2)}°E`
+        : `${lat}, ${lon}`;
 
-      if (geo.value && (geo.value.latitude !== undefined || geo.value.longitude !== undefined)) {
-        lat = geo.value.latitude || geo.value.lat;
-        lon = geo.value.longitude || geo.value.lon;
-      } else if (
-        geo.value &&
-        geo.value.value &&
-        (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)
-      ) {
-        // Handle nested structure: { value: { lat: X, lon: Y } }
-        lat = geo.value.value.lat;
-        lon = geo.value.value.lon;
-      } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
-        // Handle case where geo is the coordinate object directly
-        lat = geo.latitude || geo.lat;
-        lon = geo.longitude || geo.lon;
-      } else {
-        // Fallback - return the original geo object
-        return {
-          value: geo,
-          label: geo.toString() || '',
-          displayValue: geo.toString() || '',
-        };
-      }
-
-      const coordinateLabel =
-        lat !== undefined && lon !== undefined && lat !== null && lon !== null
-          ? `${lat}, ${lon}`
-          : 'Invalid coordinates';
-      return {
+      const result: GeolocationPropertyValue = {
         value: { latitude: lat, longitude: lon },
-        label: geo.label || coordinateLabel,
+        label: format ? coordinateLabel : (geo.label || coordinateLabel),
       };
+
+      if (geo.name) {
+        result.name = geo.name;
+      }
+      if (geo.label) {
+        result.label = geo.label;
+      }
+
+      return result;
     });
   }
 
-  protected formatProperty(property: any, context: ProcessingContext): PropertyValue[] {
-    const geolocationFormatting = {
-      combineGeolocation: context.editionMode ? false : context.combineGeolocation,
-    };
-    const values = Array.isArray(property.value) ? property.value : [property.value];
-
-    const formattedValues = values.map((geo: any) => {
-      if (!geo) {
-        return {
-          value: geo,
-          label: '',
-          displayValue: '',
-        };
-      }
-
-      let lat: number;
-      let lon: number;
-
-      if (geo.value && (geo.value.lat !== undefined || geo.value.lon !== undefined)) {
-        lat = geo.value.lat;
-        lon = geo.value.lon;
-      } else if (
-        geo.value &&
-        geo.value.value &&
-        (geo.value.value.lat !== undefined || geo.value.value.lon !== undefined)
-      ) {
-        lat = geo.value.value.lat;
-        lon = geo.value.value.lon;
-      } else if (
-        geo.value &&
-        (geo.value.latitude !== undefined || geo.value.longitude !== undefined)
-      ) {
-        lat = geo.value.latitude || geo.value.lat;
-        lon = geo.value.longitude || geo.value.lon;
-      } else if (geo.latitude !== undefined || geo.longitude !== undefined) {
-        lat = geo.latitude || geo.lat;
-        lon = geo.longitude || geo.lon;
-      } else if (geo.lat !== undefined || geo.lon !== undefined) {
-        lat = geo.lat;
-        lon = geo.lon;
-      } else {
-        return {
-          value: geo,
-          label: 'Invalid coordinates',
-          displayValue: 'Invalid coordinates',
-          error: 'Invalid coordinates',
-        };
-      }
-
-      if (lat === undefined || lon === undefined || lat === null || lon === null) {
-        return {
-          value: geo,
-          label: 'Invalid coordinates',
-          displayValue: 'Invalid coordinates',
-          error: 'Invalid coordinates',
-        };
-      }
-
-      const latFormatted = Number(lat).toFixed(2);
-      const lonFormatted = Number(lon).toFixed(2);
-      const label = `${latFormatted}°N, ${lonFormatted}°E`;
-
-      return {
-        value: { latitude: lat, longitude: lon },
-        label,
-      };
+  private processWithCombining(properties: any[], context: ProcessingContext, results: Map<string, FormattedProperty>): void {
+    const propertiesByEntity = new Map<string, any[]>();
+    properties.forEach(prop => {
+      const entityId = prop._entityId;
+      if (!propertiesByEntity.has(entityId)) propertiesByEntity.set(entityId, []);
+      propertiesByEntity.get(entityId)!.push(prop);
     });
 
-    const finalValues =
-      geolocationFormatting.combineGeolocation && formattedValues.length > 1
-        ? [
-            {
-              value: formattedValues.map((v: any) => v.value),
-              label: `Multiple locations (${formattedValues.length})`,
-              displayValue: `Multiple locations (${formattedValues.length})`,
-              formattedValue: formattedValues,
-            },
-          ]
-        : formattedValues;
+    propertiesByEntity.forEach((entityProps, entityId) => {
+      const sortedProps = entityProps
+        .filter(p => p.index !== undefined)
+        .sort((a, b) => (a.index || 0) - (b.index || 0));
 
-    return finalValues;
+      const groups = this.findAdjacentGroups(sortedProps);
+
+      groups.forEach(group => {
+        const key = `${entityId}:${group[0].name}`;
+        const values = group.length > 1
+          ? this.combineProperties(group, context)
+          : this.formatProperty(group[0], context);
+        results.set(key, { ...group[0], values });
+      });
+    });
+  }
+
+  private processIndividually(properties: any[], context: ProcessingContext, results: Map<string, FormattedProperty>): void {
+    properties.forEach(property => {
+      try {
+        const key = `${property._entityId}:${property.name}`;
+        const values = this.formatProperty(property, context);
+        results.set(key, { ...property, values });
+      } catch (error) {
+        console.error(`Error processing ${this.name} property ${property.name}:`, error);
+      }
+    });
+  }
+
+  private findAdjacentGroups(sortedProps: any[]): any[][] {
+    const groups: any[][] = [];
+    let currentGroup: any[] = [];
+
+    sortedProps.forEach(prop => {
+      if (currentGroup.length === 0 || this.isAdjacent(prop, currentGroup[currentGroup.length - 1])) {
+        currentGroup.push(prop);
+      } else {
+        groups.push([...currentGroup]);
+        currentGroup = [prop];
+      }
+    });
+
+    if (currentGroup.length > 0) groups.push(currentGroup);
+    return groups;
+  }
+
+  private isAdjacent(prop: any, prevProp: any): boolean {
+    return prop._entityId === prevProp._entityId &&
+      (prop.index || 0) === (prevProp.index || 0) + 1;
+  }
+
+  private combineProperties(properties: any[], context: ProcessingContext): GeolocationPropertyValue[] {
+    const allValues = properties.flatMap(p => {
+      const values = Array.isArray(p.value) ? p.value : [p.value];
+      return values.map((value: any) => ({
+        ...value,
+        name: p.name,
+        label: p.label,
+      }));
+    });
+
+    const combinedProperty = {
+      ...properties[0],
+      value: allValues,
+      name: properties.map(p => p.name).join(', '),
+      label: properties.map(p => p.label).join(', '),
+    };
+    return this.formatProperty(combinedProperty, context);
   }
 }

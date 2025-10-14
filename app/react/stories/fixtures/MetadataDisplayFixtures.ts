@@ -166,18 +166,21 @@ const rawEntity: EntitySchema = {
     ],
     selected_image: [
       {
-        value: '/api/files/17593747059321ygqk22fdos.png',
+        value: '/short-video-thumbnail.jpg',
+        alt: 'Alternative text for image',
       },
     ],
     preview_document: [
       {
-        value: '',
+        value: '/batman.jpg',
+        alt: 'Alternative text pdf preview',
       },
     ],
     video_of_event: [
       {
         value:
-          '(/api/files/1759374705932xi5rx0mumef.mp4, {"timelinks":{"00:20:15":"control","01:30:45":"Test timelink"}})',
+          '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45":"Test timelink"}})',
+        alt: 'Alternative text',
       },
     ],
     incident_location: [

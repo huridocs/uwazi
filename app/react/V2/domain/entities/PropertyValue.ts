@@ -59,12 +59,14 @@ export interface RelationshipPropertyValue extends PropertyValue<string[]> {
   };
 }
 
-export interface GeolocationPropertyValue extends PropertyValue<{ lat: number; lon: number }> {
+export interface GeolocationPropertyValue extends PropertyValue<{ latitude: number; longitude: number }> {
   readonly formattedValue: {
-    readonly lat: number;
-    readonly lon: number;
+    readonly latitude: number;
+    readonly longitude: number;
     readonly visualization: string;
   };
+  readonly name?: string;
+  readonly label?: string;
 }
 
 export interface FilePropertyValue extends PropertyValue<any> {
