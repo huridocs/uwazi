@@ -461,7 +461,7 @@ describe('Sidepanel forms', () => {
         });
       });
 
-      it('should add to training set by default on save after chaning the entity', async () => {
+      it('should add to training set by default on save after changing the entity', async () => {
         const entitySaveSpy = jest.fn();
         renderPropertySidepanel(suggestion1, textProperty, entitySaveSpy);
         const checkBox = await screen.findByLabelText('Use for training');
@@ -477,7 +477,7 @@ describe('Sidepanel forms', () => {
         });
       });
 
-      it('should allow removing an already added suggestiong from training set', async () => {
+      it('should allow removing an already added suggestion from the training set', async () => {
         const entitySaveSpy = jest.fn();
         renderPropertySidepanel(
           { ...suggestion1, useForTraining: true },
