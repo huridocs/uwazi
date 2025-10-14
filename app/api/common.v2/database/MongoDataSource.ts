@@ -1,5 +1,4 @@
 import { Db, Document } from 'mongodb';
-import { tenants } from 'api/tenants';
 import { DocumentTracker } from 'api/core/infrastructure/mongodb/documentTracker/DocumentTracker';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
@@ -32,12 +31,6 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
   protected getCollection<Collection extends Document = TSchema>(
     collectionName = this.collectionName
   ) {
-    try {
-      if (this.useSyncedCollection && tenants.current().featureFlags?.deactivateUpdateLogs) {
-        this.useSyncedCollection = false;
-      }
-    } catch (e) {}
-
     return this.useSyncedCollection
       ? new SyncedCollection<Collection>(
           new SessionScopedCollection<Collection>(
