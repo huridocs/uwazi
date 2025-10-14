@@ -494,6 +494,8 @@ describe('Sidepanel forms', () => {
 
         await waitFor(async () => {
           await fireEvent.click(checkBox);
+        });
+        await waitFor(async () => {
           await fireEvent.click(screen.getByText('Accept'));
         });
 
