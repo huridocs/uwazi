@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { DatePropertyTypes } from 'app/V2/domain/entities/types';
 import { PropertyValue, ProcessingContext } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
@@ -97,7 +97,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
   protected shouldSkipFormatting(context: ProcessingContext, formatKey?: string): boolean {
     if (formatKey === 'date') {
-      return !context.dateFormat;
+      return !context.formatDates;
     }
     return false;
   }
@@ -150,16 +150,19 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
       const timestamp = typeof propertyValue === 'number' ? propertyValue : propertyValue.value;
 
-      let momentInstance = moment.utc(timestamp, 'X');
-      momentInstance = momentInstance.locale(locale);
+      let luxonInstance = DateTime.fromSeconds(timestamp, { zone: 'utc' });
 
-      if (timezone && typeof momentInstance.tz === 'function') {
-        momentInstance = momentInstance.tz(timezone);
+      if (locale) {
+        luxonInstance = luxonInstance.setLocale(locale);
+      }
+
+      if (timezone) {
+        luxonInstance = luxonInstance.setZone(timezone);
       }
 
       const rawValue = timestamp;
 
-      if (!momentInstance.isValid()) {
+      if (!luxonInstance.isValid) {
         const baseObj = typeof propertyValue === 'number' ? {} : propertyValue;
         return {
           ...baseObj,
@@ -174,13 +177,13 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
       let formattedValue = '';
       if (relativeTime) {
-        formattedValue = momentInstance.fromNow();
+        formattedValue = luxonInstance.toRelative() || '';
       } else {
         const baseFormat = includeTime ? `${format} HH:mm:ss` : format;
-        formattedValue = momentInstance.format(baseFormat);
+        formattedValue = luxonInstance.toFormat(baseFormat);
       }
 
-      const localizedValue = momentInstance.format('ll' + (includeTime ? ' HH:mm' : ''));
+      const localizedValue = luxonInstance.toLocaleString(includeTime ? DateTime.DATETIME_MED : DateTime.DATE_MED);
 
       const baseObj = typeof propertyValue === 'number' ? {} : propertyValue;
       return {
@@ -190,7 +193,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         localizedValue,
         displayValue: localizedValue,
         label: formattedValue,
-        dateObject: momentInstance.toDate(),
+        dateObject: luxonInstance.toJSDate(),
       };
     });
   }

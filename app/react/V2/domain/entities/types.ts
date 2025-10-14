@@ -27,6 +27,7 @@ export interface CompositionOptions {
   includePermissions?: boolean;
   onlyForCards?: boolean;
   includePropertyMetadata?: boolean;
+  formatDates?: boolean;
 
   // Field selection
   includeFields?: string[];

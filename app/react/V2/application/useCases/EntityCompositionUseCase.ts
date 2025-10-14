@@ -13,7 +13,7 @@ export class EntityCompositionUseCase {
   constructor(
     private repository: EntityRepository,
     private atomStore: ReturnType<typeof createStore>
-  ) {}
+  ) { }
 
   private createProcessingContext(options: CompositionOptions): ProcessingContext {
     return {
@@ -34,7 +34,7 @@ export class EntityCompositionUseCase {
     try {
       const processingContext = this.createProcessingContext(options);
       const processor = new EntityAdapterProcessor(processingContext);
-      const result = await processor.processEntity(entity);
+      const result = processor.processEntity(entity);
       return { entity: result.entity, success: true };
     } catch (error) {
       return {
