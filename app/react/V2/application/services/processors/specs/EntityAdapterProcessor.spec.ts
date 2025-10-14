@@ -5,7 +5,6 @@ import {
   SelectMetadataProperty,
   MultiSelectMetadataProperty,
   LinkMetadataProperty,
-  GeneratedIdMetadataProperty,
 } from 'app/V2/domain/entities/types';
 import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
 import { EntityAdapterProcessor } from '../EntityAdapterProcessor';
@@ -391,20 +390,38 @@ describe('Simplified Processor Tests', () => {
 
   it('should process combined geolocation properties when combineGeolocation is true', async () => {
     const combinedGeolocationProperty = {
-      name: 'incident_location',
+      name: '_combined_geolocation',
       type: 'geolocation',
-      label: 'Incident Location',
-      translatedLabel: 'Incident Location',
+      label: 'Combined Geolocation',
+      translatedLabel: 'Combined Geolocation',
       values: [
         {
           value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
-          label: 'Incident Location',
           name: 'incident_location',
+          label: '44.33°N, 6.00°E',
         },
         {
           value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
-          label: 'Secondary Location',
           name: 'secondary_location',
+          label: '62.58°N, 15.47°E',
+        },
+        {
+          value: { latitude: 43.80157978110818, longitude: 7.492675781250001 },
+          name: 'location_relationships',
+          label: 'Witness Location - Maria Rodriguez',
+          color: '#16bdca',
+          properties: {
+            entity: 'xjku67dv7b',
+            label: 'Witness Location - Maria Rodriguez',
+            icon: {
+              _id: 'ECU',
+              label: 'Ecuador',
+              type: 'Flags',
+            },
+            type: 'entity',
+            inheritedType: 'geolocation',
+            url: '/entity/xjku67dv7b',
+          }
         },
       ],
     };
@@ -412,57 +429,42 @@ describe('Simplified Processor Tests', () => {
     expect(metadata[15]).toMatchObject(combinedGeolocationProperty);
   });
 
-  it('should process geolocationr property', async () => {
-    const geolocationrProperty = {
-      name: 'location_relationships',
-      type: 'relationship',
-      label: 'Location Relationships',
-      translatedLabel: 'Location Relationships',
-      values: [
-        {
-          value: 'xjku67dv7b',
-          label: 'Witness Location - Maria Rodriguez',
-        },
-        {
-          value: '4oklamamet',
-          label: 'Reporter Location - John Smith',
-        },
-      ],
-    };
-
-    expect(metadata[16]).toMatchObject(geolocationrProperty);
-  });
-
-  it('should process relationship_nested property', async () => {
-    const relationshipNestedProperty = {
+  it('should process hierarchical_relationships property', async () => {
+    const hierarchicalRelationshipsProperty = {
       name: 'hierarchical_relationships',
       type: 'relationship',
       label: 'Hierarchical Relationships',
       translatedLabel: 'Hierarchical Relationships',
       values: [
         {
-          icon: '',
-          label: 'Emergency Response Team',
-          url: '/entity/6qdshinfobf',
           value: '6qdshinfobf',
+          label: 'Emergency Response Team',
+          icon: '',
+          url: '/entity/6qdshinfobf',
         },
       ],
     };
 
-    expect(metadata[17]).toMatchObject(relationshipNestedProperty);
+    expect(metadata[16]).toMatchObject(hierarchicalRelationshipsProperty);
   });
 
-  it('should process generatedid property', async () => {
-    const generatedidProperty: GeneratedIdMetadataProperty = {
+  it('should process document_id property', async () => {
+    const documentIdProperty = {
       name: 'document_id',
       type: 'generatedid',
       label: 'Document ID',
       translatedLabel: 'Document ID',
-      values: [{ value: 'EVT-2024-001', label: 'EVT-2024-001' }],
+      values: [
+        {
+          label: 'EVT-2024-001',
+          value: 'EVT-2024-001',
+        },
+      ],
     };
 
-    expect(metadata[18]).toMatchObject(generatedidProperty);
+    expect(metadata[17]).toMatchObject(documentIdProperty);
   });
+
 
   it('should not combine geolocation properties when combineGeolocation is false', async () => {
     const nonCombiningContext = {

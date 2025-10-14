@@ -89,6 +89,16 @@ export class EntityAdapterProcessor {
       return [...metadataProperties, ...rootProperties];
     });
 
+    if (this.context.combineGeolocation) {
+      allProperties.forEach(property => {
+        if (property.type === 'relationship' && property.inherit?.type === 'geolocation') {
+          (property as any)._originalRelationshipType = 'relationship';
+          (property as any)._isInheritedGeolocation = true;
+          property.type = 'geolocation';
+        }
+      });
+    }
+
     const groupedProperties = groupBy(allProperties, 'type');
 
     Object.entries(groupedProperties).forEach(([type, properties]) => {
@@ -147,7 +157,8 @@ export class EntityAdapterProcessor {
         const creationDateResult = processedCreationDate.get(`${entity._id}:creationDate`);
         if (creationDateResult) {
           const { entity: _entityRef, ...dateWithoutEntity } = creationDateResult;
-          entity.creationDate = {
+          (entity as any).creationDate = {
+            ...entity.creationDate,
             ...dateWithoutEntity,
             translatedLabel: 'Creation date',
             propertyMetadata: creationDateResult.propertyMetadata || {},
@@ -179,63 +190,12 @@ export class EntityAdapterProcessor {
         const editDateResult = processedEditDate.get(`${entity._id}:editDate`);
         if (editDateResult) {
           const { entity: _entityRef, ...dateWithoutEntity } = editDateResult;
-          entity.editDate = {
+          (entity as any).editDate = {
             ...dateWithoutEntity,
             translatedLabel: 'Edit date',
             propertyMetadata: editDateResult.propertyMetadata || {},
           };
         }
-      }
-    });
-  }
-
-  private formatRootDateProperties(formattedEntities: any[]): void {
-    const dateProcessor = this.processors.get('date') as DatePropertyProcessor;
-    if (!dateProcessor) return;
-
-    const rootDateProperties = formattedEntities.flatMap(entity => [
-      ...(entity.creationDate && entity.creationDate.values && entity.creationDate.values[0]
-        ? [
-          {
-            value: { value: entity.creationDate },
-            type: 'date',
-            name: 'creationDate',
-            label: 'Creation date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
-        : []),
-      ...(entity.editDate && entity.editDate.values && entity.editDate.values[0]
-        ? [
-          {
-            value: { value: entity.editDate },
-            type: 'date',
-            name: 'editDate',
-            label: 'Edit date',
-            _entityId: entity._id,
-            entity,
-          },
-        ]
-        : []),
-    ]);
-
-    if (rootDateProperties.length === 0) return;
-
-    const batchResults = dateProcessor.processBatch(rootDateProperties, this.context);
-
-    batchResults.forEach((formattedProperty, key) => {
-      const [entityId, propertyName] = key.split(':');
-      const entity = formattedEntities.find(e => e._id === entityId);
-      if (entity) {
-        entity[propertyName] = {
-          name: propertyName,
-          type: 'date',
-          label: propertyName,
-          translatedLabel: propertyName,
-          values: formattedProperty.values,
-          dateObject: formattedProperty.values[0]?.dateObject,
-        };
       }
     });
   }

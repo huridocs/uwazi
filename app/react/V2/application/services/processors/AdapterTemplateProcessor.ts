@@ -109,10 +109,12 @@ export class AdapterTemplateProcessor {
       name: property.name,
       label: property.label,
       type: property.type,
+      ...(property.content && { content: property.content }),
+      ...(property.inherit && { inherit: property.inherit }),
       ...(templateTranslations !== undefined
         ? {
-            translatedLabel: templateTranslations.values[property.label] || property.label,
-          }
+          translatedLabel: templateTranslations.values[property.label] || property.label,
+        }
         : {}),
     };
   }
