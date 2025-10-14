@@ -5,7 +5,7 @@ import { EntityRepository } from 'app/V2/infrastructure';
 import { settingsAtom, templatesAtom, thesauriAtom, userAtom } from 'app/V2/atoms';
 import { localeAtom, translationsAtom } from 'app/V2/atoms/translationsAtoms';
 import { EntitySchema } from 'shared/types/entityType';
-import { EntityAdapterProcessor } from '../services/processors/EntityAdapterProcessor';
+import { AdapterEntityProcessor } from '../services/processors/AdapterEntityProcessor';
 import { ProcessingContext } from '../services/processors/types';
 import { cardViewOptions, fullDetailOptions, editionModeOptions } from '../optionsPresets';
 
@@ -13,7 +13,7 @@ export class EntityCompositionUseCase {
   constructor(
     private repository: EntityRepository,
     private atomStore: ReturnType<typeof createStore>
-  ) {}
+  ) { }
 
   private createProcessingContext(options: CompositionOptions): ProcessingContext {
     return {
@@ -33,7 +33,7 @@ export class EntityCompositionUseCase {
   ): Promise<CompositionResult> {
     try {
       const processingContext = this.createProcessingContext(options);
-      const processor = new EntityAdapterProcessor(processingContext);
+      const processor = new AdapterEntityProcessor(processingContext);
       const result = processor.processEntity(entity);
       return { entity: result.entity, success: true };
     } catch (error) {
@@ -50,7 +50,7 @@ export class EntityCompositionUseCase {
     options: CompositionOptions
   ): Promise<BatchCompositionResult> {
     const processingContext = this.createProcessingContext(options);
-    const processor = new EntityAdapterProcessor(processingContext);
+    const processor = new AdapterEntityProcessor(processingContext);
     return processor.processAllEntities(entities);
   }
 

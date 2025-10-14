@@ -18,7 +18,7 @@ import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { PermissionProcessor } from './PermissionProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 
-export class EntityAdapterProcessor {
+export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
   private readonly processors: Map<string, PropertyTypeProcessor> = new Map();
   private readonly templateProcessor: AdapterTemplateProcessor;
@@ -135,7 +135,7 @@ export class EntityAdapterProcessor {
       if (entity.rawEntity?.creationDate) {
         const creationDateValue =
           typeof entity.rawEntity.creationDate === 'object' &&
-          entity.rawEntity.creationDate !== null
+            entity.rawEntity.creationDate !== null
             ? entity.rawEntity.creationDate
             : entity.rawEntity.creationDate;
 
@@ -263,7 +263,7 @@ export class EntityAdapterProcessor {
     } catch (error) {
       allErrors.push({
         entityId: 'batch',
-        error: error instanceof Error ? error.message : 'EntityAdapterProcessor error',
+        error: error instanceof Error ? error.message : 'AdapterEntityProcessor error',
         timestamp: new Date(),
       });
     }

@@ -7,16 +7,16 @@ import {
   LinkMetadataProperty,
 } from 'app/V2/domain/entities/types';
 import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
-import { EntityAdapterProcessor } from '../EntityAdapterProcessor';
+import { AdapterEntityProcessor } from '../AdapterEntityProcessor';
 
-describe('Simplified Processor Tests', () => {
-  const entityAdapterProcessor = new EntityAdapterProcessor(processingContext);
+describe('Adapter Entity Processor Tests', () => {
+  const adapterEntityProcessor = new AdapterEntityProcessor(processingContext);
   let entity: Entity;
   let restEntity: Omit<Entity, 'metadata'>;
   let metadata: MetadataProperty[];
 
   beforeAll(() => {
-    const result = entityAdapterProcessor.processEntity(rawEntity);
+    const result = adapterEntityProcessor.processEntity(rawEntity);
     entity = result.entity;
     ({ metadata, ...restEntity } = entity);
   });
@@ -516,7 +516,7 @@ describe('Simplified Processor Tests', () => {
       ...processingContext,
       combineGeolocation: false,
     };
-    const nonCombiningProcessor = new EntityAdapterProcessor(nonCombiningContext);
+    const nonCombiningProcessor = new AdapterEntityProcessor(nonCombiningContext);
     const result = nonCombiningProcessor.processEntity(rawEntity);
     const nonCombiningMetadata = result.entity.metadata;
 
@@ -555,7 +555,7 @@ describe('Simplified Processor Tests', () => {
       ...processingContext,
       editionMode: true,
     };
-    const editionProcessor = new EntityAdapterProcessor(editionContext);
+    const editionProcessor = new AdapterEntityProcessor(editionContext);
     const result = editionProcessor.processEntity(rawEntity);
     const editionMetadata = result.entity.metadata;
 

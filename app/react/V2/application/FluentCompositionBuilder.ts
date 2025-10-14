@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import { EntitySchema } from 'shared/types/entityType';
 import { ProcessingContext } from './services/processors/types';
-import { EntityAdapterProcessor } from './services/processors/EntityAdapterProcessor';
+import { AdapterEntityProcessor } from './services/processors/AdapterEntityProcessor';
 import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase';
 import {
   BatchCompositionResult,
@@ -16,7 +16,7 @@ export class FluentCompositionBuilder {
     private readonly processingContext: ProcessingContext,
     private readonly entityIdOrIds?: string | string[],
     private readonly useCase?: EntityCompositionUseCase
-  ) {}
+  ) { }
 
   static create(
     processingContext: ProcessingContext,
@@ -125,7 +125,7 @@ export class FluentCompositionBuilder {
       ...this.options,
     };
 
-    const processor = new EntityAdapterProcessor(mergedContext);
+    const processor = new AdapterEntityProcessor(mergedContext);
     return processor.processEntity(rawEntity);
   }
 
@@ -135,7 +135,7 @@ export class FluentCompositionBuilder {
       ...this.options,
     };
 
-    const processor = new EntityAdapterProcessor(mergedContext);
+    const processor = new AdapterEntityProcessor(mergedContext);
     return processor.processAllEntities(rawEntities);
   }
 
