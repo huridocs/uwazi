@@ -64,7 +64,7 @@ const PropertySidepanel = ({
     handleSubmit,
     setValue,
     control,
-    formState: { isSubmitting, isDirty, dirtyFields },
+    formState: { isSubmitting, dirtyFields },
   } = formContext;
 
   useEffect(() => {
@@ -81,28 +81,32 @@ const PropertySidepanel = ({
 
   useEffect(() => {
     if (dirtyFields.field) {
-      setValue('inTrainingSet', true);
+      setValue('inTrainingSet', true, { shouldDirty: true });
     }
   }, [dirtyFields.field, setValue]);
 
+  // eslint-disable-next-line max-statements
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    const savedEntity = await handleEntitySave(entity, property, value.field, template, isDirty);
+    if (dirtyFields.field) {
+      const savedEntity = await handleEntitySave(entity, property, value.field, template);
 
-    if (savedEntity instanceof FetchResponseError) {
-      const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+      if (savedEntity instanceof FetchResponseError) {
+        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
 
-      setNotifications({ type: 'error', text: 'An error occurred', details });
-    } else if (savedEntity) {
-      if (savedEntity) {
-        setEntity(savedEntity);
-        if (suggestion?._id) {
-          onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
+        setNotifications({ type: 'error', text: 'An error occurred', details });
+      } else if (savedEntity) {
+        if (savedEntity) {
+          setEntity(savedEntity);
         }
-      }
 
-      setNotifications({ type: 'success', text: 'Saved successfully.' });
+        setNotifications({ type: 'success', text: 'Saved successfully.' });
+      }
+    }
+
+    if (suggestion?._id && dirtyFields.inTrainingSet) {
+      onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
     }
 
     handleClose();
