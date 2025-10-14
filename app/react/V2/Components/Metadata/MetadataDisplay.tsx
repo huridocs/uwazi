@@ -9,6 +9,7 @@ import { Image } from './Image';
 import { Text } from './Text';
 import { Title } from './Title';
 import { Markdown } from './Markdown';
+import { Select } from './Select';
 import { MetadataCard } from './MetadataCard';
 import { TemplateLabel } from './TemplateLabel';
 
@@ -61,7 +62,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -79,6 +80,12 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             label={data.label}
             translationContext={translationContext}
           />
+        );
+      }
+
+      if (data.type === 'select' || data.type === 'multiselect') {
+        return (
+          <Select values={data.values} label={data.label} translationContext={translationContext} />
         );
       }
 

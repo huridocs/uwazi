@@ -147,7 +147,6 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         };
       }
 
-
       const timestamp = typeof propertyValue === 'number' ? propertyValue : propertyValue.value;
 
       let luxonInstance = DateTime.fromSeconds(timestamp, { zone: 'utc' });
@@ -183,7 +182,9 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         formattedValue = luxonInstance.toFormat(baseFormat);
       }
 
-      const localizedValue = luxonInstance.toLocaleString(includeTime ? DateTime.DATETIME_MED : DateTime.DATE_MED);
+      const localizedValue = luxonInstance.toLocaleString(
+        includeTime ? DateTime.DATETIME_MED : DateTime.DATE_MED
+      );
 
       const baseObj = typeof propertyValue === 'number' ? {} : propertyValue;
       return {

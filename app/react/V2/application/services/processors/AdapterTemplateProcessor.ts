@@ -113,8 +113,8 @@ export class AdapterTemplateProcessor {
       ...(property.inherit && { inherit: property.inherit }),
       ...(templateTranslations !== undefined
         ? {
-          translatedLabel: templateTranslations.values[property.label] || property.label,
-        }
+            translatedLabel: templateTranslations.values[property.label] || property.label,
+          }
         : {}),
     };
   }

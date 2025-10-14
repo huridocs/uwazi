@@ -135,7 +135,7 @@ export class EntityAdapterProcessor {
       if (entity.rawEntity?.creationDate) {
         const creationDateValue =
           typeof entity.rawEntity.creationDate === 'object' &&
-            entity.rawEntity.creationDate !== null
+          entity.rawEntity.creationDate !== null
             ? entity.rawEntity.creationDate
             : entity.rawEntity.creationDate;
 

@@ -421,7 +421,7 @@ describe('Simplified Processor Tests', () => {
             type: 'entity',
             inheritedType: 'geolocation',
             url: '/entity/xjku67dv7b',
-          }
+          },
         },
       ],
     };
@@ -464,7 +464,6 @@ describe('Simplified Processor Tests', () => {
 
     expect(metadata[17]).toMatchObject(documentIdProperty);
   });
-
 
   it('should not combine geolocation properties when combineGeolocation is false', async () => {
     const nonCombiningContext = {

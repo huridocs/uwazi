@@ -1,6 +1,11 @@
 import { GeolocationPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValue, ProcessingContext, FormattedProperty, GeolocationPropertyValue } from './types';
+import {
+  PropertyValue,
+  ProcessingContext,
+  FormattedProperty,
+  GeolocationPropertyValue,
+} from './types';
 
 export class GeolocationProcessor extends BasePropertyProcessor {
   readonly name = 'GeolocationProcessor';
@@ -18,7 +23,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return results;
   }
 
-  protected createRawValues(property: PropertyValue, context?: ProcessingContext): GeolocationPropertyValue[] {
+  protected createRawValues(
+    property: PropertyValue,
+    context?: ProcessingContext
+  ): GeolocationPropertyValue[] {
     return this.processGeoValues(property, false, context);
   }
 
@@ -26,9 +34,13 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return this.processGeoValues(property, true, context);
   }
 
-  private processGeoValues(property: any, format: boolean, context?: ProcessingContext): GeolocationPropertyValue[] {
+  private processGeoValues(
+    property: any,
+    format: boolean,
+    context?: ProcessingContext
+  ): GeolocationPropertyValue[] {
     if (property._isInheritedGeolocation && property.value && context) {
-      return this.processInheritedGeolocationValues(property, format, context);
+      return this.processInheritedGeolocationValues(property, context);
     }
 
     const values = Array.isArray(property.value) ? property.value : [property.value];
@@ -49,7 +61,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
 
       const result: GeolocationPropertyValue = {
         value: { latitude: lat, longitude: lon },
-        label: format ? coordinateLabel : (geo.label || coordinateLabel),
+        label: format ? coordinateLabel : geo.label || coordinateLabel,
         name: property.name,
       };
 
@@ -57,7 +69,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     });
   }
 
-  private processInheritedGeolocationValues(property: any, format: boolean, context: ProcessingContext): GeolocationPropertyValue[] {
+  private processInheritedGeolocationValues(
+    property: any,
+    context: ProcessingContext
+  ): GeolocationPropertyValue[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
     const allGeolocationValues: GeolocationPropertyValue[] = [];
 
@@ -75,12 +90,9 @@ export class GeolocationProcessor extends BasePropertyProcessor {
             return;
           }
 
-          const coordinateLabel = format
-            ? `${Number(lat).toFixed(2)}°N, ${Number(lon).toFixed(2)}°E`
-            : `${lat}, ${lon}`;
-
-          const targetTemplate = property.content ?
-            context.templates.find((t: any) => t._id === property.content) : null;
+          const targetTemplate = property.content
+            ? context.templates.find((t: any) => t._id === property.content)
+            : null;
           const templateColor = targetTemplate?.color || '';
 
           const result: GeolocationPropertyValue = {
@@ -106,7 +118,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return allGeolocationValues;
   }
 
-  private processWithCombining(properties: any[], context: ProcessingContext, results: Map<string, FormattedProperty>): void {
+  private processWithCombining(
+    properties: any[],
+    context: ProcessingContext,
+    results: Map<string, FormattedProperty>
+  ): void {
     const propertiesByEntity = new Map<string, any[]>();
     properties.forEach(prop => {
       const entityId = prop._entityId;
@@ -116,37 +132,42 @@ export class GeolocationProcessor extends BasePropertyProcessor {
 
     propertiesByEntity.forEach((entityProps, entityId) => {
       // Sort properties by index, but include properties without index at the end
-      const sortedProps = entityProps
-        .sort((a, b) => {
-          const indexA = a.index !== undefined ? a.index : 9999;
-          const indexB = b.index !== undefined ? b.index : 9999;
-          return indexA - indexB;
-        });
+      const sortedProps = entityProps.sort((a, b) => {
+        const indexA = a.index !== undefined ? a.index : 9999;
+        const indexB = b.index !== undefined ? b.index : 9999;
+        return indexA - indexB;
+      });
 
       const groups = this.findAdjacentGroups(sortedProps);
 
       groups.forEach(group => {
         const key = `${entityId}:${group[0].name}`;
-        const values = group.length > 1
-          ? this.combineProperties(group, context)
-          : this.formatProperty(group[0], context);
+        const values =
+          group.length > 1
+            ? this.combineProperties(group, context)
+            : this.formatProperty(group[0], context);
 
-        const resultProperty = group.length > 1
-          ? {
-            ...group[0],
-            name: '_combined_geolocation',
-            label: 'Combined Geolocation',
-            translatedLabel: 'Combined Geolocation',
-            values
-          }
-          : { ...group[0], values };
+        const resultProperty =
+          group.length > 1
+            ? {
+                ...group[0],
+                name: '_combined_geolocation',
+                label: 'Combined Geolocation',
+                translatedLabel: 'Combined Geolocation',
+                values,
+              }
+            : { ...group[0], values };
 
         results.set(key, resultProperty);
       });
     });
   }
 
-  private processIndividually(properties: any[], context: ProcessingContext, results: Map<string, FormattedProperty>): void {
+  private processIndividually(
+    properties: any[],
+    context: ProcessingContext,
+    results: Map<string, FormattedProperty>
+  ): void {
     properties.forEach(property => {
       try {
         const key = `${property._entityId}:${property.name}`;
@@ -163,7 +184,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     let currentGroup: any[] = [];
 
     sortedProps.forEach(prop => {
-      if (currentGroup.length === 0 || this.isAdjacent(prop, currentGroup[currentGroup.length - 1])) {
+      if (
+        currentGroup.length === 0 ||
+        this.isAdjacent(prop, currentGroup[currentGroup.length - 1])
+      ) {
         currentGroup.push(prop);
       } else {
         groups.push([...currentGroup]);
@@ -187,7 +211,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return (prop.index || 0) === (prevProp.index || 0) + 1;
   }
 
-  private combineProperties(properties: any[], context: ProcessingContext): GeolocationPropertyValue[] {
+  private combineProperties(
+    properties: any[],
+    context: ProcessingContext
+  ): GeolocationPropertyValue[] {
     const allValues: GeolocationPropertyValue[] = [];
 
     properties.forEach(p => {

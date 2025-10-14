@@ -16,7 +16,7 @@ export class FluentCompositionBuilder {
     private readonly processingContext: ProcessingContext,
     private readonly entityIdOrIds?: string | string[],
     private readonly useCase?: EntityCompositionUseCase
-  ) { }
+  ) {}
 
   static create(
     processingContext: ProcessingContext,
@@ -170,11 +170,13 @@ export class FluentCompositionBuilder {
         totalProcessed: rawEntities.length,
         successCount: 0,
         errorCount: rawEntities.length,
-        errors: [{
-          entityId: 'batch',
-          error: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: new Date(),
-        }],
+        errors: [
+          {
+            entityId: 'batch',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date(),
+          },
+        ],
       };
     }
   }
