@@ -347,7 +347,8 @@ describe('Information Extraction', () => {
       });
       cy.get('aside').within(() => {
         cy.contains('h1', 'The Spectacular Spider-Man');
-        cy.get('input').clear();
+        cy.get('input[name="field"]').clear();
+        cy.get('input[name="field"]').should('have.value', '');
       });
       cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
@@ -357,14 +358,15 @@ describe('Information Extraction', () => {
       cy.get('div.highlight-rectangle').scrollIntoView();
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.get('aside').within(() => {
-        cy.get('input').should('have.value', 'The Spectacular Spider-Man');
+        cy.get('input[name="field"]').should('have.value', 'The Spectacular Spider-Man');
       });
     });
 
     it('should manually edit the field, save, and mark the suggestion as used for training', () => {
       cy.get('aside').within(() => {
-        cy.get('input').clear();
-        cy.get('input').type('A title', { delay: 0 });
+        cy.get('input[name="field"]').clear();
+        cy.get('input[name="field"]').should('have.value', '');
+        cy.get('input[name="field"]').type('A title', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');
