@@ -51,7 +51,7 @@ echo "  ✅ Production dependencies installed in ${DEPS_TIME}s"
 
 echo "🖥️  Step 6: Copying server files..."
 SERVER_FILES_START=$(date +%s)
-cp ./prod/app/server.js ./prod/server.js
+cp ./server.js ./prod/server.js
 cp ./package.json ./prod/package.json
 SERVER_FILES_TIME=$(($(date +%s) - SERVER_FILES_START))
 echo "  ✅ Server files copied in ${SERVER_FILES_TIME}s"
