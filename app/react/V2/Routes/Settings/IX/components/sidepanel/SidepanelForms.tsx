@@ -19,11 +19,11 @@ import { ClientIXExtractorType } from 'V2/shared/types';
 import { handleUnexpectedError } from 'app/V2/shared/errorUtils';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { DateTime } from 'luxon';
-import { selectionErrorAtom, textSelectionAtom } from './atoms';
-import { SuggestionValue, TableSuggestion } from '../types';
-import { MultiselectItemLabel } from './MultiselectItemLabel';
-import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
-import { escapeLucene, searchRelatedEntities } from '../helpers';
+import { selectionErrorAtom, textSelectionAtom } from '../atoms';
+import { SuggestionValue, TableSuggestion } from '../../types';
+import { MultiselectItemLabel } from '../MultiselectItemLabel';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
+import { escapeLucene, searchRelatedEntities } from '../../helpers';
 
 const dateStringToSeconds = (dateString: string) =>
   DateTime.fromISO(dateString).setZone('UTC').toSeconds();
@@ -410,7 +410,7 @@ const TextInput = ({
       <div className="grow">
         <InputField
           clearFieldAction={() => {
-            setValue('field', '');
+            setValue('field', '', { shouldDirty: true });
           }}
           id={property.label}
           label={<Translate context={templateId}>{property.label}</Translate>}
@@ -479,7 +479,7 @@ const Markdown = ({
             className="grow"
             disabled={isSubmitting}
             hasErrors={errors.field?.type === 'required' || !!selectionError}
-            clearFieldAction={() => setValue('field', '')}
+            clearFieldAction={() => setValue('field', '', { shouldDirty: true })}
             errorMessage={
               errors.field?.type === 'required' && (
                 <Translate className="sr-only">This field is required</Translate>
