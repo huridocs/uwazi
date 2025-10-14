@@ -53,7 +53,7 @@ describe('Simplified Processor Tests', () => {
     const formattedTemplate = {
       _id: '68ddecdbc9474e23bb5e914b',
       name: 'Emergency Incident Report Template',
-      label: 'Emergency Incident Report Template',
+      label: 'Emergency Incident Report Template EN',
       color: '#C03B22',
       entityViewPage: '',
     };
@@ -104,7 +104,7 @@ describe('Simplified Processor Tests', () => {
       name: 'simple_text',
       type: 'text',
       label: 'Simple Text',
-      translatedLabel: 'Simple Text',
+      translatedLabel: 'Simple Text EN',
       values: [
         {
           value: 'Emergency incident report from downtown area',
@@ -121,7 +121,7 @@ describe('Simplified Processor Tests', () => {
       name: 'markdown_syntax',
       type: 'markdown',
       label: 'Markdown Syntax',
-      translatedLabel: 'Markdown Syntax',
+      translatedLabel: 'Markdown Syntax EN',
       values: [
         {
           value:
@@ -140,7 +140,7 @@ describe('Simplified Processor Tests', () => {
       name: 'single_date',
       type: 'date',
       label: 'Single Date',
-      translatedLabel: 'Single Date',
+      translatedLabel: 'Single Date EN',
       values: [{ value: 1759363200, label: 'Oct 2, 2025' }],
     };
 
@@ -152,7 +152,7 @@ describe('Simplified Processor Tests', () => {
       name: 'location_of_interest',
       type: 'geolocation',
       label: 'Location of Interest',
-      translatedLabel: 'Location of Interest',
+      translatedLabel: 'Location of Interest EN',
       values: [
         {
           value: {
@@ -172,7 +172,7 @@ describe('Simplified Processor Tests', () => {
       name: 'multiple_dates',
       type: 'multidate',
       label: 'Multiple Dates',
-      translatedLabel: 'Multiple Dates',
+      translatedLabel: 'Multiple Dates EN',
       values: [
         { value: 1759276800, label: 'Oct 1, 2025' },
         { value: 1759363200, label: 'Oct 2, 2025' },
@@ -188,7 +188,7 @@ describe('Simplified Processor Tests', () => {
       name: 'date_range',
       type: 'daterange',
       label: 'Date Range',
-      translatedLabel: 'Date Range',
+      translatedLabel: 'Date Range EN',
       values: [{ value: { from: 1759276800, to: 1761955199 } }],
     };
 
@@ -200,7 +200,7 @@ describe('Simplified Processor Tests', () => {
       name: 'multiple_date_ranges',
       type: 'multidaterange',
       label: 'Multiple Date Ranges',
-      translatedLabel: 'Multiple Date Ranges',
+      translatedLabel: 'Multiple Date Ranges EN',
       values: [
         { value: { from: 1759276800, to: 1759449599 } },
         { value: { from: 1759363200, to: 1759535999 } },
@@ -215,7 +215,7 @@ describe('Simplified Processor Tests', () => {
       name: 'status_selection',
       type: 'select',
       label: 'Status Selection',
-      translatedLabel: 'Status Selection',
+      translatedLabel: 'Status Selection EN',
       values: [
         {
           value: {
@@ -236,7 +236,7 @@ describe('Simplified Processor Tests', () => {
       name: 'category_tags',
       type: 'multiselect',
       label: 'Category Tags',
-      translatedLabel: 'Category Tags',
+      translatedLabel: 'Category Tags EN',
       values: [
         {
           displayValue: 'Acknowledging',
@@ -297,7 +297,7 @@ describe('Simplified Processor Tests', () => {
       name: 'related_people',
       type: 'relationship',
       label: 'Related People',
-      translatedLabel: 'Related People',
+      translatedLabel: 'Related People EN',
       values: [
         {
           icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
@@ -322,7 +322,7 @@ describe('Simplified Processor Tests', () => {
       name: 'external_link',
       type: 'link',
       label: 'External Link',
-      translatedLabel: 'External Link',
+      translatedLabel: 'External Link EN',
       values: [
         {
           label: 'Police Report',
@@ -342,7 +342,7 @@ describe('Simplified Processor Tests', () => {
       name: 'selected_image',
       type: 'image',
       label: 'Selected Image',
-      translatedLabel: 'Selected Image',
+      translatedLabel: 'Selected Image EN',
       values: [
         {
           value: '/api/files/17593747059321ygqk22fdos.png',
@@ -359,7 +359,7 @@ describe('Simplified Processor Tests', () => {
       name: 'preview_document',
       type: 'preview',
       label: 'Preview Document',
-      translatedLabel: 'Preview Document',
+      translatedLabel: 'Preview Document EN',
       values: [
         {
           value: '',
@@ -376,7 +376,7 @@ describe('Simplified Processor Tests', () => {
       name: 'video_of_event',
       type: 'media',
       label: 'Video of Event',
-      translatedLabel: 'Video of Event',
+      translatedLabel: 'Video of Event EN',
       values: [
         {
           value: '/api/files/1759374705932xi5rx0mumef.mp4',
@@ -434,7 +434,7 @@ describe('Simplified Processor Tests', () => {
       name: 'hierarchical_relationships',
       type: 'relationship',
       label: 'Hierarchical Relationships',
-      translatedLabel: 'Hierarchical Relationships',
+      translatedLabel: 'Hierarchical Relationships EN',
       values: [
         {
           value: '6qdshinfobf',
@@ -453,7 +453,7 @@ describe('Simplified Processor Tests', () => {
       name: 'document_id',
       type: 'generatedid',
       label: 'Document ID',
-      translatedLabel: 'Document ID',
+      translatedLabel: 'Document ID EN',
       values: [
         {
           label: 'EVT-2024-001',
@@ -478,7 +478,7 @@ describe('Simplified Processor Tests', () => {
       name: 'incident_location',
       type: 'geolocation',
       label: 'Incident Location',
-      translatedLabel: 'Incident Location',
+      translatedLabel: 'Incident Location EN',
       values: [
         {
           value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
@@ -491,7 +491,7 @@ describe('Simplified Processor Tests', () => {
       name: 'secondary_location',
       type: 'geolocation',
       label: 'Secondary Location',
-      translatedLabel: 'Secondary Location',
+      translatedLabel: 'Secondary Location EN',
       values: [
         {
           value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
@@ -517,7 +517,7 @@ describe('Simplified Processor Tests', () => {
       name: 'incident_location',
       type: 'geolocation',
       label: 'Incident Location',
-      translatedLabel: 'Incident Location',
+      translatedLabel: 'Incident Location EN',
       values: [
         {
           value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
@@ -530,7 +530,7 @@ describe('Simplified Processor Tests', () => {
       name: 'secondary_location',
       type: 'geolocation',
       label: 'Secondary Location',
-      translatedLabel: 'Secondary Location',
+      translatedLabel: 'Secondary Location EN',
       values: [
         {
           value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
