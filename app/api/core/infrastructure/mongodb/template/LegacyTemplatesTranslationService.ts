@@ -1,6 +1,6 @@
 import { TranslationService } from 'api/core/domain/template/TranslationService';
 import translations from 'api/i18n/translations';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { ContextType } from 'shared/translationSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { TemplateMapper } from './Mapper';

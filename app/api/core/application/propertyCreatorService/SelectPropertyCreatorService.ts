@@ -1,4 +1,4 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
+import { Context, Property } from 'api/core/domain/template/Property';
 import { SelectPropertyWithInvalidThesaurusError } from 'api/core/domain/template/errors';
 import {
   MultiSelectPropertyProps,

@@ -1,4 +1,4 @@
-import { Context } from 'api/templates.v2/model/Property';
+import { Context } from 'api/core/domain/template/Property';
 
 class PropertyName {
   value: string;

@@ -1,6 +1,6 @@
 import { Entity } from 'api/entities.v2/model/Entity';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode'; // Todo
+import { Relationship } from 'api/relationships.v2/model/Relationship'; // Todo
 import { Property, PropertyUpdateInfo } from './Property';
 
 class RelationshipProperty extends Property {

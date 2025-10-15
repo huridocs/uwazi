@@ -13,11 +13,11 @@ import {
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
 import { Result, ResultType } from 'api/core/libs/Result';
-import { TemplatesDataSource } from '../../core/domain/template/TemplatesDataSource';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
+import { Property } from '../../../domain/template/Property';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
+import { Template } from '../../../domain/template/Template';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
 import { TemplateMappers } from './TemplateMappers';

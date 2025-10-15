@@ -1,5 +1,5 @@
-import { Context, Property, PropertyProps, PropertyTypes } from 'api/templates.v2/model/Property';
-import { propertyTypes } from 'shared/propertyTypes';
+import { Context, Property, PropertyProps, PropertyTypes } from 'api/core/domain/template/Property';
+import { propertyTypes } from 'shared/propertyTypes'; // Todo
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
 

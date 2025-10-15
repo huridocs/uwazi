@@ -1,4 +1,4 @@
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
 import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
 import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';

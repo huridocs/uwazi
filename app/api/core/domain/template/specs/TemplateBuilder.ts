@@ -1,6 +1,6 @@
-import { Property } from 'api/templates.v2/model/Property';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Template } from 'api/templates.v2/model/Template';
+import { Property } from 'api/core/domain/template/Property';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { Template } from 'api/core/domain/template/Template';
 import { CreationDateProperty } from '../CreationDateProperty';
 import { ModifiedDateProperty } from '../ModifiedDateProperty';
 import { TitleProperty } from '../TitleProperty';

@@ -4,7 +4,7 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,

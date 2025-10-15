@@ -26,7 +26,7 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { tenants } from 'api/tenants';
 import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/UpdateTemplateUseCaseFactory';
 import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';

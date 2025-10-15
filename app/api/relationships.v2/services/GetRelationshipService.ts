@@ -4,7 +4,7 @@ import { Entity } from 'api/entities.v2/model/Entity';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipType } from 'api/relationshiptypes.v2/model/RelationshipType';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { Relationship, ReadableRelationship } from '../model/Relationship';

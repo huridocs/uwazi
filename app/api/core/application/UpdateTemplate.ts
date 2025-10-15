@@ -3,7 +3,7 @@ import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLa
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';

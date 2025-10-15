@@ -1,9 +1,9 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
+import { Context, Property } from 'api/core/domain/template/Property';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from 'api/templates.v2/model/V1RelationshipProperty';
+} from 'api/core/domain/template/V1RelationshipProperty';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,

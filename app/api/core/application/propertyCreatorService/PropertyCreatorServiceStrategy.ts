@@ -1,4 +1,4 @@
-import { Context, Property, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, Property, PropertyTypes } from 'api/core/domain/template/Property';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

@@ -1,7 +1,7 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { RelationshipPropertyMappingFactory } from 'api/templates.v2/database/mappings/RelationshipPropertyMappingFactory';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { RelationshipPropertyMappingFactory } from 'api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { propertyMappings } from './mappings';

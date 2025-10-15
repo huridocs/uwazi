@@ -1,6 +1,6 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';

@@ -1,5 +1,5 @@
-import { CommonProperty, CommonPropertyProps } from 'api/templates.v2/model/CommonProperty';
-import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
+import { CommonProperty, CommonPropertyProps } from 'api/core/domain/template/CommonProperty';
+import { Context, PropertyTypes } from 'api/core/domain/template/Property';
 import {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,

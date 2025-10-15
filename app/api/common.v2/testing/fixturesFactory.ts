@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { Property, PropertyTypes } from 'api/core/domain/template/Property';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import {

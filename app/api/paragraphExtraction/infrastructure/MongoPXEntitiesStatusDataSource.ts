@@ -5,7 +5,7 @@ import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDat
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { ResultSet } from 'api/core/libs/ResultSet';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import {
