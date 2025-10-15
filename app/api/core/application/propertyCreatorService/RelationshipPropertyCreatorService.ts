@@ -4,12 +4,12 @@ import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
 } from 'api/templates.v2/model/V1RelationshipProperty';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
-} from '../errors';
+} from 'api/core/domain/template/errors';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;

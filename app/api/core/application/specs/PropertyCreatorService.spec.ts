@@ -3,8 +3,8 @@ import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
-import { TextProperty } from '../TextProperty';
-import { PropertyTypeMismatchError } from '../errors';
+import { TextProperty } from '../../domain/template/TextProperty';
+import { PropertyTypeMismatchError } from '../../domain/template/errors';
 
 const prevCreated = new ObjectId();
 

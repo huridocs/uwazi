@@ -4,12 +4,12 @@ import { Template } from 'api/templates.v2/model/Template';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 import { TranslationService } from '../domain/template/TranslationService';
 import { CreateTemplateDTO } from './TemplateDTOs';
 import { PageService } from '../domain/template/PageService';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
 
 type Output = Template;
 

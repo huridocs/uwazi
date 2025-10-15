@@ -1,8 +1,8 @@
 import { Context, Property } from 'api/templates.v2/model/Property';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { NestedPropertyNotAvailableError } from 'api/core/domain/template/errors';
+import { NestedPropertyProps, NestedProperty } from 'api/core/domain/template/NestedProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
-import { NestedProperty, NestedPropertyProps } from '../NestedProperty';
-import { NestedPropertyNotAvailableError } from '../errors';
 
 type Deps = {
   settingsDS: SettingsDataSource;

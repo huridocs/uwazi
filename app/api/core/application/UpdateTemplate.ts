@@ -7,12 +7,12 @@ import { Template } from 'api/templates.v2/model/Template';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TranslationService } from '../domain/template/TranslationService';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
 
 type Output = Template;
 

@@ -10,7 +10,7 @@ import {
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
   TemplateDoesNotExistError,
-} from '../errors';
+} from '../../domain/template/errors';
 import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService';
 
 const factory = getFixturesFactory();
