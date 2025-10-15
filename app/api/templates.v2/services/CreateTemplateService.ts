@@ -7,7 +7,7 @@ import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTe
 import { createError } from 'api/utils';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
+import { TemplatesDataSource } from '../../core/domain/template/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';

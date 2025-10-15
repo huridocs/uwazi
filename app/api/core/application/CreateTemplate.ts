@@ -1,5 +1,5 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';

@@ -7,7 +7,7 @@ import {
   JobsDispatcher,
 } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { TemplateUpdatedEventContext } from 'api/templates/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';

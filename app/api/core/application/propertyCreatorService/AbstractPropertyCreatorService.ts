@@ -1,5 +1,5 @@
 import { PropertyFactoryCreateInput } from 'api/core/domain/template/PropertyFactory';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Context, Property } from 'api/templates.v2/model/Property';
 
 type Deps<ExtendedDeps> = {

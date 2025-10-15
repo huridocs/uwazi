@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import relationshipTypeDS from 'api/relationtypes';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';

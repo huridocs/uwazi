@@ -1,6 +1,6 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';

@@ -8,7 +8,7 @@ import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { search } from 'api/search';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { cloneDeep } from 'lodash';
 import { generateID } from 'shared/IDGenerator';
 

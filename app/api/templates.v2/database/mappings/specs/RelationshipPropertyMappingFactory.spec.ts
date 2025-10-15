@@ -1,6 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Property } from 'api/templates.v2/model/Property';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { propertyMappings } from 'database/elastic_mapping/mappings';

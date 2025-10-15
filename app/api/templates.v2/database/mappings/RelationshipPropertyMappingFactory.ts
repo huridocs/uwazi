@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 

@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
 import { Db } from 'mongodb';

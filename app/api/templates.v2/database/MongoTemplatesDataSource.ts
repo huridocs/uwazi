@@ -13,7 +13,7 @@ import {
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
 import { Result, ResultType } from 'api/core/libs/Result';
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
+import { TemplatesDataSource } from '../../core/domain/template/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
