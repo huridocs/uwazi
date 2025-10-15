@@ -134,7 +134,7 @@ describe('templates routes', () => {
 
     it('should have a validation schema', async () => {
       const { body } = await request(app).post('/api/templates/setasdefault');
-      expect(body.error).toBe('validation failed');
+      expect(body.error).toContain('ValidationError');
     });
   });
 

@@ -6,7 +6,7 @@ import { GetTemplatesController } from 'api/core/infrastructure/express/template
 import { DeleteTemplateController } from 'api/core/infrastructure/express/template/DeleteTemplateController';
 import { CountTemplatesByThesaurusController } from 'api/core/infrastructure/express/template/CountTemplatesByThesaurusController';
 import needsAuthorization from '../auth/authMiddleware';
-import { createError, validation } from '../utils';
+import { createError } from '../utils';
 
 export const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
   try {
@@ -20,29 +20,15 @@ export const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
 };
 
 export default (app: Application) => {
-  app.post('/api/templates', needsAuthorization(), TemplateMutationController.createHandler());
+  app.get('/api/templates', GetTemplatesController.createHandler());
+  app.get('/api/templates/count_by_thesauri', CountTemplatesByThesaurusController.createHandler());
 
+  app.post('/api/templates', needsAuthorization(), TemplateMutationController.createHandler());
   app.post(
     '/api/templates/setasdefault',
     needsAuthorization(),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['_id'],
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
     SetTemplateAsDefaultController.createHandler()
   );
 
-  app.get('/api/templates', GetTemplatesController.createHandler());
-
   app.delete('/api/templates', needsAuthorization(), DeleteTemplateController.createHandler());
-
-  app.get('/api/templates/count_by_thesauri', CountTemplatesByThesaurusController.createHandler());
 };

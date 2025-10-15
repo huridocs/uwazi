@@ -2,6 +2,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -117,8 +118,9 @@ class Template {
     return updateInfo;
   }
 
-  selectSwappedNameProperties(newTemplate: Template) {
+  private checkForConflictingPropertyNames(newTemplate: Template) {
     let swapingNameWithExistingProperty: TemplateProperty | undefined;
+
     this.properties.forEach(prop => {
       if (!swapingNameWithExistingProperty) {
         swapingNameWithExistingProperty = (newTemplate.properties || []).find(
@@ -126,7 +128,10 @@ class Template {
         );
       }
     });
-    return swapingNameWithExistingProperty;
+
+    if (swapingNameWithExistingProperty) {
+      throw new Error(`Properties can't swap names: ${swapingNameWithExistingProperty.name}`);
+    }
   }
 
   selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): V1RelationshipProperty[] {
@@ -201,6 +206,20 @@ class Template {
     });
 
     return this.clone({ ...this, properties });
+  }
+
+  update(props: CloneProps): Template {
+    if (this.processing?.active) {
+      throw new ValidationError([
+        { path: 'processing', message: 'template is being processed you can not update it yet' },
+      ]);
+    }
+
+    const updated = this.clone(props);
+
+    this.checkForConflictingPropertyNames(updated);
+
+    return updated;
   }
 
   private clone(props: CloneProps) {

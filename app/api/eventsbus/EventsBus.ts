@@ -29,6 +29,10 @@ class EventsBus {
 
     this.listeners[event.name].push(listener);
   }
+
+  clear() {
+    this.listeners = {};
+  }
 }
 
 export { EventsBus };

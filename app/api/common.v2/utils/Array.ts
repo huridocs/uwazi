@@ -1,4 +1,4 @@
-type Callback<Item> = (item: Item, index: number, array: Item[]) => Promise<void>;
+type Callback<Item, Result = void> = (item: Item, index: number, array: Item[]) => Promise<Result>;
 
 type RunInBatchesInput<Item> = {
   array: Item[];
@@ -27,8 +27,11 @@ export class ArrayUtils {
   /**
    * Executes promises in parallel.
    */
-  static async parallelFor<Item>(array: Item[], callback: Callback<Item>): Promise<void> {
-    await Promise.all(array.map(async (item, index) => callback(item, index, array)));
+  static async parallelFor<Item, Result>(
+    array: Item[],
+    callback: Callback<Item, Result>
+  ): Promise<Result[]> {
+    return Promise.all(array.map(async (item, index) => callback(item, index, array)));
   }
 
   static splitInChunks<T>(array: T[], size: number): T[][] {
@@ -53,8 +56,8 @@ export class ArrayUtils {
 
     const batches = this.splitInChunks(array, _batchSize);
 
-    await ArrayUtils.sequentialFor(batches, async batch =>
-      ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches))
-    );
+    await ArrayUtils.sequentialFor(batches, async batch => {
+      await ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches));
+    });
   }
 }
