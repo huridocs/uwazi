@@ -11,7 +11,7 @@ import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import { TranslateModal } from 'app/I18N';
 import { inlineEditAtom } from 'V2/atoms';
-import Header from 'V2/Components/Layouts/Header';
+import { Header } from 'app/V2/Components/UI/Header/Header';
 import Confirm from './Confirm';
 import { AppMainContext } from './AppMainContext';
 import GoogleAnalytics from './GoogleAnalytics';

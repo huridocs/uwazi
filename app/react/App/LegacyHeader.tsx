@@ -3,7 +3,7 @@ import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import { useIsMobile } from 'app/V2/CustomHooks/useIsMobile';
 import { Menu } from './Menu';
-import SiteName from './SiteName';
+import { SiteName } from './SiteName';
 
 const LegacyHeader = () => {
   const [showMenu, setShowMenu] = useState(false);

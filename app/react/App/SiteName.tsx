@@ -4,18 +4,22 @@ import { Helmet } from 'react-helmet';
 import { I18NLink } from 'app/I18N';
 import { settingsAtom } from 'V2/atoms';
 
-export const SiteName = () => {
+interface SiteNameProps {
+  className?: string;
+}
+
+export const SiteName: React.FC<SiteNameProps> = ({ className = '' }) => {
   const { site_name: siteName } = useAtomValue(settingsAtom);
 
   return (
-    <div>
+    <>
       <Helmet
         titleTemplate={`%s • ${siteName}`}
-        meta={[{ 'char-set': 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
+        meta={[{ charSet: 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
       />
-      <I18NLink to="/">{siteName}</I18NLink>
-    </div>
+      <I18NLink className={className} to="/">
+        {siteName}
+      </I18NLink>
+    </>
   );
 };
-
-export default SiteName;
