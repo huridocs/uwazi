@@ -1,19 +1,18 @@
 import React, { useState, useCallback, useContext, createContext } from 'react';
-import { EntityCompositionUseCase } from '../application/useCases/EntityCompositionUseCase';
-import { Entity } from 'app/V2/domain/entities/Entity';
 import { IncomingHttpHeaders } from 'http';
+import { Entity } from 'V2/domain/entities/Entity';
 import { CompositionOptions } from '../application';
+import { EntityCompositionUseCase } from '../application/useCases/EntityCompositionUseCase';
 
 const EntityCompositionContext = createContext<{
   useCase: EntityCompositionUseCase;
 } | null>(null);
 
-export const EntityCompositionProvider: React.FC<{
+const EntityCompositionProvider: React.FC<{
   children: React.ReactNode;
   useCase: EntityCompositionUseCase;
-}> = ({ children, useCase }) => {
-  return React.createElement(EntityCompositionContext.Provider, { value: { useCase } }, children);
-};
+}> = ({ children, useCase }) =>
+  React.createElement(EntityCompositionContext.Provider, { value: { useCase } }, children);
 
 const useEntityCompositionContext = () => {
   const context = useContext(EntityCompositionContext);
@@ -23,7 +22,7 @@ const useEntityCompositionContext = () => {
   return context;
 };
 
-export const useEntityComposition = (useCase?: EntityCompositionUseCase) => {
+const useEntityComposition = (useCase?: EntityCompositionUseCase) => {
   const context = useEntityCompositionContext();
   const actualUseCase = useCase || context.useCase;
 
@@ -31,6 +30,7 @@ export const useEntityComposition = (useCase?: EntityCompositionUseCase) => {
   const [error, setError] = useState<string | null>(null);
 
   const composeEntity = useCallback(
+    // eslint-disable-next-line max-statements
     async (
       entityId: string,
       options: CompositionOptions,
@@ -58,6 +58,7 @@ export const useEntityComposition = (useCase?: EntityCompositionUseCase) => {
   );
 
   const composeEntities = useCallback(
+    // eslint-disable-next-line max-statements
     async (
       entityIds: string[],
       options: CompositionOptions,
@@ -93,26 +94,23 @@ export const useEntityComposition = (useCase?: EntityCompositionUseCase) => {
   };
 };
 
-// Fluent API hook
-export const useFluentEntityComposition = (_useCase?: EntityCompositionUseCase) => {
+const useFluentEntityComposition = (useCase?: EntityCompositionUseCase) => {
   const context = useEntityCompositionContext();
-  const useCase = _useCase || context.useCase;
+  const compositionUseCase = useCase || context.useCase;
 
   const [loading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fluentForEntity = useCallback(
-    async (entityId: string, options: CompositionOptions, headers: IncomingHttpHeaders) => {
-      return useCase.composeEntity(entityId, options, { headers });
-    },
-    [useCase]
+    async (entityId: string, options: CompositionOptions, headers: IncomingHttpHeaders) =>
+      compositionUseCase.composeEntity(entityId, options, { headers }),
+    [compositionUseCase]
   );
 
   const fluentForEntities = useCallback(
-    async (entityIds: string[], options: CompositionOptions, headers: IncomingHttpHeaders) => {
-      return useCase.composeEntities(entityIds, options, { headers });
-    },
-    [useCase]
+    async (entityIds: string[], options: CompositionOptions, headers: IncomingHttpHeaders) =>
+      compositionUseCase.composeEntities(entityIds, options, { headers }),
+    [compositionUseCase]
   );
 
   return {
@@ -123,3 +121,5 @@ export const useFluentEntityComposition = (_useCase?: EntityCompositionUseCase) 
     clearError: () => setError(null),
   };
 };
+
+export { EntityCompositionProvider, useFluentEntityComposition, useEntityComposition };
