@@ -1,13 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import { EntitySchema } from 'shared/types/entityType';
-import { ProcessingContext } from './services/processors/types';
+import { BatchCompositionResult, CompositionOptions, CompositionResult, ProcessingContext } from './services/processors/types';
 import { AdapterEntityProcessor } from './services/processors/AdapterEntityProcessor';
 import { EntityCompositionUseCase } from './useCases/EntityCompositionUseCase';
-import {
-  BatchCompositionResult,
-  CompositionOptions,
-  CompositionResult,
-} from '../domain/entities/types';
 
 export class FluentCompositionBuilder {
   private options: CompositionOptions = {};
@@ -16,7 +11,7 @@ export class FluentCompositionBuilder {
     private readonly processingContext: ProcessingContext,
     private readonly entityIdOrIds?: string | string[],
     private readonly useCase?: EntityCompositionUseCase
-  ) {}
+  ) { }
 
   static create(
     processingContext: ProcessingContext,

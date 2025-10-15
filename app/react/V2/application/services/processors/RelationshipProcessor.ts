@@ -1,69 +1,20 @@
-import { RelationshipPropertyTypes } from 'app/V2/domain/entities/types';
+import { RelationshipPropertyTypes, AllowedPropertyTypes } from 'app/V2/domain/entities/types';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import {
-  PropertyValue,
   ProcessingContext,
-  FormattedProperty,
   PropertyTypeProcessor,
+  AdapterMetadataProperty,
 } from './types';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
   readonly propertyTypes: RelationshipPropertyTypes[] = ['relationship'];
 
-  processBatch(
-    properties: any[],
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
-
-    properties.forEach(property => {
-      try {
-        const key = `${property._entityId}:${property.name}`;
-        const values = this.formatProperty(property, context);
-        const isInherited = property.inherited === true;
-
-        const relationshipMetadata: any = {
-          inherited: isInherited,
-          relationshipName: property.relationshipName,
-          properties: {
-            template: property.template
-              ? {
-                  _id: property.template._id,
-                  name: property.template.name,
-                  label: property.template.label,
-                  color: property.template.color,
-                }
-              : undefined,
-            inheritedProperty: property.inheritedProperty
-              ? {
-                  type: property.inheritedProperty.type,
-                  name: property.inheritedProperty.name,
-                  label: property.inheritedProperty.label,
-                }
-              : undefined,
-          },
-        };
-
-        results.set(key, {
-          ...property,
-          values,
-          ...relationshipMetadata,
-        });
-      } catch (error) {
-        console.error(`Error processing ${this.name} property ${property.name}:`, error);
-      }
-    });
-
-    return results;
-  }
-
   protected formatProperty(
-    property: any,
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): PropertyValue[] {
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
     if (this.shouldSkipFormatting(context, 'relationship')) {
       return this.createRawValues(property);
     }
@@ -74,7 +25,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       ? values.slice(0, context.maxRelationships)
       : values;
 
-    const processedValues = limitedValues.map((rel: any): PropertyValue => {
+    return limitedValues.map((rel: any) => {
       const label = rel.label || rel.displayValue || rel.toString();
       const url = rel.url || '#';
       const icon = rel.icon || '';
@@ -88,18 +39,16 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         inheritedType: rel.inheritedType,
       };
     });
-
-    return processedValues;
   }
 
-  protected createRawValues(property: any): PropertyValue[] {
+  protected createRawValues(property: AdapterMetadataProperty): MetadataProperty["values"] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    return values.map((rel: any): PropertyValue => {
+    return values.map((rel: any) => {
       if (!rel) {
         return {
           value: rel,
-          displayValue: '',
+          label: '',
         };
       }
 
@@ -126,29 +75,5 @@ export class RelationshipProcessor extends BasePropertyProcessor {
       return context.includeRelationships === false;
     }
     return false;
-  }
-
-  protected getCustomFormat(
-    _context: ProcessingContext,
-    formatKey: string,
-    defaultFormat: string
-  ): string {
-    if (formatKey === 'relationship') {
-      return defaultFormat;
-    }
-    return defaultFormat;
-  }
-
-  private collectAllInheritedValues(values: any[]): any[] {
-    const allInherited: any[] = [];
-
-    values.forEach(value => {
-      if (value.inheritedValue && Array.isArray(value.inheritedValue)) {
-        allInherited.push(...value.inheritedValue);
-        allInherited.push(...this.collectAllInheritedValues(value.inheritedValue));
-      }
-    });
-
-    return allInherited;
   }
 }

@@ -22,34 +22,34 @@ import { MetadataDisplay } from 'app/V2/Components/Metadata';
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    const entityId = params.sharedId;
-    if (!entityId) throw new Error('Entity ID is required');
+    async ({ params }) => {
+      const entityId = params.sharedId;
+      if (!entityId) throw new Error('Entity ID is required');
 
-    const entityCompositionUseCase = await getEntityCompositionUseCase();
-    const composition = await entityCompositionUseCase.composeEntity(entityId, fullDetailOptions, {
-      headers,
-    });
+      const entityCompositionUseCase = await getEntityCompositionUseCase();
+      const composition = await entityCompositionUseCase.composeEntity(entityId, fullDetailOptions, {
+        headers,
+      });
 
-    if (!composition.success || !composition.entity) {
-      throw new Response(
-        JSON.stringify({
-          error: 'Failed to load entity',
-          message: composition.error || 'Entity not found',
-          entityId,
-        }),
-        {
-          status: 404,
-          statusText: 'Entity Not Found',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    }
+      if (!composition.success || !composition.entity) {
+        throw new Response(
+          JSON.stringify({
+            error: 'Failed to load entity',
+            message: composition.error || 'Entity not found',
+            entityId,
+          }),
+          {
+            status: 404,
+            statusText: 'Entity Not Found',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
 
-    return composition.entity;
-  };
+      return composition.entity;
+    };
 
 const Entity = () => {
   const entity = useLoaderData() as EntityType;

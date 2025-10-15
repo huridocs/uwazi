@@ -1,9 +1,9 @@
 import React from 'react';
 import { I18NLinkV2 } from 'app/I18N';
-import { SelectMetadataProperty, MultiSelectMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
+import { SelectMetadataProperty, MultiSelectMetadataProperty } from 'V2/domain/entities/types';
 
 type SelectProps = MetadataFieldProps & {
   values: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'];
@@ -13,7 +13,7 @@ const Select = ({ label, translationContext, values, hideLabel }: SelectProps) =
   const formatSelectValue = (
     value: (SelectMetadataProperty | MultiSelectMetadataProperty)['values'][0]
   ) => {
-    let displayValue = value.displayValue || value.label || value.value;
+    let displayValue = value.label || value.value;
 
     if (value.value && typeof value.value === 'object' && value.value.parent) {
       const parent = value.value.parent;

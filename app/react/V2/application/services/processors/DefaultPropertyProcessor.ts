@@ -1,17 +1,16 @@
-import { DefaultPropertyTypes } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValue } from './types';
+import { AdapterMetadataProperty } from './types';
 
 export class DefaultPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DefaultPropertyProcessor';
 
-  readonly propertyTypes: DefaultPropertyTypes[] = ['any'];
+  readonly propertyTypes: string[] = ['any'];
 
-  protected formatProperty(property: PropertyValue, _context: any): any[] {
+  protected formatProperty(property: AdapterMetadataProperty, _context: any): any[] {
     return this.createRawValues(property);
   }
 
-  protected createRawValues(property: PropertyValue): PropertyValue[] {
+  protected createRawValues(property: AdapterMetadataProperty): any[] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
     return values.map((value: any) => {
       if (!value) {

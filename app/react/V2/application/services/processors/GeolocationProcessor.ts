@@ -1,11 +1,10 @@
 import { GeolocationPropertyTypes } from 'app/V2/domain/entities/types';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import {
-  PropertyValue,
   ProcessingContext,
-  FormattedProperty,
-  GeolocationPropertyValue,
   PropertyTypeProcessor,
+  AdapterMetadataProperty,
 } from './types';
 
 export class GeolocationProcessor extends BasePropertyProcessor {
@@ -14,11 +13,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   readonly propertyTypes: GeolocationPropertyTypes[] = ['geolocation'];
 
   processBatch(
-    properties: any[],
+    properties: Partial<AdapterMetadataProperty>[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
+  ): Map<string, MetadataProperty> {
+    const results = new Map<string, MetadataProperty>();
 
     if (context.combineGeolocation && !context.editionMode) {
       this.processWithCombining(properties, context, results, processors);
@@ -29,35 +28,24 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return results;
   }
 
-  protected createRawValues(
-    property: PropertyValue,
-    context?: ProcessingContext
-  ): GeolocationPropertyValue[] {
-    return this.processGeoValues(property, false, context);
-  }
-
   protected formatProperty(
-    property: any,
-    context: ProcessingContext,
-    processors?: Map<string, PropertyTypeProcessor>
-  ): GeolocationPropertyValue[] {
-    return this.processGeoValues(property, true, context, processors);
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
+    return this.processGeoValues(property, true, context);
   }
 
   private processGeoValues(
-    property: any,
+    property: AdapterMetadataProperty,
     format: boolean,
-    context?: ProcessingContext,
-    processors?: Map<string, PropertyTypeProcessor>
-  ): GeolocationPropertyValue[] {
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
     if (
-      property._isInheritedProperty &&
-      property._inheritedType === 'geolocation' &&
-      property.value &&
-      context &&
-      processors
+      property.properties.inherited &&
+      property.properties.inheritedProperty?.type === 'geolocation' &&
+      property.value
     ) {
-      return this.processInheritedGeolocationValues(property, context, processors);
+      return this.processInheritedGeolocationValues(property, context);
     }
 
     const values = Array.isArray(property.value) ? property.value : [property.value];
@@ -76,25 +64,20 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         ? `${Number(lat).toFixed(2)}°N, ${Number(lon).toFixed(2)}°E`
         : `${lat}, ${lon}`;
 
-      const result: GeolocationPropertyValue = {
+      return {
         value: { latitude: lat, longitude: lon },
         label: format ? coordinateLabel : geo.label || coordinateLabel,
         name: property.name,
       };
-
-      return result;
     });
   }
 
   private processInheritedGeolocationValues(
-    property: any,
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): GeolocationPropertyValue[] {
-    // Since the property value structure is now transformed to match native geolocation,
-    // we can use the standard geolocation processing while preserving relationship metadata
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
-    const allGeolocationValues: GeolocationPropertyValue[] = [];
+    const allGeolocationValues: MetadataProperty["values"] = [];
 
     values.forEach((geo: any) => {
       if (!geo || !geo.value) return;
@@ -105,12 +88,12 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         return;
       }
 
-      const targetTemplate = property.content
-        ? context.templates.find((t: any) => t._id === property.content)
+      const targetTemplate = property.properties.content
+        ? context.templates.find((t: any) => t._id === property.properties.content)
         : null;
       const templateColor = targetTemplate?.color || '';
 
-      const result: GeolocationPropertyValue = {
+      const result = {
         value: { latitude: lat, longitude: lon },
         label: geo._relationshipMetadata?.label || label || '',
         name: property.name,
@@ -118,27 +101,26 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         properties: geo._relationshipMetadata || undefined,
       };
 
-      allGeolocationValues.push(result);
+      allGeolocationValues.push(result as any);
     });
 
     return allGeolocationValues;
   }
 
   private processWithCombining(
-    properties: any[],
+    properties: Partial<AdapterMetadataProperty>[],
     context: ProcessingContext,
-    results: Map<string, FormattedProperty>,
+    results: Map<string, MetadataProperty>,
     processors?: Map<string, PropertyTypeProcessor>
   ): void {
-    const propertiesByEntity = new Map<string, any[]>();
+    const propertiesByEntity = new Map<string, Partial<AdapterMetadataProperty>[]>();
     properties.forEach(prop => {
-      const entityId = prop._entityId;
+      const entityId = prop._entityId!;
       if (!propertiesByEntity.has(entityId)) propertiesByEntity.set(entityId, []);
       propertiesByEntity.get(entityId)!.push(prop);
     });
 
     propertiesByEntity.forEach((entityProps, entityId) => {
-      // Sort properties by index, but include properties without index at the end
       const sortedProps = entityProps.sort((a, b) => {
         const indexA = a.index !== undefined ? a.index : 9999;
         const indexB = b.index !== undefined ? b.index : 9999;
@@ -152,18 +134,36 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         const values =
           group.length > 1
             ? this.combineProperties(group, context, processors)
-            : this.formatProperty(group[0], context, processors);
+            : this.formatProperty(group[0] as AdapterMetadataProperty, context);
 
-        const resultProperty =
-          group.length > 1
-            ? {
-                ...group[0],
-                name: '_combined_geolocation',
-                label: 'Combined Geolocation',
-                translatedLabel: 'Combined Geolocation',
-                values,
-              }
-            : { ...group[0], values };
+        const resultProperty = {
+          _id: group[0]._id!,
+          _entityId: group[0]._entityId!,
+          type: group[0].type!,
+          name: group.length > 1 ? '_combined_geolocation' : group[0].name!,
+          label: group.length > 1 ? 'Combined Geolocation' : group[0].label!,
+          translatedLabel: group.length > 1 ? 'Combined Geolocation' : group[0].translatedLabel,
+          values,
+          value: group[0].value || null,
+          inherited: group[0].inherited || false,
+          inheritedType: group[0].inheritedType,
+          properties: {
+            _id: group[0]._id!,
+            template: group[0].properties?.template ? {
+              _id: group[0].properties.template._id,
+              name: group[0].properties.template.name,
+              label: group[0].properties.template.label || group[0].properties?.template?.name,
+              color: group[0].properties.template.color || '',
+            } : undefined,
+            inheritedProperty: group[0].properties?.inheritedProperty ? {
+              property: group[0].properties.inheritedProperty.name || '',
+              type: (group[0].properties.inheritedProperty.type || 'geolocation') as any,
+              name: group[0].properties.inheritedProperty.name || '',
+              label: group[0].properties.inheritedProperty.label || '',
+            } : undefined,
+            translateContext: group[0].properties?.content || ''
+          },
+        };
 
         results.set(key, resultProperty);
       });
@@ -171,25 +171,55 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   }
 
   private processIndividually(
-    properties: any[],
+    properties: Partial<AdapterMetadataProperty>[],
     context: ProcessingContext,
-    results: Map<string, FormattedProperty>,
+    results: Map<string, MetadataProperty>,
     processors?: Map<string, PropertyTypeProcessor>
   ): void {
     properties.forEach(property => {
       try {
         const key = `${property._entityId}:${property.name}`;
-        const values = this.formatProperty(property, context, processors);
-        results.set(key, { ...property, values });
+        const values = this.formatProperty(property as AdapterMetadataProperty, context);
+
+        const resultProperty = {
+          _id: property._id!,
+          _entityId: property._entityId!,
+          type: property.type!,
+          name: property.name!,
+          label: property.label!,
+          translatedLabel: property.translatedLabel,
+          values,
+          value: property.value || null,
+          inherited: property.inherited || false,
+          inheritedType: property.inheritedType,
+          properties: {
+            _id: property._id!,
+            template: property.properties?.template ? {
+              _id: property.properties.template._id,
+              name: property.properties.template.name,
+              label: property.properties.template.label || property.properties?.template?.name,
+              color: property.properties.template.color || '',
+            } : undefined,
+            inheritedProperty: property.properties?.inheritedProperty ? {
+              property: property.properties.inheritedProperty.name || '',
+              type: (property.properties.inheritedProperty.type || 'geolocation') as any,
+              name: property.properties.inheritedProperty.name || '',
+              label: property.properties.inheritedProperty.label || '',
+            } : undefined,
+            translateContext: property.properties?.content || ''
+          },
+        };
+
+        results.set(key, resultProperty as MetadataProperty);
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }
     });
   }
 
-  private findAdjacentGroups(sortedProps: any[]): any[][] {
-    const groups: any[][] = [];
-    let currentGroup: any[] = [];
+  private findAdjacentGroups(sortedProps: Partial<AdapterMetadataProperty>[]): Partial<AdapterMetadataProperty>[][] {
+    const groups: Partial<AdapterMetadataProperty>[][] = [];
+    let currentGroup: Partial<AdapterMetadataProperty>[] = [];
 
     sortedProps.forEach(prop => {
       if (
@@ -207,12 +237,12 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return groups;
   }
 
-  private isAdjacent(prop: any, prevProp: any): boolean {
+  private isAdjacent(prop: Partial<AdapterMetadataProperty>, prevProp: Partial<AdapterMetadataProperty>): boolean {
     if (prop._entityId !== prevProp._entityId) {
       return false;
     }
 
-    if (prop._isInheritedGeolocation || prevProp._isInheritedGeolocation) {
+    if (prop.properties?.inherited) {
       return true;
     }
 
@@ -220,15 +250,15 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   }
 
   private combineProperties(
-    properties: any[],
+    properties: Partial<AdapterMetadataProperty>[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
-  ): GeolocationPropertyValue[] {
-    const allValues: GeolocationPropertyValue[] = [];
+  ): MetadataProperty["values"] {
+    const allValues: MetadataProperty["values"] = [];
 
     properties.forEach(p => {
-      const propValues = this.formatProperty(p, context, processors);
-      allValues.push(...propValues);
+      const propValues = this.formatProperty(p as AdapterMetadataProperty, context);
+      allValues.push(...(propValues as any));
     });
 
     return allValues;

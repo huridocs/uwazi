@@ -3,11 +3,10 @@ import { Translate } from 'app/I18N';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
-
-type DateValue = { label: string } | { label: { from: string; to: string } };
+import { DateMetadataProperty, DateRangeMetadataProperty } from 'app/V2/domain/entities/types';
 
 type DateProps = MetadataFieldProps & {
-  timestamps: DateValue[];
+  timestamps: DateMetadataProperty['values'] | DateRangeMetadataProperty['values'];
 };
 
 const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) => (
@@ -18,19 +17,21 @@ const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) =
         if (typeof stamp.label === 'string') {
           return <dd className="font-medium text-gray-900">{stamp.label}</dd>;
         }
+        const range = stamp as DateRangeMetadataProperty['values'][0];
         return (
           <dd className="font-medium text-gray-900">
             <span className="sr-only">
               <Translate>From</Translate>
             </span>
-            <span>{stamp.label.from}</span>
+            <span>{range.label.from}</span>
             <span aria-hidden="true"> - </span>
             <span className="sr-only">
               <Translate>To</Translate>
             </span>
-            <span>{stamp.label.to}</span>
+            <span>{range.label.to}</span>
           </dd>
         );
+        return null;
       })}
     </div>
   </MetadataCard>

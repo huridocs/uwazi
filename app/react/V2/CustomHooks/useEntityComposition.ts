@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useContext, createContext } from 'react';
 import { EntityCompositionUseCase } from '../application/useCases/EntityCompositionUseCase';
-import { CompositionOptions } from '../domain/entities/types';
 import { Entity } from 'app/V2/domain/entities/Entity';
 import { IncomingHttpHeaders } from 'http';
+import { CompositionOptions } from '../application';
 
 const EntityCompositionContext = createContext<{
   useCase: EntityCompositionUseCase;

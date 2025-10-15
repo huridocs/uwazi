@@ -19,6 +19,10 @@ describe('Adapter Entity Processor Tests', () => {
     const result = adapterEntityProcessor.processEntity(rawEntity);
     entity = result.entity;
     ({ metadata, ...restEntity } = entity);
+
+    metadata.forEach((item, index) => {
+      console.log(`${index}: ${item.name} (${item.type})`);
+    });
   });
 
   it('should process entity data', async () => {
@@ -27,11 +31,11 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'date',
       label: 'creationDate',
       translatedLabel: 'creationDate',
+      value: 1704067200,
       values: [
         {
           value: 1704067200,
           label: 'Jan 1, 2024',
-          dateObject: new Date('2024-01-01T00:00:00.000Z'),
         },
       ],
     };
@@ -41,11 +45,11 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'date',
       label: 'editDate',
       translatedLabel: 'editDate',
+      value: 1704153600,
       values: [
         {
           value: 1704153600,
           label: 'Jan 2, 2024',
-          dateObject: new Date('2024-01-02T00:00:00.000Z'),
         },
       ],
     };
@@ -69,34 +73,9 @@ describe('Adapter Entity Processor Tests', () => {
       editDate,
     };
 
-    // Use toMatchObject with custom matchers for NaN values
-    expect(restEntity).toMatchObject({
-      _id: expectedEntity._id,
-      title: expectedEntity.title,
-      template: expectedEntity.template,
-      sharedId: expectedEntity.sharedId,
-      language: expectedEntity.language,
-      icon: expectedEntity.icon,
-    });
+    expect(restEntity).toMatchObject(expectedEntity);
 
-    // Test date properties separately to handle NaN comparison
-    expect(restEntity.creationDate).toMatchObject({
-      name: 'creationDate',
-      type: 'date',
-      label: 'Creation date',
-    });
-    expect(restEntity.creationDate.translatedLabel).toBeDefined();
-    expect(restEntity.creationDate.values[0].value).toBeDefined();
-    expect(restEntity.creationDate.values[0].label).toBeDefined();
-
-    expect(restEntity.editDate).toMatchObject({
-      name: 'editDate',
-      type: 'date',
-      label: 'Edit date',
-    });
-    expect(restEntity.editDate.translatedLabel).toBeDefined();
-    expect(restEntity.editDate.values[0].value).toBeDefined();
-    expect(restEntity.editDate.values[0].label).toBeDefined();
+    // Test date properties s
   });
 
   it('should process text property', async () => {
@@ -141,6 +120,7 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'date',
       label: 'Single Date',
       translatedLabel: 'Single Date EN',
+      value: 1759363200,
       values: [{ value: 1759363200, label: 'Oct 2, 2025' }],
     };
 
@@ -173,6 +153,7 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'multidate',
       label: 'Multiple Dates',
       translatedLabel: 'Multiple Dates EN',
+      value: [1759276800, 1759363200, 1759449600] as any,
       values: [
         { value: 1759276800, label: 'Oct 1, 2025' },
         { value: 1759363200, label: 'Oct 2, 2025' },
@@ -216,14 +197,11 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'select',
       label: 'Status Selection',
       translatedLabel: 'Status Selection EN',
+      value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
       values: [
         {
-          value: {
-            label: 'Again',
-            value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-          },
+          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
           label: 'Again',
-          displayValue: 'Again',
         },
       ],
     };
@@ -237,53 +215,35 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'multiselect',
       label: 'Category Tags',
       translatedLabel: 'Category Tags EN',
+      value: [
+        '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+        '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+        '8c418311-1244-4777-800a-65729b8c17a8',
+        'e1b9944b-43ef-4989-837b-b3df79284b00',
+      ] as any,
       values: [
         {
-          displayValue: 'Acknowledging',
-          icon: undefined,
+          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
           label: 'Acknowledging',
-          url: undefined,
-          value: {
-            label: 'Acknowledging',
-            value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-          },
         },
         {
-          displayValue: 'Again',
-          icon: undefined,
+          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
           label: 'Again',
-          url: undefined,
-          value: {
-            label: 'Again',
-            value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-          },
         },
         {
-          displayValue: 'verb2',
-          icon: undefined,
+          value: '8c418311-1244-4777-800a-65729b8c17a8',
           label: 'verb2',
-          url: undefined,
-          value: {
-            label: 'verb2',
-            parent: {
-              label: 'grouped',
-              value: '68979984-35ac-4b98-abf9-28eac857749c',
-            },
-            value: '8c418311-1244-4777-800a-65729b8c17a8',
+          parent: {
+            label: 'grouped',
+            value: '68979984-35ac-4b98-abf9-28eac857749c',
           },
         },
         {
-          displayValue: 'verb1',
-          icon: undefined,
+          value: 'e1b9944b-43ef-4989-837b-b3df79284b00',
           label: 'verb1',
-          url: undefined,
-          value: {
-            label: 'verb1',
-            parent: {
-              label: 'grouped',
-              value: '68979984-35ac-4b98-abf9-28eac857749c',
-            },
-            value: 'e1b9944b-43ef-4989-837b-b3df79284b00',
+          parent: {
+            label: 'grouped',
+            value: '68979984-35ac-4b98-abf9-28eac857749c',
           },
         },
       ],
@@ -336,13 +296,11 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'link',
       label: 'External Link',
       translatedLabel: 'External Link EN',
+      value: { label: 'Police Report', url: 'https://police.gov/reports/incident-2024-001' } as any,
       values: [
         {
           label: 'Police Report',
-          value: {
-            label: 'Police Report',
-            url: 'https://police.gov/reports/incident-2024-001',
-          },
+          value: { label: 'Police Report', url: 'https://police.gov/reports/incident-2024-001' } as any,
         },
       ],
     };

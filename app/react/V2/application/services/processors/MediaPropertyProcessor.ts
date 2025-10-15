@@ -1,9 +1,9 @@
 import { FilePropertyTypes } from 'app/V2/domain/entities/types';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import {
-  FormattedProperty,
-  PropertyValue,
   PropertyTypeProcessor,
   ProcessingContext,
+  AdapterMetadataProperty,
 } from './types';
 
 export class MediaPropertyProcessor implements PropertyTypeProcessor {
@@ -11,50 +11,31 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
 
   readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
-  processBatch(
-    properties: any[],
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
-
-    properties.forEach(property => {
-      try {
-        const key = `${property._entityId}:${property._fieldName}`;
-        const mediaFiles = this.processMediaFiles(property.value, context);
-        const timelines =
-          context.editionMode && property.timelines
-            ? this.processTimelines(property.timelines, context)
-            : [];
-
-        const formattedProperty: FormattedProperty = {
-          ...property,
-          values: mediaFiles,
-          timelines: context.editionMode ? timelines : undefined,
-          mediaFiles: context.flattenMediaFiles ? mediaFiles : undefined,
-          fileMetadata: this.calculateFileMetadata(mediaFiles, timelines),
-          type: 'media',
-        };
-
-        results.set(key, formattedProperty);
-      } catch (error) {
-        console.error(`Error processing media property ${property._fieldName}:`, error);
-      }
-    });
-
-    return results;
+  protected formatProperty(property: AdapterMetadataProperty, context: ProcessingContext): MetadataProperty["values"] {
+    return this.processMediaFiles(property.value, context);
   }
 
-  private processMediaFiles(files: any[], _context: ProcessingContext): PropertyValue[] {
+  private processMediaFiles(files: Array<{
+    value: string;
+    fileName?: string;
+    originalname?: string;
+    label?: string;
+    url?: string;
+    mimetype?: string;
+    size?: number;
+    duration?: number;
+    dimensions?: { width: number; height: number };
+    thumbnail?: string;
+    _id?: string;
+    id?: string;
+  }>, _context: ProcessingContext): MetadataProperty["values"] {
     if (!Array.isArray(files)) {
       return [];
     }
 
     return files.map((file, index) => {
-      // Handle string format: "(/api/files/file.mp4, {\"timelinks\":{...}})"
       if (typeof file.value === 'string' && file.value.startsWith('(')) {
         try {
-          // Parse the tuple string format
           const match = file.value.match(/^\(([^,]+),\s*({.*})\)$/);
           if (match) {
             const fileUrl = match[1];
@@ -64,7 +45,6 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
             return {
               value: fileUrl,
               label: fileName,
-              displayValue: fileName,
               url: fileUrl,
               mimetype: this.getMimetypeFromUrl(fileUrl),
               size: 0,
@@ -84,11 +64,9 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
         }
       }
 
-      // Handle object format (legacy)
       return {
         value: file._id || file.id || file.value,
-        label: file.originalname || file.filename || file.label || 'Unknown file',
-        displayValue: file.originalname || file.filename || file.label || 'Unknown file',
+        label: file.originalname || file.fileName || file.label || 'Unknown file',
         url: file.url || `/api/files/${file._id || file.id || file.value}`,
         mimetype: file.mimetype,
         size: file.size || 0,
@@ -96,15 +74,32 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
         dimensions: file.dimensions,
         thumbnail: file.thumbnail,
         selected: true,
-        filename: file.filename,
+        filename: file.fileName,
         originalname: file.originalname,
-        fileType: this.getFileType(file.mimetype),
+        fileType: this.getFileType(file.mimetype || 'application/octet-stream'),
         index,
       };
     });
   }
 
-  private processTimelines(timelines: any[], _context: ProcessingContext): PropertyValue[] {
+  private processTimelines(timelines: Array<{
+    timeHours: string;
+    timeMinutes: string;
+    timeSeconds: string;
+    label: string;
+  }>, _context: ProcessingContext): Array<{
+    value: {
+      hours: string;
+      minutes: string;
+      seconds: string;
+      totalSeconds: number;
+    };
+    label: string;
+    selected: boolean;
+    index: number;
+    timeFormatted: string;
+    totalSeconds: number;
+  }> {
     if (!Array.isArray(timelines)) {
       return [];
     }
@@ -121,7 +116,6 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
           totalSeconds,
         },
         label: timeline.label || `Timeline ${index + 1}`,
-        displayValue: `${timeFormatted} - ${timeline.label || `Timeline ${index + 1}`}`,
         selected: true,
         index,
         timeFormatted,
@@ -175,18 +169,5 @@ export class MediaPropertyProcessor implements PropertyTypeProcessor {
       txt: 'text/plain',
     };
     return mimeTypes[extension || ''] || 'application/octet-stream';
-  }
-
-  private calculateFileMetadata(mediaFiles: PropertyValue[], timelines: PropertyValue[]) {
-    const totalSize = mediaFiles.reduce((sum, file) => sum + (file.size || 0), 0);
-    const totalDuration = mediaFiles.reduce((sum, file) => sum + (file.duration || 0), 0);
-    const fileTypes = [...new Set(mediaFiles.map(file => file.fileType).filter(Boolean))];
-
-    return {
-      totalSize,
-      totalDuration,
-      fileTypes,
-      timelineCount: timelines.length,
-    };
   }
 }

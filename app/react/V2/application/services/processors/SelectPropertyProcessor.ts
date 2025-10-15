@@ -1,10 +1,9 @@
 import { SelectPropertyTypes } from 'app/V2/domain/entities/types';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import {
-  FormattedProperty,
-  PropertyValue,
-  PropertyTypeProcessor,
   ProcessingContext,
+  AdapterMetadataProperty,
 } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 
@@ -13,98 +12,41 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
 
   readonly propertyTypes: SelectPropertyTypes[] = ['select', 'multiselect'];
 
-  processBatch(
-    properties: any[],
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
-
-    const { translations, thesauri } = context;
-    const selectFormatting = {
-      includeOptions: context.includeOptions,
-      showLabels: true,
-      showIcons: true,
-      showUrls: true,
-    };
-
-    properties.forEach(property => {
-      try {
-        const key = `${property._entityId}:${property.name}`;
-        const values = this.formatSelectProperty(property, selectFormatting, translations);
-
-        const formattedProperty: FormattedProperty = { ...property, values };
-
-        if (context.editionMode) {
-          const selectedValues = Array.isArray(property.value) ? property.value : [property.value];
-          const options = this.buildFlattenedOptions(
-            property,
-            selectedValues,
-            thesauri,
-            translations,
-            selectFormatting
-          );
-          formattedProperty.options = options;
-        }
-
-        results.set(key, formattedProperty);
-      } catch (error) {
-        console.error(`Error processing select property ${property.name}:`, error);
-      }
-    });
-
-    return results;
-  }
-
-  private formatSelectProperty(
-    property: any,
-    selectFormatting: any,
-    translations: Record<string, any>
-  ): PropertyValue[] {
-    const { showLabels, showIcons, showUrls } = selectFormatting;
-
-    if (property._isInheritedProperty && property._inheritedType === 'multiselect') {
-      return this.formatInheritedSelectProperty(property, selectFormatting, translations);
+  protected formatProperty(
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
+    if (property.inherited && property.inheritedType === 'multiselect') {
+      return this.formatInheritedSelectProperty(property, context);
     }
 
-    if (property.value !== undefined && !property.options) {
+    if (property.value !== undefined && !property.properties.options) {
       const values = Array.isArray(property.value) ? property.value : [property.value];
 
-      return values.map((value: any): PropertyValue => {
-        const label = showLabels ? value.label || value.toString() : '';
-        return {
-          value,
-          label: showLabels ? label : undefined,
-          displayValue: showLabels ? label : '',
-          icon: showIcons ? property.icon : undefined,
-          url: showUrls ? property.url : undefined,
-        };
-      });
+      return values.map((value: any) => ({
+        value,
+        label: value.label || value.toString(),
+      }));
     }
 
-    if (property.options && Array.isArray(property.options)) {
+    if (property.properties.options && Array.isArray(property.properties.options)) {
       const values = Array.isArray(property.value) ? property.value : [property.value];
 
-      return values.map((selectedValue: any): PropertyValue => {
-        const option = property.options.find((opt: any) => opt.value === selectedValue);
+      return values.map((selectedValue: any) => {
+        const option = property.properties.options!.find((opt: any) => opt.value === selectedValue);
 
         if (!option) {
           return {
             value: selectedValue,
             label: selectedValue.toString(),
-            displayValue: selectedValue.toString(),
           };
         }
 
-        const translatedLabel =
-          translations[option.translateContext || option.label] || option.label;
+        const translatedLabel = this.getTranslatedLabel(property, option.label, context) || option.label;
 
         return {
           value: selectedValue,
-          label: showLabels ? translatedLabel : undefined,
-          displayValue: showLabels ? translatedLabel : '',
-          icon: showIcons ? option.icon : undefined,
-          url: showUrls ? option.url : undefined,
+          label: translatedLabel,
         };
       });
     }
@@ -113,7 +55,6 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
       {
         value: property.value,
         label: property.value?.toString() || '',
-        displayValue: property.value?.toString() || '',
       },
     ];
   }
@@ -125,43 +66,78 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
     return thesauri.find(t => t._id === contentId);
   }
 
+  private formatInheritedSelectProperty(
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MetadataProperty["values"] {
+    const values = Array.isArray(property.value) ? property.value : [property.value];
+
+    return values.map((item: any) => {
+      const inheritedValue = item.value;
+      const relationshipMetadata = item._relationshipMetadata;
+
+      return {
+        value: inheritedValue,
+        label: relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString(),
+      };
+    });
+  }
+
   private buildFlattenedOptions(
-    property: any,
-    selectedValues: any[],
+    property: AdapterMetadataProperty,
+    selectedValues: string[],
     thesauri: ClientThesaurus[],
-    translations: Record<string, any>,
-    selectFormatting: any
-  ): PropertyValue[] {
-    const thesaurus = this.findThesaurusByContentId(property.content, thesauri);
+    translations: Record<string, string>,
+    selectFormatting: {
+      showLabels: boolean;
+      showIcons: boolean;
+      showUrls: boolean;
+    }
+  ): Array<{
+    value: string;
+    label?: string;
+    displayValue: string;
+    selected: boolean;
+    group: string | null;
+    level: number;
+  }> {
+    const thesaurus = this.findThesaurusByContentId(property.properties.content || '', thesauri);
 
     if (!thesaurus || !thesaurus.values) {
       return [];
     }
 
-    const flattenedOptions: PropertyValue[] = [];
+    const flattenedOptions: Array<{
+      value: string;
+      label?: string;
+      displayValue: string;
+      selected: boolean;
+      group: string | null;
+      level: number;
+    }> = [];
 
     thesaurus.values.forEach((option: ClientThesaurusValue) => {
       flattenedOptions.push({
-        value: option.id,
+        value: option.id || '',
         label: selectFormatting.showLabels ? translations[option.label] || option.label : undefined,
         displayValue: selectFormatting.showLabels ? translations[option.label] || option.label : '',
-        selected: selectedValues.includes(option.id),
+        selected: selectedValues.includes(option.id || ''),
         group: null,
         level: 0,
       });
 
       if (option.values && Array.isArray(option.values)) {
-        option.values.forEach((subOption: any) => {
+        option.values.forEach((subOption: ClientThesaurusValue) => {
           flattenedOptions.push({
-            value: subOption.id,
+            value: subOption.id || '',
             label: selectFormatting.showLabels
               ? translations[subOption.label] || subOption.label
               : undefined,
             displayValue: selectFormatting.showLabels
               ? translations[subOption.label] || subOption.label
               : '',
-            selected: selectedValues.includes(subOption.id),
-            group: option.id,
+            selected: selectedValues.includes(subOption.id || ''),
+            group: option.id || null,
             level: 1,
           });
         });
@@ -169,32 +145,5 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
     });
 
     return flattenedOptions;
-  }
-
-  private formatInheritedSelectProperty(
-    property: any,
-    selectFormatting: any,
-    _translations: Record<string, any>
-  ): PropertyValue[] {
-    const { showLabels, showIcons, showUrls } = selectFormatting;
-    const values = Array.isArray(property.value) ? property.value : [property.value];
-
-    return values.map((item: any): PropertyValue => {
-      const inheritedValue = item.value;
-      const relationshipMetadata = item._relationshipMetadata;
-
-      return {
-        value: inheritedValue,
-        label: showLabels
-          ? relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString()
-          : undefined,
-        displayValue: showLabels
-          ? relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString()
-          : '',
-        icon: showIcons ? relationshipMetadata?.icon : undefined,
-        url: showUrls ? relationshipMetadata?.url : undefined,
-        properties: relationshipMetadata,
-      };
-    });
   }
 }

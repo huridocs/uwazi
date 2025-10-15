@@ -1,80 +1,8 @@
 import { Template, ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
-import { ClientTranslationSchema } from 'app/istore';
-import { CompositionOptions } from 'app/V2/domain';
-
-export interface PropertyValue {
-  value: any;
-  label?: string;
-  displayValue?: string;
-  formattedValue?: any;
-  localizedValue?: string;
-  icon?: string;
-  url?: string;
-  error?: string;
-  inheritedValue?: any[];
-  inheritedType?: string;
-  [key: string]: any;
-}
-
-export interface GeolocationPropertyValue extends PropertyValue {
-  value: { latitude: number; longitude: number };
-  name?: string;
-  label?: string;
-}
-
-export interface PropertyMetadata {
-  showInCard: boolean;
-  propertyType: string;
-  isInherited: boolean;
-  isRequired: boolean;
-  isMultiple: boolean;
-  noLabel: boolean;
-  fullWidth: boolean;
-  obsolete: boolean;
-  indexInTemplate?: number;
-  parent?: string;
-  translateContext?: string;
-  fileName?: string;
-  timeLinks?: any;
-  relatedEntity?: any;
-  inheritedType?: string;
-  inheritedValue?: any;
-  denormalizedProperty?: string;
-  sortedBy?: boolean;
-  timestamp?: number;
-  style?: string;
-  url?: string;
-  icon?: string;
-  // Type-specific metadata
-  [key: string]: any;
-}
-
-export interface FormattedProperty {
-  values: PropertyValue[];
-  label: string;
-  name: string;
-  translatedLabel?: string;
-  propertyMetadata: PropertyMetadata;
-  type: string;
-  originalValue?: any;
-  inherited?: boolean;
-  relationshipName?: string;
-  properties?: {
-    template?: {
-      _id: string;
-      name: string;
-      label: string;
-      color: string;
-    };
-    inheritedProperty?: {
-      type: string;
-      name: string;
-      label: string;
-    };
-  };
-  index?: number;
-  [key: string]: any;
-}
+import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
+import { Entity } from 'app/V2/domain';
+import { EntityTemplate, MetadataProperty } from 'app/V2/domain/entities/types';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
 
 export interface ProcessingContext extends CompositionOptions {
   readonly userId?: string;
@@ -110,8 +38,108 @@ export interface PropertyTypeProcessor {
   readonly propertyTypes: string[];
 
   processBatch(
-    properties: any[],
+    properties: Partial<AdapterMetadataProperty>[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty>;
+  ): Map<string, AdapterMetadataProperty>;
 }
+
+export interface CompositionContext {
+  readonly userId?: string;
+  readonly userPermissions?: string[];
+  readonly language: string;
+  readonly includePermissions: boolean;
+}
+
+export interface CompositionOptions {
+  // Core inclusion options
+  includeTemplate?: boolean;
+  includeMetadata?: boolean;
+  includeRelationships?: boolean;
+  includeFiles?: boolean;
+  includeNavigation?: boolean;
+  includePermissions?: boolean;
+  onlyForCards?: boolean;
+  includePropertyMetadata?: boolean;
+  formatDates?: boolean;
+
+  // Field selection
+  includeFields?: string[];
+
+  // Processing modes
+  editionMode?: boolean;
+  translateLabels?: boolean;
+
+  // Formatting options
+  dateFormat?: string;
+  combineGeolocation?: boolean;
+
+  includeFileMetadata?: boolean;
+  includeThumbnails?: boolean;
+  maxFileSize?: number;
+  allowedTypes?: string[];
+
+  // Flattening options
+  flattenStructures?: boolean;
+  flattenRelationships?: boolean;
+  flattenCoordinates?: boolean;
+  flattenMediaFiles?: boolean;
+  flattenTimelines?: boolean;
+
+  // Permission options
+  includeAccessLevel?: boolean;
+  includeSharedWith?: boolean;
+
+  // Relationship options
+  nestedLevel?: number;
+  includeEntityData?: boolean;
+  includeTemplates?: boolean;
+  maxRelationships?: number;
+
+  // Select options
+  includeOptions?: boolean;
+
+  // Processor-specific options
+  timezone?: string;
+  includeTime?: boolean;
+  relativeTime?: boolean;
+  showLabels?: boolean;
+  showIcons?: boolean;
+  showUrls?: boolean;
+  precision?: number;
+  includeMapData?: boolean;
+}
+
+
+export interface CompositionResult {
+  readonly entity: Entity | null;
+  readonly success: boolean;
+  readonly error?: string;
+}
+
+export interface BatchCompositionResult {
+  readonly entities: Entity[];
+  readonly errors: ProcessingError[];
+  readonly success: boolean;
+  readonly totalProcessed: number;
+  readonly successCount: number;
+  readonly errorCount: number;
+}
+
+export type AdapterEntityTemplate = EntityTemplate & {
+  readonly properties: Map<string, Partial<AdapterMetadataProperty>>;
+  readonly commonProperties: Map<string, Partial<AdapterMetadataProperty>>;
+}
+
+export type AdapterEntity = Omit<Entity, 'template'> & { template: AdapterEntityTemplate };
+
+export type AdapterMetadataProperty = MetadataProperty & {
+  _id: string,
+  entity: AdapterEntity,
+  index: number,
+  value: PropertyValueSchema,
+  properties: MetadataProperty["properties"] & {
+    translationContext?: ClientTranslationContextSchema
+  }
+}
+

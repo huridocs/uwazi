@@ -1,9 +1,10 @@
-import { ComposedProperty, PermissionPropertyTypes } from 'app/V2/domain/entities/types';
+import { PermissionPropertyTypes } from 'app/V2/domain/entities/types';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import { PermissionSchema } from 'shared/types/permissionType';
 import {
   PropertyTypeProcessor,
   ProcessingContext,
-  FormattedProperty,
+  AdapterMetadataProperty,
   EntityPermissions,
 } from './types';
 
@@ -11,64 +12,60 @@ export class PermissionProcessor implements PropertyTypeProcessor {
   readonly name = 'PermissionProcessor';
   readonly propertyTypes: PermissionPropertyTypes[] = ['permissions'];
 
-  processBatch(
-    properties: ComposedProperty[],
-    context: ProcessingContext,
-    _processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
 
-    properties.forEach(property => {
-      const formattedProperty = this.processPermissionProperty(property, context);
-      results.set(property.name, formattedProperty);
-    });
-
-    return results;
-  }
-
-  private processPermissionProperty(
-    property: ComposedProperty,
+  protected formatProperty(
+    property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): FormattedProperty {
+  ): MetadataProperty {
     const entityPermissions = this.extractEntityPermissions(property, context);
 
-    const formattedProperty: FormattedProperty = {
+    const formattedProperty: AdapterMetadataProperty = {
+      _id: property._id,
+      _entityId: property._entityId,
+      type: property.type,
+      name: property.name,
+      label: property.label,
+      translatedLabel: property.translatedLabel,
       values: [
         {
-          value: entityPermissions,
+          value: entityPermissions as any,
           label: 'Permissions',
-          displayValue: this.formatPermissionsDisplay(entityPermissions),
-          formattedValue: entityPermissions,
         },
       ],
-      label: property.label || 'Permissions',
-      name: property.name,
-      propertyMetadata: {
-        showInCard: false,
-        propertyType: 'permissions',
-        isInherited: false,
-        isRequired: false,
-        isMultiple: false,
-        noLabel: false,
-        fullWidth: false,
-        obsolete: false,
+      value: property.value || null,
+      inherited: property.inherited || false,
+      inheritedType: property.inheritedType,
+      properties: {
+        _id: property._id,
+        inherited: property.inherited || false,
+        template: property.properties?.template ? {
+          _id: property.properties.template._id,
+          name: property.properties.template.name,
+          label: (property.properties.template as any).label || property.properties.template.name,
+          color: property.properties.template.color || '',
+        } : undefined,
+        inheritedProperty: property.properties?.inheritedProperty ? {
+          property: property.properties.inheritedProperty.name || '',
+          type: (property.properties.inheritedProperty.type || 'permissions') as any,
+          name: property.properties.inheritedProperty.name || '',
+          label: property.properties.inheritedProperty.label || '',
+        } : undefined,
+        translationContext: property.properties.translationContext
       },
-      type: 'permissions',
-      originalValue: property.value,
     };
 
     return formattedProperty;
   }
 
-  private extractEntityPermissions(property: any, context: ProcessingContext): EntityPermissions {
-    const permissions = property.value || [];
+  private extractEntityPermissions(property: AdapterMetadataProperty, context: ProcessingContext): EntityPermissions {
+    const permissions = (property.value as PermissionSchema[]) || [];
     const currentUserAccess = this.determineUserAccess(permissions, context);
     const sharedWith = this.extractSharedWith(permissions, context);
     const isPublic = this.isEntityPublic(permissions);
     const isRestricted = this.isEntityRestricted(permissions);
 
     return {
-      refId: property.refId || property._entityId || '',
+      refId: property._entityId || '',
       permissions: sharedWith,
       isPublic,
       isRestricted,
@@ -123,16 +120,4 @@ export class PermissionProcessor implements PropertyTypeProcessor {
     return permissions.some(p => p.type === 'user' || p.type === 'group');
   }
 
-  private formatPermissionsDisplay(permissions: EntityPermissions): string {
-    if (permissions.isPublic) {
-      return 'Public';
-    }
-
-    if (permissions.isRestricted) {
-      const sharedCount = permissions.permissions.length;
-      return `Shared with ${sharedCount} ${sharedCount === 1 ? 'person' : 'people'}`;
-    }
-
-    return 'Private';
-  }
 }

@@ -1,9 +1,12 @@
 import { flatMap, groupBy, map } from 'lodash';
-import { BatchCompositionResult, Entity } from 'app/V2/domain';
-import { ComposedProperty, ComposedTemplate } from 'app/V2/domain/entities/types';
+import { Entity, MetadataProperty } from 'app/V2/domain';
+import { DateMetadataProperty } from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import {
-  FormattedProperty,
+  AdapterEntity,
+  AdapterEntityTemplate,
+  AdapterMetadataProperty,
+  BatchCompositionResult,
   ProcessingContext,
   ProcessingError,
   PropertyTypeProcessor,
@@ -13,10 +16,9 @@ import { DatePropertyProcessor } from './DatePropertyProcessor';
 import { SelectPropertyProcessor } from './SelectPropertyProcessor';
 import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
-import { FileProcessor } from './FileProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { PermissionProcessor } from './PermissionProcessor';
-import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -31,57 +33,46 @@ export class AdapterEntityProcessor {
   }
 
   private initializeProcessors(): void {
-    const dateProcessor = new DatePropertyProcessor();
-    const selectProcessor = new SelectPropertyProcessor();
-    const geolocationProcessor = new GeolocationProcessor();
-    const relationshipProcessor = new RelationshipProcessor();
-    const fileProcessor = new FileProcessor();
-    const mediaProcessor = new MediaPropertyProcessor();
-    const permissionProcessor = new PermissionProcessor();
-    const defaultProcessor = new DefaultPropertyProcessor();
+    const processors = [
+      new DatePropertyProcessor(),
+      new SelectPropertyProcessor(),
+      new GeolocationProcessor(),
+      new RelationshipProcessor(),
+      new MediaPropertyProcessor(),
+      new PermissionProcessor(),
+    ];
 
-    dateProcessor.propertyTypes.forEach(type => this.processors.set(type, dateProcessor));
-    selectProcessor.propertyTypes.forEach(type => this.processors.set(type, selectProcessor));
-    geolocationProcessor.propertyTypes.forEach(type =>
-      this.processors.set(type, geolocationProcessor)
-    );
-    relationshipProcessor.propertyTypes.forEach(type =>
-      this.processors.set(type, relationshipProcessor)
-    );
-    fileProcessor.propertyTypes.forEach(type => this.processors.set(type, fileProcessor));
-    mediaProcessor.propertyTypes.forEach(type => this.processors.set(type, mediaProcessor));
-    permissionProcessor.propertyTypes.forEach(type =>
-      this.processors.set(type, permissionProcessor)
-    );
+    processors.forEach(processor => {
+      processor.propertyTypes.forEach(type => this.processors.set(type, processor));
+    });
 
-    this.processors.set('any', defaultProcessor);
+    // this.processors.set('any', new BasePropertyProcessor());
   }
 
-  private collectPropertiesByType(entities: Partial<Entity>[]): Map<string, any[]> {
-    const propertiesByType = new Map<string, ComposedProperty[]>();
-
+  private collectPropertiesByType(entities: Partial<AdapterEntity>[]): Map<string, AdapterMetadataProperty[]> {
     const allProperties = flatMap(entities, entity => {
       const metadataProperties = map(
         Object.entries(entity.rawEntity?.metadata || {}),
         ([name, property]) => ({
           value: property,
           name,
-          _entityId: entity._id!,
-          entity,
+          entity: entity,
+          index: 0,
           ...(entity.template?.properties?.get(name) || {}),
-        })
+        } as AdapterMetadataProperty)
       );
 
-      const rootProperties = [];
+      const rootProperties: AdapterMetadataProperty[] = [];
       if (entity.rawEntity?.permissions) {
         rootProperties.push({
+          _id: 'permissions',
           value: entity.rawEntity.permissions,
           name: 'permissions',
           label: 'Permissions',
-          type: 'permissions',
+          type: 'permissions' as any,
           _entityId: entity._id!,
-          entity,
-          refId: entity.rawEntity._id || entity._id!,
+          entity: entity as Entity,
+          index: 0,
         });
       }
 
@@ -95,27 +86,25 @@ export class AdapterEntityProcessor {
     });
 
     const groupedProperties = groupBy(allProperties, 'type');
+    const propertiesByType = new Map<string, AdapterMetadataProperty[]>();
 
     Object.entries(groupedProperties).forEach(([type, properties]) => {
-      propertiesByType.set(type, properties as ComposedProperty[]);
+      propertiesByType.set(type, properties as AdapterMetadataProperty[]);
     });
 
     return propertiesByType;
   }
 
   private processPropertiesByType(
-    propertiesByType: Map<string, any[]>
-  ): Map<string, FormattedProperty> {
-    const allResults = new Map<string, FormattedProperty>();
+    propertiesByType: Map<string, AdapterMetadataProperty[]>
+  ): Map<string, AdapterMetadataProperty> {
+    const allResults = new Map<string, AdapterMetadataProperty>();
 
     Array.from(propertiesByType.entries()).forEach(([propertyType, properties]) => {
       const processor = this.processors.get(propertyType) || this.processors.get('any');
-
       if (processor && properties.length > 0) {
         const results = processor.processBatch(properties, this.context, this.processors);
-        results.forEach((property, key) => {
-          allResults.set(key, property);
-        });
+        results.forEach((property, key) => allResults.set(key, property));
       }
     });
 
@@ -127,65 +116,50 @@ export class AdapterEntityProcessor {
     if (!dateProcessor) return;
 
     formattedEntities.forEach(entity => {
-      if (entity.rawEntity?.creationDate) {
-        const creationDateValue = Math.floor(Number(entity.rawEntity.creationDate) / 1000);
-
-        const processedCreationDate = dateProcessor.processBatch(
-          [
-            {
-              value: creationDateValue,
-              name: 'creationDate',
-              label: 'Creation date',
-              type: 'date',
-              _entityId: entity._id!,
-              entity,
-              refId: entity.rawEntity._id || entity._id!,
-            },
-          ],
-          this.context
-        );
-
-        const creationDateResult = processedCreationDate.get(`${entity._id!}:creationDate`);
-        if (creationDateResult) {
-          const { entity: _entityRef, ...dateWithoutEntity } = creationDateResult;
-          (entity as any).creationDate = {
-            ...entity.creationDate,
-            ...dateWithoutEntity,
-            translatedLabel: 'Creation date',
-            propertyMetadata: creationDateResult.propertyMetadata || {},
-          };
-        }
-      }
-
-      if (entity.rawEntity?.editDate) {
-        const editDateValue = Math.floor(Number(entity.rawEntity.editDate) / 1000);
-
-        const processedEditDate = dateProcessor.processBatch(
-          [
-            {
-              value: editDateValue,
-              name: 'editDate',
-              label: 'Edit date',
-              type: 'date',
-              _entityId: entity._id!,
-              entity,
-              refId: entity.rawEntity._id || entity._id!,
-            },
-          ],
-          this.context
-        );
-
-        const editDateResult = processedEditDate.get(`${entity._id!}:editDate`);
-        if (editDateResult) {
-          const { entity: _entityRef, ...dateWithoutEntity } = editDateResult;
-          (entity as any).editDate = {
-            ...dateWithoutEntity,
-            translatedLabel: 'Edit date',
-            propertyMetadata: editDateResult.propertyMetadata || {},
-          };
-        }
-      }
+      this.processDateField(entity, 'creationDate', 'Creation date', dateProcessor);
+      this.processDateField(entity, 'editDate', 'Edit date', dateProcessor);
     });
+  }
+
+  private processDateField(entity: Partial<Entity>, fieldName: string, label: string, dateProcessor: DatePropertyProcessor): void {
+    const dateValue = entity.rawEntity?.[fieldName as keyof typeof entity.rawEntity];
+    if (!dateValue) return;
+
+    const timestamp = Math.floor(Number(dateValue) / 1000);
+    const processedDate = dateProcessor.processBatch(
+      [{
+        _id: fieldName,
+        _entityId: entity._id!,
+        name: fieldName,
+        label,
+        type: 'date',
+        value: timestamp,
+        entity: entity as Entity,
+        index: 0,
+      } as AdapterMetadataProperty],
+      this.context
+    );
+
+    const result = processedDate.get(`${entity._id!}:${fieldName}`);
+    if (result) {
+      const dateProperty = {
+        ...result,
+        translatedLabel: label,
+        properties: {
+          _id: fieldName,
+          translateContext: "entityId",
+        },
+      };
+
+      if (fieldName === 'creationDate') {
+        entity.creationDate = {
+          ...entity.creationDate as DateMetadataProperty,
+          ...dateProperty,
+        };
+      } else {
+        Object.assign(entity as Entity, { [fieldName]: dateProperty });
+      }
+    }
   }
 
   processEntity(entity: EntitySchema): {
@@ -201,20 +175,14 @@ export class AdapterEntityProcessor {
 
   processAllEntities(entities: EntitySchema[]): BatchCompositionResult {
     const allErrors: ProcessingError[] = [];
-    let formattedEntities: Partial<Entity>[] = [];
-    const resultEntities = entities.map(entity => ({ ...entity }));
+    let formattedEntities: Partial<AdapterEntity>[] = [];
 
-    let propertiesByType: Map<string, any[]> | null = new Map();
     try {
       const templateIds = entities.map(entity => entity.template as string);
       const templatesData = this.templateProcessor.formatTemplateData(templateIds);
-      const templatesById = new Map<string, ComposedTemplate>();
+      const templatesById = new Map(templatesData.map(template => [template._id, template as AdapterEntityTemplate]));
 
-      templatesData.forEach(template => {
-        templatesById.set(template._id, template);
-      });
-
-      formattedEntities = resultEntities.map(entity => ({
+      formattedEntities = entities.map(entity => ({
         _id: entity._id! as string,
         title: entity.title,
         sharedId: entity.sharedId,
@@ -222,32 +190,18 @@ export class AdapterEntityProcessor {
         template: templatesById.get(entity.template as string),
         rawEntity: entity,
         metadata: [],
-        creationDate: {
-          name: 'creationDate',
-          label: 'Creation date',
-          type: 'date',
-          values: [{ value: Math.floor(Number(entity.creationDate) / 1000) || 0 }],
-        },
-        editDate: {
-          name: 'editDate',
-          label: 'Edit date',
-          type: 'date',
-          values: [{ value: Math.floor(Number(entity.editDate) / 1000) || 0 }],
-        },
         icon: entity.icon,
       }));
 
-      propertiesByType = this.collectPropertiesByType(formattedEntities as Partial<Entity>[]);
+      const propertiesByType = this.collectPropertiesByType(formattedEntities);
+      const processedMetadata = this.processPropertiesByType(propertiesByType);
+      this.processRootLevelDates(formattedEntities);
 
-      const batchResults = this.processPropertiesByType(propertiesByType);
-
-      batchResults.forEach(({ entity, rawEntity, ...property }) => {
+      processedMetadata.forEach(({ entity, rawEntity, ...property }) => {
         if (entity && entity.metadata) {
-          entity.metadata.splice(property.index, 0, property);
+          entity.metadata.splice(property.index, 0, property as MetadataProperty);
         }
       });
-
-      this.processRootLevelDates(formattedEntities);
     } catch (error) {
       allErrors.push({
         entityId: 'batch',
@@ -260,16 +214,11 @@ export class AdapterEntityProcessor {
       const { template, ...entity } = restEntity;
       if (template) {
         const { properties, commonProperties, ...restTemplate } = template;
-        return {
-          ...entity,
-          template: restTemplate as ComposedTemplate,
-        } as Entity;
+        return { ...entity, template: restTemplate as AdapterEntityTemplate } as Entity;
       }
-      return {
-        ...entity,
-        template,
-      } as Entity;
+      return { ...entity, template };
     });
+
     return {
       entities: composedEntities as Entity[],
       errors: allErrors,
@@ -280,61 +229,58 @@ export class AdapterEntityProcessor {
     };
   }
 
-  private shouldConvertToInheritedType(property: any): boolean {
+  private shouldConvertToInheritedType(property: AdapterMetadataProperty): boolean {
     return (
       property.type === 'relationship' &&
-      property.inherit?.type &&
-      property.inherit.type !== 'relationship'
+      !!property.properties?.inheritedProperty?.type &&
+      property.properties?.inheritedProperty.type !== 'relationship'
     );
   }
 
-  private convertToInheritedType(property: any): void {
-    const inheritedType = property.inherit.type;
-    (property as any)._originalRelationshipType = 'relationship';
-    (property as any)._isInheritedProperty = true;
-    (property as any)._inheritedType = inheritedType;
-    property.type = inheritedType;
+  private convertToInheritedType(property: AdapterMetadataProperty): void {
+    const inheritedType = property.properties?.inheritedProperty?.type;
+    if (!inheritedType) return;
 
-    const transformedValues: any[] = [];
+    const transformedValues: unknown[] = [];
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    values.forEach((rel: any) => {
-      if (rel.inheritedValue && Array.isArray(rel.inheritedValue)) {
-        rel.inheritedValue.forEach((inheritedValue: any) => {
-          if (inheritedValue.value !== undefined) {
-            const transformedValue = this.createTransformedValue(
-              inheritedType,
-              inheritedValue,
-              rel
-            );
-            transformedValues.push(transformedValue);
+    values.forEach((rel: unknown) => {
+      if (rel && typeof rel === 'object' && 'inheritedValue' in rel && Array.isArray((rel as any).inheritedValue)) {
+        (rel as any).inheritedValue.forEach((inheritedValue: unknown) => {
+          if (inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue && (inheritedValue as any).value !== undefined) {
+            transformedValues.push(this.createTransformedValue(inheritedType, inheritedValue, rel));
           }
         });
       }
     });
 
-    property.value = transformedValues;
+    Object.assign(property, {
+      ...property,
+      type: inheritedType as any,
+      _originalRelationshipType: 'relationship',
+      _isInheritedProperty: true,
+      _inheritedType: inheritedType,
+      value: transformedValues,
+    });
   }
 
-  private createTransformedValue(inheritedType: string, inheritedValue: any, rel: any): any {
-    const value =
-      inheritedType === 'geolocation' && inheritedValue.value?.lat && inheritedValue.value?.lon
-        ? {
-          lat: inheritedValue.value.lat,
-          lon: inheritedValue.value.lon,
-          label: inheritedValue.value.label || '',
-        }
-        : inheritedValue.value;
+  private createTransformedValue(inheritedType: string, inheritedValue: unknown, rel: unknown): unknown {
+    const valueObj = inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue ? (inheritedValue as any).value : null;
+    const relObj = rel && typeof rel === 'object' ? rel as any : {};
+
+    const value = inheritedType === 'geolocation' && valueObj?.lat && valueObj?.lon
+      ? { lat: valueObj.lat, lon: valueObj.lon, label: valueObj.label || '' }
+      : valueObj;
 
     return {
       value,
       _relationshipMetadata: {
-        entity: rel.value,
-        label: rel.label || '',
-        icon: rel.icon || '',
-        type: rel.type || '',
-        inheritedType: rel.inheritedType || '',
-        url: rel.url || `/entity/${rel.value}`,
+        entity: relObj.value || '',
+        label: relObj.label || '',
+        icon: relObj.icon || '',
+        type: relObj.type || '',
+        inheritedType: relObj.inheritedType || '',
+        url: relObj.url || `/entity/${relObj.value}`,
       },
     };
   }

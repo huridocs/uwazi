@@ -1,17 +1,17 @@
 import { Template } from 'app/apiResponseTypes';
 import { ClientTranslationContextSchema } from 'app/istore';
-import { ComposedTemplate } from 'app/V2/domain/entities/types';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { ProcessingContext } from './types';
+import { AdapterEntityTemplate, AdapterMetadataProperty, ProcessingContext } from './types';
 
 export class AdapterTemplateProcessor {
   private readonly context: ProcessingContext;
 
+  //in the future think to store this composition in an atom
   constructor(context: ProcessingContext) {
     this.context = context;
   }
 
-  formatTemplateData(templatesIds: string[]): ComposedTemplate[] {
+  formatTemplateData(templatesIds: string[]): AdapterEntityTemplate[] {
     return this.context.templates
       .filter((template: Template) => templatesIds.includes(template._id))
       .map((template: Template) => {
@@ -61,11 +61,11 @@ export class AdapterTemplateProcessor {
     template: Template,
     templateTranslations?: ClientTranslationContextSchema
   ): {
-    formattedProperties: Map<string, any>;
-    formattedCommonProperties: Map<string, any>;
+    formattedProperties: Map<string, Partial<AdapterMetadataProperty>>;
+    formattedCommonProperties: Map<string, Partial<AdapterMetadataProperty>>;
   } {
-    const formattedProperties = new Map<string, any>();
-    const formattedCommonProperties = new Map<string, any>();
+    const formattedProperties = new Map<string, Partial<AdapterMetadataProperty>>();
+    const formattedCommonProperties = new Map<string, Partial<AdapterMetadataProperty>>();
 
     const properties = this.filterPropertiesByIncludeFields(template.properties);
     const commonProperties = this.filterPropertiesByIncludeFields(template.commonProperties);
@@ -91,31 +91,54 @@ export class AdapterTemplateProcessor {
 
   private formatAndSetProperties(
     properties: PropertySchema[],
-    targetMap: Map<string, any>,
+    targetMap: Map<string, Partial<AdapterMetadataProperty>>,
     templateTranslations?: ClientTranslationContextSchema
   ): void {
-    properties.forEach((property, index) => {
+    properties.forEach((property: PropertySchema, index: number) => {
       const formattedProperty = this.formatPropertyDefinition(property, templateTranslations);
       targetMap.set(property.name, { ...formattedProperty, index });
     });
   }
 
+  private getInheritedProperty(property: PropertySchema): Partial<AdapterMetadataProperty['inheritedProperty']> {
+    const template = this.context.templates.find(template => template._id === property.content);
+    const inheritedProperty = template?.properties?.find(property => property._id === property.inherit?.property);
+    if (inheritedProperty) {
+      return {
+        _id: inheritedProperty._id!.toString(),
+        templateId: property.content,
+        type: inheritedProperty.type,
+        name: inheritedProperty.name,
+        label: inheritedProperty.label,
+        relationType: inheritedProperty.relationType,
+      }
+    } return undefined;
+  }
+
   private formatPropertyDefinition(
     property: PropertySchema,
     templateTranslations?: ClientTranslationContextSchema
-  ) {
+  ): Omit<AdapterMetadataProperty, 'values' | 'entity' | 'index'> {
+    const inheritedProperty = this.getInheritedProperty(property);
+    let options;
+    if (this.context.includeOptions) {
+      const thesaurus = this.context.thesauri.find(t => t._id === property.content);
+      options = thesaurus?.values;
+    }
     return {
-      _id: property._id,
+      _id: property._id as string,
       name: property.name,
       label: property.label,
       type: property.type,
-      ...(property.content && { content: property.content }),
-      ...(property.inherit && { inherit: property.inherit }),
-      ...(templateTranslations !== undefined
-        ? {
-            translatedLabel: templateTranslations.values[property.label] || property.label,
-          }
-        : {}),
+      properties: {
+        _id: property._id!.toString(),
+        content: property.content,
+        inherited: property.inherit !== undefined,
+        translatedLabel: templateTranslations?.values[property.label] || property.label,
+        inheritedProperty,
+        translationContext: templateTranslations,
+        options
+      }
     };
   }
 }

@@ -1,25 +1,42 @@
-import { ComposedProperty } from 'app/V2/domain/entities/types';
+import { AllowedPropertyTypes, MetadataProperty } from 'app/V2/domain/entities/types';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
 import {
-  FormattedProperty,
-  PropertyValue,
-  PropertyMetadata,
+  AdapterMetadataProperty,
   ProcessingContext,
   PropertyTypeProcessor,
 } from './types';
+import { AdapterEntityProcessor } from './AdapterEntityProcessor';
 
 export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   abstract readonly name: string;
 
   abstract readonly propertyTypes: string[];
 
-  processBatch(properties: any[], context: ProcessingContext): Map<string, FormattedProperty> {
-    const results = new Map<string, FormattedProperty>();
+  processBatch(
+    properties: AdapterMetadataProperty[],
+    context: ProcessingContext,
+    _processors?: Map<string, PropertyTypeProcessor>
+  ): Map<string, AdapterMetadataProperty> {
+    const results = new Map<string, Omit<AdapterMetadataProperty, 'values'> & { values: any }>(); // definir una abstraccion para values
 
     properties.forEach(property => {
       try {
-        const key = `${property._entityId}:${property.name}`;
+        const key = `${property.entity._id}:${property.name}`;
         const values = this.formatProperty(property, context);
-        results.set(key, { ...property, values });
+        results.set(key, {
+          _id: property._id,
+          entity: property.entity,
+          index: property.index,
+          type: property.type,
+          name: property.name,
+          label: property.label,
+          translatedLabel: property.translatedLabel,
+          values,
+          inherited: property.inherited || false,
+          inheritedType: property.inheritedType,
+          properties: property.properties,
+          value: property.value, //TODO: check if this can be used somehow else
+        });
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }
@@ -29,92 +46,31 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   }
 
   protected formatProperty(
-    property: ComposedProperty,
+    property: AdapterMetadataProperty,
     _context: ProcessingContext
-  ): PropertyValue[] {
-    return this.createRawValues(property);
-  }
-
-  protected createRawValues(property: ComposedProperty): PropertyValue[] {
-    return [
-      {
-        value: property.value,
-        label: property.value?.toString() || '',
-        displayValue: property.value?.toString() || '',
-      },
-    ];
-  }
-
-  protected shouldSkipFormatting(_context: ProcessingContext, _formatKey?: string): boolean {
-    return false;
-  }
-
-  protected getCustomFormat(
-    _context: ProcessingContext,
-    _formatKey: string,
-    defaultFormat: string
-  ): string {
-    return defaultFormat;
-  }
-
-  protected getPropertyLabel(property: ComposedProperty, _fieldName: string): string {
-    return property.label || property.name || _fieldName;
-  }
-
-  protected getTranslatedLabel(
-    property: any,
-    fieldName: string,
-    context: ProcessingContext
-  ): string | undefined {
-    if (!context.translateLabels || !context.translations) {
-      return undefined;
+  ): MetadataProperty["values"] {
+    if (!property.value) {
+      return [];
     }
-
-    const translationKey = property.translateContext || fieldName;
-    return (
-      context.translations
-        .find(t => t.locale === context.language)
-        ?.contexts.find(t => t.id === property._id)?.values[translationKey] || undefined
-    );
+    const values = Array.isArray(property.value) ? property.value : [property.value];
+    return values.map((v: PropertyValueSchema) => ({
+      value: v,
+    }));
   }
 
-  protected buildPropertyMetadata(
-    property: any,
-    _fieldName: string,
-    _context: ProcessingContext
-  ): PropertyMetadata {
-    return {
-      showInCard: property.showInCard || false,
-      propertyType: property.type,
-      isInherited: this.isInheritedProperty(property),
-      isRequired: property.required || false,
-      isMultiple: property.multiple || false,
-      noLabel: property.noLabel || false,
-      fullWidth: property.fullWidth || false,
-      obsolete: property.obsolete || false,
-      indexInTemplate: property.indexInTemplate,
-      parent: property.parent,
-      translateContext: property.translateContext,
-      fileName: property.fileName,
-      timeLinks: property.timeLinks,
-      relatedEntity: property.relatedEntity,
-      inheritedType: property.inheritedType,
-      inheritedValue: property.inheritedValue,
-      denormalizedProperty: property.denormalizedProperty,
-      sortedBy: property.sortedBy,
-      timestamp: property.timestamp,
-      style: property.style,
-      url: property.url,
-      icon: property.icon,
-    };
-  }
-
-  protected isInheritedProperty(property: any): boolean {
-    return !!(
-      property.inherited ||
-      property.inheritedType ||
-      property.inheritedValue ||
-      property.originalValue
-    );
-  }
+  // protected getTranslatedLabel(
+  //   property: AdapterMetadataProperty,
+  //   propertyName: string,
+  //   context: ProcessingContext
+  // ): string | undefined {
+  //   if (!context.translateLabels || !context.translations) {
+  //     return undefined;
+  //   }
+  //   const translationKey = property.label || propertyName; //TODO: ensure the value
+  //   return (
+  //     context.translations
+  //       .find(t => t.locale === context.language)
+  //       ?.contexts.find(t => t.id === property._id)?.values[translationKey] || undefined
+  //   );
+  // }
 }
