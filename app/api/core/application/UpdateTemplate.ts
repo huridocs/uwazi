@@ -1,100 +1,69 @@
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import {
-  DispatchableClass,
-  JobsDispatcher,
-} from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { applicationEventsBus } from 'api/eventsbus';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
-import { tenants } from 'api/tenants';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { GenerateIdProperty } from '../domain/template/GenerateIdProperty';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
 import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TranslationService } from '../domain/template/TranslationService';
-import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
-import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
+import { TemplatePostProcessService } from './TemplatePostProcessService';
 
 type Output = Template;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
-  jobsDispatcher: JobsDispatcher;
-  transactionManager: TransactionManager;
+};
+
+type Context = {
+  language: LanguageISO6391;
+  fullReindex: boolean;
 };
 
 class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
-  private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
-
-  constructor(deps: Deps) {
-    super(deps);
-
-    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
-  }
-
   protected async executeAsync(
     input: UpdateTemplateDTO,
-    language: LanguageISO6391,
-    fullReindex = false
+    { language, fullReindex }: Context
   ): Promise<Output> {
-    const currentTemplate = (await this.deps.templatesDS.getById(input._id)).getDataOrThrow();
-    if (currentTemplate.processing?.active) {
-      throw new ValidationError([
-        { path: 'processing', message: 'template is being processed you can not update it yet' },
-      ]);
-    }
+    const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
+      ...this.deps,
+      idGenerator: this.idGenerator,
+    });
+
+    const service = new TemplatePostProcessService({
+      ...this.deps,
+      jobsDispatcher: this.jobsDispatcher,
+    });
+
+    const currentTemplate = (await this.deps.templatesDS.getById(input.id)).getDataOrThrow();
+
     const { newNameGeneration } = await this.deps.settingsDS.get();
 
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create(
-        { ...p, id: p._id || this.deps.idGenerator.generate(), template: currentTemplate.id },
+        { ...p, id: p.id || this.idGenerator.generate(), template: currentTemplate.id },
         { newNameGeneration }
       )
     );
 
-    const properties = await Promise.all(
-      input?.properties?.map(async p =>
-        this.propertyCreatorServiceStrategy
-          .getStrategy(p.type)
-          .create(
-            { ...p, id: p._id || this.deps.idGenerator.generate(), template: currentTemplate.id },
-            { newNameGeneration }
-          )
-      ) || []
-    );
+    const properties = await propertyCreatorServiceStrategy.bulkCreate(input.properties, {
+      newNameGeneration,
+      template: currentTemplate.id,
+    });
 
-    const updatedTemplate = new Template(
-      input._id,
-      input.name,
-      properties,
-      commonProperties,
-      input.color,
-      input.default
-    );
+    const updatedTemplate = currentTemplate.update({ ...input, properties, commonProperties });
 
-    const swappedNameProp = currentTemplate.selectSwappedNameProperties(updatedTemplate);
-    if (swappedNameProp) {
-      throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
-    }
-    await this.deps.transactionManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
       await this.deps.translationService.updateTemplateTranslation(
         currentTemplate,
@@ -103,138 +72,28 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
       await this.deps.templatesDS.updateMapping(updatedTemplate, fullReindex);
     });
 
-    await applicationEventsBus.emit(
+    const context = {
+      fullReindex,
+      language,
+      tenantName: this.tenant.name,
+      userId: this.actorId,
+    };
+
+    await this.eventBus.emit(
       new TemplateUpdatedEvent({
         before: TemplateMapper.toSchema(currentTemplate),
         after: TemplateMapper.toSchema(updatedTemplate),
+        context,
       })
     );
 
-    const relationshipPropsWithChangedRelData =
-      currentTemplate.selectRelationshipPropsWithRelationshipChanges(updatedTemplate);
-    const deletedProperties = currentTemplate
-      .selectDeletedProperties(updatedTemplate)
-      .map(property => property.name);
-    const renamedProperties = Object.fromEntries(
-      currentTemplate
-        .selectPropertiesWhereNameHasChanged(updatedTemplate)
-        .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
-    );
-
-    const newProperties = currentTemplate.selectNewProperties(updatedTemplate);
-
-    const newRelationshipProps = newProperties.filter(
-      (p): p is V1RelationshipProperty => p.type === 'relationship'
-    );
-    const newGeneratedIdProps = newProperties.filter(
-      (p): p is GenerateIdProperty => p.type === 'generatedid'
-    );
-
-    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-      if (
-        relationshipPropsWithChangedRelData.length ||
-        newRelationshipProps.length ||
-        newGeneratedIdProps.length ||
-        Object.keys(renamedProperties).length ||
-        deletedProperties.length
-      ) {
-        const userId = permissionsContext.getUserInContext()?._id?.toString();
-        if (!userId) {
-          throw new Error('This process can not be started without a user');
-        }
-        await this.dispatchPostProcessJob(
-          {
-            templateId: updatedTemplate.id,
-            language,
-            fullReindex: false,
-            modifiedRelationshipsProps: relationshipPropsWithChangedRelData
-              .concat(newRelationshipProps)
-              .map(p => p.id),
-            newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
-            deletedProperties,
-            renamedProperties,
-          },
-          dispatch
-        );
-      }
-
-      if (fullReindex) {
-        await (
-          await this.deps.templatesDS.getAll().all()
-        )
-          .filter(t => t.id !== currentTemplate.id)
-          .reduce(async (previous, t) => {
-            await previous;
-            await this.dispatchPostProcessJob(
-              {
-                templateId: t.id,
-                language,
-                fullReindex: true,
-                newGeneratedIdProps: [],
-                deletedProperties: [],
-                modifiedRelationshipsProps: [],
-                renamedProperties: {},
-              },
-              dispatch
-            );
-          }, Promise.resolve());
-      }
+    await service.createJobsForEntities({
+      after: updatedTemplate,
+      before: currentTemplate,
+      context,
     });
 
     return updatedTemplate;
-  }
-
-  private async dispatchPostProcessJob(
-    {
-      templateId,
-      language,
-      fullReindex,
-      newGeneratedIdProps,
-      deletedProperties,
-      modifiedRelationshipsProps,
-      renamedProperties,
-    }: {
-      templateId: string;
-      language: LanguageISO6391;
-      fullReindex: boolean;
-      newGeneratedIdProps: string[];
-      deletedProperties: string[];
-      modifiedRelationshipsProps: string[];
-      renamedProperties: { [k: string]: string };
-    },
-    dispatch: <T extends Dispatchable>(
-      dispatchable: DispatchableClass<T>,
-      params: Parameters<T['handleDispatch']>[1]
-    ) => void
-  ) {
-    const limit = 50;
-    const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(templateId);
-    const totalJobs = Math.ceil((await this.deps.entitiesDS.countByTemplateId(templateId)) / limit);
-    if (totalJobs > 0) {
-      await this.deps.templatesDS.addJobsToProcessingCount(templateId, totalJobs);
-    }
-
-    const userId = permissionsContext.getUserInContext()?._id?.toString();
-    if (!userId) {
-      throw new Error('This process can not be started without a user');
-    }
-    // eslint-disable-next-line no-await-in-loop
-    while (await resultSet.hasNext()) {
-      // eslint-disable-next-line no-await-in-loop
-      dispatch(TemplatePostProcessEntitiesJob, {
-        // eslint-disable-next-line no-await-in-loop
-        entitiesIds: await resultSet.nextBatch(limit),
-        templateId,
-        language,
-        modifiedRelationshipsProps,
-        newGeneratedIdProps,
-        deletedProperties,
-        renamedProperties,
-        fullReindex,
-        tenantName: tenants.current().name,
-        userId,
-      });
-    }
   }
 }
 
