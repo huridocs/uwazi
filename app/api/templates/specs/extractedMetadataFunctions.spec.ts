@@ -6,7 +6,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
 import { inspect } from 'util';
-import templates from '../templates';
+import { applicationEventsBus } from 'api/eventsbus';
 import fixtures, {
   propertyA,
   propertyB,
@@ -14,6 +14,7 @@ import fixtures, {
   propertyD,
   templateWithExtractedMetadata,
 } from './fixtures/fixtures';
+import templates from '../templates';
 
 async function updateTemplate(template: TemplateSchema, language = 'en', updateV2 = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
@@ -46,6 +47,10 @@ describe.each([
     testingTenants.changeCurrentTenant({
       featureFlags,
     });
+  });
+
+  afterEach(() => {
+    applicationEventsBus.clear();
   });
 
   it('should remove deleted template properties from extracted metadata on files', async () => {

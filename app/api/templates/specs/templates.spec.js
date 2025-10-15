@@ -91,6 +91,10 @@ describe('templates', () => {
       });
     });
 
+    afterEach(() => {
+      applicationEventsBus.clear();
+    });
+
     it('should edit an existing one', async () => {
       const toSave = await templates.getById(factory.id('template to be edited'));
 
