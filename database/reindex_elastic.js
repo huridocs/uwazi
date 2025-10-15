@@ -9,6 +9,7 @@ import elasticMapping from './elastic_mapping/elastic_mapping';
 import { legacyLogger } from '../app/api/log';
 import templatesModel from '../app/api/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
+import { tenantsModel } from 'api/tenants/tenantsModel';
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
   elastic.indices.putSettings({
@@ -125,7 +126,9 @@ process.on('unhandledRejection', error => {
 
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   const start = Date.now();
-  await tenants.setupTenants();
+  const tenantsDS = await tenantsModel();
+  await tenantsDS.initialize();
+  await tenants.setupTenants(tenantsDS);
 
   await tenants.run(async () => {
     try {

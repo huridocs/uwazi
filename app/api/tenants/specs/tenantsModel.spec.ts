@@ -9,7 +9,6 @@ import { TenantsModel, tenantsModel } from '../tenantsModel';
 describe('tenantsModel', () => {
   let db: Db;
   let model: TenantsModel;
-  let changeEvent: Function;
   let errorEvent: Function;
   let mockChangeStream: { on: Function; close: Function };
 
@@ -20,22 +19,8 @@ describe('tenantsModel', () => {
   });
 
   beforeEach(async () => {
-    // Model.watch is not supported by Mongo in-memory used by the tests
-    mockChangeStream = {
-      on: (event: string, fn: Function) => {
-        if (event === 'change') {
-          changeEvent = fn;
-        }
-        if (event === 'error') {
-          errorEvent = fn;
-        }
-      },
-      close: jest.fn(),
-    };
-
-    //@ts-ignore
-    jest.spyOn(Model, 'watch').mockReturnValue(mockChangeStream);
     model = await tenantsModel();
+    await model.initialize();
 
     await db.collection('tenants').deleteMany({});
     await db.collection('tenants').insertMany([
@@ -61,7 +46,15 @@ describe('tenantsModel', () => {
     ]);
   });
 
+  afterEach(async () => {
+    await model.closeChangeStream();
+  });
+
   afterAll(async () => {
+    // await for the debounce to finish
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
     await testingEnvironment.tearDown();
   });
 
@@ -94,27 +87,6 @@ describe('tenantsModel', () => {
     });
   });
 
-  it('should emit the new list after a change', async () => {
-    let list = [];
-
-    model.on('change', data => {
-      list = data;
-    });
-
-    await db.collection('tenants').insertMany([
-      {
-        name: 'tenant three',
-        dbName: 'tenant_three',
-      },
-    ]);
-
-    changeEvent();
-
-    await waitForExpect(async () => {
-      expect(list.length).toEqual(3);
-    });
-  });
-
   it('should require name', async () => {
     try {
       await db.collection('tenants').insertOne({ name: '' });
@@ -142,8 +114,50 @@ describe('tenantsModel', () => {
     expect(tenants).toMatchObject([{ name: 'tenant one' }, { name: 'tenant two' }]);
   });
 
+  it('should emit the new list after a change (1 emit per multiple changes)', async () => {
+    let list = [];
+    let changesEmitted = 0;
+
+    model.on('change', data => {
+      changesEmitted += 1;
+      list = data;
+    });
+
+    await db.collection('tenants').insertMany([
+      {
+        name: 'tenant three',
+        dbName: 'tenant_three',
+      },
+      {
+        name: 'tenant four',
+        dbName: 'tenant_four',
+      },
+    ]);
+
+    await waitForExpect(async () => {
+      expect(list.length).toEqual(4);
+    });
+
+    expect(changesEmitted).toBe(1);
+  });
+
   describe('on error', () => {
-    it('watch not supported should close the connection', () => {
+    it('watch not supported should close the connection', async () => {
+      //Model.watch is not supported by Mongo in-memory used by the tests
+      mockChangeStream = {
+        on: (event: string, fn: Function) => {
+          if (event === 'error') {
+            errorEvent = fn;
+          }
+        },
+
+        close: jest.fn(),
+      };
+
+      //@ts-ignore
+      jest.spyOn(Model, 'watch').mockReturnValue(mockChangeStream);
+      model = await tenantsModel();
+      await model.initialize();
       errorEvent({
         message: 'The $changeStream stage is only supported on replica sets',
         code: 40573,
