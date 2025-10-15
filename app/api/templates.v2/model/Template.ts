@@ -14,7 +14,7 @@ type CloneProps = {
   properties: Property[];
   commonProperties: CommonProperty[];
   color?: string;
-  isDefault?: boolean;
+  default?: boolean;
   entityViewPage?: string;
 };
 
@@ -205,7 +205,7 @@ class Template {
       return true;
     });
 
-    return this.clone({ ...this, properties });
+    return this.clone({ ...this, default: this.isDefault, properties }); // Todo: redo this after hotfix
   }
 
   update(props: CloneProps): Template {
@@ -229,7 +229,7 @@ class Template {
       props.properties,
       props.commonProperties,
       props.color,
-      props.isDefault,
+      props.default,
       props.entityViewPage
     );
 
