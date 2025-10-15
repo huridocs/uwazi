@@ -61,7 +61,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
             contextId: template.id,
             keysToDelete: template
               .selectDeletedProperties(editedTemplates.find(t => t.id === template.id)!)
-              .map(p => p.name),
+              .map(p => p.label),
           }))
         );
       }
