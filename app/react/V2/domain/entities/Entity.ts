@@ -1,10 +1,5 @@
 import { EntitySchema } from 'shared/types/entityType';
-import {
-  EntityPermissions,
-  MetadataProperty,
-  DateMetadataProperty,
-  EntityTemplate,
-} from './types';
+import { EntityPermissions, MetadataProperty, DateMetadataProperty, EntityTemplate } from './types';
 
 export interface Entity {
   readonly _id: string;

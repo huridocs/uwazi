@@ -5,40 +5,18 @@ import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MediaPlayer } from '../UI';
 import { MetadataCard } from './MetadataCard';
-
-type Timelink = {
-  time: string;
-  label: string;
-};
+import { MediaMetadataProperty } from 'app/V2/domain/entities/types';
 
 type MediaProps = MetadataFieldProps & {
-  values: {
-    value: string;
-    timelinks?: Timelink[];
-    alt?: string;
-  }[];
-};
-
-const parseTimeToSeconds = (timeString: string): number => {
-  const parts = timeString.split(':').map(Number);
-  if (parts.length === 3) {
-    const [h, m, s] = parts;
-    return h * 3600 + m * 60 + s;
-  }
-  if (parts.length === 2) {
-    const [m, s] = parts;
-    return m * 60 + s;
-  }
-  return Number(timeString) || 0;
+  values: MediaMetadataProperty['values'];
 };
 
 const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => {
   const { value, alt, timelinks = [] } = values[0];
   const playerRef = useRef<ReactPlayer>(null);
 
-  const handleTimelinkClick = (timeString: string) => {
-    const seconds = parseTimeToSeconds(timeString);
-    playerRef.current?.seekTo(seconds, 'seconds');
+  const handleTimelinkClick = (time: number) => {
+    playerRef.current?.seekTo(time, 'seconds');
   };
 
   return (

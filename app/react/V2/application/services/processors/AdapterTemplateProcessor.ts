@@ -100,19 +100,22 @@ export class AdapterTemplateProcessor {
     });
   }
 
-  private getInheritedProperty(property: PropertySchema): Partial<AdapterMetadataProperty['inheritedProperty']> {
+  private getInheritedProperty(
+    property: PropertySchema
+  ): Partial<AdapterMetadataProperty['properties']['inheritedProperty']> {
     const template = this.context.templates.find(template => template._id === property.content);
-    const inheritedProperty = template?.properties?.find(property => property._id === property.inherit?.property);
+    const inheritedProperty = template?.properties?.find(
+      property => property._id === property.inherit?.property
+    );
     if (inheritedProperty) {
       return {
-        _id: inheritedProperty._id!.toString(),
-        templateId: property.content,
+        property: inheritedProperty._id!.toString(),
         type: inheritedProperty.type,
         name: inheritedProperty.name,
         label: inheritedProperty.label,
-        relationType: inheritedProperty.relationType,
-      }
-    } return undefined;
+      };
+    }
+    return undefined;
   }
 
   private formatPropertyDefinition(
@@ -135,10 +138,10 @@ export class AdapterTemplateProcessor {
         content: property.content,
         inherited: property.inherit !== undefined,
         translatedLabel: templateTranslations?.values[property.label] || property.label,
-        inheritedProperty,
+        inheritedProperty: inheritedProperty as any, //TODO FIX 
         translationContext: templateTranslations,
-        options
-      }
+        options: [],
+      },
     };
   }
 }

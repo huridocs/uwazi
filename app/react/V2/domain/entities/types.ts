@@ -29,7 +29,7 @@ export type DefaultPropertyTypes = 'text' | 'markdown' | 'preview';
 export type LinkPropertyTypes = 'link';
 export type NumericPropertyTypes = 'numeric';
 export type GeneratedIdPropertyTypes = 'generatedid';
-// export type PermissionPropertyTypes = 'permissions';
+export type PermissionPropertyTypes = 'permissions';
 
 export type AllowedPropertyTypes =
   | DatePropertyTypes
@@ -68,7 +68,7 @@ export interface ExtendedPropertyInfo {
   content?: string;
   inherited: boolean;
   translatedLabel?: string;
-  options?: ClientThesaurusValue[];
+  options?: SelectMetadataProperty['values'];
 }
 
 export interface BaseMetadataProperty {
@@ -79,7 +79,7 @@ export interface BaseMetadataProperty {
   readonly inherited?: boolean;
   readonly inheritedType?: string;
   readonly type: AllowedPropertyTypes;
-  readonly properties?: ExtendedPropertyInfo;
+  readonly properties: ExtendedPropertyInfo;
   readonly values: Array<{
     value: PropertyValueSchema;
     label?: string;
@@ -97,10 +97,12 @@ export interface MultiDateMetadataProperty extends Omit<DateMetadataProperty, 't
 
 export interface DateRangeMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'daterange';
-  readonly values: Array<{
-    value: { from: number; to: number };
-    label: { from: string; to: string };
-  } & { source?: SourceValue }>;
+  readonly values: Array<
+    {
+      value: { from: number; to: number };
+      label: { from: string; to: string };
+    } & { source?: SourceValue }
+  >;
 }
 
 export interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataProperty, 'type'> {
@@ -130,6 +132,8 @@ export interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'value
     value: string;
     alt?: string;
     timelinks?: Timelink[];
+    mimetype?: string;
+    fileType?: string;
   }>;
 }
 
@@ -164,8 +168,13 @@ export interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'valu
   readonly values: Array<{
     value: string;
     label?: string;
+    translatedLabel?: string;
+    selected?: boolean;
+    group?: string | null;
+    level?: number;
     parent?: {
       label: string;
+      translatedLabel?: string;
       value: string;
     };
   }>;
@@ -187,6 +196,24 @@ export interface GeneratedIdMetadataProperty extends Omit<BaseMetadataProperty, 
   readonly type: 'generatedid';
 }
 
+export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, 'values' | 'type'> {
+  readonly type: 'permissions';
+  readonly values: Array<{
+    value: {
+      refId: string;
+      permissions: Array<{
+        type: 'user' | 'group';
+        refId: string;
+        level: 'read' | 'write' | 'mixed';
+      }>;
+      isPublic: boolean;
+      isRestricted: boolean;
+      currentUserAccess: 'read' | 'write' | 'admin' | 'none';
+    };
+    label?: string;
+  }>;
+}
+
 export type InheritedTypes =
   | DateMetadataProperty["values"]
   | MultiDateMetadataProperty["values"]
@@ -202,7 +229,8 @@ export type InheritedTypes =
   | MultiSelectMetadataProperty["values"]
   | LinkMetadataProperty["values"]
   | NumericMetadataProperty["values"]
-  | GeneratedIdMetadataProperty["values"];
+  | GeneratedIdMetadataProperty["values"]
+  | PermissionMetadataProperty['values'];
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship';
   readonly values: InheritedTypes;
@@ -225,7 +253,9 @@ export type MetadataProperty =
   | LinkMetadataProperty
   | NumericMetadataProperty
   | GeneratedIdMetadataProperty
-  | RelationshipMetadataProperty;
+  | PermissionMetadataProperty
+  | RelationshipMetadataProperty
+  | EntityPermissions;
 
 export interface EntityTemplate {
   readonly _id: string;
@@ -235,3 +265,22 @@ export interface EntityTemplate {
   readonly color?: string;
   readonly entityViewPage?: string;
 }
+
+export interface EntityPermissions {
+  readonly refId: string;
+  readonly permissions: Array<{
+    type: 'user' | 'group';
+    refId: string;
+    level: 'read' | 'write' | 'mixed';
+  }>;
+  readonly isPublic: boolean;
+  readonly isRestricted: boolean;
+  readonly currentUserAccess: 'read' | 'write' | 'admin' | 'none';
+}
+// readonly canRead: boolean;
+// readonly canWrite: boolean;
+// readonly canDelete: boolean;
+// readonly canShare: boolean;
+// readonly userPermissions: string[];
+// readonly groupPermissions: string[];
+// readonly publicAccess: boolean;

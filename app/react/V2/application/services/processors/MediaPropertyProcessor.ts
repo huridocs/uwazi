@@ -1,141 +1,91 @@
-import { FilePropertyTypes } from 'app/V2/domain/entities/types';
-import { MetadataProperty } from 'app/V2/domain/entities/types';
-import {
-  PropertyTypeProcessor,
-  ProcessingContext,
-  AdapterMetadataProperty,
-} from './types';
+import { FilePropertyTypes, MediaMetadataProperty, Timelink } from 'app/V2/domain/entities/types';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
-export class MediaPropertyProcessor implements PropertyTypeProcessor {
+export class MediaPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'MediaPropertyProcessor';
 
   readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
-  protected formatProperty(property: AdapterMetadataProperty, context: ProcessingContext): MetadataProperty["values"] {
-    return this.processMediaFiles(property.value, context);
+  processBatch(
+    properties: any[],
+    context: ProcessingContext
+  ): Map<string, AdapterMetadataProperty> {
+    const results = new Map<string, AdapterMetadataProperty>();
+
+    properties.forEach(property => {
+      try {
+        const values = this.processMediaFiles(
+          property.value as MediaMetadataProperty['values'],
+          context
+        );
+        this.pushProperty(property as AdapterMetadataProperty, values, results);
+      } catch (error) {
+        console.error(`Error processing media property ${property._fieldName}:`, error);
+      }
+    });
+
+    return results;
   }
 
-  private processMediaFiles(files: Array<{
-    value: string;
-    fileName?: string;
-    originalname?: string;
-    label?: string;
-    url?: string;
-    mimetype?: string;
-    size?: number;
-    duration?: number;
-    dimensions?: { width: number; height: number };
-    thumbnail?: string;
-    _id?: string;
-    id?: string;
-  }>, _context: ProcessingContext): MetadataProperty["values"] {
-    if (!Array.isArray(files)) {
-      return [];
-    }
+  protected formatProperty(
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): MediaMetadataProperty['values'] {
+    return this.processMediaFiles(property.value as MediaMetadataProperty['values'], context);
+  }
 
-    return files.map((file, index) => {
+  private processMediaFiles(
+    mediaFiles: MediaMetadataProperty['values'],
+    context: ProcessingContext
+  ): MediaMetadataProperty['values'] {
+    return mediaFiles.map(file => {
       if (typeof file.value === 'string' && file.value.startsWith('(')) {
         try {
           const match = file.value.match(/^\(([^,]+),\s*({.*})\)$/);
           if (match) {
             const fileUrl = match[1];
             const timelinksData = JSON.parse(match[2]);
+            const timelinks = this.processTimelines(timelinksData.timelinks, context);
             const fileName = fileUrl.split('/').pop() || 'Unknown file';
 
             return {
               value: fileUrl,
-              label: fileName,
-              url: fileUrl,
+              alt: fileName,
               mimetype: this.getMimetypeFromUrl(fileUrl),
-              size: 0,
-              duration: 0,
-              dimensions: null,
-              thumbnail: null,
-              selected: true,
-              filename: fileName,
-              originalname: fileName,
               fileType: this.getFileType(this.getMimetypeFromUrl(fileUrl)),
-              index,
-              timelinks: timelinksData.timelinks || {},
+              timelinks: timelinks || {},
             };
           }
         } catch (error) {
-          console.error('Error parsing media file string:', error);
+          return {
+            value: file.value,
+          };
         }
       }
 
       return {
-        value: file._id || file.id || file.value,
-        label: file.originalname || file.fileName || file.label || 'Unknown file',
-        url: file.url || `/api/files/${file._id || file.id || file.value}`,
+        value: file.value,
+        alt: file.alt,
+        timelinks: file.timelinks,
         mimetype: file.mimetype,
-        size: file.size || 0,
-        duration: file.duration || 0,
-        dimensions: file.dimensions,
-        thumbnail: file.thumbnail,
-        selected: true,
-        filename: file.fileName,
-        originalname: file.originalname,
-        fileType: this.getFileType(file.mimetype || 'application/octet-stream'),
-        index,
+        fileType: file.fileType,
       };
     });
   }
 
-  private processTimelines(timelines: Array<{
-    timeHours: string;
-    timeMinutes: string;
-    timeSeconds: string;
-    label: string;
-  }>, _context: ProcessingContext): Array<{
-    value: {
-      hours: string;
-      minutes: string;
-      seconds: string;
-      totalSeconds: number;
-    };
-    label: string;
-    selected: boolean;
-    index: number;
-    timeFormatted: string;
-    totalSeconds: number;
-  }> {
-    if (!Array.isArray(timelines)) {
-      return [];
-    }
-
-    return timelines.map((timeline, index) => {
-      const totalSeconds = this.calculateTotalSeconds(timeline);
-      const timeFormatted = this.formatTime(timeline);
-
+  private processTimelines(timelines: string, _context: ProcessingContext): Timelink[] {
+    return timelines.split(',').map(timeline => {
+      const [time, label] = timeline.split('":"').map(part => part.replace(/^"|"$/g, ''));
+      const [hours, minutes, seconds] = time.split(':').map(Number);
       return {
-        value: {
-          hours: timeline.timeHours,
-          minutes: timeline.timeMinutes,
-          seconds: timeline.timeSeconds,
-          totalSeconds,
-        },
-        label: timeline.label || `Timeline ${index + 1}`,
-        selected: true,
-        index,
-        timeFormatted,
-        totalSeconds,
+        label,
+        hh: hours,
+        mm: minutes,
+        ss: seconds,
+        time: hours * 3600 + minutes * 60 + seconds,
       };
     });
-  }
-
-  private calculateTotalSeconds(timeline: any): number {
-    const hours = parseInt(timeline.timeHours, 10) || 0;
-    const minutes = parseInt(timeline.timeMinutes, 10) || 0;
-    const seconds = parseInt(timeline.timeSeconds, 10) || 0;
-    return hours * 3600 + minutes * 60 + seconds;
-  }
-
-  private formatTime(timeline: any): string {
-    const hours = timeline.timeHours || '00';
-    const minutes = timeline.timeMinutes || '00';
-    const seconds = timeline.timeSeconds || '00';
-    return `${hours}:${minutes}:${seconds}`;
   }
 
   private getFileType(mimetype: string): string {

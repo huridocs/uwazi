@@ -1,63 +1,29 @@
-import { PermissionPropertyTypes } from 'app/V2/domain/entities/types';
-import { MetadataProperty } from 'app/V2/domain/entities/types';
+import { PermissionPropertyTypes, PermissionMetadataProperty } from 'app/V2/domain/entities/types';
 import { PermissionSchema } from 'shared/types/permissionType';
-import {
-  PropertyTypeProcessor,
-  ProcessingContext,
-  AdapterMetadataProperty,
-  EntityPermissions,
-} from './types';
+import { ProcessingContext, AdapterMetadataProperty, EntityPermissions } from './types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
 
-export class PermissionProcessor implements PropertyTypeProcessor {
+export class PermissionProcessor extends BasePropertyProcessor {
   readonly name = 'PermissionProcessor';
   readonly propertyTypes: PermissionPropertyTypes[] = ['permissions'];
-
 
   protected formatProperty(
     property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): MetadataProperty {
+  ): PermissionMetadataProperty['values'] {
     const entityPermissions = this.extractEntityPermissions(property, context);
-
-    const formattedProperty: AdapterMetadataProperty = {
-      _id: property._id,
-      _entityId: property._entityId,
-      type: property.type,
-      name: property.name,
-      label: property.label,
-      translatedLabel: property.translatedLabel,
-      values: [
-        {
-          value: entityPermissions as any,
-          label: 'Permissions',
-        },
-      ],
-      value: property.value || null,
-      inherited: property.inherited || false,
-      inheritedType: property.inheritedType,
-      properties: {
-        _id: property._id,
-        inherited: property.inherited || false,
-        template: property.properties?.template ? {
-          _id: property.properties.template._id,
-          name: property.properties.template.name,
-          label: (property.properties.template as any).label || property.properties.template.name,
-          color: property.properties.template.color || '',
-        } : undefined,
-        inheritedProperty: property.properties?.inheritedProperty ? {
-          property: property.properties.inheritedProperty.name || '',
-          type: (property.properties.inheritedProperty.type || 'permissions') as any,
-          name: property.properties.inheritedProperty.name || '',
-          label: property.properties.inheritedProperty.label || '',
-        } : undefined,
-        translationContext: property.properties.translationContext
+    return [
+      {
+        value: entityPermissions,
+        label: 'Permissions',
       },
-    };
-
-    return formattedProperty;
+    ];
   }
 
-  private extractEntityPermissions(property: AdapterMetadataProperty, context: ProcessingContext): EntityPermissions {
+  private extractEntityPermissions(
+    property: AdapterMetadataProperty,
+    context: ProcessingContext
+  ): EntityPermissions {
     const permissions = (property.value as PermissionSchema[]) || [];
     const currentUserAccess = this.determineUserAccess(permissions, context);
     const sharedWith = this.extractSharedWith(permissions, context);
@@ -65,7 +31,7 @@ export class PermissionProcessor implements PropertyTypeProcessor {
     const isRestricted = this.isEntityRestricted(permissions);
 
     return {
-      refId: property._entityId || '',
+      refId: property.entity._id || '',
       permissions: sharedWith,
       isPublic,
       isRestricted,
@@ -119,5 +85,4 @@ export class PermissionProcessor implements PropertyTypeProcessor {
   private isEntityRestricted(permissions: PermissionSchema[]): boolean {
     return permissions.some(p => p.type === 'user' || p.type === 'group');
   }
-
 }

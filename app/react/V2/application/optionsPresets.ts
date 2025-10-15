@@ -1,4 +1,4 @@
-import { CompositionOptions } from "./services/processors/types";
+import { CompositionOptions } from './services/processors/types';
 
 export const cardViewOptions: CompositionOptions = {
   includeTemplate: true,

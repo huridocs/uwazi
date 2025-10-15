@@ -5,14 +5,19 @@ import { settingsAtom, templatesAtom, thesauriAtom, userAtom } from 'app/V2/atom
 import { localeAtom, translationsAtom } from 'app/V2/atoms/translationsAtoms';
 import { EntitySchema } from 'shared/types/entityType';
 import { AdapterEntityProcessor } from '../services/processors/AdapterEntityProcessor';
-import { BatchCompositionResult, CompositionOptions, CompositionResult, ProcessingContext } from '../services/processors/types';
+import {
+  BatchCompositionResult,
+  CompositionOptions,
+  CompositionResult,
+  ProcessingContext,
+} from '../services/processors/types';
 import { cardViewOptions, fullDetailOptions, editionModeOptions } from '../optionsPresets';
 
 export class EntityCompositionUseCase {
   constructor(
     private repository: EntityRepository,
     private atomStore: ReturnType<typeof createStore>
-  ) { }
+  ) {}
 
   private createProcessingContext(options: CompositionOptions): ProcessingContext {
     return {

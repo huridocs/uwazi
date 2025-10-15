@@ -1,6 +1,5 @@
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
-import { DateMetadataProperty } from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import {
   AdapterEntity,
@@ -18,7 +17,7 @@ import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { PermissionProcessor } from './PermissionProcessor';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
+import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -46,34 +45,37 @@ export class AdapterEntityProcessor {
       processor.propertyTypes.forEach(type => this.processors.set(type, processor));
     });
 
-    // this.processors.set('any', new BasePropertyProcessor());
+    this.processors.set('any', new DefaultPropertyProcessor());
   }
 
-  private collectPropertiesByType(entities: Partial<AdapterEntity>[]): Map<string, AdapterMetadataProperty[]> {
+  private collectPropertiesByType(
+    entities: Partial<AdapterEntity>[]
+  ): Map<string, AdapterMetadataProperty[]> {
     const allProperties = flatMap(entities, entity => {
       const metadataProperties = map(
         Object.entries(entity.rawEntity?.metadata || {}),
-        ([name, property]) => ({
-          value: property,
-          name,
-          entity: entity,
-          index: 0,
-          ...(entity.template?.properties?.get(name) || {}),
-        } as AdapterMetadataProperty)
+        ([name, property]) =>
+          ({
+            value: property,
+            name,
+            entity: entity,
+            index: 0,
+            ...(entity.template?.properties?.get(name) || {}),
+          }) as AdapterMetadataProperty
       );
 
       const rootProperties: AdapterMetadataProperty[] = [];
       if (entity.rawEntity?.permissions) {
         rootProperties.push({
           _id: 'permissions',
-          value: entity.rawEntity.permissions,
+          value: entity.rawEntity.permissions as any,
           name: 'permissions',
           label: 'Permissions',
           type: 'permissions' as any,
           _entityId: entity._id!,
-          entity: entity as Entity,
+          entity: entity as any,
           index: 0,
-        });
+        } as any);
       }
 
       return [...metadataProperties, ...rootProperties];
@@ -121,22 +123,27 @@ export class AdapterEntityProcessor {
     });
   }
 
-  private processDateField(entity: Partial<Entity>, fieldName: string, label: string, dateProcessor: DatePropertyProcessor): void {
+  private processDateField(
+    entity: Partial<Entity>,
+    fieldName: string,
+    label: string,
+    dateProcessor: DatePropertyProcessor
+  ): void {
     const dateValue = entity.rawEntity?.[fieldName as keyof typeof entity.rawEntity];
     if (!dateValue) return;
 
     const timestamp = Math.floor(Number(dateValue) / 1000);
     const processedDate = dateProcessor.processBatch(
-      [{
-        _id: fieldName,
-        _entityId: entity._id!,
-        name: fieldName,
-        label,
-        type: 'date',
-        value: timestamp,
-        entity: entity as Entity,
-        index: 0,
-      } as AdapterMetadataProperty],
+      [
+        {
+          _id: fieldName,
+          name: fieldName,
+          label,
+          type: 'date',
+          value: timestamp,
+          index: 0,
+        },
+      ],
       this.context
     );
 
@@ -147,13 +154,13 @@ export class AdapterEntityProcessor {
         translatedLabel: label,
         properties: {
           _id: fieldName,
-          translateContext: "entityId",
+          translateContext: 'entityId',
         },
       };
 
       if (fieldName === 'creationDate') {
         entity.creationDate = {
-          ...entity.creationDate as DateMetadataProperty,
+          ...(entity.creationDate as any),
           ...dateProperty,
         };
       } else {
@@ -180,7 +187,9 @@ export class AdapterEntityProcessor {
     try {
       const templateIds = entities.map(entity => entity.template as string);
       const templatesData = this.templateProcessor.formatTemplateData(templateIds);
-      const templatesById = new Map(templatesData.map(template => [template._id, template as AdapterEntityTemplate]));
+      const templatesById = new Map(
+        templatesData.map(template => [template._id, template as AdapterEntityTemplate])
+      );
 
       formattedEntities = entities.map(entity => ({
         _id: entity._id! as string,
@@ -197,7 +206,7 @@ export class AdapterEntityProcessor {
       const processedMetadata = this.processPropertiesByType(propertiesByType);
       this.processRootLevelDates(formattedEntities);
 
-      processedMetadata.forEach(({ entity, rawEntity, ...property }) => {
+      processedMetadata.forEach(({ entity, ...property }) => {
         if (entity && entity.metadata) {
           entity.metadata.splice(property.index, 0, property as MetadataProperty);
         }
@@ -245,9 +254,19 @@ export class AdapterEntityProcessor {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
     values.forEach((rel: unknown) => {
-      if (rel && typeof rel === 'object' && 'inheritedValue' in rel && Array.isArray((rel as any).inheritedValue)) {
+      if (
+        rel &&
+        typeof rel === 'object' &&
+        'inheritedValue' in rel &&
+        Array.isArray((rel as any).inheritedValue)
+      ) {
         (rel as any).inheritedValue.forEach((inheritedValue: unknown) => {
-          if (inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue && (inheritedValue as any).value !== undefined) {
+          if (
+            inheritedValue &&
+            typeof inheritedValue === 'object' &&
+            'value' in inheritedValue &&
+            (inheritedValue as any).value !== undefined
+          ) {
             transformedValues.push(this.createTransformedValue(inheritedType, inheritedValue, rel));
           }
         });
@@ -264,13 +283,21 @@ export class AdapterEntityProcessor {
     });
   }
 
-  private createTransformedValue(inheritedType: string, inheritedValue: unknown, rel: unknown): unknown {
-    const valueObj = inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue ? (inheritedValue as any).value : null;
-    const relObj = rel && typeof rel === 'object' ? rel as any : {};
+  private createTransformedValue(
+    inheritedType: string,
+    inheritedValue: unknown,
+    rel: unknown
+  ): unknown {
+    const valueObj =
+      inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue
+        ? (inheritedValue as any).value
+        : null;
+    const relObj = rel && typeof rel === 'object' ? (rel as any) : {};
 
-    const value = inheritedType === 'geolocation' && valueObj?.lat && valueObj?.lon
-      ? { lat: valueObj.lat, lon: valueObj.lon, label: valueObj.label || '' }
-      : valueObj;
+    const value =
+      inheritedType === 'geolocation' && valueObj?.lat && valueObj?.lon
+        ? { lat: valueObj.lat, lon: valueObj.lon, label: valueObj.label || '' }
+        : valueObj;
 
     return {
       value,

@@ -300,7 +300,10 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           label: 'Police Report',
-          value: { label: 'Police Report', url: 'https://police.gov/reports/incident-2024-001' } as any,
+          value: {
+            label: 'Police Report',
+            url: 'https://police.gov/reports/incident-2024-001',
+          } as any,
         },
       ],
     };

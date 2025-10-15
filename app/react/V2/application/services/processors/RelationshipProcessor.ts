@@ -1,11 +1,9 @@
-import { RelationshipPropertyTypes, AllowedPropertyTypes } from 'app/V2/domain/entities/types';
-import { MetadataProperty } from 'app/V2/domain/entities/types';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
 import {
-  ProcessingContext,
-  PropertyTypeProcessor,
-  AdapterMetadataProperty,
-} from './types';
+  RelationshipMetadataProperty,
+  RelationshipPropertyTypes,
+} from 'app/V2/domain/entities/types';
+import { BasePropertyProcessor } from './BasePropertyProcessor';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
@@ -14,7 +12,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
   protected formatProperty(
     property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): MetadataProperty["values"] {
+  ): RelationshipMetadataProperty['values'] {
     if (this.shouldSkipFormatting(context, 'relationship')) {
       return this.createRawValues(property);
     }
@@ -41,7 +39,9 @@ export class RelationshipProcessor extends BasePropertyProcessor {
     });
   }
 
-  protected createRawValues(property: AdapterMetadataProperty): MetadataProperty["values"] {
+  protected createRawValues(
+    property: AdapterMetadataProperty
+  ): RelationshipMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
     return values.map((rel: any) => {

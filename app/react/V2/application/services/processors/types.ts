@@ -1,7 +1,11 @@
 import { Template, ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Entity } from 'app/V2/domain';
-import { EntityTemplate, MetadataProperty } from 'app/V2/domain/entities/types';
+import {
+  EntityTemplate,
+  ExtendedPropertyInfo,
+  MetadataProperty,
+} from 'app/V2/domain/entities/types';
 import { PropertyValueSchema } from 'shared/types/commonTypes';
 
 export interface ProcessingContext extends CompositionOptions {
@@ -110,7 +114,6 @@ export interface CompositionOptions {
   includeMapData?: boolean;
 }
 
-
 export interface CompositionResult {
   readonly entity: Entity | null;
   readonly success: boolean;
@@ -129,17 +132,16 @@ export interface BatchCompositionResult {
 export type AdapterEntityTemplate = EntityTemplate & {
   readonly properties: Map<string, Partial<AdapterMetadataProperty>>;
   readonly commonProperties: Map<string, Partial<AdapterMetadataProperty>>;
-}
+};
 
 export type AdapterEntity = Omit<Entity, 'template'> & { template: AdapterEntityTemplate };
 
-export type AdapterMetadataProperty = MetadataProperty & {
-  _id: string,
-  entity: AdapterEntity,
-  index: number,
-  value: PropertyValueSchema,
-  properties: MetadataProperty["properties"] & {
-    translationContext?: ClientTranslationContextSchema
-  }
-}
-
+export type AdapterMetadataProperty = Exclude<MetadataProperty, EntityPermissions> & {
+  _id: string;
+  entity: AdapterEntity;
+  index: number;
+  value?: PropertyValueSchema;
+  properties: ExtendedPropertyInfo & {
+    translationContext?: ClientTranslationContextSchema;
+  };
+};

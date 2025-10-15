@@ -1,10 +1,6 @@
-import { SelectPropertyTypes } from 'app/V2/domain/entities/types';
+import { SelectMetadataProperty, SelectPropertyTypes } from 'app/V2/domain/entities/types';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
-import { MetadataProperty } from 'app/V2/domain/entities/types';
-import {
-  ProcessingContext,
-  AdapterMetadataProperty,
-} from './types';
+import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class SelectPropertyProcessor extends BasePropertyProcessor {
@@ -15,14 +11,26 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
   protected formatProperty(
     property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): MetadataProperty["values"] {
-    if (property.inherited && property.inheritedType === 'multiselect') {
+  ): SelectMetadataProperty['values'] {
+    if (
+      property.properties.inherited &&
+      property.properties.inheritedProperty?.type === 'multiselect'
+    ) {
       return this.formatInheritedSelectProperty(property, context);
+    }
+
+    if (context.includeOptions) {
+      const selectedValues = Array.isArray(property.value) ? property.value : [property.value];
+      const options = this.buildFlattenedOptions(
+        property,
+        selectedValues.map(value => value?.toString() || ''),
+        context
+      );
+      property.properties.options = options;
     }
 
     if (property.value !== undefined && !property.properties.options) {
       const values = Array.isArray(property.value) ? property.value : [property.value];
-
       return values.map((value: any) => ({
         value,
         label: value.label || value.toString(),
@@ -42,7 +50,8 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
           };
         }
 
-        const translatedLabel = this.getTranslatedLabel(property, option.label, context) || option.label;
+        const translatedLabel =
+          property.properties.translationContext?.values[option.label || ''] || option.label;
 
         return {
           value: selectedValue,
@@ -53,7 +62,7 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
 
     return [
       {
-        value: property.value,
+        value: property.value?.toString() || '',
         label: property.value?.toString() || '',
       },
     ];
@@ -69,7 +78,7 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
   private formatInheritedSelectProperty(
     property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): MetadataProperty["values"] {
+  ): SelectMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
     return values.map((item: any) => {
@@ -86,42 +95,26 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
   private buildFlattenedOptions(
     property: AdapterMetadataProperty,
     selectedValues: string[],
-    thesauri: ClientThesaurus[],
-    translations: Record<string, string>,
-    selectFormatting: {
-      showLabels: boolean;
-      showIcons: boolean;
-      showUrls: boolean;
-    }
-  ): Array<{
-    value: string;
-    label?: string;
-    displayValue: string;
-    selected: boolean;
-    group: string | null;
-    level: number;
-  }> {
-    const thesaurus = this.findThesaurusByContentId(property.properties.content || '', thesauri);
+    context: ProcessingContext
+  ): SelectMetadataProperty['values'] {
+    const thesaurus = this.findThesaurusByContentId(
+      property.properties.content || '',
+      context.thesauri
+    );
 
     if (!thesaurus || !thesaurus.values) {
       return [];
     }
 
-    const flattenedOptions: Array<{
-      value: string;
-      label?: string;
-      displayValue: string;
-      selected: boolean;
-      group: string | null;
-      level: number;
-    }> = [];
+    const flattenedOptions: SelectMetadataProperty['values'] = [];
 
     thesaurus.values.forEach((option: ClientThesaurusValue) => {
       flattenedOptions.push({
         value: option.id || '',
-        label: selectFormatting.showLabels ? translations[option.label] || option.label : undefined,
-        displayValue: selectFormatting.showLabels ? translations[option.label] || option.label : '',
-        selected: selectedValues.includes(option.id || ''),
+        label: option.label,
+        ...(context.translateLabels
+          ? { translatedLabel: property.properties.translationContext?.values[option.label] }
+          : {}),
         group: null,
         level: 0,
       });
@@ -130,12 +123,12 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
         option.values.forEach((subOption: ClientThesaurusValue) => {
           flattenedOptions.push({
             value: subOption.id || '',
-            label: selectFormatting.showLabels
-              ? translations[subOption.label] || subOption.label
+            label: context.translateLabels
+              ? property.properties.translationContext?.values[subOption.label] || subOption.label
               : undefined,
-            displayValue: selectFormatting.showLabels
-              ? translations[subOption.label] || subOption.label
-              : '',
+            translatedLabel: context.translateLabels
+              ? property.properties.translationContext?.values[subOption.label] || subOption.label
+              : undefined,
             selected: selectedValues.includes(subOption.id || ''),
             group: option.id || null,
             level: 1,
