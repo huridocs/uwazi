@@ -205,7 +205,7 @@ class Template {
       return true;
     });
 
-    return this.clone({ ...this, properties });
+    return this.clone({ ...this, default: this.isDefault, properties }); // Todo: redo this after hotfix
   }
 
   update(props: CloneProps): Template {
