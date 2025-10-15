@@ -42,13 +42,16 @@ class Tenants {
     };
   }
 
-  async setupTenants() {
-    const model = await tenantsModel();
+  async setupTenants(_model?: TenantsModel) {
+    let model = _model;
+    if (!model) {
+      model = await tenantsModel();
+    }
     this.model = model;
-    model.on('change', () => {
+    this.model.on('change', () => {
       this.updateTenants(model).catch(handleError);
     });
-    await this.updateTenants(model);
+    await this.updateTenants(this.model);
   }
 
   async tearDownTenants() {
