@@ -18,6 +18,8 @@ class TemplateBuilder {
 
   private _isDefault: boolean = false;
 
+  private _entityViewPage: string = '';
+
   private constructor() {}
 
   static aTemplate(props: Partial<Template> = {}): TemplateBuilder {
@@ -29,6 +31,7 @@ class TemplateBuilder {
     if (props.commonProperties) builder.withCommonProperties(props.commonProperties);
     if (props.color) builder.withColor(props.color);
     if (props.isDefault) builder.withDefault(props.isDefault);
+    if (props.entityViewPage) builder.withEntityViewPage(props.entityViewPage);
 
     return builder;
   }
@@ -78,6 +81,11 @@ class TemplateBuilder {
     return this;
   }
 
+  withEntityViewPage(entityViewPage: string): this {
+    this._entityViewPage = entityViewPage;
+    return this;
+  }
+
   build(): Template {
     const commonProperties = this._commonProperties ?? [
       new TitleProperty({
@@ -103,7 +111,8 @@ class TemplateBuilder {
       this._properties,
       commonProperties,
       this._color,
-      this._isDefault
+      this._isDefault,
+      this._entityViewPage
     );
   }
 }

@@ -10,9 +10,9 @@ import { CommonProperty } from './CommonProperty';
 type TemplateProperty = Property | V1RelationshipProperty;
 
 type CloneProps = {
-  name: string;
-  properties: Property[];
-  commonProperties: CommonProperty[];
+  name?: string;
+  properties?: Property[];
+  commonProperties?: CommonProperty[];
   color?: string;
   default?: boolean;
   entityViewPage?: string;
@@ -205,7 +205,7 @@ class Template {
       return true;
     });
 
-    return this.clone({ ...this, default: this.isDefault, properties }); // Todo: redo this after hotfix
+    return this.clone({ properties });
   }
 
   update(props: CloneProps): Template {
@@ -225,12 +225,12 @@ class Template {
   private clone(props: CloneProps) {
     const template = new Template(
       this.id,
-      props.name,
-      props.properties,
-      props.commonProperties,
-      props.color,
-      props.default,
-      props.entityViewPage
+      props.name || this.name,
+      props.properties || this.properties,
+      props.commonProperties || this.commonProperties,
+      props.color || this.color,
+      props.default ?? this.isDefault,
+      props.entityViewPage || this.entityViewPage
     );
 
     template.processing = this.processing;
