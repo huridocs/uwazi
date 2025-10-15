@@ -17,18 +17,17 @@ const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) =
         if (typeof stamp.label === 'string') {
           return <dd className="font-medium text-gray-900">{stamp.label}</dd>;
         }
-        const range = stamp as DateRangeMetadataProperty['values'][0];
         return (
           <dd className="font-medium text-gray-900">
             <span className="sr-only">
               <Translate>From</Translate>
             </span>
-            <span>{range.label.from}</span>
+            <span>{stamp.label.from}</span>
             <span aria-hidden="true"> - </span>
             <span className="sr-only">
               <Translate>To</Translate>
             </span>
-            <span>{range.label.to}</span>
+            <span>{stamp.label.to}</span>
           </dd>
         );
         return null;
