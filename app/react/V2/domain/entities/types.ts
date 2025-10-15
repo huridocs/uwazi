@@ -74,18 +74,28 @@ export interface ExtendedPropertyInfo {
 export interface BaseMetadataProperty {
   readonly _id: string;
   readonly name: string;
-  readonly label?: string | null;
+  readonly label: string;
   readonly translatedLabel?: string;
   readonly inherited?: boolean;
   readonly inheritedType?: string;
   readonly type: AllowedPropertyTypes;
   readonly properties: ExtendedPropertyInfo;
-  readonly values: Array<{
-    value: PropertyValueSchema;
-    label?: string;
-    source?: SourceValue;
-  }>;
+  // readonly values: Array<{
+  //   value: PropertyValueSchema;
+  //   label?: string;
+  //   source?: SourceValue;
+  // }>;
 }
+
+export interface SimpleMetadataProperty extends BaseMetadataProperty {
+  readonly type: 'text' | 'generatedid' | 'numeric';
+  readonly values: Array<{ value: string; source?: SourceValue }>;
+}
+// export interface NumberMetadataProperty extends BaseMetadataProperty {
+//   readonly type: 'numeric';
+//   readonly values: Array<{ value: number; source?: SourceValue }>;
+// }
+
 export interface DateMetadataProperty extends BaseMetadataProperty {
   readonly type: 'date';
   readonly values: Array<{ value: number; label: string; source?: SourceValue }>;
@@ -151,11 +161,6 @@ export interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'val
     value: string;
   }>;
 }
-
-export interface TextMetadataProperty extends BaseMetadataProperty {
-  readonly type: 'text';
-}
-
 export interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'markdown';
   readonly values: Array<{
@@ -186,15 +191,19 @@ export interface MultiSelectMetadataProperty extends Omit<SelectMetadataProperty
 
 export interface LinkMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
   readonly type: 'link';
+  readonly values: Array<{
+    value: string;
+    label?: string;
+  }>;
 }
 
-export interface NumericMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
-  readonly type: 'numeric';
-}
+// export interface NumericMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
+//   readonly type: 'numeric';
+// }
 
-export interface GeneratedIdMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
-  readonly type: 'generatedid';
-}
+// export interface GeneratedIdMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
+//   readonly type: 'generatedid';
+// }
 
 export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, 'values' | 'type'> {
   readonly type: 'permissions';
@@ -223,13 +232,13 @@ export type InheritedTypes =
   | MediaMetadataProperty["values"]
   | ImageMetadataProperty["values"]
   | PreviewMetadataProperty["values"]
-  | TextMetadataProperty["values"]
+  | SimpleMetadataProperty["values"]
   | MarkdownMetadataProperty["values"]
   | SelectMetadataProperty["values"]
   | MultiSelectMetadataProperty["values"]
   | LinkMetadataProperty["values"]
-  | NumericMetadataProperty["values"]
-  | GeneratedIdMetadataProperty["values"]
+  // | NumericMetadataProperty["values"]
+  // | GeneratedIdMetadataProperty["values"]
   | PermissionMetadataProperty['values'];
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship';
@@ -237,7 +246,9 @@ export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty,
 }
 
 export type MetadataProperty =
-  | BaseMetadataProperty //try to avoid export it
+  // | NumberMetadataProperty
+  | SimpleMetadataProperty
+  // | BaseMetadataProperty //try to avoid export it
   | DateMetadataProperty
   | MultiDateMetadataProperty
   | DateRangeMetadataProperty
@@ -246,16 +257,14 @@ export type MetadataProperty =
   | MediaMetadataProperty
   | ImageMetadataProperty
   | PreviewMetadataProperty
-  | TextMetadataProperty
   | MarkdownMetadataProperty
   | SelectMetadataProperty
   | MultiSelectMetadataProperty
   | LinkMetadataProperty
-  | NumericMetadataProperty
-  | GeneratedIdMetadataProperty
+  // | NumericMetadataProperty
+  // | GeneratedIdMetadataProperty
   | PermissionMetadataProperty
-  | RelationshipMetadataProperty
-  | EntityPermissions;
+  | RelationshipMetadataProperty;
 
 export interface EntityTemplate {
   readonly _id: string;

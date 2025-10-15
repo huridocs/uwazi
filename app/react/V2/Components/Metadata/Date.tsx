@@ -6,14 +6,14 @@ import { MetadataCard } from './MetadataCard';
 import { DateMetadataProperty, DateRangeMetadataProperty } from 'app/V2/domain/entities/types';
 
 type DateProps = MetadataFieldProps & {
-  timestamps: DateMetadataProperty['values'] | DateRangeMetadataProperty['values'];
+  values: DateMetadataProperty['values'] | DateRangeMetadataProperty['values'];
 };
 
-const Date = ({ timestamps, label, translationContext, hideLabel }: DateProps) => (
+const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
   <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     <div className="flex flex-col gap-1" role="group">
-      {timestamps.map(stamp => {
+      {values.map(stamp => {
         if (typeof stamp.label === 'string') {
           return <dd className="font-medium text-gray-900">{stamp.label}</dd>;
         }

@@ -44,7 +44,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       ) {
         return (
           <Date
-            timestamps={data.values}
+            values={data.values}
             label={data.label}
             translationContext={translationContext}
           />
@@ -73,7 +73,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -100,13 +100,14 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
+          //hideLabel={hideLabel}
           />
         );
       }
 
       if (data.type === 'relationship') {
-        if (data.properties?.inherited) {
-          const inheritedType = data.properties.inherited.type;
+        if (data.properties?.inherited && data.properties.inheritedProperty) {
+          const inheritedType = data.properties.inheritedProperty.type;
           const reformattedData = {
             values: data.values,
             label: data.label,
@@ -156,7 +157,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
       {entity.creationDate && (
         <Date
-          timestamps={[{ value: entity.creationDate.values[0].value }]}
+          values={entity.creationDate.values}
           label="Creation Date"
           translationContext="System"
         />
@@ -164,7 +165,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
       {entity.editDate && (
         <Date
-          timestamps={[{ value: entity.editDate.values[0].value }]}
+          values={entity.editDate.values}
           label="Edit Date"
           translationContext="System"
         />
