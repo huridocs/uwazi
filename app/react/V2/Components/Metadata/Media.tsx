@@ -7,7 +7,7 @@ import { MediaPlayer } from '../UI';
 import { MetadataCard } from './MetadataCard';
 
 type Timelink = {
-  time: number;
+  time: string;
   label: string;
 };
 
@@ -19,12 +19,26 @@ type MediaProps = MetadataFieldProps & {
   }[];
 };
 
+const parseTimeToSeconds = (timeString: string): number => {
+  const parts = timeString.split(':').map(Number);
+  if (parts.length === 3) {
+    const [h, m, s] = parts;
+    return h * 3600 + m * 60 + s;
+  }
+  if (parts.length === 2) {
+    const [m, s] = parts;
+    return m * 60 + s;
+  }
+  return Number(timeString) || 0;
+};
+
 const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => {
   const { value, alt, timelinks = [] } = values[0];
   const playerRef = useRef<ReactPlayer>(null);
 
-  const handleTimelinkClick = (time: number) => {
-    playerRef.current?.seekTo(time, 'seconds');
+  const handleTimelinkClick = (timeString: string) => {
+    const seconds = parseTimeToSeconds(timeString);
+    playerRef.current?.seekTo(seconds, 'seconds');
   };
 
   return (
