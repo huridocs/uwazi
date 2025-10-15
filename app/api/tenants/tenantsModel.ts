@@ -137,7 +137,9 @@ class TenantsModel extends EventEmitter {
 
 const tenantsModel = async () => {
   const model = new TenantsModel();
-  await model.initialize();
+  if (process.env.NODE_ENV !== 'test') {
+    await model.initialize();
+  }
   return model;
 };
 

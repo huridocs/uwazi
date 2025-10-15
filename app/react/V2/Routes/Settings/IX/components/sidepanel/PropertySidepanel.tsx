@@ -1,38 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
 import loadable from '@loadable/component';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { TableSuggestion } from '../types';
+import { Checkbox } from 'V2/Components/Forms';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../helpers';
+} from '../../helpers';
 import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from './atoms';
-import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
+import { SidepanelProps } from './types';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
-const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
-
-interface PropertySidepanelProps {
-  showSidepanel: boolean;
-  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  suggestion?: TableSuggestion;
-  onEntitySave: (suggestionId: string[]) => any;
-  property?: ClientPropertySchema;
-  extractor?: ClientIXExtractorType;
-}
+const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
 
 // eslint-disable-next-line max-statements
 const PropertySidepanel = ({
@@ -42,7 +33,7 @@ const PropertySidepanel = ({
   onEntitySave,
   property,
   extractor,
-}: PropertySidepanelProps) => {
+}: SidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const [highlights, setHighlights] = useAtom(highlightsAtom);
@@ -50,18 +41,6 @@ const PropertySidepanel = ({
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const setNotifications = useSetAtom(notificationAtom);
-
-  useEffect(() => {
-    if (showSidepanel && suggestion) {
-      loadSidepanelData(suggestion)
-        .then(({ entity: suggestionEntity }) => {
-          setEntity(suggestionEntity);
-        })
-        .catch(e => {
-          throw e;
-        });
-    }
-  }, [showSidepanel, suggestion]);
 
   const templateId = suggestion?.entityTemplateId;
   const template = templates.find(t => t._id.toString() === templateId);
@@ -77,30 +56,57 @@ const PropertySidepanel = ({
   const formContext = useForm({
     values: {
       field: getFormValue(suggestion, entity, property?.type) || '',
+      inTrainingSet: suggestion?.useForTraining,
     },
   });
 
-  const { isSubmitting, isDirty } = formContext.formState;
-  const { handleSubmit, setValue } = formContext;
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isSubmitting, dirtyFields },
+  } = formContext;
 
+  useEffect(() => {
+    if (showSidepanel && suggestion) {
+      loadSidepanelData(suggestion)
+        .then(({ entity: suggestionEntity }) => {
+          setEntity(suggestionEntity);
+        })
+        .catch(e => {
+          throw e;
+        });
+    }
+  }, [showSidepanel, suggestion]);
+
+  useEffect(() => {
+    if (dirtyFields.field) {
+      setValue('inTrainingSet', true, { shouldDirty: true });
+    }
+  }, [dirtyFields.field, setValue]);
+
+  // eslint-disable-next-line max-statements
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    const savedEntity = await handleEntitySave(entity, property, value.field, template, isDirty);
+    if (dirtyFields.field) {
+      const savedEntity = await handleEntitySave(entity, property, value.field, template);
 
-    if (savedEntity instanceof FetchResponseError) {
-      const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+      if (savedEntity instanceof FetchResponseError) {
+        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
 
-      setNotifications({ type: 'error', text: 'An error occurred', details });
-    } else if (savedEntity) {
-      if (savedEntity) {
-        setEntity(savedEntity);
-        if (suggestion?._id) {
-          onEntitySave([suggestion?._id]);
+        setNotifications({ type: 'error', text: 'An error occurred', details });
+      } else if (savedEntity) {
+        if (savedEntity) {
+          setEntity(savedEntity);
         }
-      }
 
-      setNotifications({ type: 'success', text: 'Saved successfully.' });
+        setNotifications({ type: 'success', text: 'Saved successfully.' });
+      }
+    }
+
+    if (suggestion?._id && dirtyFields.inTrainingSet) {
+      onEntitySave([suggestion?._id], formContext.getValues().inTrainingSet || false);
     }
 
     handleClose();
@@ -194,13 +200,29 @@ const PropertySidepanel = ({
                 }
               />
             </VerticalDrawer>
-            <div className="flex justify-end gap-2 px-4 py-2 border-t border-gray-200">
+            <div className="flex justify-between gap-2 px-4 py-2 border-t border-gray-200">
               <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
                 <Translate>Cancel</Translate>
               </Button>
-              <Button type="submit" disabled={isSubmitting} color="success">
-                <Translate>Accept</Translate>
-              </Button>
+              <div className="flex flex-row gap-2 items-center">
+                <Controller
+                  control={control}
+                  name="inTrainingSet"
+                  disabled={isSubmitting}
+                  render={({ field: { onChange, name, value } }) => (
+                    <Checkbox
+                      onChange={onChange}
+                      disabled={isSubmitting}
+                      checked={value}
+                      name={name}
+                      label={<Translate>Use for training</Translate>}
+                    />
+                  )}
+                />
+                <Button type="submit" disabled={isSubmitting} color="success">
+                  <Translate>Accept</Translate>
+                </Button>
+              </div>
             </div>
           </form>
         </FormProvider>

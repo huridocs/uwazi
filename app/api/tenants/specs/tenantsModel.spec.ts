@@ -20,6 +20,7 @@ describe('tenantsModel', () => {
 
   beforeEach(async () => {
     model = await tenantsModel();
+    await model.initialize();
 
     await db.collection('tenants').deleteMany({});
     await db.collection('tenants').insertMany([
@@ -156,6 +157,7 @@ describe('tenantsModel', () => {
       //@ts-ignore
       jest.spyOn(Model, 'watch').mockReturnValue(mockChangeStream);
       model = await tenantsModel();
+      await model.initialize();
       errorEvent({
         message: 'The $changeStream stage is only supported on replica sets',
         code: 40573,
