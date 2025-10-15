@@ -1,4 +1,4 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
+import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

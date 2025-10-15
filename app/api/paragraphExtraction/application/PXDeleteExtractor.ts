@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 

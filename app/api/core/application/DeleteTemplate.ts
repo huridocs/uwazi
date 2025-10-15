@@ -1,4 +1,4 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
+import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';

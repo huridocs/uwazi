@@ -1,4 +1,4 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
+import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

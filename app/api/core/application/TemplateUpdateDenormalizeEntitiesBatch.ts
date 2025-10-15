@@ -1,5 +1,5 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
