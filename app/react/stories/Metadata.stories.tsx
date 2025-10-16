@@ -5,15 +5,20 @@ import { createStore, Provider } from 'jotai';
 import { EntitySchema } from 'shared/types/entityType';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { settingsAtom } from 'V2/atoms';
-import { FluentCompositionBuilder } from 'V2/application';
+import { FluentCompositionBuilder, ProcessingContext } from 'V2/application';
 import { rawEntity, processingContext } from './fixtures/MetadataDisplayFixtures';
 
 const store = createStore();
 store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
 
-const fluentBuilder = FluentCompositionBuilder.create(processingContext);
-
-const MetadataDisplayComponent = ({ dbEntity }: { dbEntity: EntitySchema }) => {
+const MetadataDisplayComponent = ({
+  dbEntity,
+  context,
+}: {
+  dbEntity: EntitySchema;
+  context: ProcessingContext;
+}) => {
+  const fluentBuilder = FluentCompositionBuilder.create(context);
   const { entity } = fluentBuilder.forDetailView().processEntity(dbEntity);
 
   return (
@@ -35,12 +40,12 @@ const meta: Meta<typeof MetadataDisplayComponent> = {
 type Story = StoryObj<typeof MetadataDisplayComponent>;
 
 const Primary: Story = {
-  render: args => <MetadataDisplayComponent dbEntity={args.dbEntity} />,
+  render: args => <MetadataDisplayComponent dbEntity={args.dbEntity} context={args.context} />,
 };
 
 const Basic = {
   ...Primary,
-  args: { dbEntity: rawEntity },
+  args: { dbEntity: rawEntity, context: processingContext },
 };
 
 export { Basic };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { I18NLinkV2 } from 'app/I18N';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
