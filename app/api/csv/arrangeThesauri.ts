@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import { ImportFile } from 'api/csv/importFile';
@@ -240,6 +242,7 @@ const tryAddingLabel = (
   name: string,
   id: any,
   row: CSVRow
+  // eslint-disable-next-line max-params
 ): Set<string> => {
   const map = thesauriValueData[id];
   if (isStandaloneGroup(map, labelInfo)) {
@@ -279,6 +282,7 @@ const handleRow = (
   languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage: string,
   template: TemplateSchema
+  // eslint-disable-next-line max-params
 ): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
 
@@ -450,11 +454,14 @@ const arrangeThesauri = async (
   _languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage: string,
   stopOnError: boolean = true
+  // eslint-disable-next-line max-params
 ): Promise<Record<string, string>> => {
   const { propNameToThesauriId, headersWithoutLanguage, languagesPerHeader, allRelatedThesauri } =
     await setupProperties(template, _headersWithoutLanguage, _languagesPerHeader);
 
   const thesaurusMaps = setupThesaurusMaps(allRelatedThesauri);
+
+  let firstError: ArrangeThesauriError | null = null;
 
   await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow) =>
@@ -470,9 +477,15 @@ const arrangeThesauri = async (
       )
     )
     .onError(async (e: Error, row: CSVRow, index: number) => {
-      throw new ArrangeThesauriError(e, row, index);
+      if (!firstError) {
+        firstError = new ArrangeThesauriError(e, row, index);
+      }
     })
     .read();
+
+  if (firstError) {
+    throw firstError;
+  }
 
   await syncSaveThesauri(allRelatedThesauri, thesaurusMaps);
   await syncUpdateTranslations(thesaurusMaps);
