@@ -1,4 +1,4 @@
-import { PermissionPropertyTypes, PermissionMetadataProperty } from 'app/V2/domain/entities/types';
+import { PermissionPropertyTypes } from 'app/V2/domain/entities/types';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ProcessingContext, AdapterMetadataProperty, EntityPermissions } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';

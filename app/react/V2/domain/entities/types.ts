@@ -1,5 +1,3 @@
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
 export interface Timelink {
@@ -10,7 +8,7 @@ export interface Timelink {
   readonly label: string;
 }
 
-export interface EntityPermissions {
+export interface FormattedEntityPermissions {
   readonly canRead: boolean;
   readonly canWrite: boolean;
   readonly canDelete: boolean;
@@ -210,7 +208,7 @@ export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty,
   readonly values: Array<{
     value: string;
     label?: string;
-    url?: string;
+    url: string;
     icon?: EntitySchema['icon'];
   }>;
 }
@@ -251,10 +249,3 @@ export interface EntityPermissions {
   readonly isRestricted: boolean;
   readonly currentUserAccess: 'read' | 'write' | 'admin' | 'none';
 }
-// readonly canRead: boolean;
-// readonly canWrite: boolean;
-// readonly canDelete: boolean;
-// readonly canShare: boolean;
-// readonly userPermissions: string[];
-// readonly groupPermissions: string[];
-// readonly publicAccess: boolean;

@@ -30,7 +30,6 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
             <span>{stamp.label.to}</span>
           </dd>
         );
-        return null;
       })}
     </div>
   </MetadataCard>

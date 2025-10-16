@@ -4,7 +4,7 @@ import {
 } from 'app/V2/domain/entities/types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
@@ -17,7 +17,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
     return property.value.map((rel: MetadataObjectSchema) => ({
       value: rel.value?.toString() || '',
       label: rel.label,
-      url: '/entities/' + rel.value?.toString() || '',
+      url: '/entities/' + (rel.value?.toString() || ''),
       icon: rel.icon as any,
     }));
   }

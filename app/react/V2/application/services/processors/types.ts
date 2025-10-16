@@ -6,7 +6,7 @@ import {
   ExtendedPropertyInfo,
   MetadataProperty,
 } from 'app/V2/domain/entities/types';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 export interface ProcessingContext extends CompositionOptions {
   readonly userId?: string;

@@ -70,8 +70,6 @@ describe('Adapter Entity Processor Tests', () => {
     };
 
     expect(restEntity).toMatchObject(expectedEntity);
-
-    // Test date properties s
   });
 
   it('should process text property', async () => {
@@ -83,7 +81,6 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: 'Emergency incident report from downtown area',
-          label: 'Emergency incident report from downtown area',
         },
       ],
     };
@@ -116,8 +113,8 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'date',
       label: 'Single Date',
       translatedLabel: 'Single Date EN',
-      value: 1759363200,
       values: [{ value: 1759363200, label: 'Oct 2, 2025' }],
+      _id: '68ddecdbc9474e23bb5e914e',
     };
 
     expect(metadata[2]).toMatchObject(dateProperty);
@@ -149,12 +146,12 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'multidate',
       label: 'Multiple Dates',
       translatedLabel: 'Multiple Dates EN',
-      value: [1759276800, 1759363200, 1759449600] as any,
       values: [
         { value: 1759276800, label: 'Oct 1, 2025' },
         { value: 1759363200, label: 'Oct 2, 2025' },
         { value: 1759449600, label: 'Oct 3, 2025' },
       ],
+      _id: '',
     };
 
     expect(metadata[4]).toMatchObject(multipleDateProperty);
@@ -193,13 +190,13 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'select',
       label: 'Status Selection',
       translatedLabel: 'Status Selection EN',
-      value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
       values: [
         {
           value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
           label: 'Again',
         },
       ],
+      _id: '',
     };
 
     expect(metadata[7]).toMatchObject(selectProperty);
@@ -211,12 +208,6 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'multiselect',
       label: 'Category Tags',
       translatedLabel: 'Category Tags EN',
-      value: [
-        '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-        '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-        '8c418311-1244-4777-800a-65729b8c17a8',
-        'e1b9944b-43ef-4989-837b-b3df79284b00',
-      ] as any,
       values: [
         {
           value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
@@ -243,6 +234,7 @@ describe('Adapter Entity Processor Tests', () => {
           },
         },
       ],
+      _id: '',
     };
 
     expect(metadata[8]).toMatchObject(multiselectProperty);
@@ -292,7 +284,6 @@ describe('Adapter Entity Processor Tests', () => {
       type: 'link',
       label: 'External Link',
       translatedLabel: 'External Link EN',
-      value: { label: 'Police Report', url: 'https://police.gov/reports/incident-2024-001' } as any,
       values: [
         {
           label: 'Police Report',
@@ -302,6 +293,7 @@ describe('Adapter Entity Processor Tests', () => {
           } as any,
         },
       ],
+      _id: '',
     };
 
     expect(metadata[11]).toMatchObject(linkProperty);

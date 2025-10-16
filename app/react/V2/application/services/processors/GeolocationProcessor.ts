@@ -118,7 +118,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
       propertiesByEntity.get(entityId)!.push(prop);
     });
 
-    propertiesByEntity.forEach((entityProps, entityId) => {
+    propertiesByEntity.forEach(entityProps => {
       const sortedProps = entityProps.sort((a, b) => {
         const indexA = a.index !== undefined ? a.index : 9999;
         const indexB = b.index !== undefined ? b.index : 9999;
@@ -155,7 +155,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     properties.forEach(property => {
       try {
         const values = this.formatProperty(property, context);
-        results.push({ ...property, values });
+        results.push(Object.assign(property, { values }));
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }
@@ -183,7 +183,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   }
 
   private isAdjacent(prop: AdapterMetadataProperty, prevProp: AdapterMetadataProperty): boolean {
-    if (prop.entity?._id !== prop.entity?._id) {
+    if (prop.entity?._id !== prevProp.entity?._id) {
       return false;
     }
 
@@ -197,7 +197,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   private combineProperties(
     properties: AdapterMetadataProperty[],
     context: ProcessingContext,
-    processors?: Map<string, PropertyTypeProcessor>
+    _processors?: Map<string, PropertyTypeProcessor>
   ): GeolocationMetadataProperty['values'] {
     const allValues: GeolocationMetadataProperty['values'] = [];
 

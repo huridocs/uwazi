@@ -103,9 +103,11 @@ export class AdapterTemplateProcessor {
   private getInheritedProperty(
     property: PropertySchema
   ): Partial<AdapterMetadataProperty['properties']['inheritedProperty']> | undefined {
-    const template = this.context.templates.find(template => template._id === property.content);
-    const inheritedProperty = template?.properties?.find(
-      property => property._id === property.inherit?.property
+    const propertyTemplate = this.context.templates.find(
+      template => template._id === property.content
+    );
+    const inheritedProperty = propertyTemplate?.properties?.find(
+      (propertyDefinition: PropertySchema) => propertyDefinition._id === property.inherit?.property
     );
     if (inheritedProperty) {
       return {
@@ -133,14 +135,14 @@ export class AdapterTemplateProcessor {
       name: property.name,
       label: property.label,
       type: property.type,
+      translatedLabel: templateTranslations?.values[property.label] || property.label,
       properties: {
         _id: property._id!.toString(),
         content: property.content,
         inherited: property.inherit !== undefined,
-        translatedLabel: templateTranslations?.values[property.label] || property.label,
         inheritedProperty: inheritedProperty as any, //TODO FIX
         translationContext: templateTranslations,
-        options: [],
+        options,
       },
       values: [],
     });

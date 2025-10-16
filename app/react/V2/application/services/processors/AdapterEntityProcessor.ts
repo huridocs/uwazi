@@ -18,7 +18,6 @@ import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { PermissionProcessor } from './PermissionProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
-import { BaseMetadataProperty } from 'app/V2/domain/entities/types';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -55,17 +54,17 @@ export class AdapterEntityProcessor {
     const allProperties = flatMap(entities, entity => {
       const metadataProperties: AdapterMetadataProperty[] = map(
         Object.keys(entity.rawEntity?.metadata || {}),
-        name => {
+        (name, index) => {
           const templateProperty = entity.template.properties.get(name);
           if (templateProperty) {
             const entityProperty = entity.rawEntity?.metadata?.[name];
             return {
               ...templateProperty,
               value: entityProperty,
-              index: 0,
+              index,
               values: entityProperty,
               entity: entity,
-            };
+            } as AdapterMetadataProperty; //TODO avoid this cast
           }
         }
       ).filter(property => property !== undefined);
@@ -119,7 +118,7 @@ export class AdapterEntityProcessor {
       const processor = this.processors.get(propertyType) || this.processors.get('any');
       if (processor && properties.length > 0) {
         const results = processor.processBatch(properties, this.context, this.processors);
-        allResults.push(results);
+        allResults.push(...results);
       }
     });
 
@@ -143,12 +142,18 @@ export class AdapterEntityProcessor {
     });
   }
 
-  private getRootDate(name: string, label: string, value: number): AdapterMetadataProperty {
+  private getRootDate(
+    name: string,
+    label: string,
+    translatedLabel: string,
+    value: number
+  ): AdapterMetadataProperty {
     return {
       _id: name,
       name: name,
       entity: undefined as any,
       label: label,
+      translatedLabel,
       type: 'date',
       value: [{ value }],
       index: 0,
@@ -190,8 +195,8 @@ export class AdapterEntityProcessor {
       const systemContext = this.context.translations
         .find(translation => translation.locale === this.context.language)
         ?.contexts.find(context => context.id === 'System');
-      const creationLabel = systemContext?.values.creationDate || 'Creation Date';
-      const editLabel = systemContext?.values.editDate || 'Edit Date';
+      const createdTranslatedLabel = systemContext?.values.creationDate || 'Creation Date';
+      const editTranslatedLabel = systemContext?.values.editDate || 'Edit Date';
 
       formattedEntities = entities.map(entity => ({
         _id: entity._id! as string,
@@ -199,8 +204,18 @@ export class AdapterEntityProcessor {
         sharedId: entity.sharedId!,
         language: entity.language!,
         template: templatesById.get(entity.template as string)!,
-        creationDate: this.getRootDate('creationDate', creationLabel, entity.creationDate || 0),
-        editDate: this.getRootDate('editDate', editLabel, entity.creationDate || 0),
+        creationDate: this.getRootDate(
+          'creationDate',
+          'Creation Date',
+          createdTranslatedLabel,
+          entity.creationDate || 0
+        ),
+        editDate: this.getRootDate(
+          'editDate',
+          'Edit Date',
+          editTranslatedLabel,
+          (entity.editDate as number) || 0
+        ), //TODO: editDate is not defined
         rawEntity: entity,
         metadata: [],
         icon: entity.icon,

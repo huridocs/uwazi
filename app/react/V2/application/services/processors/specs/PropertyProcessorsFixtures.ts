@@ -910,7 +910,7 @@ export const processingContext: ProcessingContext = {
     },
   ],
   settings: {
-    dateFormat: 'MMM D, YYYY',
+    dateFormat: 'DDD',
     site_name: 'Uwazi',
     languages: [
       {

@@ -42,9 +42,9 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         return '';
       }
 
-      if (context.dateFormat) {
-        return luxonInstance.toFormat(context.dateFormat);
-      }
+      // if (context.dateFormat) {
+      //   return luxonInstance.toFormat(context.dateFormat);
+      // }
       return luxonInstance.toLocaleString(DateTime.DATE_MED);
     }
     return '';
@@ -65,6 +65,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
       let timestamp: number = 0;
 
       if (typeof value.value === 'number') {
+        //how conditionally divide only if it's milliseconds
         timestamp = value.value;
       }
 

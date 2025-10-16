@@ -77,7 +77,7 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
 
   private formatInheritedSelectProperty(
     property: AdapterMetadataProperty,
-    context: ProcessingContext
+    _context: ProcessingContext
   ): SelectMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 

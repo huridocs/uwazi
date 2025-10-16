@@ -17,7 +17,7 @@ export class MediaPropertyProcessor extends BasePropertyProcessor {
     properties.forEach(property => {
       try {
         const values = this.processMediaFiles(property.value[0].value, context);
-        results.push({ ...property, values });
+        results.push(Object.assign(property, { values }));
       } catch (error) {
         console.error(`Error processing media property ${property.name}:`, error);
       }

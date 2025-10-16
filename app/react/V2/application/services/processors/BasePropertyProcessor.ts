@@ -16,7 +16,7 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
     properties.forEach(property => {
       try {
         const values = this.formatProperty(property, context);
-        results.push({ ...property, values });
+        results.push(Object.assign(property, { values }));
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }

@@ -14,20 +14,20 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
   const formatRelationshipLabel = (value: RelationshipProps['values'][0]) => {
     let displayLabel = value.label;
 
-    // Handle inherited values display
-    if (
-      value.inheritedValue &&
-      Array.isArray(value.inheritedValue) &&
-      value.inheritedValue.length > 0
-    ) {
-      const inheritedLabels = value.inheritedValue
-        .map((inherited: any) => inherited.label || inherited.value)
-        .filter(Boolean);
+    // // Handle inherited values display
+    // if (
+    //   value.inheritedValue &&
+    //   Array.isArray(value.inheritedValue) &&
+    //   value.inheritedValue.length > 0
+    // ) {
+    //   const inheritedLabels = value.inheritedValue
+    //     .map((inherited: any) => inherited.label || inherited.value)
+    //     .filter(Boolean);
 
-      if (inheritedLabels.length > 0) {
-        displayLabel = `${value.label} (${inheritedLabels.join(', ')})`;
-      }
-    }
+    //   if (inheritedLabels.length > 0) {
+    //     displayLabel = `${value.label} (${inheritedLabels.join(', ')})`;
+    //   }
+    // }
 
     return displayLabel;
   };
