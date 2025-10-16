@@ -9,13 +9,15 @@ type TitleProps = MetadataFieldProps & {
 };
 
 const Title = ({ title, label, iconId, translationContext }: TitleProps) => (
-  <div role="group">
+  <>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel />
-    <span className="flex flex-row flex-nowrap gap-2 align-middle">
-      {iconId && <CountryFlag id={iconId} />}
-      <dd className="font-bold text-gray-900">{title}</dd>
-    </span>
-  </div>
+    <dd className="font-bold text-gray-900">
+      <span className="flex flex-row flex-nowrap gap-2 align-middle">
+        {iconId && <CountryFlag id={iconId} />}
+        {title}
+      </span>
+    </dd>
+  </>
 );
 
 export { Title };

@@ -12,18 +12,18 @@ type DateProps = MetadataFieldProps & {
 const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
   <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    <div className="flex flex-col gap-1" role="group">
+    <dd className="flex flex-col gap-1">
       {values.map((stamp, index) => {
         if (typeof stamp.label === 'string') {
           return (
             // eslint-disable-next-line react/no-array-index-key
-            <dd key={index} className="font-medium text-gray-900">
+            <span key={index} className="font-medium text-gray-900">
               {stamp.label}
-            </dd>
+            </span>
           );
         }
         return (
-          <dd
+          <div
             // eslint-disable-next-line react/no-array-index-key
             key={index}
             className="font-medium text-gray-900"
@@ -37,10 +37,10 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
               <Translate>To</Translate>
             </span>
             <span>{stamp.label.to}</span>
-          </dd>
+          </div>
         );
       })}
-    </div>
+    </dd>
   </MetadataCard>
 );
 
