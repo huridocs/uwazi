@@ -40,12 +40,12 @@ const TemplateLabel = ({
   }
 
   return (
-    <dd
+    <div
       className="py-1 px-2 w-fit rounded-md relative"
       style={{ backgroundColor: color, color: textColor }}
     >
       <Translate context={templateId}>{label}</Translate>
-    </dd>
+    </div>
   );
 };
 

@@ -41,16 +41,18 @@ const Geolocation = ({
     <dt>
       <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     </dt>
-    <Map
-      height={height}
-      markers={formatMarkers(markers, label)}
-      clickOnMarker={clickOnMarker}
-      onClick={onClick}
-      showControls={showControls}
-      renderPopupInfo={renderPopupInfo}
-      layers={layers}
-      zoom={zoom}
-    />
+    <dd>
+      <Map
+        height={height}
+        markers={formatMarkers(markers, label)}
+        clickOnMarker={clickOnMarker}
+        onClick={onClick}
+        showControls={showControls}
+        renderPopupInfo={renderPopupInfo}
+        layers={layers}
+        zoom={zoom}
+      />
+    </dd>
   </MetadataCard>
 );
 

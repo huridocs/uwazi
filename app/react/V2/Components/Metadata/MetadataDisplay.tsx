@@ -96,7 +96,6 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            //hideLabel={hideLabel}
           />
         );
       }
@@ -138,11 +137,13 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         <dt className="sr-only">
           <Translate>Template</Translate>
         </dt>
-        <TemplateLabel
-          label={entity.template?.label || ''}
-          color={entity.template?.color}
-          templateId={templateId}
-        />
+        <dd>
+          <TemplateLabel
+            label={entity.template?.label || ''}
+            color={entity.template?.color}
+            templateId={templateId}
+          />
+        </dd>
         <Title
           label="Title"
           title={entity.title}

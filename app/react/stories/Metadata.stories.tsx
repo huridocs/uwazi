@@ -18,6 +18,7 @@ const MetadataDisplayComponent = ({
   dbEntity: EntitySchema;
   context: ProcessingContext;
 }) => {
+  //This methods are meant to be used in loaders
   const fluentBuilder = FluentCompositionBuilder.create(context);
   const { entity } = fluentBuilder.forDetailView().processEntity(dbEntity);
 
