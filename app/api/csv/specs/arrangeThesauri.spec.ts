@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db from 'api/utils/testing_db';
 import thesauri from 'api/thesauri';
@@ -501,6 +502,74 @@ describe('arrangeThesauri', () => {
           'en'
         )
       ).rejects.toThrow(ArrangeThesauriError);
+    });
+
+    it('should not throw inside csv onError and instead throw after read', async () => {
+      jest.resetModules();
+
+      const csvModulePath = require.resolve('../csv');
+      const thesauriModulePath = require.resolve('api/thesauri');
+      const arrangeThesauriModulePath = require.resolve('../arrangeThesauri');
+
+      const csvState = { onErrorThrew: false };
+
+      jest.doMock(csvModulePath, () => {
+        const csvMock = (_stream: any, _stopOnError?: boolean) => {
+          const api: any = {
+            // eslint-disable-next-line no-empty-function
+            _onRow: async () => {},
+            // eslint-disable-next-line no-empty-function
+            _onError: async () => {},
+            onRow(fn: any) {
+              this._onRow = fn;
+              return this;
+            },
+            onError(fn: any) {
+              this._onError = fn;
+              return this;
+            },
+            async read() {
+              const row = { any: 'value' };
+              const index = 0;
+              try {
+                await this._onError(new Error('simulated error'), row, index);
+              } catch (_e) {
+                csvState.onErrorThrew = true;
+                // swallow to let test proceed and assert
+              }
+            },
+          };
+          return api;
+        };
+
+        return { __esModule: true, default: csvMock };
+      });
+
+      // avoid DB calls in setupProperties/saves
+      jest.doMock(thesauriModulePath, () => ({
+        __esModule: true,
+        default: {
+          get: jest.fn().mockResolvedValue([]),
+          appendValues: jest.fn(),
+          save: jest.fn(),
+          getById: jest.fn(),
+        },
+      }));
+
+      const {
+        arrangeThesauri: arrangeThesauriImported,
+        ArrangeThesauriError: ArrangeThesauriErrorImported,
+      } = await import(arrangeThesauriModulePath);
+
+      const file = createMockImportFile('title\nentity1');
+      const minimalTemplate = { properties: [] } as any;
+
+      await expect(
+        arrangeThesauriImported(file as any, minimalTemplate, false, [], {}, 'en', true)
+      ).rejects.toThrow(ArrangeThesauriErrorImported);
+
+      // Key assertion: onError must NOT throw synchronously
+      expect(csvState.onErrorThrew).toBe(false);
     });
   });
 
