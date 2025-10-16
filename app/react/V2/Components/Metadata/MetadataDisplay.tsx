@@ -69,7 +69,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -84,11 +84,11 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         );
       }
 
-      if (data.type === 'select' || data.type === 'multiselect') {
-        return (
-          <Select values={data.values} label={data.label} translationContext={translationContext} />
-        );
-      }
+      // if (data.type === 'select' || data.type === 'multiselect') {
+      //   return (
+      //     <Select values={data.values} label={data.label} translationContext={translationContext} />
+      //   );
+      // }
 
       // if (data.type === 'link') {
       //   return (

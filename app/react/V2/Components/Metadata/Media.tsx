@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { t } from 'app/I18N';
+import { MediaMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MediaPlayer } from '../UI';
 import { MetadataCard } from './MetadataCard';
-import { MediaMetadataProperty } from 'app/V2/domain/entities/types';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];

@@ -38,6 +38,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
               }}
               src={image.value}
               alt={image.alt}
+              key={image.value}
               onError={() => setErrorIndices(prevErrors => prevErrors.add(index))}
             />
           </dd>
