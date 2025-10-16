@@ -6,7 +6,7 @@ import {
   ExtendedPropertyInfo,
   MetadataProperty,
 } from 'app/V2/domain/entities/types';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 
 export interface ProcessingContext extends CompositionOptions {
   readonly userId?: string;
@@ -42,10 +42,10 @@ export interface PropertyTypeProcessor {
   readonly propertyTypes: string[];
 
   processBatch(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, AdapterMetadataProperty>;
+  ): AdapterMetadataProperty[];
 }
 
 export interface CompositionContext {
@@ -130,17 +130,21 @@ export interface BatchCompositionResult {
 }
 
 export type AdapterEntityTemplate = EntityTemplate & {
-  readonly properties: Map<string, Partial<AdapterMetadataProperty>>;
-  readonly commonProperties: Map<string, Partial<AdapterMetadataProperty>>;
+  readonly properties: Map<string, AdapterMetadataProperty>;
+  readonly commonProperties: Map<string, AdapterMetadataProperty>;
 };
 
-export type AdapterEntity = Omit<Entity, 'template'> & { template: AdapterEntityTemplate };
+export type AdapterEntity = Omit<Entity, 'template' | 'creationDate' | 'editDate'> & {
+  template: AdapterEntityTemplate;
+  creationDate: AdapterMetadataProperty;
+  editDate: AdapterMetadataProperty;
+};
 
-export type AdapterMetadataProperty = Exclude<MetadataProperty, EntityPermissions> & {
+export type AdapterMetadataProperty = MetadataProperty & {
   _id: string;
   entity: AdapterEntity;
   index: number;
-  value?: PropertyValueSchema;
+  value: MetadataObjectSchema[];
   properties: ExtendedPropertyInfo & {
     translationContext?: ClientTranslationContextSchema;
   };

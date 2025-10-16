@@ -6,6 +6,7 @@ import {
 } from 'app/V2/domain/entities/types';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
+import { DateRangeSchema } from 'shared/types/commonTypes';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';
@@ -55,7 +56,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
   ): DateMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    return values.flatMap((value) => {
+    return values.flatMap(value => {
       // Handle null/undefined values
       if (value === null || value === undefined) {
         return [];
@@ -63,8 +64,8 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
 
       let timestamp: number = 0;
 
-      if (typeof value === 'number') {
-        timestamp = value;
+      if (typeof value.value === 'number') {
+        timestamp = value.value;
       }
 
       const formattedValue = this.formatDate(timestamp, context);
@@ -78,17 +79,12 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
   ): DateRangeMetadataProperty['values'] {
     const ranges = Array.isArray(property.value) ? property.value : [property.value];
 
-    return ranges.flatMap((value) => {
-      // Handle null/undefined values
+    return ranges.flatMap(value => {
       if (value === null || value === undefined) {
         return [];
       }
 
-      const rangeValue =
-        value && typeof value === 'object' && 'from' in value && 'to' in value
-          ? (value as { from: number | null; to: number | null })
-          : { from: null, to: null };
-      const { from, to } = rangeValue;
+      const { from, to } = value as DateRangeSchema;
 
       if (!from && !to) {
         return [];

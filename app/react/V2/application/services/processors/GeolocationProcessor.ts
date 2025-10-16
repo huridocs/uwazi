@@ -11,11 +11,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   readonly propertyTypes: GeolocationPropertyTypes[] = ['geolocation'];
 
   processBatch(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, AdapterMetadataProperty> {
-    const results = new Map<string, AdapterMetadataProperty>();
+  ): AdapterMetadataProperty[] {
+    const results: AdapterMetadataProperty[] = [];
 
     if (context.combineGeolocation && !context.editionMode) {
       this.processWithCombining(properties, context, results, processors);
@@ -98,19 +98,19 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         properties: geo._relationshipMetadata || undefined,
       };
 
-      allGeolocationValues.push(result as any);
+      allGeolocationValues.push(result);
     });
 
     return allGeolocationValues;
   }
 
   private processWithCombining(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
-    results: Map<string, AdapterMetadataProperty>,
+    results: AdapterMetadataProperty[],
     processors?: Map<string, PropertyTypeProcessor>
   ): void {
-    const propertiesByEntity = new Map<string, Partial<AdapterMetadataProperty>[]>();
+    const propertiesByEntity: Map<string, AdapterMetadataProperty[]> = new Map();
 
     properties.forEach(prop => {
       const entityId = prop.entity?._id!;
@@ -130,9 +130,9 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         const values =
           group.length > 1
             ? this.combineProperties(group, context, processors)
-            : this.formatProperty(group[0] as AdapterMetadataProperty, context);
+            : this.formatProperty(group[0], context);
 
-        const baseProperty = group[0] as AdapterMetadataProperty;
+        const baseProperty = group[0];
         const groupedProperty = {
           ...baseProperty,
           type: 'geolocation' as const,
@@ -140,33 +140,31 @@ export class GeolocationProcessor extends BasePropertyProcessor {
           label: group.length > 1 ? 'Combined Geolocation' : baseProperty.label,
           translatedLabel: group.length > 1 ? 'Combined Geolocation' : baseProperty.translatedLabel,
           values,
-        } as AdapterMetadataProperty;
+        };
 
-        this.pushProperty(groupedProperty, values, results);
+        results.push(groupedProperty);
       });
     });
   }
 
   private processIndividually(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
-    results: Map<string, AdapterMetadataProperty>
+    results: AdapterMetadataProperty[]
   ): void {
     properties.forEach(property => {
       try {
-        const values = this.formatProperty(property as AdapterMetadataProperty, context);
-        this.pushProperty(property as AdapterMetadataProperty, values, results);
+        const values = this.formatProperty(property, context);
+        results.push({ ...property, values });
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }
     });
   }
 
-  private findAdjacentGroups(
-    sortedProps: Partial<AdapterMetadataProperty>[]
-  ): Partial<AdapterMetadataProperty>[][] {
-    const groups: Partial<AdapterMetadataProperty>[][] = [];
-    let currentGroup: Partial<AdapterMetadataProperty>[] = [];
+  private findAdjacentGroups(sortedProps: AdapterMetadataProperty[]): AdapterMetadataProperty[][] {
+    const groups: AdapterMetadataProperty[][] = [];
+    let currentGroup: AdapterMetadataProperty[] = [];
 
     sortedProps.forEach(prop => {
       if (
@@ -184,10 +182,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     return groups;
   }
 
-  private isAdjacent(
-    prop: Partial<AdapterMetadataProperty>,
-    prevProp: Partial<AdapterMetadataProperty>
-  ): boolean {
+  private isAdjacent(prop: AdapterMetadataProperty, prevProp: AdapterMetadataProperty): boolean {
     if (prop.entity?._id !== prop.entity?._id) {
       return false;
     }
@@ -200,15 +195,15 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   }
 
   private combineProperties(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
     processors?: Map<string, PropertyTypeProcessor>
   ): GeolocationMetadataProperty['values'] {
     const allValues: GeolocationMetadataProperty['values'] = [];
 
     properties.forEach(p => {
-      const propValues = this.formatProperty(p as AdapterMetadataProperty, context);
-      allValues.push(...(propValues as any));
+      const propValues = this.formatProperty(p, context);
+      allValues.push(...propValues);
     });
 
     return allValues;

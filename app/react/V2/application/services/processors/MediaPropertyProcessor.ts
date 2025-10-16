@@ -1,6 +1,7 @@
 import { FilePropertyTypes, MediaMetadataProperty, Timelink } from 'app/V2/domain/entities/types';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
 
 export class MediaPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'MediaPropertyProcessor';
@@ -8,20 +9,17 @@ export class MediaPropertyProcessor extends BasePropertyProcessor {
   readonly propertyTypes: FilePropertyTypes[] = ['media'];
 
   processBatch(
-    properties: any[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext
-  ): Map<string, AdapterMetadataProperty> {
-    const results = new Map<string, AdapterMetadataProperty>();
+  ): AdapterMetadataProperty[] {
+    const results: AdapterMetadataProperty[] = [];
 
     properties.forEach(property => {
       try {
-        const values = this.processMediaFiles(
-          property.value as MediaMetadataProperty['values'],
-          context
-        );
-        this.pushProperty(property as AdapterMetadataProperty, values, results);
+        const values = this.processMediaFiles(property.value[0].value, context);
+        results.push({ ...property, values });
       } catch (error) {
-        console.error(`Error processing media property ${property._fieldName}:`, error);
+        console.error(`Error processing media property ${property.name}:`, error);
       }
     });
 
@@ -32,51 +30,45 @@ export class MediaPropertyProcessor extends BasePropertyProcessor {
     property: AdapterMetadataProperty,
     context: ProcessingContext
   ): MediaMetadataProperty['values'] {
-    return this.processMediaFiles(property.value as MediaMetadataProperty['values'], context);
+    return this.processMediaFiles(property.value[0].value, context);
   }
 
   private processMediaFiles(
-    mediaFiles: MediaMetadataProperty['values'],
+    url: PropertyValueSchema,
     context: ProcessingContext
   ): MediaMetadataProperty['values'] {
-    return mediaFiles.map(file => {
-      if (typeof file.value === 'string' && file.value.startsWith('(')) {
-        try {
-          const match = file.value.match(/^\(([^,]+),\s*({.*})\)$/);
-          if (match) {
-            const fileUrl = match[1];
-            const timelinksData = JSON.parse(match[2]);
-            const timelinks = this.processTimelines(timelinksData.timelinks, context);
-            const fileName = fileUrl.split('/').pop() || 'Unknown file';
+    if (typeof url === 'string' && url.startsWith('(')) {
+      const match = url.match(/^\(([^,]+),\s*({.*})\)$/);
+      if (match) {
+        const fileUrl = match[1];
+        const timelinksData = JSON.parse(match[2]);
+        const timelinks = this.processTimelines(timelinksData.timelinks, context);
+        const fileName = fileUrl.split('/').pop() || 'Unknown file';
 
-            return {
-              value: fileUrl,
-              alt: fileName,
-              mimetype: this.getMimetypeFromUrl(fileUrl),
-              fileType: this.getFileType(this.getMimetypeFromUrl(fileUrl)),
-              timelinks: timelinks || {},
-            };
-          }
-        } catch (error) {
-          return {
-            value: file.value,
-          };
-        }
+        return [
+          {
+            value: fileUrl,
+            alt: fileName,
+            mimetype: this.getMimetypeFromUrl(fileUrl),
+            fileType: this.getFileType(this.getMimetypeFromUrl(fileUrl)),
+            timelinks: timelinks || {},
+          },
+        ];
       }
-
-      return {
-        value: file.value,
-        alt: file.alt,
-        timelinks: file.timelinks,
-        mimetype: file.mimetype,
-        fileType: file.fileType,
-      };
-    });
+    }
+    return [
+      {
+        value: url?.toString() || '',
+        timelinks: [],
+      },
+    ];
   }
 
-  private processTimelines(timelines: string, _context: ProcessingContext): Timelink[] {
-    return timelines.split(',').map(timeline => {
-      const [time, label] = timeline.split('":"').map(part => part.replace(/^"|"$/g, ''));
+  private processTimelines(
+    timelines: { [key: string]: string },
+    _context: ProcessingContext
+  ): Timelink[] {
+    return Object.entries(timelines).map(([time, label]) => {
       const [hours, minutes, seconds] = time.split(':').map(Number);
       return {
         label,

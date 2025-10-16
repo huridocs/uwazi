@@ -1,5 +1,4 @@
-import { MetadataProperty, EntityPermissions } from 'app/V2/domain/entities/types';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataProperty } from 'app/V2/domain/entities/types';
 import { AdapterMetadataProperty, ProcessingContext, PropertyTypeProcessor } from './types';
 
 export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
@@ -7,39 +6,17 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
 
   abstract readonly propertyTypes: string[];
 
-  protected pushProperty(
-    property: AdapterMetadataProperty,
-    values: Exclude<MetadataProperty, EntityPermissions>['values'],
-    results: Map<string, AdapterMetadataProperty>
-  ) {
-    const key = `${property.entity._id}:${property.name}`;
-    results.set(key, {
-      _id: property._id,
-      entity: property.entity,
-      index: property.index,
-      type: property.type,
-      name: property.name,
-      label: property.label,
-      translatedLabel: property.translatedLabel,
-      values,
-      inherited: property.inherited || false,
-      inheritedType: property.inheritedType,
-      properties: property.properties,
-      value: property.value, //TODO: check if this can be used somehow else
-    } as AdapterMetadataProperty);
-  }
-
   processBatch(
-    properties: Partial<AdapterMetadataProperty>[],
+    properties: AdapterMetadataProperty[],
     context: ProcessingContext,
     _processors?: Map<string, PropertyTypeProcessor>
-  ): Map<string, AdapterMetadataProperty> {
-    const results = new Map<string, AdapterMetadataProperty>();
+  ): AdapterMetadataProperty[] {
+    const results: AdapterMetadataProperty[] = [];
 
     properties.forEach(property => {
       try {
-        const values = this.formatProperty(property as AdapterMetadataProperty, context);
-        this.pushProperty(property as AdapterMetadataProperty, values, results);
+        const values = this.formatProperty(property, context);
+        results.push({ ...property, values });
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
       }
@@ -51,13 +28,11 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   protected formatProperty(
     property: AdapterMetadataProperty,
     _context: ProcessingContext
-  ): Exclude<MetadataProperty, EntityPermissions>['values'] {
+  ): MetadataProperty['values'] {
     if (!property.value) {
       return [];
     }
     const values = Array.isArray(property.value) ? property.value : [property.value];
-    return values.map((v: PropertyValueSchema) => ({
-      value: v,
-    }));
+    return values.map((value: any) => ({ value }));
   }
 }

@@ -1,5 +1,5 @@
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
 export interface Timelink {
@@ -41,7 +41,6 @@ export type AllowedPropertyTypes =
   | LinkPropertyTypes
   | NumericPropertyTypes
   | GeneratedIdPropertyTypes
-  // | PermissionPropertyTypes
   | 'nested'
   | 'newRelationship';
 
@@ -79,22 +78,13 @@ export interface BaseMetadataProperty {
   readonly inherited?: boolean;
   readonly inheritedType?: string;
   readonly type: AllowedPropertyTypes;
-  readonly properties: ExtendedPropertyInfo;
-  // readonly values: Array<{
-  //   value: PropertyValueSchema;
-  //   label?: string;
-  //   source?: SourceValue;
-  // }>;
+  readonly properties?: ExtendedPropertyInfo;
 }
 
 export interface SimpleMetadataProperty extends BaseMetadataProperty {
-  readonly type: 'text' | 'generatedid' | 'numeric';
+  readonly type: 'text' | 'generatedid' | 'numeric' | 'markdown' | 'preview' | 'nested';
   readonly values: Array<{ value: string; source?: SourceValue }>;
 }
-// export interface NumberMetadataProperty extends BaseMetadataProperty {
-//   readonly type: 'numeric';
-//   readonly values: Array<{ value: number; source?: SourceValue }>;
-// }
 
 export interface DateMetadataProperty extends BaseMetadataProperty {
   readonly type: 'date';
@@ -197,14 +187,6 @@ export interface LinkMetadataProperty extends Omit<BaseMetadataProperty, 'type'>
   }>;
 }
 
-// export interface NumericMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
-//   readonly type: 'numeric';
-// }
-
-// export interface GeneratedIdMetadataProperty extends Omit<BaseMetadataProperty, 'type'> {
-//   readonly type: 'generatedid';
-// }
-
 export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, 'values' | 'type'> {
   readonly type: 'permissions';
   readonly values: Array<{
@@ -223,32 +205,18 @@ export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, '
   }>;
 }
 
-export type InheritedTypes =
-  | DateMetadataProperty["values"]
-  | MultiDateMetadataProperty["values"]
-  | DateRangeMetadataProperty["values"]
-  | MultiDateRangeMetadataProperty["values"]
-  | GeolocationMetadataProperty["values"]
-  | MediaMetadataProperty["values"]
-  | ImageMetadataProperty["values"]
-  | PreviewMetadataProperty["values"]
-  | SimpleMetadataProperty["values"]
-  | MarkdownMetadataProperty["values"]
-  | SelectMetadataProperty["values"]
-  | MultiSelectMetadataProperty["values"]
-  | LinkMetadataProperty["values"]
-  // | NumericMetadataProperty["values"]
-  // | GeneratedIdMetadataProperty["values"]
-  | PermissionMetadataProperty['values'];
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
-  readonly type: 'relationship';
-  readonly values: InheritedTypes;
+  readonly type: 'relationship' | 'newRelationship';
+  readonly values: Array<{
+    value: string;
+    label?: string;
+    url?: string;
+    icon?: EntitySchema['icon'];
+  }>;
 }
 
 export type MetadataProperty =
-  // | NumberMetadataProperty
   | SimpleMetadataProperty
-  // | BaseMetadataProperty //try to avoid export it
   | DateMetadataProperty
   | MultiDateMetadataProperty
   | DateRangeMetadataProperty
@@ -261,9 +229,6 @@ export type MetadataProperty =
   | SelectMetadataProperty
   | MultiSelectMetadataProperty
   | LinkMetadataProperty
-  // | NumericMetadataProperty
-  // | GeneratedIdMetadataProperty
-  | PermissionMetadataProperty
   | RelationshipMetadataProperty;
 
 export interface EntityTemplate {

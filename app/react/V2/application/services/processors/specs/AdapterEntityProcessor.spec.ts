@@ -19,39 +19,35 @@ describe('Adapter Entity Processor Tests', () => {
     const result = adapterEntityProcessor.processEntity(rawEntity);
     entity = result.entity;
     ({ metadata, ...restEntity } = entity);
-
-    metadata.forEach((item, index) => {
-      console.log(`${index}: ${item.name} (${item.type})`);
-    });
   });
 
   it('should process entity data', async () => {
     const creationDate: DateMetadataProperty = {
       name: 'creationDate',
       type: 'date',
-      label: 'creationDate',
-      translatedLabel: 'creationDate',
-      value: 1704067200,
+      label: 'Creation Date',
+      translatedLabel: 'Creation Date',
       values: [
         {
           value: 1704067200,
           label: 'Jan 1, 2024',
         },
       ],
+      _id: 'creationDate',
     };
 
     const editDate: DateMetadataProperty = {
       name: 'editDate',
       type: 'date',
-      label: 'editDate',
-      translatedLabel: 'editDate',
-      value: 1704153600,
+      label: 'Edit Date',
+      translatedLabel: 'Edit Date',
       values: [
         {
           value: 1704153600,
           label: 'Jan 2, 2024',
         },
       ],
+      _id: 'editDate',
     };
 
     const formattedTemplate = {

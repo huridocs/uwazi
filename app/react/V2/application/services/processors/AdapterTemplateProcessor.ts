@@ -61,11 +61,11 @@ export class AdapterTemplateProcessor {
     template: Template,
     templateTranslations?: ClientTranslationContextSchema
   ): {
-    formattedProperties: Map<string, Partial<AdapterMetadataProperty>>;
-    formattedCommonProperties: Map<string, Partial<AdapterMetadataProperty>>;
+    formattedProperties: Map<string, AdapterMetadataProperty>;
+    formattedCommonProperties: Map<string, AdapterMetadataProperty>;
   } {
-    const formattedProperties = new Map<string, Partial<AdapterMetadataProperty>>();
-    const formattedCommonProperties = new Map<string, Partial<AdapterMetadataProperty>>();
+    const formattedProperties = new Map<string, AdapterMetadataProperty>();
+    const formattedCommonProperties = new Map<string, AdapterMetadataProperty>();
 
     const properties = this.filterPropertiesByIncludeFields(template.properties);
     const commonProperties = this.filterPropertiesByIncludeFields(template.commonProperties);
@@ -91,7 +91,7 @@ export class AdapterTemplateProcessor {
 
   private formatAndSetProperties(
     properties: PropertySchema[],
-    targetMap: Map<string, Partial<AdapterMetadataProperty>>,
+    targetMap: Map<string, AdapterMetadataProperty>,
     templateTranslations?: ClientTranslationContextSchema
   ): void {
     properties.forEach((property: PropertySchema, index: number) => {
@@ -102,7 +102,7 @@ export class AdapterTemplateProcessor {
 
   private getInheritedProperty(
     property: PropertySchema
-  ): Partial<AdapterMetadataProperty['properties']['inheritedProperty']> {
+  ): Partial<AdapterMetadataProperty['properties']['inheritedProperty']> | undefined {
     const template = this.context.templates.find(template => template._id === property.content);
     const inheritedProperty = template?.properties?.find(
       property => property._id === property.inherit?.property
@@ -121,15 +121,15 @@ export class AdapterTemplateProcessor {
   private formatPropertyDefinition(
     property: PropertySchema,
     templateTranslations?: ClientTranslationContextSchema
-  ): Omit<AdapterMetadataProperty, 'values' | 'entity' | 'index'> {
+  ): AdapterMetadataProperty {
     const inheritedProperty = this.getInheritedProperty(property);
     let options;
     if (this.context.includeOptions) {
       const thesaurus = this.context.thesauri.find(t => t._id === property.content);
       options = thesaurus?.values;
     }
-    return {
-      _id: property._id as string,
+    return Object.assign({} as AdapterMetadataProperty, property, {
+      _id: property._id!.toString(),
       name: property.name,
       label: property.label,
       type: property.type,
@@ -138,10 +138,11 @@ export class AdapterTemplateProcessor {
         content: property.content,
         inherited: property.inherit !== undefined,
         translatedLabel: templateTranslations?.values[property.label] || property.label,
-        inheritedProperty: inheritedProperty as any, //TODO FIX 
+        inheritedProperty: inheritedProperty as any, //TODO FIX
         translationContext: templateTranslations,
         options: [],
       },
-    };
+      values: [],
+    });
   }
 }

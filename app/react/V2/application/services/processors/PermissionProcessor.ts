@@ -10,11 +10,11 @@ export class PermissionProcessor extends BasePropertyProcessor {
   protected formatProperty(
     property: AdapterMetadataProperty,
     context: ProcessingContext
-  ): PermissionMetadataProperty['values'] {
+  ): AdapterMetadataProperty['values'] {
     const entityPermissions = this.extractEntityPermissions(property, context);
     return [
       {
-        value: entityPermissions,
+        values: entityPermissions,
         label: 'Permissions',
       },
     ];

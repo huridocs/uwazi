@@ -43,11 +43,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         data.type === 'multidaterange'
       ) {
         return (
-          <Date
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-          />
+          <Date values={data.values} label={data.label} translationContext={translationContext} />
         );
       }
 
@@ -73,7 +69,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -100,7 +96,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          //hideLabel={hideLabel}
+            //hideLabel={hideLabel}
           />
         );
       }
@@ -164,11 +160,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       )}
 
       {entity.editDate && (
-        <Date
-          values={entity.editDate.values}
-          label="Edit Date"
-          translationContext="System"
-        />
+        <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
       )}
 
       {entity.metadata.map(renderMetadataProperty)}
