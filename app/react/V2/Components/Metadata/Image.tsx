@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type ImageProps = MetadataFieldProps & {
@@ -17,7 +17,13 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
 
   return (
     <MetadataCard>
-      <MetadataLabel label={label} hideLabel={hideLabel} translationContext={translationContext} />
+      <dt>
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
+      </dt>
 
       {values.map((image, index) => {
         const hasError = errorIndices.has(index);

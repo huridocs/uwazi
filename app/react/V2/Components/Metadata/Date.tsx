@@ -2,7 +2,7 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { DateMetadataProperty, DateRangeMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type DateProps = MetadataFieldProps & {
@@ -11,7 +11,9 @@ type DateProps = MetadataFieldProps & {
 
 const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
   <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    <dt>
+      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    </dt>
     <dd className="flex flex-col gap-1">
       {values.map((stamp, index) => {
         if (typeof stamp.label === 'string') {

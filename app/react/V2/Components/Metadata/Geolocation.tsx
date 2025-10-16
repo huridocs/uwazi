@@ -2,7 +2,7 @@ import React from 'react';
 import { Map } from 'app/Map';
 import { MapProps } from 'app/Map/MapContainer';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type GeolocationProps = MetadataFieldProps & {
@@ -38,7 +38,9 @@ const Geolocation = ({
   height = 500,
 }: GeolocationProps) => (
   <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    <dt>
+      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    </dt>
     <Map
       height={height}
       markers={formatMarkers(markers, label)}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MetadataFieldProps } from './types';
 import { CountryFlag } from '../CustomIcons';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 
 type TitleProps = MetadataFieldProps & {
   title: string;
@@ -10,7 +10,9 @@ type TitleProps = MetadataFieldProps & {
 
 const Title = ({ title, label, iconId, translationContext }: TitleProps) => (
   <>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel />
+    <dt>
+      <PropertyLabel label={label} translationContext={translationContext} hideLabel />
+    </dt>
     <dd className="font-bold text-gray-900">
       <span className="flex flex-row flex-nowrap gap-2 align-middle">
         {iconId && <CountryFlag id={iconId} />}
