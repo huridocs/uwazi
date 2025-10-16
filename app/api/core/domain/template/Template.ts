@@ -3,9 +3,11 @@ import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
+import { Property, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
+import { PropertyType } from './PropertyType';
+import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
 
 type TemplateProperty = Property | V1RelationshipProperty;
 
@@ -78,7 +80,7 @@ class Template {
   private validate() {
     const validator = new Validator([
       new TemplateWithDuplicatedPropertyValidator(),
-      // new TemplateWithMissingCommonPropertyValidator(),
+      new TemplateWithMissingCommonPropertyValidator(),
     ]);
 
     validator.validate(this);
@@ -170,7 +172,7 @@ class Template {
     return null;
   }
 
-  getPropertiesByType(type: PropertyTypes) {
+  getPropertiesByType(type: PropertyType) {
     return this.properties.filter(p => p.type === type);
   }
 

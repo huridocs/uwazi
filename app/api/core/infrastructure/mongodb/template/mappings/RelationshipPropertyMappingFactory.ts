@@ -1,8 +1,9 @@
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { Property, PropertyTypes } from 'api/core/domain/template/Property';
+import { Property } from 'api/core/domain/template/Property';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { PropertyType } from 'api/core/domain/template/PropertyType';
 
-type MappedPropertyTypes = Exclude<PropertyTypes, 'preview' | 'newRelationship'>;
+type MappedPropertyTypes = Exclude<PropertyType, 'preview' | 'newRelationship'>;
 
 type PropertyMappings = { [key in MappedPropertyTypes]: () => unknown };
 

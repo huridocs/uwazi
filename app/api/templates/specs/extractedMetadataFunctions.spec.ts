@@ -65,6 +65,20 @@ describe.each([
           type: 'text',
           isCommonProperty: true,
         },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
       ],
       properties: [
         {
@@ -127,6 +141,19 @@ describe.each([
           label: 'Title',
           type: 'text',
           isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
         },
       ],
       properties: [
