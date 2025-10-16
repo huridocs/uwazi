@@ -83,13 +83,21 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
   ): SelectMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    return values.map((item: MetadataObjectSchema) => {
-      const inheritedValue = item.value;
-      // const relationshipMetadata = item._relationshipMetadata;
+    return values.map((item: any) => {
+      const relationshipMetadata = item._relationshipMetadata;
 
       return {
-        value: inheritedValue,
-        label: '', //relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString(),
+        value: item.value.value,
+        label: item.value.label,
+        source: relationshipMetadata
+          ? {
+              icon: relationshipMetadata.icon,
+              value: relationshipMetadata.entity || '',
+              label: relationshipMetadata.label || '',
+              url: relationshipMetadata.url || '',
+            }
+          : undefined,
+        parent: item.value.parent,
       };
     });
   }
@@ -117,8 +125,6 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
         ...(context.translateLabels
           ? { translatedLabel: property.properties.translationContext?.values[option.label] }
           : {}),
-        group: null,
-        level: 0,
       });
 
       if (option.values && Array.isArray(option.values)) {
@@ -132,8 +138,6 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
               ? property.properties.translationContext?.values[subOption.label] || subOption.label
               : undefined,
             selected: selectedValues.includes(subOption.id || ''),
-            group: option.id || null,
-            level: 1,
           });
         });
       }

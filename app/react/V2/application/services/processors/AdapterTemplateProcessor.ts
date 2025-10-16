@@ -1,7 +1,9 @@
-import { Template } from 'app/apiResponseTypes';
+import { has } from 'lodash';
+import { ClientThesaurusValue, Template } from 'app/apiResponseTypes';
 import { ClientTranslationContextSchema } from 'app/istore';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { AdapterEntityTemplate, AdapterMetadataProperty, ProcessingContext } from './types';
+import { ExtendedPropertyInfo, InheritedPropertyInfo } from 'app/V2/domain/entities/types';
 
 export class AdapterTemplateProcessor {
   private readonly context: ProcessingContext;
@@ -101,8 +103,9 @@ export class AdapterTemplateProcessor {
   }
 
   private getInheritedProperty(
-    property: PropertySchema
-  ): Partial<AdapterMetadataProperty['properties']['inheritedProperty']> | undefined {
+    property: PropertySchema,
+    templateTranslations?: ClientTranslationContextSchema
+  ): InheritedPropertyInfo | undefined {
     const propertyTemplate = this.context.templates.find(
       template => template._id === property.content
     );
@@ -111,10 +114,11 @@ export class AdapterTemplateProcessor {
     );
     if (inheritedProperty) {
       return {
-        property: inheritedProperty._id!.toString(),
         type: inheritedProperty.type,
         name: inheritedProperty.name,
         label: inheritedProperty.label,
+        translatedLabel:
+          templateTranslations?.values[inheritedProperty.label] || inheritedProperty.label,
       };
     }
     return undefined;
@@ -128,22 +132,39 @@ export class AdapterTemplateProcessor {
     let options;
     if (this.context.includeOptions) {
       const thesaurus = this.context.thesauri.find(t => t._id === property.content);
-      options = thesaurus?.values;
+
+      options = thesaurus?.values.map(value => {
+        const parent = has(value, 'parent') ? (value.parent as ClientThesaurusValue) : undefined;
+        return {
+          value: value.id || '',
+          label: value.label || '',
+          translatedLabel: templateTranslations?.values[value.label] || value.label,
+          selected: false,
+          parent: parent
+            ? {
+                value: parent.id || '',
+                label: parent.label || '',
+                translatedLabel: templateTranslations?.values[parent.label] || parent.label,
+              }
+            : undefined,
+        };
+      });
     }
+
+    const properties: ExtendedPropertyInfo = {
+      _id: property._id!.toString(),
+      content: property.content,
+      inherited: property.inherit !== undefined,
+      inheritedProperty: inheritedProperty,
+      options,
+    };
     return Object.assign({} as AdapterMetadataProperty, property, {
       _id: property._id!.toString(),
       name: property.name,
       label: property.label,
       type: property.type,
       translatedLabel: templateTranslations?.values[property.label] || property.label,
-      properties: {
-        _id: property._id!.toString(),
-        content: property.content,
-        inherited: property.inherit !== undefined,
-        inheritedProperty: inheritedProperty as any, //TODO FIX
-        translationContext: templateTranslations,
-        options,
-      },
+      properties,
       values: [],
     });
   }

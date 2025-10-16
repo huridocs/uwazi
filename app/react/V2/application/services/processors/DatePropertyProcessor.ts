@@ -65,9 +65,9 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
       let timestamp: number = 0;
 
       if (typeof value.value === 'number') {
-        const valueString = value.value.toString();
-        if (valueString.includes('e')) {
-          timestamp = value.value / 1000;
+        // Check if timestamp is in milliseconds (13+ digits) or seconds (10 digits)
+        if (value.value > 9999999999) {
+          timestamp = Math.floor(value.value / 1000);
         } else {
           timestamp = value.value;
         }

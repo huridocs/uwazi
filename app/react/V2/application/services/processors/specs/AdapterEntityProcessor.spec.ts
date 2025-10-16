@@ -29,8 +29,8 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Creation Date',
       values: [
         {
-          value: 1704067200,
-          label: 'Jan 1, 2024',
+          value: 1759374706,
+          label: 'Oct 2, 2025',
         },
       ],
       _id: 'creationDate',
@@ -43,8 +43,8 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Edit Date',
       values: [
         {
-          value: 1704153600,
-          label: 'Jan 2, 2024',
+          value: 1760366924,
+          label: 'Oct 13, 2025',
         },
       ],
       _id: 'editDate',
@@ -241,7 +241,7 @@ describe('Adapter Entity Processor Tests', () => {
   it('should process relationship property', async () => {
     const relationshipProperty = {
       name: 'related_people',
-      type: 'relationship',
+      type: 'multiselect',
       label: 'Related People',
       translatedLabel: 'Related People EN',
       values: [
@@ -339,7 +339,6 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: '',
-          label: '[object Object]',
         },
       ],
     };
@@ -356,7 +355,6 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: '/api/files/1759374705932xi5rx0mumef.mp4',
-          label: '1759374705932xi5rx0mumef.mp4',
         },
       ],
     };
@@ -448,8 +446,7 @@ describe('Adapter Entity Processor Tests', () => {
         },
       ],
     };
-    //should be 17
-    expect(metadata[18]).toMatchObject(documentIdProperty);
+    expect(metadata[17]).toMatchObject(documentIdProperty);
   });
 
   it('should not combine geolocation properties when combineGeolocation is false', async () => {

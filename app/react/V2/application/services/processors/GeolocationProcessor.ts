@@ -79,7 +79,7 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     values.forEach((geo: any) => {
       if (!geo || !geo.value) return;
 
-      const { lat, lon, label } = geo.value;
+      const { lat, lon, label } = geo.value.value || geo.value;
 
       if (lat === undefined || lon === undefined || lat === null || lon === null) {
         return;
@@ -95,7 +95,14 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         label: geo._relationshipMetadata?.label || label || '',
         name: property.name,
         color: templateColor,
-        properties: geo._relationshipMetadata || undefined,
+        source: {
+          value: geo._relationshipMetadata?.entity || '',
+          label: geo._relationshipMetadata?.label || '',
+          icon: geo._relationshipMetadata?.icon,
+          url: geo._relationshipMetadata?.url || '',
+          type: 'entity',
+          inheritedType: 'geolocation',
+        },
       };
 
       allGeolocationValues.push(result);

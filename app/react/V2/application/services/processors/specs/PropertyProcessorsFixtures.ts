@@ -9,8 +9,8 @@ export const rawEntity: EntitySchema = {
   title: 'Emergency Incident Report - Downtown Traffic Accident',
   template: '68ddecdbc9474e23bb5e914b',
   published: false,
-  creationDate: 1759374706197,
-  editDate: 1760366924144,
+  creationDate: 1759374706197, // Oct 2, 2025 (seconds)
+  editDate: 1760366924144, // Oct 13, 2025 (seconds)
   metadata: {
     simple_text: [
       {

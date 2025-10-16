@@ -1,5 +1,3 @@
-import { EntitySchema } from 'shared/types/entityType';
-
 export interface Timelink {
   readonly time: number;
   readonly hh: number;
@@ -43,11 +41,16 @@ export type AllowedPropertyTypes =
   | 'newRelationship';
 
 export interface SourceValue {
-  entityId: string;
   value: string;
   label: string;
+  color?: string;
 }
-
+export interface InheritedPropertyInfo {
+  type: AllowedPropertyTypes;
+  name: string;
+  label: string;
+  translatedLabel?: string;
+}
 export interface ExtendedPropertyInfo {
   _id: string;
   template?: {
@@ -56,15 +59,9 @@ export interface ExtendedPropertyInfo {
     label: string;
     color: string;
   };
-  inheritedProperty?: {
-    property: string;
-    type: AllowedPropertyTypes;
-    name: string;
-    label: string;
-  };
-  content?: string;
   inherited: boolean;
-  translatedLabel?: string;
+  inheritedProperty?: InheritedPropertyInfo;
+  content?: string;
   options?: SelectMetadataProperty['values'];
 }
 
@@ -107,6 +104,12 @@ export interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataPr
   readonly type: 'multidaterange';
 }
 
+export interface Icon {
+  _id: string;
+  label: string;
+  type: string;
+}
+
 export interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'geolocation';
   readonly values: Array<{
@@ -117,10 +120,11 @@ export interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 
       entity?: {
         _id: string;
         label: string;
-        icon?: string;
+        icon?: Icon;
         url?: string;
       };
     };
+    source?: SourceValue;
   }>;
 }
 
@@ -132,6 +136,7 @@ export interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'value
     timelinks?: Timelink[];
     mimetype?: string;
     fileType?: string;
+    source?: SourceValue;
   }>;
 }
 
@@ -140,6 +145,7 @@ export interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'value
   readonly values: Array<{
     value: string;
     alt?: string;
+    source?: SourceValue;
   }>;
 }
 
@@ -147,6 +153,7 @@ export interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'val
   readonly type: 'preview';
   readonly values: Array<{
     value: string;
+    source?: SourceValue;
   }>;
 }
 export interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
@@ -154,6 +161,7 @@ export interface MarkdownMetadataProperty extends Omit<BaseMetadataProperty, 'va
   readonly values: Array<{
     value: string;
     label: string;
+    source?: SourceValue;
   }>;
 }
 export interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
@@ -163,13 +171,12 @@ export interface SelectMetadataProperty extends Omit<BaseMetadataProperty, 'valu
     label?: string;
     translatedLabel?: string;
     selected?: boolean;
-    group?: string | null;
-    level?: number;
     parent?: {
       label: string;
       translatedLabel?: string;
       value: string;
     };
+    source?: SourceValue;
   }>;
 }
 
@@ -182,6 +189,7 @@ export interface LinkMetadataProperty extends Omit<BaseMetadataProperty, 'type'>
   readonly values: Array<{
     value: string;
     label?: string;
+    source?: SourceValue;
   }>;
 }
 
@@ -205,12 +213,16 @@ export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, '
 
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship' | 'newRelationship';
-  readonly values: Array<{
+  readonly values:
+  | MetadataProperty
+  | Array<{
     value: string;
-    label?: string;
+    label: string;
+    icon?: Icon;
     url: string;
-    icon?: EntitySchema['icon'];
+    source?: { value: string; label: string; url: string };
   }>;
+  readonly properties?: ExtendedPropertyInfo;
 }
 
 export type MetadataProperty =

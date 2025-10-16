@@ -113,6 +113,53 @@ export class AdapterEntityProcessor {
     return propertiesByType;
   }
 
+  private processFinalValues(properties: AdapterMetadataProperty[]): AdapterMetadataProperty[] {
+    return properties.map(property => {
+      if (property.type === 'relationship' && property.value && Array.isArray(property.value)) {
+        const processedValues = this.flattenInheritedValues(property.value, []);
+        return {
+          ...property,
+          value: processedValues,
+          values: processedValues,
+        };
+      }
+      return property;
+    });
+  }
+
+  private flattenInheritedValues(values: any[], sourceChain: any[]): any[] {
+    const result: any[] = [];
+
+    values.forEach(value => {
+      if (value.inheritedValue && Array.isArray(value.inheritedValue)) {
+        const newSourceChain = [
+          ...sourceChain,
+          {
+            value: value.value,
+            label: value.label,
+            icon: value.icon,
+            type: value.type,
+          },
+        ];
+        const nestedValues = this.flattenInheritedValues(value.inheritedValue, newSourceChain);
+        result.push(...nestedValues);
+      } else {
+        const source =
+          sourceChain.length > 1
+            ? sourceChain[sourceChain.length - 2]
+            : sourceChain.length > 0
+              ? sourceChain[sourceChain.length - 1]
+              : null;
+        result.push({
+          ...value,
+          _inheritedSource: source,
+        });
+      }
+    });
+
+    return result;
+  }
+
   private processPropertiesByType(
     propertiesByType: Map<string, AdapterMetadataProperty[]>
   ): AdapterMetadataProperty[] {
@@ -121,7 +168,8 @@ export class AdapterEntityProcessor {
     Array.from(propertiesByType.entries()).forEach(([propertyType, properties]) => {
       const processor = this.processors.get(propertyType) || this.processors.get('any');
       if (processor && properties.length > 0) {
-        const results = processor.processBatch(properties, this.context, this.processors);
+        const processedProperties = this.processFinalValues(properties);
+        const results = processor.processBatch(processedProperties, this.context, this.processors);
         allResults.push(...results);
       }
     });
@@ -263,7 +311,7 @@ export class AdapterEntityProcessor {
 
   private shouldConvertToInheritedType(property: AdapterMetadataProperty): boolean {
     return (
-      property.properties.inheritedProperty?.type === 'relationship' &&
+      property.type === 'relationship' &&
       !!property.properties.inheritedProperty?.type &&
       property.properties.inheritedProperty.type !== 'relationship'
     );
@@ -303,6 +351,10 @@ export class AdapterEntityProcessor {
       _isInheritedProperty: true,
       _inheritedType: inheritedType,
       value: transformedValues,
+      properties: {
+        ...property.properties,
+        inherited: true,
+      },
     });
   }
 
@@ -323,7 +375,11 @@ export class AdapterEntityProcessor {
         : valueObj;
 
     return {
-      value,
+      value: {
+        value,
+        label: (inheritedValue as any)?.label || value?.toString(),
+        parent: (inheritedValue as any)?.parent,
+      },
       _relationshipMetadata: {
         entity: relObj.value || '',
         label: relObj.label || '',
