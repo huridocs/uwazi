@@ -501,7 +501,7 @@ export default {
     const options = { sortedProperties: [], ..._options };
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
-    if (!template || !thesauri.size) {
+    if (!template) {
       return { ...doc, metadata: [], documentType: '' };
     }
 

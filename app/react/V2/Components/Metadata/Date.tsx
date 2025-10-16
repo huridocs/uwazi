@@ -1,9 +1,9 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
+import { DateMetadataProperty, DateRangeMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
-import { DateMetadataProperty, DateRangeMetadataProperty } from 'app/V2/domain/entities/types';
 
 type DateProps = MetadataFieldProps & {
   values: DateMetadataProperty['values'] | DateRangeMetadataProperty['values'];
@@ -13,12 +13,21 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
   <MetadataCard>
     <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
     <div className="flex flex-col gap-1" role="group">
-      {values.map(stamp => {
+      {values.map((stamp, index) => {
         if (typeof stamp.label === 'string') {
-          return <dd className="font-medium text-gray-900">{stamp.label}</dd>;
+          return (
+            // eslint-disable-next-line react/no-array-index-key
+            <dd key={index} className="font-medium text-gray-900">
+              {stamp.label}
+            </dd>
+          );
         }
         return (
-          <dd className="font-medium text-gray-900">
+          <dd
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            className="font-medium text-gray-900"
+          >
             <span className="sr-only">
               <Translate>From</Translate>
             </span>
