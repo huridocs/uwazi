@@ -1,8 +1,8 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';

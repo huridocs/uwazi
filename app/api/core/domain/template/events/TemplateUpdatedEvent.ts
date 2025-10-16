@@ -1,4 +1,4 @@
-import { AbstractEvent } from 'api/eventsbus';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 

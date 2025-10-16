@@ -10,7 +10,7 @@ import {
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import { search } from 'api/search';
@@ -32,8 +32,8 @@ import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/
 import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';
 import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
 import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from '../core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../core/domain/template/events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';

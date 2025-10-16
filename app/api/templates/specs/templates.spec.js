@@ -9,16 +9,16 @@ import { ObjectId } from 'mongodb';
 import * as idGenerator from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
 import { TemplateInUseError } from 'api/core/domain/template/errors';
-import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from '../../core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../../core/domain/template/events/TemplateUpdatedEvent';
 import templates from '../templates';
 import templatesModel from '../templatesModel';
 import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';

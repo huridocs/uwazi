@@ -9,7 +9,7 @@ import {
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Template } from 'api/core/domain/template/Template';
-import { TemplateUpdatedEventContext } from 'api/templates/events/TemplateUpdatedEvent';
+import { TemplateUpdatedEventContext } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type Deps = {

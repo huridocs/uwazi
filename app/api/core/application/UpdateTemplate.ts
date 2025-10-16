@@ -4,7 +4,7 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { Template } from 'api/core/domain/template/Template';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { TranslationService } from '../domain/template/TranslationService';
