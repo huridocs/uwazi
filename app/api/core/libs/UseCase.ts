@@ -4,8 +4,8 @@ import { EventsBus } from 'api/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { UserSchema } from 'shared/types/userType';
 import { Tenant } from 'api/tenants/tenantContext';
-import { TransactionManager } from '../../common.v2/contracts/TransactionManager';
-import { IdGenerator } from '../../common.v2/contracts/IdGenerator';
+import { TransactionManager } from './TransactionManager';
+import { IdGenerator } from './IdGenerator';
 
 interface UseCase<Input, Output> {
   execute(input: Input, ...args: any): Promise<Output>;

@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { TransactionManager } from 'api/core/libs/TransactionManager';
 import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { objectIndex } from 'shared/data_utils/objectIndex';

@@ -3,7 +3,7 @@ import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSourc
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { IdGenerator } from 'api/core/libs/IdGenerator';
 import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';
 import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';

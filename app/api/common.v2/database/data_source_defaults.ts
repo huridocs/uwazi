@@ -1,6 +1,6 @@
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { dbSessionContext } from 'api/odm/sessionsContext';
-import { IdGenerator } from '../contracts/IdGenerator';
+import { IdGenerator } from '../../core/libs/IdGenerator';
 import { getClient } from './getConnectionForCurrentTenant';
 import { MongoIdHandler } from './MongoIdGenerator';
 import { MongoTransactionManager } from './MongoTransactionManager';
