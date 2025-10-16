@@ -23,8 +23,8 @@ export type SelectPropertyTypes = 'select' | 'multiselect';
 export type GeolocationPropertyTypes = 'geolocation';
 export type RelationshipPropertyTypes = 'relationship';
 export type FilePropertyTypes = 'image' | 'media';
-export type DefaultPropertyTypes = 'text' | 'markdown' | 'preview';
-export type LinkPropertyTypes = 'link';
+export type DefaultPropertyTypes = 'text' | 'markdown';
+export type ValuePropertyTypes = 'link' | 'preview';
 export type NumericPropertyTypes = 'numeric';
 export type GeneratedIdPropertyTypes = 'generatedid';
 export type PermissionPropertyTypes = 'permissions';
@@ -36,7 +36,7 @@ export type AllowedPropertyTypes =
   | RelationshipPropertyTypes
   | FilePropertyTypes
   | DefaultPropertyTypes
-  | LinkPropertyTypes
+  | ValuePropertyTypes
   | NumericPropertyTypes
   | GeneratedIdPropertyTypes
   | 'nested'

@@ -6,7 +6,7 @@ import {
 } from 'app/V2/domain/entities/types';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { DateRangeSchema } from 'shared/types/commonTypes';
+import { DateRangeSchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';
@@ -65,8 +65,12 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
       let timestamp: number = 0;
 
       if (typeof value.value === 'number') {
-        //how conditionally divide only if it's milliseconds
-        timestamp = value.value;
+        const valueString = value.value.toString();
+        if (valueString.includes('e')) {
+          timestamp = value.value / 1000;
+        } else {
+          timestamp = value.value;
+        }
       }
 
       const formattedValue = this.formatDate(timestamp, context);
@@ -80,7 +84,7 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
   ): DateRangeMetadataProperty['values'] {
     const ranges = Array.isArray(property.value) ? property.value : [property.value];
 
-    return ranges.flatMap(value => {
+    return ranges.flatMap(({ value }: MetadataObjectSchema) => {
       if (value === null || value === undefined) {
         return [];
       }

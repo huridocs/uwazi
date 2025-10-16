@@ -69,7 +69,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-          // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -90,38 +90,38 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         );
       }
 
-      // if (data.type === 'link') {
-      //   return (
-      //     <LinkProperty
-      //       values={data.values}
-      //       label={data.label}
-      //       translationContext={translationContext}
-      //     //hideLabel={hideLabel}
-      //     />
-      //   );
-      // }
+      if (data.type === 'link') {
+        return (
+          <LinkProperty
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+            //hideLabel={hideLabel}
+          />
+        );
+      }
 
-      // if (data.type === 'relationship') {
-      //   if (data.properties?.inherited && data.properties.inheritedProperty) {
-      //     const inheritedType = data.properties.inheritedProperty.type;
-      //     const reformattedData = {
-      //       values: data.values,
-      //       label: data.label,
-      //       name: data.name,
-      //       type: inheritedType,
-      //       translatedLabel: data.translatedLabel,
-      //       properties: data.properties,
-      //     };
-      //     return renderMetadataProperty(reformattedData as MetadataProperty);
-      //   }
-      //   return (
-      //     <Relationship
-      //       values={data.values}
-      //       label={data.label}
-      //       translationContext={translationContext}
-      //     />
-      //   );
-      // }
+      if (data.type === 'relationship') {
+        if (data.properties?.inherited && data.properties.inheritedProperty) {
+          const inheritedType = data.properties.inheritedProperty.type;
+          const reformattedData = {
+            values: data.values,
+            label: data.label,
+            name: data.name,
+            type: inheritedType,
+            translatedLabel: data.translatedLabel,
+            properties: data.properties,
+          };
+          return renderMetadataProperty(reformattedData as MetadataProperty);
+        }
+        return (
+          <Relationship
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+          />
+        );
+      }
 
       return undefined;
     },

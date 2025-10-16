@@ -17,7 +17,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
     return property.value.map((rel: MetadataObjectSchema) => ({
       value: rel.value?.toString() || '',
       label: rel.label,
-      url: '/entities/' + (rel.value?.toString() || ''),
+      url: '/entity/' + (rel.value?.toString() || ''),
       icon: rel.icon as any,
     }));
   }

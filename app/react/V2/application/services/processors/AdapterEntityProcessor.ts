@@ -18,6 +18,8 @@ import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { PermissionProcessor } from './PermissionProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
+import { LinkPropertyProcessor } from './LinkPropertyProcessor';
+import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -39,6 +41,8 @@ export class AdapterEntityProcessor {
       new RelationshipProcessor(),
       new MediaPropertyProcessor(),
       new PermissionProcessor(),
+      new LinkPropertyProcessor(),
+      new PreviewPropertyProcessor(),
     ];
 
     processors.forEach(processor => {

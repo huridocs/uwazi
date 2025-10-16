@@ -39,7 +39,7 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
         {values.map((value, index) => (
           <span key={index} className="flex flex-row flex-nowrap gap-2 align-middle">
             <dd className="font-medium text-gray-900">
-              {value.icon && <CountryFlag id={value.icon} />}
+              {value.icon && <CountryFlag id={value.icon._id || ''} />}
               <I18NLinkV2
                 className="underline"
                 to={value.url}

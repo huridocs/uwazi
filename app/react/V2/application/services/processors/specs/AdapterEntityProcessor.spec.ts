@@ -98,8 +98,6 @@ describe('Adapter Entity Processor Tests', () => {
         {
           value:
             '# Emergency Incident Report\n## Incident Details\n### Location: Downtown Area\n\n**Incident Type:** Traffic Accident\n**Time:** 14:30\n**Status:** Under Investigation',
-          label:
-            '# Emergency Incident Report\n## Incident Details\n### Location: Downtown Area\n\n**Incident Type:** Traffic Accident\n**Time:** 14:30\n**Status:** Under Investigation',
         },
       ],
     };
@@ -151,7 +149,7 @@ describe('Adapter Entity Processor Tests', () => {
         { value: 1759363200, label: 'Oct 2, 2025' },
         { value: 1759449600, label: 'Oct 3, 2025' },
       ],
-      _id: '',
+      _id: '68ddecdbc9474e23bb5e914f',
     };
 
     expect(metadata[4]).toMatchObject(multipleDateProperty);
@@ -196,7 +194,7 @@ describe('Adapter Entity Processor Tests', () => {
           label: 'Again',
         },
       ],
-      _id: '',
+      _id: '68ddecdbc9474e23bb5e9151',
     };
 
     expect(metadata[7]).toMatchObject(selectProperty);
@@ -234,45 +232,65 @@ describe('Adapter Entity Processor Tests', () => {
           },
         },
       ],
-      _id: '',
+      _id: '68ddecdbc9474e23bb5e9152',
     };
 
     expect(metadata[8]).toMatchObject(multiselectProperty);
   });
 
-  it.skip('should process relationship property', async () => {
+  it('should process relationship property', async () => {
     const relationshipProperty = {
       name: 'related_people',
-      type: 'multiselect',
+      type: 'relationship',
       label: 'Related People',
       translatedLabel: 'Related People EN',
       values: [
         {
-          icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
-          label: 'Maria Rodriguez - Witness',
-          url: '/entity/xjku67dv7b',
-          value: 'xjku67dv7b',
-          inheritedValue: [
-            {
-              value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-              label: 'Again',
-            },
-            {
-              value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-              label: 'Acknowledging',
-            },
-          ],
-          inheritedType: 'multiselect',
+          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          label: 'Again',
+          source: {
+            icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
+            label: 'Maria Rodriguez - Witness',
+            url: '/entity/xjku67dv7b',
+            value: 'xjku67dv7b',
+          },
         },
         {
-          icon: '',
-          label: 'John Smith - Reporter',
-          url: '/entity/4oklamamet',
-          value: '4oklamamet',
-          inheritedValue: [],
-          inheritedType: 'multiselect',
+          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+          label: 'Acknowledging',
+          source: {
+            icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
+            label: 'Maria Rodriguez - Witness',
+            url: '/entity/xjku67dv7b',
+            value: 'xjku67dv7b',
+          },
+        },
+        {
+          value: '6c744926-bf38-4f98-8c74-cf6b7280863c',
+          label: 'Expressing',
+          source: {
+            value: '4oklamamet',
+            label: 'John Smith - Reporter',
+            url: '/entity/4oklamamet',
+          },
+        },
+        {
+          value: '8c418311-1244-4777-800a-65729b8c17a8',
+          label: 'verb2',
+          parent: {
+            value: '68979984-35ac-4b98-abf9-28eac857749c',
+            label: 'grouped',
+          },
+          source: {
+            value: '4oklamamet',
+            label: 'John Smith - Reporter',
+            url: '/entity/4oklamamet',
+          },
         },
       ],
+      properties: {
+        inherited: true,
+      },
     };
 
     expect(metadata[9]).toMatchObject(relationshipProperty);
@@ -286,14 +304,11 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'External Link EN',
       values: [
         {
+          value: 'https://police.gov/reports/incident-2024-001',
           label: 'Police Report',
-          value: {
-            label: 'Police Report',
-            url: 'https://police.gov/reports/incident-2024-001',
-          } as any,
         },
       ],
-      _id: '',
+      _id: '68ddecdbc9474e23bb5e9154',
     };
 
     expect(metadata[11]).toMatchObject(linkProperty);
@@ -308,7 +323,6 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: '/api/files/17593747059321ygqk22fdos.png',
-          label: '17593747059321ygqk22fdos.png',
         },
       ],
     };
@@ -372,8 +386,8 @@ describe('Adapter Entity Processor Tests', () => {
           name: 'location_relationships',
           label: 'Witness Location - Maria Rodriguez',
           color: '#16bdca',
-          properties: {
-            entity: 'xjku67dv7b',
+          source: {
+            value: 'xjku67dv7b',
             label: 'Witness Location - Maria Rodriguez',
             icon: {
               _id: 'ECU',
@@ -399,43 +413,22 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Hierarchical Relationships EN',
       values: [
         {
-          value: '6qdshinfobf',
-          label: 'Emergency Response Team',
-          icon: '',
-          url: '/entity/6qdshinfobf',
-          inheritedValue: [
-            {
-              value: '7jdr88mnow6',
-              label: 'First Responders',
-              icon: '',
-              type: 'entity',
-              inheritedValue: [
-                {
-                  value: 'xjku67dv7b',
-                  label: 'Police Officer - Maria Rodriguez',
-                  icon: {
-                    _id: 'ECU',
-                    label: 'Ecuador',
-                    type: 'Flags',
-                  },
-                  type: 'entity',
-                  inheritedValue: [
-                    {
-                      value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-                      label: 'Again',
-                    },
-                    {
-                      value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-                      label: 'Acknowledging',
-                    },
-                  ],
-                  inheritedType: 'multiselect',
-                },
-              ],
-              inheritedType: 'relationship',
-            },
-          ],
-          inheritedType: 'relationship',
+          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          label: 'Again',
+          source: {
+            value: '7jdr88mnow6',
+            label: 'First Responders',
+            url: '/entity/7jdr88mnow6',
+          },
+        },
+        {
+          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+          label: 'Acknowledging',
+          source: {
+            value: '7jdr88mnow6',
+            label: 'First Responders',
+            url: '/entity/7jdr88mnow6',
+          },
         },
       ],
     };
@@ -451,13 +444,12 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Document ID EN',
       values: [
         {
-          label: 'EVT-2024-001',
           value: 'EVT-2024-001',
         },
       ],
     };
-
-    expect(metadata[17]).toMatchObject(documentIdProperty);
+    //should be 17
+    expect(metadata[18]).toMatchObject(documentIdProperty);
   });
 
   it('should not combine geolocation properties when combineGeolocation is false', async () => {

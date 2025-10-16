@@ -1,5 +1,6 @@
 import { SelectMetadataProperty, SelectPropertyTypes } from 'app/V2/domain/entities/types';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 
@@ -31,9 +32,10 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
 
     if (property.value !== undefined && !property.properties.options) {
       const values = Array.isArray(property.value) ? property.value : [property.value];
-      return values.map((value: any) => ({
-        value,
+      return values.map((value: MetadataObjectSchema) => ({
+        value: value.value?.toString() || '',
         label: value.label || value.toString(),
+        parent: value.parent,
       }));
     }
 
@@ -81,13 +83,13 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
   ): SelectMetadataProperty['values'] {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
-    return values.map((item: any) => {
+    return values.map((item: MetadataObjectSchema) => {
       const inheritedValue = item.value;
-      const relationshipMetadata = item._relationshipMetadata;
+      // const relationshipMetadata = item._relationshipMetadata;
 
       return {
         value: inheritedValue,
-        label: relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString(),
+        label: '', //relationshipMetadata?.label || inheritedValue?.label || inheritedValue?.toString(),
       };
     });
   }
