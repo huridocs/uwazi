@@ -63,7 +63,7 @@ const BaseCommonPropertySchema = z.object({
 
 const BaseTemplateSchema = z.object({
   name: z.string({ message: 'Template name is required' }),
-  color: z.string().optional(), // If not provided, domain will generate next on pallet
+  color: z.string().optional(),
   default: z.boolean().optional(),
   entityViewPage: z.string().optional(),
   commonProperties: z.array(BaseCommonPropertySchema),
@@ -71,15 +71,15 @@ const BaseTemplateSchema = z.object({
 });
 
 const UpdatePropertySchema = BasePropertySchema.extend({
-  _id: z.string().optional(),
+  id: z.string().optional(),
 });
 
 const UpdateCommonPropertySchema = BaseCommonPropertySchema.extend({
-  _id: z.string({ message: 'Template _id is required' }),
+  id: z.string({ message: 'Common property id is required' }),
 });
 
 const UpdateTemplateSchema = BaseTemplateSchema.extend({
-  _id: z.string({ message: 'Template _id is required' }),
+  id: z.string({ message: 'Template id is required' }),
   commonProperties: z.array(UpdateCommonPropertySchema),
   properties: z.array(UpdatePropertySchema).default([]),
 });

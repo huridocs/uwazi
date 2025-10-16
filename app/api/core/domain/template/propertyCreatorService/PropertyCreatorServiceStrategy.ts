@@ -1,8 +1,10 @@
-import { PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';
 import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';
 import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService';
@@ -13,6 +15,7 @@ type Props = {
   select: SelectPropertyCreatorService;
   relationship: RelationshipPropertyCreatorService;
   nested: NestedPropertyCreatorService;
+  idGenerator: IdGenerator;
 };
 
 type CreateProps = {
@@ -20,7 +23,10 @@ type CreateProps = {
   relationshipTypesDS: RelationshipTypesDataSource;
   thesauriDS: ThesauriDataSource;
   settingsDS: SettingsDataSource;
+  idGenerator: IdGenerator;
 };
+
+type BulkCreateInput = (Omit<CreateInput, 'id' | 'template'> & { id?: string })[];
 
 class PropertyCreatorServiceStrategy {
   constructor(private props: Props) {}
@@ -42,8 +48,29 @@ class PropertyCreatorServiceStrategy {
     }
   }
 
-  static create({ relationshipTypesDS, templatesDS, thesauriDS, settingsDS }: CreateProps) {
+  async bulkCreate(
+    input: BulkCreateInput,
+    { newNameGeneration, template }: Context & { template: string }
+  ): Promise<Property[]> {
+    const properties = await ArrayUtils.parallelFor(input, async property =>
+      this.getStrategy(property.type!).create(
+        { ...property, id: property.id || this.props.idGenerator.generate(), template },
+        { newNameGeneration }
+      )
+    );
+
+    return properties;
+  }
+
+  static create({
+    relationshipTypesDS,
+    templatesDS,
+    thesauriDS,
+    settingsDS,
+    idGenerator,
+  }: CreateProps) {
     return new PropertyCreatorServiceStrategy({
+      idGenerator,
       default: new PropertyCreatorService({ templatesDS }),
       relationship: new RelationshipPropertyCreatorService({
         templatesDS,

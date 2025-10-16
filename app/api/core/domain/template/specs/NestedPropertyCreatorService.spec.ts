@@ -11,6 +11,7 @@ import { NestedProperty } from '../NestedProperty';
 const createSut = () => {
   const transactionManager = DefaultTransactionManager();
   const strategy = PropertyCreatorServiceStrategy.create({
+    idGenerator: TestUtils.mockClass({ generate: () => 'id' }),
     thesauriDS: TestUtils.mockClass({}),
     relationshipTypesDS: TestUtils.mockClass({}),
     settingsDS: DefaultSettingsDataSource(transactionManager),
