@@ -18,6 +18,7 @@ export interface TemplatesDataSource {
   getV1RelationshipPropertiesByIds(ids?: string[]): ResultSet<V1RelationshipProperty>;
   getGeneratedIdPropertiesByIds(ids?: string[]): ResultSet<GenerateIdProperty>;
   getAllProperties(): ResultSet<Property>;
+  getPropertiesBeingInherited(properties: Property[]): Promise<Property[]>;
   getAllTextProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;

@@ -51,7 +51,6 @@ export const thesaurusSchema = {
   uniqueLabels: true,
   properties: {
     _id: objectIdSchema,
-    type: { type: 'string', enum: ['thesauri', 'template'] },
     name: {
       type: 'string',
       minLength: 1,

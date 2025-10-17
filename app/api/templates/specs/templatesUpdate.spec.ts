@@ -183,6 +183,24 @@ describe('Templates Update', () => {
       applicationEventsBus.clear();
     });
 
+    describe('Validations', () => {
+      it('invalid when trying to delete an inherited property', async () => {
+        await setUpFixtures(fixtures, featureFlag);
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA', {
+            inherit: { property: f.idString('text_property'), type: 'text' },
+          }),
+        ]);
+
+        await updateTemplate(template, featureFlag);
+        const templateWithDeletedInheritedProp = f.template('templateA', []);
+
+        await expect(async () =>
+          updateTemplate(templateWithDeletedInheritedProp, featureFlag)
+        ).rejects.toThrow('validation failed');
+      });
+    });
+
     describe('templates denormalization scenarios', () => {
       beforeEach(async () => {
         await setUpFixtures(fixtures, featureFlag);

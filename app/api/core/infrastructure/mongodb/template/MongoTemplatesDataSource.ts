@@ -191,6 +191,29 @@ export class MongoTemplatesDataSource
     return this._nameToPropertyMap[name];
   }
 
+  async getPropertiesBeingInherited(properties: Property[]) {
+    const cursor = this.getCollection().aggregate([
+      {
+        $match: { 'properties.inherit.property': { $in: properties.map(p => p.id) } },
+      },
+      { $unwind: '$properties' },
+      {
+        $match: { 'properties.inherit.property': { $in: properties.map(p => p.id) } },
+      },
+      { $project: { inheritedProperty: '$properties.inherit.property' } },
+      {
+        $group: { _id: null, inheritedProperties: { $push: '$inheritedProperty' } },
+      },
+    ]);
+
+    const result = await cursor.toArray();
+    if (result.length) {
+      const { inheritedProperties } = result[0];
+      return properties.filter(p => inheritedProperties.includes(p.id));
+    }
+    return [];
+  }
+
   getAllProperties() {
     const cursor = this.getCollection().aggregate([
       {

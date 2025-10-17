@@ -7,12 +7,14 @@ import { Template } from 'api/core/domain/template/Template';
 import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
+import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors';
+import { TemplateDiff } from '../domain/template/TemplateDiff';
 import { TranslationService } from '../domain/template/TranslationService';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
 import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
 
 type Output = Template;
 
@@ -62,6 +64,15 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
     });
 
     const updatedTemplate = currentTemplate.update({ ...input, properties, commonProperties });
+
+    const templateDiff = new TemplateDiff(currentTemplate, updatedTemplate);
+    const propertiesBeingInherited = await this.deps.templatesDS.getPropertiesBeingInherited(
+      templateDiff.deletedProperties
+    );
+
+    if (propertiesBeingInherited.length) {
+      throw new InheritedPropertyCanNotBeDeleted(propertiesBeingInherited);
+    }
 
     await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
