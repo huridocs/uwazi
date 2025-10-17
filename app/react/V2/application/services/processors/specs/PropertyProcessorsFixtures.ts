@@ -241,6 +241,21 @@ export const rawEntity: EntitySchema = {
         value: 'EVT-2024-001',
       },
     ],
+    numeric_value: [
+      {
+        value: 42.5,
+      },
+    ],
+    negative_numeric: [
+      {
+        value: -15.75,
+      },
+    ],
+    zero_numeric: [
+      {
+        value: 0,
+      },
+    ],
     hierarchical_relationships: [
       {
         value: '6qdshinfobf',
@@ -774,6 +789,39 @@ export const processingContext: ProcessingContext = {
           style: '',
           generatedId: false,
           name: 'document_id',
+        },
+        {
+          _id: '68ddecdbc9474e23bb5e9160',
+          type: 'numeric',
+          label: 'Numeric Value',
+          noLabel: false,
+          required: false,
+          showInCard: false,
+          style: '',
+          generatedId: false,
+          name: 'numeric_value',
+        },
+        {
+          _id: '68ddecdbc9474e23bb5e9161',
+          type: 'numeric',
+          label: 'Negative Numeric',
+          noLabel: false,
+          required: false,
+          showInCard: false,
+          style: '',
+          generatedId: false,
+          name: 'negative_numeric',
+        },
+        {
+          _id: '68ddecdbc9474e23bb5e9162',
+          type: 'numeric',
+          label: 'Zero Numeric',
+          noLabel: false,
+          required: false,
+          showInCard: false,
+          style: '',
+          generatedId: false,
+          name: 'zero_numeric',
         },
         {
           content: '68ec577980a3354966fb293c',

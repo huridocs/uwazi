@@ -57,6 +57,7 @@ export interface CompositionContext {
 
 export interface CompositionOptions {
   // Core inclusion options
+  entityBasePath?: string;
   includeTemplate?: boolean;
   includeMetadata?: boolean;
   includeRelationships?: boolean;

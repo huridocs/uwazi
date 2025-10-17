@@ -5,6 +5,7 @@ import {
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
+import { DEFAULT_ENTITY_BASE_PATH } from '../../optionsPresets';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';
@@ -12,7 +13,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
 
   protected formatProperty(
     property: AdapterMetadataProperty,
-    _context: ProcessingContext
+    context: ProcessingContext
   ): RelationshipMetadataProperty['values'] {
     const result: MetadataObjectSchema[] = [];
 
@@ -32,7 +33,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
             source: {
               value: value?.toString() || '',
               label: label || '',
-              url: '/entityv2/' + (inherited.value?.toString() || ''),
+              url: context.entityBasePath || DEFAULT_ENTITY_BASE_PATH + (value?.toString() || ''),
               icon: (icon as any)?._id || '',
             },
             parent: inherited.parent,
@@ -42,7 +43,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
         result.push({
           value: value?.toString() || '',
           label: label || '',
-          url: '/entityv2/' + (value?.toString() || ''),
+          url: context.entityBasePath || DEFAULT_ENTITY_BASE_PATH + (value?.toString() || ''),
           icon: (icon as any)?._id || '',
         });
       }

@@ -251,7 +251,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entity/xjku67dv7b',
+            url: '/entityv2/xjku67dv7b',
             value: 'xjku67dv7b',
           },
         },
@@ -261,7 +261,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entity/xjku67dv7b',
+            url: '/entityv2/xjku67dv7b',
             value: 'xjku67dv7b',
           },
         },
@@ -271,7 +271,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: '4oklamamet',
             label: 'John Smith - Reporter',
-            url: '/entity/4oklamamet',
+            url: '/entityv2/4oklamamet',
           },
         },
         {
@@ -284,7 +284,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: '4oklamamet',
             label: 'John Smith - Reporter',
-            url: '/entity/4oklamamet',
+            url: '/entityv2/4oklamamet',
           },
         },
       ],
@@ -527,5 +527,53 @@ describe('Adapter Entity Processor Tests', () => {
 
     expect(editionMetadata[15]).toMatchObject(incidentLocationProperty);
     expect(editionMetadata[16]).toMatchObject(secondaryLocationProperty);
+  });
+
+  it('should process numeric property', async () => {
+    const numericProperty = {
+      name: 'numeric_value',
+      type: 'numeric',
+      label: 'Numeric Value',
+      translatedLabel: 'Numeric Value',
+      values: [
+        {
+          value: '42.5',
+        },
+      ],
+    };
+
+    expect(metadata[18]).toMatchObject(numericProperty);
+  });
+
+  it('should process negative numeric property', async () => {
+    const negativeNumericProperty = {
+      name: 'negative_numeric',
+      type: 'numeric',
+      label: 'Negative Numeric',
+      translatedLabel: 'Negative Numeric',
+      values: [
+        {
+          value: '-15.75',
+        },
+      ],
+    };
+
+    expect(metadata[19]).toMatchObject(negativeNumericProperty);
+  });
+
+  it('should process zero numeric property', async () => {
+    const zeroNumericProperty = {
+      name: 'zero_numeric',
+      type: 'numeric',
+      label: 'Zero Numeric',
+      translatedLabel: 'Zero Numeric',
+      values: [
+        {
+          value: '0',
+        },
+      ],
+    };
+
+    expect(metadata[20]).toMatchObject(zeroNumericProperty);
   });
 });

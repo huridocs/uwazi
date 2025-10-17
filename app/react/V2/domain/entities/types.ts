@@ -212,13 +212,13 @@ export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, '
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship' | 'newRelationship';
   readonly values:
-  | MetadataProperty
-  | Array<{
-    value: string;
-    label: string;
-    icon?: string;
-    url: string;
-  }>;
+    | MetadataProperty
+    | Array<{
+        value: string;
+        label: string;
+        icon?: string;
+        url: string;
+      }>;
   readonly properties?: ExtendedPropertyInfo;
 }
 

@@ -14,7 +14,11 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
   return (
     <MetadataCard>
       <dt>
-        <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
       </dt>
       <div className="flex flex-col gap-1">
         {values.map((value, index) => (
