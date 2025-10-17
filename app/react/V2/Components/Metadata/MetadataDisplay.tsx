@@ -69,7 +69,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            // imageStyle={property?.style === 'contain' ? 'contain' : 'cover'}
+            imageStyle={data.properties?.style === 'contain' ? 'contain' : 'cover'}
           />
         );
       }
@@ -96,7 +96,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
             values={data.values}
             label={data.label}
             translationContext={translationContext}
-            //hideLabel={hideLabel}
+            hideLabel={data.properties?.hideLabel}
           />
         );
       }
@@ -104,19 +104,17 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
       if (data.type === 'relationship') {
         if (data.properties?.inherited && data.properties.inheritedProperty) {
           const inheritedType = data.properties.inheritedProperty.type;
+          const { properties, ...restData } = data;
           const reformattedData = {
-            values: data.values,
-            label: data.label,
-            name: data.name,
+            ...restData,
+            ...properties.inheritedProperty,
             type: inheritedType,
-            translatedLabel: data.translatedLabel,
-            properties: data.properties,
           };
           return renderMetadataProperty(reformattedData as MetadataProperty);
         }
         return (
           <Relationship
-            values={data.values}
+            values={Array.isArray(data.values) ? data.values : []}
             label={data.label}
             translationContext={translationContext}
           />

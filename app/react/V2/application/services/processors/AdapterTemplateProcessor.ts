@@ -157,6 +157,9 @@ export class AdapterTemplateProcessor {
       inherited: property.inherit !== undefined,
       inheritedProperty: inheritedProperty,
       options,
+      hideLabel: property.noLabel,
+      showInCard: property.showInCard,
+      style: property.style,
     };
     return Object.assign({} as AdapterMetadataProperty, property, {
       _id: property._id!.toString(),

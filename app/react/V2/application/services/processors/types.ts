@@ -66,6 +66,7 @@ export interface CompositionOptions {
   onlyForCards?: boolean;
   includePropertyMetadata?: boolean;
   formatDates?: boolean;
+  includeRawEntity?: boolean;
 
   // Field selection
   includeFields?: string[];

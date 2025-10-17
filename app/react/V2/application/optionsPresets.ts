@@ -7,6 +7,7 @@ export const cardViewOptions: CompositionOptions = {
   includeFiles: false,
   includeNavigation: false,
   includePermissions: true,
+  dateFormat: 'LLL d, yyyy',
   onlyForCards: true,
   translateLabels: true,
 };
@@ -19,7 +20,7 @@ export const fullDetailOptions: CompositionOptions = {
   includeFiles: true,
   includeNavigation: true,
   includePermissions: true,
-  dateFormat: 'YYYY-MM-DD',
+  dateFormat: 'LLL d, yyyy',
   includePropertyMetadata: true,
   translateLabels: true,
 };
@@ -32,7 +33,7 @@ export const editionModeOptions: CompositionOptions = {
   includeNavigation: false,
   includePermissions: true,
   editionMode: true,
-  dateFormat: 'YYYY-MM-DD',
+  dateFormat: 'LLL d, yyyy',
   includePropertyMetadata: true,
   translateLabels: true,
   flattenStructures: true,

@@ -292,9 +292,9 @@ describe('Adapter Entity Processor Tests', () => {
         inherited: true,
         inheritedProperty: {
           type: 'multiselect',
-          label: "Multiselect",
-          name: "category_tags",
-          translatedLabel: "Multiselect",
+          label: 'Multiselect',
+          name: 'category_tags',
+          translatedLabel: 'Multiselect',
         },
       },
     };
@@ -383,7 +383,7 @@ describe('Adapter Entity Processor Tests', () => {
         {
           value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
           name: 'secondary_location',
-          label: 'Location',
+          label: 'Secondary Location',
         },
         {
           value: { latitude: 43.80157978110818, longitude: 7.492675781250001 },

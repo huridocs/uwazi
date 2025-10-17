@@ -38,7 +38,7 @@ const rawEntity: EntitySchema = {
         value: {
           lat: 46.3964365565104,
           lon: 3.6694335937500004,
-          label: '',
+          label: 'Downtown Traffic Accident Location',
         },
       },
     ],
@@ -179,7 +179,7 @@ const rawEntity: EntitySchema = {
     video_of_event: [
       {
         value:
-          '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45":"Test timelink"}})',
+          '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45": "Test timelink"}})',
         alt: 'Alternative text',
       },
     ],
@@ -297,7 +297,7 @@ const processingContext: ProcessingContext = {
   includeNavigation: false,
   includePermissions: true,
   onlyForCards: true,
-  dateFormat: 'MMM D, YYYY',
+  dateFormat: 'LLL d, yyyy',
   translateLabels: true,
   language: 'en',
   translations: [

@@ -1,5 +1,6 @@
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
+import { DateMetadataProperty } from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import {
@@ -17,7 +18,6 @@ import { SelectPropertyProcessor } from './SelectPropertyProcessor';
 import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
-import { PermissionProcessor } from './PermissionProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
 import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
@@ -41,7 +41,6 @@ export class AdapterEntityProcessor {
       new GeolocationProcessor(),
       new RelationshipProcessor(),
       new MediaPropertyProcessor(),
-      new PermissionProcessor(),
       new LinkPropertyProcessor(),
       new PreviewPropertyProcessor(),
     ];
@@ -94,7 +93,7 @@ export class AdapterEntityProcessor {
   }
 
   private processFinalValues(properties: AdapterMetadataProperty[]): AdapterMetadataProperty[] {
-    return properties.map(property => {
+    return properties.map((property): AdapterMetadataProperty => {
       if (property.type === 'relationship' && property.value && Array.isArray(property.value)) {
         const hasInheritedValues = property.value.some(
           (value: any) =>
@@ -104,13 +103,22 @@ export class AdapterEntityProcessor {
         );
 
         if (hasInheritedValues) {
-          const processedValues = this.flattenInheritedValues(property.value, property.entity, [property.entity._id]);
-          return {
-            ...property,
-            type: 'relationship',
-            value: processedValues,
-            values: processedValues,
-          };
+          const isHierarchical = property.value.some(
+            (value: MetadataObjectSchema) => value.inheritedType === 'relationship'
+          );
+
+          if (isHierarchical) {
+            const processedValues = this.flattenInheritedValues(property.value, property.entity, [
+              property.entity._id,
+            ]);
+            return {
+              ...property,
+              type: 'relationship' as const,
+              value: processedValues,
+              values: processedValues as any,
+            } as AdapterMetadataProperty;
+          }
+          return property;
         }
       }
       return property;
@@ -121,19 +129,54 @@ export class AdapterEntityProcessor {
     values: MetadataObjectSchema[],
     mainEntity: AdapterEntity,
     sourceChain: string[],
+    parentSource?: { value: string; label: string; url: string }
   ): MetadataObjectSchema[] {
-    return values.map(value => {
-      if (value.inheritedType !== 'relationship' || sourceChain.includes(value.value as string)) {
+    return values
+      .map(value => {
+        if (
+          value.inheritedValue &&
+          Array.isArray(value.inheritedValue) &&
+          value.inheritedValue.length > 0
+        ) {
+          if (sourceChain.includes(value.value as string)) {
+            return [];
+          }
+
+          if (value.inheritedType === 'relationship') {
+            sourceChain.push(value.value as string);
+            const currentSource = {
+              value: value.value as string,
+              label: value.label || '',
+              url: '/entity/' + value.value,
+            };
+            return this.flattenInheritedValues(
+              value.inheritedValue,
+              mainEntity,
+              sourceChain,
+              currentSource
+            );
+          }
+          const source = parentSource || {
+            value: value.value,
+            label: value.label,
+            url: '/entity/' + value.value,
+          };
+          return value.inheritedValue.map(inherited => ({
+            value: inherited.value,
+            label: inherited.label,
+            parent: inherited.parent,
+            source,
+          }));
+        }
+
         return {
           value: value.value,
           label: value.label,
           url: '/entity/' + value.value,
           icon: value.icon,
         };
-      }
-      sourceChain.push(value.value as string);
-      return this.flattenInheritedValues(value.inheritedValue || [], mainEntity, sourceChain);
-    }).flat();
+      })
+      .flat();
   }
 
   private processPropertiesByType(
@@ -253,9 +296,10 @@ export class AdapterEntityProcessor {
       const processedMetadata = this.processPropertiesByType(propertiesByType);
       this.processRootLevelDates(formattedEntities);
 
-      processedMetadata.forEach(({ entity, ...property }) => {
+      processedMetadata.forEach(({ entity, value, index, ...property }) => {
         if (entity && entity.metadata) {
-          entity.metadata.splice(property.index, 0, property as MetadataProperty);
+          const formattedProperty: MetadataProperty = property;
+          entity.metadata.splice(index, 0, formattedProperty);
         }
       });
     } catch (error) {
@@ -266,17 +310,10 @@ export class AdapterEntityProcessor {
       });
     }
 
-    const composedEntities = formattedEntities.map(({ rawEntity, ...restEntity }) => {
-      const { template, ...entity } = restEntity;
-      if (template) {
-        const { properties, commonProperties, ...restTemplate } = template;
-        return { ...entity, template: restTemplate as AdapterEntityTemplate } as Entity;
-      }
-      return { ...entity, template };
-    });
+    const composedEntities: Entity[] = formattedEntities.map(entity => this.composeEntity(entity));
 
     return {
-      entities: composedEntities as Entity[],
+      entities: composedEntities,
       errors: allErrors,
       success: allErrors.length === 0,
       totalProcessed: entities.length,
@@ -289,7 +326,7 @@ export class AdapterEntityProcessor {
     return (
       property.type === 'relationship' &&
       !!property.properties.inheritedProperty?.type &&
-      property.properties.inheritedProperty.type !== 'relationship'
+      property.properties.inheritedProperty.type === 'geolocation'
     );
   }
 
@@ -301,26 +338,44 @@ export class AdapterEntityProcessor {
 
     property.value.forEach(rel => {
       rel.inheritedValue?.forEach(inheritedValue => {
-        transformedValues.push({
+        const transformedValue = {
           value: inheritedValue.value,
           label: inheritedValue.label,
           source: {
             value: rel.value?.toString() || '',
             label: rel.label || '',
+            icon: (rel.icon as any)?._id || '',
             url: '/entity/' + (rel.value?.toString() || ''),
           },
-        });
+        };
+        transformedValues.push(transformedValue);
       });
     });
 
     Object.assign(property, {
       ...property,
+      type: inheritedProperty.type,
+      value: transformedValues,
       values: transformedValues,
       properties: {
         ...property.properties,
-        type: inheritedProperty.type,
         inherited: true,
+        inheritedProperty: inheritedProperty,
       },
     });
+  }
+
+  private composeEntity(adapterEntity: AdapterEntity): Entity {
+    const { rawEntity, template, creationDate, editDate, ...entity } = adapterEntity;
+    const { entity: _, ...cleanCreationDate } = creationDate;
+    const { entity: __, ...cleanEditDate } = editDate;
+
+    return {
+      ...entity,
+      creationDate: cleanCreationDate as DateMetadataProperty,
+      editDate: cleanEditDate as DateMetadataProperty,
+      ...(this.context.includeTemplate ? { template } : {}),
+      ...(this.context.includeRawEntity ? { rawEntity } : {}),
+    };
   }
 }

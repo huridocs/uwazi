@@ -12,5 +12,5 @@ export interface Entity {
   readonly icon?: { _id: string } | any;
   readonly permissions?: EntityPermissions;
   metadata: MetadataProperty[];
-  readonly rawEntity?: EntitySchema;
+  rawEntity?: EntitySchema;
 }

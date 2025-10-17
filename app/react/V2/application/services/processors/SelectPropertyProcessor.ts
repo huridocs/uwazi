@@ -84,19 +84,10 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
     const values = Array.isArray(property.value) ? property.value : [property.value];
 
     return values.map((item: any) => {
-      const relationshipMetadata = item._relationshipMetadata;
-
       return {
         value: item.value.value,
         label: item.value.label,
-        source: relationshipMetadata
-          ? {
-              icon: relationshipMetadata.icon,
-              value: relationshipMetadata.entity || '',
-              label: relationshipMetadata.label || '',
-              url: relationshipMetadata.url || '',
-            }
-          : undefined,
+        source: item.source,
         parent: item.value.parent,
       };
     });

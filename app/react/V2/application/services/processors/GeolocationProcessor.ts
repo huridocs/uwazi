@@ -10,6 +10,12 @@ export class GeolocationProcessor extends BasePropertyProcessor {
 
   readonly propertyTypes: GeolocationPropertyTypes[] = ['geolocation'];
 
+  private formatCoordinate(latitude: number, longitude: number): string {
+    const latDir = latitude >= 0 ? 'N' : 'S';
+    const lonDir = longitude >= 0 ? 'E' : 'W';
+    return `${Math.abs(latitude).toFixed(2)}°${latDir}, ${Math.abs(longitude).toFixed(2)}°${lonDir}`;
+  }
+
   processBatch(
     properties: AdapterMetadataProperty[],
     context: ProcessingContext,
@@ -29,12 +35,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
     property: AdapterMetadataProperty,
     context: ProcessingContext
   ): GeolocationMetadataProperty['values'] {
-    return this.processGeoValues(property, true, context);
+    return this.processGeoValues(property, context);
   }
 
   private processGeoValues(
     property: AdapterMetadataProperty,
-    format: boolean,
     context: ProcessingContext
   ): GeolocationMetadataProperty['values'] {
     if (
@@ -88,14 +93,14 @@ export class GeolocationProcessor extends BasePropertyProcessor {
 
       const result = {
         value: { latitude: lat, longitude: lon },
-        label: geo._relationshipMetadata?.label || label || '',
+        label: geo.source?.label || label || '',
         name: property.name,
-        color: templateColor,
         source: {
-          value: geo._relationshipMetadata?.entity || '',
-          label: geo._relationshipMetadata?.label || '',
-          icon: geo._relationshipMetadata?.icon,
-          url: geo._relationshipMetadata?.url || '',
+          value: geo.source?.value || '',
+          label: geo.source?.label || '',
+          color: templateColor,
+          icon: geo.source?.icon,
+          url: geo.source?.url || '',
           type: 'entity',
           inheritedType: 'geolocation',
         },
@@ -157,7 +162,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
   ): void {
     properties.forEach(property => {
       try {
-        const values = this.formatProperty(property, context);
+        const values = this.formatProperty(property, context).map(v => ({
+          ...v,
+          label: this.formatCoordinate(v.value.latitude, v.value.longitude),
+        }));
         results.push(Object.assign(property, { values }));
       } catch (error) {
         console.error(`Error processing ${this.name} property ${property.name}:`, error);
@@ -206,7 +214,11 @@ export class GeolocationProcessor extends BasePropertyProcessor {
 
     properties.forEach(p => {
       const propValues = this.formatProperty(p, context);
-      allValues.push(...propValues);
+      const valuesWithName = propValues.map(v => ({
+        ...v,
+        name: p.name,
+      }));
+      allValues.push(...valuesWithName);
     });
 
     return allValues;

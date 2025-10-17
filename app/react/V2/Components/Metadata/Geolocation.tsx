@@ -6,7 +6,7 @@ import { MetadataLabel } from './MetadataLabel';
 import { MetadataCard } from './MetadataCard';
 
 type GeolocationProps = MetadataFieldProps & {
-  markers: { value: { latitude: number; longitude: number } }[];
+  markers: { value: { latitude: number; longitude: number }; label?: string }[];
   height?: MapProps['height'];
   clickOnMarker?: MapProps['clickOnMarker'];
   onClick?: MapProps['onClick'];
@@ -16,11 +16,14 @@ type GeolocationProps = MetadataFieldProps & {
   zoom?: MapProps['zoom'];
 };
 
-const formatMarkers = (points: GeolocationProps['markers'], label: string): MapProps['markers'] =>
+const formatMarkers = (
+  points: GeolocationProps['markers'],
+  fallbackLabel: string
+): MapProps['markers'] =>
   points.map(point => ({
     latitude: point.value.latitude,
     longitude: point.value.longitude,
-    label,
+    label: point.label || fallbackLabel,
     properties: {},
   }));
 
