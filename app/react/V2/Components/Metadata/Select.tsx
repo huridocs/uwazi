@@ -1,7 +1,7 @@
 import React from 'react';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type SelectProps = MetadataFieldProps & {
@@ -23,17 +23,19 @@ const formatSelectValue = (
 
 const Select = ({ label, translationContext, values, hideLabel }: SelectProps) => (
   <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
-    <div role="group" className="flex flex-col gap-1">
+    <dt>
+      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    </dt>
+    <dd className="flex flex-col gap-1">
       {values.map(value => {
         const formatted = formatSelectValue(value);
         return (
-          <dd key={formatted} className="font-medium  ext-gray-90 ">
+          <span key={formatted} className="font-medium  ext-gray-90 ">
             {formatted}
-          </dd>
+          </span>
         );
       })}
-    </div>
+    </dd>
   </MetadataCard>
 );
 

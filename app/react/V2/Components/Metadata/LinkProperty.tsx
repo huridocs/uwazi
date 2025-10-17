@@ -1,8 +1,8 @@
 import React from 'react';
-import { MetadataLabel } from './MetadataLabel';
+import { LinkMetadataProperty } from 'V2/domain/entities/types';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataFieldProps } from './types';
 import { MetadataCard } from './MetadataCard';
-import { LinkMetadataProperty } from 'app/V2/domain/entities/types';
 
 type LinkPropertyProps = MetadataFieldProps & {
   values: LinkMetadataProperty['values'];
@@ -10,7 +10,9 @@ type LinkPropertyProps = MetadataFieldProps & {
 
 const LinkProperty = ({ values, label, translationContext, hideLabel }: LinkPropertyProps) => (
   <MetadataCard>
-    <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    <dt>
+      <PropertyLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+    </dt>
     {values.map(value => (
       <dd className="font-medium text-gray-900 underline">
         <a href={value.value} target="_blank" rel="noreferrer">

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import MarkdownIt from 'markdown-it';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type MarkdownProps = MetadataFieldProps & {
@@ -30,7 +30,13 @@ const Markdown = ({ label, translationContext, values, hideLabel }: MarkdownProp
 
   return (
     <MetadataCard>
-      <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+      <dt>
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
+      </dt>
       <dd>
         {/* Allow inserting html since it's sanitized */}
         {/* eslint-disable-next-line react/no-danger */}

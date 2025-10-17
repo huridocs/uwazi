@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player';
 import { t } from 'app/I18N';
 import { MediaMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
-import { MetadataLabel } from './MetadataLabel';
+import { PropertyLabel } from './PropertyLabel';
 import { MediaPlayer } from '../UI';
 import { MetadataCard } from './MetadataCard';
 
@@ -21,7 +21,13 @@ const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => 
 
   return (
     <MetadataCard>
-      <MetadataLabel label={label} translationContext={translationContext} hideLabel={hideLabel} />
+      <dt>
+        <PropertyLabel
+          label={label}
+          translationContext={translationContext}
+          hideLabel={hideLabel}
+        />
+      </dt>
       <dd className="flex flex-col items-center">
         <figure aria-labelledby={label}>
           <MediaPlayer playerRef={playerRef} url={value} width={500} height={300} />
