@@ -95,6 +95,22 @@ class TemplateWithDuplicatedPropertyError extends ValidationError {
   }
 }
 
+class InheritedPropertyCanNotBeDeleted extends ValidationError {
+  constructor(properties: Property[]) {
+    super(
+      `Properties can not be deleted because are being inherited: [properties=${properties.map(p => p.name).join(',')}]`,
+      'template.property.delete.being_inherited'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return {
+      message: this.message,
+      keyword: 'noDeleteInheritedProperty',
+    };
+  }
+}
+
 class PropertyTypeMismatchError extends DomainError {
   constructor(existing: Property, attempted: Property) {
     super(
@@ -272,4 +288,5 @@ export {
   DefaultTemplateDeletionError,
   DefaultTemplateConflictError,
   TemplateInUseError,
+  InheritedPropertyCanNotBeDeleted,
 };
