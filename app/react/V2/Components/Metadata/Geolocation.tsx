@@ -4,9 +4,10 @@ import { MapProps } from 'app/Map/MapContainer';
 import { MetadataFieldProps } from './types';
 import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
+import { GeolocationMetadataProperty } from 'app/V2/domain/entities/types';
 
 type GeolocationProps = MetadataFieldProps & {
-  markers: { value: { latitude: number; longitude: number }; label?: string }[];
+  markers: GeolocationMetadataProperty['values'];
   height?: MapProps['height'];
   clickOnMarker?: MapProps['clickOnMarker'];
   onClick?: MapProps['onClick'];
@@ -23,8 +24,11 @@ const formatMarkers = (
   points.map(point => ({
     latitude: point.value.latitude,
     longitude: point.value.longitude,
-    label: point.label || fallbackLabel,
-    properties: {},
+    properties: {
+      label: point.source?.label || point.label,
+      color: point.source?.color,
+      info: point.source?.label || point.label || fallbackLabel,
+    },
   }));
 
 const Geolocation = ({

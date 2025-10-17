@@ -24,7 +24,10 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
       const selectedValues = Array.isArray(property.value) ? property.value : [property.value];
       const options = this.buildFlattenedOptions(
         property,
-        selectedValues.map(value => value?.toString() || ''),
+        selectedValues.map(value => {
+          // Handle both object and string values
+          return typeof value === 'object' ? value.value : (value as any)?.toString() || '';
+        }),
         context
       );
       property.properties.options = options;
@@ -43,12 +46,18 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
       const values = Array.isArray(property.value) ? property.value : [property.value];
 
       return values.map((selectedValue: any) => {
-        const option = property.properties.options!.find((opt: any) => opt.value === selectedValue);
+        const valueToMatch =
+          typeof selectedValue === 'object' ? selectedValue.value : selectedValue;
+        const option = property.properties.options!.find((opt: any) => opt.value === valueToMatch);
 
         if (!option) {
           return {
-            value: selectedValue,
-            label: selectedValue.toString(),
+            value: valueToMatch,
+            label:
+              typeof selectedValue === 'object' ? selectedValue.label : selectedValue.toString(),
+            ...(typeof selectedValue === 'object' && selectedValue.parent
+              ? { parent: selectedValue.parent }
+              : {}),
           };
         }
 
@@ -56,8 +65,11 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
           property.properties.translationContext?.values[option.label || ''] || option.label;
 
         return {
-          value: selectedValue,
+          value: valueToMatch,
           label: translatedLabel,
+          ...(typeof selectedValue === 'object' && selectedValue.parent
+            ? { parent: selectedValue.parent }
+            : {}),
         };
       });
     }
@@ -113,6 +125,7 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
       flattenedOptions.push({
         value: option.id || '',
         label: option.label,
+        selected: selectedValues.includes(option.id || ''),
         ...(context.translateLabels
           ? { translatedLabel: property.properties.translationContext?.values[option.label] }
           : {}),
@@ -124,11 +137,15 @@ export class SelectPropertyProcessor extends BasePropertyProcessor {
             value: subOption.id || '',
             label: context.translateLabels
               ? property.properties.translationContext?.values[subOption.label] || subOption.label
-              : undefined,
+              : subOption.label,
             translatedLabel: context.translateLabels
               ? property.properties.translationContext?.values[subOption.label] || subOption.label
               : undefined,
             selected: selectedValues.includes(subOption.id || ''),
+            parent: {
+              value: option.id || '',
+              label: option.label,
+            },
           });
         });
       }

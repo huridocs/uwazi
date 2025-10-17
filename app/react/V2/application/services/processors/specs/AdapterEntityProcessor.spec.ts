@@ -51,18 +51,18 @@ describe('Adapter Entity Processor Tests', () => {
     };
 
     const formattedTemplate = {
-      _id: '68ddecdbc9474e23bb5e914b',
-      name: 'Emergency Incident Report Template',
-      label: 'Emergency Incident Report Template EN',
+      _id: 'template.incident-report',
+      name: 'Incident Report Template',
+      label: 'Incident Report Template EN',
       color: '#C03B22',
       entityViewPage: '',
     };
 
     const expectedEntity: Omit<Entity, 'metadata'> = {
-      _id: '68dded72c9474e23bb5e9254',
-      title: 'Emergency Incident Report - Downtown Traffic Accident',
+      _id: 'entity.test-incident',
+      title: 'Test Incident Report',
       template: formattedTemplate,
-      sharedId: '36l0vr92qce',
+      sharedId: 'test-incident-001',
       language: 'en',
       icon: undefined,
       creationDate,
@@ -80,7 +80,7 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Simple Text EN',
       values: [
         {
-          value: 'Emergency incident report from downtown area',
+          value: 'Test incident report',
         },
       ],
     };
@@ -96,8 +96,7 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Markdown Syntax EN',
       values: [
         {
-          value:
-            '# Emergency Incident Report\n## Incident Details\n### Location: Downtown Area\n\n**Incident Type:** Traffic Accident\n**Time:** 14:30\n**Status:** Under Investigation',
+          value: '# Test Report\n**Status:** Under Investigation',
         },
       ],
     };
@@ -112,7 +111,7 @@ describe('Adapter Entity Processor Tests', () => {
       label: 'Single Date',
       translatedLabel: 'Single Date EN',
       values: [{ value: 1759363200, label: 'Oct 2, 2025' }],
-      _id: '68ddecdbc9474e23bb5e914e',
+      _id: 'prop.single-date',
     };
 
     expect(metadata[2]).toMatchObject(dateProperty);
@@ -149,7 +148,7 @@ describe('Adapter Entity Processor Tests', () => {
         { value: 1759363200, label: 'Oct 2, 2025' },
         { value: 1759449600, label: 'Oct 3, 2025' },
       ],
-      _id: '68ddecdbc9474e23bb5e914f',
+      _id: 'prop.multiple-dates',
     };
 
     expect(metadata[4]).toMatchObject(multipleDateProperty);
@@ -190,11 +189,11 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Status Selection EN',
       values: [
         {
-          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          value: 'thesaurus.again',
           label: 'Again',
         },
       ],
-      _id: '68ddecdbc9474e23bb5e9151',
+      _id: 'prop.status-selection',
     };
 
     expect(metadata[7]).toMatchObject(selectProperty);
@@ -208,31 +207,31 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Category Tags EN',
       values: [
         {
-          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+          value: 'thesaurus.acknowledging',
           label: 'Acknowledging',
         },
         {
-          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          value: 'thesaurus.again',
           label: 'Again',
         },
         {
-          value: '8c418311-1244-4777-800a-65729b8c17a8',
+          value: 'thesaurus.verb2',
           label: 'verb2',
           parent: {
             label: 'grouped',
-            value: '68979984-35ac-4b98-abf9-28eac857749c',
+            value: 'thesaurus.grouped',
           },
         },
         {
-          value: 'e1b9944b-43ef-4989-837b-b3df79284b00',
+          value: 'thesaurus.verb1',
           label: 'verb1',
           parent: {
             label: 'grouped',
-            value: '68979984-35ac-4b98-abf9-28eac857749c',
+            value: 'thesaurus.grouped',
           },
         },
       ],
-      _id: '68ddecdbc9474e23bb5e9152',
+      _id: 'prop.category-tags',
     };
 
     expect(metadata[8]).toMatchObject(multiselectProperty);
@@ -246,45 +245,45 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Related People EN',
       values: [
         {
-          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          value: 'thesaurus.again',
           label: 'Again',
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/xjku67dv7b',
-            value: 'xjku67dv7b',
+            url: '/entityv2/entity.witness-maria',
+            value: 'entity.witness-maria',
           },
         },
         {
-          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+          value: 'thesaurus.acknowledging',
           label: 'Acknowledging',
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/xjku67dv7b',
-            value: 'xjku67dv7b',
+            url: '/entityv2/entity.witness-maria',
+            value: 'entity.witness-maria',
           },
         },
         {
-          value: '6c744926-bf38-4f98-8c74-cf6b7280863c',
+          value: 'thesaurus.expressing',
           label: 'Expressing',
           source: {
-            value: '4oklamamet',
+            value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/4oklamamet',
+            url: '/entityv2/entity.reporter-john',
           },
         },
         {
-          value: '8c418311-1244-4777-800a-65729b8c17a8',
+          value: 'thesaurus.verb2',
           label: 'verb2',
           parent: {
-            value: '68979984-35ac-4b98-abf9-28eac857749c',
+            value: 'thesaurus.grouped',
             label: 'grouped',
           },
           source: {
-            value: '4oklamamet',
+            value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/4oklamamet',
+            url: '/entityv2/entity.reporter-john',
           },
         },
       ],
@@ -292,9 +291,9 @@ describe('Adapter Entity Processor Tests', () => {
         inherited: true,
         inheritedProperty: {
           type: 'multiselect',
-          label: 'Multiselect',
+          label: 'Category Tags',
           name: 'category_tags',
-          translatedLabel: 'Multiselect',
+          translatedLabel: 'Category Tags',
         },
       },
     };
@@ -314,7 +313,7 @@ describe('Adapter Entity Processor Tests', () => {
           label: 'Police Report',
         },
       ],
-      _id: '68ddecdbc9474e23bb5e9154',
+      _id: 'prop.external-link',
     };
 
     expect(metadata[11]).toMatchObject(linkProperty);
@@ -328,7 +327,7 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Selected Image EN',
       values: [
         {
-          value: '/api/files/17593747059321ygqk22fdos.png',
+          value: '/api/files/test-image.png',
         },
       ],
     };
@@ -360,7 +359,7 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Video of Event EN',
       values: [
         {
-          value: '/api/files/1759374705932xi5rx0mumef.mp4',
+          value: '/api/files/test-video.mp4',
         },
       ],
     };
@@ -390,13 +389,13 @@ describe('Adapter Entity Processor Tests', () => {
           name: 'location_relationships',
           label: 'Witness Location - Maria Rodriguez',
           source: {
-            value: 'xjku67dv7b',
+            value: 'entity.witness-maria',
             label: 'Witness Location - Maria Rodriguez',
-            color: '#16bdca',
+            color: '#C03B22',
             icon: 'ECU',
             type: 'entity',
             inheritedType: 'geolocation',
-            url: '/entity/xjku67dv7b',
+            url: '/entity/entity.witness-maria',
           },
         },
       ],
@@ -413,21 +412,21 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Hierarchical Relationships EN',
       values: [
         {
-          value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+          value: 'thesaurus.again',
           label: 'Again',
           source: {
-            value: '7jdr88mnow6',
+            value: 'entity.first-responders',
             label: 'First Responders',
-            url: '/entity/7jdr88mnow6',
+            url: '/entity/entity.first-responders',
           },
         },
         {
-          value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+          value: 'thesaurus.acknowledging',
           label: 'Acknowledging',
           source: {
-            value: '7jdr88mnow6',
+            value: 'entity.first-responders',
             label: 'First Responders',
-            url: '/entity/7jdr88mnow6',
+            url: '/entity/entity.first-responders',
           },
         },
       ],
@@ -534,7 +533,7 @@ describe('Adapter Entity Processor Tests', () => {
       name: 'numeric_value',
       type: 'numeric',
       label: 'Numeric Value',
-      translatedLabel: 'Numeric Value',
+      translatedLabel: 'Numeric Value EN',
       values: [
         {
           value: '42.5',
@@ -550,7 +549,7 @@ describe('Adapter Entity Processor Tests', () => {
       name: 'negative_numeric',
       type: 'numeric',
       label: 'Negative Numeric',
-      translatedLabel: 'Negative Numeric',
+      translatedLabel: 'Negative Numeric EN',
       values: [
         {
           value: '-15.75',
@@ -566,7 +565,7 @@ describe('Adapter Entity Processor Tests', () => {
       name: 'zero_numeric',
       type: 'numeric',
       label: 'Zero Numeric',
-      translatedLabel: 'Zero Numeric',
+      translatedLabel: 'Zero Numeric EN',
       values: [
         {
           value: '0',
@@ -575,5 +574,135 @@ describe('Adapter Entity Processor Tests', () => {
     };
 
     expect(metadata[20]).toMatchObject(zeroNumericProperty);
+  });
+
+  it('should include showInCard property in metadata', async () => {
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+    const markdownProperty = metadata.find(prop => prop.name === 'markdown_syntax');
+    const dateProperty = metadata.find(prop => prop.name === 'single_date');
+    const imageProperty = metadata.find(prop => prop.name === 'selected_image');
+
+    expect(textProperty).toHaveProperty('showInCard', true);
+    expect(markdownProperty).toHaveProperty('showInCard', false);
+    expect(dateProperty).toHaveProperty('showInCard', true);
+    expect(imageProperty).toHaveProperty('showInCard', true);
+  });
+
+  it('should include style property in metadata', async () => {
+    const imageProperty = metadata.find(prop => prop.name === 'selected_image');
+    const previewProperty = metadata.find(prop => prop.name === 'preview_document');
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+
+    expect(imageProperty).toHaveProperty('style', 'fill');
+    expect(previewProperty).toHaveProperty('style', 'fill');
+    expect(textProperty).toHaveProperty('style', '');
+  });
+
+  it('should include required property in metadata', async () => {
+    const dateProperty = metadata.find(prop => prop.name === 'single_date');
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+    const numericProperty = metadata.find(prop => prop.name === 'numeric_value');
+
+    expect(dateProperty).toHaveProperty('required', true);
+    expect(textProperty).toHaveProperty('required', false);
+    expect(numericProperty).toHaveProperty('required', false);
+  });
+
+  it('should include noLabel property in metadata', async () => {
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+    const dateProperty = metadata.find(prop => prop.name === 'single_date');
+    const imageProperty = metadata.find(prop => prop.name === 'selected_image');
+
+    expect(textProperty).toHaveProperty('noLabel', false);
+    expect(dateProperty).toHaveProperty('noLabel', false);
+    expect(imageProperty).toHaveProperty('noLabel', false);
+  });
+
+  it('should include generatedId property in metadata', async () => {
+    const documentIdProperty = metadata.find(prop => prop.name === 'document_id');
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+    const numericProperty = metadata.find(prop => prop.name === 'numeric_value');
+
+    expect(documentIdProperty).toHaveProperty('generatedId', false);
+    expect(textProperty).toHaveProperty('generatedId', false);
+    expect(numericProperty).toHaveProperty('generatedId', false);
+  });
+
+  it('should include translatedLabel when translateLabels is true', async () => {
+    const textProperty = metadata.find(prop => prop.name === 'simple_text');
+    const dateProperty = metadata.find(prop => prop.name === 'single_date');
+    const selectProperty = metadata.find(prop => prop.name === 'status_selection');
+
+    expect(textProperty).toHaveProperty('translatedLabel', 'Simple Text EN');
+    expect(dateProperty).toHaveProperty('translatedLabel', 'Single Date EN');
+    expect(selectProperty).toHaveProperty('translatedLabel', 'Status Selection EN');
+  });
+
+  it('should use original label when translateLabels is false', async () => {
+    const contextWithoutTranslation = {
+      ...processingContext,
+      translateLabels: false,
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithoutTranslation);
+    const result = processor.processEntity(rawEntity);
+    const metadataWithoutTranslation = result.entity.metadata;
+
+    const textProperty = metadataWithoutTranslation.find(prop => prop.name === 'simple_text');
+    const dateProperty = metadataWithoutTranslation.find(prop => prop.name === 'single_date');
+
+    expect(textProperty).toHaveProperty('translatedLabel', 'Simple Text');
+    expect(dateProperty).toHaveProperty('translatedLabel', 'Single Date');
+  });
+
+  it('should include options for select property when includeOptions is true', async () => {
+    const contextWithOptions = {
+      ...processingContext,
+      includeOptions: true,
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithOptions);
+    const result = processor.processEntity(rawEntity);
+    const metadataWithOptions = result.entity.metadata;
+
+    const selectPropertyWithOptions: SelectMetadataProperty = {
+      name: 'status_selection',
+      type: 'select',
+      label: 'Status Selection',
+      translatedLabel: 'Status Selection EN',
+      values: [
+        {
+          value: 'thesaurus.again',
+          label: 'Again',
+        },
+      ],
+      _id: 'prop.status-selection',
+      properties: {
+        _id: 'prop.status-selection',
+        inherited: false,
+        options: [
+          { value: 'thesaurus.acknowledging', label: 'Acknowledging' },
+          { value: 'thesaurus.again', label: 'Again', selected: true },
+          { value: 'thesaurus.expressing', label: 'Expressing' },
+          { value: 'thesaurus.grouped', label: 'grouped' },
+          {
+            value: 'thesaurus.verb1',
+            label: 'verb1',
+            translatedLabel: 'verb1',
+            selected: false,
+            parent: { value: 'thesaurus.grouped', label: 'grouped' },
+          },
+          {
+            value: 'thesaurus.verb2',
+            label: 'verb2',
+            translatedLabel: 'verb2',
+            selected: false,
+            parent: { value: 'thesaurus.grouped', label: 'grouped' },
+          },
+        ],
+      },
+    };
+
+    expect(metadataWithOptions[7]).toMatchObject(selectPropertyWithOptions);
   });
 });
