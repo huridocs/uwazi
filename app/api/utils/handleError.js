@@ -18,7 +18,11 @@ const ajvPrettifier = error => {
   const errorMessage = [error.message];
   if (error.validations && error.validations.length) {
     error.validations.forEach(oneError => {
-      errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
+      if (oneError.instancePath) {
+        errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
+      } else {
+        errorMessage.push(oneError.message);
+      }
     });
   }
   return errorMessage.join('\n');
