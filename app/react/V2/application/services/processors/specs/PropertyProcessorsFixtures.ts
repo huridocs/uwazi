@@ -305,7 +305,7 @@ export const processingContext: ProcessingContext = {
   combineGeolocation: true,
   onlyForCards: true,
   formatDates: true,
-  dateFormat: 'MMM d, yyyy',
+  dateFormat: 'LLL d, yyyy',
   translateLabels: true,
   language: 'en',
   translations: [

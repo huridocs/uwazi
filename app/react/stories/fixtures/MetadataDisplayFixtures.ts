@@ -107,176 +107,176 @@ const rawEntity: EntitySchema = {
         },
       },
     ],
-    // related_people: [
-    //   {
-    //     value: 'xjku67dv7b',
-    //     label: 'Maria Rodriguez - Witness',
-    //     icon: {
-    //       _id: 'ECU',
-    //       label: 'Ecuador',
-    //       type: 'Flags',
-    //     },
-    //     type: 'entity',
-    //     inheritedValue: [
-    //       {
-    //         value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-    //         label: 'Again',
-    //       },
-    //       {
-    //         value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-    //         label: 'Acknowledging',
-    //       },
-    //     ],
-    //     inheritedType: 'multiselect',
-    //   },
-    //   {
-    //     value: '4oklamamet',
-    //     label: 'John Smith - Reporter',
-    //     icon: '',
-    //     type: 'entity',
-    //     inheritedValue: [],
-    //     inheritedType: 'multiselect',
-    //   },
-    // ],
-    // nearby_incidents: [
-    //   {
-    //     value: 'xjku67dv7b',
-    //     label: 'Traffic Accident - Main Street',
-    //     icon: {
-    //       _id: 'ECU',
-    //       label: 'Ecuador',
-    //       type: 'Flags',
-    //     },
-    //     type: 'entity',
-    //   },
-    //   {
-    //     value: '4oklamamet',
-    //     label: 'Fire Incident - Downtown',
-    //     icon: '',
-    //     type: 'entity',
-    //   },
-    // ],
-    // external_link: [
-    //   {
-    //     value: {
-    //       label: 'Police Report',
-    //       url: 'https://police.gov/reports/incident-2024-001',
-    //     },
-    //   },
-    // ],
-    // selected_image: [
-    //   {
-    //     value: '/short-video-thumbnail.jpg',
-    //     alt: 'Alternative text for image',
-    //   },
-    // ],
-    // preview_document: [
-    //   {
-    //     value: '/batman.jpg',
-    //     alt: 'Alternative text pdf preview',
-    //   },
-    // ],
-    // video_of_event: [
-    //   {
-    //     value:
-    //       '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45":"Test timelink"}})',
-    //     alt: 'Alternative text',
-    //   },
-    // ],
-    // incident_location: [
-    //   {
-    //     value: {
-    //       lat: 44.33301685687683,
-    //       lon: 5.998535156250001,
-    //       label: '',
-    //     },
-    //   },
-    // ],
-    // secondary_location: [
-    //   {
-    //     value: {
-    //       lat: 62.58069554111894,
-    //       lon: 15.468750000000002,
-    //       label: '',
-    //     },
-    //   },
-    // ],
-    // location_relationships: [
-    //   {
-    //     value: 'xjku67dv7b',
-    //     label: 'Witness Location - Maria Rodriguez',
-    //     icon: {
-    //       _id: 'ECU',
-    //       label: 'Ecuador',
-    //       type: 'Flags',
-    //     },
-    //     type: 'entity',
-    //     inheritedValue: [
-    //       {
-    //         value: {
-    //           lat: 43.80157978110818,
-    //           lon: 7.492675781250001,
-    //           label: 'Witness Home Address',
-    //         },
-    //       },
-    //     ],
-    //     inheritedType: 'geolocation',
-    //   },
-    //   {
-    //     value: '4oklamamet',
-    //     label: 'Reporter Location - John Smith',
-    //     icon: '',
-    //     type: 'entity',
-    //     inheritedValue: [],
-    //     inheritedType: 'geolocation',
-    //   },
-    // ],
-    // document_id: [
-    //   {
-    //     value: 'EVT-2024-001',
-    //   },
-    // ],
-    // hierarchical_relationships: [
-    //   {
-    //     value: '6qdshinfobf',
-    //     label: 'Emergency Response Team',
-    //     icon: '',
-    //     type: 'entity',
-    //     inheritedValue: [
-    //       {
-    //         value: '7jdr88mnow6',
-    //         label: 'First Responders',
-    //         icon: '',
-    //         type: 'entity',
-    //         inheritedValue: [
-    //           {
-    //             value: 'xjku67dv7b',
-    //             label: 'Police Officer - Maria Rodriguez',
-    //             icon: {
-    //               _id: 'ECU',
-    //               label: 'Ecuador',
-    //               type: 'Flags',
-    //             },
-    //             type: 'entity',
-    //             inheritedValue: [
-    //               {
-    //                 value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
-    //                 label: 'Again',
-    //               },
-    //               {
-    //                 value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
-    //                 label: 'Acknowledging',
-    //               },
-    //             ],
-    //             inheritedType: 'multiselect',
-    //           },
-    //         ],
-    //         inheritedType: 'relationship',
-    //       },
-    //     ],
-    //     inheritedType: 'relationship',
-    //   },
-    // ],
+    related_people: [
+      {
+        value: 'xjku67dv7b',
+        label: 'Maria Rodriguez - Witness',
+        icon: {
+          _id: 'ECU',
+          label: 'Ecuador',
+          type: 'Flags',
+        },
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+            label: 'Again',
+          },
+          {
+            value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+            label: 'Acknowledging',
+          },
+        ],
+        inheritedType: 'multiselect',
+      },
+      {
+        value: '4oklamamet',
+        label: 'John Smith - Reporter',
+        icon: '',
+        type: 'entity',
+        inheritedValue: [],
+        inheritedType: 'multiselect',
+      },
+    ],
+    nearby_incidents: [
+      {
+        value: 'xjku67dv7b',
+        label: 'Traffic Accident - Main Street',
+        icon: {
+          _id: 'ECU',
+          label: 'Ecuador',
+          type: 'Flags',
+        },
+        type: 'entity',
+      },
+      {
+        value: '4oklamamet',
+        label: 'Fire Incident - Downtown',
+        icon: '',
+        type: 'entity',
+      },
+    ],
+    external_link: [
+      {
+        value: {
+          label: 'Police Report',
+          url: 'https://police.gov/reports/incident-2024-001',
+        },
+      },
+    ],
+    selected_image: [
+      {
+        value: '/short-video-thumbnail.jpg',
+        alt: 'Alternative text for image',
+      },
+    ],
+    preview_document: [
+      {
+        value: '/batman.jpg',
+        alt: 'Alternative text pdf preview',
+      },
+    ],
+    video_of_event: [
+      {
+        value:
+          '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45":"Test timelink"}})',
+        alt: 'Alternative text',
+      },
+    ],
+    incident_location: [
+      {
+        value: {
+          lat: 44.33301685687683,
+          lon: 5.998535156250001,
+          label: '',
+        },
+      },
+    ],
+    secondary_location: [
+      {
+        value: {
+          lat: 62.58069554111894,
+          lon: 15.468750000000002,
+          label: '',
+        },
+      },
+    ],
+    location_relationships: [
+      {
+        value: 'xjku67dv7b',
+        label: 'Witness Location - Maria Rodriguez',
+        icon: {
+          _id: 'ECU',
+          label: 'Ecuador',
+          type: 'Flags',
+        },
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: {
+              lat: 43.80157978110818,
+              lon: 7.492675781250001,
+              label: 'Witness Home Address',
+            },
+          },
+        ],
+        inheritedType: 'geolocation',
+      },
+      {
+        value: '4oklamamet',
+        label: 'Reporter Location - John Smith',
+        icon: '',
+        type: 'entity',
+        inheritedValue: [],
+        inheritedType: 'geolocation',
+      },
+    ],
+    document_id: [
+      {
+        value: 'EVT-2024-001',
+      },
+    ],
+    hierarchical_relationships: [
+      {
+        value: '6qdshinfobf',
+        label: 'Emergency Response Team',
+        icon: '',
+        type: 'entity',
+        inheritedValue: [
+          {
+            value: '7jdr88mnow6',
+            label: 'First Responders',
+            icon: '',
+            type: 'entity',
+            inheritedValue: [
+              {
+                value: 'xjku67dv7b',
+                label: 'Police Officer - Maria Rodriguez',
+                icon: {
+                  _id: 'ECU',
+                  label: 'Ecuador',
+                  type: 'Flags',
+                },
+                type: 'entity',
+                inheritedValue: [
+                  {
+                    value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
+                    label: 'Again',
+                  },
+                  {
+                    value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
+                    label: 'Acknowledging',
+                  },
+                ],
+                inheritedType: 'multiselect',
+              },
+            ],
+            inheritedType: 'relationship',
+          },
+        ],
+        inheritedType: 'relationship',
+      },
+    ],
   },
   user: '58ada34d299e82674854510f',
   permissions: [

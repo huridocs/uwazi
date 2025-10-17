@@ -130,7 +130,7 @@ describe('Adapter Entity Processor Tests', () => {
             latitude: 46.3964365565104,
             longitude: 3.6694335937500004,
           },
-          label: '46.40°N, 3.67°E',
+          label: 'Location of Interest',
         },
       ],
     };
@@ -241,7 +241,7 @@ describe('Adapter Entity Processor Tests', () => {
   it('should process relationship property', async () => {
     const relationshipProperty = {
       name: 'related_people',
-      type: 'multiselect',
+      type: 'relationship',
       label: 'Related People',
       translatedLabel: 'Related People EN',
       values: [
@@ -249,7 +249,7 @@ describe('Adapter Entity Processor Tests', () => {
           value: '9e22a1af-75d7-49a2-b9d8-9ec77939b630',
           label: 'Again',
           source: {
-            icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
+            icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
             url: '/entity/xjku67dv7b',
             value: 'xjku67dv7b',
@@ -259,7 +259,7 @@ describe('Adapter Entity Processor Tests', () => {
           value: '765ab6ca-56a1-4948-9dc9-17fc0aa30843',
           label: 'Acknowledging',
           source: {
-            icon: { _id: 'ECU', label: 'Ecuador', type: 'Flags' },
+            icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
             url: '/entity/xjku67dv7b',
             value: 'xjku67dv7b',
@@ -290,6 +290,12 @@ describe('Adapter Entity Processor Tests', () => {
       ],
       properties: {
         inherited: true,
+        inheritedProperty: {
+          type: 'multiselect',
+          label: "Multiselect",
+          name: "category_tags",
+          translatedLabel: "Multiselect",
+        },
       },
     };
 
@@ -372,26 +378,22 @@ describe('Adapter Entity Processor Tests', () => {
         {
           value: { latitude: 44.33301685687683, longitude: 5.998535156250001 },
           name: 'incident_location',
-          label: '44.33°N, 6.00°E',
+          label: 'Incident Location',
         },
         {
           value: { latitude: 62.58069554111894, longitude: 15.468750000000002 },
           name: 'secondary_location',
-          label: '62.58°N, 15.47°E',
+          label: 'Location',
         },
         {
           value: { latitude: 43.80157978110818, longitude: 7.492675781250001 },
           name: 'location_relationships',
           label: 'Witness Location - Maria Rodriguez',
-          color: '#16bdca',
           source: {
             value: 'xjku67dv7b',
             label: 'Witness Location - Maria Rodriguez',
-            icon: {
-              _id: 'ECU',
-              label: 'Ecuador',
-              type: 'Flags',
-            },
+            color: '#16bdca',
+            icon: 'ECU',
             type: 'entity',
             inheritedType: 'geolocation',
             url: '/entity/xjku67dv7b',

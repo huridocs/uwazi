@@ -1,6 +1,7 @@
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
 import { EntitySchema } from 'shared/types/entityType';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import {
   AdapterEntity,
   AdapterEntityTemplate,
@@ -68,31 +69,10 @@ export class AdapterEntityProcessor {
               index,
               values: entityProperty,
               entity: entity,
-            } as AdapterMetadataProperty; //TODO avoid this cast
+            } as AdapterMetadataProperty;
           }
         }
       ).filter(property => property !== undefined);
-
-      // const rootProperties: AdapterMetadataProperty[] = [];
-      // if (entity.rawEntity?.permissions) {
-      //   rootProperties.push({
-      //     _id: 'permissions',
-      //     value: entity.rawEntity.permissions as any,
-      //     name: 'permissions',
-      //     label: 'Permissions',
-      //     type: 'permissions',
-      //     entity: entity,
-      //     index: 0,
-      //     values: [],
-      //     properties: {
-      //       _id: 'permissions',
-      //       content: 'permissions',
-      //       inherited: false,
-      //       translatedLabel: 'Permissions',
-      //       inheritedProperty: undefined,
-      //     },
-      //   });
-      // }
 
       return metadataProperties;
     });
@@ -116,48 +96,44 @@ export class AdapterEntityProcessor {
   private processFinalValues(properties: AdapterMetadataProperty[]): AdapterMetadataProperty[] {
     return properties.map(property => {
       if (property.type === 'relationship' && property.value && Array.isArray(property.value)) {
-        const processedValues = this.flattenInheritedValues(property.value, []);
-        return {
-          ...property,
-          value: processedValues,
-          values: processedValues,
-        };
+        const hasInheritedValues = property.value.some(
+          (value: any) =>
+            value.inheritedValue &&
+            Array.isArray(value.inheritedValue) &&
+            value.inheritedValue.length > 0
+        );
+
+        if (hasInheritedValues) {
+          const processedValues = this.flattenInheritedValues(property.value, property.entity, [property.entity._id]);
+          return {
+            ...property,
+            type: 'relationship',
+            value: processedValues,
+            values: processedValues,
+          };
+        }
       }
       return property;
     });
   }
 
-  private flattenInheritedValues(values: any[], sourceChain: any[]): any[] {
-    const result: any[] = [];
-
-    values.forEach(value => {
-      if (value.inheritedValue && Array.isArray(value.inheritedValue)) {
-        const newSourceChain = [
-          ...sourceChain,
-          {
-            value: value.value,
-            label: value.label,
-            icon: value.icon,
-            type: value.type,
-          },
-        ];
-        const nestedValues = this.flattenInheritedValues(value.inheritedValue, newSourceChain);
-        result.push(...nestedValues);
-      } else {
-        const source =
-          sourceChain.length > 1
-            ? sourceChain[sourceChain.length - 2]
-            : sourceChain.length > 0
-              ? sourceChain[sourceChain.length - 1]
-              : null;
-        result.push({
-          ...value,
-          _inheritedSource: source,
-        });
+  private flattenInheritedValues(
+    values: MetadataObjectSchema[],
+    mainEntity: AdapterEntity,
+    sourceChain: string[],
+  ): MetadataObjectSchema[] {
+    return values.map(value => {
+      if (value.inheritedType !== 'relationship' || sourceChain.includes(value.value as string)) {
+        return {
+          value: value.value,
+          label: value.label,
+          url: '/entity/' + value.value,
+          icon: value.icon,
+        };
       }
-    });
-
-    return result;
+      sourceChain.push(value.value as string);
+      return this.flattenInheritedValues(value.inheritedValue || [], mainEntity, sourceChain);
+    }).flat();
   }
 
   private processPropertiesByType(
@@ -318,76 +294,33 @@ export class AdapterEntityProcessor {
   }
 
   private convertToInheritedType(property: AdapterMetadataProperty): void {
-    const inheritedType = property.properties?.inheritedProperty?.type;
-    if (!inheritedType) return;
+    const inheritedProperty = property.properties?.inheritedProperty;
+    if (!inheritedProperty?.type) return;
 
-    const transformedValues: unknown[] = [];
-    const values = Array.isArray(property.value) ? property.value : [property.value];
+    const transformedValues: AdapterMetadataProperty['value'] = [];
 
-    values.forEach((rel: unknown) => {
-      if (
-        rel &&
-        typeof rel === 'object' &&
-        'inheritedValue' in rel &&
-        Array.isArray((rel as any).inheritedValue)
-      ) {
-        (rel as any).inheritedValue.forEach((inheritedValue: unknown) => {
-          if (
-            inheritedValue &&
-            typeof inheritedValue === 'object' &&
-            'value' in inheritedValue &&
-            (inheritedValue as any).value !== undefined
-          ) {
-            transformedValues.push(this.createTransformedValue(inheritedType, inheritedValue, rel));
-          }
+    property.value.forEach(rel => {
+      rel.inheritedValue?.forEach(inheritedValue => {
+        transformedValues.push({
+          value: inheritedValue.value,
+          label: inheritedValue.label,
+          source: {
+            value: rel.value?.toString() || '',
+            label: rel.label || '',
+            url: '/entity/' + (rel.value?.toString() || ''),
+          },
         });
-      }
+      });
     });
 
     Object.assign(property, {
       ...property,
-      type: inheritedType as any,
-      _originalRelationshipType: 'relationship',
-      _isInheritedProperty: true,
-      _inheritedType: inheritedType,
-      value: transformedValues,
+      values: transformedValues,
       properties: {
         ...property.properties,
+        type: inheritedProperty.type,
         inherited: true,
       },
     });
-  }
-
-  private createTransformedValue(
-    inheritedType: string,
-    inheritedValue: unknown,
-    rel: unknown
-  ): unknown {
-    const valueObj =
-      inheritedValue && typeof inheritedValue === 'object' && 'value' in inheritedValue
-        ? (inheritedValue as any).value
-        : null;
-    const relObj = rel && typeof rel === 'object' ? (rel as any) : {};
-
-    const value =
-      inheritedType === 'geolocation' && valueObj?.lat && valueObj?.lon
-        ? { lat: valueObj.lat, lon: valueObj.lon, label: valueObj.label || '' }
-        : valueObj;
-
-    return {
-      value: {
-        value,
-        label: (inheritedValue as any)?.label || value?.toString(),
-        parent: (inheritedValue as any)?.parent,
-      },
-      _relationshipMetadata: {
-        entity: relObj.value || '',
-        label: relObj.label || '',
-        icon: relObj.icon || '',
-        type: relObj.type || '',
-        inheritedType: relObj.inheritedType || '',
-        url: relObj.url || `/entity/${relObj.value}`,
-      },
-    };
   }
 }

@@ -44,6 +44,8 @@ export interface SourceValue {
   value: string;
   label: string;
   color?: string;
+  icon?: string;
+  url?: string;
 }
 export interface InheritedPropertyInfo {
   type: AllowedPropertyTypes;
@@ -103,13 +105,6 @@ export interface DateRangeMetadataProperty extends Omit<BaseMetadataProperty, 'v
 export interface MultiDateRangeMetadataProperty extends Omit<DateRangeMetadataProperty, 'type'> {
   readonly type: 'multidaterange';
 }
-
-export interface Icon {
-  _id: string;
-  label: string;
-  type: string;
-}
-
 export interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'geolocation';
   readonly values: Array<{
@@ -120,7 +115,7 @@ export interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 
       entity?: {
         _id: string;
         label: string;
-        icon?: Icon;
+        icon?: string;
         url?: string;
       };
     };
@@ -214,14 +209,13 @@ export interface PermissionMetadataProperty extends Omit<BaseMetadataProperty, '
 export interface RelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'relationship' | 'newRelationship';
   readonly values:
-  | MetadataProperty
-  | Array<{
-    value: string;
-    label: string;
-    icon?: Icon;
-    url: string;
-    source?: { value: string; label: string; url: string };
-  }>;
+    | MetadataProperty
+    | Array<{
+        value: string;
+        label: string;
+        icon?: string;
+        url: string;
+      }>;
   readonly properties?: ExtendedPropertyInfo;
 }
 

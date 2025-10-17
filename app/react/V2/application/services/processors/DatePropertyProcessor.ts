@@ -4,9 +4,9 @@ import {
   DatePropertyTypes,
   DateRangeMetadataProperty,
 } from 'app/V2/domain/entities/types';
+import { DateRangeSchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { DateRangeSchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 
 export class DatePropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DatePropertyProcessor';
@@ -42,9 +42,9 @@ export class DatePropertyProcessor extends BasePropertyProcessor {
         return '';
       }
 
-      // if (context.dateFormat) {
-      //   return luxonInstance.toFormat(context.dateFormat);
-      // }
+      if (context.dateFormat) {
+        return luxonInstance.toFormat(context.dateFormat);
+      }
       return luxonInstance.toLocaleString(DateTime.DATE_MED);
     }
     return '';

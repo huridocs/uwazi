@@ -57,14 +57,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         return { value: geo, label: '' };
       }
 
-      const coordinateLabel = format
-        ? `${Number(lat).toFixed(2)}°N, ${Number(lon).toFixed(2)}°E`
-        : `${lat}, ${lon}`;
-
       return {
         value: { latitude: lat, longitude: lon },
-        label: format ? coordinateLabel : geo.label || coordinateLabel,
-        name: property.name,
+        label: property.label,
+        translatedLabel: property.translatedLabel,
       };
     });
   }
