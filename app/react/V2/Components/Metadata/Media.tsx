@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import ReactPlayer from 'react-player';
+import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from 'app/I18N';
 import { MediaMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
@@ -9,9 +10,18 @@ import { MetadataCard } from './MetadataCard';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];
+  width?: number;
+  height?: number;
 };
 
-const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => {
+const Media = ({
+  label,
+  values,
+  hideLabel,
+  translationContext,
+  width = 500,
+  height = 300,
+}: MediaProps) => {
   const { value, alt, timelinks = [] } = values[0];
   const playerRef = useRef<ReactPlayer>(null);
 
@@ -28,9 +38,11 @@ const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => 
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="flex flex-col items-center">
-        <figure aria-labelledby={label}>
-          <MediaPlayer playerRef={playerRef} url={value} width={500} height={300} />
+      <dd className="flex flex-col items-center gap-2">
+        <figure aria-labelledby={label} className="w-full">
+          <div className="w-full m-auto bg-gray-100 rounded-md">
+            <MediaPlayer playerRef={playerRef} url={value} width={width} height={height} />
+          </div>
           {alt && (
             <figcaption className="sr-only" id={label}>
               {alt}
@@ -39,12 +51,19 @@ const Media = ({ label, values, hideLabel, translationContext }: MediaProps) => 
         </figure>
 
         {timelinks.length > 0 && (
-          <nav aria-label={t('System', 'Timelinks', null, false)}>
-            <ul className="flex flex-wrap justify-center gap-2">
-              {timelinks.map(({ time, label: timelinkLabel }) => (
+          <nav className="w-full" aria-label={t('System', 'Timelinks', null, false)}>
+            <ul className="flex flex-col gap-2">
+              {timelinks.map(({ time, hh, mm, ss, label: timelinkLabel }) => (
                 <li key={timelinkLabel + time}>
-                  <button type="button" onClick={() => handleTimelinkClick(time)}>
-                    {timelinkLabel}
+                  <button
+                    className="flex flex-row flex-nowrap"
+                    type="button"
+                    onClick={() => handleTimelinkClick(time)}
+                    aria-label={`${hh} ${mm} ${ss} : ${timelinkLabel}`}
+                  >
+                    <PlayIcon className="w-4 h-4" />
+                    {`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`}{' '}
+                    - {timelinkLabel}
                   </button>
                 </li>
               ))}

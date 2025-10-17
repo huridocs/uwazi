@@ -170,7 +170,7 @@ const rawEntity: EntitySchema = {
     video_of_event: [
       {
         value:
-          '(/short-video.mp4, {"timelinks":{"00:20:15":"control","01:30:45": "Test timelink"}})',
+          '(/short-video.mp4, {"timelinks":{"00:00:02":"Timelink 1","00:00:04": "Timelink 2"}})',
         alt: 'Alternative text',
       },
     ],

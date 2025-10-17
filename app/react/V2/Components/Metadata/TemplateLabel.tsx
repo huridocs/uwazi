@@ -41,7 +41,7 @@ const TemplateLabel = ({
 
   return (
     <div
-      className="py-1 px-2 w-fit rounded-md relative"
+      className="py-1 px-2 w-fit rounded-md"
       style={{ backgroundColor: color, color: textColor }}
     >
       <Translate context={templateId}>{label}</Translate>

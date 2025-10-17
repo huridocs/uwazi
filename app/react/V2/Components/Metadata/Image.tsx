@@ -37,8 +37,9 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
         }
 
         return (
-          <dd className="flex justify-center">
+          <dd className="w-full rounded-md bg-gray-100">
             <img
+              className="m-auto"
               style={{
                 objectFit: imageStyle ?? 'fill',
               }}
