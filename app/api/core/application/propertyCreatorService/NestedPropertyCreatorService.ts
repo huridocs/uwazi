@@ -1,7 +1,7 @@
-import { Context, Property } from 'api/core/domain/template/Property';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { NestedPropertyNotAvailableError } from 'api/core/domain/template/errors';
-import { NestedPropertyProps, NestedProperty } from 'api/core/domain/template/NestedProperty';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { Context, Property } from '../../domain/template/Property';
+import { NestedPropertyNotAvailableError } from '../../domain/template/errors';
+import { NestedPropertyProps, NestedProperty } from '../../domain/template/NestedProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 type Deps = {

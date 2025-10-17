@@ -7,7 +7,6 @@ import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from 'api/core/application/TemplateDTOs';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
@@ -32,6 +31,7 @@ import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/
 import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';
 import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
 import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { TemplateDeletedEvent } from '../core/domain/template/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../core/domain/template/events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -166,7 +166,7 @@ export default {
       const input = CreateTemplateDTOSchema.parse(template);
       const output = await CreateTemplateUseCaseFactory.create().execute(input);
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
 
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
@@ -187,7 +187,7 @@ export default {
         fullReindex,
       });
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
 
     // processing can not be saved from this interface, its an internal tracking property
@@ -425,8 +425,8 @@ export default {
       });
 
       return [
-        TemplateMapper.toSchema(output.current),
-        output.previous && TemplateMapper.toSchema(output.previous),
+        MongoTemplateMapper.toSchema(output.current),
+        output.previous && MongoTemplateMapper.toSchema(output.previous),
       ];
     }
 

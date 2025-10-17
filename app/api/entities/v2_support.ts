@@ -9,7 +9,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { TemplateMappers } from 'api/core/infrastructure/mongodb/template/TemplateMappers';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/schemas/TemplateDBO';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';

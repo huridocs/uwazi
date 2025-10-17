@@ -1,10 +1,10 @@
-import { Context, Property } from 'api/core/domain/template/Property';
-import { SelectPropertyWithInvalidThesaurusError } from 'api/core/domain/template/errors';
+import { Context, Property } from '../../domain/template/Property';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
-} from 'api/core/domain/template/MultiSelectProperty';
-import { SelectPropertyProps, SelectProperty } from 'api/core/domain/template/SelectProperty';
+} from '../../domain/template/MultiSelectProperty';
+import { SelectPropertyProps, SelectProperty } from '../../domain/template/SelectProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 interface ThesauriDataSource {

@@ -1,11 +1,11 @@
-import { Context, Property } from 'api/core/domain/template/Property';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IdGenerator } from 'api/core/libs/IdGenerator';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
-import { PropertyFactoryCreateInput } from 'api/core/domain/template/PropertyFactory';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
+import { TemplatesDataSource } from '../../domain/template/TemplatesDataSource';
+import { Context, Property } from '../../domain/template/Property';
+import { IdGenerator } from '../../libs/IdGenerator';
+import { PropertyType } from '../../domain/template/PropertyType';
+import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';
 import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';

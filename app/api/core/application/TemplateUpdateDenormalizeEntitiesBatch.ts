@@ -1,16 +1,16 @@
-import { TransactionManager } from 'api/core/libs/TransactionManager';
-import { UseCase } from 'api/core/libs/UseCase';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
-import { search } from 'api/search';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
 import { cloneDeep } from 'lodash';
 import { generateID } from 'shared/IDGenerator';
+import { search } from 'api/search';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { applicationEventsBus } from '../libs/eventsbus';
+import { TransactionManager } from '../libs/TransactionManager';
+import { UseCase } from '../libs/UseCase';
 
 type Input = {
   entitiesIds: string[];
