@@ -614,6 +614,21 @@ const rawEntity: EntitySchema = {
       },
     ],
   },
+  documents: [
+    {
+      _id: 'batman',
+      entity: 'shared1',
+      type: 'document',
+      filename: 'batman.pdf',
+      originalname: 'Anoying rich kid.pdf',
+      mimetype: 'application/pdf',
+      size: 1,
+      status: 'ready',
+      creationDate: 1760792421312,
+      language: 'en',
+      totalPages: 1,
+    },
+  ],
 };
 
 const processingContextBase: Omit<ProcessingContext, 'templates' | 'settings' | 'thesauri'> = {

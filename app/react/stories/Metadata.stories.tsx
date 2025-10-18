@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
@@ -40,11 +40,29 @@ const MetadataDisplayComponent = ({
   });
   const { entity } = fluentBuilder.forDetailView().processEntity(dbEntity);
 
+  //Storybook cannot understand relative paths to api/files
+  const storyReadyEntity = useMemo(() => {
+    const newMetadata = entity.metadata.map(property => {
+      if (property.type === 'preview') {
+        return {
+          ...property,
+          values: property.values.map(value => ({
+            ...value,
+            value: value.value.replace('/api/files', ''),
+          })),
+        };
+      }
+      return property;
+    });
+
+    return { ...entity, metadata: newMetadata };
+  }, [entity]);
+
   return (
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <MetadataDisplay entity={entity} />
+          <MetadataDisplay entity={storyReadyEntity} />
         </Provider>
       </BrowserRouter>
     </div>
