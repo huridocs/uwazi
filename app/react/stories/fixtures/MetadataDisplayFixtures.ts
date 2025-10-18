@@ -575,7 +575,7 @@ const rawEntity: EntitySchema = {
     hierarchical_relationships: [
       {
         value: '6qdshinfobf',
-        label: 'Emergency Response Team',
+        label: 'Emergency Response Team (not defined in template)',
         icon: '',
         type: 'entity',
         inheritedValue: [

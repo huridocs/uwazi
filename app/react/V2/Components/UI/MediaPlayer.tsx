@@ -13,6 +13,7 @@ interface MediaPlayerProps extends ReactPlayerProps {
     fileName?: string;
   };
   playerRef?: React.RefObject<ReactPlayer>;
+  className?: string;
 }
 
 const verifyUrl = (url: string): MediaType => {
@@ -49,7 +50,15 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   );
 };
 
-const MediaPlayer = ({ url, width, height, thumbnail, playerRef, ...props }: MediaPlayerProps) => {
+const MediaPlayer = ({
+  url,
+  width,
+  height,
+  thumbnail,
+  playerRef,
+  className,
+  ...props
+}: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const [playerHeight, setPlayerHeight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,7 +81,7 @@ const MediaPlayer = ({ url, width, height, thumbnail, playerRef, ...props }: Med
   return (
     <div
       style={{ width: width || '100%', height: height || '100%' }}
-      className="relative"
+      className={`relative ${className ?? ''}`}
       ref={containerRef}
     >
       {mediaType === 'invalid' && (
