@@ -59,11 +59,6 @@ export interface CompositionOptions {
   // Core inclusion options
   entityBasePath?: string;
   includeTemplate?: boolean;
-  includeMetadata?: boolean;
-  includeRelationships?: boolean;
-  includeFiles?: boolean;
-  includeNavigation?: boolean;
-  includePermissions?: boolean;
   onlyForCards?: boolean;
   includePropertyMetadata?: boolean;
   formatDates?: boolean;
@@ -80,40 +75,13 @@ export interface CompositionOptions {
   dateFormat?: string;
   combineGeolocation?: boolean;
 
-  includeFileMetadata?: boolean;
-  includeThumbnails?: boolean;
-  maxFileSize?: number;
-  allowedTypes?: string[];
-
-  // Flattening options
-  flattenStructures?: boolean;
-  flattenRelationships?: boolean;
-  flattenCoordinates?: boolean;
-  flattenMediaFiles?: boolean;
-  flattenTimelines?: boolean;
-
-  // Permission options
-  includeAccessLevel?: boolean;
-  includeSharedWith?: boolean;
-
-  // Relationship options
-  nestedLevel?: number;
-  includeEntityData?: boolean;
-  includeTemplates?: boolean;
-  maxRelationships?: number;
-
   // Select options
   includeOptions?: boolean;
 
+  // Flattening options
+
   // Processor-specific options
   timezone?: string;
-  includeTime?: boolean;
-  relativeTime?: boolean;
-  showLabels?: boolean;
-  showIcons?: boolean;
-  showUrls?: boolean;
-  precision?: number;
-  includeMapData?: boolean;
 }
 
 export interface CompositionResult {

@@ -39,7 +39,7 @@ export class RelationshipProcessor extends BasePropertyProcessor {
             parent: inherited.parent,
           });
         });
-      } else {
+      } else if (!property.properties.inherited) {
         result.push({
           value: value?.toString() || '',
           label: label || '',

@@ -282,11 +282,6 @@ const rawEntity: EntitySchema = {
 
 const processingContext: ProcessingContext = {
   includeTemplate: true,
-  includeMetadata: true,
-  includeRelationships: false,
-  includeFiles: false,
-  includeNavigation: false,
-  includePermissions: true,
   onlyForCards: true,
   dateFormat: 'LLL d, yyyy',
   translateLabels: true,

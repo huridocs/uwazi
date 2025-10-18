@@ -311,12 +311,6 @@ export const rawEntity: EntitySchema = {
 
 export const processingContext: ProcessingContext = {
   includeTemplate: true,
-  includeMetadata: true,
-  includeRelationships: false,
-  includeFiles: false,
-  includeNavigation: false,
-  includePermissions: true,
-  combineGeolocation: true,
   onlyForCards: true,
   formatDates: true,
   dateFormat: 'LLL d, yyyy',

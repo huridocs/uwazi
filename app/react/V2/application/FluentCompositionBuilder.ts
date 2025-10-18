@@ -33,54 +33,14 @@ export class FluentCompositionBuilder {
     return new FluentCompositionBuilder(processingContext, entityIdOrIds, useCase);
   }
 
-  withTemplate(): FluentCompositionBuilder {
-    this.options.includeTemplate = true;
-    return this;
-  }
-
-  withMetadata(): FluentCompositionBuilder {
-    this.options.includeMetadata = true;
-    return this;
-  }
-
-  withRelationships(): FluentCompositionBuilder {
-    this.options.includeRelationships = true;
-    return this;
-  }
-
-  withFiles(): FluentCompositionBuilder {
-    this.options.includeFiles = true;
-    return this;
-  }
-
-  withNavigation(): FluentCompositionBuilder {
-    this.options.includeNavigation = true;
-    return this;
-  }
-
-  withPermissions(): FluentCompositionBuilder {
-    this.options.includePermissions = true;
-    return this;
-  }
-
   forCardView(): FluentCompositionBuilder {
     this.options.includeTemplate = true;
-    this.options.includeMetadata = true;
-    this.options.includeRelationships = false;
-    this.options.includeFiles = false;
-    this.options.includeNavigation = false;
-    this.options.includePermissions = true;
     this.options.onlyForCards = true;
     return this;
   }
 
   forDetailView(): FluentCompositionBuilder {
     this.options.includeTemplate = true;
-    this.options.includeMetadata = true;
-    this.options.includeRelationships = true;
-    this.options.includeFiles = true;
-    this.options.includeNavigation = true;
-    this.options.includePermissions = true;
     this.options.combineGeolocation = true;
     this.options.translateLabels = true;
     this.options.formatDates = true;
@@ -89,11 +49,6 @@ export class FluentCompositionBuilder {
   }
 
   forForm(): FluentCompositionBuilder {
-    this.options.includeMetadata = true;
-    this.options.includeRelationships = true;
-    this.options.includeFiles = true;
-    this.options.includeNavigation = true;
-    this.options.includePermissions = true;
     this.options.combineGeolocation = false;
     this.options.translateLabels = true;
     this.options.includePropertyMetadata = true;
