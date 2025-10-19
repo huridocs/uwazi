@@ -13,7 +13,6 @@ import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { testingTenants } from 'api/utils/testingTenants';
 import { FieldIsRequiredError, TemplateInUseError } from 'api/core/domain/template/errors';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { TemplateDeletedEvent } from '../../core/domain/template/events/TemplateDeletedEvent';
@@ -717,21 +716,9 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'setAsDefault() v1',
-      featureFlags: { v2SetTemplateAsDefaultUseCase: false },
-    },
-    { title: 'setAsDefault() v2', featureFlags: { v2SetTemplateAsDefaultUseCase: true } },
-  ])('$title', ({ featureFlags }) => {
+  describe('setAsDefault()', () => {
     beforeEach(async () => {
       await testingEnvironment.setFixtures(fixtures);
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
     });
 
     afterEach(async () => {
@@ -754,9 +741,7 @@ describe('templates', () => {
         await templates.setAsDefault(propertyToBeInherited);
         fail('it should not pass');
       } catch (err) {
-        expect(err.message).toContain(
-          featureFlags.v2SetTemplateAsDefaultUseCase ? 'The Template with Id' : 'Invalid ID'
-        );
+        expect(err.message).toContain('The Template with Id');
       }
     });
   });

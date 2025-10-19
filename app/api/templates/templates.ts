@@ -8,9 +8,6 @@ import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { tenants } from 'api/tenants';
-import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import model from './templatesModel';
 
@@ -101,36 +98,7 @@ export default {
   },
 
   async setAsDefault(_id: string) {
-    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2SetTemplateAsDefaultUseCase;
-    if (v2CreateTemplateUseCase) {
-      const output = await SetTemplateAsDefaultUseCaseFactory.create().execute({
-        templateId: _id.toString(),
-      });
-
-      return [
-        MongoTemplateMapper.toSchema(output.current),
-        output.previous && MongoTemplateMapper.toSchema(output.previous),
-      ];
-    }
-
-    const [templateToBeDefault] = await this.get({ _id });
-    const [currentDefault] = await this.get({ _id: { $nin: [_id] }, default: true });
-
-    if (templateToBeDefault) {
-      let saveCurrentDefault = Promise.resolve({});
-      if (currentDefault) {
-        saveCurrentDefault = model.save(
-          {
-            _id: currentDefault._id,
-            default: false,
-          },
-          undefined
-        );
-      }
-      return Promise.all([model.save({ _id, default: true }, undefined), saveCurrentDefault]);
-    }
-
-    throw createError('Invalid ID');
+    return TemplateFacade.setAsDefault({ _id: _id.toString() });
   },
 
   async getById(templateId: ObjectId | string) {

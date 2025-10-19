@@ -14,6 +14,11 @@ import {
   DeleteTemplateSchema,
 } from '../express/template/DeleteTemplateController/DTO';
 import { DeleteTemplateUseCaseFactory } from '../factories/DeleteTemplateUseCaseFactory';
+import {
+  SetTemplateAsDefaultRequestDto,
+  SetTemplateAsDefaultSchema,
+} from '../express/template/SetTemplateAsDefaultController/DTO';
+import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };
@@ -73,5 +78,18 @@ export class TemplateFacade {
     await useCase.execute({ templateId: parsed._id.toString() });
 
     return parsed;
+  }
+
+  static async setAsDefault(dto: SetTemplateAsDefaultRequestDto) {
+    const parsed = SetTemplateAsDefaultSchema.parse(dto);
+
+    const output = await SetTemplateAsDefaultUseCaseFactory.create().execute({
+      templateId: parsed._id.toString(),
+    });
+
+    return [
+      MongoTemplateMapper.toSchema(output.current),
+      output.previous && MongoTemplateMapper.toSchema(output.previous),
+    ];
   }
 }
