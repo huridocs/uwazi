@@ -49,12 +49,28 @@ yarn install --production=true --modules-folder=./prod/node_modules
 DEPS_TIME=$(($(date +%s) - DEPS_START))
 echo "  ✅ Production dependencies installed in ${DEPS_TIME}s"
 
-echo "🖥️  Step 6: Copying server files..."
+echo "🖥️  Step 6: Creating production bootstrap..."
 SERVER_FILES_START=$(date +%s)
-cp ./server.js ./prod/server.js
+
+# Create production-specific server.js bootstrap
+cat > ./prod/server.js << 'EOF'
+/* eslint-disable no-console */
+require('dotenv').config();
+
+// Set ROOT_PATH to parent directory (where the root repo is)
+process.env.ROOT_PATH = process.env.ROOT_PATH || require('path').resolve(__dirname, '..');
+
+// Register handlers for scss/css imports that get compiled in production
+require.extensions['.scss'] = function scss() {};
+require.extensions['.css'] = function css() {};
+
+// Load the compiled production server
+require('./app/server.js');
+EOF
+
 cp ./package.json ./prod/package.json
 SERVER_FILES_TIME=$(($(date +%s) - SERVER_FILES_START))
-echo "  ✅ Server files copied in ${SERVER_FILES_TIME}s"
+echo "  ✅ Production bootstrap created in ${SERVER_FILES_TIME}s"
 
 TOTAL_TIME=$(($(date +%s) - START_TIME))
 
