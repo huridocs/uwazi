@@ -26,10 +26,6 @@ import fixtures, {
   thesaurusTemplateId,
 } from './fixtures/fixtures';
 
-jest.mock('../templateUpdateDenormalizeUseCase', () => ({
-  denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
-}));
-
 async function updateTemplate(template, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
   return templates.save(template, language, true, false);
