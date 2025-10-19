@@ -3,24 +3,16 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from 'api/entities';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import translations from 'api/i18n/translations';
-import settings from 'api/settings/settings';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { ensure } from 'shared/tsUtils';
 import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { tenants } from 'api/tenants';
-import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
 import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
-import { TemplateDeletedEvent } from '../core/domain/template/events/TemplateDeletedEvent';
 import model from './templatesModel';
-import * as v2 from './v2_support';
-import { TemplateValidationService } from './validation/TemplateValidationService';
 
 const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSession) => {
   const thesauriIds = (template.properties || []).map(p => p.content).filter(p => p);
@@ -33,8 +25,6 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
   });
   return thesauriByKey;
 };
-
-const validationService = new TemplateValidationService();
 
 export default {
   async save(
@@ -147,60 +137,8 @@ export default {
     return model.getById(templateId, undefined);
   },
 
-  async removePropsWithNonexistentId(nonexistentId: string, session?: ClientSession) {
-    const relatedTemplates = await model.get({ 'properties.content': nonexistentId }, undefined, {
-      session,
-    });
-    const defaultLanguage = (await settings.getDefaultLanguage())?.key;
-    if (!defaultLanguage) {
-      throw Error('Missing default language.');
-    }
-    await Promise.all(
-      relatedTemplates.map(async t =>
-        this.save(
-          {
-            ...t,
-            properties: (t.properties || []).filter(prop => prop.content !== nonexistentId),
-          },
-          defaultLanguage,
-          false
-        )
-      )
-    );
-  },
-  async validateTemplateDelete(templateToDelete: TemplateSchema, _id: string) {
-    const countByTemplate = await this.countByTemplate(_id);
-    await validationService.validateTemplateDelete(templateToDelete, countByTemplate);
-  },
-
   async delete(template: Partial<TemplateSchema>) {
-    const v2DeleteTemplateUseCase = tenants.current().featureFlags?.v2DeleteTemplateUseCase;
-    if (v2DeleteTemplateUseCase) {
-      const useCase = await DeleteTemplateUseCaseFactory.create();
-
-      await useCase.execute({ templateId: template._id!.toString() });
-
-      return template;
-    }
-
-    const _id = ensure<string>(template._id);
-    const [templateToDelete] = await this.get({ _id });
-
-    if (!templateToDelete) {
-      return Promise.resolve();
-    }
-
-    await this.validateTemplateDelete(templateToDelete, _id);
-
-    await v2.processNewRelationshipPropertiesOnDelete(template._id);
-
-    await translations.deleteContext(_id);
-    await this.removePropsWithNonexistentId(_id);
-    await model.delete(_id);
-
-    await applicationEventsBus.emit(new TemplateDeletedEvent({ templateId: _id }));
-
-    return template;
+    return TemplateFacade.delete({ _id: template._id!.toString() });
   },
 
   async countByTemplate(template: string, session?: ClientSession) {

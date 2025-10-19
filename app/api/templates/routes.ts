@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
 import { SetTemplateAsDefaultController } from 'api/core/infrastructure/express/template/SetTemplateAsDefaultController';
 import { GetTemplatesController } from 'api/core/infrastructure/express/template/GetTemplatesController';
-import { DeleteTemplateController } from 'api/core/infrastructure/express/template/DeleteTemplateController';
+import { DeleteTemplateController } from 'api/core/infrastructure/express/template/DeleteTemplateController/DeleteTemplateController';
 import { CountTemplatesByThesaurusController } from 'api/core/infrastructure/express/template/CountTemplatesByThesaurusController';
 import needsAuthorization from '../auth/authMiddleware';
 

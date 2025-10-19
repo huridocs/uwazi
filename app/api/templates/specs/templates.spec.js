@@ -558,32 +558,13 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'delete v1',
-      featureFlags: {
-        v2DeleteTemplateUseCase: false,
-      },
-    },
-    {
-      title: 'delete v2',
-      featureFlags: {
-        v2DeleteTemplateUseCase: true,
-      },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('Delete', () => {
     beforeAll(() => {
       jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
     });
 
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
     });
 
     afterEach(() => {
@@ -695,13 +676,7 @@ describe('templates', () => {
           'should not delete the template and throw an error because there is some documents associated with the template'
         );
       } catch (error) {
-        if (featureFlags.v2DeleteTemplateUseCase) {
-          expect(error).toBeInstanceOf(TemplateInUseError);
-        } else {
-          expect(error.message).toBeUndefined();
-          expect(error.key).toEqual('documents_using_template');
-          expect(error.value).toEqual(1);
-        }
+        expect(error).toBeInstanceOf(TemplateInUseError);
       }
     });
 
@@ -723,9 +698,7 @@ describe('templates', () => {
         );
       } catch (error) {
         expect(error.message).toEqual(
-          featureFlags.v2DeleteTemplateUseCase
-            ? 'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
-            : 'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
+          'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
         );
       }
     });

@@ -9,6 +9,11 @@ import { CreateTemplateUseCaseFactory } from '../factories/CreateTemplateUseCase
 import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO';
 import { UpdateTemplateUseCaseFactory } from '../factories/UpdateTemplateUseCaseFactory';
 import { MongoTemplateMapper } from '../mongodb/template/Mapper';
+import {
+  DeleteTemplateRequestDto,
+  DeleteTemplateSchema,
+} from '../express/template/DeleteTemplateController/DTO';
+import { DeleteTemplateUseCaseFactory } from '../factories/DeleteTemplateUseCaseFactory';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };
@@ -59,5 +64,14 @@ export class TemplateFacade {
     const updated = await useCase.execute(input, context);
 
     return MongoTemplateMapper.toSchema(updated);
+  }
+
+  static async delete(dto: DeleteTemplateRequestDto) {
+    const parsed = DeleteTemplateSchema.parse(dto);
+    const useCase = await DeleteTemplateUseCaseFactory.create();
+
+    await useCase.execute({ templateId: parsed._id.toString() });
+
+    return parsed;
   }
 }
