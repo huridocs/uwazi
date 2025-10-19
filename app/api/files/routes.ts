@@ -36,16 +36,11 @@ const checkEntityPermission = async (
 
   const relatedEntities: EntitySchema[] = await entities.get(
     { sharedId: fileInDB.entity },
-    '_id, permissions, published',
+    '_id +permissions',
     { withoutDocuments: true }
   );
 
   if (level === 'read') {
-    if (!user) {
-      // Unauthenticated users can only access published entities
-      return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published);
-    }
-    // Authenticated users can access if entity exists (permission check happens elsewhere)
     return relatedEntities.length > 0;
   }
 
@@ -84,11 +79,11 @@ const isFilePubliclyAccessible = async (
   // For documents/attachments: Check if all related entities are published
   const relatedEntities: EntitySchema[] = await entities.get(
     { sharedId: file.entity },
-    'published',
+    undefined,
     { withoutDocuments: true }
   );
 
-  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published);
+  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {

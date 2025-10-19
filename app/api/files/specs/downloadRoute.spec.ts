@@ -144,6 +144,8 @@ describe('files routes download', () => {
       describe('when instance is public', () => {
         beforeEach(async () => {
           await settings.save({ private: false });
+          // Reset to no user for unauthenticated access tests
+          testingEnvironment.userInContextMockFactory.mock(undefined);
         });
 
         it('should set "public, no-cache" for custom files accessed without authentication', async () => {
@@ -210,6 +212,8 @@ describe('files routes download', () => {
       describe('when instance is private', () => {
         beforeEach(async () => {
           await settings.save({ private: true });
+          // Reset to no user - even without auth, private instance stays private
+          testingEnvironment.userInContextMockFactory.mock(undefined);
         });
 
         it('should set "private, max-age=3600" for custom files', async () => {
