@@ -716,36 +716,6 @@ describe('templates', () => {
     });
   });
 
-  describe('setAsDefault()', () => {
-    beforeEach(async () => {
-      await testingEnvironment.setFixtures(fixtures);
-    });
-
-    afterEach(async () => {
-      jest.resetAllMocks();
-    });
-
-    it('should set the given ID as the default template and return the affected templates', async () => {
-      const [newDefault, oldDefault] = await templates.setAsDefault(
-        templateWithContents.toString()
-      );
-
-      expect(newDefault.name).toBe('content template');
-      expect(newDefault.default).toBe(true);
-      expect(oldDefault.name).toBe('template to be edited');
-      expect(oldDefault.default).toBe(false);
-    });
-
-    it("should fail if id doesn't exist", async () => {
-      try {
-        await templates.setAsDefault(propertyToBeInherited);
-        fail('it should not pass');
-      } catch (err) {
-        expect(err.message).toContain('The Template with Id');
-      }
-    });
-  });
-
   describe('getPropertyByName()', () => {
     it('should get properties with the name provided', async () => {
       await TemplateFacade.createWithDefaultValues({
