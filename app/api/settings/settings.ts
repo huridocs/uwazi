@@ -10,9 +10,10 @@ import { ensure } from 'shared/tsUtils';
 import templates from 'api/templates';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 
-import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
 import { ContextType } from 'shared/translationSchema';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
@@ -158,20 +159,13 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      await (
-        await templates.get()
-      ).reduce<Promise<TemplateSchema>>(
-        async (lastSave, template) => {
-          await lastSave;
-          return templates.save(
-            template,
-            ensure<LanguageSchema>(
-              ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
-            ).key
-          );
-        },
-        Promise.resolve({} as TemplateSchema)
-      );
+      const templatesList = await templates.get();
+      const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
+
+      // Todo
+      await ArrayUtils.sequentialFor(templatesList, async template => {
+        await TemplateFacade.update(template as any, defaultLanguage);
+      });
     }
 
     return result;

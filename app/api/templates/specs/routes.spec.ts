@@ -225,7 +225,6 @@ describe('templates routes', () => {
       await postToEndpoint('/api/templates', templateA);
       const [savedTemplateA] = await templates.get({ name: 'template A' });
       const [numericProp, textProp] = savedTemplateA.properties!;
-
       const templateB = {
         ...templateToSave,
         name: 'template B',
@@ -244,6 +243,7 @@ describe('templates routes', () => {
       const [savedTemplate] = await templates.get({ name: 'template B' });
 
       savedTemplate.properties![0].inherit!.property = textProp._id!.toString();
+      savedTemplate.properties![0].inherit!.type = 'text';
 
       const { body } = await postToEndpoint('/api/templates', savedTemplate, 409);
       expect(body.error).toContain('conflict');

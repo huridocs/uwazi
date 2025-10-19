@@ -1,14 +1,14 @@
 import { WithId } from 'api/odm';
 import thesauri from 'api/thesauri';
 import settings from 'api/settings';
-import templates from 'api/templates';
 import request from 'shared/JSONRequest';
 import createError from 'api/utils/Error';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { TemplateSchema } from 'shared/types/templateType';
 import { User } from 'api/users/usersModel';
 import { PreserveConfig } from 'shared/types/settingsType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 
 export const Preserve = {
   async setup(language: string, user: User) {
@@ -64,26 +64,20 @@ export const Preserve = {
     return resp.json.data.token;
   },
 
-  async createTemplate(language: string) {
+  async createTemplate(_language: string) {
     const fetchedThesauri = await Preserve.createEmptyThesauri();
-    const toSave: TemplateSchema = {
+
+    return TemplateFacade.createWithDefaultValues({
       name: 'Preserve',
-      commonProperties: [
-        { label: 'Title', name: 'title', type: 'text' },
-        { name: 'creationDate', label: 'Date added', type: 'date' },
-        { name: 'editDate', label: 'Date modified', type: 'date' },
-      ],
       properties: [
-        { type: 'link', name: 'url', label: 'Url' },
+        { type: PropertyTypeEnum.Link, label: 'Url' },
         {
-          type: 'select',
-          name: 'source',
+          type: PropertyTypeEnum.Select,
           label: 'Source',
           content: fetchedThesauri._id.toString(),
         },
       ],
-    };
-    return templates.save(toSave, language);
+    });
   },
 
   async createEmptyThesauri(name?: string): Promise<WithId<ThesaurusSchema>> {

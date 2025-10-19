@@ -35,7 +35,7 @@ const BaseCommonPropertySchema = z.object({
   label: z.string(),
   type: z.nativeEnum(PropertyTypeEnum),
   name: z.string(),
-  isCommonProperty: z.literal(true).default(true),
+  isCommonProperty: z.literal(true).optional(),
 
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),

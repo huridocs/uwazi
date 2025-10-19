@@ -2,139 +2,25 @@
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import {
-  CreateTemplateDTOSchema,
-  UpdateTemplateDTOSchema,
-} from 'api/core/application/TemplateDTOs';
 import entities from 'api/entities';
-import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import translations from 'api/i18n/translations';
-import { WithId } from 'api/odm';
-import { search } from 'api/search';
-import { reindexAll, updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
-import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ContextType } from 'shared/translationSchema';
 import { ensure } from 'shared/tsUtils';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { validateTemplate } from 'shared/types/templateSchema';
+import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { tenants } from 'api/tenants';
-import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/UpdateTemplateUseCaseFactory';
-import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';
 import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
 import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { TemplateDeletedEvent } from '../core/domain/template/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../core/domain/template/events/TemplateUpdatedEvent';
-import { checkIfReindex } from './reindex';
 import model from './templatesModel';
-import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
-import {
-  generateNames,
-  getDeletedProperties,
-  getRenamedTitle,
-  getUpdatedNames,
-  setInheritedPropertiesType,
-  updateExtractedMetadataProperties,
-} from './utils';
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
-
-const createTranslationContext = (template: TemplateSchema) => {
-  const titleProperty = ensure<PropertySchema>(
-    ensure<PropertySchema[]>(template.commonProperties).find(p => p.name === 'title')
-  );
-
-  const context = (template.properties || []).reduce<{ [k: string]: string }>((ctx, prop) => {
-    ctx[prop.label] = prop.label;
-    return ctx;
-  }, {});
-
-  context[template.name] = template.name;
-  context[titleProperty.label] = titleProperty.label;
-  return context;
-};
-
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
-  translations.addContext(
-    template._id.toString(),
-    template.name,
-    createTranslationContext(template),
-    ContextType.entity
-  );
-
-const updateTranslation = async (
-  currentTemplate: WithId<TemplateSchema>,
-  template: TemplateSchema
-) => {
-  const currentProperties = currentTemplate.properties;
-  const newProperties = template.properties || [];
-  const updatedLabels = getUpdatedNames(
-    {
-      prop: 'label',
-      filterBy: '_id',
-    },
-    currentProperties,
-    newProperties
-  ).update;
-  if (currentTemplate.name !== template.name) {
-    updatedLabels[currentTemplate.name] = template.name;
-  }
-  const deletedPropertiesByLabel = getDeletedProperties(
-    currentProperties,
-    newProperties,
-    '_id',
-    'label'
-  );
-  deletedPropertiesByLabel.push(
-    ...getRenamedTitle(
-      ensure<PropertySchema[]>(currentTemplate.commonProperties),
-      ensure<PropertySchema[]>(template.commonProperties)
-    )
-  );
-
-  const context = createTranslationContext(template);
-
-  return translations.updateContext(
-    { id: currentTemplate._id.toString(), label: template.name, type: 'Entity' },
-    updatedLabels,
-    deletedPropertiesByLabel,
-    context
-  );
-};
-
-const checkAndFillGeneratedIdProperties = async (
-  currentTemplate: TemplateSchema,
-  template: TemplateSchema
-) => {
-  const storedGeneratedIdProps =
-    currentTemplate.properties?.filter(prop => prop.type === propertyTypes.generatedid) || [];
-  const newGeneratedIdProps =
-    template.properties?.filter(
-      newProp =>
-        !newProp._id &&
-        newProp.type === propertyTypes.generatedid &&
-        !storedGeneratedIdProps.find(prop => prop.name === newProp.name)
-    ) || [];
-  if (newGeneratedIdProps.length > 0) {
-    await populateGeneratedIdByTemplate(currentTemplate._id!, newGeneratedIdProps);
-  }
-  return newGeneratedIdProps.length > 0;
-};
-
-const _save = async (template: TemplateSchema) => {
-  const newTemplate = await model.save(template, undefined);
-  await addTemplateTranslation(newTemplate);
-  return newTemplate;
-};
 
 const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSession) => {
   const thesauriIds = (template.properties || []).map(p => p.content).filter(p => p);
@@ -154,214 +40,21 @@ export default {
   async save(
     template: TemplateSchema,
     language: string,
-    reindex = true,
-    fullReindex = false,
-    onTemplateProcessed: (
-      error?: Error,
-      denormalizationExecuted?: boolean
-    ) => Promise<void> = async () => {}
-  ) {
-    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
-    if (v2CreateTemplateUseCase && !template._id) {
-      const input = CreateTemplateDTOSchema.parse(template);
-      const output = await CreateTemplateUseCaseFactory.create().execute(input);
-
-      return MongoTemplateMapper.toSchema(output);
-    }
-
-    const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
-    if (v2UpdateTemplateUseCase && template._id) {
-      const input = UpdateTemplateDTOSchema.parse({
-        ...template,
-        id: template._id.toString(),
-        properties: (template.properties || []).map(p => ({ ...p, id: p._id?.toString() })),
-        commonProperties: (template.commonProperties || []).map(p => ({
-          ...p,
-          id: p._id?.toString(),
-        })),
-      });
-
-      const useCase = await UpdateTemplateUseCaseFactory.create();
-      const output = await useCase.execute(input, {
-        language,
-        fullReindex,
-      });
-
-      return MongoTemplateMapper.toSchema(output);
-    }
-
-    // processing can not be saved from this interface, its an internal tracking property
-    delete template.processing;
-    template.properties = template.properties || [];
-    template.properties = await generateNames(template.properties);
-    template.properties = await setInheritedPropertiesType(template);
-
-    await validateTemplate(template);
-
-    const mappedTemplate = await v2.processNewRelationshipProperties(template);
-
-    await this.swapNamesValidation(mappedTemplate);
-
-    if (reindex && !fullReindex) {
-      await updateMapping([mappedTemplate]);
-    }
-
-    return mappedTemplate._id
-      ? this._update(mappedTemplate, language, reindex, fullReindex, onTemplateProcessed)
-      : _save(mappedTemplate);
-  },
-
-  async swapNamesValidation(template: TemplateSchema) {
-    if (!template._id) {
-      return;
-    }
-    const current = await this.getById(ensure(template._id));
-
-    const currentTemplate = ensure<TemplateSchema>(current);
-    currentTemplate.properties = currentTemplate.properties || [];
-    currentTemplate.properties.forEach(prop => {
-      const swapingNameWithExistingProperty = (template.properties || []).find(
-        p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
-      );
-      if (swapingNameWithExistingProperty) {
-        throw new ValidationError([{ path: prop.name, message: "Properties can't swap names" }]);
-      }
-    });
-  },
-
-  async postProcessTemplateUpdate(
-    currentTemplate: WithId<TemplateSchema>,
-    template: TemplateSchema,
-    language: string,
-    reindex: boolean
-  ) {
-    await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, template);
-
-    const newTemplate = TemplateInputMappers.toApp(template);
-    const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
-
-    const relationshipPropsWithChangedRelData =
-      currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
-    const deletedProperties = currentTemplateV2
-      .selectDeletedProperties(newTemplate)
-      .map(property => property.name);
-    const renamedProperties = Object.fromEntries(
-      currentTemplateV2
-        .selectPropertiesWhereNameHasChanged(newTemplate)
-        .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
-    );
-
-    let denormalizationExecuted = false;
-    const newRelationshipProps = currentTemplateV2
-      .selectNewProperties(newTemplate)
-      .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
-    if (
-      (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
-      newRelationshipProps.length ||
-      renamedProperties ||
-      deletedProperties
-    ) {
-      await denormalizeTemplateEntities(
-        TemplateInputMappers.toApp(template),
-        language,
-        relationshipPropsWithChangedRelData.concat(newRelationshipProps),
-        deletedProperties,
-        renamedProperties,
-        50
-      );
-      denormalizationExecuted = true;
-    }
-
-    if (!denormalizationExecuted) {
-      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
-    }
-
-    if (reindex) {
-      await search.indexEntities({ template: template._id });
-    }
-
-    return denormalizationExecuted;
-  },
-
-  async reindexAllTemplates(fullReindex: boolean) {
-    const allTemplates = await this.get();
-    if (fullReindex) {
-      return reindexAll(allTemplates, search);
-    }
-
-    return Promise.resolve();
-  },
-
-  async _update(
-    template: TemplateSchema,
-    language: string,
     _reindex = true,
     fullReindex = false,
-    onTemplateProcessed: (
+    _onTemplateProcessed: (
       error?: Error,
       denormalizationExecuted?: boolean
     ) => Promise<void> = async () => {}
   ) {
-    const templateStructureChanges = await checkIfReindex(template);
-    const reindex = _reindex && templateStructureChanges && !template.synced;
-    const currentTemplate = ensure<WithId<TemplateSchema>>(
-      await this.getById(ensure(template._id))
+    if (!template._id) {
+      return TemplateFacade.create(template);
+    }
+
+    return TemplateFacade.update(
+      { ...template, reindex: fullReindex } as any,
+      language as LanguageISO6391
     );
-
-    if (templateStructureChanges && currentTemplate.processing?.active) {
-      throw new ValidationError([
-        { path: 'processing', message: 'template is being processed you can not update it yet' },
-      ]);
-    }
-
-    if (templateStructureChanges || currentTemplate.name !== template.name) {
-      await updateTranslation(currentTemplate, template);
-    }
-    if (templateStructureChanges) {
-      await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
-    }
-
-    const entitiesCount = await entities.countByTemplate(template._id);
-    await checkAndFillGeneratedIdProperties(currentTemplate, template);
-    if (templateStructureChanges && entitiesCount) {
-      // eslint-disable-next-line no-param-reassign
-      template.processing = {
-        ...template.processing,
-        active: true,
-      };
-    }
-    const savedTemplate = await model.save(template, undefined);
-
-    if (templateStructureChanges) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reindexAllTemplates(fullReindex)
-        .then(async () => {
-          if (entitiesCount) {
-            return this.postProcessTemplateUpdate(
-              currentTemplate,
-              savedTemplate,
-              language,
-              reindex
-            );
-          }
-          return false;
-        })
-        .then(async denormalizationExecuted => {
-          await onTemplateProcessed(
-            undefined,
-            !denormalizationExecuted && template.processing?.active
-          );
-        })
-        .catch(async error => onTemplateProcessed(error));
-    }
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: currentTemplate,
-        after: { ...savedTemplate },
-      })
-    );
-
-    return savedTemplate;
   },
 
   async canDeleteProperty(

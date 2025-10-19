@@ -13,7 +13,9 @@ import {
 
 describe('templates utils', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({
+      settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+    });
   });
 
   describe('name generation', () => {

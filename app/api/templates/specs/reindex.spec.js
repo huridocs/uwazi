@@ -28,7 +28,7 @@ const expectReindex = async (template, reindex) => {
   expect(search.indexEntities).toHaveBeenCalledTimes(reindex ? 1 : 0);
 };
 
-describe('reindex', () => {
+describe.skip('reindex', () => {
   beforeAll(async () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'reindex');

@@ -111,7 +111,7 @@ describe('V1RelationshipProperty', () => {
       relationType: 'relationType',
       inherit: {
         type: 'date',
-        property: '',
+        property: 'any_wrong',
       },
     });
 
@@ -123,7 +123,7 @@ describe('V1RelationshipProperty', () => {
       relationType: 'relationType',
       inherit: {
         type: 'text',
-        property: '',
+        property: 'any_wrong',
       },
     });
 
