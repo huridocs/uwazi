@@ -97,10 +97,6 @@ export default {
     return Array.from(Object.values(propertiesByName));
   },
 
-  async setAsDefault(_id: string) {
-    return TemplateFacade.setAsDefault({ _id: _id.toString() });
-  },
-
   async getById(templateId: ObjectId | string) {
     return model.getById(templateId, undefined);
   },
