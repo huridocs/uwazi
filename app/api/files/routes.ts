@@ -7,6 +7,7 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import settings from 'api/settings/settings';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
@@ -35,11 +36,16 @@ const checkEntityPermission = async (
 
   const relatedEntities: EntitySchema[] = await entities.get(
     { sharedId: fileInDB.entity },
-    '_id, permissions',
+    '_id, permissions, published',
     { withoutDocuments: true }
   );
 
   if (level === 'read') {
+    if (!user) {
+      // Unauthenticated users can only access published entities
+      return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published);
+    }
+    // Authenticated users can access if entity exists (permission check happens elsewhere)
     return relatedEntities.length > 0;
   }
 
@@ -55,6 +61,36 @@ const checkEntityPermission = async (
   );
 };
 
+const isFilePubliclyAccessible = async (
+  file: FileType,
+  user: UserSchema | undefined,
+  isPrivateInstance: boolean
+): Promise<boolean> => {
+  // Nothing is publicly accessible in a private instance
+  if (isPrivateInstance) {
+    return false;
+  }
+
+  // If accessed by authenticated user, not publicly cacheable (might have special permissions)
+  if (user) {
+    return false;
+  }
+
+  // Custom files are publicly accessible in public instances (no entity restrictions)
+  if (file.type === 'custom') {
+    return true;
+  }
+
+  // For documents/attachments: Check if all related entities are published
+  const relatedEntities: EntitySchema[] = await entities.get(
+    { sharedId: file.entity },
+    'published',
+    { withoutDocuments: true }
+  );
+
+  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published);
+};
+
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
   const sharedIds = fileList.map(f => f.entity).filter(f => f);
   const allowedSharedIds = await entities
@@ -63,6 +99,28 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
     })
     .then((arr: { sharedId: string }[]) => new Set(arr.map(e => e.sharedId)));
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
+};
+
+const getCacheControlHeader = (
+  isPubliclyAccessible: boolean,
+  isPrivateInstance: boolean
+): string => {
+  // Private instance: everything is private, no CDN caching
+  if (isPrivateInstance) {
+    return 'private, max-age=3600';
+  }
+
+  // Public instance + publicly accessible file: CDN can cache but must revalidate
+  if (isPubliclyAccessible) {
+    return 'public, no-cache';
+  }
+
+  // Default to private for security (authenticated access, unpublished entities, etc.)
+  return 'private, max-age=3600';
+};
+
+const timestampToHTTPDate = (timestamp: number): string => {
+  return new Date(timestamp).toUTCString();
 };
 
 export default (app: Application) => {
@@ -228,6 +286,39 @@ export default (app: Application) => {
         !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
       ) {
         throw createError('file not found', 404);
+      }
+
+      // Fetch settings to determine cache policy
+      const appSettings = await settings.get();
+      const isPrivateInstance = appSettings.private || false;
+
+      // Check if file is publicly accessible
+      const isPublic = await isFilePubliclyAccessible(
+        file,
+        permissionsContext.getUserInContext(),
+        isPrivateInstance
+      );
+
+      // Set cache control headers
+      res.setHeader('Cache-Control', getCacheControlHeader(isPublic, isPrivateInstance));
+
+      // Set Last-Modified header if creationDate exists
+      if (file.creationDate) {
+        const lastModified = timestampToHTTPDate(file.creationDate);
+        res.setHeader('Last-Modified', lastModified);
+
+        // Handle conditional requests (If-Modified-Since)
+        const ifModifiedSince = req.headers['if-modified-since'];
+        if (ifModifiedSince) {
+          const requestDate = new Date(ifModifiedSince).getTime();
+          // Compare at second-level precision (HTTP dates don't include milliseconds)
+          const fileTimestampSeconds = Math.floor(file.creationDate / 1000);
+          const requestTimestampSeconds = Math.floor(requestDate / 1000);
+          if (requestTimestampSeconds >= fileTimestampSeconds) {
+            res.status(304).end();
+            return;
+          }
+        }
       }
 
       const headerFilename = file.originalname || file.filename;

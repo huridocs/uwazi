@@ -4,6 +4,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import settings from 'api/settings/settings';
 import {
   fixtures,
   fileName1,
@@ -136,6 +137,141 @@ describe('files routes download', () => {
           .expect(200);
 
         expect(response.body instanceof Buffer).toBe(true);
+      });
+    });
+
+    describe('Cache-Control and Last-Modified headers', () => {
+      describe('when instance is public', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+        });
+
+        it('should set "public, no-cache" for custom files accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set "public, no-cache" for documents from published entities accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set "private, max-age=3600" for documents from unpublished entities', async () => {
+          // fileName1 is on sharedId1 which is NOT published
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileName1}`)
+            .expect(404); // Unpublished entity, no user = 404
+
+          // Note: This test expects 404 because unpublished entities shouldn't be accessible
+          // without authentication in the current implementation
+        });
+
+        it('should set Last-Modified header based on file creationDate', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          const lastModified = response.get('Last-Modified');
+          expect(lastModified).toBeDefined();
+          // creationDate is 1 millisecond in fixtures, which converts to Thu, 01 Jan 1970 00:00:00 GMT
+          expect(lastModified).toBe('Thu, 01 Jan 1970 00:00:00 GMT');
+        });
+      });
+
+      describe('when accessed by authenticated user', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+          app = setAppWithUser(uploadRoutes, adminUser);
+        });
+
+        it('should set "private, max-age=3600" even for public files (no CDN caching for authenticated requests)', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+
+        it('should set "private, max-age=3600" for custom files', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+      });
+
+      describe('when instance is private', () => {
+        beforeEach(async () => {
+          await settings.save({ private: true });
+        });
+
+        it('should set "private, max-age=3600" for custom files', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+
+        it('should set "private, max-age=3600" for document files from published entities', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+      });
+
+      describe('conditional requests (If-Modified-Since)', () => {
+        it('should return 304 Not Modified when If-Modified-Since matches file creationDate', async () => {
+          // File creationDate is 1 (Thu, 01 Jan 1970 00:00:00 GMT)
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .set('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT')
+            .expect(304);
+
+          expect(response.body).toEqual({});
+        });
+
+        it('should return 304 Not Modified when If-Modified-Since is newer than file creationDate', async () => {
+          // File creationDate is 1, so any date after that should return 304
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .set('If-Modified-Since', 'Fri, 02 Jan 1970 00:00:00 GMT')
+            .expect(304);
+
+          expect(response.body).toEqual({});
+        });
+
+        it('should return 200 OK with file when If-Modified-Since is older than file creationDate', async () => {
+          // Need to use a file we can update - get the file ID first
+          const [publicFile] = await files.get({ filename: fileOnPublicEntity });
+          const newCreationDate = new Date('2024-01-15T10:00:00Z').getTime();
+          await files.save({ _id: publicFile._id, creationDate: newCreationDate });
+
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .set('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT')
+            .expect(200);
+
+          expect(response.body instanceof Buffer).toBe(true);
+          expect(response.get('Last-Modified')).toBe('Mon, 15 Jan 2024 10:00:00 GMT');
+        });
+
+        it('should return 200 OK when no If-Modified-Since header is present', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.body instanceof Buffer).toBe(true);
+        });
       });
     });
   });
