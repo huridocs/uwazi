@@ -178,7 +178,7 @@ const templates: Template[] = [
       {
         _id: '1.14',
         type: 'preview',
-        label: 'Preview of the main documented (treated as an image field)',
+        label: 'Preview of the main document (treated as an image field)',
         noLabel: false,
         style: 'fit',
         name: 'preview_document',
@@ -353,6 +353,11 @@ const rawEntity: EntitySchema = {
   mongoLanguage: 'en',
   sharedId: 'shared1',
   title: 'Title of the displayed entity',
+  icon: {
+    _id: 'ECU',
+    label: 'Ecuador',
+    type: 'Flags',
+  },
   template: 'template1',
   creationDate: 1759374706197, // Oct 2, 2025
   editDate: 1760366924144, // Oct 13, 2025
@@ -365,7 +370,7 @@ const rawEntity: EntitySchema = {
     markdown_html: [
       {
         value:
-          '<p>This <b>Markdown</b> field includes <i>simple HTML</i> tags and a <a href="https://example.com">link</a>.</p>',
+          '<p>This <b>Markdown</b> field includes <i>simple HTML</i> tags and a <a href="https://example.com" target="_blank">link</a>.</p>',
       },
     ],
     markdown_syntax: [

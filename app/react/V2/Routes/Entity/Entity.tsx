@@ -56,10 +56,6 @@ const Entity = () => {
   const navigate = useNavigate();
   const { sharedId, tabView } = useParams();
 
-  if (!entity) {
-    return <div>Loading entity...</div>;
-  }
-
   const [mainFromPath, subFromPath] = (tabView || '').split('-');
   const mainTabFromUrl = mainFromPath || 'metadata';
   const subTabFromUrl = subFromPath || 'attachments';
@@ -194,16 +190,14 @@ const Entity = () => {
           },
         ];
     }
-  }, [mainTabFromUrl]);
+  }, [entity, mainTabFromUrl]);
 
-  // ensure subtab in URL is valid for current sideTabs
   const ensuredSubTab = useMemo(() => {
     const exists = sideTabs.some(t => t.id === subTabFromUrl);
     if (exists) return subTabFromUrl;
     return sideTabs[0]?.id || '';
   }, [sideTabs, subTabFromUrl]);
 
-  // keep URL normalized to /entity/:id/<main>-<sub>
   useEffect(() => {
     if (!sharedId) return;
     const desired = `${mainTabFromUrl}-${ensuredSubTab}`;
@@ -212,6 +206,10 @@ const Entity = () => {
       navigate(buildPath(mainTabFromUrl, ensuredSubTab), { replace: true, relative: 'path' });
     }
   }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
+
+  if (!entity) {
+    return <div>Loading entity...</div>;
+  }
 
   return (
     <div className="tw-content">
@@ -225,6 +223,7 @@ const Entity = () => {
         </PaneLayout.Pane>
         <PaneLayout.Pane className="py-6 px-4">
           <Tabs
+            className="min-w-[520px] overflow-x-auto"
             tabs={sideTabs}
             activeId={ensuredSubTab}
             onTabSelected={async id => setSubTab(id)}
