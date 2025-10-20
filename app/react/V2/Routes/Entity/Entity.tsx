@@ -223,6 +223,7 @@ const Entity = () => {
         </PaneLayout.Pane>
         <PaneLayout.Pane className="py-6 px-4">
           <Tabs
+            className="min-w-[520px] overflow-x-auto"
             tabs={sideTabs}
             activeId={ensuredSubTab}
             onTabSelected={async id => setSubTab(id)}
