@@ -1,6 +1,6 @@
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
-import { DateMetadataProperty } from 'app/V2/domain/entities/types';
+import { DateMetadataProperty, EntityTemplate } from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import {
@@ -374,7 +374,7 @@ export class AdapterEntityProcessor {
       ...entity,
       creationDate: cleanCreationDate as DateMetadataProperty,
       editDate: cleanEditDate as DateMetadataProperty,
-      ...(this.context.includeTemplate ? { template } : {}),
+      ...(this.context.includeTemplate ? { template: template as EntityTemplate } : {}),
       ...(this.context.includeRawEntity ? { rawEntity } : {}),
     };
   }

@@ -1,8 +1,8 @@
 /* eslint-disable import/no-named-as-default */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { Icon } from 'UI';
@@ -11,7 +11,7 @@ import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import { TranslateModal, t } from 'app/I18N';
-import { inlineEditAtom } from 'V2/atoms';
+import { inlineEditAtom, localeAtom } from 'V2/atoms';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -30,6 +30,7 @@ const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const [settings, setSettings] = useAtom(settingsAtom);
+  const setLocale = useSetAtom(localeAtom);
 
   const location = useLocation();
   const params = useParams();
@@ -40,6 +41,15 @@ const App = ({ customParams }) => {
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
+
+  useEffect(() => {
+    if (settings.languages && settings.languages.length > 0) {
+      const pathLanguage = location.pathname.split('/')[1];
+      const validLanguage = possibleLanguages.includes(pathLanguage) ? pathLanguage : settings.languages.find(lang => lang.default)?.key || 'en';
+
+      setLocale(validLanguage);
+    }
+  }, [location.pathname, settings.languages, possibleLanguages, setLocale]);
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);

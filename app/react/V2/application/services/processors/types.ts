@@ -78,8 +78,6 @@ export interface CompositionOptions {
   // Select options
   includeOptions?: boolean;
 
-  // Flattening options
-
   // Processor-specific options
   timezone?: string;
 }

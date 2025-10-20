@@ -108,6 +108,9 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
           const reformattedData = {
             ...restData,
             ...properties.inheritedProperty,
+            name: data.name,
+            label: data.label,
+            transtalatedLabel: data.translatedLabel,
             type: inheritedType,
           };
           return renderMetadataProperty(reformattedData as MetadataProperty);
