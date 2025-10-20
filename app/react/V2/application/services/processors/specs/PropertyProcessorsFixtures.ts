@@ -17,6 +17,11 @@ export const rawEntity: EntitySchema = {
         value: 'Test incident report',
       },
     ],
+    outdated_field: [
+      {
+        value: 'Outdated Field - not in result',
+      },
+    ],
     markdown_syntax: [
       {
         value: '# Test Report\n**Status:** Under Investigation',

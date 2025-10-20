@@ -18,6 +18,7 @@ import { SelectPropertyProcessor } from './SelectPropertyProcessor';
 import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
+import { ImagePropertyProcessor } from './ImagePropertyProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
 import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
@@ -41,6 +42,7 @@ export class AdapterEntityProcessor {
       new GeolocationProcessor(),
       new RelationshipProcessor(),
       new MediaPropertyProcessor(),
+      new ImagePropertyProcessor(),
       new LinkPropertyProcessor(),
       new PreviewPropertyProcessor(),
     ];
@@ -73,7 +75,11 @@ export class AdapterEntityProcessor {
         }
       ).filter(property => property !== undefined);
 
-      return metadataProperties;
+
+      return metadataProperties.map((property, newIndex) => ({
+        ...property,
+        index: newIndex,
+      }));
     });
 
     allProperties.forEach(property => {

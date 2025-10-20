@@ -328,6 +328,7 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: '/api/files/test-image.png',
+          alt: 'Test Image',
         },
       ],
     };
