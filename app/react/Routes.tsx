@@ -107,7 +107,6 @@ const getRoutesLayout = (
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    {/* Uncomment this to work on v2 */}
     <Route
       path="entityv2/:sharedId/:tabView?"
       element={<Entity />}
