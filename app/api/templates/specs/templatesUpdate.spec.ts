@@ -65,7 +65,7 @@ describe('Templates Update', () => {
     await testingEnvironment.setUp({}, elasticIndex);
   });
 
-  async function setUpFixtures(_fixtures: DBFixture, featureFlag = false) {
+  async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
     await Promise.all(
       (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
@@ -75,9 +75,6 @@ describe('Templates Update', () => {
       name: testingDB.dbName,
       dbName: testingDB.dbName,
       indexName: elasticIndex,
-      featureFlags: {
-        v2UpdateTemplateUseCase: featureFlag,
-      },
     });
   }
   const fixtures: DBFixture = {
@@ -758,17 +755,14 @@ describe('Templates Update', () => {
     });
 
     it('should throw error when there is a mapping conflict, and not save the template', async () => {
-      await setUpFixtures(
-        {
-          ...fixtures,
-          templates: [
-            ...fixtures.templates,
-            f.template('templateD', [f.property('text_property_d')]),
-          ],
-          entities: [],
-        },
-        true
-      );
+      await setUpFixtures({
+        ...fixtures,
+        templates: [
+          ...fixtures.templates,
+          f.template('templateD', [f.property('text_property_d')]),
+        ],
+        entities: [],
+      });
       await updateTemplate(f.template('templateD', []), true);
       await expect(async () =>
         updateTemplate(f.template('templateD', [f.property('text_property_d', 'numeric')]), true)
@@ -780,27 +774,24 @@ describe('Templates Update', () => {
     });
 
     it('should reset the index when fullReindex is passed, and reindex all entities', async () => {
-      await setUpFixtures(
-        {
-          ...fixtures,
-          templates: [
-            ...fixtures.templates,
-            f.template('templateD', [f.property('text_property_d')]),
-          ],
-          files: [
-            {
-              entity: 'entityA1',
-              fullText: { 1: 'entityA1 full text' },
-              language: 'eng',
-              originalname: 'file1',
-              filename: 'file1',
-              type: 'document',
-              mimetype: 'application/pdf',
-            },
-          ],
-        },
-        true
-      );
+      await setUpFixtures({
+        ...fixtures,
+        templates: [
+          ...fixtures.templates,
+          f.template('templateD', [f.property('text_property_d')]),
+        ],
+        files: [
+          {
+            entity: 'entityA1',
+            fullText: { 1: 'entityA1 full text' },
+            language: 'eng',
+            originalname: 'file1',
+            filename: 'file1',
+            type: 'document',
+            mimetype: 'application/pdf',
+          },
+        ],
+      });
 
       expect((await getEntitiesByTemplate('templateA', 'elastic')).length).toBe(2);
       expect((await getEntitiesByTemplate('templateB', 'elastic')).length).toBe(2);
