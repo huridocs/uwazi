@@ -1,6 +1,6 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import {
   Dispatchable,
   HeartbeatCallback,

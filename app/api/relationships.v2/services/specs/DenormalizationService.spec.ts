@@ -2,7 +2,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';

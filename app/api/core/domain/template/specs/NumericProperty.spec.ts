@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { NumericProperty } from '../NumericProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('NumericProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -16,7 +17,13 @@ describe('NumericProperty', () => {
 
   it('should throw if providing a type different from numeric', () => {
     expect(
-      () => new NumericProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new NumericProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'NumericProperty'));
   });
 });

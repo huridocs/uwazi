@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { GenerateIdProperty } from '../GenerateIdProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('GenerateIdProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -16,7 +17,13 @@ describe('GenerateIdProperty', () => {
 
   it('should throw if providing a type different from generatedid', () => {
     expect(
-      () => new GenerateIdProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new GenerateIdProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'GenerateIdProperty'));
   });
 });

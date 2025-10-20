@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FileType } from 'shared/types/fileType';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';

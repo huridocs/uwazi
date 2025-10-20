@@ -1,4 +1,4 @@
-import { AbstractEvent } from 'api/eventsbus';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
 import { FileType } from 'shared/types/fileType';
 
 interface FilesDeletedData {

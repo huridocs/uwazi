@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { ObjectId } from 'mongodb';
 import { EnforcedWithId } from 'api/odm';
 import { IXModelType } from 'shared/types/IXModelType';

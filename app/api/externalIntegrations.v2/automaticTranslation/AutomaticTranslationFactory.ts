@@ -4,12 +4,12 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';
 import { ATExternalAPI } from './infrastructure/ATExternalAPI';

@@ -1,6 +1,6 @@
 import { ValidationError as AJVValidationError } from 'ajv';
 import { ValidationError } from 'api/core/domain/error/ValidationError';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { UserSchema } from 'shared/types/userType';
 import { Tenant } from 'api/tenants/tenantContext';

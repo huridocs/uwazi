@@ -1,4 +1,4 @@
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EntitySchema } from 'shared/types/entityType';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';

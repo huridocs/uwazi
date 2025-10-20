@@ -1,7 +1,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DBFixture } from 'api/utils/testing_db';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { tenants } from 'api/tenants';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';

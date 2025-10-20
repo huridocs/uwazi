@@ -1,11 +1,12 @@
 import { NestedProperty } from '../NestedProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('NestedProperty', () => {
   it('should include nested type at the end of the PropertyName', () => {
     const nestedProperty = new NestedProperty({
       id: 'any_id',
       label: 'A label',
-      type: 'nested',
+      type: PropertyTypeEnum.Nested,
       template: 'any',
     });
 
@@ -16,7 +17,7 @@ describe('NestedProperty', () => {
     const nestedProperty = new NestedProperty({
       id: 'any_id',
       label: 'A label',
-      type: 'nested',
+      type: PropertyTypeEnum.Nested,
       name: 'a_label_2_nested',
       template: 'any',
     });

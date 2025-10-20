@@ -3,8 +3,9 @@ import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
-import { SelectPropertyWithInvalidThesaurusError } from '../errors';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {
@@ -26,7 +27,7 @@ describe('SelectPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Text',
-          type: 'select',
+          type: PropertyTypeEnum.Select,
           template: '',
           content: new ObjectId().toHexString(),
         },
@@ -39,7 +40,7 @@ describe('SelectPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Text',
-          type: 'multiselect',
+          type: PropertyTypeEnum.MultiSelect,
           template: '',
           content: new ObjectId().toHexString(),
         },

@@ -1,5 +1,5 @@
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { EntitySchema } from 'shared/types/entityType';
 
 export class ElasticEntityMapper {
