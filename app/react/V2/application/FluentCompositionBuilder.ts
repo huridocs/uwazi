@@ -74,7 +74,7 @@ export class FluentCompositionBuilder {
     return this.useCase.composeEntity(this.entityIdOrIds, this.options, context);
   }
 
-  processEntity(rawEntity: EntitySchema): { entity: any } {
+  processEntity(rawEntity: EntitySchema) {
     const mergedContext: ProcessingContext = {
       ...this.processingContext,
       ...this.options,
@@ -84,7 +84,7 @@ export class FluentCompositionBuilder {
     return processor.processEntity(rawEntity);
   }
 
-  processEntities(rawEntities: EntitySchema[]): { entities: any[] } {
+  processEntities(rawEntities: EntitySchema[]) {
     const mergedContext: ProcessingContext = {
       ...this.processingContext,
       ...this.options,

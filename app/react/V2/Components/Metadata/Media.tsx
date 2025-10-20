@@ -39,10 +39,14 @@ const Media = ({
         />
       </dt>
       <dd className="flex flex-col items-center gap-2">
-        <figure aria-labelledby={label} className="w-full">
-          <div className="w-full m-auto bg-gray-100 rounded-md">
-            <MediaPlayer playerRef={playerRef} url={value} width={width} height={height} />
-          </div>
+        <figure aria-labelledby={label} className="w-full bg-gray-100 rounded-md">
+          <MediaPlayer
+            className="m-auto"
+            playerRef={playerRef}
+            url={value}
+            width={width}
+            height={height}
+          />
           {alt && (
             <figcaption className="sr-only" id={label}>
               {alt}

@@ -15,7 +15,7 @@ const formatSelectValue = (
 
   if (value?.parent) {
     const { parent } = value;
-    displayValue = `${value.label || value.value} (${parent.label})`;
+    displayValue = `${parent.label}: ${value.label || value.value}`;
   }
 
   return displayValue;
