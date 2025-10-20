@@ -130,7 +130,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   );
 
   if (!entity) {
-    return <div>No entity data available</div>;
+    return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
   return (
