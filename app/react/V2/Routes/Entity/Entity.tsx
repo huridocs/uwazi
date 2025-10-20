@@ -60,6 +60,11 @@ const Entity = () => {
   const mainTabFromUrl = mainFromPath || 'metadata';
   const subTabFromUrl = subFromPath || 'attachments';
 
+  const buildPath = useCallback(
+    (main: string, sub: string) => `/entityv2/${sharedId}/${main}-${sub}`,
+    [sharedId]
+  );
+
   const setMainTab = async (id: string) => {
     await navigate(buildPath(id, subTabFromUrl), { replace: true, relative: 'path' });
   };
@@ -67,11 +72,6 @@ const Entity = () => {
   const setSubTab = async (id: string) => {
     await navigate(buildPath(mainTabFromUrl, id), { replace: true, relative: 'path' });
   };
-
-  const buildPath = useCallback(
-    (main: string, sub: string) => `/entityv2/${sharedId}/${main}-${sub}`,
-    [sharedId]
-  );
 
   const mainTabs = useMemo(
     () => [
@@ -190,7 +190,7 @@ const Entity = () => {
           },
         ];
     }
-  }, [mainTabFromUrl]);
+  }, [entity, mainTabFromUrl]);
 
   const ensuredSubTab = useMemo(() => {
     const exists = sideTabs.some(t => t.id === subTabFromUrl);
