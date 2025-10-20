@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { LanguageUtils } from 'shared/language';
 import { files } from 'api/files';
 import { IXSuggestionType } from 'shared/types/suggestionType';

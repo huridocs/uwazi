@@ -1,4 +1,4 @@
-import { Property } from 'api/templates.v2/model/Property';
+import { Property } from 'api/core/domain/template/Property';
 import { PropertyTypeMismatchError } from '../errors';
 
 describe('Property', () => {

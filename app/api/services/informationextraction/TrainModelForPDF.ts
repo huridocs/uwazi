@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { storage } from 'api/files';
 import urljoin from 'url-join';

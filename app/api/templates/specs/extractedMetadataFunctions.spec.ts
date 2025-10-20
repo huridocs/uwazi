@@ -6,7 +6,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
 import { inspect } from 'util';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import fixtures, {
   propertyA,
   propertyB,
@@ -63,6 +63,20 @@ describe.each([
           name: 'title',
           label: 'Title',
           type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
           isCommonProperty: true,
         },
       ],
@@ -127,6 +141,19 @@ describe.each([
           label: 'Title',
           type: 'text',
           isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
         },
       ],
       properties: [

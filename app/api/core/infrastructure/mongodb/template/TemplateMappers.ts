@@ -3,13 +3,13 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { CommonPropertyFactory } from 'api/core/domain/template/CommonPropertyFactory';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { Property } from '../../../domain/template/Property';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
+import { Template } from '../../../domain/template/Template';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
-import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
-import { RelationshipPropertyDBO, TemplateDBO } from './schemas/TemplateDBO';
+import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO';
+import { RelationshipPropertyDBO, TemplateDBO } from './DBOs/TemplateDBO';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 
@@ -17,6 +17,7 @@ function propertyToApp(
   property: RelationshipPropertyDBO,
   _templateId: TemplateDBO['_id']
 ): RelationshipProperty;
+//@ts-ignore
 function propertyToApp(property: PropertySchema, _templateId: TemplateDBO['_id']): Property;
 function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): Property {
   const templateId = MongoIdHandler.mapToApp(_templateId);

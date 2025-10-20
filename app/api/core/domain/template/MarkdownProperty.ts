@@ -1,21 +1,22 @@
-import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.Markdown;
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MarkdownProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'markdown' }, context);
+    super({ ...props, type: props.type || PropertyTypeEnum.Markdown }, context);
     this.compatibleTypes = ['text'];
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'markdown') {
+    if (this.type !== PropertyTypeEnum.Markdown) {
       throw new PropertyTypeInvalidTypeError(this.type, 'MarkdownProperty');
     }
   }

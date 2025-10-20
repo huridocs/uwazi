@@ -1,4 +1,4 @@
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

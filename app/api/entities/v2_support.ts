@@ -8,12 +8,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
+import { TemplateMappers } from 'api/core/infrastructure/mongodb/template/TemplateMappers';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 

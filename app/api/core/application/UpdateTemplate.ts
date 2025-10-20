@@ -1,20 +1,20 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
 import { TemplateDiff } from '../domain/template/TemplateDiff';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { TranslationService } from '../domain/template/TranslationService';
-import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { AbstractUseCase } from '../libs/UseCase';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
 import { UpdateTemplateDTO } from './TemplateDTOs';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
+import { Template } from '../domain/template/Template';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 
 type Output = Template;
 
@@ -92,8 +92,8 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
 
     await this.eventBus.emit(
       new TemplateUpdatedEvent({
-        before: TemplateMapper.toSchema(currentTemplate),
-        after: TemplateMapper.toSchema(updatedTemplate),
+        before: MongoTemplateMapper.toSchema(currentTemplate),
+        after: MongoTemplateMapper.toSchema(updatedTemplate),
         context,
       })
     );

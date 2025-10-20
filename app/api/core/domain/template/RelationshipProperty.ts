@@ -2,6 +2,14 @@ import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { Property, PropertyUpdateInfo } from './Property';
+import { PropertyTypeEnum } from './PropertyType';
+import { FilterablePropertyProps } from './FilterableProperty';
+
+type Props = {
+  type?: PropertyTypeEnum.NewRelationship;
+  query: MatchQueryNode['traversals'];
+  denormalizedProperty?: string;
+} & Omit<FilterablePropertyProps, 'type'>;
 
 class RelationshipProperty extends Property {
   readonly query: MatchQueryNode['traversals'];
@@ -73,3 +81,4 @@ class RelationshipProperty extends Property {
 }
 
 export { RelationshipProperty };
+export type { Props as RelationshipPropertyProps };

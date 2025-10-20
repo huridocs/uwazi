@@ -4,9 +4,10 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { PropertyCreatorServiceStrategy } from '../propertyCreatorService/PropertyCreatorServiceStrategy';
-import { NestedPropertyNotAvailableError } from '../errors';
-import { NestedProperty } from '../NestedProperty';
+import { NestedPropertyNotAvailableError } from '../../domain/template/errors';
+import { NestedProperty } from '../../domain/template/NestedProperty';
 
 const createSut = () => {
   const transactionManager = DefaultTransactionManager();
@@ -40,7 +41,7 @@ describe('NestedPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Nested Property',
-          type: 'nested',
+          type: PropertyTypeEnum.Nested,
           template: new ObjectId().toHexString(),
         },
         {}
@@ -58,7 +59,7 @@ describe('NestedPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Nested Property',
-          type: 'nested',
+          type: PropertyTypeEnum.Nested,
           template: new ObjectId().toHexString(),
         },
         {}

@@ -1,4 +1,4 @@
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
 import { CommonPropertyInvalidError } from '../errors';
 
 describe('CommonProperty', () => {

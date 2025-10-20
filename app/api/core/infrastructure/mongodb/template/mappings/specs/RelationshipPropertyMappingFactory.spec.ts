@@ -1,7 +1,7 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { ResultSet } from 'api/core/libs/ResultSet';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Property } from 'api/templates.v2/model/Property';
+import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { Property } from 'api/core/domain/template/Property';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { propertyMappings } from 'database/elastic_mapping/mappings';
 import { RelationshipPropertyMappingFactory } from '../RelationshipPropertyMappingFactory';

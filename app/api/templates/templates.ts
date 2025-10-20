@@ -7,10 +7,9 @@ import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from 'api/core/application/TemplateDTOs';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import { search } from 'api/search';
@@ -26,14 +25,15 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { tenants } from 'api/tenants';
 import { UpdateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/UpdateTemplateUseCaseFactory';
 import { CreateTemplateUseCaseFactory } from 'api/core/infrastructure/factories/CreateTemplateUseCaseFactory';
 import { DeleteTemplateUseCaseFactory } from 'api/core/infrastructure/factories/DeleteTemplateUseCaseFactory';
 import { SetTemplateAsDefaultUseCaseFactory } from 'api/core/infrastructure/factories/SetTemplateAsDefaultUseCaseFactory';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { TemplateDeletedEvent } from '../core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../core/domain/template/events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
@@ -166,7 +166,7 @@ export default {
       const input = CreateTemplateDTOSchema.parse(template);
       const output = await CreateTemplateUseCaseFactory.create().execute(input);
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
 
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
@@ -187,7 +187,7 @@ export default {
         fullReindex,
       });
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
 
     // processing can not be saved from this interface, its an internal tracking property
@@ -425,8 +425,8 @@ export default {
       });
 
       return [
-        TemplateMapper.toSchema(output.current),
-        output.previous && TemplateMapper.toSchema(output.previous),
+        MongoTemplateMapper.toSchema(output.current),
+        output.previous && MongoTemplateMapper.toSchema(output.previous),
       ];
     }
 

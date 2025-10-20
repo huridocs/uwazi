@@ -1,4 +1,4 @@
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { PropertyInheritedTypeMismatchError, PropertyTypeMismatchError } from '../errors';
 
 describe('V1RelationshipProperty', () => {

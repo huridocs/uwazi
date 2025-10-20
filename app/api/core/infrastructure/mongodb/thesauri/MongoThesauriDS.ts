@@ -1,4 +1,4 @@
-import { ThesauriDataSource } from 'api/core/domain/template/propertyCreatorService/SelectPropertyCreatorService';
+import { ThesauriDataSource } from 'api/core/application/propertyCreatorService/SelectPropertyCreatorService';
 import thesauri from 'api/thesauri';
 
 class MongoThesauriDataSource implements ThesauriDataSource {

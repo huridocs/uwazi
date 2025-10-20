@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';

@@ -1,15 +1,15 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { Context, Property } from '../../domain/template/Property';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from 'api/templates.v2/model/V1RelationshipProperty';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+} from '../../domain/template/V1RelationshipProperty';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
-} from '../errors';
+} from '../../domain/template/errors';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;

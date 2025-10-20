@@ -1,5 +1,5 @@
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Property } from 'api/templates.v2/model/Property';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { Property } from 'api/core/domain/template/Property';
 import { EntityInputModel } from '../types/EntityInputDataType';
 
 type MetadataValue = unknown;

@@ -3,16 +3,18 @@ import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
+import { Property, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
+import { PropertyType } from './PropertyType';
+import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
 
 type TemplateProperty = Property | V1RelationshipProperty;
 
 type CloneProps = {
-  name: string;
-  properties: Property[];
-  commonProperties: CommonProperty[];
+  name?: string;
+  properties?: Property[];
+  commonProperties?: CommonProperty[];
   color?: string;
   default?: boolean;
   entityViewPage?: string;
@@ -78,7 +80,7 @@ class Template {
   private validate() {
     const validator = new Validator([
       new TemplateWithDuplicatedPropertyValidator(),
-      // new TemplateWithMissingCommonPropertyValidator(),
+      new TemplateWithMissingCommonPropertyValidator(),
     ]);
 
     validator.validate(this);
@@ -170,7 +172,7 @@ class Template {
     return null;
   }
 
-  getPropertiesByType(type: PropertyTypes) {
+  getPropertiesByType(type: PropertyType) {
     return this.properties.filter(p => p.type === type);
   }
 
@@ -205,7 +207,7 @@ class Template {
       return true;
     });
 
-    return this.clone({ ...this, default: this.isDefault, properties }); // Todo: redo this after hotfix
+    return this.clone({ properties });
   }
 
   update(props: CloneProps): Template {
@@ -225,12 +227,12 @@ class Template {
   private clone(props: CloneProps) {
     const template = new Template(
       this.id,
-      props.name,
-      props.properties,
-      props.commonProperties,
-      props.color,
-      props.default,
-      props.entityViewPage
+      props.name || this.name,
+      props.properties || this.properties,
+      props.commonProperties || this.commonProperties,
+      props.color || this.color,
+      props.default ?? this.isDefault,
+      props.entityViewPage || this.entityViewPage
     );
 
     template.processing = this.processing;
