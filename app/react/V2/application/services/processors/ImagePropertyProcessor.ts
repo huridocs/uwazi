@@ -1,5 +1,6 @@
 import { ImageMetadataProperty } from 'app/V2/domain/entities/types';
 import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 
@@ -37,7 +38,7 @@ export class ImagePropertyProcessor extends BasePropertyProcessor {
   }
 
   private processImageFiles(
-    value: any,
+    value: MetadataObjectSchema[],
     _context: ProcessingContext
   ): ImageMetadataProperty['values'] {
     if (!value) {
@@ -46,33 +47,16 @@ export class ImagePropertyProcessor extends BasePropertyProcessor {
 
     const values = Array.isArray(value) ? value : [value];
 
-    return values.map((imageValue: any) => {
+    return values.flatMap((imageValue: MetadataObjectSchema) => {
       if (typeof imageValue === 'string') {
-        return {
-          value: imageValue,
-          alt: this.extractAltFromUrl(imageValue),
-        };
+        return [{ value: imageValue as string, alt: 'Image not described' }];
       }
 
-      if (typeof imageValue === 'object' && imageValue !== null) {
-        return {
-          value: imageValue.value || imageValue.url || '',
-          alt: imageValue.alt || 'Image not described',
-        };
-      }
+      return [{
+        value: imageValue.value?.toString() || '',
+        alt: imageValue.alt?.toString() || 'Image not described',
+      }];
 
-      return {
-        value: imageValue?.toString() || '',
-      };
     });
-  }
-
-  private extractAltFromUrl(url: string): string {
-    if (!url) return '';
-
-    const filename = url.split('/').pop() || '';
-    const nameWithoutExtension = filename.split('.')[0];
-
-    return nameWithoutExtension.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 }

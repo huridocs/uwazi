@@ -18,6 +18,7 @@ import { DatePropertyProcessor } from './DatePropertyProcessor';
 import { SelectPropertyProcessor } from './SelectPropertyProcessor';
 import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
+import { ImagePropertyProcessor } from './ImagePropertyProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
@@ -43,6 +44,7 @@ export class AdapterEntityProcessor {
       new SelectPropertyProcessor(),
       new GeolocationProcessor(),
       new RelationshipProcessor(),
+      new ImagePropertyProcessor(),
       new MediaPropertyProcessor(),
       new LinkPropertyProcessor(),
       new PreviewPropertyProcessor(),
