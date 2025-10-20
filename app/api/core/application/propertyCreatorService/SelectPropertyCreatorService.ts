@@ -1,8 +1,11 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
+import { Context, Property } from '../../domain/template/Property';
+import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
+import {
+  MultiSelectPropertyProps,
+  MultiSelectProperty,
+} from '../../domain/template/MultiSelectProperty';
+import { SelectPropertyProps, SelectProperty } from '../../domain/template/SelectProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
-import { SelectProperty, SelectPropertyProps } from '../SelectProperty';
-import { SelectPropertyWithInvalidThesaurusError } from '../errors';
-import { MultiSelectProperty, MultiSelectPropertyProps } from '../MultiSelectProperty';
 
 interface ThesauriDataSource {
   exists(id: string): Promise<boolean>;

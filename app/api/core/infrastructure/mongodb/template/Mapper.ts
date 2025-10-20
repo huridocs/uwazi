@@ -22,16 +22,16 @@ import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
 import { SelectProperty } from 'api/core/domain/template/SelectProperty';
 import { TextProperty } from 'api/core/domain/template/TextProperty';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
-import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
-import { TraverseQueryDBO } from 'api/templates.v2/database/schemas/RelationshipsQueryDBO';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Property } from 'api/templates.v2/model/Property';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { mapPropertyQuery } from 'api/core/infrastructure/mongodb/template/QueryMapper';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { Property } from 'api/core/domain/template/Property';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
+import { Template } from 'api/core/domain/template/Template';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { ObjectId } from 'mongodb';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { TraverseQueryDBO } from './DBOs/RelationshipsQueryDBO';
+import { TemplateDBO } from './DBOs/TemplateDBO';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {
@@ -271,7 +271,8 @@ class PropertyMapper {
     }
   }
 }
-class TemplateMapper {
+
+export class MongoTemplateMapper {
   static toSchema(domain: Template): TemplateDBO {
     return {
       _id: ObjectId.createFromHexString(domain.id),
@@ -306,5 +307,3 @@ class TemplateMapper {
     return template;
   }
 }
-
-export { TemplateMapper };

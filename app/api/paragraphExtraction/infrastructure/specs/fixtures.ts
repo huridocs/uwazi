@@ -2,7 +2,7 @@ import { Document } from 'api/files.v2/model/Document';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
-import { Property } from 'api/templates.v2/model/Property';
+import { Property } from 'api/core/domain/template/Property';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';

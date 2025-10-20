@@ -1,14 +1,14 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { ResultSet } from 'api/core/libs/ResultSet';
 import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { ResultType } from 'api/core/application/common/Result';
+import { ResultType } from 'api/core/libs/Result';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { Property } from './Property';
+import { RelationshipProperty } from './RelationshipProperty';
+import { Template } from './Template';
+import { V1RelationshipProperty } from './V1RelationshipProperty';
 
 export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;

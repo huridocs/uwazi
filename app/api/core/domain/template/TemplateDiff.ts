@@ -1,6 +1,6 @@
-import { Template } from 'api/templates.v2/model/Template';
-import { Property, PropertyUpdateInfo } from 'api/templates.v2/model/Property';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { Template } from 'api/core/domain/template/Template';
+import { Property, PropertyUpdateInfo } from 'api/core/domain/template/Property';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { GenerateIdProperty } from './GenerateIdProperty';
 
 type RenamedMap = { [oldName: string]: string };

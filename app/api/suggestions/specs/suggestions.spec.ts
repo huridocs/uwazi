@@ -10,7 +10,7 @@ import {
   IXSuggestionType,
   IXSuggestionsFilter,
 } from 'shared/types/suggestionType';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { Suggestions } from '../suggestions';
 import {
   factory,

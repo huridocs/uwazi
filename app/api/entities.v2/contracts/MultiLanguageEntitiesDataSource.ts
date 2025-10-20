@@ -1,6 +1,6 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { TemplateProperty } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { ResultSet } from 'api/core/libs/ResultSet';
+import { TemplateProperty } from 'api/core/domain/template/Template';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
 
 export interface MultiLanguageEntityDataSource {

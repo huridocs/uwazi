@@ -1,15 +1,15 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource'; // Todo
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
+import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 
 type Input = {
   templateId: string;
@@ -26,7 +26,6 @@ type Deps = {
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  // eslint-disable-next-line max-statements
   protected async executeAsync({ templateId }: Input): Promise<Output> {
     const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getData();
     if (!templateToBeDeleted) {
@@ -85,8 +84,8 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
       await this.eventBus.emit(
         new TemplateUpdatedEvent({
-          before: TemplateMapper.toSchema(before),
-          after: TemplateMapper.toSchema(after),
+          before: MongoTemplateMapper.toSchema(before),
+          after: MongoTemplateMapper.toSchema(after),
           context,
         })
       );

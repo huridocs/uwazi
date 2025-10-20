@@ -2,9 +2,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
-import { TextProperty } from '../TextProperty';
-import { PropertyTypeMismatchError } from '../errors';
+import { TextProperty } from '../../domain/template/TextProperty';
+import { PropertyTypeMismatchError } from '../../domain/template/errors';
 
 const prevCreated = new ObjectId();
 
@@ -21,7 +22,7 @@ describe('PropertyCreatorService', () => {
           commonProperties: [
             {
               _id: new ObjectId(),
-              type: 'text',
+              type: PropertyTypeEnum.Text,
               label: 'Title',
               name: 'title',
               isCommonProperty: true,
@@ -33,7 +34,7 @@ describe('PropertyCreatorService', () => {
             },
             {
               _id: new ObjectId(),
-              type: 'date',
+              type: PropertyTypeEnum.Date,
               label: 'Creation Date',
               name: 'creationDate',
               isCommonProperty: true,
@@ -44,7 +45,7 @@ describe('PropertyCreatorService', () => {
             },
             {
               _id: new ObjectId(),
-              type: 'date',
+              type: PropertyTypeEnum.Date,
               label: 'Edit Date',
               name: 'editDate',
               isCommonProperty: true,
@@ -57,7 +58,7 @@ describe('PropertyCreatorService', () => {
           properties: [
             {
               _id: new ObjectId(),
-              type: 'text',
+              type: PropertyTypeEnum.Text,
               label: 'Text',
               name: 'text',
               noLabel: false,
@@ -70,7 +71,7 @@ describe('PropertyCreatorService', () => {
             },
             {
               _id: new ObjectId(),
-              type: 'text',
+              type: PropertyTypeEnum.Text,
               label: 'Text',
               name: 'text1',
               noLabel: false,
@@ -84,7 +85,7 @@ describe('PropertyCreatorService', () => {
 
             {
               _id: prevCreated,
-              type: 'text',
+              type: PropertyTypeEnum.Text,
               label: 'Previous created',
               name: 'prev_created',
             },
@@ -108,7 +109,7 @@ describe('PropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Text',
-          type: 'date',
+          type: PropertyTypeEnum.Date,
           template: new ObjectId().toString(),
         },
         {}
@@ -126,7 +127,7 @@ describe('PropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Text Label',
-          type: 'text',
+          type: PropertyTypeEnum.Text,
           template: templateId.toString(),
         },
         {}
@@ -143,7 +144,7 @@ describe('PropertyCreatorService', () => {
       sut.create(
         {
           id: prevCreated.toHexString(),
-          type: 'text',
+          type: PropertyTypeEnum.Text,
           label: 'Previous created',
           name: 'prev_created',
           template: templateId.toString(),

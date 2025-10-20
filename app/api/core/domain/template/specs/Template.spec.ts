@@ -653,3 +653,98 @@ it('should throw if Template is already default', () => {
 
   expect(() => existingDefault.setAsDefault(existingDefault)).toThrow(DefaultTemplateConflictError);
 });
+
+it('should update correctly with partial changes', () => {
+  const template = TemplateBuilder.aTemplate({
+    name: 'Template',
+    color: 'red',
+    isDefault: true,
+    entityViewPage: 'any_1',
+  }).build();
+
+  template.processing = { active: false };
+
+  expect(template.update({ name: 'Changed' })).toEqual({
+    ...template,
+    name: 'Changed',
+  });
+
+  expect(template.update({ color: 'blue' })).toEqual({
+    ...template,
+    color: 'blue',
+  });
+
+  expect(template.update({ default: false })).toEqual({
+    ...template,
+    isDefault: false,
+  });
+
+  expect(template.update({ entityViewPage: 'any' })).toEqual({
+    ...template,
+    entityViewPage: 'any',
+  });
+
+  expect(
+    template.update({
+      properties: [new TextProperty({ id: 'any', label: 'Text', template: 'any' })],
+    })
+  ).toEqual({
+    ...template,
+    properties: [new TextProperty({ id: 'any', label: 'Text', template: 'any' })],
+  });
+
+  expect(
+    template.update({
+      properties: [],
+    })
+  ).toEqual({
+    ...template,
+    properties: [],
+  });
+
+  const commonProperties = template.commonProperties.filter(p => p.name !== 'title');
+
+  expect(
+    template.update({
+      commonProperties: [
+        ...commonProperties,
+        new TitleProperty({ label: 'Title of Entity', template: 'any', id: 'any' }),
+      ],
+    })
+  ).toEqual({
+    ...template,
+    commonProperties: [
+      ...commonProperties,
+      new TitleProperty({ label: 'Title of Entity', template: 'any', id: 'any' }),
+    ],
+  });
+});
+
+it('should cleanup Relationship properties on Template delete', () => {
+  const withRelationship = TemplateBuilder.aTemplate({
+    id: 'withRelationship',
+    name: 'With relationship',
+    properties: [
+      V1RelationshipProperty.create({
+        id: 'any',
+        label: 'Relationship',
+        template: 'withRelationship',
+        relationType: 'any',
+        content: 'to_be_deleted_template',
+      }),
+    ],
+    color: 'color',
+    isDefault: true,
+    entityViewPage: 'any',
+  }).build();
+
+  const toBeDeleted = TemplateBuilder.aTemplate({
+    id: 'to_be_deleted_template',
+    name: 'To be deleted',
+  }).build();
+
+  expect(withRelationship.onTemplateDeleted(toBeDeleted)).toEqual({
+    ...withRelationship,
+    properties: [],
+  });
+});

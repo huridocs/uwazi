@@ -1,4 +1,4 @@
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';

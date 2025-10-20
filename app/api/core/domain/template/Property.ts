@@ -1,8 +1,6 @@
 import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { PropertySchema } from 'shared/types/commonTypes';
-
-type PropertyTypes = PropertySchema['type'];
+import { PropertyType } from './PropertyType';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -13,7 +11,7 @@ type PropertyUpdateInfo = {
 
 type Props = {
   id: string;
-  type: PropertyTypes;
+  type: PropertyType;
   template: string;
   name?: string;
   label: string;
@@ -29,7 +27,7 @@ type Context = {
 class Property {
   readonly id: string;
 
-  readonly type: PropertyTypes;
+  readonly type: PropertyType;
 
   private _name: PropertyName;
 
@@ -43,7 +41,7 @@ class Property {
 
   showInCard: boolean;
 
-  protected compatibleTypes: PropertyTypes[] = [];
+  protected compatibleTypes: PropertyType[] = [];
 
   constructor(props: Props, context?: Context) {
     this.id = props.id;
@@ -74,7 +72,7 @@ class Property {
     return this.discriminator === other.discriminator;
   }
 
-  protected isTypeEqual(type: PropertyTypes): boolean {
+  protected isTypeEqual(type: PropertyType): boolean {
     return this.type === type || this.compatibleTypes.includes(type);
   }
 
@@ -108,4 +106,4 @@ class Property {
 }
 
 export { Property };
-export type { PropertyTypes, PropertyUpdateInfo, Props as PropertyProps, Context };
+export type { PropertyUpdateInfo, Props as PropertyProps, Context };

@@ -1,4 +1,4 @@
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { FileType } from 'shared/types/fileType';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

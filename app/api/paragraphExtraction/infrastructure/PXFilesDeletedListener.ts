@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';

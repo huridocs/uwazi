@@ -13,7 +13,7 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 
 import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
