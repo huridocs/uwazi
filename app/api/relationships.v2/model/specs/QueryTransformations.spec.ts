@@ -7,45 +7,60 @@ describe('when calling chainsDecomposition()', () => {
   // eslint-disable-next-line max-statements
   it('should return an array of the queries from the chain decomposition of the query', () => {
     /* eslint-disable */
-    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
-      new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
-          new TraversalQueryNode('out', {}, [ // A -> B
+    const query = new MatchQueryNode({ sharedId: 'root' }, [
+      // Root
+      new TraversalQueryNode('out', {}, [
+        // R -> A
+        new MatchQueryNode({}, [
+          // A
+          new TraversalQueryNode('out', {}, [
+            // A -> B
             new MatchQueryNode({}, []), //B
           ]),
-          new TraversalQueryNode('out', {}, [ // A -> D
+          new TraversalQueryNode('out', {}, [
+            // A -> D
             new MatchQueryNode({}, []), // D
           ]),
         ]),
       ]),
-      new TraversalQueryNode('out', {}, [ // R -> C
-        new MatchQueryNode({}, []) // C
+      new TraversalQueryNode('out', {}, [
+        // R -> C
+        new MatchQueryNode({}, []), // C
       ]),
     ]);
-    
 
-    const chain1 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
-      new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
-          new TraversalQueryNode('out', {}, [ // A -> B
-            new MatchQueryNode({}, []) // B
+    const chain1 = new MatchQueryNode({ sharedId: 'root' }, [
+      // Root
+      new TraversalQueryNode('out', {}, [
+        // R -> A
+        new MatchQueryNode({}, [
+          // A
+          new TraversalQueryNode('out', {}, [
+            // A -> B
+            new MatchQueryNode({}, []), // B
           ]),
         ]),
       ]),
     ]);
 
-    const chain2 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
-      new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
-          new TraversalQueryNode('out', {}, [ // A -> D
-            new MatchQueryNode({}, []) // D
+    const chain2 = new MatchQueryNode({ sharedId: 'root' }, [
+      // Root
+      new TraversalQueryNode('out', {}, [
+        // R -> A
+        new MatchQueryNode({}, [
+          // A
+          new TraversalQueryNode('out', {}, [
+            // A -> D
+            new MatchQueryNode({}, []), // D
           ]),
         ]),
       ]),
     ]);
 
-    const chain3 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
-      new TraversalQueryNode('out', {}, [ // R -> C
+    const chain3 = new MatchQueryNode({ sharedId: 'root' }, [
+      // Root
+      new TraversalQueryNode('out', {}, [
+        // R -> C
         new MatchQueryNode({}, []), // C
       ]),
     ]);
@@ -452,21 +467,30 @@ describe('when calling a method that only supports chain queries', () => {
 describe('when getting the templates matched by the leaf nodes', () => {
   it('should return an array containing the occurrences of the template ids', () => {
     /* eslint-disable */
-    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
-      new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
-          new TraversalQueryNode('out', {}, [ // A -> B
-            new MatchQueryNode({
-              templates: ['template1', 'template2']
-            }, []), //B
+    const query = new MatchQueryNode({ sharedId: 'root' }, [
+      // Root
+      new TraversalQueryNode('out', {}, [
+        // R -> A
+        new MatchQueryNode({}, [
+          // A
+          new TraversalQueryNode('out', {}, [
+            // A -> B
+            new MatchQueryNode(
+              {
+                templates: ['template1', 'template2'],
+              },
+              []
+            ), //B
           ]),
-          new TraversalQueryNode('out', {}, [ // A -> D
+          new TraversalQueryNode('out', {}, [
+            // A -> D
             new MatchQueryNode({}, []), // D
           ]),
         ]),
       ]),
-      new TraversalQueryNode('out', {}, [ // R -> C
-        new MatchQueryNode({ templates: ['template2'] }, []) // C
+      new TraversalQueryNode('out', {}, [
+        // R -> C
+        new MatchQueryNode({ templates: ['template2'] }, []), // C
       ]),
     ]);
     /* eslint-enable */

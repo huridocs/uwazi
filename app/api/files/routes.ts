@@ -76,14 +76,24 @@ const isFilePubliclyAccessible = async (
     return true;
   }
 
-  // For documents/attachments: Check if all related entities are published
-  const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: file.entity },
-    undefined,
-    { withoutDocuments: true }
-  );
+  // Files without an entity reference cannot be publicly cacheable (safety)
+  if (!file.entity) {
+    return false;
+  }
 
-  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
+  // For documents/attachments: Check if all related entities are published
+  try {
+    const relatedEntities: EntitySchema[] = await entities.get(
+      { sharedId: file.entity },
+      undefined,
+      { withoutDocuments: true }
+    );
+
+    return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
+  } catch (error) {
+    // If entity query fails, default to not cacheable for safety
+    return false;
+  }
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
@@ -284,18 +294,28 @@ export default (app: Application) => {
       }
 
       // Fetch settings to determine cache policy
-      const appSettings = await settings.get();
-      const isPrivateInstance = appSettings.private || false;
+      // Use try-catch to ensure cache header logic never blocks file serving
+      let cacheControl = 'private, max-age=3600'; // Safe default
 
-      // Check if file is publicly accessible
-      const isPublic = await isFilePubliclyAccessible(
-        file,
-        permissionsContext.getUserInContext(),
-        isPrivateInstance
-      );
+      try {
+        const appSettings = await settings.get();
+        const isPrivateInstance = appSettings.private || false;
+
+        // Check if file is publicly accessible
+        const isPublic = await isFilePubliclyAccessible(
+          file,
+          permissionsContext.getUserInContext(),
+          isPrivateInstance
+        );
+
+        cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+      } catch (error) {
+        // If cache policy determination fails, use safe default and continue serving file
+        cacheControl = 'private, max-age=3600';
+      }
 
       // Set cache control headers
-      res.setHeader('Cache-Control', getCacheControlHeader(isPublic, isPrivateInstance));
+      res.setHeader('Cache-Control', cacheControl);
 
       // Set Last-Modified header if creationDate exists
       if (file.creationDate) {

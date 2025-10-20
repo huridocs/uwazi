@@ -166,9 +166,7 @@ describe('files routes download', () => {
 
         it('should set "private, max-age=3600" for documents from unpublished entities', async () => {
           // fileName1 is on sharedId1 which is NOT published
-          const response: SuperTestResponse = await request(app)
-            .get(`/api/files/${fileName1}`)
-            .expect(404); // Unpublished entity, no user = 404
+          await request(app).get(`/api/files/${fileName1}`).expect(404); // Unpublished entity, no user = 404
 
           // Note: This test expects 404 because unpublished entities shouldn't be accessible
           // without authentication in the current implementation
