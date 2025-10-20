@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
 import { DateMetadataProperty, EntityTemplate } from 'app/V2/domain/entities/types';
@@ -18,14 +19,15 @@ import { SelectPropertyProcessor } from './SelectPropertyProcessor';
 import { GeolocationProcessor } from './GeolocationProcessor';
 import { RelationshipProcessor } from './RelationshipProcessor';
 import { MediaPropertyProcessor } from './MediaPropertyProcessor';
-import { ImagePropertyProcessor } from './ImagePropertyProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
 import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
+
   private readonly processors: Map<string, PropertyTypeProcessor> = new Map();
+
   private readonly templateProcessor: AdapterTemplateProcessor;
 
   constructor(context: ProcessingContext) {
@@ -42,7 +44,6 @@ export class AdapterEntityProcessor {
       new GeolocationProcessor(),
       new RelationshipProcessor(),
       new MediaPropertyProcessor(),
-      new ImagePropertyProcessor(),
       new LinkPropertyProcessor(),
       new PreviewPropertyProcessor(),
     ];
@@ -69,17 +70,15 @@ export class AdapterEntityProcessor {
               value: entityProperty,
               index,
               values: entityProperty,
-              entity: entity,
+              entity,
             } as AdapterMetadataProperty;
           }
+
+          return undefined;
         }
       ).filter(property => property !== undefined);
 
-
-      return metadataProperties.map((property, newIndex) => ({
-        ...property,
-        index: newIndex,
-      }));
+      return metadataProperties;
     });
 
     allProperties.forEach(property => {
@@ -153,7 +152,7 @@ export class AdapterEntityProcessor {
             const currentSource = {
               value: value.value as string,
               label: value.label || '',
-              url: '/entity/' + value.value,
+              url: `/entity/${value.value}`,
             };
             return this.flattenInheritedValues(
               value.inheritedValue,
@@ -165,7 +164,7 @@ export class AdapterEntityProcessor {
           const source = parentSource || {
             value: value.value,
             label: value.label,
-            url: '/entity/' + value.value,
+            url: `/entity/${value.value}`,
           };
           return value.inheritedValue.map(inherited => ({
             value: inherited.value,
@@ -178,7 +177,7 @@ export class AdapterEntityProcessor {
         return {
           value: value.value,
           label: value.label,
-          url: '/entity/' + value.value,
+          url: `/entity/${value.value}`,
           icon: value.icon,
         };
       })
@@ -227,16 +226,16 @@ export class AdapterEntityProcessor {
   ): AdapterMetadataProperty {
     return {
       _id: name,
-      name: name,
+      name,
       entity: undefined as any,
-      label: label,
+      label,
       translatedLabel,
       type: 'date',
       value: [{ value }],
       index: 0,
       values: [
         {
-          value: value,
+          value,
           label: '',
         },
       ],
@@ -258,6 +257,7 @@ export class AdapterEntityProcessor {
     };
   }
 
+  // eslint-disable-next-line max-statements
   processAllEntities(entities: EntitySchema[]): BatchCompositionResult {
     const allErrors: ProcessingError[] = [];
     let formattedEntities: AdapterEntity[] = [];
@@ -351,7 +351,7 @@ export class AdapterEntityProcessor {
             value: rel.value?.toString() || '',
             label: rel.label || '',
             icon: (rel.icon as any)?._id || '',
-            url: '/entity/' + (rel.value?.toString() || ''),
+            url: `/entity/${rel.value?.toString() || ''}`,
           },
         };
         transformedValues.push(transformedValue);
@@ -366,7 +366,7 @@ export class AdapterEntityProcessor {
       properties: {
         ...property.properties,
         inherited: true,
-        inheritedProperty: inheritedProperty,
+        inheritedProperty,
       },
     });
   }
