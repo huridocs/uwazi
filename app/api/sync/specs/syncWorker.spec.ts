@@ -75,14 +75,6 @@ async function applyFixtures(
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-  }, 'host1');
-
-  await tenants.run(async () => {
-    await elasticTesting.reindex();
-  }, 'host2');
-
-  await tenants.run(async () => {
-    await elasticTesting.reindex();
     await users.newUser({
       username: 'user',
       password: 'password',
