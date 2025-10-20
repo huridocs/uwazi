@@ -34,7 +34,7 @@ const Date = ({ values, label, translationContext, hideLabel }: DateProps) => (
               <Translate>From</Translate>
             </span>
             <span>{stamp.label.from}</span>
-            <span aria-hidden="true"> - </span>
+            <span aria-hidden="true"> ~ </span>
             <span className="sr-only">
               <Translate>To</Translate>
             </span>

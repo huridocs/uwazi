@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
+import { ImageMetadataProperty } from 'V2/domain/entities/types';
 import { MetadataFieldProps } from './types';
 import { PropertyLabel } from './PropertyLabel';
 import { MetadataCard } from './MetadataCard';
 
 type ImageProps = MetadataFieldProps & {
-  values: {
-    value: string;
-    alt?: string;
-  }[];
+  values: ImageMetadataProperty['values'];
   imageStyle?: 'contain' | 'cover';
 };
 
@@ -39,7 +37,7 @@ const Image = ({ label, hideLabel, translationContext, values, imageStyle }: Ima
         return (
           <dd className="w-full rounded-md bg-gray-100">
             <img
-              className="m-auto"
+              className="m-auto max-h-96"
               style={{
                 objectFit: imageStyle ?? 'fill',
               }}
