@@ -14,6 +14,7 @@ import {
   FlagIcon,
   ListBulletIcon,
 } from '@heroicons/react/24/outline';
+import { Translate } from 'app/I18N';
 import { RelationshipPropertyIcon } from 'app/V2/Components/CustomIcons';
 import { getEntityCompositionUseCase } from 'app/V2/application/container/singletons';
 import { fullDetailOptions } from 'app/V2/application/optionsPresets';
@@ -133,7 +134,7 @@ const Entity = () => {
             id: 'side-metadata',
             label: 'Metadata',
             controls: 'side-panel-metadata',
-            content: entity ? <MetadataDisplay entity={entity} /> : <div>Loading metadata...</div>,
+            content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
             icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
           },
           {
@@ -208,7 +209,7 @@ const Entity = () => {
   }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
 
   if (!entity) {
-    return <div>Loading entity...</div>;
+    return <Translate>Loading</Translate>;
   }
 
   return (
