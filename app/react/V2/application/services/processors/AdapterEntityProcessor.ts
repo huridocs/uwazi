@@ -75,7 +75,6 @@ export class AdapterEntityProcessor {
         }
       ).filter(property => property !== undefined);
 
-
       return metadataProperties.map((property, newIndex) => ({
         ...property,
         index: newIndex,

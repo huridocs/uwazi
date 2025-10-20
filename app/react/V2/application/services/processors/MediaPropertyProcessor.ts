@@ -1,7 +1,8 @@
 import { FilePropertyTypes, MediaMetadataProperty, Timelink } from 'app/V2/domain/entities/types';
+import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
+import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { ProcessingContext, AdapterMetadataProperty } from './types';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { PropertyValueSchema } from 'shared/types/commonTypes';
 
 export class MediaPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'MediaPropertyProcessor';
@@ -19,7 +20,10 @@ export class MediaPropertyProcessor extends BasePropertyProcessor {
         const values = this.processMediaFiles(property.value[0].value, context);
         results.push(Object.assign(property, { values }));
       } catch (error) {
-        console.error(`Error processing media property ${property.name}:`, error);
+        reportErrorToSentry(
+          error as Error,
+          `Error processing ${this.name} property ${property.name}`
+        );
       }
     });
 

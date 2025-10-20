@@ -38,7 +38,7 @@ const getBySharedId = async (
   {
     sharedId,
     language,
-    omitRelationships = false,
+    omitRelationships = true,
   }: EntityApiParams & {
     sharedId: string;
     language: string;

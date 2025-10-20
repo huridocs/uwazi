@@ -1,4 +1,5 @@
 import { MetadataProperty } from 'app/V2/domain/entities/types';
+import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
 import { AdapterMetadataProperty, ProcessingContext, PropertyTypeProcessor } from './types';
 
 export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
@@ -18,7 +19,10 @@ export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
         const values = this.formatProperty(property, context);
         results.push(Object.assign(property, { values }));
       } catch (error) {
-        console.error(`Error processing ${this.name} property ${property.name}:`, error);
+        reportErrorToSentry(
+          error as Error,
+          `Error processing ${this.name} property ${property.name}`
+        );
       }
     });
 

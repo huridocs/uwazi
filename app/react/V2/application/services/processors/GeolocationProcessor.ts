@@ -2,6 +2,7 @@ import {
   GeolocationMetadataProperty,
   GeolocationPropertyTypes,
 } from 'app/V2/domain/entities/types';
+import { reportErrorToSentry } from 'app/V2/shared/errorUtils';
 import { BasePropertyProcessor } from './BasePropertyProcessor';
 import { ProcessingContext, PropertyTypeProcessor, AdapterMetadataProperty } from './types';
 
@@ -168,7 +169,10 @@ export class GeolocationProcessor extends BasePropertyProcessor {
         }));
         results.push(Object.assign(property, { values }));
       } catch (error) {
-        console.error(`Error processing ${this.name} property ${property.name}:`, error);
+        reportErrorToSentry(
+          error as Error,
+          `Error processing ${this.name} property ${property.name}`
+        );
       }
     });
   }
