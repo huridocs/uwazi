@@ -6,7 +6,6 @@ import Ajv from 'ajv';
 import fs from 'fs/promises';
 
 import entitiesModel from 'api/entities/entitiesModel';
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import relationships from 'api/relationships';
 import { storage, uploadsPath } from 'api/files';
 import { search } from 'api/search';
@@ -15,8 +14,9 @@ import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 import entities from '../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';

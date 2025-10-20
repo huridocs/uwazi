@@ -1,6 +1,7 @@
 import { DateRangeProperty } from '../DateRangeProperty';
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('MultiDateRangeProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -21,7 +22,7 @@ describe('MultiDateRangeProperty', () => {
         new MultiDateRangeProperty({
           id: 'any',
           label: 'A label',
-          type: 'text',
+          type: PropertyTypeEnum.Text as any,
           template: 'any',
         })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'MultiDateRangeProperty'));

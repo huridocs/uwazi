@@ -4,13 +4,14 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
   TemplateDoesNotExistError,
-} from '../errors';
+} from '../../domain/template/errors';
 import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService';
 
 const factory = getFixturesFactory();
@@ -43,7 +44,7 @@ describe('RelationshipPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           template: '',
           relationType: new ObjectId().toHexString(),
         },
@@ -70,13 +71,13 @@ describe('RelationshipPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           template: '',
           relationType: relationTypeId.toHexString(),
           content: new ObjectId().toHexString(),
           inherit: {
             property: new ObjectId().toHexString(),
-            type: 'date',
+            type: PropertyTypeEnum.Date,
           },
         },
         {}
@@ -104,13 +105,13 @@ describe('RelationshipPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           template: '',
           relationType: relationTypeId.toHexString(),
           content: templateId.toHexString(),
           inherit: {
             property: new ObjectId().toHexString(),
-            type: 'date',
+            type: PropertyTypeEnum.Date,
           },
         },
         {}
@@ -144,13 +145,13 @@ describe('RelationshipPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           template: '',
           relationType: relationTypeId.toHexString(),
           content: templateId.toHexString(),
           inherit: {
             property: propertyId.toHexString(),
-            type: 'daterange',
+            type: PropertyTypeEnum.DateRange,
           },
         },
         {}
@@ -184,13 +185,13 @@ describe('RelationshipPropertyCreatorService', () => {
         {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           template: templateId.toString(),
           relationType: relationTypeId.toHexString(),
           content: templateId.toHexString(),
           inherit: {
             property: propertyId.toHexString(),
-            type: 'date',
+            type: PropertyTypeEnum.Date,
           },
         },
         {}

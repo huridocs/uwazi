@@ -1,21 +1,22 @@
-import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.MultiDateRange;
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MultiDateRangeProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'multidaterange' }, context);
-    this.compatibleTypes = ['daterange'];
+    super({ ...props, type: props.type || PropertyTypeEnum.MultiDateRange }, context);
+    this.compatibleTypes = [PropertyTypeEnum.DateRange];
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'multidaterange') {
+    if (this.type !== PropertyTypeEnum.MultiDateRange) {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiDateRangeProperty');
     }
   }

@@ -13,6 +13,7 @@ import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/dat
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
@@ -100,49 +101,63 @@ describe('CreateTemplateUseCase', () => {
     const output = await sut.execute({
       name: 'Template Name',
       properties: [
-        { label: 'Text', type: 'text' },
-        { label: 'Date', type: 'date' },
-        { label: 'Date Range', type: 'daterange' },
-        { label: 'Geolocation', type: 'geolocation' },
-        { label: 'Image', type: 'image' },
-        { label: 'Link', type: 'link' },
-        { label: 'Markdown', type: 'markdown' },
-        { label: 'Media', type: 'media' },
-        { label: 'Multi Date', type: 'multidate' },
-        { label: 'Multi Date Range', type: 'multidaterange' },
-        { label: 'Numeric', type: 'numeric' },
-        { label: 'Preview', type: 'preview' },
-        { label: 'Generated Id', type: 'generatedid' },
-        { label: 'Select', type: 'select', content: factory.id('thesaurusId').toHexString() },
+        { label: 'Text', type: PropertyTypeEnum.Text },
+        { label: 'Date', type: PropertyTypeEnum.Date },
+        { label: 'Date Range', type: PropertyTypeEnum.DateRange },
+        { label: 'Geolocation', type: PropertyTypeEnum.Geolocation },
+        { label: 'Image', type: PropertyTypeEnum.Image },
+        { label: 'Link', type: PropertyTypeEnum.Link },
+        { label: 'Markdown', type: PropertyTypeEnum.Markdown },
+        { label: 'Media', type: PropertyTypeEnum.Media },
+        { label: 'Multi Date', type: PropertyTypeEnum.MultiDate },
+        { label: 'Multi Date Range', type: PropertyTypeEnum.MultiDateRange },
+        { label: 'Numeric', type: PropertyTypeEnum.Numeric },
+        { label: 'Preview', type: PropertyTypeEnum.Preview },
+        { label: 'Generated Id', type: PropertyTypeEnum.GeneratedId },
+        {
+          label: 'Select',
+          type: PropertyTypeEnum.Select,
+          content: factory.id('thesaurusId').toHexString(),
+        },
         {
           label: 'Multi Select',
-          type: 'multiselect',
+          type: PropertyTypeEnum.MultiSelect,
           content: factory.id('thesaurusId').toHexString(),
         },
         {
           label: 'Relationship to any',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           relationType: factory.id('relationTypeId').toHexString(),
         },
 
         {
           label: 'Relationship to Property as target',
-          type: 'relationship',
+          type: PropertyTypeEnum.Relationship,
           relationType: factory.id('relationTypeId').toHexString(),
           content: factory.id('targetedTemplate').toHexString(),
           inherit: {
             property: factory.id('date1').toHexString(),
-            type: 'date',
+            type: PropertyTypeEnum.Date,
           },
         },
-        { label: 'Nested', type: 'nested' },
+        { label: 'Nested', type: PropertyTypeEnum.Nested },
 
-        // { label: 'New Relationship', type: 'newRelationship' }, // missing
+        // { label: 'New Relationship', type: PropertyTypeEnum.newRelationship }, // missing
       ],
       commonProperties: [
-        { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
-        { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
-        { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+        { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+        {
+          label: 'Creation Date',
+          type: PropertyTypeEnum.Date,
+          name: 'creationDate',
+          isCommonProperty: true,
+        },
+        {
+          label: 'Edit Date',
+          type: PropertyTypeEnum.Date,
+          name: 'editDate',
+          isCommonProperty: true,
+        },
       ],
       color: '#142134',
     });
@@ -485,11 +500,21 @@ describe('CreateTemplateUseCase', () => {
     await expect(
       sut.execute({
         name: 'Template Name',
-        properties: [{ label: 'Text2', type: 'text' }],
+        properties: [{ label: 'Text2', type: PropertyTypeEnum.Text }],
         commonProperties: [
-          { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
-          { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
-          { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+          {
+            label: 'Creation Date',
+            type: PropertyTypeEnum.Date,
+            name: 'creationDate',
+            isCommonProperty: true,
+          },
+          {
+            label: 'Edit Date',
+            type: PropertyTypeEnum.Date,
+            name: 'editDate',
+            isCommonProperty: true,
+          },
         ],
         color: '#142134',
       })
@@ -507,9 +532,19 @@ describe('CreateTemplateUseCase', () => {
         name: 'Template Name',
         properties: [],
         commonProperties: [
-          { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
-          { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
-          { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+          {
+            label: 'Creation Date',
+            type: PropertyTypeEnum.Date,
+            name: 'creationDate',
+            isCommonProperty: true,
+          },
+          {
+            label: 'Edit Date',
+            type: PropertyTypeEnum.Date,
+            name: 'editDate',
+            isCommonProperty: true,
+          },
         ],
         color: '#142134',
         entityViewPage: 'not_exists',
@@ -531,9 +566,19 @@ describe('CreateTemplateUseCase', () => {
         name: 'Template Name',
         properties: [],
         commonProperties: [
-          { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
-          { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
-          { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+          { label: 'Title', type: PropertyTypeEnum.Text, name: 'title', isCommonProperty: true },
+          {
+            label: 'Creation Date',
+            type: PropertyTypeEnum.Date,
+            name: 'creationDate',
+            isCommonProperty: true,
+          },
+          {
+            label: 'Edit Date',
+            type: PropertyTypeEnum.Date,
+            name: 'editDate',
+            isCommonProperty: true,
+          },
         ],
         color: '#142134',
         entityViewPage: 'existing_not_enabled',

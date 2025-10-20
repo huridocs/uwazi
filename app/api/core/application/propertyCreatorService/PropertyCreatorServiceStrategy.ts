@@ -1,10 +1,12 @@
-import { Context, Property, PropertyTypes } from 'api/templates.v2/model/Property';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
+import { TemplatesDataSource } from '../../domain/template/TemplatesDataSource';
+import { Context, Property } from '../../domain/template/Property';
+import { IdGenerator } from '../../libs/IdGenerator';
+import { PropertyType } from '../../domain/template/PropertyType';
+import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory';
+import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';
 import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';
 import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService';
@@ -26,12 +28,12 @@ type CreateProps = {
   idGenerator: IdGenerator;
 };
 
-type BulkCreateInput = (Omit<CreateInput, 'id' | 'template'> & { id?: string })[];
+type BulkCreateInput = (Omit<PropertyFactoryCreateInput, 'id' | 'template'> & { id?: string })[];
 
 class PropertyCreatorServiceStrategy {
   constructor(private props: Props) {}
 
-  getStrategy(type: PropertyTypes): AbstractPropertyCreatorService {
+  getStrategy(type: PropertyType): AbstractPropertyCreatorService {
     switch (type) {
       case 'multiselect':
       case 'select':
@@ -54,7 +56,11 @@ class PropertyCreatorServiceStrategy {
   ): Promise<Property[]> {
     const properties = await ArrayUtils.parallelFor(input, async property =>
       this.getStrategy(property.type!).create(
-        { ...property, id: property.id || this.props.idGenerator.generate(), template },
+        {
+          ...(property as PropertyFactoryCreateInput),
+          id: property.id || this.props.idGenerator.generate(),
+          template,
+        },
         { newNameGeneration }
       )
     );

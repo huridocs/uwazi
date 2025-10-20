@@ -1,15 +1,15 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
-import { TranslationService } from '../domain/template/TranslationService';
-import { CreateTemplateDTO } from './TemplateDTOs';
 import { PageService } from '../domain/template/PageService';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TranslationService } from '../domain/template/TranslationService';
+import { AbstractUseCase } from '../libs/UseCase';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService';
+import { CreateTemplateDTO } from './TemplateDTOs';
+import { Template } from '../domain/template/Template';
 
 type Output = Template;
 

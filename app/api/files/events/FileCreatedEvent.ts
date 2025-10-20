@@ -1,4 +1,4 @@
-import { AbstractEvent } from 'api/eventsbus';
+import { AbstractEvent } from 'api/core/libs/eventsbus';
 import { WithId } from 'api/odm/model';
 
 import { FileType } from 'shared/types/fileType';

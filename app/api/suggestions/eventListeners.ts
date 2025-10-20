@@ -1,11 +1,11 @@
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
 import templates from 'api/templates';
-import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';

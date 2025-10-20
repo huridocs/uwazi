@@ -1,16 +1,16 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { TemplateDiff } from 'api/core/domain/template/TemplateDiff';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import {
-  DispatchableClass,
-  JobsDispatcher,
-} from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
-import { TemplateUpdatedEventContext } from 'api/templates/events/TemplateUpdatedEvent';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent';
+import { TemplateDiff } from '../domain/template/TemplateDiff';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
+import {
+  JobsDispatcher,
+  DispatchableClass,
+} from '../libs/queue/application/contracts/JobsDispatcher';
+import { Template } from '../domain/template/Template';
 
 type Deps = {
   jobsDispatcher: JobsDispatcher;

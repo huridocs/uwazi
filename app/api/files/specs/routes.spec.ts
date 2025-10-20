@@ -4,7 +4,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
-import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';

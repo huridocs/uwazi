@@ -1,6 +1,7 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { DateRangeProperty } from '../DateRangeProperty';
 import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('DateRangeProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -17,7 +18,13 @@ describe('DateRangeProperty', () => {
 
   it('should throw if providing a type different from daterange', () => {
     expect(
-      () => new DateRangeProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new DateRangeProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'DateRangeProperty'));
   });
 

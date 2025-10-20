@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import * as filesystem from 'api/files';
 import { PDF, files } from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';

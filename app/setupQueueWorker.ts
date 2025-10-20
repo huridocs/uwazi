@@ -2,7 +2,7 @@
 import * as Sentry from '@sentry/node';
 import { config } from 'api/config';
 import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { Redis } from 'api/infrastructure/Redis';
 import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
 import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';

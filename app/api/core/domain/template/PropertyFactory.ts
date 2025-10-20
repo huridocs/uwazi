@@ -1,18 +1,17 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
+import { Context, Property } from 'api/core/domain/template/Property';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from 'api/templates.v2/model/V1RelationshipProperty';
+} from 'api/core/domain/template/V1RelationshipProperty';
 import { TextProperty, TextPropertyProps } from './TextProperty';
 import { NumericProperty, NumericPropertyProps } from './NumericProperty';
 import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty';
 import { MultiDateProperty, MultiDatePropertyProps } from './MultiDateProperty';
 import { MultiDateRangeProperty, MultiDateRangePropertyProps } from './MultiDateRangeProperty';
-import { MediaProperty } from './MediaProperty';
-import { AbstractImagePropertyProps } from './AbstractImageProperty';
+import { MediaProperty, MediaPropertyProps } from './MediaProperty';
 import { MarkdownProperty, MarkdownPropertyProps } from './MarkdownProperty';
 import { LinkProperty, LinkPropertyProps } from './LinkProperty';
-import { ImageProperty } from './ImageProperty';
+import { ImageProperty, ImagePropertyProps } from './ImageProperty';
 import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProperty';
 import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty';
 import { DateProperty, DatePropertyProps } from './DateProperty';
@@ -20,6 +19,7 @@ import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdPropert
 import { SelectProperty, SelectPropertyProps } from './SelectProperty';
 import { MultiSelectProperty, MultiSelectPropertyProps } from './MultiSelectProperty';
 import { NestedProperty, NestedPropertyProps } from './NestedProperty';
+import { RelationshipPropertyProps } from './RelationshipProperty';
 
 type CreateInput =
   | TextPropertyProps
@@ -27,7 +27,6 @@ type CreateInput =
   | PreviewPropertyProps
   | MultiDatePropertyProps
   | MultiDateRangePropertyProps
-  | AbstractImagePropertyProps
   | MarkdownPropertyProps
   | LinkPropertyProps
   | GeolocationPropertyProps
@@ -37,7 +36,10 @@ type CreateInput =
   | SelectPropertyProps
   | MultiSelectPropertyProps
   | V1RelationshipPropertyProps
-  | NestedPropertyProps;
+  | NestedPropertyProps
+  | ImagePropertyProps
+  | MediaPropertyProps
+  | RelationshipPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput, context: Context): Property {
@@ -82,16 +84,16 @@ class PropertyFactory {
         return new GenerateIdProperty(input, context);
 
       case 'select':
-        return new SelectProperty(input as SelectPropertyProps, context);
+        return new SelectProperty(input, context);
 
       case 'multiselect':
-        return new MultiSelectProperty(input as MultiSelectPropertyProps, context);
+        return new MultiSelectProperty(input, context);
 
       case 'relationship':
-        return V1RelationshipProperty.create(input as V1RelationshipPropertyProps, context);
+        return V1RelationshipProperty.create(input, context);
 
       case 'nested':
-        return new NestedProperty(input as NestedPropertyProps);
+        return new NestedProperty(input);
 
       default:
         throw new Error(`The following type was not handled. Type = ${input.type}`);

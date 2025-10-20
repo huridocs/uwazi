@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { MarkdownProperty } from '../MarkdownProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 import { TextProperty } from '../TextProperty';
 
 describe('TextProperty', () => {
@@ -22,7 +23,7 @@ describe('TextProperty', () => {
         new TextProperty({
           id: 'any',
           label: 'A label',
-          type: 'date',
+          type: PropertyTypeEnum.Date as any,
           template: 'any',
         })
     ).toThrow(new PropertyTypeInvalidTypeError('date', 'TextProperty'));
