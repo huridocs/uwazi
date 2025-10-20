@@ -88,11 +88,16 @@ const Primary: Story = {
   ),
 };
 
-const Basic = {
+const Basic: Story = {
   ...Primary,
   args: {
     dbEntity: rawEntity,
-    context: processingContextBase,
+    context: {
+      ...processingContextBase,
+      templates,
+      settings,
+      thesauri,
+    },
     contextThesauri: thesauri,
     contextTemplates: templates,
     contextSettings: settings,

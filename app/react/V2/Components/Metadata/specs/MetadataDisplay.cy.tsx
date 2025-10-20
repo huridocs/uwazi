@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Metadata.stories.tsx';
+import * as stories from 'app/stories/Metadata.stories';
 
 describe('MultiselectList.cy.tsx', () => {
   const { Basic } = composeStories(stories);
@@ -17,10 +17,12 @@ describe('MultiselectList.cy.tsx', () => {
   });
 
   describe('Template label', () => {
-    const originalColor = Basic.args.context.templates[0].color;
+    const originalColor = Basic.args.context?.templates[0].color;
 
     afterEach(() => {
-      Basic.args.context.templates[0].color = originalColor;
+      if (Basic.args.context?.templates[0]) {
+        Basic.args.context.templates[0].color = originalColor;
+      }
     });
 
     [
@@ -34,7 +36,9 @@ describe('MultiselectList.cy.tsx', () => {
       },
     ].forEach(({ templateColor, expectedColor }) => {
       it(`should display "${expectedColor}" for template color ${templateColor}`, () => {
-        Basic.args.context.templates[0].color = templateColor;
+        if (Basic.args.context?.templates[0]) {
+          Basic.args.context.templates[0].color = templateColor;
+        }
         mount(<Basic />);
         cy.contains('div', 'This is the title of Template 1').should(
           'have.css',

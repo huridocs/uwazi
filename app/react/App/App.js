@@ -36,7 +36,10 @@ const App = ({ customParams }) => {
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
 
-  const possibleLanguages = settings.languages?.map(l => l.key) || [];
+  const possibleLanguages = useMemo(
+    () => settings.languages?.map(l => l.key) || [],
+    [settings.languages]
+  );
   const shouldAddAppClassName =
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||
@@ -45,7 +48,9 @@ const App = ({ customParams }) => {
   useEffect(() => {
     if (settings.languages && settings.languages.length > 0) {
       const pathLanguage = location.pathname.split('/')[1];
-      const validLanguage = possibleLanguages.includes(pathLanguage) ? pathLanguage : settings.languages.find(lang => lang.default)?.key || 'en';
+      const validLanguage = possibleLanguages.includes(pathLanguage)
+        ? pathLanguage
+        : settings.languages.find(lang => lang.default)?.key || 'en';
 
       setLocale(validLanguage);
     }
@@ -103,6 +108,7 @@ const App = ({ customParams }) => {
         </header>
         <main className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Confirm {...confirmOptions} />
             <Outlet />
             <GoogleAnalytics />
