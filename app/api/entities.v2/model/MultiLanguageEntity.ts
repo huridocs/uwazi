@@ -1,6 +1,6 @@
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
-import { Template, TemplateProperty } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { Template, TemplateProperty } from 'api/core/domain/template/Template';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { IndexTypes } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Entity } from './Entity';

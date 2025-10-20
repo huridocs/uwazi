@@ -1,7 +1,7 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from '../domain/PXEntityStatusModel';

@@ -4,7 +4,6 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -12,15 +11,16 @@ import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
-import { Result, ResultType } from 'api/core/application/common/Result';
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { Result, ResultType } from 'api/core/libs/Result';
+import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
+import { Property } from '../../../domain/template/Property';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
+import { Template } from '../../../domain/template/Template';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
-import { TemplateDBO } from './schemas/TemplateDBO';
+import { TemplateDBO } from './DBOs/TemplateDBO';
 import { TemplateMappers } from './TemplateMappers';
+import { MongoTemplateMapper } from './Mapper';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -47,7 +47,7 @@ export class MongoTemplatesDataSource
       await resetIndex();
       return updateMapping(await this.getCollection().find({}).toArray());
     }
-    return updateMapping([TemplateMapper.toSchema(template)]);
+    return updateMapping([MongoTemplateMapper.toSchema(template)]);
   }
 
   getAll() {
@@ -269,7 +269,7 @@ export class MongoTemplatesDataSource
       return Result.fail(new TemplateDoesNotExistError(id));
     }
 
-    return Result.ok(TemplateMapper.toDomain(schema));
+    return Result.ok(MongoTemplateMapper.toDomain(schema));
   }
 
   async incrementProcessingTracking(id: Template['id']) {
@@ -304,13 +304,13 @@ export class MongoTemplatesDataSource
   }
 
   async update(template: Template): Promise<void> {
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
     this.templatesMutated.set(schema._id, schema);
   }
 
   async create(template: Template): Promise<void> {
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
     await this.getCollection().insertOne(schema);
     this.templatesMutated.set(schema._id, schema);
   }
@@ -355,7 +355,7 @@ export class MongoTemplatesDataSource
       })
       .toArray();
 
-    return schemas.map(TemplateMapper.toDomain);
+    return schemas.map(MongoTemplateMapper.toDomain);
   }
 
   async getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>> {
@@ -364,7 +364,7 @@ export class MongoTemplatesDataSource
       return Result.fail(new DefaultTemplateNotFoundError());
     }
 
-    return Result.ok(TemplateMapper.toDomain(schema));
+    return Result.ok(MongoTemplateMapper.toDomain(schema));
   }
 
   async findTemplatesReferencing(templateId: string): Promise<Template[]> {
@@ -374,7 +374,7 @@ export class MongoTemplatesDataSource
       })
       .toArray();
 
-    return schemas.map(TemplateMapper.toDomain);
+    return schemas.map(MongoTemplateMapper.toDomain);
   }
 
   async delete(templateId: string): Promise<void> {
@@ -382,7 +382,7 @@ export class MongoTemplatesDataSource
   }
 
   async bulkUpdate(template: Template[]): Promise<void> {
-    const schemas = template.map(TemplateMapper.toSchema);
+    const schemas = template.map(MongoTemplateMapper.toSchema);
 
     await this.getCollection().bulkWrite(
       schemas.map(schema => ({

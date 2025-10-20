@@ -3,18 +3,20 @@ import {
   FilterablePropertyProps,
 } from 'api/core/domain/template/FilterableProperty';
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
-import { Context, Property, PropertyTypes, PropertyUpdateInfo } from './Property';
+import { Context, Property, PropertyUpdateInfo } from './Property';
+import { PropertyType, PropertyTypeEnum } from './PropertyType';
 
 type Inherit = {
   property: string;
-  type: PropertyTypes;
+  type: PropertyType;
 };
 
 type Props = {
   relationType: string;
   content?: string;
   inherit?: Inherit;
-} & FilterablePropertyProps;
+  type?: PropertyTypeEnum.Relationship;
+} & Omit<FilterablePropertyProps, 'type'>;
 
 class V1RelationshipProperty extends FilterableProperty {
   readonly relationType: string;

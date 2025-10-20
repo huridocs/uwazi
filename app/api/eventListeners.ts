@@ -1,4 +1,4 @@
-import { EventsBus } from './eventsbus';
+import { EventsBus } from './core/libs/eventsbus';
 import { AutomaticTranslationFactory } from './externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { PXEntityDeletedListener } from './paragraphExtraction/infrastructure/PXEntityDeletedListener';
 import { PXEntityUpdatedListener } from './paragraphExtraction/infrastructure/PXEntityUpdatedListener';

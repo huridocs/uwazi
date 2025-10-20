@@ -1,4 +1,4 @@
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import db from 'api/utils/testing_db';

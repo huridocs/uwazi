@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import entities from 'api/entities';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';

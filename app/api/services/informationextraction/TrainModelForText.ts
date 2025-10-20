@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-statements */
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import urljoin from 'url-join';
 import request from 'shared/JSONRequest';

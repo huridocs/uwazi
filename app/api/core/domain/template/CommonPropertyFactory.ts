@@ -1,5 +1,5 @@
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Context } from 'api/templates.v2/model/Property';
+import { CommonProperty } from 'api/core/domain/template/CommonProperty';
+import { Context } from 'api/core/domain/template/Property';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 import { CreationDateProperty } from './CreationDateProperty';

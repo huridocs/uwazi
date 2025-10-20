@@ -1,6 +1,7 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { DateProperty } from '../DateProperty';
 import { MultiDateProperty } from '../MultiDateProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('DateProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -17,7 +18,13 @@ describe('DateProperty', () => {
 
   it('should throw if providing a type different from date', () => {
     expect(
-      () => new DateProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new DateProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'DateProperty'));
   });
 

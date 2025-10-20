@@ -2,7 +2,7 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { elasticTesting } from 'api/utils/elastic_testing';

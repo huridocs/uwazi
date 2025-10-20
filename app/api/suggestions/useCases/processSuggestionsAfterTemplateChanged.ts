@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { EntitySchema } from 'shared/types/entityType';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { ArrayUtils } from 'api/common.v2/utils/Array';

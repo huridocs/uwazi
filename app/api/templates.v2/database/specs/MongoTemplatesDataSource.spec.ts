@@ -1,12 +1,12 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { Property } from 'api/templates.v2/model/Property';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { Property } from 'api/core/domain/template/Property';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../QueryMapper';
+import { MongoTemplatesDataSource } from '../../../core/infrastructure/mongodb/template/MongoTemplatesDataSource';
+import { mapPropertyQuery } from '../../../core/infrastructure/mongodb/template/QueryMapper';
 
 const factory = getFixturesFactory();
 

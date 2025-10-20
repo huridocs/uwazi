@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { TransactionManager } from 'api/core/libs/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
