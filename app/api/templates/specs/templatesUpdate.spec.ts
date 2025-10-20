@@ -806,7 +806,9 @@ describe('Templates Update', () => {
           ...fixtures,
           templates: [
             ...fixtures.templates,
-            f.template('templateD', [f.property('text_property_b')]),
+            f.template('templateD', [f.property('text_property_b')], {
+              processing: { active: false },
+            }),
           ],
           entities: [],
         },

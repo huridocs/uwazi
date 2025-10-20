@@ -119,9 +119,6 @@ function getFixturesFactory() {
         _id: idMapper(name),
         name,
         properties,
-        processing: {
-          active: false,
-        },
         commonProperties: commonProperties(`commonProperties${name}`, idMapper),
         ...template,
       }) as TemplateSchema & { _id: ObjectId },

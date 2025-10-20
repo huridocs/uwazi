@@ -163,7 +163,16 @@ export default {
   ) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
     if (v2CreateTemplateUseCase && !template._id) {
-      const input = CreateTemplateDTOSchema.parse(template);
+      const templateToParse = {
+        ...template,
+      };
+
+      delete templateToParse.default;
+      delete templateToParse.processing;
+      delete templateToParse.__v;
+      delete templateToParse._id;
+
+      const input = CreateTemplateDTOSchema.parse(templateToParse);
       const output = await CreateTemplateUseCaseFactory.create().execute(input);
 
       return TemplateMapper.toSchema(output);
@@ -171,9 +180,20 @@ export default {
 
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
     if (v2UpdateTemplateUseCase && template._id) {
-      const input = UpdateTemplateDTOSchema.parse({
+      const id = template._id.toString();
+
+      const templateToParse = {
         ...template,
-        id: template._id.toString(),
+      };
+
+      delete templateToParse.default;
+      delete templateToParse.processing;
+      delete templateToParse.__v;
+      delete templateToParse._id;
+
+      const input = UpdateTemplateDTOSchema.parse({
+        ...templateToParse,
+        id,
         properties: (template.properties || []).map(p => ({ ...p, id: p._id?.toString() })),
         commonProperties: (template.commonProperties || []).map(p => ({
           ...p,
