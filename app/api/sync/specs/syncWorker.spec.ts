@@ -501,6 +501,7 @@ describe('syncWorker', () => {
   describe('when a template that is whitelisted has been deleted', () => {
     it('should not throw an error', async () => {
       await tenants.run(async () => {
+        await elasticTesting.reindex();
         permissionsContext.setCommandContext();
         await entitiesModel.delete({ template: template1 });
         await templates.delete({ _id: template1 });
