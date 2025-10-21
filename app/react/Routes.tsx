@@ -61,7 +61,7 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 } from 'V2/Routes/Settings/Templates';
-import { Entity, entityLoader } from 'V2/Routes/Entity/Entity';
+import { Entity, entityLoader, shouldRevalidate } from 'V2/Routes/Entity/Entity';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -103,15 +103,19 @@ const getRoutesLayout = (
     <Route path="document/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
-    <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
+    {/* <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
       <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
     </Route>
-    <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} /> */}
     <Route
-      path="entityv2/:sharedId/:tabView?"
+      path="entity/:sharedId"
       element={<Entity />}
       loader={entityLoader(headers)}
-    />
+      shouldRevalidate={shouldRevalidate}
+    >
+      <Route index />
+      <Route path=":tabView" />
+    </Route>
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />

@@ -1,8 +1,12 @@
-/* eslint-disable max-statements */
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Entity as EntityType } from 'app/V2/domain/entities/Entity';
-import { LoaderFunction, useLoaderData, useNavigate, useParams } from 'react-router';
+import React, { useCallback, useMemo } from 'react';
+import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import {
+  LoaderFunction,
+  ShouldRevalidateFunctionArgs,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from 'react-router';
 import { PaneLayout } from 'app/V2/Components/Layouts/PaneLayout';
 import { Tabs } from 'app/V2/Routes/Entity/Components/Tabs';
 import {
@@ -21,23 +25,42 @@ import { fullDetailOptions } from 'app/V2/application/optionsPresets';
 import { IncomingHttpHeaders } from 'http';
 import { MetadataDisplay } from 'app/V2/Components/Metadata';
 
+const ENTITY_BASE_ROUTE = 'entity';
+
+type LoaderResponse = EntityType | undefined;
+
+const shouldRevalidate = ({ currentParams, nextParams }: ShouldRevalidateFunctionArgs): boolean => {
+  if (currentParams.sharedId !== nextParams.sharedId) {
+    return true;
+  }
+
+  return false;
+};
+
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    const entityId = params.sharedId;
-    if (!entityId) throw new Error('Entity ID is required');
+  async ({ params }): Promise<LoaderResponse> => {
+    const entitySharedId = params.sharedId;
+
+    if (!entitySharedId) {
+      return undefined;
+    }
 
     const entityCompositionUseCase = await getEntityCompositionUseCase();
-    const composition = await entityCompositionUseCase.composeEntity(entityId, fullDetailOptions, {
-      headers,
-    });
+    const composition = await entityCompositionUseCase.composeEntity(
+      entitySharedId,
+      fullDetailOptions,
+      {
+        headers,
+      }
+    );
 
     if (!composition.success || !composition.entity) {
       throw new Response(
         JSON.stringify({
           error: 'Failed to load entity',
           message: composition.error || 'Entity not found',
-          entityId,
+          entityId: entitySharedId,
         }),
         {
           status: 404,
@@ -53,7 +76,7 @@ const entityLoader =
   };
 
 const Entity = () => {
-  const entity = useLoaderData() as EntityType;
+  const entity = useLoaderData<LoaderResponse>();
   const navigate = useNavigate();
   const { sharedId, tabView } = useParams();
 
@@ -62,7 +85,7 @@ const Entity = () => {
   const subTabFromUrl = subFromPath || 'attachments';
 
   const buildPath = useCallback(
-    (main: string, sub: string) => `/entityv2/${sharedId}/${main}-${sub}`,
+    (main: string, sub: string) => `/${ENTITY_BASE_ROUTE}/${sharedId}/${main}-${sub}`,
     [sharedId]
   );
 
@@ -83,7 +106,7 @@ const Entity = () => {
         icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
         content: (
           <div no-translate>
-            <h1>{entity.title}</h1>
+            <h1>{entity?.title}</h1>
           </div>
         ),
       },
@@ -94,7 +117,7 @@ const Entity = () => {
         icon: <DocumentTextIcon className="w-5 h-5" />,
         content: (
           <div>
-            <h1>{entity.title}</h1>
+            <h1>{entity?.title}</h1>
           </div>
         ),
       },
@@ -106,7 +129,7 @@ const Entity = () => {
         count: 14,
         content: (
           <div>
-            <h1>{entity.title}</h1>
+            <h1>{entity?.title}</h1>
           </div>
         ),
       },
@@ -117,13 +140,13 @@ const Entity = () => {
         icon: <FolderIcon className="w-5 h-5" />,
         content: (
           <div>
-            <h1>{entity.title}</h1>
+            <h1>{entity?.title}</h1>
           </div>
         ),
         count: 3,
       },
     ],
-    [entity.title]
+    [entity?.title]
   );
 
   const sideTabs = useMemo(() => {
@@ -199,14 +222,14 @@ const Entity = () => {
     return sideTabs[0]?.id || '';
   }, [sideTabs, subTabFromUrl]);
 
-  useEffect(() => {
-    if (!sharedId) return;
-    const desired = `${mainTabFromUrl}-${ensuredSubTab}`;
-    if (tabView !== desired) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(buildPath(mainTabFromUrl, ensuredSubTab), { replace: true, relative: 'path' });
-    }
-  }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
+  // useEffect(() => {
+  //   if (!sharedId) return;
+  //   const desired = `${mainTabFromUrl}-${ensuredSubTab}`;
+  //   if (tabView !== desired) {
+  //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  //     navigate(buildPath(mainTabFromUrl, ensuredSubTab), { replace: true, relative: 'path' });
+  //   }
+  // }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
 
   if (!entity) {
     return <Translate>Loading</Translate>;
@@ -235,4 +258,4 @@ const Entity = () => {
   );
 };
 
-export { Entity, entityLoader };
+export { Entity, entityLoader, shouldRevalidate };
