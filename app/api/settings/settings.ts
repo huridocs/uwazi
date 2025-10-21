@@ -15,6 +15,8 @@ import { ContextType } from 'shared/translationSchema';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { settingsModel } from './settingsModel';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
@@ -159,12 +161,12 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      const templatesList = await templates.get();
+      const db = getConnection();
+      const templatesCol = db.collection<TemplateDBO>('templates');
       const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
 
-      // Todo
-      await ArrayUtils.sequentialFor(templatesList, async template => {
-        await TemplateFacade.update(template as any, defaultLanguage);
+      await ArrayUtils.sequentialFor(await templatesCol.find().toArray(), async template => {
+        await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
       });
     }
 
