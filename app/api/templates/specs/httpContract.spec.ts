@@ -1,7 +1,6 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingTenants } from 'api/utils/testingTenants';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
 import templateRoutes from '../routes';
@@ -34,13 +33,6 @@ describe('templates routes contract', () => {
         { ...f.template('template1', []), default: true },
         { ...f.template('template2', []), default: false },
       ],
-    });
-
-    testingTenants.changeCurrentTenant({
-      featureFlags: {
-        v2UpdateTemplateUseCase: true,
-        v2CreateTemplateUseCase: true,
-      },
     });
   });
 
@@ -105,7 +97,7 @@ describe('templates routes contract', () => {
       });
 
       it('should allow specific (non valid) properties for backwards compatibility', async () => {
-        const template = f.template('template1', [], {
+        const template = f.template('template2', [], {
           default: true,
           processing: { active: true },
           __v: 5,
@@ -117,7 +109,7 @@ describe('templates routes contract', () => {
           throw JSON.parse(response.text);
         }
 
-        expect(JSON.parse(response.text).name).toBe('template1');
+        expect(JSON.parse(response.text).name).toBe('template2');
         expect(JSON.parse(response.text).default).toBe(false);
         expect(JSON.parse(response.text).processing).toEqual({ active: false });
         expect(JSON.parse(response.text).__v).toBeUndefined();

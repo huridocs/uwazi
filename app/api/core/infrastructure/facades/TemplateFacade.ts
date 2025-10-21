@@ -27,6 +27,13 @@ export class TemplateFacade {
   static async create(dto: CreateDTO) {
     const useCase = CreateTemplateUseCaseFactory.create();
 
+    // eslint-disable-next-line no-param-reassign
+    delete dto.default;
+    // eslint-disable-next-line no-param-reassign
+    delete dto.processing;
+    // eslint-disable-next-line no-param-reassign
+    delete dto.__v;
+
     const template = await useCase.execute(CreateTemplateDTOSchema.parse(dto));
 
     return MongoTemplateMapper.toSchema(template);
@@ -44,13 +51,17 @@ export class TemplateFacade {
   }
 
   static async update(dto: UpdateDTO, language: LanguageISO6391) {
-    const { reindex: fullReindex, ...template } = dto;
+    const { reindex: fullReindex, _id: id, ...template } = dto;
+
+    delete template.default;
+    delete template.processing;
+    delete template.__v;
 
     const useCase = await UpdateTemplateUseCaseFactory.create();
 
     const input = UpdateTemplateDTOSchema.parse({
       ...template,
-      id: template._id.toString(),
+      id: id.toString(),
       properties: (template.properties || []).map(p => ({
         ...p,
         id: p._id?.toString(),
@@ -68,7 +79,7 @@ export class TemplateFacade {
 
     const updated = await useCase.execute(input, context);
 
-    return MongoTemplateMapper.toSchema(updated);
+    return MongoTemplateMapper.toDTO(updated);
   }
 
   static async delete(dto: DeleteTemplateRequestDto) {
