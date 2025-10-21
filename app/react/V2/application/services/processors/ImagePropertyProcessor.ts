@@ -52,11 +52,12 @@ export class ImagePropertyProcessor extends BasePropertyProcessor {
         return [{ value: imageValue as string, alt: 'Image not described' }];
       }
 
-      return [{
-        value: imageValue.value?.toString() || '',
-        alt: imageValue.alt?.toString() || 'Image not described',
-      }];
-
+      return [
+        {
+          value: imageValue.value?.toString() || '',
+          alt: imageValue.alt?.toString() || 'Image not described',
+        },
+      ];
     });
   }
 }
