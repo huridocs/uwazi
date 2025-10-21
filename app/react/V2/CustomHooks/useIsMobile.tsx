@@ -14,7 +14,7 @@ const useIsMobile = (maxWidth: number = MOBILE_VIEW_MAX_WIDTH) => {
       return serverInitialValue;
     }
     if (isClient) {
-      return window.innerWidth < maxWidth;
+      return window.innerWidth <= maxWidth;
     }
     return undefined;
   };
@@ -33,7 +33,7 @@ const useIsMobile = (maxWidth: number = MOBILE_VIEW_MAX_WIDTH) => {
 
       maxWidthObserver.addEventListener('change', onChange);
 
-      setIsMobile(window.innerWidth < maxWidth);
+      setIsMobile(window.innerWidth <= maxWidth);
     }
 
     return () => {
