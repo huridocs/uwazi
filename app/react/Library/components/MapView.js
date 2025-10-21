@@ -44,10 +44,6 @@ class MapViewComponent extends Component {
         <Markers entities={markers.get('rows')}>
           {processedMarkers => (
             <Map
-              ref={ref => {
-                // eslint-disable-next-line react/no-unused-class-component-methods
-                this.map = ref;
-              }}
               markers={processedMarkers}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}
