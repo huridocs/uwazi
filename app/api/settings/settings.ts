@@ -7,7 +7,6 @@ import {
   SettingsSublinkSchema,
 } from 'shared/types/settingsType';
 import { ensure } from 'shared/tsUtils';
-import templates from 'api/templates';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 
 import { validateSettings } from 'shared/types/settingsSchema';
