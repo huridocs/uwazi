@@ -15,7 +15,7 @@ type Input = {
   templateId: string;
 };
 
-type Output = void;
+type Output = Input;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -29,7 +29,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync({ templateId }: Input): Promise<Output> {
     const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getData();
     if (!templateToBeDeleted) {
-      return;
+      return { templateId };
     }
 
     if (templateToBeDeleted.isDefault) {
@@ -92,6 +92,8 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
       await service.createJobsForEntities({ context, before, after });
     });
+
+    return { templateId };
   }
 }
 

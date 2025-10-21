@@ -1,41 +1,42 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import settings from 'api/settings';
-import templates from 'api/templates';
-import { handleMappingConflict } from 'api/templates/routes';
-import { handleError } from 'api/utils';
+import { createError } from 'api/utils';
+import { inspect } from 'util';
+import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO';
+import { TemplateFacade } from '../../facades/TemplateFacade';
+
+type TemplateMutationResponseDTO = TemplateDBO;
 
 class TemplateMutationController extends AbstractController {
+  // eslint-disable-next-line max-statements
   protected async handle(): Promise<void> {
-    const { reindex: fullReindex, ...template } = this.request.body;
+    try {
+      let response: TemplateMutationResponseDTO;
 
-    const response = await handleMappingConflict(async () =>
-      templates.save(
-        template,
-        this.language,
-        !fullReindex,
-        fullReindex,
-        async (error?: Error, fullyProcessed?: boolean) => {
-          if (error) {
-            handleError(error, { req: this.request });
-          }
-          if (fullyProcessed) {
-            this.request.sockets.emitToCurrentTenant('templateProcessed', {
-              templateId: template._id.toString(),
-            });
-          }
-        }
-      )
-    );
+      if (!this.request.body?._id) {
+        response = await TemplateFacade.create(this.request.body);
+      } else {
+        response = await TemplateFacade.update(this.request.body, this.language);
+      }
 
-    this.request.sockets.emitToCurrentTenant('templateChange', response);
+      const updatedSettings = await settings.updateFilterName(
+        response._id.toString(),
+        response.name
+      );
 
-    const updatedSettings = await settings.updateFilterName(response._id.toString(), response.name);
+      if (updatedSettings) {
+        this.request.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
+      }
 
-    if (updatedSettings) {
-      this.request.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
+      this.request.sockets.emitToCurrentTenant('templateChange', response);
+      this.response.json(response);
+    } catch (error) {
+      if (error.meta?.body?.error?.reason?.match(/mapp(?:ing|er)/)) {
+        throw createError(`mapping conflict: ${inspect(error)}`, 409);
+      }
+
+      throw error;
     }
-
-    this.response.json(response);
   }
 }
 

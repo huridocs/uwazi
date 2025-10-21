@@ -19,10 +19,6 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    v2CreateTemplateUseCase?: boolean;
-    v2SetTemplateAsDefaultUseCase?: boolean;
-    v2UpdateTemplateUseCase?: boolean;
-    v2DeleteTemplateUseCase?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

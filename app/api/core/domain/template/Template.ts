@@ -121,18 +121,18 @@ class Template {
   }
 
   private checkForConflictingPropertyNames(newTemplate: Template) {
-    let swapingNameWithExistingProperty: TemplateProperty | undefined;
+    let property: TemplateProperty | undefined;
 
     this.properties.forEach(prop => {
-      if (!swapingNameWithExistingProperty) {
-        swapingNameWithExistingProperty = (newTemplate.properties || []).find(
+      if (!property) {
+        property = (newTemplate.properties || []).find(
           p => p.name === prop.name && p.id?.toString() !== prop.id?.toString()
         );
       }
     });
 
-    if (swapingNameWithExistingProperty) {
-      throw new Error(`Properties can't swap names: ${swapingNameWithExistingProperty.name}`);
+    if (property) {
+      throw new ValidationError([{ path: property.name, message: 'Properties cannot swap names' }]);
     }
   }
 
