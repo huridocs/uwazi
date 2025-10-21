@@ -151,6 +151,7 @@ export interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'val
   readonly type: 'preview';
   readonly values: Array<{
     value: string;
+    alt: string;
     source?: SourceValue;
   }>;
 }

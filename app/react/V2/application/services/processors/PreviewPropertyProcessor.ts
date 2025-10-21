@@ -6,6 +6,7 @@ import { BasePropertyProcessor } from './BasePropertyProcessor';
 
 export class PreviewPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'PreviewPropertyProcessor';
+
   readonly propertyTypes: ValuePropertyTypes[] = ['preview'];
 
   protected formatProperty(
@@ -18,6 +19,7 @@ export class PreviewPropertyProcessor extends BasePropertyProcessor {
     return [
       {
         value: mainDocument?._id ? `/api/files/${mainDocument._id}.jpg` : '',
+        alt: mainDocument?.originalname || 'Image not described',
       },
     ];
   }

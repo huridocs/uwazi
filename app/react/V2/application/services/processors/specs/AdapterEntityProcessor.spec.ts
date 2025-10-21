@@ -345,6 +345,7 @@ describe('Adapter Entity Processor Tests', () => {
       values: [
         {
           value: '',
+          alt: 'Image not described',
         },
       ],
     };

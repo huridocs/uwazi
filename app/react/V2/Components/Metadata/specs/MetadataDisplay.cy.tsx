@@ -10,6 +10,7 @@ describe('Metadata Display', () => {
   // eslint-disable-next-line max-statements
   describe('General', () => {
     beforeEach(() => {
+      Basic.args.showGeolocationProperties = false;
       mount(<Basic />);
     });
 
@@ -78,7 +79,7 @@ describe('Metadata Display', () => {
         '/short-video-thumbnail.jpg'
       );
 
-      cy.get('img[alt="Alternative text pdf preview"]').should('have.attr', 'src', '/batman.jpg');
+      cy.get('img[alt="Anoying rich kid.pdf"]').should('have.attr', 'src', '/batman.jpg');
     });
 
     it('renders media timelinks as buttons', () => {
@@ -86,9 +87,13 @@ describe('Metadata Display', () => {
       cy.contains('Timelink 1').should('exist');
       cy.contains('Timelink 2').should('exist');
     });
+  });
 
+  describe('accessibility', () => {
     it('should be accessible', () => {
+      Basic.args.showGeolocationProperties = true;
       cy.injectAxe();
+      mount(<Basic />);
       cy.get('div[data-testid="map-container"]').should('exist');
       cy.checkA11y();
     });
@@ -117,6 +122,7 @@ describe('Metadata Display', () => {
         if (Basic.args.context?.templates[0]) {
           Basic.args.context.templates[0].color = templateColor;
         }
+        Basic.args.showGeolocationProperties = false;
         mount(<Basic />);
         cy.contains('div', 'This is the title of Template 1').should(
           'have.css',
