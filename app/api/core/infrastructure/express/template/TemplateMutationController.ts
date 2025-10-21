@@ -31,7 +31,7 @@ class TemplateMutationController extends AbstractController {
       this.request.sockets.emitToCurrentTenant('templateChange', response);
       this.response.json(response);
     } catch (error) {
-      if (error.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
+      if (error.meta?.body?.error?.reason?.match(/mapp(?:ing|er)/)) {
         throw createError(`mapping conflict: ${inspect(error)}`, 409);
       }
 
