@@ -4,19 +4,19 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
-import templateRoutes from '../routes';
-import templates from '../templates';
-import { fixtureFactory, fixtures, templateCommonProperties } from './fixtures/routesFixtures';
+import templateRoutes from '../Routes';
+import templates from '../../../../../templates/templates';
+import { fixtureFactory, fixtures, templateCommonProperties } from './routesFixtures';
 
 jest.mock(
-  '../../auth/authMiddleware.ts',
+  '../../../../../auth/authMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
 );
 
 jest.mock(
-  '../../utils/languageMiddleware.ts',
+  '../../../../../utils/languageMiddleware.ts',
   () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
@@ -225,7 +225,6 @@ describe('templates routes', () => {
       await postToEndpoint('/api/templates', templateA);
       const [savedTemplateA] = await templates.get({ name: 'template A' });
       const [numericProp, textProp] = savedTemplateA.properties!;
-
       const templateB = {
         ...templateToSave,
         name: 'template B',
@@ -244,6 +243,7 @@ describe('templates routes', () => {
       const [savedTemplate] = await templates.get({ name: 'template B' });
 
       savedTemplate.properties![0].inherit!.property = textProp._id!.toString();
+      savedTemplate.properties![0].inherit!.type = 'text';
 
       const { body } = await postToEndpoint('/api/templates', savedTemplate, 409);
       expect(body.error).toContain('conflict');

@@ -16,6 +16,7 @@ import { TemplatePostProcessService } from './TemplatePostProcessService';
 import { Template } from '../domain/template/Template';
 import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 
+type Input = UpdateTemplateDTO;
 type Output = Template;
 
 type Deps = {
@@ -32,11 +33,8 @@ type Context = {
   fullReindex: boolean;
 };
 
-class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, Deps> {
-  protected async executeAsync(
-    input: UpdateTemplateDTO,
-    { language, fullReindex }: Context
-  ): Promise<Output> {
+class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
+  protected async executeAsync(input: Input, { language, fullReindex }: Context): Promise<Output> {
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,
@@ -109,3 +107,4 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output, D
 }
 
 export { UpdateTemplateUseCase };
+export type { Context as UpdateTemplateUseCaseContext, Input as UpdateTemplateUseCaseInput };

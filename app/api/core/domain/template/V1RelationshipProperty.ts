@@ -25,7 +25,7 @@ class V1RelationshipProperty extends FilterableProperty {
 
   readonly inheritedPropertyId?: string;
 
-  readonly inherit?: Inherit;
+  inherit?: Inherit;
 
   constructor(
     id: string,
@@ -64,6 +64,10 @@ class V1RelationshipProperty extends FilterableProperty {
     this.relationType = relationType;
     this.inheritedPropertyId = inheritedPropertyId;
     this.inherit = inherit;
+
+    if (!inheritedPropertyId) {
+      delete this.inherit;
+    }
   }
 
   override updatedAttributes(other: Property): PropertyUpdateInfo {
