@@ -27,6 +27,7 @@
     "production-build": "./webpack/build.sh",
     "build-production": "yarn production-build",
     "run-production": "NODE_ENV=production node --no-experimental-fetch prod/server.js",
+    "run-production-e2e": "NODE_ENV=production DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ROOT_PATH=. node --no-experimental-fetch prod/server.js",
     "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
