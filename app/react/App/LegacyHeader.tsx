@@ -41,7 +41,9 @@ const LegacyHeader = () => {
           </button>
         )}
         <h1 className="logotype">
-          <SiteName />
+          <div>
+            <SiteName />
+          </div>
         </h1>
         <Menu toggleMobileMenu={toggleMobileMenu} className={navClass} />
         <div className="nprogress-container" />
