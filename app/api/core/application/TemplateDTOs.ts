@@ -18,7 +18,7 @@ const BasePropertySchema = z.object({
     .nullable(),
 
   filter: z.boolean().optional(),
-  defaultFilter: z.boolean().optional(),
+  defaultfilter: z.boolean().optional(),
   noLabel: z.boolean().optional(),
   fullWidth: z.boolean().optional(),
   style: z.string().optional(),
@@ -35,7 +35,7 @@ const BaseCommonPropertySchema = z.object({
   label: z.string(),
   type: z.nativeEnum(PropertyTypeEnum),
   name: z.string(),
-  isCommonProperty: z.literal(true).default(true),
+  isCommonProperty: z.literal(true).optional(),
 
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),

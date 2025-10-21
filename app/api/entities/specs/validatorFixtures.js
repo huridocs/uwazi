@@ -1,3 +1,4 @@
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import db from 'api/utils/testing_db';
 
 const templateId = db.id();
@@ -7,23 +8,59 @@ const dictionary1 = db.id();
 const dictionary2 = db.id();
 
 export default {
+  settings: [
+    {
+      languages: [
+        {
+          default: true,
+          key: 'en',
+          label: 'English',
+        },
+      ],
+    },
+  ],
+
   templates: [
     {
       name: 'template',
       _id: templateId,
-      properties: [
-        { name: 'name', type: 'text' },
-        { name: 'markdown', type: 'markdown' },
-        { name: 'numeric', type: 'numeric' },
-        { name: 'date', type: 'date' },
-        { name: 'daterange', type: 'daterange' },
-        { name: 'multidate', type: 'multidate' },
-        { name: 'multidaterange', type: 'multidaterange' },
-        { name: 'select', type: 'select', content: dictionary1 },
-        { name: 'multiselect', type: 'multiselect', content: dictionary2 },
-        { name: 'relationship', type: 'relationship', content: simpleTemplateId },
-        { name: 'relationship2', type: 'relationship', content: simpleTemplateId },
+      commonProperties: [
         {
+          _id: db.id(),
+          label: 'Title',
+          type: PropertyTypeEnum.Text,
+          name: 'title',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          label: 'Creation Date',
+          type: PropertyTypeEnum.Date,
+          name: 'creationDate',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          label: 'Edit Date',
+          type: PropertyTypeEnum.Date,
+          name: 'editDate',
+          isCommonProperty: true,
+        },
+      ],
+      properties: [
+        { _id: db.id(), name: 'name', type: 'text' },
+        { _id: db.id(), name: 'markdown', type: 'markdown' },
+        { _id: db.id(), name: 'numeric', type: 'numeric' },
+        { _id: db.id(), name: 'date', type: 'date' },
+        { _id: db.id(), name: 'daterange', type: 'daterange' },
+        { _id: db.id(), name: 'multidate', type: 'multidate' },
+        { _id: db.id(), name: 'multidaterange', type: 'multidaterange' },
+        { _id: db.id(), name: 'select', type: 'select', content: dictionary1 },
+        { _id: db.id(), name: 'multiselect', type: 'multiselect', content: dictionary2 },
+        { _id: db.id(), name: 'relationship', type: 'relationship', content: simpleTemplateId },
+        { _id: db.id(), name: 'relationship2', type: 'relationship', content: simpleTemplateId },
+        {
+          _id: db.id(),
           name: 'newRelationship',
           type: 'newRelationship',
           query: [
@@ -41,6 +78,7 @@ export default {
           targetTemplates: [simpleTemplateId],
         },
         {
+          _id: db.id(),
           name: 'newRelationship2',
           type: 'newRelationship',
           query: [
@@ -68,18 +106,76 @@ export default {
           ],
           targetTemplates: false,
         },
-        { name: 'media', type: 'media' },
-        { name: 'image', type: 'image' },
-        { name: 'link', type: 'link' },
-        { name: 'preview', type: 'preview' },
-        { name: 'geolocation', type: 'geolocation' },
-        { name: 'required_multiselect', type: 'multiselect', content: dictionary2 },
-        { name: 'field_nested', type: 'nested' },
+        {
+          _id: db.id(),
+          name: 'media',
+          type: 'media',
+        },
+        {
+          _id: db.id(),
+          name: 'image',
+          type: 'image',
+        },
+        {
+          _id: db.id(),
+          name: 'link',
+          type: 'link',
+        },
+        {
+          _id: db.id(),
+          name: 'preview',
+          type: 'preview',
+        },
+        {
+          _id: db.id(),
+          name: 'geolocation',
+          type: 'geolocation',
+        },
+        {
+          _id: db.id(),
+          name: 'required_multiselect',
+          type: 'multiselect',
+          content: dictionary2,
+        },
+        {
+          _id: db.id(),
+          name: 'field_nested',
+          type: 'nested',
+        },
       ],
     },
     {
       _id: simpleTemplateId,
-      properties: [{ name: 'markdown', type: 'markdown' }],
+      commonProperties: [
+        {
+          _id: db.id(),
+          label: 'Title',
+          type: PropertyTypeEnum.Text,
+          name: 'title',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          label: 'Creation Date',
+          type: PropertyTypeEnum.Date,
+          name: 'creationDate',
+          isCommonProperty: true,
+        },
+        {
+          _id: db.id(),
+          label: 'Edit Date',
+          type: PropertyTypeEnum.Date,
+          name: 'editDate',
+          isCommonProperty: true,
+        },
+      ],
+      properties: [
+        {
+          _id: db.id(),
+          name: 'markdown',
+          type: 'markdown',
+        },
+      ],
     },
   ],
   entities: [

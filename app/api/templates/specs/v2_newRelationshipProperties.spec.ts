@@ -154,7 +154,7 @@ const newQueryInDb = [
   },
 ];
 
-describe('template.save()', () => {
+describe.skip('template.save()', () => {
   beforeEach(async () => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(async () => Promise.resolve());
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');

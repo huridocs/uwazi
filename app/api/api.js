@@ -15,7 +15,7 @@ export default (app, server) => {
   require('./relationships/routes').default(app);
   require('./activitylog/routes').default(app);
   require('./users/routes').default(app);
-  require('./templates/routes').default(app);
+  require('./core/infrastructure/express/template/Routes').default(app);
   require('./search/deprecatedRoutes').default(app);
   require('./search/routes').default(app);
   require('./search.v2/routes').searchRoutes(app);
