@@ -25,7 +25,7 @@ const useIsMobile = (maxWidth: number = MOBILE_VIEW_MAX_WIDTH) => {
     let maxWidthObserver: MediaQueryList;
 
     const onChange = () => {
-      setIsMobile(window.innerWidth < maxWidth);
+      setIsMobile(window.innerWidth <= maxWidth);
     };
 
     if (isClient) {
