@@ -156,7 +156,7 @@ describe('templates', () => {
         await templates.save(changedTemplate);
         throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
-        expect(error.message).toContain("Properties can't swap names");
+        expect(error.message).toContain('Properties cannot swap names');
       }
     });
 
