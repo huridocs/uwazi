@@ -11,6 +11,8 @@ import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreat
 import { CreateTemplateDTO } from './TemplateDTOs';
 import { Template } from '../domain/template/Template';
 
+type Input = CreateTemplateDTO;
+
 type Output = Template;
 
 type Deps = {
@@ -22,8 +24,8 @@ type Deps = {
   pageService: PageService;
 };
 
-class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, Deps> {
-  protected async executeAsync(input: CreateTemplateDTO): Promise<Output> {
+class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
+  protected async executeAsync(input: Input): Promise<Output> {
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,
@@ -71,3 +73,4 @@ class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, D
 }
 
 export { CreateTemplateUseCase };
+export type { Input as CreateTemplateUseCaseInput };

@@ -5,18 +5,17 @@ import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom, useSetAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
-import { Icon } from 'UI';
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
-import { TranslateModal, t } from 'app/I18N';
+import { TranslateModal } from 'app/I18N';
 import { inlineEditAtom, localeAtom } from 'V2/atoms';
+import { Header } from 'app/V2/Components/UI/Header/Header';
 import Confirm from './Confirm';
-import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
-import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
+import { LegacyHeader } from './LegacyHeader';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -26,7 +25,6 @@ import './styles/globals.css';
 import 'flowbite';
 
 const App = ({ customParams }) => {
-  const [showMenu, setShowMenu] = useState(false);
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const [settings, setSettings] = useAtom(settingsAtom);
@@ -56,9 +54,9 @@ const App = ({ customParams }) => {
     }
   }, [location.pathname, settings.languages, possibleLanguages, setLocale]);
 
-  const toggleMobileMenu = visible => {
-    setShowMenu(visible);
-  };
+  //TODO: Remove this once the new header is ready
+  const shouldShowNewHeader = false;
+  //const shouldShowNewHeader = location.pathname.includes('/settings') || location.pathname.includes('/v2');
 
   const confirm = options => {
     setConfirmOptions(options);
@@ -66,14 +64,6 @@ const App = ({ customParams }) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const appContext = useMemo(() => ({ confirm }));
-
-  let MenuButtonIcon = 'bars';
-  let navClass = 'menuNav';
-
-  if (showMenu) {
-    MenuButtonIcon = 'times';
-    navClass += ' is-active';
-  }
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
@@ -86,27 +76,14 @@ const App = ({ customParams }) => {
       <Notifications />
       <Cookiepopup />
       <div className="content">
-        <nav className="library-nav">
-          <h1>
-            <SiteName />
-          </h1>
-        </nav>
-        <header>
-          <button
-            className="menu-button"
-            onClick={() => toggleMobileMenu(MenuButtonIcon === 'bars')}
-            type="button"
-            aria-label={t('System', 'Menu', null, false)}
-          >
-            <Icon icon={MenuButtonIcon} />
-          </button>
-          <h1 className="logotype">
-            <SiteName />
-          </h1>
-          <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
-          <div className="nprogress-container" />
-        </header>
-        <main className="app-content container-fluid">
+        {shouldShowNewHeader ? (
+          <div className="tw-content">
+            <Header />
+          </div>
+        ) : (
+          <LegacyHeader />
+        )}
+        <main id="main" className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Confirm {...confirmOptions} />

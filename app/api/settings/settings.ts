@@ -7,13 +7,15 @@ import {
   SettingsSublinkSchema,
 } from 'shared/types/settingsType';
 import { ensure } from 'shared/tsUtils';
-import templates from 'api/templates';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 
-import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
 import { ContextType } from 'shared/translationSchema';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { settingsModel } from './settingsModel';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
@@ -158,20 +160,13 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      await (
-        await templates.get()
-      ).reduce<Promise<TemplateSchema>>(
-        async (lastSave, template) => {
-          await lastSave;
-          return templates.save(
-            template,
-            ensure<LanguageSchema>(
-              ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
-            ).key
-          );
-        },
-        Promise.resolve({} as TemplateSchema)
-      );
+      const db = getConnection();
+      const templatesCol = db.collection<TemplateDBO>('templates');
+      const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
+
+      await ArrayUtils.sequentialFor(await templatesCol.find().toArray(), async template => {
+        await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
+      });
     }
 
     return result;

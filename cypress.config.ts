@@ -25,11 +25,11 @@ const cypressWebpackConfig = {
               return false;
             }
             return true;
-          })
+          }),
         };
       }
       return rule;
-    })
+    }),
   },
   resolve: {
     ...webpackConfig.resolve,
@@ -38,8 +38,8 @@ const cypressWebpackConfig = {
       ...webpackConfig.resolve.fallback,
       fs: false, // disable fs fallback for cypress-axe
       path: false, // disable path fallback for cypress-axe
-    }
-  }
+    },
+  },
 };
 
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
@@ -52,7 +52,7 @@ export default defineConfig({
   defaultCommandTimeout: 12000,
   requestTimeout: 30000,
   env: {
-    FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'true',
+    FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'false',
     FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
   },
   e2e: {
@@ -65,7 +65,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       initPlugin(on, config);
       cypressFailFast(on, config);
-      
+
       // Add logging tasks for accessibility violations
       on('task', {
         log(message) {
@@ -77,7 +77,7 @@ export default defineConfig({
           return null;
         },
       });
-      
+
       on('after:spec', (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
         if (results && results.video) {
           // Do we have failures for any retry attempts?

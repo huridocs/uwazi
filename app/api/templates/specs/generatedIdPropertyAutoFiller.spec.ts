@@ -2,7 +2,6 @@ import entities from 'api/entities';
 import translations from 'api/i18n';
 import { elastic } from 'api/search';
 import {
-  factory,
   fixtures,
   templateId,
   textPropertyId,
@@ -13,22 +12,9 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { inspect } from 'util';
-import templates from '../templates';
-
-async function updateTemplate(template: TemplateSchema) {
-  return new Promise<void>((resolve, reject) => {
-    templates
-      .save(template, 'en', true, false, async error => {
-        if (error) {
-          reject(inspect(error));
-        }
-        resolve();
-      })
-      .catch(reject);
-  });
-}
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
+import { ObjectId } from 'mongodb';
 
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
@@ -44,20 +30,38 @@ describe('generatedId property auto filler', () => {
   describe('fill generated id fields for entities of a specified template', () => {
     let affectedEntities: EntitySchema[];
     beforeAll(async () => {
-      const templateToUpdate = factory.template(
-        '',
-        [
-          { _id: textPropertyId, name: 'text', type: 'text', label: 'Text' },
-          { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
-          { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
-        ],
+      await TemplateFacade.update(
         {
           _id: templateId,
           name: 'template',
-        }
+
+          commonProperties: [
+            { _id: new ObjectId(), name: 'title', label: 'Title', type: PropertyTypeEnum.Text },
+            {
+              _id: new ObjectId(),
+              name: 'creationDate',
+              label: 'Date added',
+              type: PropertyTypeEnum.Date,
+            },
+            {
+              _id: new ObjectId(),
+              name: 'editDate',
+              label: 'Date modified',
+              type: PropertyTypeEnum.Date,
+            },
+          ],
+
+          properties: [
+            { _id: textPropertyId, name: 'text', type: 'text', label: 'Text' },
+            { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
+            { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
+          ],
+
+          reindex: false,
+        },
+        'en'
       );
 
-      await updateTemplate(templateToUpdate);
       affectedEntities = await entities.get({ template: templateId });
     });
     it('should assign the same value to all entities with the same sharedId', async () => {
@@ -87,13 +91,16 @@ describe('generatedId property auto filler', () => {
       const updatedEntities = indexedEntities.filter(e => e.template === templateId.toString());
       expect(indexedEntities.length).toBe(5);
       expect(updatedEntities.length).toBe(4);
-
       updatedEntities.forEach(entity => {
         expect(entity.metadata).toEqual(
           expect.objectContaining({
             text: [{ value: 'test' }],
-            auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
-            auto_id_1: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
+            auto_id: [
+              expect.objectContaining({ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }),
+            ],
+            auto_id_1: [
+              expect.objectContaining({ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }),
+            ],
           })
         );
       });
