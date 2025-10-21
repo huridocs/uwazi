@@ -12,7 +12,7 @@ mkdir -p "$LOG_DIR"
 > "$START_UWAZI_LOG"
 > "$HEALTH_CHECK_LOG"
 
-yarn run-production-e2e > "$START_UWAZI_LOG" 2>&1 &
+yarn run-e2e > "$START_UWAZI_LOG" 2>&1 &
 sleep 2  
 
 uwazi_pid=$(pgrep -f "server.js")
