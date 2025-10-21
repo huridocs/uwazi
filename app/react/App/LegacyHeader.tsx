@@ -12,7 +12,7 @@ const LegacyHeader = () => {
     setShowMenu(visible);
   };
 
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(1024);
 
   let MenuButtonIcon = 'bars';
   let navClass = 'menuNav';
