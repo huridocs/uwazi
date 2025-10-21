@@ -28,12 +28,14 @@ const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const [settings, setSettings] = useAtom(settingsAtom);
-
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
 
-  const possibleLanguages = settings.languages?.map(l => l.key) || [];
+  const possibleLanguages = useMemo(
+    () => settings.languages?.map(l => l.key) || [],
+    [settings.languages]
+  );
   const shouldAddAppClassName =
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||
@@ -70,6 +72,7 @@ const App = ({ customParams }) => {
         )}
         <main id="main" className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Confirm {...confirmOptions} />
             <Outlet />
             <GoogleAnalytics />
