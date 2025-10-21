@@ -41,7 +41,7 @@ const App = ({ customParams }) => {
 
   // Determine which header to show based on route
   const shouldShowNewHeader =
-    location.pathname.includes('/settings') || location.pathname.includes('/v2');
+    location.pathname.includes('/settings') || location.pathname.includes('/v2') || true;
 
   const confirm = options => {
     setConfirmOptions(options);
@@ -68,7 +68,7 @@ const App = ({ customParams }) => {
         ) : (
           <LegacyHeader />
         )}
-        <main className="app-content container-fluid">
+        <main id="main" className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
             <Confirm {...confirmOptions} />
             <Outlet />

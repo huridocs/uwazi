@@ -5,6 +5,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'jotai';
 import { serverIsMobileAtom } from 'V2/atoms/isMobileAtom';
+import { TestAtomStoreProvider } from 'V2/testing/TestAtomStoreProvider';
 import { useIsMobile, MOBILE_VIEW_MAX_WIDTH } from '../useIsMobile';
 
 describe('useIsMobile', () => {
@@ -205,7 +206,9 @@ describe('useIsMobile', () => {
 
       const { result } = renderHook(() => useIsMobile(), {
         wrapper: ({ children }) => (
-          <Provider initialValues={[[serverIsMobileAtom, true]]}>{children}</Provider>
+          <TestAtomStoreProvider initialValues={[[serverIsMobileAtom, true]]}>
+            {children}
+          </TestAtomStoreProvider>
         ),
       });
 
@@ -236,7 +239,9 @@ describe('useIsMobile', () => {
 
       const { result } = renderHook(() => useIsMobile(), {
         wrapper: ({ children }) => (
-          <Provider initialValues={[[serverIsMobileAtom, true]]}>{children}</Provider>
+          <TestAtomStoreProvider initialValues={[[serverIsMobileAtom, true]]}>
+            {children}
+          </TestAtomStoreProvider>
         ),
       });
 

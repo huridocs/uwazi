@@ -145,7 +145,13 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const [
     userApiResponse = { json: {} },
-    settingsApiResponse = { json: { languages: [], private: settings.private } },
+    settingsApiResponse = {
+      json: {
+        languages: settings.languages,
+        private: settings.private,
+        site_name: settings.site_name,
+      },
+    },
     templatesApiResponse = { json: { rows: [] } },
     thesaurisApiResponse = { json: { rows: [] } },
     relationTypesApiResponse = { json: { rows: [] } },

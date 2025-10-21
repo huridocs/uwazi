@@ -10,7 +10,6 @@ interface SiteNameProps {
 
 export const SiteName: React.FC<SiteNameProps> = ({ className = '' }) => {
   const { site_name: siteName } = useAtomValue(settingsAtom);
-
   return (
     <>
       <Helmet
