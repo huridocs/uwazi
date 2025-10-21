@@ -1,15 +1,15 @@
 /* eslint-disable max-statements */
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { useAtomValue } from 'jotai';
 import { Loader } from '@googlemaps/js-api-loader';
-import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
 import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
-import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
+import { ErrorBoundary } from 'V2/Components/ErrorHandling';
+import { settingsAtom, templatesAtom } from 'V2/atoms';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 
-type MapComponentProps = {
+type MapProps = {
   markers?: MarkerInput[];
   height?: number;
   clickOnMarker?: (marker: DataMarker) => {};
@@ -21,23 +21,13 @@ type MapComponentProps = {
   zoom?: number;
 };
 
-const mapStateToProps = ({ settings, templates }: IStore) => ({
-  collectionSettings: settings.collection,
-  templates,
-});
-
-const connector = connect(mapStateToProps);
-
-type mappedProps = ConnectedProps<typeof connector>;
-type ComponentProps = MapComponentProps & mappedProps;
-
-const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProps) => {
-  const startingPoint = collectionSettings?.get('mapStartingPoint')?.toJS() || [
-    { lat: 46, lon: 6 },
-  ];
-  const tilesProvider = collectionSettings?.get('tilesProvider') || 'mapbox';
-  const mapApiKey = collectionSettings?.get('mapApiKey');
-  let mapLayers: Layer[] = props.layers || collectionSettings?.get('mapLayers')?.toJS();
+const Map = ({ ...props }: MapProps) => {
+  const collectionSettings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
+  const startingPoint = collectionSettings?.mapStartingPoint || [{ lat: 46, lon: 6 }];
+  const tilesProvider = collectionSettings?.tilesProvider || 'mapbox';
+  const mapApiKey = collectionSettings?.mapApiKey;
+  let mapLayers = (props.layers || collectionSettings?.mapLayers) as Layer[];
 
   if (tilesProvider === 'google') {
     mapLayers = mapLayers?.filter(layer => layer !== 'Dark');
@@ -59,9 +49,9 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
       ...info,
       ...(t
         ? {
-            [t.get('_id')]: {
-              color: t.get('color'),
-              name: t.get('name'),
+            [t._id]: {
+              color: t.color,
+              name: t.name,
             },
           }
         : {}),
@@ -78,11 +68,11 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
   };
   return (
     <ErrorBoundary>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <LMap {...mapProps} />
     </ErrorBoundary>
   );
 };
 
-const container = connector(MapComponent);
-export { container as Map };
-export type { Layer };
+export { Map };
+export type { Layer, MapProps };
