@@ -39,9 +39,9 @@ const App = ({ customParams }) => {
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
-  // Determine which header to show based on route
-  const shouldShowNewHeader =
-    location.pathname.includes('/settings') || location.pathname.includes('/v2') || true;
+  // TODO: Remove this once the new header is ready
+  const shouldShowNewHeader = false;
+  //const shouldShowNewHeader = location.pathname.includes('/settings') || location.pathname.includes('/v2');
 
   const confirm = options => {
     setConfirmOptions(options);
