@@ -18,7 +18,7 @@ const BasePropertySchema = z.object({
     .nullable(),
 
   filter: z.boolean().optional(),
-  defaultFilter: z.boolean().optional(),
+  defaultfilter: z.boolean().optional(),
   noLabel: z.boolean().optional(),
   fullWidth: z.boolean().optional(),
   style: z.string().optional(),
