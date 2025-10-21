@@ -58,8 +58,8 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
+      <Cookiepopup />
       <Notifications />
-
       <div className="content">
         {shouldShowNewHeader ? (
           <div className="tw-content">
@@ -79,7 +79,6 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
-      <Cookiepopup />
       {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>
   );
