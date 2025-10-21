@@ -11,6 +11,8 @@ import {
   TwitterImageData,
 } from 'api/services/twitterintegration/getTwitterImages';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
+import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 
 interface TweetParamsType {
   title: string;
@@ -197,31 +199,34 @@ class TwitterIntegration {
       ? relationsType[0]
       : await relationtypes.save({ name: 'Twitter query' });
 
-    return templates.save(
-      {
-        name: twitterIntegration.tweetsTemplateName,
-        commonProperties: [
-          { name: 'title', label: 'Title', type: 'text' },
-          { name: 'creationDate', label: 'Date added', type: 'date' },
-          { name: 'editDate', label: 'Date modified', type: 'date' },
-        ],
-        properties: [
-          { name: 'tweet_text', label: 'Tweet text', type: 'markdown', showInCard: true },
-          { name: 'tweet_source', label: 'Tweet source', type: 'link', showInCard: true },
-          { name: 'tweet_author', label: 'Tweet author', type: 'link', showInCard: true },
-          { name: 'tweet_date', label: 'Tweet date', type: 'date' },
-          {
-            name: 'tweet_hashtags',
-            label: 'Tweet hashtags',
-            type: 'relationship',
-            relationType: relationType._id.toString(),
-            content: hashtagsTemplate._id.toString(),
-            filter: true,
-          },
-        ],
-      },
-      twitterIntegration.language
-    );
+    return TemplateFacade.createWithDefaultValues({
+      name: twitterIntegration.tweetsTemplateName,
+      properties: [
+        {
+          label: 'Tweet text',
+          type: PropertyTypeEnum.Markdown,
+          showInCard: true,
+        },
+        {
+          label: 'Tweet source',
+          type: PropertyTypeEnum.Link,
+          showInCard: true,
+        },
+        {
+          label: 'Tweet author',
+          type: PropertyTypeEnum.Link,
+          showInCard: true,
+        },
+        { label: 'Tweet date', type: PropertyTypeEnum.Date },
+        {
+          label: 'Tweet hashtags',
+          type: PropertyTypeEnum.Relationship,
+          relationType: relationType._id.toString(),
+          content: hashtagsTemplate._id.toString(),
+          filter: true,
+        },
+      ],
+    });
   };
 
   getHashtagsTemplate = async (twitterIntegration: TwitterIntegrationSettingsType) => {
@@ -229,15 +234,14 @@ class TwitterIntegration {
       name: twitterIntegration.hashtagsTemplateName,
     });
 
-    return templatesHashtag.length
-      ? templatesHashtag[0]
-      : templates.save(
-          {
-            name: twitterIntegration.hashtagsTemplateName,
-            commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          },
-          twitterIntegration.language
-        );
+    if (templatesHashtag[0]) {
+      return templatesHashtag[0];
+    }
+
+    return TemplateFacade.createWithDefaultValues({
+      name: twitterIntegration.hashtagsTemplateName,
+      properties: [],
+    });
   };
 }
 

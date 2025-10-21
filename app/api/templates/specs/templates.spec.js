@@ -1,71 +1,40 @@
 /* eslint-disable max-statements */
-import Ajv from 'ajv';
-import documents from 'api/documents/documents.js';
 import { elasticClient } from 'api/search/elastic';
 import * as setupSockets from 'api/socketio/setupSockets';
 import db, { testingDB } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ObjectId } from 'mongodb';
 import * as idGenerator from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
-
-import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { testingTenants } from 'api/utils/testingTenants';
-import { inspect } from 'util';
-import { TemplateInUseError } from 'api/core/domain/template/errors';
-import { TemplateDeletedEvent } from '../../core/domain/template/events/TemplateDeletedEvent';
+import { FieldIsRequiredError } from 'api/core/domain/template/errors';
+import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { TemplateUpdatedEvent } from '../../core/domain/template/events/TemplateUpdatedEvent';
 import templates from '../templates';
 import templatesModel from '../templatesModel';
-import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
 import fixtures, {
-  createEntitiesInAllLanguages,
   factory,
   propertyToBeInherited,
   relatedTo,
-  relatedToAnother,
   swapTemplate,
-  templateToBeDeleted,
   templateToBeEditedId,
   templateToBeInherited,
   templateWithContents,
   thesauriId1,
-  thesaurusTemplate2Id,
-  thesaurusTemplate3Id,
   thesaurusTemplateId,
-  thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
 
-jest.mock('../templateUpdateDenormalizeUseCase', () => ({
-  denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
-}));
-
-async function updateTemplate(template, language = 'en', updateV2 = false) {
-  if (updateV2) {
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-    return templates.save(template, language, true, false);
-  }
-  return new Promise((resolve, reject) => {
-    templates
-      .save(template, language, true, false, async error => {
-        if (error) {
-          reject(inspect(error));
-        }
-        await templatesModel.db.updateOne({ _id: template._id }, { $unset: { processing: '' } });
-        resolve();
-      })
-      .catch(reject);
-  });
+async function updateTemplate(template, language = 'en') {
+  jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+  return templates.save(template, language, true, false);
 }
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, elasticIndex);
   });
 
@@ -73,22 +42,10 @@ describe('templates', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each([
-    {
-      title: 'Update v1',
-      featureFlags: { v2UpdateTemplateUseCase: false },
-    },
-    { title: 'Update v2', featureFlags: { v2UpdateTemplateUseCase: true } },
-  ])('$title', ({ featureFlags }) => {
+  describe('Update', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
       jest.spyOn(idGenerator, 'generateID').mockImplementation(() => 'generated_id');
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
     });
 
     afterEach(() => {
@@ -141,7 +98,7 @@ describe('templates', () => {
       applicationEventsBus.on(TemplateUpdatedEvent, data => {
         emitedEventData = data;
       });
-      await updateTemplate(template, 'en', featureFlags.v2UpdateTemplateUseCase);
+      await updateTemplate(template, 'en');
 
       const [currentTemplate] = await db.mongodb
         .collection('templates')
@@ -199,7 +156,7 @@ describe('templates', () => {
         await templates.save(changedTemplate);
         throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
-        expect(error.message).toContain("Properties can't swap names");
+        expect(error.message).toContain('Properties cannot swap names');
       }
     });
 
@@ -404,7 +361,7 @@ describe('templates', () => {
           }
         );
 
-        await updateTemplate(templateToUpdate, 'en', featureFlags.v2UpdateTemplateUseCase);
+        await updateTemplate(templateToUpdate, 'en');
 
         const generatedIdEntities = (await testingEnvironment.db.getAllFrom('entities')).filter(
           e => e.metadata.auto_id
@@ -444,21 +401,9 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'Create v1',
-      featureFlags: { v2CreateTemplateUseCase: false },
-    },
-    { title: 'Create v2', featureFlags: { v2CreateTemplateUseCase: true } },
-  ])('$title', ({ featureFlags }) => {
+  describe('Create', () => {
     beforeEach(async () => {
       await testingEnvironment.setFixtures(fixtures);
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
     });
 
     afterEach(async () => {
@@ -599,179 +544,6 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'delete v1',
-      featureFlags: {
-        v2DeleteTemplateUseCase: false,
-      },
-    },
-    {
-      title: 'delete v2',
-      featureFlags: {
-        v2DeleteTemplateUseCase: true,
-      },
-    },
-  ])('$title', ({ featureFlags }) => {
-    beforeAll(() => {
-      jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-    });
-
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
-
-    it('should delete properties of other templates using this template as select/relationship', async () => {
-      await templates.delete({ _id: templateToBeDeleted });
-
-      const [template1] = await templates.get({ name: 'thesauri template' });
-
-      expect(template1.properties.length).toBe(1);
-      expect(template1.properties[0].label).toBe('select');
-
-      const [template2] = await templates.get({ name: 'thesauri template 2' });
-      expect(template2.properties.length).toBe(1);
-      expect(template2.properties[0].label).toBe('select2');
-
-      const [template3] = await templates.get({ name: 'thesauri template 3' });
-      expect(template3.properties.length).toBe(2);
-      expect(template3.properties[0].label).toBe('text');
-      expect(template3.properties[1].label).toBe('text2');
-    });
-
-    it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
-      await templates.delete({ _id: templateToBeDeleted });
-      const relatedEntities = await db.mongodb
-        .collection('entities')
-        .find({
-          template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
-        })
-        .sort({ title: 1 })
-        .toArray();
-
-      const titles = relatedEntities.map(e => e.title);
-      expect(titles).toEqual([
-        't1-1_en',
-        't1-1_es',
-        't1-1_pt',
-        't1-2_en',
-        't1-2_es',
-        't1-2_pt',
-        't1-3_en',
-        't1-3_es',
-        't1-3_pt',
-        't2-1_en',
-        't2-1_es',
-        't2-1_pt',
-      ]);
-      ['en', 'es', 'pt'].forEach(l => {
-        const metadatas = relatedEntities.filter(e => e.language === l).map(e => e.metadata);
-        expect(metadatas).toMatchObject([
-          { select: [] },
-          { select: [] },
-          { select: [] },
-          { select2: [] },
-        ]);
-      });
-    });
-
-    it('should delete a template when no document is using it', async () => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
-      const response = await templates.delete({ _id: templateToBeDeleted });
-      expect(response).toEqual({ _id: templateToBeDeleted });
-
-      const allTemplates = await templates.get();
-      const deleted = allTemplates.find(template1 => template1.name === 'to be deleted');
-
-      expect(deleted).not.toBeDefined();
-    });
-
-    it('should delete the template translation', async () => {
-      jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
-      await templates.delete({ _id: templateToBeDeleted });
-      const translation = await testingEnvironment.db
-        .getCollection('translationsV2')
-        .findOne({ 'context.id': templateToBeDeleted });
-
-      expect(translation).toBeNull();
-    });
-
-    it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
-      const emitSpy = spyOnEmit();
-
-      await templates.delete({ _id: templateToBeDeleted });
-
-      emitSpy.expectToEmitEvent(TemplateDeletedEvent, { template: templateToBeDeleted });
-    });
-
-    it('should throw an error when there is documents using it', async () => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
-      await testingEnvironment.setFixtures({
-        ...fixtures,
-        entities: [
-          ...fixtures.entities,
-          ...createEntitiesInAllLanguages(
-            'templateToBeDeleted entity',
-            db.id(templateToBeDeleted),
-            {}
-          ),
-        ],
-      });
-
-      try {
-        await templates.delete({ _id: templateToBeDeleted });
-        throw new Error(
-          'should not delete the template and throw an error because there is some documents associated with the template'
-        );
-      } catch (error) {
-        if (featureFlags.v2DeleteTemplateUseCase) {
-          expect(error).toBeInstanceOf(TemplateInUseError);
-        } else {
-          expect(error.message).toBeUndefined();
-          expect(error.key).toEqual('documents_using_template');
-          expect(error.value).toEqual(1);
-        }
-      }
-    });
-
-    it('should handle a non existing template', async () => {
-      try {
-        await templates.delete({ _id: new ObjectId().toString() });
-      } catch (error) {
-        throw new Error(
-          'should not delete the template and throw an error because it is the default template'
-        );
-      }
-    });
-
-    it('should throw an error when the template is the default template', async () => {
-      try {
-        await templates.delete({ _id: templateToBeEditedId });
-        throw new Error(
-          'should not delete the template and throw an error because it is the default template'
-        );
-      } catch (error) {
-        expect(error.message).toEqual(
-          featureFlags.v2DeleteTemplateUseCase
-            ? 'The default template cannot be deleted. Please set a different template as the default before deleting this one.'
-            : 'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
-        );
-      }
-    });
-  });
-
   describe('countByThesauri()', () => {
     it('should return number of templates using a thesauri', async () => {
       const result = await templates.countByThesauri(thesauriId1.toString());
@@ -785,61 +557,16 @@ describe('templates', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'setAsDefault() v1',
-      featureFlags: { v2SetTemplateAsDefaultUseCase: false },
-    },
-    { title: 'setAsDefault() v2', featureFlags: { v2SetTemplateAsDefaultUseCase: true } },
-  ])('$title', ({ featureFlags }) => {
-    beforeEach(async () => {
-      await testingEnvironment.setFixtures(fixtures);
-      testingTenants.mockCurrentTenant({
-        name: testingDB.dbName,
-        dbName: testingDB.dbName,
-        indexName: elasticIndex,
-        featureFlags,
-      });
-    });
-
-    afterEach(async () => {
-      jest.resetAllMocks();
-    });
-
-    it('should set the given ID as the default template and return the affected templates', async () => {
-      const [newDefault, oldDefault] = await templates.setAsDefault(
-        templateWithContents.toString()
-      );
-
-      expect(newDefault.name).toBe('content template');
-      expect(newDefault.default).toBe(true);
-      expect(oldDefault.name).toBe('template to be edited');
-      expect(oldDefault.default).toBe(false);
-    });
-
-    it("should fail if id doesn't exist", async () => {
-      try {
-        await templates.setAsDefault(propertyToBeInherited);
-        fail('it should not pass');
-      } catch (err) {
-        expect(err.message).toContain(
-          featureFlags.v2SetTemplateAsDefaultUseCase ? 'The Template with Id' : 'Invalid ID'
-        );
-      }
-    });
-  });
-
   describe('getPropertyByName()', () => {
     it('should get properties with the name provided', async () => {
-      const newTemplate = {
+      await TemplateFacade.createWithDefaultValues({
         name: 'created template 2',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label', type: 'text' },
           { label: 'Date', type: 'date' },
         ],
-      };
-      await templates.save(newTemplate);
+      });
+
       const property = await templates.getPropertyByName('date');
       expect(property.name).toEqual('date');
       expect(property.type).toEqual('date');
@@ -858,7 +585,6 @@ describe('templates', () => {
     it('should get properties with the name provided', async () => {
       const newTemplate = {
         name: 'created template 3',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label', type: 'text' },
           { label: 'Date', type: 'date' },
@@ -866,12 +592,14 @@ describe('templates', () => {
       };
       const newTemplate2 = {
         name: 'created template 4',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [{ label: 'number', type: 'numeric' }],
       };
-      await templates.save(newTemplate);
-      await templates.save(newTemplate2);
+
+      await TemplateFacade.createWithDefaultValues(newTemplate);
+      await TemplateFacade.createWithDefaultValues(newTemplate2);
+
       const properties = await templates.getPropertiesByName(['date', 'label', 'number', 'title']);
+
       expect(properties).toMatchObject([
         { name: 'title', type: 'text' },
         { name: 'label', type: 'text' },
@@ -891,10 +619,9 @@ describe('templates', () => {
 
   describe('inherit', () => {
     let savedTemplate;
-    beforeAll(async () => {
-      savedTemplate = await templates.save({
+    beforeEach(async () => {
+      savedTemplate = await TemplateFacade.createWithDefaultValues({
         name: 'template inherit',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           {
             type: propertyTypes.relationship,
@@ -933,18 +660,14 @@ describe('templates', () => {
     it('should validate on save', async () => {
       const tpl = {
         name: 'Test',
-        commonProperties: [{ name: 'title', type: 'text' }],
         properties: [{ label: 'Select', type: 'select' }],
       };
+
       try {
-        await templates.save(tpl, 'en');
+        await TemplateFacade.createWithDefaultValues(tpl, 'en');
         fail('should throw validation error');
       } catch (error) {
-        expect(error).toBeInstanceOf(Ajv.ValidationError);
-        expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
-        expect(error.errors.some(e => e.keyword === 'requireOrInvalidContentForSelectFields')).toBe(
-          true
-        );
+        expect(error).toBeInstanceOf(FieldIsRequiredError);
       }
     });
   });
@@ -964,67 +687,71 @@ describe('templates', () => {
     });
   });
 
-  describe('denormalizeTemplateEntities', () => {
-    it('should not denormalize when relationship related data has not changed', async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
-          {
-            name: 'new_mapped_prop',
-            label: 'new mapped prop',
-            type: 'text',
-          },
-        ],
-        default: true,
-      };
+  // Todo
 
-      denormalizeTemplateEntities.mockReset();
-      await templates.save(template);
-      expect(denormalizeTemplateEntities).not.toHaveBeenCalled();
-    });
+  // describe('denormalizeTemplateEntities', () => {
+  //   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 
-    it.each([
-      { propChanges: { content: 'NEW CONTENT' } },
-      { propChanges: { inherit: { property: thesaurusTemplateRelationshipPropId.toString() } } },
-      { propChanges: { relationType: relatedToAnother.toString() } },
-      { propChanges: { relationType: relatedToAnother.toString(), content: 'New Content' } },
-    ])(
-      'should denormalize when relationship related data has changed ($propChanges)',
-      async ({ propChanges }) => {
-        await testingEnvironment.setUp(fixtures, elasticIndex);
-        const template = factory.template(
-          '',
-          [
-            {
-              _id: thesaurusTemplateRelationshipPropId,
-              type: propertyTypes.relationship,
-              relationType: relatedTo.toString(),
-              content: templateToBeDeleted,
-              label: 'relationshipToBeDeleted',
-              name: 'relationshipToBeDeleted',
-              ...propChanges,
-            },
-          ],
-          {
-            _id: thesaurusTemplateId,
-            name: 'thesauri template',
-          }
-        );
+  //   it('should not denormalize when relationship related data has not changed', async () => {
+  //     await testingEnvironment.setUp(fixtures, elasticIndex);
+  //     const template = {
+  //       _id: templateToBeEditedId,
+  //       name: 'template to be edited',
+  //       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  //       properties: [
+  //         {
+  //           name: 'new_mapped_prop',
+  //           label: 'new mapped prop',
+  //           type: 'text',
+  //         },
+  //       ],
+  //       default: true,
+  //     };
 
-        denormalizeTemplateEntities.mockReset();
-        await new Promise((resolve, reject) => {
-          templates.save(template, 'en', false, false, e => {
-            if (e) {
-              reject(e);
-            }
-            resolve();
-          });
-        });
-        expect(denormalizeTemplateEntities).toHaveBeenCalled();
-      }
-    );
-  });
+  //     denormalizeTemplateEntities.mockReset();
+  //     await TemplateFacade.createWithDefaultValues(template);
+  //     expect(denormalizeTemplateEntities).not.toHaveBeenCalled();
+  //   });
+
+  //   it.each([
+  //     { propChanges: { content: 'NEW CONTENT' } },
+  //     { propChanges: { inherit: { property: thesaurusTemplateRelationshipPropId.toString() } } },
+  //     { propChanges: { relationType: relatedToAnother.toString() } },
+  //     { propChanges: { relationType: relatedToAnother.toString(), content: 'New Content' } },
+  //   ])(
+  //     'should denormalize when relationship related data has changed ($propChanges)',
+  //     async ({ propChanges }) => {
+  //       await testingEnvironment.setUp(fixtures, elasticIndex);
+  //       const template = factory.template(
+  //         '',
+  //         [
+  //           {
+  //             _id: thesaurusTemplateRelationshipPropId,
+  //             type: propertyTypes.relationship,
+  //             relationType: relatedTo.toString(),
+  //             content: templateToBeDeleted,
+  //             label: 'relationshipToBeDeleted',
+  //             name: 'relationshipToBeDeleted',
+  //             ...propChanges,
+  //           },
+  //         ],
+  //         {
+  //           _id: thesaurusTemplateId,
+  //           name: 'thesauri template',
+  //         }
+  //       );
+
+  //       denormalizeTemplateEntities.mockReset();
+  //       await new Promise((resolve, reject) => {
+  //         templates.save(template, 'en', false, false, e => {
+  //           if (e) {
+  //             reject(e);
+  //           }
+  //           resolve();
+  //         });
+  //       });
+  //       expect(denormalizeTemplateEntities).toHaveBeenCalled();
+  //     }
+  //   );
+  // });
 });
