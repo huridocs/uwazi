@@ -1,7 +1,7 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { ThesaurusNotFoundError } from 'api/core/domain/thesaurus/errors';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { z } from 'zod';

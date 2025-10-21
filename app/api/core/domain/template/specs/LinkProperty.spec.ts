@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { LinkProperty } from '../LinkProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('LinkProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -16,7 +17,13 @@ describe('LinkProperty', () => {
 
   it('should throw if providing a type different from link', () => {
     expect(
-      () => new LinkProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new LinkProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'LinkProperty'));
   });
 });

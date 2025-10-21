@@ -1,6 +1,6 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { IdGenerator } from 'api/core/libs/IdGenerator';
+import { TransactionManager } from 'api/core/libs/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';

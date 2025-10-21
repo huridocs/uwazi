@@ -1,7 +1,8 @@
+/* eslint-disable max-statements */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { elasticTesting } from 'api/utils/elastic_testing';
@@ -74,6 +75,10 @@ async function updateTemplate(template: TemplateSchema, updateV2 = false, fullRe
 const elasticIndex = 'templates_denorm_flow';
 
 describe('Templates Update', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, elasticIndex);
+  });
+
   async function setUpFixtures(_fixtures: DBFixture, featureFlag = false) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
     await Promise.all(
@@ -162,6 +167,7 @@ describe('Templates Update', () => {
       ),
     ],
   };
+
   describe.each([
     {
       title: 'V1',
@@ -169,8 +175,34 @@ describe('Templates Update', () => {
     },
     { title: 'V2', featureFlag: true },
   ])('$title', ({ featureFlag }) => {
+    beforeEach(async () => {
+      await setUpFixtures({}, featureFlag);
+    });
+
+    afterEach(() => {
+      applicationEventsBus.clear();
+    });
+
+    describe('Validations', () => {
+      it('invalid when trying to delete an inherited property', async () => {
+        await setUpFixtures(fixtures, featureFlag);
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA', {
+            inherit: { property: f.idString('text_property'), type: 'text' },
+          }),
+        ]);
+
+        await updateTemplate(template, featureFlag);
+        const templateWithDeletedInheritedProp = f.template('templateA', []);
+
+        await expect(async () =>
+          updateTemplate(templateWithDeletedInheritedProp, featureFlag)
+        ).rejects.toThrow('validation failed');
+      });
+    });
+
     describe('templates denormalization scenarios', () => {
-      beforeAll(async () => {
+      beforeEach(async () => {
         await setUpFixtures(fixtures, featureFlag);
       });
 
@@ -815,6 +847,10 @@ describe('Templates Update', () => {
   });
 
   describe('Only v2 update', () => {
+    afterEach(() => {
+      applicationEventsBus.clear();
+    });
+
     it('should throw error when there is a mapping conflict, and not save the template', async () => {
       await setUpFixtures(
         {

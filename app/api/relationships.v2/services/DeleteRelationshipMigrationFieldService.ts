@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { TransactionManager } from 'api/core/libs/TransactionManager';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import { RelationshipMigrationFieldUniqueId } from '../model/RelationshipMigrationField';
 

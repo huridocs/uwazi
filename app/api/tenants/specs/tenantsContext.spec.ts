@@ -41,15 +41,23 @@ describe('tenantsContext', () => {
     });
 
     afterAll(async () => {
+      // await for the debounce to finish
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      });
+      await tenants.tearDownTenants();
       await db.collection('tenants').deleteMany({});
       await testingEnvironment.tearDown();
     });
 
     it('should udpate tenants with DB data', async () => {
-      await tenants.updateTenants(await tenantsModel());
+      const model = await tenantsModel();
+      await model.initialize();
+      await tenants.updateTenants(model);
 
       expect(tenants.tenants['tenant one'].dbName).toBe('tenant_one');
       expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
+      await model.closeChangeStream();
     });
   });
 

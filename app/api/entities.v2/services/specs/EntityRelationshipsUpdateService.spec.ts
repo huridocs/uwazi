@@ -3,7 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import testingDB from 'api/utils/testing_db';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';

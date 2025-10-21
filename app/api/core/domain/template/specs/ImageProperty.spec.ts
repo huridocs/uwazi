@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { ImageProperty } from '../ImageProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 
 describe('ImageProperty', () => {
   it('should set defaults values if not provided', () => {
@@ -16,7 +17,13 @@ describe('ImageProperty', () => {
 
   it('should throw if providing a type different from image', () => {
     expect(
-      () => new ImageProperty({ id: 'any', label: 'A label', type: 'text', template: 'any' })
+      () =>
+        new ImageProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: 'any',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'ImageProperty'));
   });
 });

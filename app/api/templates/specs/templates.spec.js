@@ -9,16 +9,16 @@ import { ObjectId } from 'mongodb';
 import * as idGenerator from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
 import { TemplateInUseError } from 'api/core/domain/template/errors';
-import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from '../../core/domain/template/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../../core/domain/template/events/TemplateUpdatedEvent';
 import templates from '../templates';
 import templatesModel from '../templatesModel';
 import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
@@ -89,6 +89,10 @@ describe('templates', () => {
         indexName: elasticIndex,
         featureFlags,
       });
+    });
+
+    afterEach(() => {
+      applicationEventsBus.clear();
     });
 
     it('should edit an existing one', async () => {
@@ -164,6 +168,19 @@ describe('templates', () => {
             label: 'Title',
             type: 'text',
             isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'creationDate',
+            label: 'creationDate',
+            type: 'date',
+            isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'editDate',
+            label: 'editDate',
+            type: 'date',
           },
         ],
         properties: [
@@ -255,7 +272,22 @@ describe('templates', () => {
     it('should update the translation context for it', async () => {
       const newTemplate = {
         name: 'created template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        commonProperties: [
+          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
+          {
+            _id: testingDB.id(),
+            name: 'creationDate',
+            label: 'creationDate',
+            type: 'date',
+            isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'editDate',
+            label: 'editDate',
+            type: 'date',
+          },
+        ],
         properties: [
           { label: 'label 1', type: 'text' },
           { label: 'label 2', type: 'text' },
@@ -300,6 +332,19 @@ describe('templates', () => {
         name: 'Country',
         commonProperties: [
           { name: 'title', label: 'Country', type: 'text', isCommonProperty: true },
+          {
+            _id: testingDB.id(),
+            name: 'creationDate',
+            label: 'creationDate',
+            type: 'date',
+            isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'editDate',
+            label: 'editDate',
+            type: 'date',
+          },
         ],
         properties: [],
       };
@@ -423,7 +468,11 @@ describe('templates', () => {
     it('should return the saved template', async () => {
       const newTemplate = {
         name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        commonProperties: [
+          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
+          { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+          { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+        ],
         properties: [
           { label: 'fieldLabel', type: 'text' },
           {
@@ -457,7 +506,11 @@ describe('templates', () => {
     it('should add it to translations with Entity type', async () => {
       const newTemplate = {
         name: 'created template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        commonProperties: [
+          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
+          { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+          { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+        ],
         properties: [
           { label: 'label 1', type: 'text' },
           { label: 'label 2', type: 'text' },
@@ -484,7 +537,22 @@ describe('templates', () => {
     it('should assign a safe property name based on the label ', async () => {
       const newTemplate = {
         name: 'new template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        commonProperties: [
+          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
+          {
+            _id: testingDB.id(),
+            name: 'creationDate',
+            label: 'creationDate',
+            type: 'date',
+            isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'editDate',
+            label: 'editDate',
+            type: 'date',
+          },
+        ],
         properties: [
           { label: 'new label 1', type: 'text' },
           { label: 'new label 2', type: 'select', content: thesauriId1.toString() },
@@ -507,7 +575,22 @@ describe('templates', () => {
     it('should set a default value of [] to properties', async () => {
       const newTemplate = {
         name: 'new template default properties',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        commonProperties: [
+          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
+          {
+            _id: testingDB.id(),
+            name: 'creationDate',
+            label: 'creationDate',
+            type: 'date',
+            isCommonProperty: true,
+          },
+          {
+            _id: testingDB.id(),
+            name: 'editDate',
+            label: 'editDate',
+            type: 'date',
+          },
+        ],
       };
       await templates.save(newTemplate);
 

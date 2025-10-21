@@ -57,7 +57,11 @@ const templateChangingNames = {
   _id: templateChangingNamesId,
   name: 'template_changing_names',
   default: false,
-  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  commonProperties: [
+    { name: 'title', label: 'Title', type: 'text' },
+    { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+    { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+  ],
   properties: [
     { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
     { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
@@ -69,7 +73,11 @@ const templateNotChangingNames = {
   _id: db.id(),
   name: 'template_not_changing_names',
   default: false,
-  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  commonProperties: [
+    { name: 'title', label: 'Title', type: 'text' },
+    { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+    { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+  ],
   properties: [
     { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
     { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
@@ -339,7 +347,11 @@ const fixtures: DBFixture = {
       _id: db.id(),
       name: 'duplicated name',
       properties: [],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        { name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+      ],
     },
     factory.template(
       '',
@@ -450,6 +462,8 @@ const fixtures: DBFixture = {
           type: 'text',
           isCommonProperty: true,
         },
+        { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
       ],
       properties: [
         {
@@ -470,7 +484,11 @@ const fixtures: DBFixture = {
     {
       _id: templateToBeInherited,
       name: 'template to be inherited',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        { name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+      ],
       properties: [
         { _id: propertyToBeInherited, name: 'inherit_me', type: 'text' },
         { _id: propertyToBeInherited2, name: 'inherit_me_as_well', type: 'text' },
@@ -480,7 +498,11 @@ const fixtures: DBFixture = {
     {
       _id: templateInheritingFromAnother,
       name: 'template inheriting from another',
-      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+      ],
       properties: [
         {
           _id: db.id(),

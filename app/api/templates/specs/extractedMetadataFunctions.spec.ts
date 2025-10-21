@@ -6,7 +6,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
 import { inspect } from 'util';
-import templates from '../templates';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import fixtures, {
   propertyA,
   propertyB,
@@ -14,6 +14,7 @@ import fixtures, {
   propertyD,
   templateWithExtractedMetadata,
 } from './fixtures/fixtures';
+import templates from '../templates';
 
 async function updateTemplate(template: TemplateSchema, language = 'en', updateV2 = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
@@ -48,6 +49,10 @@ describe.each([
     });
   });
 
+  afterEach(() => {
+    applicationEventsBus.clear();
+  });
+
   it('should remove deleted template properties from extracted metadata on files', async () => {
     const templateToUpdate: TemplateSchema = {
       _id: templateWithExtractedMetadata,
@@ -58,6 +63,20 @@ describe.each([
           name: 'title',
           label: 'Title',
           type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
           isCommonProperty: true,
         },
       ],
@@ -122,6 +141,19 @@ describe.each([
           label: 'Title',
           type: 'text',
           isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
         },
       ],
       properties: [

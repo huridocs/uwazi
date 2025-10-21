@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
@@ -9,7 +9,7 @@ import { Document } from 'api/files.v2/model/Document';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { IdGenerator } from 'api/core/libs/IdGenerator';
 import { Logger } from 'api/log.v2/contracts/Logger';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';

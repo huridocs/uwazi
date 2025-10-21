@@ -57,11 +57,10 @@ const handleEntitySave = async (
   entity?: ClientEntitySchema,
   property?: ClientPropertySchema,
   metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
-  template?: TemplateSchema,
-  fieldHasChanged?: boolean
+  template?: TemplateSchema
 ) => {
   const propertyName = property?.name;
-  if (!fieldHasChanged || !entity || !propertyName) {
+  if (!entity || !propertyName) {
     return undefined;
   }
 
