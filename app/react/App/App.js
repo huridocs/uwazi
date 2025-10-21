@@ -58,8 +58,8 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
-      <Cookiepopup />
       <Notifications />
+      <Cookiepopup />
       <div className="content">
         {shouldShowNewHeader ? (
           <div className="tw-content">
