@@ -132,7 +132,7 @@ class Template {
     });
 
     if (property) {
-      throw new ValidationError([{ path: property.name, message: "Properties can't swap names" }]);
+      throw new ValidationError([{ path: property.name, message: "Properties cannot swap names" }]);
     }
   }
 
