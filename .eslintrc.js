@@ -15,7 +15,7 @@ module.exports = {
     'eslint-plugin-cypress',
   ],
   rules: {
-    "quotes": ["error", "single", { "avoidEscape": true }],
+    quotes: ['error', 'single', { avoidEscape: true }],
     'prettier/prettier': [
       'error',
       {
@@ -239,6 +239,15 @@ module.exports = {
         ...rules,
         'no-empty-function': ['warn', { allow: ['constructors'] }],
         'no-useless-constructor': 'off',
+      },
+    },
+    {
+      files: ['app/react/**/*.tsx'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: { project: './tsconfig.json' },
+      rules: {
+        ...rules,
+        'max-statements': ['warn', { max: 20 }],
       },
     },
     {
