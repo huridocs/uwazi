@@ -1,8 +1,8 @@
 /* eslint-disable import/no-named-as-default */
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { socket } from 'app/socket';
@@ -10,7 +10,7 @@ import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import { TranslateModal } from 'app/I18N';
-import { inlineEditAtom, localeAtom } from 'V2/atoms';
+import { inlineEditAtom } from 'V2/atoms';
 import { Header } from 'app/V2/Components/UI/Header/Header';
 import Confirm from './Confirm';
 import { AppMainContext } from './AppMainContext';
@@ -28,8 +28,6 @@ const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const [settings, setSettings] = useAtom(settingsAtom);
-  const setLocale = useSetAtom(localeAtom);
-
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
@@ -42,17 +40,6 @@ const App = ({ customParams }) => {
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
-
-  useEffect(() => {
-    if (settings.languages && settings.languages.length > 0) {
-      const pathLanguage = location.pathname.split('/')[1];
-      const validLanguage = possibleLanguages.includes(pathLanguage)
-        ? pathLanguage
-        : settings.languages.find(lang => lang.default)?.key || 'en';
-
-      setLocale(validLanguage);
-    }
-  }, [location.pathname, settings.languages, possibleLanguages, setLocale]);
 
   //TODO: Remove this once the new header is ready
   const shouldShowNewHeader = false;
