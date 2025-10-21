@@ -3,6 +3,7 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UpdateLog } from 'api/updatelogs';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { ObjectId } from 'mongodb';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
@@ -674,22 +675,60 @@ const host1Fixtures: DBFixture = {
       _id: template1,
       name: 'template1',
       entityViewPage: 'id_of_a_page',
-      commonProperties: [{ label: 'Template Title', name: 'title' }],
+      commonProperties: [
+        {
+          _id: new ObjectId(),
+          label: 'Template Title',
+          name: 'title',
+          isCommonProperty: true,
+          type: 'text',
+          noLabel: false,
+          prioritySorting: false,
+          required: false,
+          showInCard: false,
+          generatedId: false,
+        },
+        {
+          _id: new ObjectId(),
+          label: 'Date added',
+          name: 'creationDate',
+          isCommonProperty: true,
+          type: 'date',
+          noLabel: false,
+          prioritySorting: false,
+          required: false,
+          showInCard: false,
+        },
+        {
+          _id: new ObjectId(),
+          label: 'Date modified',
+          name: 'editDate',
+          isCommonProperty: true,
+          type: 'date',
+          noLabel: false,
+          prioritySorting: false,
+          required: false,
+          showInCard: false,
+        },
+      ],
       properties: [
         {
           _id: template1Property1,
           name: 't1Property1',
           label: 't1Property1L',
+          type: 'text',
         },
         {
           _id: template1Property2,
           name: 't1Property2',
           label: 't1Property2L',
+          type: 'text',
         },
         {
           _id: template1Property3,
           name: 't1Property3',
           label: 't1Property3L',
+          type: 'text',
         },
         {
           _id: template1PropertyThesauri1Select,

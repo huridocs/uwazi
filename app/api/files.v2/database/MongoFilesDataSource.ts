@@ -5,7 +5,7 @@ import { SegmentationType } from 'shared/types/segmentationType';
 
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { ResultSet } from 'api/core/libs/ResultSet';
 
 import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
 import { UwaziFile } from '../model/UwaziFile';

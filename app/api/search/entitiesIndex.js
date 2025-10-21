@@ -4,7 +4,7 @@ import { legacyLogger } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { LanguageUtils } from 'shared/language';

@@ -1,5 +1,6 @@
 import { PropertyTypeInvalidTypeError } from '../errors';
 import { MarkdownProperty } from '../MarkdownProperty';
+import { PropertyTypeEnum } from '../PropertyType';
 import { TextProperty } from '../TextProperty';
 
 describe('MarkdownProperty', () => {
@@ -17,7 +18,13 @@ describe('MarkdownProperty', () => {
 
   it('should throw if providing a type different from markdown', () => {
     expect(
-      () => new MarkdownProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+      () =>
+        new MarkdownProperty({
+          id: 'any',
+          label: 'A label',
+          type: PropertyTypeEnum.Text as any,
+          template: '',
+        })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'MarkdownProperty'));
   });
 

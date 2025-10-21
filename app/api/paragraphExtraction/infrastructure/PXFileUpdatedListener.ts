@@ -1,5 +1,5 @@
 import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
-import { EventsBus } from 'api/eventsbus';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { LanguageUtils } from 'shared/language';

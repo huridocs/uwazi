@@ -3,10 +3,7 @@ import translations from 'api/i18n/translations';
 import * as setupSockets from 'api/socketio/setupSockets';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
 import { TemplateSchema } from 'shared/types/templateType';
-import { inspect } from 'util';
-import { applicationEventsBus } from 'api/eventsbus';
 import fixtures, {
   propertyA,
   propertyB,
@@ -16,41 +13,19 @@ import fixtures, {
 } from './fixtures/fixtures';
 import templates from '../templates';
 
-async function updateTemplate(template: TemplateSchema, language = 'en', updateV2 = false) {
+async function updateTemplate(template: TemplateSchema, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
-  if (updateV2) {
-    return templates.save(template, language, true, false);
-  }
-
-  return new Promise((resolve, reject) => {
-    templates
-      .save(template, language, true, false, async error => {
-        if (error) {
-          reject(inspect(error));
-        }
-        resolve(true);
-      })
-      .catch(reject);
-  });
+  return templates.save(template, language, true, false);
 }
 
-describe.each([
-  {
-    title: 'v1',
-    featureFlags: { v2UpdateTemplateUseCase: false },
-  },
-  { title: 'v2', featureFlags: { v2UpdateTemplateUseCase: true } },
-])('updateExtractedMetadataProperties $title', ({ featureFlags }) => {
+describe('updateExtractedMetadataProperties', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, true);
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    testingTenants.changeCurrentTenant({
-      featureFlags,
-    });
   });
 
-  afterEach(() => {
-    applicationEventsBus.clear();
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
   });
 
   it('should remove deleted template properties from extracted metadata on files', async () => {
@@ -63,6 +38,20 @@ describe.each([
           name: 'title',
           label: 'Title',
           type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
           isCommonProperty: true,
         },
       ],
@@ -92,7 +81,7 @@ describe.each([
       ],
     };
 
-    await updateTemplate(templateToUpdate, 'en', featureFlags.v2UpdateTemplateUseCase);
+    await updateTemplate(templateToUpdate, 'en');
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
@@ -128,6 +117,19 @@ describe.each([
           type: 'text',
           isCommonProperty: true,
         },
+        {
+          _id: testingDB.id(),
+          name: 'creationDate',
+          label: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: testingDB.id(),
+          name: 'editDate',
+          label: 'editDate',
+          type: 'date',
+        },
       ],
       properties: [
         {
@@ -157,7 +159,7 @@ describe.each([
       ],
     };
 
-    await updateTemplate(templateWithRenamedProps, 'en', featureFlags.v2UpdateTemplateUseCase);
+    await updateTemplate(templateWithRenamedProps, 'en');
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',

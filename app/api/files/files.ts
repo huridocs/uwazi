@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import entities from 'api/entities';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import connections from 'api/relationships';

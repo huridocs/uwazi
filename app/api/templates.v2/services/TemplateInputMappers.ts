@@ -6,12 +6,12 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectId } from 'mongodb';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
-import { TemplateMappers } from '../database/TemplateMappers';
-import { CommonProperty } from '../model/CommonProperty';
+import { Property } from '../../core/domain/template/Property';
+import { RelationshipProperty } from '../../core/domain/template/RelationshipProperty';
+import { Template } from '../../core/domain/template/Template';
+import { V1RelationshipProperty } from '../../core/domain/template/V1RelationshipProperty';
+import { TemplateMappers } from '../../core/infrastructure/mongodb/template/TemplateMappers';
+import { CommonProperty } from '../../core/domain/template/CommonProperty';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>

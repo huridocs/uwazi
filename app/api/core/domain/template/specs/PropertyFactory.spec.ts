@@ -12,6 +12,7 @@ import { MultiSelectProperty } from '../MultiSelectProperty';
 import { NumericProperty } from '../NumericProperty';
 import { PreviewProperty } from '../PreviewProperty';
 import { PropertyFactory } from '../PropertyFactory';
+import { PropertyTypeEnum } from '../PropertyType';
 import { SelectProperty } from '../SelectProperty';
 import { TextProperty } from '../TextProperty';
 
@@ -23,7 +24,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A text property',
-          type: 'text',
+          type: PropertyTypeEnum.Text,
         },
         {}
       )
@@ -37,7 +38,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'numeric',
+          type: PropertyTypeEnum.Numeric,
         },
         {}
       )
@@ -51,7 +52,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'preview',
+          type: PropertyTypeEnum.Preview,
         },
         {}
       )
@@ -65,7 +66,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'multidate',
+          type: PropertyTypeEnum.MultiDate,
         },
         {}
       )
@@ -79,7 +80,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'multidaterange',
+          type: PropertyTypeEnum.MultiDateRange,
         },
         {}
       )
@@ -93,7 +94,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'media',
+          type: PropertyTypeEnum.Media,
         },
         {}
       )
@@ -107,7 +108,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'markdown',
+          type: PropertyTypeEnum.Markdown,
         },
         {}
       )
@@ -121,7 +122,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'link',
+          type: PropertyTypeEnum.Link,
         },
         {}
       )
@@ -135,7 +136,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'image',
+          type: PropertyTypeEnum.Image,
         },
         {}
       )
@@ -149,7 +150,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'geolocation',
+          type: PropertyTypeEnum.Geolocation,
         },
         {}
       )
@@ -163,7 +164,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'daterange',
+          type: PropertyTypeEnum.DateRange,
         },
         {}
       )
@@ -177,7 +178,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'date',
+          type: PropertyTypeEnum.Date,
         },
         {}
       )
@@ -191,7 +192,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'generatedid',
+          type: PropertyTypeEnum.GeneratedId,
         },
         {}
       )
@@ -205,7 +206,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'select',
+          type: PropertyTypeEnum.Select,
           content: 'any',
         },
         {}
@@ -220,7 +221,7 @@ describe('PropertyFactory', () => {
           template: 'any',
           id: 'any_id',
           label: 'A numeric property',
-          type: 'multiselect',
+          type: PropertyTypeEnum.MultiSelect,
           content: 'any',
         },
         {}

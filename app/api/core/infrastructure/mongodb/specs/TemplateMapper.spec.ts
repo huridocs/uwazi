@@ -1,4 +1,4 @@
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
 import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
 import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
@@ -15,7 +15,7 @@ import { GeolocationProperty } from 'api/core/domain/template/GeoLocationPropert
 import { DateProperty } from 'api/core/domain/template/DateProperty';
 import { DateRangeProperty } from 'api/core/domain/template/DateRangeProperty';
 import { ObjectId } from 'mongodb';
-import { TemplateMapper } from '../template/Mapper';
+import { MongoTemplateMapper } from '../template/Mapper';
 
 const IDS = {
   TEMPLATE: new ObjectId(),
@@ -89,7 +89,7 @@ describe('TemplateMapper', () => {
       true
     );
 
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
 
     expect(schema).toEqual({
       _id: IDS.TEMPLATE,

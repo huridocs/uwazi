@@ -1,5 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
+import { TemplateMappers } from 'api/core/infrastructure/mongodb/template/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import entities from 'api/entities';

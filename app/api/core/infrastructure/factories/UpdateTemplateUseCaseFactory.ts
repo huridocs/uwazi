@@ -8,7 +8,7 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/eventsbus';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';

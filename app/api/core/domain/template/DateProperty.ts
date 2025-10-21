@@ -1,21 +1,22 @@
-import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.Date;
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class DateProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'date' }, context);
-    this.compatibleTypes = ['multidate'];
+    super({ ...props, type: props.type || PropertyTypeEnum.Date }, context);
+    this.compatibleTypes = [PropertyTypeEnum.MultiDate];
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'date') {
+    if (this.type !== PropertyTypeEnum.Date) {
       throw new PropertyTypeInvalidTypeError(this.type, 'DateProperty');
     }
   }

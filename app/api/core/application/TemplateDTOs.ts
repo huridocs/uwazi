@@ -1,47 +1,27 @@
 import { z } from 'zod';
-
-const types = [
-  'date',
-  'daterange',
-  'geolocation',
-  'image',
-  'link',
-  'markdown',
-  'media',
-  'multidate',
-  'multidaterange',
-  'multiselect',
-  'nested',
-  'numeric',
-  'preview',
-  'relationship',
-  'select',
-  'text',
-  'generatedid',
-  'newRelationship',
-] as const;
+import { PropertyTypeEnum } from '../domain/template/PropertyType';
 
 const BasePropertySchema = z.object({
   label: z.string(),
-  type: z.enum(types),
+  type: z.nativeEnum(PropertyTypeEnum),
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),
-  content: z.string().optional().nullable(), // Is the target template Id or thesaurus Id.
-  relationType: z.string().optional(), // Only for relationship type properties
+  content: z.string().optional().nullable(),
+  relationType: z.string().optional(),
   inherit: z
     .object({
       property: z.string(),
-      type: z.enum(types),
+      type: z.nativeEnum(PropertyTypeEnum),
     })
     .optional()
     .or(z.literal(''))
-    .nullable(), // Only for relationship type propertie
+    .nullable(),
 
-  filter: z.boolean().optional(), // Depends on the type of Property
-  defaultFilter: z.boolean().optional(), // Depends on the type of Property
+  filter: z.boolean().optional(),
+  defaultfilter: z.boolean().optional(),
   noLabel: z.boolean().optional(),
-  fullWidth: z.boolean().optional(), // Only used when type is multiMedia
-  style: z.string().optional(), // Related to multiMedia, create a enum for the correct values
+  fullWidth: z.boolean().optional(),
+  style: z.string().optional(),
   required: z.boolean().optional(),
   sortable: z.boolean().optional(),
   showInCard: z.boolean().optional(),
@@ -53,9 +33,9 @@ const BasePropertySchema = z.object({
 
 const BaseCommonPropertySchema = z.object({
   label: z.string(),
-  type: z.enum(types),
+  type: z.nativeEnum(PropertyTypeEnum),
   name: z.string(),
-  isCommonProperty: z.literal(true).default(true),
+  isCommonProperty: z.literal(true).optional(),
 
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),

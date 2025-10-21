@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from 'api/core/libs/UseCase';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
