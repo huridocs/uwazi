@@ -1,5 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
+import { ENTITY_BASE_ROUTE } from 'V2/Routes/Entity/Entity';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Metadata.stories';
@@ -53,7 +54,7 @@ describe('Metadata Display', () => {
     it('renders relationship links with correct hrefs', () => {
       cy.contains('dt', 'Relationship with inheritance').should('exist');
       cy.contains('a.underline', 'Traffic Accident - Main Street')
-        .should('have.attr', 'href', '/entityv2/entity4')
+        .should('have.attr', 'href', `/${ENTITY_BASE_ROUTE}/entity4`)
         .should('have.attr', 'target', '_blank');
       cy.contains('a.underline', 'Traffic Accident - Main Street')
         .parent()

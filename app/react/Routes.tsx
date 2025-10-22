@@ -61,7 +61,11 @@ import {
   TemplatesEditor,
   templatesEditorLoader,
 } from 'V2/Routes/Settings/Templates';
-import { Entity, entityLoader, shouldRevalidate } from 'V2/Routes/Entity/Entity';
+import {
+  Entity,
+  entityLoader,
+  shouldRevalidate as entityShouldRevalidate,
+} from 'V2/Routes/Entity/Entity';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -108,14 +112,11 @@ const getRoutesLayout = (
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} /> */}
     <Route
-      path="entity/:sharedId"
+      path="entity/:sharedId/:tabView?"
       element={<Entity />}
       loader={entityLoader(headers)}
-      shouldRevalidate={shouldRevalidate}
-    >
-      <Route index />
-      <Route path=":tabView" />
-    </Route>
+      shouldRevalidate={entityShouldRevalidate}
+    />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />

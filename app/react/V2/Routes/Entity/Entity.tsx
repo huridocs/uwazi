@@ -1,36 +1,45 @@
-import React, { useCallback, useMemo } from 'react';
-import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import React, { useMemo, useState } from 'react';
+import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
   ShouldRevalidateFunctionArgs,
   useLoaderData,
-  useNavigate,
   useParams,
 } from 'react-router';
-import { PaneLayout } from 'app/V2/Components/Layouts/PaneLayout';
-import { Tabs } from 'app/V2/Routes/Entity/Components/Tabs';
-import {
-  Bars3CenterLeftIcon,
-  ChartBarIcon,
-  DocumentTextIcon,
-  FolderIcon,
-  FunnelIcon,
-  FlagIcon,
-  ListBulletIcon,
-} from '@heroicons/react/24/outline';
+import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { RelationshipPropertyIcon } from 'app/V2/Components/CustomIcons';
-import { getEntityCompositionUseCase } from 'app/V2/application/container/singletons';
-import { fullDetailOptions } from 'app/V2/application/optionsPresets';
-import { IncomingHttpHeaders } from 'http';
-import { MetadataDisplay } from 'app/V2/Components/Metadata';
+import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
+import { fullDetailOptions } from 'V2/application/optionsPresets';
+import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
+import { Tabs } from 'V2/Components/UI';
+import { TabLabel } from './Components/TabLabel';
 
 const ENTITY_BASE_ROUTE = 'entity';
 
+const MAIN_TABS = {
+  DOCUMENT: 'pdf',
+  MAIN_METADATA: 'main-metadata',
+  RELATIONSHIPS: 'main-rels',
+} as const;
+
+const SIDE_TABS = {
+  METADATA: 'side-metadata',
+  RELATIONSHIPS: 'side-rels',
+} as const;
+
+type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
+type SideTabId = (typeof SIDE_TABS)[keyof typeof SIDE_TABS];
+
 type LoaderResponse = EntityType | undefined;
 
-const shouldRevalidate = ({ currentParams, nextParams }: ShouldRevalidateFunctionArgs): boolean => {
-  if (currentParams.sharedId !== nextParams.sharedId) {
+const shouldRevalidate = ({
+  currentParams,
+  nextParams,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs): boolean => {
+  if (defaultShouldRevalidate || currentParams.sharedId !== nextParams.sharedId) {
     return true;
   }
 
@@ -77,159 +86,56 @@ const entityLoader =
 
 const Entity = () => {
   const entity = useLoaderData<LoaderResponse>();
-  const navigate = useNavigate();
-  const { sharedId, tabView } = useParams();
-
-  const [mainFromPath, subFromPath] = (tabView || '').split('-');
-  const mainTabFromUrl = mainFromPath || 'metadata';
-  const subTabFromUrl = subFromPath || 'attachments';
-
-  const buildPath = useCallback(
-    (main: string, sub: string) => `/${ENTITY_BASE_ROUTE}/${sharedId}/${main}-${sub}`,
-    [sharedId]
+  const { tabView } = useParams();
+  const [activeMainTab, setActiveMainTab] = useState<MainTabId>(
+    (tabView as MainTabId) || MAIN_TABS.DOCUMENT
   );
+  const [activeSideTab, setActiveSideTab] = useState<SideTabId | undefined>(undefined);
 
-  const setMainTab = async (id: string) => {
-    await navigate(buildPath(id, subTabFromUrl), { replace: true, relative: 'path' });
-  };
-
-  const setSubTab = async (id: string) => {
-    await navigate(buildPath(mainTabFromUrl, id), { replace: true, relative: 'path' });
-  };
-
-  const mainTabs = useMemo(
-    () => [
-      {
-        id: 'metadata',
-        label: 'Metadata',
-        controls: 'metadata',
-        icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
-        content: (
-          <div no-translate>
-            <h1>{entity?.title}</h1>
-          </div>
-        ),
-      },
-      {
-        id: 'document',
-        label: 'Document',
-        controls: 'document',
-        icon: <DocumentTextIcon className="w-5 h-5" />,
-        content: (
-          <div>
-            <h1>{entity?.title}</h1>
-          </div>
-        ),
-      },
-      {
-        id: 'relationships',
-        label: 'Relationships',
-        controls: 'relationships',
-        icon: <RelationshipPropertyIcon className="w-5 h-5" />,
-        count: 14,
-        content: (
-          <div>
-            <h1>{entity?.title}</h1>
-          </div>
-        ),
-      },
-      {
-        id: 'files',
-        label: 'Files',
-        controls: 'files',
-        icon: <FolderIcon className="w-5 h-5" />,
-        content: (
-          <div>
-            <h1>{entity?.title}</h1>
-          </div>
-        ),
-        count: 3,
-      },
-    ],
-    [entity?.title]
+  const sideTabsByMain: Record<
+    MainTabId,
+    { id: SideTabId; label: React.ReactNode; content: React.ReactNode }[]
+  > = useMemo(
+    () => ({
+      [MAIN_TABS.DOCUMENT]: [
+        {
+          id: SIDE_TABS.METADATA,
+          label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
+          content: <div>Sidepanel Metadata</div>,
+        },
+        {
+          id: SIDE_TABS.RELATIONSHIPS,
+          label: (
+            <TabLabel
+              text="Relationships"
+              icon={<RelationshipPropertyIcon className="w-5 h-5" />}
+            />
+          ),
+          content: <div>rels content</div>,
+        },
+      ],
+      [MAIN_TABS.MAIN_METADATA]: [
+        {
+          id: SIDE_TABS.RELATIONSHIPS,
+          label: (
+            <TabLabel
+              text="Relationships"
+              icon={<RelationshipPropertyIcon className="w-5 h-5" />}
+            />
+          ),
+          content: <div>rels content</div>,
+        },
+      ],
+      [MAIN_TABS.RELATIONSHIPS]: [
+        {
+          id: SIDE_TABS.METADATA,
+          label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
+          content: <div>Sidepanel Metadata</div>,
+        },
+      ],
+    }),
+    []
   );
-
-  const sideTabs = useMemo(() => {
-    switch (mainTabFromUrl) {
-      case 'document':
-        return [
-          {
-            id: 'side-metadata',
-            label: 'Metadata',
-            controls: 'side-panel-metadata',
-            content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
-            icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
-          },
-          {
-            id: 'toc',
-            label: 'Table of Contents',
-            controls: 'side-panel-annotations',
-            content: <div />,
-            icon: <ListBulletIcon className="w-5 h-5" />,
-          },
-        ];
-      case 'relationships':
-        return [
-          {
-            id: 'filters',
-            label: 'Filters',
-            controls: 'side-panel-filter',
-            content: <div />,
-            icon: <FunnelIcon className="w-5 h-5" />,
-          },
-          {
-            id: 'graphs',
-            label: 'Suggestions',
-            controls: 'side-panel-suggestions',
-            content: <div />,
-            icon: <ChartBarIcon className="w-5 h-5" />,
-          },
-        ];
-      case 'files':
-        return [
-          {
-            id: 'file',
-            label: 'File',
-            controls: 'side-panel-file',
-            content: <div />,
-            icon: <DocumentTextIcon className="w-5 h-5" />,
-          },
-          {
-            id: 'translations',
-            label: 'Translations',
-            controls: 'side-panel-translations',
-            content: <div />,
-            icon: <FlagIcon className="w-5 h-5" />,
-          },
-        ];
-      case 'metadata':
-      default:
-        return [
-          {
-            id: 'side-metadata',
-            label: 'Metadata',
-            controls: 'side-panel-metadata',
-            content: <div />,
-            icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
-          },
-        ];
-    }
-  }, [entity, mainTabFromUrl]);
-
-  const ensuredSubTab = useMemo(() => {
-    const exists = sideTabs.some(t => t.id === subTabFromUrl);
-    if (exists) return subTabFromUrl;
-    return sideTabs[0]?.id || '';
-  }, [sideTabs, subTabFromUrl]);
-
-  // useEffect(() => {
-  //   if (!sharedId) return;
-  //   const desired = `${mainTabFromUrl}-${ensuredSubTab}`;
-  //   if (tabView !== desired) {
-  //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  //     navigate(buildPath(mainTabFromUrl, ensuredSubTab), { replace: true, relative: 'path' });
-  //   }
-  // }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
 
   if (!entity) {
     return <Translate>Loading</Translate>;
@@ -238,24 +144,63 @@ const Entity = () => {
   return (
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="py-6 px-4 h-full">
+        <PaneLayout.Pane className="py-4 px-2 h-full">
           <Tabs
-            tabs={mainTabs}
-            activeId={mainTabFromUrl}
-            onTabSelected={async id => setMainTab(id)}
-          />
+            unmountTabs={false}
+            initialTabId={activeMainTab}
+            onTabSelected={(selectedTab: string) => {
+              setActiveMainTab(selectedTab as MainTabId);
+              setActiveSideTab(undefined);
+            }}
+          >
+            <Tabs.Tab
+              id={MAIN_TABS.DOCUMENT}
+              label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
+            >
+              Document
+            </Tabs.Tab>
+            <Tabs.Tab
+              id={MAIN_TABS.MAIN_METADATA}
+              label={
+                <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />
+              }
+            >
+              Metadata
+            </Tabs.Tab>
+            <Tabs.Tab
+              id={MAIN_TABS.RELATIONSHIPS}
+              label={
+                <TabLabel
+                  text="Relationships"
+                  icon={<RelationshipPropertyIcon className="w-5 h-5" />}
+                />
+              }
+            >
+              Relationships
+            </Tabs.Tab>
+          </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="py-6 px-4">
+        <PaneLayout.Pane className="py-4 px-2 h-full">
           <Tabs
-            className="min-w-[520px] overflow-x-auto"
-            tabs={sideTabs}
-            activeId={ensuredSubTab}
-            onTabSelected={async id => setSubTab(id)}
-          />
+            key={activeMainTab}
+            unmountTabs={false}
+            initialTabId={
+              (activeSideTab && sideTabsByMain[activeMainTab].some(t => t.id === activeSideTab)
+                ? activeSideTab
+                : sideTabsByMain[activeMainTab][0].id) as string
+            }
+            onTabSelected={selectedTab => setActiveSideTab(selectedTab as SideTabId)}
+          >
+            {sideTabsByMain[activeMainTab].map(tab => (
+              <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
+                {tab.content}
+              </Tabs.Tab>
+            ))}
+          </Tabs>
         </PaneLayout.Pane>
       </PaneLayout>
     </div>
   );
 };
 
-export { Entity, entityLoader, shouldRevalidate };
+export { Entity, entityLoader, shouldRevalidate, ENTITY_BASE_ROUTE };
