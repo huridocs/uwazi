@@ -4,9 +4,9 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
-import templateRoutes from '../Routes';
+import templateRoutes from '../routes';
 import templates from '../../../../../templates/templates';
-import { fixtureFactory, fixtures, templateCommonProperties } from './routesFixtures';
+import { fixtureFactory, fixtures } from './routesFixtures';
 
 jest.mock(
   '../../../../../auth/authMiddleware.ts',
@@ -22,11 +22,7 @@ jest.mock(
   }
 );
 
-const templateToSave = {
-  name: 'template4',
-  properties: [],
-  commonProperties: templateCommonProperties,
-};
+const templateToSave = fixtureFactory.template('template4', [], { _id: undefined });
 
 const emitToCurrentTenantSpy = jest.fn();
 
@@ -70,35 +66,80 @@ describe('templates routes', () => {
   });
 
   describe('POST', () => {
-    it('should create a template', async () => {
-      await postToEndpoint('/api/templates', templateToSave);
+    describe('create', () => {
+      it('should return created template', async () => {
+        const template = { ...fixtureFactory.template('new template'), _id: undefined };
+        const response = await postToEndpoint('/api/templates', template);
+        if (response.status !== 200) {
+          throw JSON.parse(response.text);
+        }
+        expect(JSON.parse(response.text).name).toBe('new template');
+      });
 
-      const savedTemplates = await templates.get();
+      it('should return error when sending invalid template props', async () => {
+        const template = {
+          ...fixtureFactory.template('new template'),
+          _id: undefined,
+          invalid_prop: true,
+        };
+        const response = await request(app).post('/api/templates').send(template);
 
-      expect(savedTemplates).toContainEqual(expect.objectContaining({ name: 'template4' }));
+        expect(response.status).toBe(422);
+        expect(response.text.match('invalid_prop')).toBeTruthy();
+      });
+
+      it('should allow specific (non valid) properties for backwards compatibility', async () => {
+        const template = {
+          ...fixtureFactory.template('backwards compatible template'),
+          _id: undefined,
+          default: true,
+          processing: { active: true },
+          __v: 5,
+        };
+        const response = await postToEndpoint('/api/templates', template);
+
+        if (response.status !== 200) {
+          throw JSON.parse(response.text);
+        }
+
+        expect(JSON.parse(response.text).name).toBe('backwards compatible template');
+        expect(JSON.parse(response.text).default).toBe(false);
+        expect(JSON.parse(response.text).processing).toEqual({ active: false });
+        expect(JSON.parse(response.text).__v).toBeUndefined();
+      });
     });
 
-    it('should update a existing template', async () => {
-      const [firstTemplate] = await templates.get();
-      const templateToUpdate = {
-        ...firstTemplate,
-        properties: [{ label: 'Numeric', type: 'numeric' }],
-        commonProperties: templateCommonProperties,
-        __v: 0,
-      };
+    describe('update', () => {
+      it('should update a existing template', async () => {
+        const [firstTemplate] = await templates.get();
+        const templateToUpdate = {
+          ...firstTemplate,
+          properties: [{ label: 'Numeric', type: 'numeric' }],
+          commonProperties: templateCommonProperties,
+          __v: 0,
+        };
 
-      await postToEndpoint('/api/templates', templateToUpdate);
+        await postToEndpoint('/api/templates', templateToUpdate);
 
-      const [updatedTemplate] = await templates.get({ _id: templateToUpdate._id });
-      expect(updatedTemplate.properties).toContainEqual(
-        expect.objectContaining({ label: 'Numeric', type: 'numeric' })
-      );
-    });
+        const [updatedTemplate] = await templates.get({ _id: templateToUpdate._id });
+        expect(updatedTemplate.properties).toContainEqual(
+          expect.objectContaining({ label: 'Numeric', type: 'numeric' })
+        );
+      });
+      it('should not emit settings update when settings not modified', async () => {
+        await postToEndpoint('/api/templates', templateToSave);
 
-    it('should not emit settings update when settings not modified', async () => {
-      await postToEndpoint('/api/templates', templateToSave);
+        expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
+      });
 
-      expect(emitToCurrentTenantSpy).not.toHaveBeenCalledWith('updateSettings');
+      it('should return updated template', async () => {
+        const template = fixtureFactory.template('template1', [], { name: 'template1 updated' });
+        const response = await postToEndpoint('/api/templates', template);
+        if (response.status !== 200) {
+          throw JSON.parse(response.text);
+        }
+        expect(JSON.parse(response.text).name).toBe('template1 updated');
+      });
     });
   });
 
@@ -272,3 +313,70 @@ describe('templates routes', () => {
     });
   });
 });
+
+// describe('templates routes contract', () => {
+//   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
+//     req.sockets = { emitToCurrentTenant: emitToCurrentTenantSpy };
+//     next();
+//   });
+//
+//   const postToEndpoint = async (route: string, body: any) => request(app).post(route).send(body);
+//
+//   beforeAll(async () => {
+//     await testingEnvironment.setUp({
+//       settings: [
+//         { site_name: 'Uwazi', languages: [{ key: 'en', label: 'English', default: true }] },
+//       ],
+//       templates: [
+//         { ...f.template('template1', []), default: true },
+//         { ...f.template('template2', []), default: false },
+//       ],
+//     });
+//   });
+//
+//   afterAll(async () => testingEnvironment.tearDown());
+//
+//   describe('POST', () => {
+//     describe('Create', () => {
+//
+//     });
+//
+//     describe('Update', () => {
+//       it('should return updated template', async () => {
+//         const template = f.template('template1', [], { name: 'template1 updated' });
+//         const response = await postToEndpoint('/api/templates', template);
+//         if (response.status !== 200) {
+//           throw JSON.parse(response.text);
+//         }
+//         expect(JSON.parse(response.text).name).toBe('template1 updated');
+//       });
+//
+//       it('should return error when sending invalid template props', async () => {
+//         const template = f.template('template1', [], { invalid_prop: true });
+//         const response = await postToEndpoint('/api/templates', template);
+//
+//         expect(response.status).toBe(422);
+//         expect(response.text.match('invalid_prop')).toBeTruthy();
+//       });
+//
+//       it('should allow specific (non valid) properties for backwards compatibility', async () => {
+//         const template = f.template('template2', [], {
+//           default: true,
+//           processing: { active: true },
+//           __v: 5,
+//         });
+//
+//         const response = await postToEndpoint('/api/templates', template);
+//
+//         if (response.status !== 200) {
+//           throw JSON.parse(response.text);
+//         }
+//
+//         expect(JSON.parse(response.text).name).toBe('template2');
+//         expect(JSON.parse(response.text).default).toBe(false);
+//         expect(JSON.parse(response.text).processing).toEqual({ active: false });
+//         expect(JSON.parse(response.text).__v).toBeUndefined();
+//       });
+//     });
+//   });
+// });
