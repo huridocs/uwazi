@@ -95,10 +95,19 @@ describe('Share Entities', () => {
       .should('be.visible')
       .and('contain', '3');
 
-    selectRestrictedEntities();
+    cy.contains('CorteIDH').should('exist');
 
-    cy.contains('CorteIDH').should('not.exist');
+    cy.intercept('GET', '/api/search*', (req) => {
+      if (req.url.includes('includeUnpublished=false')) {
+        req.alias = 'librarySearch';
+      }
+    });
 
+    cy.get('aside.library-filters').contains('li', 'Published').click();
+
+    cy.wait('@librarySearch');
+
+    cy.contains('CorteIDH').should('not.exist', { timeout: 5000 });
     cy.get('.item').should('have.length', 3);
 
     checkCanEdit(titleEntity1, false);
