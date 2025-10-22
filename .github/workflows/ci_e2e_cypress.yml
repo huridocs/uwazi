@@ -275,8 +275,6 @@ jobs:
           NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:9200
-          DATABASE_NAME: uwazi_e2e
-          INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
           REDIS_HOST: localhost

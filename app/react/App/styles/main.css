@@ -9,3 +9,8 @@
     font-family: 'Inter', sans-serif !important;
   }
 }
+
+.no-tailwind,
+.no-tailwind * {
+  all: revert !important;
+}
