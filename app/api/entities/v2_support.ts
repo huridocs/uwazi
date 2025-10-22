@@ -178,7 +178,9 @@ const updateNewRelationships = async (updates: DefinitionsToUpdate) => {
 };
 
 export {
-  deleteRelatedNewRelationships, denormalizeAfterEntityCreation,
-  denormalizeAfterEntityUpdate, ignoreNewRelationshipsMetadata,
-  updateNewRelationships
+  deleteRelatedNewRelationships,
+  denormalizeAfterEntityCreation,
+  denormalizeAfterEntityUpdate,
+  ignoreNewRelationshipsMetadata,
+  updateNewRelationships,
 };
