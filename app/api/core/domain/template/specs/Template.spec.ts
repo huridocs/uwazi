@@ -741,6 +741,7 @@ it('should cleanup Relationship properties on Template delete', () => {
   const toBeDeleted = TemplateBuilder.aTemplate({
     id: 'to_be_deleted_template',
     name: 'To be deleted',
+    isDefault: true,
   }).build();
 
   expect(withRelationship.onTemplateDeleted(toBeDeleted)).toEqual({

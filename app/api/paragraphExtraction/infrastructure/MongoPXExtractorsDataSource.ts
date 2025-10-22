@@ -1,20 +1,20 @@
-import { Db, ObjectId } from 'mongodb';
-import { TemplateMappers } from 'api/core/infrastructure/mongodb/template/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import entities from 'api/entities';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import entities from 'api/entities';
+import { Db, ObjectId } from 'mongodb';
 
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { PXExtractor } from '../domain/PXExtractor';
 import {
   DeleteParagraphsInput,
   ExistsInput,
   PXExtractorsDataSource,
 } from '../domain/PXExtractorDataSource';
-import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
-import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXValidationError } from '../domain/PXValidationError';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
+import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -139,8 +139,8 @@ export class MongoPXExtractorsDataSource
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
     return new PXExtractor({
       id: dbo._id.toString(),
-      sourceTemplate: TemplateMappers.toApp(dbo.sourceTemplate),
-      targetTemplate: TemplateMappers.toApp(dbo.targetTemplate),
+      sourceTemplate: MongoTemplateMapper.toDomain(dbo.sourceTemplate),
+      targetTemplate: MongoTemplateMapper.toDomain(dbo.targetTemplate),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
       sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),
