@@ -1,17 +1,16 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoTemplatePropertyMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
+import { propertyTypes } from 'shared/propertyTypes';
 import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ObjectId } from 'mongodb';
+import { CommonProperty } from '../../core/domain/template/CommonProperty';
 import { Property } from '../../core/domain/template/Property';
 import { RelationshipProperty } from '../../core/domain/template/RelationshipProperty';
 import { Template } from '../../core/domain/template/Template';
 import { V1RelationshipProperty } from '../../core/domain/template/V1RelationshipProperty';
-import { TemplateMappers } from '../../core/infrastructure/mongodb/template/TemplateMappers';
-import { CommonProperty } from '../../core/domain/template/CommonProperty';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>
@@ -74,9 +73,8 @@ const TemplateInputMappers = {
       id,
       template.name,
       template.properties?.map(p => propertyToApp(p, id)) || [],
-      (template.commonProperties?.map(p =>
-        TemplateMappers.propertyToApp(p, ObjectId.createFromHexString(id))
-      ) || []) as CommonProperty[]
+      (template.commonProperties?.map(p => MongoTemplatePropertyMapper.toDomain(p, id)) ||
+        []) as CommonProperty[]
     );
   },
 };

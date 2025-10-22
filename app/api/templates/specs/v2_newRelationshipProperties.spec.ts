@@ -10,7 +10,6 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { inspect } from 'util';
 import templates from '../templates';
 
 jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
@@ -45,25 +44,15 @@ const oldQueryInInput = [
   },
 ];
 
-const updateTemplate = async (template: TemplateSchema): Promise<TemplateSchema> =>
-  new Promise<void>((resolve, reject) => {
-    templates
-      .save(template, 'en', false, false, async error => {
-        if (error) {
-          reject(inspect(error));
-        }
-
-        resolve();
-      })
-      .catch(reject);
-  }).then(async () =>
-    templates.getById(template._id || '').then(t => {
-      if (!t) {
-        throw new Error(`Template "${template._id}" does not exist`);
-      }
-      return t;
-    })
-  );
+const updateTemplate = async (template: TemplateSchema): Promise<TemplateSchema> => {
+  await templates.save(template, 'en');
+  return templates.getById(template._id || '').then(t => {
+    if (!t) {
+      throw new Error(`Template "${template._id}" does not exist`);
+    }
+    return t;
+  });
+};
 
 const fixtures: DBFixture = {
   relationtypes: [fixtureFactory.relationType('relation')],

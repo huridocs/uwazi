@@ -41,7 +41,7 @@ class Template {
 
   color?: string;
 
-  isDefault: boolean;
+  isDefault?: boolean;
 
   constructor(
     id: string,
@@ -57,7 +57,7 @@ class Template {
     this.properties = properties;
     this.commonProperties = commonProperties;
     this.color = color ?? '';
-    this.isDefault = isDefault ?? false;
+    this.isDefault = isDefault;
     this.entityViewPage = entityViewPage ?? '';
 
     this.validate();

@@ -913,64 +913,25 @@ const fixtures: DBFixture = {
   ],
   dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
   templates: [
-    {
-      _id: personTemplateId,
-      properties: [
-        {
-          label: 'Age',
-          type: 'numeric',
-          name: 'age',
-        },
-        {
-          label: 'Enemy',
-          type: 'text',
-          name: 'enemy',
-        },
-        {
-          label: 'Super powers',
-          type: 'text',
-          name: 'super_powers',
-        },
+    factory.template(
+      'personTemplate',
+      [
+        factory.property('age', 'numeric'),
+        factory.property('enemy'),
+        factory.property('super_powers'),
       ],
-      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
-    },
-    {
-      _id: heroTemplateId,
-      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
-      properties: [
-        {
-          label: 'Age',
-          type: 'numeric',
-          name: 'age',
-        },
-        {
-          label: 'Enemy',
-          type: 'text',
-          name: 'enemy',
-        },
-        {
-          label: 'First Encountered',
-          type: 'date',
-          name: 'first_encountered',
-        },
+      { _id: personTemplateId }
+    ),
+    factory.template(
+      'heroTemplate',
+      [
+        factory.property('age', 'numeric'),
+        factory.property('enemy'),
+        factory.property('first_encountered'),
       ],
-    },
-    {
-      _id: factory.id('template1'),
-      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
-      properties: [
-        {
-          label: 'Super powers',
-          type: 'text',
-          name: 'super_powers',
-        },
-        {
-          label: 'Age',
-          type: 'numeric',
-          name: 'age',
-        },
-      ],
-    },
+      { _id: heroTemplateId }
+    ),
+    factory.template('template1', [factory.property('super_powers'), factory.property('age')]),
     factory.template('templateWithSelects', [
       factory.property('property_select', 'select', {
         content: factory.id('Nested Thesaurus').toString(),
