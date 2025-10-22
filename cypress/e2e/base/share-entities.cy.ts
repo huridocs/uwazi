@@ -97,8 +97,12 @@ describe('Share Entities', () => {
 
     cy.contains('CorteIDH').should('exist');
 
-    cy.contains('.search__filter .multiselectItem', 'Published').find('svg.checkbox-checked').should('be.visible', { timeout: 5000 });
-    cy.contains('.search__filter .multiselectItem', 'Restricted').find('svg.checkbox-checked').should('be.visible', { timeout: 5000 });
+    cy.contains('.search__filter .multiselectItem', 'Published')
+      .find('svg.checkbox-checked')
+      .should('be.visible', { timeout: 5000 });
+    cy.contains('.search__filter .multiselectItem', 'Restricted')
+      .find('svg.checkbox-checked')
+      .should('be.visible', { timeout: 5000 });
 
     cy.intercept('GET', '/api/search*unpublished=true*').as('librarySearch');
     cy.get('#publishedStatuspublished').click({ force: true });
