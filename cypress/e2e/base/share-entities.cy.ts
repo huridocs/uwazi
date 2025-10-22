@@ -1,3 +1,4 @@
+import { CYCLIC_KEY } from '@storybook/addon-actions/*';
 import { selectPublishedEntities, selectRestrictedEntities } from '../helpers';
 import { clickOnEditEntity, grantPermission, shareSearchTerm } from '../helpers/entities';
 import { clearCookiesAndLogin } from '../helpers/login';
@@ -88,7 +89,6 @@ describe('Share Entities', () => {
     clearCookiesAndLogin('colla', 'borator');
 
     cy.contains('Ordenes del presidente', { timeout: 5000 });
-
     cy.get('aside.library-filters').should('be.visible');
 
     cy.get('aside.library-filters')
@@ -97,6 +97,8 @@ describe('Share Entities', () => {
       .and('contain', '3');
 
     selectRestrictedEntities();
+
+    cy.contains('CorteIDH').should('not.exist');
 
     cy.get('.item').should('have.length', 3);
 

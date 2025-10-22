@@ -48,11 +48,8 @@ const selectRestrictedEntities = () => {
       }
     });
 
-  // Always wait for the search results to be rendered, regardless of filter changes
-  cy.get('.item', { timeout: 10000 }).should($items => {
-    expect($items.length).to.be.greaterThan(0);
-    expect($items.first()).to.be.visible();
-  });
+  cy.get('.item', { timeout: 10000 }).should('have.length.greaterThan', 0);
+  cy.get('.item').first().should('be.visible');
 };
 
 export { selectPublishedEntities, selectRestrictedEntities };
