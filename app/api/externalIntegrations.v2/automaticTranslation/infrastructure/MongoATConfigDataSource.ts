@@ -61,11 +61,12 @@ export class MongoATConfigDataSource
       return new ATTemplateConfig(
         templateConfig.template,
         configPropertiesIds
-          .filter(
-            propertyId =>
+          .filter(propertyId => {
+            return (
               validPropertiesIds.includes(propertyId) &&
               validPropertiesMap[propertyId].template === templateConfig.template
-          )
+            );
+          })
           .map(propertyId => validPropertiesMap[propertyId])
       );
     });

@@ -41,13 +41,15 @@ const BaseCommonPropertySchema = z.object({
   generatedId: z.boolean().optional(),
 });
 
-const BaseTemplateSchema = z.object({
-  name: z.string({ message: 'Template name is required' }),
-  color: z.string().optional(),
-  entityViewPage: z.string().optional(),
-  commonProperties: z.array(BaseCommonPropertySchema),
-  properties: z.array(BasePropertySchema).default([]),
-});
+const BaseTemplateSchema = z
+  .object({
+    name: z.string({ message: 'Template name is required' }),
+    color: z.string().optional(),
+    entityViewPage: z.string().optional(),
+    commonProperties: z.array(BaseCommonPropertySchema),
+    properties: z.array(BasePropertySchema).default([]),
+  })
+  .strict();
 
 const UpdatePropertySchema = BasePropertySchema.extend({
   id: z.string().optional(),
@@ -61,7 +63,7 @@ const UpdateTemplateSchema = BaseTemplateSchema.extend({
   id: z.string({ message: 'Template id is required' }),
   commonProperties: z.array(UpdateCommonPropertySchema),
   properties: z.array(UpdatePropertySchema).default([]),
-});
+}).strict();
 
 export {
   BaseTemplateSchema as CreateTemplateDTOSchema,

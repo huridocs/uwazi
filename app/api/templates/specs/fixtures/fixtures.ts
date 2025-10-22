@@ -58,7 +58,7 @@ const templateChangingNames = {
   name: 'template_changing_names',
   default: false,
   commonProperties: [
-    { name: 'title', label: 'Title', type: 'text' },
+    { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
     { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
     { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
   ],
@@ -74,7 +74,7 @@ const templateNotChangingNames = {
   name: 'template_not_changing_names',
   default: false,
   commonProperties: [
-    { name: 'title', label: 'Title', type: 'text' },
+    { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
     { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
     { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
   ],
@@ -348,7 +348,7 @@ const fixtures: DBFixture = {
       name: 'duplicated name',
       properties: [],
       commonProperties: [
-        { name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
         { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
         { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
       ],
