@@ -1,4 +1,3 @@
-import { CYCLIC_KEY } from '@storybook/addon-actions/*';
 import { selectPublishedEntities, selectRestrictedEntities } from '../helpers';
 import { clickOnEditEntity, grantPermission, shareSearchTerm } from '../helpers/entities';
 import { clearCookiesAndLogin } from '../helpers/login';
