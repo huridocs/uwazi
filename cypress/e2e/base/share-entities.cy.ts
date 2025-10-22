@@ -97,8 +97,8 @@ describe('Share Entities', () => {
 
     cy.contains('CorteIDH').should('exist');
 
-    cy.contains('input[id="publishedStatuspublished"]').should('be.checked', { timeout: 10000 });
-    cy.contains('input[id="publishedStatusrestricted"]').should('be.checked', { timeout: 10000 });
+    cy.contains('.search__filter .multiselectItem', 'Published').find('svg.checkbox-checked').should('be.visible', { timeout: 5000 });
+    cy.contains('.search__filter .multiselectItem', 'Restricted').find('svg.checkbox-checked').should('be.visible', { timeout: 5000 });
 
     cy.intercept('GET', '/api/search*unpublished=true*').as('librarySearch');
     cy.get('#publishedStatuspublished').click({ force: true });
