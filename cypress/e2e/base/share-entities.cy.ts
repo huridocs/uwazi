@@ -97,13 +97,11 @@ describe('Share Entities', () => {
 
     cy.contains('CorteIDH').should('exist');
 
-    cy.intercept('GET', '/api/search*', (req) => {
-      if (req.url.includes('unpublished=true')) {
-        req.alias = 'librarySearch';
-      }
-    });
+    cy.contains('input[id="publishedStatuspublished"]').should('be.checked', { timeout: 10000 });
+    cy.contains('input[id="publishedStatusrestricted"]').should('be.checked', { timeout: 10000 });
 
-    cy.get('aside.library-filters').contains('li', 'Published').click();
+    cy.intercept('GET', '/api/search*unpublished=true*').as('librarySearch');
+    cy.get('#publishedStatuspublished').click({ force: true });
 
     cy.wait('@librarySearch');
 
