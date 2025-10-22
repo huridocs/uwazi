@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { EntitySchema } from 'shared/types/entityType';
+import { Entity as EntityType } from 'app/V2/domain/entities/Entity';
 import { LoaderFunction, useLoaderData, useNavigate, useParams } from 'react-router';
 import { PaneLayout } from 'app/V2/Components/Layouts/PaneLayout';
 import { Tabs } from 'app/V2/Routes/Entity/Components/Tabs';
@@ -14,14 +14,46 @@ import {
   FlagIcon,
   ListBulletIcon,
 } from '@heroicons/react/24/outline';
+import { Translate } from 'app/I18N';
 import { RelationshipPropertyIcon } from 'app/V2/Components/CustomIcons';
+import { getEntityCompositionUseCase } from 'app/V2/application/container/singletons';
+import { fullDetailOptions } from 'app/V2/application/optionsPresets';
+import { IncomingHttpHeaders } from 'http';
+import { MetadataDisplay } from 'app/V2/Components/Metadata';
 
-const entityLoader = (): LoaderFunction => async () => ({
-  title: 'My entity',
-});
+const entityLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params }) => {
+    const entityId = params.sharedId;
+    if (!entityId) throw new Error('Entity ID is required');
+
+    const entityCompositionUseCase = await getEntityCompositionUseCase();
+    const composition = await entityCompositionUseCase.composeEntity(entityId, fullDetailOptions, {
+      headers,
+    });
+
+    if (!composition.success || !composition.entity) {
+      throw new Response(
+        JSON.stringify({
+          error: 'Failed to load entity',
+          message: composition.error || 'Entity not found',
+          entityId,
+        }),
+        {
+          status: 404,
+          statusText: 'Entity Not Found',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    return composition.entity;
+  };
 
 const Entity = () => {
-  const entity = useLoaderData() as EntitySchema;
+  const entity = useLoaderData() as EntityType;
   const navigate = useNavigate();
   const { sharedId, tabView } = useParams();
 
@@ -102,7 +134,7 @@ const Entity = () => {
             id: 'side-metadata',
             label: 'Metadata',
             controls: 'side-panel-metadata',
-            content: <div />,
+            content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
             icon: <Bars3CenterLeftIcon className="w-5 h-5" />,
           },
           {
@@ -159,16 +191,14 @@ const Entity = () => {
           },
         ];
     }
-  }, [mainTabFromUrl]);
+  }, [entity, mainTabFromUrl]);
 
-  // ensure subtab in URL is valid for current sideTabs
   const ensuredSubTab = useMemo(() => {
     const exists = sideTabs.some(t => t.id === subTabFromUrl);
     if (exists) return subTabFromUrl;
     return sideTabs[0]?.id || '';
   }, [sideTabs, subTabFromUrl]);
 
-  // keep URL normalized to /entity/:id/<main>-<sub>
   useEffect(() => {
     if (!sharedId) return;
     const desired = `${mainTabFromUrl}-${ensuredSubTab}`;
@@ -177,6 +207,10 @@ const Entity = () => {
       navigate(buildPath(mainTabFromUrl, ensuredSubTab), { replace: true, relative: 'path' });
     }
   }, [sharedId, tabView, mainTabFromUrl, ensuredSubTab, navigate, buildPath]);
+
+  if (!entity) {
+    return <Translate>Loading</Translate>;
+  }
 
   return (
     <div className="tw-content">
@@ -190,6 +224,7 @@ const Entity = () => {
         </PaneLayout.Pane>
         <PaneLayout.Pane className="py-6 px-4">
           <Tabs
+            className="min-w-[520px] overflow-x-auto"
             tabs={sideTabs}
             activeId={ensuredSubTab}
             onTabSelected={async id => setSubTab(id)}

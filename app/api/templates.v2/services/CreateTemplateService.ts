@@ -6,11 +6,11 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { createError } from 'api/utils';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { QueryMapper } from '../database/QueryMapper';
+import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TemplatesDataSource } from '../../core/domain/template/TemplatesDataSource';
+import { QueryMapper } from '../../core/infrastructure/mongodb/template/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
-import { RelationshipProperty } from '../model/RelationshipProperty';
+import { RelationshipProperty } from '../../core/domain/template/RelationshipProperty';
 
 interface MatchQuery {
   templates: string[];

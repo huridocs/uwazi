@@ -1,6 +1,6 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from '../domain/template/Template';
+import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { AbstractUseCase } from '../libs/UseCase';
 
 type Input = {
   templateId: string;

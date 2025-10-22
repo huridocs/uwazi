@@ -1,12 +1,12 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { Property } from 'api/templates.v2/model/Property';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { Property } from 'api/core/domain/template/Property';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../QueryMapper';
+import { MongoTemplatesDataSource } from '../../../core/infrastructure/mongodb/template/MongoTemplatesDataSource';
+import { mapPropertyQuery } from '../../../core/infrastructure/mongodb/template/QueryMapper';
 
 const factory = getFixturesFactory();
 
@@ -38,6 +38,7 @@ const fixtures = {
     ]),
     factory.template('template2', [
       {
+        _id: factory.id('relationshipProp2'),
         name: 'relationshipProp2',
         type: 'newRelationship',
         label: 'relationshipProp2',
@@ -46,6 +47,7 @@ const fixtures = {
     ]),
     factory.template('template3', [
       {
+        _id: factory.id('relationshipProp3'),
         name: 'relationshipProp3',
         type: 'newRelationship',
         label: 'relationshipProp3',
@@ -54,6 +56,7 @@ const fixtures = {
     ]),
     factory.template('template4', [
       {
+        _id: factory.id('textprop'),
         name: 'textprop',
         type: 'text',
         label: 'textProp',
@@ -79,7 +82,7 @@ describe('getAllProperties()', () => {
     expect(result[1]).toBeInstanceOf(RelationshipProperty);
     expect(result[2]).toBeInstanceOf(RelationshipProperty);
     expect(result[3]).toBeInstanceOf(Property);
-    expect(result).toMatchObject([
+    expect(result.map(p => ({ template: p.template.toString(), name: p.name }))).toMatchObject([
       {
         name: 'relationshipProp1',
         template: factory.id('template1').toHexString(),

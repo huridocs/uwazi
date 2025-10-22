@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { Property } from 'api/templates.v2/model/Property';
+import { Property } from 'api/core/domain/template/Property';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 class ATTemplateConfig {

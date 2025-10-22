@@ -1,13 +1,13 @@
 import { TranslationService } from 'api/core/domain/template/TranslationService';
 import translations from 'api/i18n/translations';
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from 'api/core/domain/template/Template';
 import { ContextType } from 'shared/translationSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { TemplateMapper } from './Mapper';
+import { MongoTemplateMapper } from './Mapper';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
 
     await translations.addContext(
       schema._id.toString(),
@@ -40,7 +40,7 @@ class LegacyTemplatesTranslationService implements TranslationService {
       deletedLabels.concat(
         currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label)
       ),
-      this.createTranslationContext(TemplateMapper.toSchema(updatedTemplate))
+      this.createTranslationContext(MongoTemplateMapper.toSchema(updatedTemplate))
     );
   }
 

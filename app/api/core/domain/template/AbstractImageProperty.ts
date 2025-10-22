@@ -1,4 +1,4 @@
-import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property';
+import { Context, Property, PropertyProps } from 'api/core/domain/template/Property';
 import { InvalidStyleTypeError } from './errors';
 
 enum ImageStyle {

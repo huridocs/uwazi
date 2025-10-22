@@ -10,5 +10,6 @@ export { userAtom } from './userAtom';
 export { relationshipTypesAtom } from './relationshipTypes';
 export { pdfScaleAtom } from './pdfScaleAtom';
 export { deletedEntityAtom } from './deletedEntityAtom';
+export { serverIsMobileAtom } from './isMobileAtom';
 export type { AtomStoreData } from './store';
 export type { notificationAtomType } from './notificationAtom';
