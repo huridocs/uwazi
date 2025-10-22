@@ -1,21 +1,21 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 import {
+  DenormalizationService as CreateDenormalizationService,
   CreateRelationshipService,
   DeleteRelationshipService,
-  DenormalizationService as CreateDenormalizationService,
 } from 'api/relationships.v2/services/service_factories';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { TemplateMappers } from 'api/core/infrastructure/mongodb/template/TemplateMappers';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();
@@ -100,7 +100,7 @@ const ignoreNewRelationshipsMetadata = async (
   const removedRelationships: RelationshipDefinition[] = [];
   const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
   if (await newRelationshipsEnabled()) {
-    const templateModel = TemplateMappers.toApp(template as TemplateDBO);
+    const templateModel = MongoTemplateMapper.toDomain(template as TemplateDBO);
     await Promise.all(
       templateModel.properties.map(async property => {
         if (property instanceof RelationshipProperty) {
@@ -179,8 +179,8 @@ const updateNewRelationships = async (updates: DefinitionsToUpdate) => {
 
 export {
   deleteRelatedNewRelationships,
-  ignoreNewRelationshipsMetadata,
-  updateNewRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
+  ignoreNewRelationshipsMetadata,
+  updateNewRelationships,
 };

@@ -1,7 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
+import { Redis } from 'api/infrastructure/Redis';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
@@ -10,11 +12,9 @@ import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
-import { Redis } from 'api/infrastructure/Redis';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {

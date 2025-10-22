@@ -3,24 +3,23 @@ import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDat
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
-import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
 } from 'api/core/domain/template/errors';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
 import { Result, ResultType } from 'api/core/libs/Result';
-import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
+import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
+import { Db, ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Property } from '../../../domain/template/Property';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
 import { Template } from '../../../domain/template/Template';
+import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
 import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
-import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './DBOs/TemplateDBO';
-import { TemplateMappers } from './TemplateMappers';
-import { MongoTemplateMapper } from './Mapper';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './Mapper';
+import { mapPropertyQuery } from './QueryMapper';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -51,7 +50,7 @@ export class MongoTemplatesDataSource
   }
 
   getAll() {
-    return new MongoResultSet(this.getCollection().find({}), TemplateMappers.toApp);
+    return new MongoResultSet(this.getCollection().find({}), MongoTemplateMapper.toDomain);
   }
 
   getAllRelationshipProperties() {
@@ -172,7 +171,7 @@ export class MongoTemplatesDataSource
     ]);
 
     return new MongoResultSet(cursor, template =>
-      TemplateMappers.propertyToApp(template.textProperty, template._id)
+      MongoTemplatePropertyMapper.toDomain(template.textProperty, template._id.toString())
     );
   }
 
@@ -180,7 +179,11 @@ export class MongoTemplatesDataSource
     if (!this._nameToPropertyMap) {
       const templates = await this.getCollection().find({}).toArray();
       const properties = templates
-        .map(t => t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
+        .map(
+          t =>
+            t.properties.map(p => MongoTemplatePropertyMapper.toDomain(p, t._id.toHexString())) ||
+            []
+        )
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
@@ -229,7 +232,7 @@ export class MongoTemplatesDataSource
     ]);
 
     return new MongoResultSet(cursor, template =>
-      TemplateMappers.propertyToApp(template.properties, template._id)
+      MongoTemplatePropertyMapper.toDomain(template.properties, template._id.toString())
     );
   }
 
@@ -251,7 +254,7 @@ export class MongoTemplatesDataSource
       _id: { $in: ids.map(MongoIdHandler.mapToDb) },
     });
 
-    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
   }
 
   getByNames(names: Template['name'][]) {
@@ -259,7 +262,7 @@ export class MongoTemplatesDataSource
       name: { $in: names },
     });
 
-    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
   }
 
   async getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>> {

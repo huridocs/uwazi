@@ -353,7 +353,7 @@ describe('templates', () => {
     describe('when there is a new property with generatedId type', () => {
       it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
         const templateToUpdate = factory.template(
-          '',
+          'template',
           [{ name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' }],
           {
             _id: thesaurusTemplateId,

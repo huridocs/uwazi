@@ -16,7 +16,7 @@ class TemplateBuilder {
 
   private _color: string = '#FFFFFF';
 
-  private _isDefault: boolean = false;
+  private _isDefault?: boolean;
 
   private _entityViewPage: string = '';
 
@@ -76,7 +76,7 @@ class TemplateBuilder {
     return this;
   }
 
-  withDefault(isDefault: boolean): this {
+  withDefault(isDefault?: boolean): this {
     this._isDefault = isDefault;
     return this;
   }
