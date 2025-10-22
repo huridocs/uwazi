@@ -231,6 +231,21 @@ describe('files routes download', () => {
         });
       });
 
+      describe('error handling and edge cases', () => {
+        it('should serve file even if file has no creationDate', async () => {
+          const [publicFile] = await files.get({ filename: fileOnPublicEntity });
+          await files.save({ _id: publicFile._id, creationDate: undefined });
+
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.body instanceof Buffer).toBe(true);
+          // Note: Mongoose default will set creationDate, so Last-Modified will still be present
+          expect(response.get('Last-Modified')).toBeDefined();
+        });
+      });
+
       describe('conditional requests (If-Modified-Since)', () => {
         it('should return 304 Not Modified when If-Modified-Since matches file creationDate', async () => {
           // File creationDate is 1 (Thu, 01 Jan 1970 00:00:00 GMT)

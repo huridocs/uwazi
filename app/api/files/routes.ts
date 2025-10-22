@@ -293,10 +293,8 @@ export default (app: Application) => {
         throw createError('file not found', 404);
       }
 
-      // Fetch settings to determine cache policy
+      // Set cache control headers
       // Use try-catch to ensure cache header logic never blocks file serving
-      let cacheControl = 'private, max-age=3600'; // Safe default
-
       try {
         const appSettings = await settings.get();
         const isPrivateInstance = appSettings.private || false;
@@ -308,32 +306,37 @@ export default (app: Application) => {
           isPrivateInstance
         );
 
-        cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+        const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+        res.setHeader('Cache-Control', cacheControl);
       } catch (error) {
         // If cache policy determination fails, use safe default and continue serving file
-        cacheControl = 'private, max-age=3600';
+        // eslint-disable-next-line no-console
+        console.error('[Cache Headers] Error determining cache policy:', error);
+        res.setHeader('Cache-Control', 'private, max-age=3600');
       }
 
-      // Set cache control headers
-      res.setHeader('Cache-Control', cacheControl);
+      // Set Last-Modified header and handle conditional requests
+      try {
+        if (file.creationDate) {
+          const lastModified = timestampToHTTPDate(file.creationDate);
+          res.setHeader('Last-Modified', lastModified);
 
-      // Set Last-Modified header if creationDate exists
-      if (file.creationDate) {
-        const lastModified = timestampToHTTPDate(file.creationDate);
-        res.setHeader('Last-Modified', lastModified);
-
-        // Handle conditional requests (If-Modified-Since)
-        const ifModifiedSince = req.headers['if-modified-since'];
-        if (ifModifiedSince) {
-          const requestDate = new Date(ifModifiedSince).getTime();
-          // Compare at second-level precision (HTTP dates don't include milliseconds)
-          const fileTimestampSeconds = Math.floor(file.creationDate / 1000);
-          const requestTimestampSeconds = Math.floor(requestDate / 1000);
-          if (requestTimestampSeconds >= fileTimestampSeconds) {
-            res.status(304).end();
-            return;
+          // Handle conditional requests (If-Modified-Since)
+          const ifModifiedSince = req.headers['if-modified-since'];
+          if (ifModifiedSince) {
+            const requestDate = new Date(ifModifiedSince).getTime();
+            // Compare at second-level precision (HTTP dates don't include milliseconds)
+            const fileTimestampSeconds = Math.floor(file.creationDate / 1000);
+            const requestTimestampSeconds = Math.floor(requestDate / 1000);
+            if (requestTimestampSeconds >= fileTimestampSeconds) {
+              res.status(304).end();
+              return;
+            }
           }
         }
+      } catch (error) {
+        // If Last-Modified logic fails, skip it and continue serving file
+        // This ensures backwards compatibility if creationDate is missing or invalid
       }
 
       const headerFilename = file.originalname || file.filename;
