@@ -1,7 +1,7 @@
 import React from 'react';
 import { I18NLinkV2 } from 'app/I18N';
 import { RelationshipMetadataProperty } from 'V2/domain/entities/types';
-import { ENTITY_BASE_ROUTE } from 'V2/Routes/Entity/Entity';
+import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
 import { MetadataFieldProps } from './types';
 import { CountryFlag } from '../CustomIcons';
 import { PropertyLabel } from './PropertyLabel';
@@ -23,7 +23,7 @@ const Relationship = ({ label, translationContext, hideLabel, values }: Relation
           {value.icon && <CountryFlag id={value.icon} />}
           <I18NLinkV2
             className="underline"
-            to={value.url || `/${ENTITY_BASE_ROUTE}/${value.value}`}
+            to={value.url || `${DEFAULT_ENTITY_BASE_PATH}${value.value}`}
             target="_blank"
             rel="noreferrer"
             localized={false}

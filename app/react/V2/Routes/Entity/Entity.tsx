@@ -16,8 +16,6 @@ import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
 import { TabLabel } from './Components/TabLabel';
 
-const ENTITY_BASE_ROUTE = 'entity';
-
 const MAIN_TABS = {
   DOCUMENT: 'pdf',
   MAIN_METADATA: 'main-metadata',
@@ -203,4 +201,4 @@ const Entity = () => {
   );
 };
 
-export { Entity, entityLoader, shouldRevalidate, ENTITY_BASE_ROUTE };
+export { Entity, entityLoader, shouldRevalidate };
