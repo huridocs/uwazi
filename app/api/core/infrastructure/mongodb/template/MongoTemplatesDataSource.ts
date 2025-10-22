@@ -51,7 +51,7 @@ export class MongoTemplatesDataSource
   }
 
   getAll() {
-    return new MongoResultSet(this.getCollection().find({}), TemplateMappers.toApp);
+    return new MongoResultSet(this.getCollection().find({}), MongoTemplateMapper.toDomain);
   }
 
   getAllRelationshipProperties() {
@@ -251,7 +251,7 @@ export class MongoTemplatesDataSource
       _id: { $in: ids.map(MongoIdHandler.mapToDb) },
     });
 
-    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
   }
 
   getByNames(names: Template['name'][]) {
@@ -259,7 +259,7 @@ export class MongoTemplatesDataSource
       name: { $in: names },
     });
 
-    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+    return new MongoResultSet(templatesCursor, MongoTemplateMapper.toDomain);
   }
 
   async getById(id: string): Promise<ResultType<Template, TemplateDoesNotExistError>> {

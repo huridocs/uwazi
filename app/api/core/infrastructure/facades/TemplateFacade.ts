@@ -19,6 +19,7 @@ import {
   SetTemplateAsDefaultSchema,
 } from '../express/template/SetTemplateAsDefaultController/DTO';
 import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory';
+import { ExpressTemplateMapper } from '../express/template/ExpressTemplateMapper';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };
@@ -79,7 +80,7 @@ export class TemplateFacade {
 
     const updated = await useCase.execute(input, context);
 
-    return MongoTemplateMapper.toDTO(updated);
+    return ExpressTemplateMapper.toDTO(updated);
   }
 
   static async delete(dto: DeleteTemplateRequestDto) {

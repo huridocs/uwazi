@@ -38,6 +38,7 @@ const fixtures = {
     ]),
     factory.template('template2', [
       {
+        _id: factory.id('relationshipProp2'),
         name: 'relationshipProp2',
         type: 'newRelationship',
         label: 'relationshipProp2',
@@ -46,6 +47,7 @@ const fixtures = {
     ]),
     factory.template('template3', [
       {
+        _id: factory.id('relationshipProp3'),
         name: 'relationshipProp3',
         type: 'newRelationship',
         label: 'relationshipProp3',

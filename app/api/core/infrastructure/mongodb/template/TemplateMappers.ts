@@ -75,18 +75,6 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
 
 const TemplateMappers = {
   propertyToApp,
-  toApp: (tdbo: TemplateDBO): Template => {
-    const template = new Template(
-      MongoIdHandler.mapToApp(tdbo._id),
-      tdbo.name,
-      tdbo.properties.map(p => propertyToApp(p, tdbo._id)),
-      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id) as any), // TODO: remove as any
-      tdbo.color || '',
-      tdbo.default
-    );
-    template.processing = tdbo.processing;
-    return template;
-  },
 };
 
 export { TemplateMappers };
