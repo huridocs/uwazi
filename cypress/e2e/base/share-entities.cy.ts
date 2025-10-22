@@ -98,7 +98,7 @@ describe('Share Entities', () => {
     cy.contains('CorteIDH').should('exist');
 
     cy.intercept('GET', '/api/search*', (req) => {
-      if (req.url.includes('includeUnpublished=false')) {
+      if (req.url.includes('unpublished=true')) {
         req.alias = 'librarySearch';
       }
     });
