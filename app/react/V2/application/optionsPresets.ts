@@ -1,6 +1,7 @@
 import { CompositionOptions } from './services/processors/types';
 
 export const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
+
 export const cardViewOptions: CompositionOptions = {
   includeTemplate: true,
   formatDates: true,
@@ -17,6 +18,7 @@ export const fullDetailOptions: CompositionOptions = {
   dateFormat: 'LLL d, yyyy',
   includePropertyMetadata: true,
   translateLabels: true,
+  includeSupportingFiles: true,
 };
 
 export const editionModeOptions: CompositionOptions = {

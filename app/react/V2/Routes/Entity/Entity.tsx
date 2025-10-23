@@ -9,22 +9,23 @@ import {
 import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
 import { fullDetailOptions } from 'V2/application/optionsPresets';
+import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
+import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
 import { TabLabel } from './Components/TabLabel';
 
 const MAIN_TABS = {
-  DOCUMENT: 'pdf',
-  MAIN_METADATA: 'main-metadata',
-  RELATIONSHIPS: 'main-rels',
+  DOCUMENT: 'document',
+  METADATA: 'metadata',
+  RELATIONSHIPS: 'relationships',
 } as const;
 
 const SIDE_TABS = {
-  METADATA: 'side-metadata',
-  RELATIONSHIPS: 'side-rels',
+  METADATA: 'metadata',
+  RELATIONSHIPS: 'relationships',
 } as const;
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
@@ -54,6 +55,7 @@ const entityLoader =
     }
 
     const entityCompositionUseCase = await getEntityCompositionUseCase();
+
     const composition = await entityCompositionUseCase.composeEntity(
       entitySharedId,
       fullDetailOptions,
@@ -85,10 +87,25 @@ const entityLoader =
 const Entity = () => {
   const entity = useLoaderData<LoaderResponse>();
   const { tabView } = useParams();
-  const [activeMainTab, setActiveMainTab] = useState<MainTabId>(
-    (tabView as MainTabId) || MAIN_TABS.DOCUMENT
-  );
+  const [activeMainTab, setActiveMainTab] = useState<MainTabId>(() => {
+    if (tabView) {
+      return tabView as MainTabId;
+    }
+    if (entity?.documents?.length) {
+      return MAIN_TABS.DOCUMENT;
+    }
+    return MAIN_TABS.METADATA;
+  });
   const [activeSideTab, setActiveSideTab] = useState<SideTabId | undefined>(undefined);
+
+  const onMainTabChange = (selectedMainTab: string) => {
+    setActiveMainTab(selectedMainTab as MainTabId);
+    setActiveSideTab(undefined);
+  };
+
+  const onSideTabChange = (selectedSideTab: string) => {
+    setActiveSideTab(selectedSideTab as SideTabId);
+  };
 
   const sideTabsByMain: Record<
     MainTabId,
@@ -99,7 +116,7 @@ const Entity = () => {
         {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: <div>Sidepanel Metadata</div>,
+          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -112,7 +129,7 @@ const Entity = () => {
           content: <div>rels content</div>,
         },
       ],
-      [MAIN_TABS.MAIN_METADATA]: [
+      [MAIN_TABS.METADATA]: [
         {
           id: SIDE_TABS.RELATIONSHIPS,
           label: (
@@ -128,11 +145,11 @@ const Entity = () => {
         {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
-          content: <div>Sidepanel Metadata</div>,
+          content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],
     }),
-    []
+    [entity]
   );
 
   if (!entity) {
@@ -144,12 +161,10 @@ const Entity = () => {
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="py-4 px-2 h-full">
           <Tabs
+            className="min-w-fit overflow-x-auto"
             unmountTabs={false}
             initialTabId={activeMainTab}
-            onTabSelected={(selectedTab: string) => {
-              setActiveMainTab(selectedTab as MainTabId);
-              setActiveSideTab(undefined);
-            }}
+            onTabSelected={onMainTabChange}
           >
             <Tabs.Tab
               id={MAIN_TABS.DOCUMENT}
@@ -158,12 +173,12 @@ const Entity = () => {
               Document
             </Tabs.Tab>
             <Tabs.Tab
-              id={MAIN_TABS.MAIN_METADATA}
+              id={MAIN_TABS.METADATA}
               label={
                 <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />
               }
             >
-              Metadata
+              <MetadataDisplay entity={entity} />
             </Tabs.Tab>
             <Tabs.Tab
               id={MAIN_TABS.RELATIONSHIPS}
@@ -180,6 +195,7 @@ const Entity = () => {
         </PaneLayout.Pane>
         <PaneLayout.Pane className="py-4 px-2 h-full">
           <Tabs
+            className="min-w-[300px] overflow-x-auto"
             key={activeMainTab}
             unmountTabs={false}
             initialTabId={
@@ -187,7 +203,7 @@ const Entity = () => {
                 ? activeSideTab
                 : sideTabsByMain[activeMainTab][0].id) as string
             }
-            onTabSelected={selectedTab => setActiveSideTab(selectedTab as SideTabId)}
+            onTabSelected={onSideTabChange}
           >
             {sideTabsByMain[activeMainTab].map(tab => (
               <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
