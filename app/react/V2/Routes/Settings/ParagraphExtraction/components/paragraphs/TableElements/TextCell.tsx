@@ -12,7 +12,7 @@ const TextCell = ({
     <Truncate
       maxLength={200}
       ellipsisPosition="center"
-      tooltipClassname="text-xs text-gray-900 inline-block md:min-w-[500px] max-w-5xl"
+      tooltipClassname="text-xs text-gray-900 inline-block max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-2xl min-w-32 whitespace-normal"
     >
       {text}
     </Truncate>
