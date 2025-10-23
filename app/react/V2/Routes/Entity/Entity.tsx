@@ -13,6 +13,7 @@ import { getEntityCompositionUseCase } from 'V2/application/container/singletons
 import { fullDetailOptions } from 'V2/application/optionsPresets';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
+import { PDF } from 'V2/Components/PDFViewer';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
 import { TabLabel } from './Components/TabLabel';
@@ -192,7 +193,11 @@ const Entity = () => {
               id={MAIN_TABS.DOCUMENT}
               label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
             >
-              Document
+              {entity?.documents?.[0].filename ? (
+                <PDF fileUrl={`/api/files/${entity.documents[0].filename}`} />
+              ) : (
+                <Translate>Loading</Translate>
+              )}
             </Tabs.Tab>
             <Tabs.Tab
               id={MAIN_TABS.METADATA}
