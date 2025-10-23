@@ -48,7 +48,7 @@ const titleFormat = (locale: string) => {
       return 'MM y';
   }
 };
-const getDateFnsLocale = (language: string): Locale | undefined => {
+const getDateFnsLocale = (language: string): Locale => {
   const localeMap: Record<string, Locale> = {
     en: dateFnsLocales.enUS,
     ar: dateFnsLocales.ar,
@@ -75,27 +75,27 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
   // Get locale-specific data from date-fns
   const weekdays = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(2024, 0, i); // Start from Sunday
-    return locale?.localize?.day(date.getDay(), { width: 'wide' }) || '';
+    return locale.localize?.day(date.getDay(), { width: 'wide' }) || '';
   });
 
   const weekdaysShort = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(2024, 0, i);
-    return locale?.localize?.day(date.getDay(), { width: 'abbreviated' }) || '';
+    return locale.localize?.day(date.getDay(), { width: 'abbreviated' }) || '';
   });
 
   const weekdaysMin = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(2024, 0, i);
-    return locale?.localize?.day(date.getDay(), { width: 'narrow' }) || '';
+    return locale.localize?.day(date.getDay(), { width: 'narrow' }) || '';
   });
 
   const months = Array.from(
     { length: 12 },
-    (_, i) => locale?.localize?.month(i, { width: 'wide' }) || ''
+    (_, i) => locale.localize?.month(i, { width: 'wide' }) || ''
   );
 
   const monthsShort = Array.from(
     { length: 12 },
-    (_, i) => locale?.localize?.month(i, { width: 'abbreviated' }) || ''
+    (_, i) => locale.localize?.month(i, { width: 'abbreviated' }) || ''
   );
 
   return {
@@ -107,7 +107,7 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
     today: labelToday,
     monthsTitle: t('System', 'Months', null, false),
     clear: labelClear,
-    weekStart: locale?.options?.weekStartsOn || 0,
+    weekStart: locale.options?.weekStartsOn || 0,
     format: 'dd/mm/yyyy',
     titleFormat: titleFormat(language),
     rtl: isRTL,
