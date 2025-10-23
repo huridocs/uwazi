@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import moment from 'moment';
+import { format } from 'date-fns';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 import { Pill, Button } from 'app/V2/Components/UI';
@@ -91,11 +91,11 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
 const TimeCell =
   (dateFormat: string) =>
   ({ cell }: CellContext<LogEntry, number>) => {
-    const date = moment(cell.getValue());
+    const date = new Date(cell.getValue());
     return (
       <>
-        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
-        <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
+        <span className="font-semibold">{format(date, dateFormat)}</span>
+        <span className="font-medium">&nbsp;-&nbsp;{format(date, 'hh:mm a')}</span>
       </>
     );
   };

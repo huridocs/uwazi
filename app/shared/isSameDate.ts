@@ -1,6 +1,6 @@
-import moment from 'moment';
+import { isSameDay, fromUnixTime } from 'date-fns';
 
 const isSameDate = (first: number, second: number) =>
-  moment.unix(first).utc().isSame(moment.unix(second).utc(), 'day');
+  isSameDay(fromUnixTime(first), fromUnixTime(second));
 
 export { isSameDate };

@@ -1,6 +1,6 @@
 /** @format */
 
-import moment from 'moment';
+import { format, fromUnixTime } from 'date-fns';
 
 export default {
   performantDocToJSWithoutRelations(doc) {
@@ -31,7 +31,7 @@ export default {
       }
 
       if (property.type === 'date' && value) {
-        value = moment(value, 'X').format('MMM DD, YYYY');
+        value = format(fromUnixTime(value), 'MMM dd, yyyy');
       }
 
       return { label: property.label, value };

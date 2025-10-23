@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import moment from 'moment-timezone';
+import { format, fromUnixTime } from 'date-fns';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
@@ -58,7 +58,7 @@ const formatMetadataSortedProperties = (metadata, sortedProperties) =>
 
 const addCreationDate = (result, doc) =>
   result.push({
-    value: moment(doc.creationDate).format('ll'),
+    value: format(new Date(doc.creationDate), 'PP'),
     label: 'Date added',
     name: 'creationDate',
     translateContext: 'System',
@@ -67,7 +67,7 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: moment(doc.editDate).format('ll'),
+    value: format(new Date(doc.editDate), 'PP'),
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',
@@ -119,7 +119,7 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
 };
 
 const propertyValueFormatter = {
-  date: timestamp => moment.utc(timestamp, 'X').format('ll'),
+  date: timestamp => format(fromUnixTime(timestamp), 'PP'),
 };
 
 //relationship v2
@@ -139,10 +139,10 @@ export default {
     let from = '';
     let to = '';
     if (daterange.value.from) {
-      from = moment.utc(daterange.value.from, 'X').format('ll');
+      from = format(fromUnixTime(daterange.value.from), 'PP');
     }
     if (daterange.value.to) {
-      to = moment.utc(daterange.value.to, 'X').format('ll');
+      to = format(fromUnixTime(daterange.value.to), 'PP');
     }
     return `${from} ~ ${to}`;
   },
@@ -211,7 +211,7 @@ export default {
   multidate(property, timestamps = []) {
     const value = timestamps.map(timestamp => ({
       timestamp: timestamp.value,
-      value: moment.utc(timestamp.value, 'X').format('ll'),
+      value: format(fromUnixTime(timestamp.value), 'PP'),
     }));
     return { label: property.get('label'), name: property.get('name'), value };
   },

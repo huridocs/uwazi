@@ -3,8 +3,7 @@ import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import baseMoment from 'moment';
-import moment from 'moment-timezone';
+import { getUnixTime } from 'date-fns';
 import DatePickerComponent from 'react-datepicker';
 import DatePicker from '../DatePicker';
 
@@ -16,11 +15,11 @@ describe('DatePicker', () => {
   let props;
   let input;
 
-  const date = moment.utc('2016-07-28T00:00:00+00:00');
+  const date = new Date('2016-07-28T00:00:00Z');
 
   beforeEach(() => {
     props = {
-      value: Number(date.format('X')),
+      value: getUnixTime(date),
       onChange: jasmine.createSpy('onChange'),
     };
   });
@@ -33,19 +32,15 @@ describe('DatePicker', () => {
 
   it('should render a DatePickerComponent with the correct date transformed to local value', () => {
     render();
-    expect(input.props().selected).toBe(parseInt(moment('2016-07-28').format('x'), 10));
+    expect(input.props().selected).toBe(new Date('2016-07-28').getTime());
   });
 
   describe('when useTimezone is true', () => {
     it('should render a DatePickerComponent without transforming the value to local', () => {
       props.useTimezone = true;
       render();
-      expect(input.props().selected).toBe(parseInt(date.format('x'), 10));
+      expect(input.props().selected).toBe(date.getTime());
     });
-  });
-
-  afterEach(() => {
-    moment.tz.setDefault();
   });
 
   describe('when date is in a diferent timezone than today', () => {
@@ -53,12 +48,11 @@ describe('DatePicker', () => {
       { timezone: 'Japan', dateToTest: '1950-08-05' },
       { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
     ])('should use the timestamp offsetting to UTC %s', ({ timezone, dateToTest }) => {
-      moment.tz.setDefault(timezone);
-      const newDate = moment.utc(dateToTest);
-      props.value = Number(newDate.format('X'));
+      const newDate = new Date(`${dateToTest}T00:00:00Z`);
+      props.value = getUnixTime(newDate);
 
       render();
-      expect(input.props().selected).toBe(parseInt(moment(dateToTest).format('x'), 10));
+      expect(input.props().selected).toBe(new Date(dateToTest).getTime());
     });
 
     it.each([
@@ -66,41 +60,24 @@ describe('DatePicker', () => {
       { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
       { timezone: 'Europe/Madrid', dateToTest: '2020-08-18' },
     ])('should set the value to timestamp offsetting to UTC %s', ({ timezone, dateToTest }) => {
-      moment.tz.setDefault(timezone);
-      const newDate = moment(dateToTest).toDate();
+      const newDate = new Date(dateToTest);
       render();
       input.simulate('change', newDate);
-      expect(props.onChange).toHaveBeenCalledWith(parseInt(moment.utc(dateToTest).format('X'), 10));
+      expect(props.onChange).toHaveBeenCalledWith(getUnixTime(new Date(`${dateToTest}T00:00:00Z`)));
     });
   });
 
   describe('When locale is a non-latin locale', () => {
-    let originalLocale;
-
-    beforeEach(() => {
-      originalLocale = baseMoment.locale();
-      baseMoment.locale('ar');
-    });
-
-    afterEach(() => {
-      baseMoment.locale(originalLocale);
-    });
-
     it('should render a latin-based value (until correct locales are implemented)', () => {
       render();
-      expect(input.props().selected).toBe(
-        parseInt(moment('2016-07-28').locale('en').format('x'), 10)
-      );
+      expect(input.props().selected).toBe(new Date('2016-07-28').getTime());
     });
 
     it('should not fail on change', () => {
-      moment.tz.setDefault('Europe/Madrid');
-      const newDate = moment('2020-08-18').toDate();
+      const newDate = new Date('2020-08-18');
       render();
       input.simulate('change', newDate);
-      expect(props.onChange).toHaveBeenCalledWith(
-        parseInt(moment.utc('2020-08-18').locale('en').format('X'), 10)
-      );
+      expect(props.onChange).toHaveBeenCalledWith(getUnixTime(new Date('2020-08-18T00:00:00Z')));
     });
   });
 
@@ -118,11 +95,11 @@ describe('DatePicker', () => {
       props.endOfDay = true;
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment
-        .utc(newDate)
-        .add(moment().utcOffset(), 'minute')
-        .endOf('day');
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      // The value should be end of day in UTC
+      const expectedDate = new Date('2020-08-18T23:59:59.999Z');
+      const offsetMinutes = newDate.getTimezoneOffset();
+      const adjustedDate = new Date(expectedDate.getTime() - offsetMinutes * 60 * 1000);
+      expect(props.onChange).toHaveBeenCalledWith(getUnixTime(adjustedDate));
     });
   });
 
@@ -136,16 +113,15 @@ describe('DatePicker', () => {
     it('should set the value to timestamp NOT offsetting to UTC', () => {
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment.utc(newDate);
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      expect(props.onChange).toHaveBeenCalledWith(getUnixTime(newDate));
     });
 
     it('should set the value to the end of the day NOT offsetting to UTC', () => {
       props.endOfDay = true;
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment.utc(newDate).local().endOf('day');
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      const expectedDate = new Date('2020-08-18T23:59:59.999Z');
+      expect(props.onChange).toHaveBeenCalledWith(getUnixTime(expectedDate));
     });
   });
 });

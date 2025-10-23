@@ -16,7 +16,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import { Icon } from 'UI';
 
-import moment from 'moment';
+import { format, getYear } from 'date-fns';
 
 import {
   caseTemplate,
@@ -54,13 +54,13 @@ const fetchReferenceData = references => {
 };
 
 const assignDataToYear = (years, date, data) => {
-  const year = moment.utc(date * 1000).format('YYYY');
+  const year = getYear(new Date(date * 1000));
   years[year] = years[year] || [];
   years[year].push(data);
 };
 
 const normalizeYears = years => {
-  const currentYear = Number(moment().format('YYYY'));
+  const currentYear = getYear(new Date());
   const { minYear, maxYear } = Object.keys(years).reduce(
     (memo, year) => {
       memo.minYear = Math.min(memo.minYear, Number(year));
@@ -367,16 +367,14 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${
+                      title={`${format(new Date(reference.additionalData.date * 1000), 'PP')}\n${
                         reference.data.title
                       }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
                           <span>
-                            {`${moment
-                              .utc(reference.additionalData.date * 1000)
-                              .format('MMM YYYY')}`}
+                            {format(new Date(reference.additionalData.date * 1000), 'MMM yyyy')}
                           </span>
                         </span>
                       </ShowIf>
@@ -395,15 +393,13 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${moment.utc(reference.timestamp * 1000).format('ll')}\n${
+                      title={`${format(new Date(reference.timestamp * 1000), 'PP')}\n${
                         reference.label
                       }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
-                          <span>
-                            {`${moment.utc(reference.timestamp * 1000).format('MMM YYYY')}`}
-                          </span>
+                          <span>{format(new Date(reference.timestamp * 1000), 'MMM yyyy')}</span>
                         </span>
                       </ShowIf>
                     </span>

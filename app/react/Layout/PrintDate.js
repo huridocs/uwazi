@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 const PrintDate = ({ utc, toLocal }) => {
   let date;
   if (!toLocal) {
-    date = moment.utc(utc).format('ll');
+    date = format(new Date(utc), 'PP');
   }
 
   if (toLocal) {
-    date = moment(moment(utc).toDate()).format('ll');
+    date = format(new Date(utc), 'PP');
   }
   return <span>{date}</span>;
 };

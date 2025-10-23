@@ -6,7 +6,6 @@ import React from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import moment from 'moment';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { I18NUtils } from 'app/I18N';
@@ -91,7 +90,6 @@ describe('RouteHandler', () => {
     });
 
     it('should set the locales of the different stores and services', () => {
-      expect(moment.locale()).toBe('de');
       expect(api.locale).toHaveBeenCalledWith('de');
       expect(I18NUtils.saveLocale).toHaveBeenCalledWith('de');
     });

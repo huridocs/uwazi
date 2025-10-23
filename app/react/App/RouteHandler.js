@@ -4,14 +4,12 @@ import { I18NUtils } from 'app/I18N';
 import { isClient } from 'app/utils';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 const getLocale = ({ store }) => store.getState().locale;
 
 const setLocale = locale => {
-  moment.locale(locale);
   api.locale(locale);
   I18NUtils.saveLocale(locale);
 };

@@ -5,38 +5,39 @@ import DatePickerComponent, { registerLocale } from 'react-datepicker';
 import * as localization from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import moment from 'moment-timezone';
+import { endOfDay as dateEndOfDay, getUnixTime } from 'date-fns';
 
 const removeOffset = (useTimezone, value) => {
   let datePickerValue = null;
   const miliseconds = value * 1000;
   if (value) {
-    const newValue = moment.utc(miliseconds);
+    let newValue = new Date(miliseconds);
 
     if (!useTimezone) {
       // in order to get the system offset for the specific date we
-      // need to create a new not UTC moment object with the original timestamp
-      newValue.subtract(moment(moment(miliseconds)).utcOffset(), 'minutes');
+      // need to create a new not UTC Date object with the original timestamp
+      const offsetMinutes = new Date(miliseconds).getTimezoneOffset();
+      newValue = new Date(miliseconds + offsetMinutes * 60 * 1000);
     }
 
-    datePickerValue = parseInt(newValue.locale('en').format('x'), 10);
+    datePickerValue = newValue.getTime();
   }
 
   return datePickerValue;
 };
 
 const addOffset = (useTimezone, endOfDay, value) => {
-  const newValue = moment.utc(value);
+  let newValue = new Date(value);
 
   if (!useTimezone) {
-    // in order to get the proper offset moment has to be initialized with the actual date
-    // without this you always get the "now" moment offset
-    newValue.add(moment(value).utcOffset(), 'minutes');
+    // in order to get the proper offset we need to use the actual date
+    // without this you always get the "now" offset
+    const offsetMinutes = new Date(value).getTimezoneOffset();
+    newValue = new Date(value - offsetMinutes * 60 * 1000);
   }
 
   if (endOfDay) {
-    const method = useTimezone ? newValue.local() : newValue.utc();
-    method.endOf('day');
+    newValue = dateEndOfDay(newValue);
   }
 
   return newValue;
@@ -56,7 +57,7 @@ class DatePicker extends Component {
       onChange(null);
     } else {
       const newValue = addOffset(useTimezone, endOfDay, datePickerValue);
-      onChange(parseInt(newValue.locale('en').format('X'), 10));
+      onChange(getUnixTime(newValue));
     }
   }
 

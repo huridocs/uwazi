@@ -1,5 +1,6 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import moment from 'moment';
+import { Locale } from 'date-fns';
+import * as dateFnsLocales from 'date-fns/locale';
 import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //Module has no types
@@ -47,19 +48,66 @@ const titleFormat = (locale: string) => {
       return 'MM y';
   }
 };
+const getDateFnsLocale = (language: string): Locale | undefined => {
+  const localeMap: Record<string, Locale> = {
+    en: dateFnsLocales.enUS,
+    ar: dateFnsLocales.ar,
+    es: dateFnsLocales.es,
+    fr: dateFnsLocales.fr,
+    de: dateFnsLocales.de,
+    pt: dateFnsLocales.pt,
+    ru: dateFnsLocales.ru,
+    zh: dateFnsLocales.zhCN,
+    'zh-CN': dateFnsLocales.zhCN,
+    ja: dateFnsLocales.ja,
+    ko: dateFnsLocales.ko,
+    hu: dateFnsLocales.hu,
+    he: dateFnsLocales.he,
+    fa: dateFnsLocales.faIR,
+  };
+  return localeMap[language] || dateFnsLocales.enUS;
+};
+
 const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
-  const localeData = moment.localeData(language);
+  const locale = getDateFnsLocale(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
+
+  // Get locale-specific data from date-fns
+  const weekdays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(2024, 0, i); // Start from Sunday
+    return locale?.localize?.day(date.getDay(), { width: 'wide' }) || '';
+  });
+
+  const weekdaysShort = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(2024, 0, i);
+    return locale?.localize?.day(date.getDay(), { width: 'abbreviated' }) || '';
+  });
+
+  const weekdaysMin = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(2024, 0, i);
+    return locale?.localize?.day(date.getDay(), { width: 'narrow' }) || '';
+  });
+
+  const months = Array.from(
+    { length: 12 },
+    (_, i) => locale?.localize?.month(i, { width: 'wide' }) || ''
+  );
+
+  const monthsShort = Array.from(
+    { length: 12 },
+    (_, i) => locale?.localize?.month(i, { width: 'abbreviated' }) || ''
+  );
+
   return {
-    days: localeData.weekdays(),
-    daysShort: localeData.weekdaysShort(),
-    daysMin: localeData.weekdaysMin(),
-    months: localeData.months(),
-    monthsShort: localeData.monthsShort(),
+    days: weekdays,
+    daysShort: weekdaysShort,
+    daysMin: weekdaysMin,
+    months,
+    monthsShort,
     today: labelToday,
     monthsTitle: t('System', 'Months', null, false),
     clear: labelClear,
-    weekStart: localeData.firstDayOfWeek(),
+    weekStart: locale?.options?.weekStartsOn || 0,
     format: 'dd/mm/yyyy',
     titleFormat: titleFormat(language),
     rtl: isRTL,

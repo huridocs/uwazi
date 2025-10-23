@@ -2,7 +2,7 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
-import moment from 'moment';
+import { parse } from 'date-fns';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientSettings } from 'app/apiResponseTypes';
 import * as activityLogAPI from 'V2/api/activityLog';
@@ -35,9 +35,9 @@ interface ActivityLogSearchParams {
   limit?: number;
 }
 
-const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
-  const fromDate = from && moment(from, dateFormat).toDate().getTime();
-  const toDate = to && moment(to, dateFormat).toDate().getTime();
+const timeFilter = (from?: string, to?: string, dateFormat = 'yyyy-MM-dd') => {
+  const fromDate = from && parse(from, dateFormat, new Date()).getTime();
+  const toDate = to && parse(to, dateFormat, new Date()).getTime();
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 
@@ -48,7 +48,7 @@ const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {})
 
 const getQueryParamsBySearchParams = (
   searchParams: ActivityLogSearchParams,
-  dateFormat = 'YYYY-MM-DD'
+  dateFormat = 'yyyy-MM-dd'
 ) => {
   const {
     username,
@@ -61,7 +61,7 @@ const getQueryParamsBySearchParams = (
     page = 1,
     limit = ITEMS_PER_PAGE,
   } = searchParams;
-  const time = timeFilter(from, to, dateFormat.toUpperCase());
+  const time = timeFilter(from, to, dateFormat);
   const sortOptions = sortParam(sort, order);
   const methodList = isArray(method) ? method : [method];
   const params = {
@@ -89,7 +89,7 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
 const activityLogLoader =
   (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
   async ({ request }) => {
-    const { settings } = handlerContext || { dateFormat: 'YYYY-MM-DD' };
+    const { settings } = handlerContext || { dateFormat: 'yyyy-MM-dd' };
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
     const params = getQueryParamsBySearchParams(searchParams, settings?.dateFormat);
