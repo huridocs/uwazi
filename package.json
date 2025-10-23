@@ -373,7 +373,7 @@
     "sass-loader": "16.0.4",
     "storybook": "^8.1.11",
     "stream-mock": "^2.0.5",
-    "supertest": "7.0.0",
+    "supertest": "7.1.4",
     "svg-inline-loader": "^0.8.2",
     "tailwindcss": "3.4.17",
     "terser-webpack-plugin": "^5.3.11",
