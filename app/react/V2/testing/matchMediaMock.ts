@@ -1,13 +1,7 @@
-type MatchMediaHelper = {
-  matchMediaMock: jest.Mock<any, any>;
-  listeners: Array<(event: MediaQueryListEvent) => void>;
-  restore: () => void;
-};
-
-export const setupMatchMediaMock = (): MatchMediaHelper => {
+export const setupMatchMediaMock = () => {
   const listeners: Array<(event: MediaQueryListEvent) => void> = [];
 
-  const matchMediaMock: jest.Mock = jest.fn().mockImplementation((query: string) => ({
+  const matchMediaMock = jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
