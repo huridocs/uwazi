@@ -149,7 +149,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <div>rels content</div>,
+          content: <div no-translate>rels content</div>,
         },
       ],
       [MAIN_TABS.METADATA]: [
@@ -161,7 +161,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <div>rels content</div>,
+          content: <div no-translate>rels content</div>,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -216,7 +216,7 @@ const Entity = () => {
                 />
               }
             >
-              Relationships
+              <span no-translate>Relationships</span>
             </Tabs.Tab>
           </Tabs>
         </PaneLayout.Pane>
