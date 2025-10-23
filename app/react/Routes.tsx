@@ -112,7 +112,7 @@ const getRoutesLayout = (
     </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} /> */}
     <Route
-      path="entity/:sharedId/:tabView?"
+      path="entity/:sharedId"
       element={<Entity />}
       loader={entityLoader(headers)}
       shouldRevalidate={entityShouldRevalidate}

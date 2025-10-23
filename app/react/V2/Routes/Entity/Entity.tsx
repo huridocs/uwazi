@@ -4,7 +4,7 @@ import {
   LoaderFunction,
   ShouldRevalidateFunctionArgs,
   useLoaderData,
-  useParams,
+  useSearchParams,
 } from 'react-router';
 import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
@@ -36,13 +36,19 @@ type LoaderResponse = EntityType | undefined;
 const shouldRevalidate = ({
   currentParams,
   nextParams,
+  currentUrl,
+  nextUrl,
   defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean => {
-  if (defaultShouldRevalidate || currentParams.sharedId !== nextParams.sharedId) {
+  if (currentParams.sharedId !== nextParams.sharedId) {
     return true;
   }
 
-  return false;
+  if (currentUrl?.pathname === nextUrl?.pathname && currentUrl?.search !== nextUrl?.search) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
 };
 
 const entityLoader =
@@ -86,25 +92,41 @@ const entityLoader =
 
 const Entity = () => {
   const entity = useLoaderData<LoaderResponse>();
-  const { tabView } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [activeMainTab, setActiveMainTab] = useState<MainTabId>(() => {
-    if (tabView) {
-      return tabView as MainTabId;
+    const mainTab = searchParams.get('main');
+    if (mainTab) {
+      return mainTab as MainTabId;
     }
     if (entity?.documents?.length) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
   });
-  const [activeSideTab, setActiveSideTab] = useState<SideTabId | undefined>(undefined);
+
+  const [activeSideTab, setActiveSideTab] = useState<SideTabId | undefined>(() => {
+    const sideTab = searchParams.get('side');
+    return sideTab ? (sideTab as SideTabId) : undefined;
+  });
 
   const onMainTabChange = (selectedMainTab: string) => {
     setActiveMainTab(selectedMainTab as MainTabId);
     setActiveSideTab(undefined);
+    const next = new URLSearchParams(searchParams.toString());
+    next.set('main', selectedMainTab);
+    next.delete('side');
+    setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
   const onSideTabChange = (selectedSideTab: string) => {
     setActiveSideTab(selectedSideTab as SideTabId);
+    const next = new URLSearchParams(searchParams.toString());
+    next.set('side', selectedSideTab);
+    if (!next.get('main')) {
+      next.set('main', activeMainTab);
+    }
+    setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
   const sideTabsByMain: Record<
