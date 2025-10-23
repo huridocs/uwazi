@@ -1,8 +1,8 @@
+import React from 'react';
 import { captureException } from '@sentry/react';
 import { isClient } from 'app/utils';
-import { notificationAtom, atomStore } from 'app/V2/atoms';
 import { Translate } from 'app/I18N';
-import React from 'react';
+import { notificationAtom, atomStore } from 'app/V2/atoms';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -50,5 +50,5 @@ const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   }));
 };
 
-export { handledErrors, handleUnexpectedError };
+export { handledErrors, handleUnexpectedError, reportErrorToSentry };
 export type { RequestError };

@@ -86,9 +86,32 @@ describe('Share Entities', () => {
   it('should be able to see and edit entities as a collaborator', () => {
     cy.visit('http://localhost:3000/logout');
     clearCookiesAndLogin('colla', 'borator');
-    cy.contains('Ordenes del presidente', { timeout: 300 });
-    selectRestrictedEntities();
+
+    cy.contains('Ordenes del presidente', { timeout: 5000 });
+    cy.get('aside.library-filters').should('be.visible');
+
+    cy.get('aside.library-filters')
+      .contains('li', 'Restricted')
+      .should('be.visible')
+      .and('contain', '3');
+
+    cy.contains('CorteIDH').should('exist');
+
+    cy.contains('.search__filter .multiselectItem', 'Published')
+      .find('svg.checkbox-checked')
+      .should('be.visible', { timeout: 5000 });
+    cy.contains('.search__filter .multiselectItem', 'Restricted')
+      .find('svg.checkbox-checked')
+      .should('be.visible', { timeout: 5000 });
+
+    cy.intercept('GET', '/api/search*unpublished=true*').as('librarySearch');
+    cy.get('#publishedStatuspublished').click({ force: true });
+
+    cy.wait('@librarySearch');
+
+    cy.contains('CorteIDH').should('not.exist', { timeout: 5000 });
     cy.get('.item').should('have.length', 3);
+
     checkCanEdit(titleEntity1, false);
     checkCanEdit(titleEntity3);
     checkCanEdit(titleEntity4);

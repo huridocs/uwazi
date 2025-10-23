@@ -38,6 +38,7 @@ const fixtures = {
     ]),
     factory.template('template2', [
       {
+        _id: factory.id('relationshipProp2'),
         name: 'relationshipProp2',
         type: 'newRelationship',
         label: 'relationshipProp2',
@@ -46,6 +47,7 @@ const fixtures = {
     ]),
     factory.template('template3', [
       {
+        _id: factory.id('relationshipProp3'),
         name: 'relationshipProp3',
         type: 'newRelationship',
         label: 'relationshipProp3',
@@ -54,6 +56,7 @@ const fixtures = {
     ]),
     factory.template('template4', [
       {
+        _id: factory.id('textprop'),
         name: 'textprop',
         type: 'text',
         label: 'textProp',
@@ -79,7 +82,7 @@ describe('getAllProperties()', () => {
     expect(result[1]).toBeInstanceOf(RelationshipProperty);
     expect(result[2]).toBeInstanceOf(RelationshipProperty);
     expect(result[3]).toBeInstanceOf(Property);
-    expect(result).toMatchObject([
+    expect(result.map(p => ({ template: p.template.toString(), name: p.name }))).toMatchObject([
       {
         name: 'relationshipProp1',
         template: factory.id('template1').toHexString(),

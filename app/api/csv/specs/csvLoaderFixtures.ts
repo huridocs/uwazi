@@ -113,42 +113,50 @@ export default {
       name: 'base template',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'text label',
           name: templateUtils.safeName('text label'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'header.with. dots',
           name: templateUtils.safeName('header.with.dots'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.numeric,
           label: 'numeric label',
           name: templateUtils.safeName('numeric label'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.select,
           label: 'Select Label',
           name: templateUtils.safeName('select label'),
           content: thesauri1Id.toString(),
         },
         {
+          _id: db.id(),
           type: 'non_defined_type',
           label: 'not defined type',
           name: templateUtils.safeName('not defined type'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.geolocation,
           label: 'geolocation',
           name: templateUtils.safeName('geolocation_geolocation'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.generatedid,
           label: 'Auto ID',
           name: templateUtils.safeName('auto id'),
@@ -160,6 +168,7 @@ export default {
           name: templateUtils.safeName('additional tag(s)', true),
         },
         {
+          _id: db.id(),
           type: propertyTypes.multiselect,
           label: 'Multi Select Label',
           name: templateUtils.safeName('multi_select_label'),
@@ -171,17 +180,20 @@ export default {
           name: templateUtils.safeName('Date label'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.text,
           label: 'Language',
           name: templateUtils.safeName('Language'),
         },
         {
+          _id: db.id(),
           type: propertyTypes.select,
           label: 'Select with spaces',
           name: templateUtils.safeName('select_with_spaces'),
           content: thesaurusWithSpacesId.toString(),
         },
         {
+          _id: db.id(),
           type: propertyTypes.multiselect,
           label: 'Multiselect with spaces',
           name: templateUtils.safeName('multiselect_with_spaces'),
@@ -192,9 +204,18 @@ export default {
     {
       _id: templateWithGeneratedTitle,
       name: 'template with generated title',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text', generatedId: true }],
+      commonProperties: [
+        {
+          _id: db.id(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          generatedId: true,
+        },
+      ],
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.numeric,
           label: 'numeric label',
           name: templateUtils.safeName('numeric label'),

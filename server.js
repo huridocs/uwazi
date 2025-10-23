@@ -9,10 +9,11 @@ const { NODE_ENV } = process.env;
 require.extensions['.scss'] = function scss() {};
 require.extensions['.css'] = function css() {};
 
+process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
+
 (async () => {
   if (NODE_ENV === 'production') {
     try {
-      process.env.ROOT_PATH = process.env.ROOT_PATH || require('path').resolve(__dirname, '..');
       require('./app/server.js');
     } catch (e) {
       console.error(e);
@@ -23,7 +24,6 @@ require.extensions['.css'] = function css() {};
       );
     }
   } else {
-    process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
     require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
     require('./app/server.js');
   }

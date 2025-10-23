@@ -24,16 +24,7 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
 };
 
 export default {
-  async save(
-    template: TemplateSchema,
-    language: string,
-    _reindex = true,
-    fullReindex = false,
-    _onTemplateProcessed: (
-      error?: Error,
-      denormalizationExecuted?: boolean
-    ) => Promise<void> = async () => {}
-  ) {
+  async save(template: TemplateSchema, language: string, _reindex = true, fullReindex = false) {
     if (!template._id) {
       return TemplateFacade.create(template);
     }
