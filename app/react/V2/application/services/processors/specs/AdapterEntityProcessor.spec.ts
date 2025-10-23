@@ -6,6 +6,7 @@ import {
   MultiSelectMetadataProperty,
   LinkMetadataProperty,
 } from 'app/V2/domain/entities/types';
+import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
 import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
 import { AdapterEntityProcessor } from '../AdapterEntityProcessor';
 
@@ -250,7 +251,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/entity.witness-maria',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.witness-maria`,
             value: 'entity.witness-maria',
           },
         },
@@ -260,7 +261,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/entity.witness-maria',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.witness-maria`,
             value: 'entity.witness-maria',
           },
         },
@@ -270,7 +271,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/entity.reporter-john',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.reporter-john`,
           },
         },
         {
@@ -283,7 +284,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/entity.reporter-john',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.reporter-john`,
           },
         },
       ],
