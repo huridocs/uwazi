@@ -1,17 +1,17 @@
 import Ajv, { ErrorObject } from 'ajv';
 import { ObjectId } from 'mongodb';
 
-import model from 'api/templates/templatesModel';
-import templates from 'api/templates';
 import pages from 'api/pages';
+import templates from 'api/templates';
+import model from 'api/templates/templatesModel';
 import { thesauri } from 'api/thesauri/thesauri';
 
-import { ensure, wrapValidator } from 'shared/tsUtils';
-import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import { getCompatibleTypes } from 'shared/propertyTypes';
+import { ensure } from 'shared/tsUtils';
+import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 
-import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
+import { TemplateSchema } from './templateType';
 
 export const emitSchemaTypes = true;
 
@@ -318,6 +318,3 @@ export const templateSchema = {
     },
   },
 };
-
-const validateTemplate = wrapValidator(ajv.compile(templateSchema));
-export { validateTemplate, getCompatibleTypes };
