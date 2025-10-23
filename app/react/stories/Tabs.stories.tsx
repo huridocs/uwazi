@@ -15,7 +15,7 @@ const Primary: Story = {
       <Tabs
         unmountTabs={args.unmountTabs}
         onTabSelected={args.onTabSelected}
-        className="md:w-2/3 w-full"
+        tabListClassName="md:w-2/3 w-full"
       >
         <Tabs.Tab id="tab1" label="Tab 1">
           <div className="py-4">

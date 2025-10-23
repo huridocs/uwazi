@@ -132,7 +132,7 @@ const PageEditor = () => {
         />
 
         <SettingsContent.Body>
-          <Tabs unmountTabs={false} className="md:w-2/3 w-full">
+          <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
               <form>
                 <input className="hidden" {...register('sharedId')} />

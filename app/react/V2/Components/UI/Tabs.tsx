@@ -19,6 +19,7 @@ interface TabsProps {
   initialTabId?: string;
   unmountTabs?: boolean;
   className?: string;
+  tabListClassName?: string;
 }
 
 const Tabs = ({
@@ -26,6 +27,7 @@ const Tabs = ({
   onTabSelected,
   initialTabId,
   className,
+  tabListClassName,
   unmountTabs = true,
 }: TabsProps) => {
   const tabChildren = Array.isArray(children) ? children : [children];
@@ -47,11 +49,11 @@ const Tabs = ({
   const inactiveClass = 'text-gray-500';
 
   return (
-    <div className="flex flex-col h-full">
+    <div className={`flex flex-col h-full ${className ?? ''}`}>
       <div
         role="tablist"
         aria-orientation="horizontal"
-        className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow divide-x-2 divide-gray-100 w-max ${className || ''}`}
+        className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow divide-x-2 divide-gray-100 w-max ${tabListClassName || ''}`}
         data-testid="tabs-comp"
       >
         {tabChildren.map(child => (
@@ -72,7 +74,7 @@ const Tabs = ({
           </button>
         ))}
       </div>
-      <div className="py-4 grow">
+      <div className="py-4 grow overflow-y-auto">
         {tabChildren.map(child => {
           const isActive = child.props.id === activeTab;
 
