@@ -311,6 +311,33 @@ export const rawEntity: EntitySchema = {
     },
   ],
   obsoleteMetadata: [],
+  documents: [
+    {
+      _id: 'd1',
+      originalname: 'MockPDF.pdf',
+      mimetype: 'application/pdf',
+      filename: '16116590902796ifv9bxjnvk.pdf',
+      size: 1,
+      entity: 'test-incident-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'en',
+      totalPages: 1,
+    },
+  ],
+  attachments: [
+    {
+      _id: 'a1',
+      originalname: 'my_image.jpg',
+      mimetype: 'image/jpg',
+      filename: 'a1.jpg',
+      size: 1,
+      entity: 'test-incident-001',
+      type: 'attachment',
+      creationDate: 1,
+    },
+  ],
   __v: 11,
 };
 
