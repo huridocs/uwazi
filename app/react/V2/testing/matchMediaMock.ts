@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 export const setupMatchMediaMock = () => {
   const listeners: Array<(event: MediaQueryListEvent) => void> = [];
 
