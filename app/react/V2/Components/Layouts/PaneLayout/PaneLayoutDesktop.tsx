@@ -89,6 +89,14 @@ const PaneLayoutDesktop = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    if (
+      widthsRef.current &&
+      widthsRef.current.length === children.length &&
+      widthsRef.current.some(w => w > 0)
+    ) {
+      return;
+    }
+
     const containerRect = containerRef.current.getBoundingClientRect();
     const containerWidth = containerRect.width || 1;
     const separatorCount = children.length - 1;

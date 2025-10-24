@@ -6,6 +6,7 @@ import {
   MultiSelectMetadataProperty,
   LinkMetadataProperty,
 } from 'app/V2/domain/entities/types';
+import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
 import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
 import { AdapterEntityProcessor } from '../AdapterEntityProcessor';
 
@@ -250,7 +251,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/entity.witness-maria',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.witness-maria`,
             value: 'entity.witness-maria',
           },
         },
@@ -260,7 +261,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             icon: 'ECU',
             label: 'Maria Rodriguez - Witness',
-            url: '/entityv2/entity.witness-maria',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.witness-maria`,
             value: 'entity.witness-maria',
           },
         },
@@ -270,7 +271,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/entity.reporter-john',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.reporter-john`,
           },
         },
         {
@@ -283,7 +284,7 @@ describe('Adapter Entity Processor Tests', () => {
           source: {
             value: 'entity.reporter-john',
             label: 'John Smith - Reporter',
-            url: '/entityv2/entity.reporter-john',
+            url: `${DEFAULT_ENTITY_BASE_PATH}entity.reporter-john`,
           },
         },
       ],
@@ -344,8 +345,8 @@ describe('Adapter Entity Processor Tests', () => {
       translatedLabel: 'Preview Document EN',
       values: [
         {
-          value: '',
-          alt: 'Image not described',
+          alt: 'MockPDF.pdf',
+          value: '/api/files/d1.jpg',
         },
       ],
     };
@@ -706,5 +707,45 @@ describe('Adapter Entity Processor Tests', () => {
     };
 
     expect(metadataWithOptions[7]).toMatchObject(selectPropertyWithOptions);
+  });
+
+  it('should include supporting files', () => {
+    const contextWithOptions = {
+      ...processingContext,
+      includeSupportingFiles: true,
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithOptions);
+    const result = processor.processEntity(rawEntity);
+    const { documents, attachments } = result.entity;
+
+    expect(documents).toMatchObject([
+      {
+        _id: 'd1',
+        creationDate: 1,
+        entity: 'test-incident-001',
+        filename: '16116590902796ifv9bxjnvk.pdf',
+        language: 'en',
+        mimetype: 'application/pdf',
+        originalname: 'MockPDF.pdf',
+        size: 1,
+        status: 'ready',
+        totalPages: 1,
+        type: 'document',
+      },
+    ]);
+
+    expect(attachments).toMatchObject([
+      {
+        _id: 'a1',
+        creationDate: 1,
+        entity: 'test-incident-001',
+        filename: 'a1.jpg',
+        mimetype: 'image/jpg',
+        originalname: 'my_image.jpg',
+        size: 1,
+        type: 'attachment',
+      },
+    ]);
   });
 });
