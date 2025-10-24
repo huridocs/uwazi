@@ -8,9 +8,9 @@
 header {
   width: 100%;
   z-index: 6;
-  position: sticky;
+  position: fixed;
   top: 0;
-  //min-height: materials.$header-height;
+  min-height: materials.$header-height;
   justify-content: space-between;
   background: colors.$c-theme;
   border-bottom: 1px solid colors.$c-grey-light;
