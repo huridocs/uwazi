@@ -5,42 +5,23 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'jotai';
 import { serverIsMobileAtom } from 'V2/atoms/isMobileAtom';
-import { TestAtomStoreProvider } from 'V2/testing/TestAtomStoreProvider';
+import { setupMatchMediaMock, TestAtomStoreProvider } from 'V2/testing';
 import { useIsMobile, MOBILE_VIEW_MAX_WIDTH } from '../useIsMobile';
 
 describe('useIsMobile', () => {
   let matchMediaMock: jest.Mock;
   let listeners: ((event: MediaQueryListEvent) => void)[] = [];
+  let mediaMock: ReturnType<typeof setupMatchMediaMock>;
 
   beforeEach(() => {
-    listeners = [];
-    matchMediaMock = jest.fn().mockImplementation((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: jest.fn((event: string, handler: (event: MediaQueryListEvent) => void) => {
-        if (event === 'change') {
-          listeners.push(handler);
-        }
-      }),
-      removeEventListener: jest.fn(
-        (event: string, handler: (event: MediaQueryListEvent) => void) => {
-          if (event === 'change') {
-            listeners = listeners.filter(l => l !== handler);
-          }
-        }
-      ),
-      dispatchEvent: jest.fn(),
-    }));
-
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: matchMediaMock,
-    });
+    mediaMock = setupMatchMediaMock();
+    matchMediaMock = mediaMock.matchMediaMock;
+    listeners = mediaMock.listeners as unknown as typeof listeners;
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    mediaMock.restore();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => <Provider>{children}</Provider>;

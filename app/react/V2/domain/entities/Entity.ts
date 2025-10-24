@@ -1,4 +1,5 @@
-import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { EntityPermissions, MetadataProperty, DateMetadataProperty, EntityTemplate } from './types';
 
 export interface Entity {
@@ -12,5 +13,7 @@ export interface Entity {
   readonly icon?: { _id: string } | any;
   readonly permissions?: EntityPermissions;
   metadata: MetadataProperty[];
-  rawEntity?: EntitySchema;
+  rawEntity?: EntityWithFilesSchema;
+  documents?: FileType[];
+  attachments?: FileType[];
 }
