@@ -100,7 +100,7 @@ const Entity = () => {
     if (mainTab) {
       return mainTab as MainTabId;
     }
-    if (entity?.documents?.length) {
+    if (entity?.documents?.length && entity.documents[0].filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
@@ -193,7 +193,7 @@ const Entity = () => {
               id={MAIN_TABS.DOCUMENT}
               label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
             >
-              {entity?.documents?.[0].filename ? (
+              {entity?.documents?.[0]?.filename ? (
                 <PDF fileUrl={`/api/files/${entity.documents[0].filename}`} />
               ) : (
                 <Translate>Loading</Translate>
