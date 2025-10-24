@@ -1,5 +1,5 @@
 import Ajv, { ErrorObject } from 'ajv';
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from 'api/core/v1_layer/templates/templatesModel';
 import { wrapValidator } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
 import { PropertySchema } from 'shared/types/commonTypes';

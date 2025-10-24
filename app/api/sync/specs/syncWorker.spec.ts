@@ -16,7 +16,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships';
 import relationtypes from 'api/relationtypes';
 import syncRoutes from 'api/sync/routes';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import users from 'api/users/users';

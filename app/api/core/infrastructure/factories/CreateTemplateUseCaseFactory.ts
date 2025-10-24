@@ -2,7 +2,7 @@ import {
   DefaultIdGenerator,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';

@@ -1,5 +1,5 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';

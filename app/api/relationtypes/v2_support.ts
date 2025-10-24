@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
+import { CreateTemplateService } from 'api/core/v1_layer/templates.v2/services/service_factories';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 const getNewRelationshipCount = async (id: ObjectId) => {

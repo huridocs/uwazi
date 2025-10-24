@@ -5,8 +5,8 @@ import { RelationshipProperty } from 'api/core/domain/template/RelationshipPrope
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from '../../../core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../../../core/infrastructure/mongodb/template/QueryMapper';
+import { MongoTemplatesDataSource } from '../../../../infrastructure/mongodb/template/MongoTemplatesDataSource';
+import { mapPropertyQuery } from '../../../../infrastructure/mongodb/template/QueryMapper';
 
 const factory = getFixturesFactory();
 

@@ -9,7 +9,7 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   PropertyOrThesaurusSchema,
-} from '../utils';
+} from '../templateUtils';
 
 describe('templates utils', () => {
   beforeEach(async () => {

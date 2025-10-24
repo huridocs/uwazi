@@ -6,11 +6,11 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { CommonProperty } from '../../core/domain/template/CommonProperty';
-import { Property } from '../../core/domain/template/Property';
-import { RelationshipProperty } from '../../core/domain/template/RelationshipProperty';
-import { Template } from '../../core/domain/template/Template';
-import { V1RelationshipProperty } from '../../core/domain/template/V1RelationshipProperty';
+import { CommonProperty } from '../../../domain/template/CommonProperty';
+import { Property } from '../../../domain/template/Property';
+import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
+import { Template } from '../../../domain/template/Template';
+import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>

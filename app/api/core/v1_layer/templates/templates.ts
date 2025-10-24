@@ -35,25 +35,6 @@ export default {
     );
   },
 
-  async canDeleteProperty(
-    template: ObjectId,
-    property: ObjectId | string | undefined,
-    session?: ClientSession
-  ) {
-    const tmps = await model.get({}, undefined, { session });
-    return tmps.every(iteratedTemplate =>
-      (iteratedTemplate.properties || []).every(
-        iteratedProperty =>
-          !iteratedProperty.content ||
-          !iteratedProperty.inherit?.property ||
-          !(
-            iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inherit.property.toString() === (property || '').toString()
-          )
-      )
-    );
-  },
-
   async get(query: any = {}) {
     return model.get(query);
   },

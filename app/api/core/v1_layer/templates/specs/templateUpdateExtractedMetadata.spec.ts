@@ -1,9 +1,9 @@
 import { files } from 'api/files';
-import translations from 'api/i18n/translations';
 import * as setupSockets from 'api/socketio/setupSockets';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
+import templates from '../templates';
 import fixtures, {
   propertyA,
   propertyB,
@@ -11,7 +11,6 @@ import fixtures, {
   propertyD,
   templateWithExtractedMetadata,
 } from './fixtures/fixtures';
-import templates from '../templates';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
@@ -21,7 +20,6 @@ async function updateTemplate(template: TemplateSchema, language = 'en') {
 describe('updateExtractedMetadataProperties', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, true);
-    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
   });
 
   afterAll(async () => {

@@ -1,7 +1,7 @@
 import { WithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty';
-import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
+import { validateCreateNewRelationshipProperty } from 'api/core/v1_layer/templates.v2/routes/validators/createNewRelationshipProperty';
+import { CreateTemplateService } from 'api/core/v1_layer/templates.v2/services/service_factories';
 import { ensure } from 'shared/tsUtils';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';

@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { elasticTesting } from 'api/utils/elastic_testing';
@@ -10,6 +10,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
+import * as idGenerator from 'shared/IDGenerator';
+import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from '../templates';
 
@@ -53,7 +55,7 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-async function updateTemplate(template: TemplateSchema, _updateV2 = false, fullReindex = false) {
+async function updateTemplate(template: TemplateSchema, fullReindex = false) {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
   return templates.save(template, 'en', true, fullReindex);
 }
@@ -729,9 +731,9 @@ describe('Templates Update', () => {
       templates: [...fixtures.templates, f.template('templateD', [f.property('text_property_d')])],
       entities: [],
     });
-    await updateTemplate(f.template('templateD', []), true);
+    await updateTemplate(f.template('templateD', []));
     await expect(async () =>
-      updateTemplate(f.template('templateD', [f.property('text_property_d', 'numeric')]), true)
+      updateTemplate(f.template('templateD', [f.property('text_property_d', 'numeric')]))
     ).rejects.toThrow('Reason: mapper');
     const templateD = (await testingEnvironment.db.getAllFrom('templates'))?.find(
       t => t.name === 'templateD'
@@ -760,12 +762,8 @@ describe('Templates Update', () => {
     expect((await getEntitiesByTemplate('templateB', 'elastic')).length).toBe(2);
     expect((await getEntitiesByTemplate('templateC', 'elastic')).length).toBe(0);
 
-    await updateTemplate(f.template('templateD', []), true);
-    await updateTemplate(
-      f.template('templateD', [f.property('text_property_d', 'numeric')]),
-      true,
-      true
-    );
+    await updateTemplate(f.template('templateD', []));
+    await updateTemplate(f.template('templateD', [f.property('text_property_d', 'numeric')]), true);
 
     await elasticTesting.refresh();
     expect((await elasticTesting.getIndexedFullTextFromFiles())[0].fullText_english).toBe(
@@ -775,5 +773,32 @@ describe('Templates Update', () => {
     expect((await getEntitiesByTemplate('templateA', 'elastic')).length).toBe(3);
     expect((await getEntitiesByTemplate('templateB', 'elastic')).length).toBe(2);
     expect((await getEntitiesByTemplate('templateC', 'elastic')).length).toBe(0);
+  });
+
+  describe('when there is a new property with generatedId type', () => {
+    it('should generate id for all entities related', async () => {
+      jest.spyOn(idGenerator, 'generateID').mockImplementation(() => 'generated_id');
+      jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
+      const templateToUpdate = f.template('templateA', [
+        { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
+      ]);
+
+      await updateTemplate(templateToUpdate);
+
+      const generatedIdEntities = (await testingEnvironment.db.getAllFrom('entities')).filter(
+        e => e.metadata.auto_id
+      );
+
+      expect(generatedIdEntities.length).toBe(6);
+      const generatedIds = generatedIdEntities.map(e => e.metadata.auto_id[0].value);
+      expect(generatedIds).toEqual([
+        'generated_id',
+        'generated_id',
+        'generated_id',
+        'generated_id',
+        'generated_id',
+        'generated_id',
+      ]);
+    });
   });
 });

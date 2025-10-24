@@ -1,7 +1,7 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
 import { MongoEntitiesDataSource } from './MongoEntitiesDataSource';
 
 const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) => {

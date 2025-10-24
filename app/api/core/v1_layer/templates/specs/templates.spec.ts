@@ -1,18 +1,17 @@
 /* eslint-disable max-statements */
-import db, { testingDB } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as idGenerator from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { FieldIsRequiredError } from 'api/core/domain/template/errors';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import templates from '../templates';
 import fixtures, {
+  factory,
   propertyToBeInherited,
   relatedTo,
-  swapTemplate,
   templateToBeInherited,
   thesauriId1,
 } from './fixtures/fixtures';
@@ -31,58 +30,35 @@ describe('templates', () => {
     });
 
     it('should return the saved template', async () => {
-      const newTemplate = {
-        name: 'created_template',
-        commonProperties: [
-          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
-          { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
-          { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
-        ],
-        properties: [
-          { label: 'fieldLabel', type: 'text' },
-          {
-            label: 'Generated ID new ',
-            type: 'generatedid',
-          },
-        ],
-      };
+      const { _id, ...newTemplate } = factory.template('created_template', [
+        factory.property('fieldLabel'),
+        factory.property('Generated_ID_new', 'generatedid'),
+      ]);
 
-      const template = await templates.save(newTemplate);
+      const template = await templates.save(newTemplate, 'en');
       expect(template._id).toBeDefined();
       expect(template.name).toBe('created_template');
       expect(template.properties[0].label).toEqual('fieldLabel');
     });
 
     it('should validate after generating property names', async () => {
-      const newTemplate = {
-        name: 'newTemplate',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
-        properties: [
-          { label: 'field label', type: 'text' },
-          { label: 'field_label', type: 'text' },
-        ],
-      };
+      const { _id, ...newTemplate } = factory.template('newTemplate', [
+        factory.property('field_label'),
+        factory.property('field_label'),
+      ]);
 
-      await expect(templates.save(newTemplate)).rejects.toHaveProperty('errors', [
+      await expect(templates.save(newTemplate, 'en')).rejects.toHaveProperty('errors', [
         expect.objectContaining({ keyword: 'uniquePropertyFields' }),
       ]);
     });
 
     it('should add it to translations with Entity type', async () => {
-      const newTemplate = {
-        name: 'created template',
-        commonProperties: [
-          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
-          { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
-          { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
-        ],
-        properties: [
-          { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'text' },
-        ],
-      };
+      const { _id, ...newTemplate } = factory.template('created template', [
+        factory.property('label_1', 'text', { label: 'label 1' }),
+        factory.property('label_2', 'text', { label: 'label 2' }),
+      ]);
 
-      const response = await templates.save(newTemplate);
+      const response = await templates.save(newTemplate, 'en');
 
       const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
         .getContextAndKeys(response._id.toString(), [
@@ -100,64 +76,27 @@ describe('templates', () => {
     });
 
     it('should assign a safe property name based on the label ', async () => {
-      const newTemplate = {
-        name: 'new template',
-        commonProperties: [
-          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
-          {
-            _id: testingDB.id(),
-            name: 'creationDate',
-            label: 'creationDate',
-            type: 'date',
-            isCommonProperty: true,
-          },
-          {
-            _id: testingDB.id(),
-            name: 'editDate',
-            label: 'editDate',
-            type: 'date',
-          },
-        ],
-        properties: [
-          { label: 'new label 1', type: 'text' },
-          { label: 'new label 2', type: 'select', content: thesauriId1.toString() },
-          { label: 'new label 3', type: 'image' },
-          { label: 'new label 4', type: 'text' },
-          { label: 'new label 5', type: 'geolocation' },
-        ],
-      };
+      const { _id, ...newTemplate } = factory.template('new template', [
+        factory.property('new label 1', 'text'),
+        factory.property('new label 2', 'select', { content: thesauriId1.toString() }),
+        factory.property('new label 3', 'image'),
+        factory.property('new label 4'),
+        factory.property('new label 5', 'geolocation'),
+      ]);
 
-      await templates.save(newTemplate);
+      await templates.save(newTemplate, 'en');
       const [createdTemplate] = await templates.get({ name: 'new template' });
 
-      expect(createdTemplate.properties[0].name).toEqual('new_label_1');
-      expect(createdTemplate.properties[1].name).toEqual('new_label_2');
-      expect(createdTemplate.properties[2].name).toEqual('new_label_3');
-      expect(createdTemplate.properties[3].name).toEqual('new_label_4');
-      expect(createdTemplate.properties[4].name).toEqual('new_label_5_geolocation');
+      expect(createdTemplate.properties?.[0].name).toEqual('new_label_1');
+      expect(createdTemplate.properties?.[1].name).toEqual('new_label_2');
+      expect(createdTemplate.properties?.[2].name).toEqual('new_label_3');
+      expect(createdTemplate.properties?.[3].name).toEqual('new_label_4');
+      expect(createdTemplate.properties?.[4].name).toEqual('new_label_5_geolocation');
     });
 
     it('should set a default value of [] to properties', async () => {
-      const newTemplate = {
-        name: 'new template default properties',
-        commonProperties: [
-          { name: 'title', label: 'Title', type: 'text', isCommonProperty: true },
-          {
-            _id: testingDB.id(),
-            name: 'creationDate',
-            label: 'creationDate',
-            type: 'date',
-            isCommonProperty: true,
-          },
-          {
-            _id: testingDB.id(),
-            name: 'editDate',
-            label: 'editDate',
-            type: 'date',
-          },
-        ],
-      };
-      await templates.save(newTemplate);
+      const { _id, ...newTemplate } = factory.template('new template default properties');
+      await templates.save(newTemplate, 'en');
 
       const [newCreatedTemplate] = await templates.get({ name: 'new template default properties' });
       expect(newCreatedTemplate.properties).toEqual([]);
@@ -238,7 +177,7 @@ describe('templates', () => {
   });
 
   describe('inherit', () => {
-    let savedTemplate;
+    let savedTemplate: TemplateSchema;
     beforeAll(async () => {
       savedTemplate = await TemplateFacade.createWithDefaultValues({
         name: 'template inherit',
@@ -270,9 +209,10 @@ describe('templates', () => {
     });
 
     it('should remove denormalized type when removing inheritance', async () => {
-      savedTemplate.properties[0].inherit.property = '';
+      savedTemplate.properties![0]!.inherit!.property = '';
       const resavedTemplate = await templates.save(savedTemplate, 'en', false);
-      expect(resavedTemplate.properties[0].inherit).not.toBeDefined();
+      //@ts-ignore
+      expect(resavedTemplate.properties?.[0].inherit).not.toBeDefined();
     });
   });
 
@@ -284,26 +224,11 @@ describe('templates', () => {
       };
 
       try {
-        await TemplateFacade.createWithDefaultValues(tpl, 'en');
+        await TemplateFacade.createWithDefaultValues(tpl);
         fail('should throw validation error');
       } catch (error) {
         expect(error).toBeInstanceOf(FieldIsRequiredError);
       }
-    });
-  });
-
-  describe('canDeleteProperty()', () => {
-    it('should return false if the property is been inherited by others', async () => {
-      const canDelete = await templates.canDeleteProperty(
-        templateToBeInherited,
-        propertyToBeInherited
-      );
-      expect(canDelete).toBe(false);
-    });
-
-    it('should be true for other properties', async () => {
-      const canDelete = await templates.canDeleteProperty(swapTemplate, 'notMatchingId');
-      expect(canDelete).toBe(true);
     });
   });
 });

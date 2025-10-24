@@ -3,7 +3,7 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { IXSuggestionType } from 'shared/types/suggestionType';
