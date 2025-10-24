@@ -361,18 +361,20 @@ const suggestionsTableColumnsBuilder = ({
   acceptSuggestions,
   openPdfSidepanel,
   markForTraining,
+  suggestions,
 }: {
   templates: ClientTemplateSchema[];
   acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>;
   openPdfSidepanel: (suggestion: TableSuggestion) => void;
   markForTraining: (suggestions: string[], use: boolean) => Promise<void>;
+  suggestions: TableSuggestion[];
 }) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
     ...(templates[0].properties || []),
   ];
 
-  const { titleWidth, contextWidth, valueWidth } = calculateOptimalProportions([]);
+  const { titleWidth, contextWidth, valueWidth } = calculateOptimalProportions(suggestions || []);
 
   return [
     suggestionColumnHelper.accessor('entityTitle', {
@@ -395,7 +397,7 @@ const suggestionsTableColumnsBuilder = ({
       cell: ({ cell, row }) => (
         <UsedForTrainingCell cell={cell} row={row} action={markForTraining} />
       ),
-      meta: { headerClassName: valueWidth },
+      meta: { headerClassName: 'w-0' },
       enableSorting: false,
     }),
     suggestionColumnHelper.display({
