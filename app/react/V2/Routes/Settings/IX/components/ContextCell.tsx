@@ -112,7 +112,7 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
       node =>
         React.isValidElement(node) &&
         (node.props as { className?: string }).className ===
-        ixContextClassnames.ix_adjacent_paragraph
+          ixContextClassnames.ix_adjacent_paragraph
     )
     .slice(-1);
 
@@ -122,7 +122,7 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
       node =>
         React.isValidElement(node) &&
         (node.props as { className?: string }).className ===
-        ixContextClassnames.ix_adjacent_paragraph
+          ixContextClassnames.ix_adjacent_paragraph
     )
     .slice(0, 1);
 
@@ -147,7 +147,7 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
       if (
         React.isValidElement(node) &&
         (node.props as { className?: string }).className ===
-        ixContextClassnames.ix_matching_paragraph
+          ixContextClassnames.ix_matching_paragraph
       ) {
         const truncatedHTML = truncateMatching(node);
         const elementType = node.type === 'p' ? 'span' : node.type;
@@ -160,7 +160,7 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
       if (
         React.isValidElement(node) &&
         (node.props as { className?: string }).className ===
-        ixContextClassnames.ix_adjacent_paragraph
+          ixContextClassnames.ix_adjacent_paragraph
       ) {
         const textContent = extractTextContent(node);
         const optimizedText = optimizeTextForDisplay(textContent);
@@ -296,7 +296,7 @@ const ContextCell = ({ text }: { text: string }) => {
       <Truncate
         maxLength={100}
         ellipsisPosition="center"
-        tooltipClassname="text-xs text-gray-700 inline-block w-[50vw] max-w-[600px] min-w-32 whitespace-normal"
+        tooltipClassname="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal"
       >
         {text}
       </Truncate>
@@ -307,7 +307,7 @@ const ContextCell = ({ text }: { text: string }) => {
     return (
       <Tooltip
         content={
-          <div className="text-xs text-gray-700 inline-block w-[50vw] max-w-[600px] min-w-32 whitespace-normal">
+          <div className="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal">
             {fullHTML}
           </div>
         }

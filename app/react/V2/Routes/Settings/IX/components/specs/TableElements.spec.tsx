@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { TableSuggestion } from '../../types';
-import { analyzeContentWidths } from '../../helpers/contextHelpers';
+import { calculateOptimalProportions } from '../../helpers/contextHelpers';
 
 describe('TableElements - Unified Column Width Analysis', () => {
   describe('Basic Column Width Configuration', () => {
@@ -45,9 +45,9 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBe('w-1/3 min-w-[200px]');
+      expect(result.titleWidth).toBe('w-1/2 min-w-[200px]');
       expect(result.contextWidth).toBe('w-1/4');
       expect(result.valueWidth).toBe('w-1/4');
     });
@@ -62,11 +62,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBe('w-1/4 min-w-[150px]');
-      expect(result.contextWidth).toBe('w-1/6');
-      expect(result.valueWidth).toBe('w-1/2');
+      expect(result.titleWidth).toBe('w-1/4');
+      expect(result.contextWidth).toBe('w-1/4');
+      expect(result.valueWidth).toBe('w-1/2 min-w-[200px]');
     });
 
     it('should handle no values but has context', () => {
@@ -79,11 +79,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBe('w-1/4 min-w-[150px]');
-      expect(result.contextWidth).toBe('w-1/2');
-      expect(result.valueWidth).toBe('w-1/6');
+      expect(result.titleWidth).toBe('w-1/4');
+      expect(result.contextWidth).toBe('w-1/2 min-w-[200px]');
+      expect(result.valueWidth).toBe('w-1/4');
     });
   });
 
@@ -98,11 +98,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
       expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
-      expect(result.contextWidth).toBe('w-3/5');
-      expect(result.valueWidth).toBe('w-1/6');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
 
     it('should handle short values (dates)', () => {
@@ -115,11 +115,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
       expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
-      expect(result.contextWidth).toBe('w-3/5'); // Adjusted based on actual behavior
-      expect(result.valueWidth).toBe('w-1/6');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
   });
 
@@ -135,11 +135,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
-      expect(result.contextWidth).toBe('w-3/5'); // Adjusted based on actual behavior
-      expect(result.valueWidth).toBe('w-1/6');
+      expect(result.titleWidth).toBe('w-1/2 min-w-[200px]');
+      expect(result.contextWidth).toBe('w-1/4');
+      expect(result.valueWidth).toBe('w-1/4');
     });
   });
 
@@ -154,27 +154,27 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]'); // Adjusted based on actual behavior
-      expect(result.contextWidth).toBe('w-3/5');
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
+      expect(result.contextWidth).toBe('w-2/3');
       expect(result.valueWidth).toBe('w-1/6');
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle empty suggestions array', () => {
-      const result = analyzeContentWidths([]);
+      const result = calculateOptimalProportions([]);
 
-      expect(result.titleWidth).toBe('w-1/5 min-w-[120px]');
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
       expect(result.contextWidth).toBe('w-2/5');
       expect(result.valueWidth).toBe('w-2/5');
     });
 
     it('should handle null/undefined suggestions', () => {
-      const result = analyzeContentWidths(null as any);
+      const result = calculateOptimalProportions(null as any);
 
-      expect(result.titleWidth).toBe('w-1/5 min-w-[120px]');
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
       expect(result.contextWidth).toBe('w-2/5');
       expect(result.valueWidth).toBe('w-2/5');
     });
@@ -185,11 +185,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         { entityTitle: 'Title' } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBeDefined();
-      expect(result.contextWidth).toBeDefined();
-      expect(result.valueWidth).toBeDefined();
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
 
     it('should handle very large datasets efficiently', () => {
@@ -205,13 +205,13 @@ describe('TableElements - Unified Column Width Analysis', () => {
       );
 
       const startTime = performance.now();
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
       const endTime = performance.now();
 
       expect(endTime - startTime).toBeLessThan(50); // Should analyze in under 50ms
-      expect(result.titleWidth).toBeDefined();
-      expect(result.contextWidth).toBeDefined();
-      expect(result.valueWidth).toBeDefined();
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
   });
 
@@ -227,11 +227,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
       expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
-      expect(result.contextWidth).toBe('w-1/2');
-      expect(result.valueWidth).toBe('w-1/3');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
 
     it('should handle multilingual document data', () => {
@@ -250,11 +250,11 @@ describe('TableElements - Unified Column Width Analysis', () => {
         } as TableSuggestion,
       ];
 
-      const result = analyzeContentWidths(suggestions);
+      const result = calculateOptimalProportions(suggestions);
 
-      expect(result.titleWidth).toBeDefined();
-      expect(result.contextWidth).toBeDefined();
-      expect(result.valueWidth).toBeDefined();
+      expect(result.titleWidth).toBe('w-1/6 min-w-[100px]');
+      expect(result.contextWidth).toBe('w-2/5');
+      expect(result.valueWidth).toBe('w-2/5');
     });
   });
 });

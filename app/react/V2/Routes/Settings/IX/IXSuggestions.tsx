@@ -302,6 +302,7 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openPdfSidepanel: openSidepanel,
               markForTraining,
+              suggestions,
             })}
             onSelect={({ selectedRows }) => {
               setSelected(() =>
