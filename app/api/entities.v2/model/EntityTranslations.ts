@@ -7,7 +7,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 import { EntityMappers } from '../database/EntityMapper';
 import { BaseMetadataValue, Entity, EntityMetadata } from './Entity';
-import { MultiLanguageEntity } from './MultiLanguageEntity';
+import { Entity } from '../../core/domain/entity/Entity';
 
 export class EntityTranslations {
   public translations: { [key in LanguageISO6391]?: Entity } = {};
@@ -66,7 +66,7 @@ export class EntityTranslations {
 
   denormalizeRelationshipProperty(
     property: V1RelationshipProperty,
-    relatedEntities: Record<IndexTypes, MultiLanguageEntity | undefined>
+    relatedEntities: Record<IndexTypes, Entity | undefined>
   ) {
     this.getLanguages().forEach(language => {
       const currentValues = this.getValue(property, language);
@@ -81,10 +81,10 @@ export class EntityTranslations {
         return {
           ...value,
           label: relatedEntity.getTitle(language),
-          icon: relatedEntity.getIcon(language),
+          icon: relatedEntity.icon,
           ...(inheritedProperty
             ? {
-                inheritedValue: relatedEntity.getValue(inheritedProperty, language),
+                inheritedValue: relatedEntity.getValue(inheritedProperty.name, language).value,
                 inheritedType: inheritedProperty.type,
               }
             : {}),

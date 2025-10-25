@@ -66,6 +66,7 @@ describe('generatedId property auto filler', () => {
     });
     it('should assign the same value to all entities with the same sharedId', async () => {
       const generatedIds: { [k: string]: string } = {};
+
       affectedEntities.forEach(e => {
         const sharedId = e.sharedId as string;
         if (!generatedIds[sharedId]) {
@@ -74,6 +75,7 @@ describe('generatedId property auto filler', () => {
         expect(generatedIds[sharedId]).toEqual(e.metadata!.auto_id![0].value);
       });
     });
+
     it('should assign different values across sharedIds', async () => {
       const differentAutoId = affectedEntities
         .map(e => e.metadata!.auto_id![0].value)

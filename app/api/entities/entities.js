@@ -15,6 +15,17 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
+import { tenants } from 'api/tenants';
+import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import {
+  DefaultIdGenerator,
+  DefaultTransactionManager,
+} from 'api/common.v2/database/data_source_defaults';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -377,7 +388,45 @@ export default {
   createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }, options = {}) {
+    const { v2CreateEntity } = tenants.current().featureFlags;
+
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
+    if (v2CreateEntity) {
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const useCase = new CreateEntityUseCase(
+        {
+          templatesDS,
+          settingsDS: DefaultSettingsDataSource(transactionManager),
+          idGenerator: DefaultIdGenerator,
+          multiLanguageEntityDS: new MongoMultiLanguageEntityDataSource(
+            getConnection(),
+            transactionManager,
+            templatesDS
+          ),
+          transactionManager,
+        },
+        { actor: user }
+      );
+
+      const output = await useCase.execute({
+        ..._doc,
+        templateId: _doc.template,
+        propertyValues: [
+          ...Object.entries(_doc.metadata || {}).map(([name, value, ...rest]) => ({
+            name,
+            value,
+            ...rest,
+          })),
+          {
+            name: 'title',
+            value: [{ value: _doc.title }],
+          },
+        ],
+      });
+
+      return MongoEntityMapper.toDBO(output).find(e => e.language === language);
+    }
 
     await validateEntity(_doc);
     await saveSelections(_doc);

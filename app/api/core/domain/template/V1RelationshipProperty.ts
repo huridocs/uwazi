@@ -5,6 +5,7 @@ import {
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
 import { Context, Property, PropertyUpdateInfo } from './Property';
 import { PropertyType, PropertyTypeEnum } from './PropertyType';
+import { InheritedResultValue, PropertyValue } from './PropertyValue';
 
 type Inherit = {
   property: string;
@@ -96,6 +97,34 @@ class V1RelationshipProperty extends FilterableProperty {
     if (this.inherit && this.inherit.type !== property.inherit?.type) {
       throw new PropertyInheritedTypeMismatchError(this, property);
     }
+  }
+
+  createPropertyValue(input: InheritedResultValue[]): PropertyValue {
+    const normalizedItems: InheritedResultValue[] = [];
+    const seen = new Set<string>();
+
+    input.forEach(item => {
+      const value = String(item?.value || '').trim();
+      if (!value || seen.has(value)) return;
+
+      seen.add(value);
+
+      const normalized: InheritedResultValue = {
+        value,
+        label: item.label,
+        inheritedValue: item.inheritedValue,
+        inheritedType: item.inheritedType,
+        icon: item.icon,
+      };
+
+      normalizedItems.push(normalized);
+    });
+
+    if (this.required && normalizedItems.length === 0) {
+      throw new Error('Relationship Property is required');
+    }
+
+    return { name: this.name, type: this.type, value: normalizedItems };
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {

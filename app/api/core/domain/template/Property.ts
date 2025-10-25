@@ -1,6 +1,7 @@
 import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
 import { PropertyType } from './PropertyType';
+import { EntityMetadata, PropertyValue } from './PropertyValue';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -102,6 +103,15 @@ class Property {
     if (this.template !== other.template) updateInfo.updatedAttributes.push('template');
 
     return updateInfo;
+  }
+
+  createDefaultValue(): PropertyValue {
+    return { name: this.name, value: [], type: this.type };
+  }
+
+  // Todo: Find better name for the "product" of an Property
+  createPropertyValue(input: EntityMetadata[]): PropertyValue {
+    return { name: this.name, value: input, type: this.type };
   }
 }
 

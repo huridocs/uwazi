@@ -8,6 +8,7 @@ import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
 import { PropertyType } from './PropertyType';
 import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
+import { EntityMetadata, PropertyValue } from './PropertyValue';
 
 type TemplateProperty = Property | V1RelationshipProperty;
 
@@ -210,6 +211,25 @@ class Template {
     return this.clone({ properties });
   }
 
+  createPropertyValue(name: string, value: EntityMetadata[]) {
+    const property = this.allProperties.find(p => p.name === name);
+    if (!property) {
+      throw new Error(`Property with name ${name} not found in template ${JSON.stringify(this)}`);
+    }
+
+    return property.createPropertyValue(value);
+  }
+
+  createDefaultPropertyValues(): Record<string, PropertyValue> {
+    const propertyValues = this.allProperties.map(prop => {
+      const propertyValue = prop.createDefaultValue();
+
+      return [propertyValue.name, propertyValue];
+    });
+
+    return Object.fromEntries(propertyValues);
+  }
+
   update(props: CloneProps): Template {
     if (this.processing?.active) {
       throw new ValidationError([
@@ -241,5 +261,5 @@ class Template {
   }
 }
 
-export type { TemplateProperty };
 export { Template };
+export type { TemplateProperty };
