@@ -63,7 +63,7 @@ const Customisation = () => {
 
         <SettingsContent.Body>
           {allowcustomJS ? (
-            <Tabs unmountTabs={false}>
+            <Tabs unmountTabs={false} tabListClassName="md:w-2/3 w-full">
               <Tabs.Tab id="css" label={<Translate>Custom CSS</Translate>}>
                 <CodeEditor
                   language="css"

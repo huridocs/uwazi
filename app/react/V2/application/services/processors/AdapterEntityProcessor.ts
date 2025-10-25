@@ -387,6 +387,9 @@ export class AdapterEntityProcessor {
       editDate: cleanEditDate as DateMetadataProperty,
       ...(this.context.includeTemplate ? { template: template as EntityTemplate } : {}),
       ...(this.context.includeRawEntity ? { rawEntity } : {}),
+      ...(this.context.includeSupportingFiles
+        ? { attachments: rawEntity?.attachments, documents: rawEntity?.documents }
+        : {}),
     };
   }
 }

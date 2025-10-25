@@ -3,6 +3,7 @@ import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Layouts/PaneLayout.stories';
+import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 
 const { Basic } = composeStories(stories);
 
@@ -76,6 +77,42 @@ describe('PaneLayout', () => {
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+    });
+
+    it('should keep user selected widths when children update', () => {
+      const Wrapper = () => {
+        const [v, setV] = React.useState(false);
+        return (
+          <div style={{ height: '768px' }} className="tw-content">
+            <button type="button" id="replace" onClick={() => setV(x => !x)}>
+              replace
+            </button>
+            <PaneLayout defaultWidthsPercents={[0.4, 0.6]}>
+              <PaneLayout.Pane key={`p1-${v ? 'b' : 'a'}`}>
+                <div>{v ? 'A2' : 'A1'}</div>
+              </PaneLayout.Pane>
+              <PaneLayout.Pane key={`p2-${v ? 'b' : 'a'}`}>
+                <div>{v ? 'B2' : 'B1'}</div>
+              </PaneLayout.Pane>
+            </PaneLayout>
+          </div>
+        );
+      };
+
+      mount(<Wrapper />);
+
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 491.6px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+
+      cy.realDrag(cy.get('div[role="separator"]'), 100, 0);
+
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 600px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 629px;');
+
+      cy.get('#replace').click();
+
+      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 600px;');
+      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 629px;');
     });
   });
 

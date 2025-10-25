@@ -63,6 +63,7 @@ export interface CompositionOptions {
   includePropertyMetadata?: boolean;
   formatDates?: boolean;
   includeRawEntity?: boolean;
+  includeSupportingFiles?: boolean;
 
   // Field selection
   includeFields?: string[];
