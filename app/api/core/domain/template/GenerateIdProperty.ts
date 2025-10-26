@@ -3,7 +3,7 @@ import { generateID } from 'shared/IDGenerator';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
-import { PropertyValue } from './PropertyValue';
+import { PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.GeneratedId;
@@ -22,7 +22,7 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
-  createPropertyValue(): PropertyValue {
+  createPropertyAssignment(): PropertyAssignment {
     return {
       name: this.name,
       type: this.type,

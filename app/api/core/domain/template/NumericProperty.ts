@@ -1,8 +1,8 @@
 import { Context } from 'api/core/domain/template/Property';
-import { EntityMetadata } from 'api/entities.v2/model/Entity';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
+import { NumericPropertyValue, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Numeric;
@@ -21,22 +21,24 @@ class NumericProperty extends FilterableProperty {
     }
   }
 
-  createPropertyValue(input: EntityMetadata[]) {
-    if (input.length > 1) {
+  createPropertyAssignment(value: NumericPropertyValue[]): PropertyAssignment {
+    if (value.length > 1) {
       throw new Error(
-        `Numeric Property only accepts a single value. ${JSON.stringify(input)} given.`
+        `Numeric Property only accepts a single value. ${JSON.stringify(value)} given.`
       );
     }
 
     if (this.required) {
-      if (input[0].value === undefined || input[0].value === null) {
+      if (value?.[0]?.value === undefined || value?.[0]?.value === null) {
         throw new Error('Numeric Property is required');
       }
     }
 
+    const hasValue = value[0] && (value[0].value === 0 || value[0].value);
+
     return {
       name: this.name,
-      value: input[0]?.value ? [{ value: Number(input[0].value) }] : [],
+      value: hasValue ? [{ value: Number(value[0]!.value) }] : [],
       type: this.type,
     };
   }

@@ -5,7 +5,7 @@ import {
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
 import { Context, Property, PropertyUpdateInfo } from './Property';
 import { PropertyType, PropertyTypeEnum } from './PropertyType';
-import { InheritedResultValue, PropertyValue } from './PropertyValue';
+import { InheritedResultValue, PropertyAssignment } from './PropertyValue';
 
 type Inherit = {
   property: string;
@@ -99,7 +99,7 @@ class V1RelationshipProperty extends FilterableProperty {
     }
   }
 
-  createPropertyValue(input: InheritedResultValue[]): PropertyValue {
+  createPropertyAssignment(input: InheritedResultValue[]): PropertyAssignment {
     const normalizedItems: InheritedResultValue[] = [];
     const seen = new Set<string>();
 

@@ -6,7 +6,7 @@ import {
   CreationDatePropertyInvalidTypeError,
 } from './errors';
 import { PropertyType } from './PropertyType';
-import { PropertyValue } from './PropertyValue';
+import { PropertyAssignment } from './PropertyValue';
 
 type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPropertyProps, 'type'>;
 
@@ -34,8 +34,12 @@ class CreationDateProperty extends CommonProperty {
     }
   }
 
-  createDefaultValue(): PropertyValue {
-    return { name: this.name, value: [{ value: this.defaultCreationDate }], type: this.type };
+  createDefaultValue(): PropertyAssignment {
+    return {
+      name: this.name,
+      value: [{ value: this.defaultCreationDate }],
+      type: this.type,
+    };
   }
 }
 

@@ -1,27 +1,60 @@
 import { PropertyType } from './PropertyType';
 
-type MetadataValue = any;
+type Icon = {
+  label: string;
+  type: string;
+};
 
 type BaseMetadataValue = {
-  value: MetadataValue;
+  value: any;
   label?: string;
 };
 
-type InheritedResultValue = BaseMetadataValue & {
+export type InheritedResultValue = BaseMetadataValue & {
   inheritedValue?: BaseMetadataValue[];
   inheritedType?: string;
-  icon?: {
-    label: string;
-    type: string;
-  };
+  icon?: Icon;
+  // legacy tag occasionally present in v1 relationship entries
+  type?: 'entity';
 };
 
-type EntityMetadata = BaseMetadataValue | InheritedResultValue;
+export type TextPropertyValue = { value: string };
+export type NumericPropertyValue = { value: number };
+export type MarkdownEntry = { value: string };
+export type DateEntry = { value: number };
+export type DateRangeEntry = { value: { from: number; to: number } };
+export type GeolocationEntry = { value: { lat: number; lon: number; label?: string } };
+export type SelectionEntry = { value: string; label: string };
+export type LinkEntry = { value: { url: string; label?: string } };
 
-type PropertyValue = {
+export type RelationshipEntry = InheritedResultValue & { value: string };
+
+export type NestedEntry = { value: { [childName: string]: BaseMetadataValue[] } };
+
+export type ImageEntry = { value: string };
+export type MediaEntry = { value: string };
+export type PreviewEntry = { value: string };
+export type GeneratedIdEntry = { value: string };
+
+export type PropertyValue =
+  | TextPropertyValue
+  | MarkdownEntry
+  | NumericPropertyValue
+  | DateEntry
+  | DateRangeEntry
+  | GeolocationEntry
+  | SelectionEntry
+  | RelationshipEntry
+  | NestedEntry
+  | ImageEntry
+  | MediaEntry
+  | PreviewEntry
+  | LinkEntry
+  | GeneratedIdEntry
+  | BaseMetadataValue;
+
+export type PropertyAssignment<Value = PropertyValue> = {
   name: string;
   type: PropertyType;
-  value: EntityMetadata[];
+  value: Value[];
 };
-
-export type { PropertyValue, EntityMetadata, InheritedResultValue };

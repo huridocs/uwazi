@@ -2,6 +2,7 @@ import { Context, Property, PropertyProps } from 'api/core/domain/template/Prope
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
+import { GeolocationEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Geolocation;
@@ -22,6 +23,21 @@ class GeolocationProperty extends Property {
     if (this.type !== PropertyTypeEnum.Geolocation) {
       throw new PropertyTypeInvalidTypeError(this.type, 'GeolocationProperty');
     }
+  }
+
+  // Todo: help about business rules for geolocation property
+  createPropertyAssignment(value: GeolocationEntry[]): PropertyAssignment<GeolocationEntry> {
+    const cleaned = value.filter(v => v?.value);
+
+    if (this.required && cleaned.length === 0) {
+      throw new Error('Geolocation Property is required');
+    }
+
+    return {
+      name: this.name,
+      value: cleaned,
+      type: this.type,
+    };
   }
 }
 

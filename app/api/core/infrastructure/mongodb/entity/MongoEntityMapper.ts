@@ -11,9 +11,11 @@ import { MongoTemplateMapper } from '../template/Mapper';
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {
     const commonProperties = {
-      title: template.createPropertyValue('title', [{ value: dbo.title }]),
-      creationDate: template.createPropertyValue('creationDate', [{ value: dbo.creationDate }]),
-      editDate: template.createPropertyValue('editDate', [{ value: dbo.editDate }]),
+      title: template.createPropertyAssignment('title', [{ value: dbo.title }]),
+      creationDate: template.createPropertyAssignment('creationDate', [
+        { value: dbo.creationDate },
+      ]),
+      editDate: template.createPropertyAssignment('editDate', [{ value: dbo.editDate }]),
     };
 
     return {
@@ -22,7 +24,7 @@ class MongoEntityLanguageMapper {
       metadata: Object.entries(dbo.metadata).reduce(
         (acc, [name, value]) => ({
           ...acc,
-          [name]: template.createPropertyValue(name, value),
+          [name]: template.createPropertyAssignment(name, value),
         }),
         commonProperties
       ),
@@ -41,10 +43,16 @@ class MongoEntityMapper {
       user: entity.userId ? ObjectId.createFromHexString(entity.userId) : undefined,
 
       title: translation.title.value[0].value,
-      creationDate: translation.creationDate.value[0].value,
+      creationDate: translation.editDate.value[0].value,
       editDate: translation.editDate.value[0].value,
 
-      icon: entity.icon,
+      icon: entity.icon
+        ? {
+            _id: entity.icon.id,
+            label: entity.icon.label,
+            type: entity.icon.type,
+          }
+        : undefined,
       published: entity.published,
       metadata: Object.entries(translation.properties).reduce(
         (acc, [key, propertyValue]) => ({ ...acc, [key]: propertyValue.value }),
@@ -62,7 +70,11 @@ class MongoEntityMapper {
       template,
       sharedId: entityDbo[0].sharedId,
       published: entityDbo[0].published,
-      icon: entityDbo[0].icon,
+      icon: entityDbo[0].icon && {
+        id: entityDbo[0].icon._id,
+        label: entityDbo[0].icon.label,
+        type: entityDbo[0].icon.type,
+      },
       userId: entityDbo[0].user?.toHexString(),
       translations: entityDbo.map(dbo => MongoEntityLanguageMapper.toDomain(dbo, template)),
     });

@@ -203,6 +203,7 @@ async function createEntity(doc, [currentLanguage, languages], sharedId, docTemp
         { thesauriByKey }
       );
 
+      console.log(JSON.stringify(langDoc));
       return model.save(langDoc);
     })
   );
@@ -412,7 +413,7 @@ export default {
       const output = await useCase.execute({
         ..._doc,
         templateId: _doc.template,
-        propertyValues: [
+        propertyAssignments: [
           ...Object.entries(_doc.metadata || {}).map(([name, value, ...rest]) => ({
             name,
             value,

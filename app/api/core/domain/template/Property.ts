@@ -1,7 +1,7 @@
 import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
 import { PropertyType } from './PropertyType';
-import { EntityMetadata, PropertyValue } from './PropertyValue';
+import { PropertyValue, PropertyAssignment } from './PropertyValue';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -105,13 +105,12 @@ class Property {
     return updateInfo;
   }
 
-  createDefaultValue(): PropertyValue {
+  createDefaultValue(): PropertyAssignment {
     return { name: this.name, value: [], type: this.type };
   }
 
-  // Todo: Find better name for the "product" of an Property
-  createPropertyValue(input: EntityMetadata[]): PropertyValue {
-    return { name: this.name, value: input, type: this.type };
+  createPropertyAssignment(value: PropertyValue[]): PropertyAssignment {
+    return { name: this.name, value, type: this.type };
   }
 }
 

@@ -2,6 +2,7 @@ import { Context } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
+import { DateEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Date;
@@ -19,6 +20,24 @@ class DateProperty extends FilterableProperty {
     if (this.type !== PropertyTypeEnum.Date) {
       throw new PropertyTypeInvalidTypeError(this.type, 'DateProperty');
     }
+  }
+
+  createPropertyAssignment(value: DateEntry[]): PropertyAssignment<DateEntry> {
+    if (value.length > 1) {
+      throw new Error(`Date Property only accepts a single value. ${JSON.stringify(value)} given.`);
+    }
+
+    const isValid = value?.[0]?.value !== undefined && value?.[0]?.value !== null;
+
+    if (this.required && !isValid) {
+      throw new Error('Date Property is required');
+    }
+
+    return {
+      name: this.name,
+      value: isValid ? [{ value: Number(value[0].value) }] : [],
+      type: this.type,
+    };
   }
 }
 

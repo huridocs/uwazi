@@ -2,7 +2,7 @@ import { Context } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
-import { EntityMetadata } from './PropertyValue';
+import { TextPropertyValue } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Text;
@@ -26,20 +26,20 @@ class TextProperty extends FilterableProperty {
     }
   }
 
-  createPropertyValue(input: EntityMetadata[]) {
-    if (input.length > 1) {
-      throw new Error(`Text Property only accepts a single value. ${JSON.stringify(input)} given.`);
+  createPropertyAssignment(value: TextPropertyValue[]) {
+    if (value.length > 1) {
+      throw new Error(`Text Property only accepts a single value. ${JSON.stringify(value)} given.`);
     }
 
     if (this.required) {
-      if (!input[0].value || input[0].value === '') {
+      if (!value?.[0]?.value || value?.[0]?.value === '') {
         throw new Error('Text Property is required');
       }
     }
 
     return {
       name: this.name,
-      value: input[0]?.value ? [{ value: String(input[0].value).trim() }] : [],
+      value: value[0]?.value ? [{ value: String(value[0].value).trim() }] : [],
       type: this.type,
     };
   }

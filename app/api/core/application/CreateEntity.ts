@@ -1,12 +1,29 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { Entity } from 'api/core/domain/entity/Entity';
+import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 
+type ValueInput =
+  | string
+  | number
+  | { from: number; to: number }
+  | { lat: number; lon: number }
+  | { url: string; label?: string };
+
+type PropertyValueInput = {
+  value: ValueInput[];
+};
+
+type PropertyAssignmentInput = {
+  name: string;
+  value: PropertyValueInput[];
+};
+
 type Input = {
   templateId?: string;
-  propertyValues: { name: string; value: any[] }[];
+  propertyAssignments: PropertyAssignmentInput[];
+  icon?: EntityIcon;
 };
 
 type Output = Entity;
@@ -31,11 +48,11 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       this.idGenerator
     );
 
-    const propertyValues = input.propertyValues.map(({ name, value }) =>
-      template.createPropertyValue(name, value)
+    const propertyAssignments = input.propertyAssignments.map(({ name, value }) =>
+      template.createPropertyAssignment(name, value)
     );
 
-    entity.setValues(propertyValues);
+    entity.setValues(propertyAssignments);
 
     await this.transactionManager.run(async () => {
       await this.deps.multiLanguageEntityDS.create(entity);

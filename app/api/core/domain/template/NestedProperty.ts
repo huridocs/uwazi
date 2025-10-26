@@ -3,6 +3,7 @@ import { PropertyName } from './PropertyName';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
+import { NestedEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Nested;
@@ -26,6 +27,20 @@ class NestedProperty extends FilterableProperty {
     if (this.type !== PropertyTypeEnum.Nested) {
       throw new PropertyTypeInvalidTypeError(this.type, 'NestedProperty');
     }
+  }
+
+  createPropertyAssignment(value: NestedEntry[]): PropertyAssignment<NestedEntry> {
+    const cleaned = (value || []).filter(v => v?.value);
+
+    if (this.required && cleaned.length === 0) {
+      throw new Error('Nested Property is required');
+    }
+
+    return {
+      name: this.name,
+      value: cleaned,
+      type: this.type,
+    };
   }
 }
 
