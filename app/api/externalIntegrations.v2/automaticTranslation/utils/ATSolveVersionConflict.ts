@@ -2,7 +2,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { Entity } from 'api/entities.v2/model/Entity';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import { inspect } from 'util';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
@@ -51,7 +51,7 @@ export const ATSolveVersionConflict = async (
       newValue.startsWith(RequestEntityTranslation.AITranslationPendingText) &&
       currentValue.startsWith(SaveEntityTranslations.AITranslatedText)
     ) {
-      DefaultLogger().info(
+      LoggerFactory.default().info(
         inspect(
           new Error(`[AT] property ${p.name} conflict when trying to save entity ${newEntity._id}`)
         )

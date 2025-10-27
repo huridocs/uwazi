@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';

@@ -10,7 +10,7 @@ import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';

@@ -2,7 +2,7 @@
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { SaveStream } from 'api/common.v2/contracts/SaveStream';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
 import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';

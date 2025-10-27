@@ -7,7 +7,7 @@ import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/Te
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { User } from 'api/users.v2/model/User';
@@ -177,7 +177,7 @@ const DeleteRelationshipService = async () => {
 };
 
 const MigrationService = () => {
-  const logger = DefaultLogger();
+  const logger = LoggerFactory.default();
   const transactionManager = TransactionManagerFactory.default();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);

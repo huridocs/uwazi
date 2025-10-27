@@ -5,7 +5,7 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
@@ -48,7 +48,7 @@ const AutomaticTranslationFactory = {
       TemplatesDataSourceFactory.default(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
-      DefaultLogger()
+      LoggerFactory.default()
     );
   },
 
@@ -61,7 +61,7 @@ const AutomaticTranslationFactory = {
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<EntityInputModel>(entityInputDataSchema),
-      DefaultLogger()
+      LoggerFactory.default()
     );
   },
 

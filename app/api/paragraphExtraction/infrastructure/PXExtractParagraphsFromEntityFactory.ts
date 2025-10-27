@@ -4,7 +4,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
@@ -32,7 +32,7 @@ export class PXExtractParagraphsFromEntityFactory {
       fileStorage: FileStorageStrategyFactory.createDefault(),
       idGenerator: MongoIdHandler,
       settingsDS: SettingsDataSourceFactory.default(mongoTransactionManager),
-      logger: DefaultLogger(),
+      logger: LoggerFactory.default(),
       tenantName,
     });
 

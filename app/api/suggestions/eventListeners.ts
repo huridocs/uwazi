@@ -10,7 +10,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { Suggestions } from './suggestions';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
@@ -28,7 +28,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
-    logger: DefaultLogger(),
+    logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
   })).start();
@@ -69,7 +69,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
-    logger: DefaultLogger(),
+    logger: LoggerFactory.default(),
   })).start();
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {

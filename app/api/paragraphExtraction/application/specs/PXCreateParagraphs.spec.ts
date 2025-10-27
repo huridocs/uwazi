@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';

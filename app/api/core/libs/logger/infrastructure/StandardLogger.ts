@@ -1,10 +1,8 @@
-import { getTenant } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { Tenant } from 'api/tenants/tenantContext';
 import { Logger } from '../contracts/Logger';
-import { LogLevel, LogLevels } from './LogLevels';
 import { LogEntry, LogMetadata } from './LogEntry';
+import { LogLevel, LogLevels } from './LogLevels';
 import { LogWriter } from './LogWriter';
-import { StandardJSONWriter } from './writers/StandardJSONWriter';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -44,18 +42,6 @@ class StandardLogger implements Logger {
   }
 }
 
-const DefaultLogger = (writer = StandardJSONWriter) => new StandardLogger(writer, getTenant());
-const SystemLogger = (writer = StandardJSONWriter) =>
-  new StandardLogger(writer, {
-    name: 'System Logger',
-    dbName: 'N/a',
-    activityLogs: 'N/a',
-    attachments: 'N/a',
-    customUploads: 'N/a',
-    indexName: 'N/a',
-    uploadedDocuments: 'N/a',
-  });
-
 export const withFeature =
   (writer: LogWriter, featureName: string): LogWriter =>
   (log: LogEntry) => {
@@ -67,4 +53,4 @@ export const withFeature =
     );
   };
 
-export { StandardLogger, DefaultLogger, SystemLogger };
+export { StandardLogger };
