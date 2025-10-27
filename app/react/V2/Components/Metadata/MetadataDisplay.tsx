@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Translate } from 'app/I18N';
 import { Entity, MetadataProperty } from 'V2/domain';
 import { Date } from './Date';
@@ -166,7 +166,9 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
       )}
 
-      {entity.metadata.map(renderMetadataProperty)}
+      {entity.metadata.map((data, index) => (
+        <Fragment key={data?.name || data?.label || index}>{renderMetadataProperty(data)}</Fragment>
+      ))}
     </dl>
   );
 };

@@ -2,3 +2,4 @@
 export { LEGACY_createStore } from './reduxStore';
 export { TestAtomStoreProvider } from './TestAtomStoreProvider';
 export { TestRouterContext } from './TestRouterContext';
+export { setupMatchMediaMock } from './matchMediaMock';
