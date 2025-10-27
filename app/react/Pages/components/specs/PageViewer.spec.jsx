@@ -32,7 +32,7 @@ describe('PageViewer', () => {
         title: 'Page 1',
         metadata: {
           content: '# Test Page\n\nThis is test content with **bold text**.',
-          script: 'JSScript',
+          script: 'console.log("JSScript");',
         },
         scriptRendered: false,
       }),
@@ -300,63 +300,14 @@ describe('PageViewer', () => {
 
       expect(screen.getByText('Test Page')).toBeInTheDocument();
 
-      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
+      const scriptElements = document.querySelectorAll('script[type="text/javascript"');
       expect(scriptElements.length).toBeGreaterThan(0);
 
       const scriptElement = scriptElements[0];
-      const scriptSrc = scriptElement.src;
-      const decodedScript = decodeURIComponent(
-        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
-      );
+      const script = scriptElement.textContent;
 
-      expect(decodedScript).toContain(
-        'var datasets = window.store.getState().page.datasets.toJS();'
-      );
-      expect(decodedScript).toContain('JSScript');
-    });
-
-    it('should render Script component with correct props', async () => {
-      renderComponent();
-
-      await waitFor(() => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      });
-
-      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
-      expect(scriptElements.length).toBeGreaterThan(0);
-
-      const scriptElement = scriptElements[0];
-      const scriptSrc = scriptElement.src;
-      const decodedScript = decodeURIComponent(
-        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
-      );
-
-      expect(decodedScript).toContain(
-        'var datasets = window.store.getState().page.datasets.toJS();'
-      );
-      expect(decodedScript).toContain('JSScript');
-    });
-
-    it('should render Script component with correct props', async () => {
-      renderComponent();
-
-      await waitFor(() => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      });
-
-      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
-      expect(scriptElements.length).toBeGreaterThan(0);
-
-      const scriptElement = scriptElements[0];
-      const scriptSrc = scriptElement.src;
-      const decodedScript = decodeURIComponent(
-        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
-      );
-
-      expect(decodedScript).toContain(
-        'var datasets = window.store.getState().page.datasets.toJS();'
-      );
-      expect(decodedScript).toContain('JSScript');
+      expect(script).toContain('var datasets = window.store.getState().page.datasets.toJS();');
+      expect(script).toContain('console.log("JSScript")');
     });
   });
 
