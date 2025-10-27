@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable @typescript-eslint/no-misused-promises */
+import bodyParser from 'body-parser';
 import { Application } from 'express';
 
 const wrapHandler = (originalHandler: any) => async (req: any, res: any, next: any) => {
@@ -11,17 +11,28 @@ const wrapHandler = (originalHandler: any) => async (req: any, res: any, next: a
 };
 
 const routesErrorHandler = (app: Application) => {
+  const jsonParser = bodyParser.json({ limit: '5mb' });
+  const shouldSkipJson = (path: any) =>
+    typeof path === 'string' && path.includes('/api/remotepublic');
+
   const originalGet = app.get.bind(app);
-  app.get = (path: any, ...args: any[]) => originalGet(path, ...args.map(wrapHandler));
+  app.get = (path: any, ...handlers: any[]) => originalGet(path, ...handlers.map(wrapHandler));
 
   const originalPost = app.post.bind(app);
-  app.post = (path: any, ...args: any[]) => originalPost(path, ...args.map(wrapHandler));
+  app.post = (path: any, ...handlers: any[]) =>
+    originalPost(path, ...(shouldSkipJson(path) ? [] : [jsonParser]), ...handlers.map(wrapHandler));
 
   const originalDelete = app.delete.bind(app);
-  app.delete = (path: any, ...args: any[]) => originalDelete(path, ...args.map(wrapHandler));
+  app.delete = (path: any, ...handlers: any[]) =>
+    originalDelete(
+      path,
+      ...(shouldSkipJson(path) ? [] : [jsonParser]),
+      ...handlers.map(wrapHandler)
+    );
 
   const originalPut = app.put.bind(app);
-  app.put = (path: any, ...args: any[]) => originalPut(path, ...args.map(wrapHandler));
+  app.put = (path: any, ...handlers: any[]) =>
+    originalPut(path, ...(shouldSkipJson(path) ? [] : [jsonParser]), ...handlers.map(wrapHandler));
 };
 
 export { routesErrorHandler };
