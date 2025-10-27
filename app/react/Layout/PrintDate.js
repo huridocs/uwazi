@@ -3,6 +3,10 @@ import React from 'react';
 import { DateTime } from 'luxon';
 
 const PrintDate = ({ utc, toLocal }) => {
+  if (utc == null) {
+    return <span />;
+  }
+
   let date;
   if (!toLocal) {
     date = DateTime.fromMillis(utc, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED);
