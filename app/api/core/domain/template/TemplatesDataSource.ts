@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
 import { ResultType } from 'api/core/libs/Result';
 import {

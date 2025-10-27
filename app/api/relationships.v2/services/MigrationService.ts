@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { IdGenerator } from 'api/core/libs/IdGenerator';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { SaveStream } from 'api/common.v2/contracts/SaveStream';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';

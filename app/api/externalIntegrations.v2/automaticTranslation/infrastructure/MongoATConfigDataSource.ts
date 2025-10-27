@@ -1,5 +1,5 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { CommonProperty } from 'api/core/domain/template/CommonProperty';

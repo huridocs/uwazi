@@ -9,7 +9,7 @@ import { generateID } from 'shared/IDGenerator';
 import { search } from 'api/search';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { applicationEventsBus } from '../libs/eventsbus';
-import { TransactionManager } from '../libs/TransactionManager';
+import { TransactionManager } from './contracts/TransactionManager';
 import { UseCase } from '../libs/UseCase';
 
 type Input = {

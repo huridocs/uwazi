@@ -1,4 +1,4 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { MongoTemplatePropertyMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';

@@ -1,4 +1,4 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { storage } from 'api/files/storage';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { dbSessionContext } from 'api/odm/sessionsContext';
@@ -46,7 +46,7 @@ const withTransaction = async <T>(
   const startTime = performance.now();
   const logNamespace = namespace ? `(${namespace})` : '';
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   let wasManuallyAborted = false;
   try {

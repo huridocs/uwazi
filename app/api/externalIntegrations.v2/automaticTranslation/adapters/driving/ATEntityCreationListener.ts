@@ -1,4 +1,4 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
@@ -19,7 +19,7 @@ export class ATEntityCreationListener {
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
       const { active } = await this.ATFactory.defaultATConfigDataSource(
-        DefaultTransactionManager()
+        TransactionManagerFactory.default()
       ).get();
 
       if (active) {

@@ -1,14 +1,14 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';
@@ -26,26 +26,26 @@ const AutomaticTranslationFactory = {
     return new MongoATConfigDataSource(
       db,
       transactionManager,
-      MongoSettingsDataSourceFactory.default(transactionManager),
-      MongoTemplatesDataSourceFactory.default(transactionManager),
+      SettingsDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default(transactionManager),
       new ATExternalAPI()
     );
   },
 
   defaultGenerateATConfig() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const db = getConnection();
     return new GenerateAutomaticTranslationsCofig(
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      new MongoTemplatesDataSource(db, DefaultTransactionManager()),
+      new MongoTemplatesDataSource(db, TransactionManagerFactory.default()),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   },
 
   defaultSaveEntityTranslations() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     return new SaveEntityTranslations(
-      MongoTemplatesDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       DefaultLogger()
@@ -53,7 +53,7 @@ const AutomaticTranslationFactory = {
   },
 
   defaultRequestEntityTranslation() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,

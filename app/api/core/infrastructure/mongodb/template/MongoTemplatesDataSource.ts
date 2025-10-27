@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoDataSource, MongoDSOptions } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,

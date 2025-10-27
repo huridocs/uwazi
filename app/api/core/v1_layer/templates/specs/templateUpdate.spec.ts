@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { elasticClient } from 'api/search/elastic';
@@ -159,7 +159,7 @@ describe('templates', () => {
       testTemplate.name = 'changed name';
       await updateTemplate(testTemplate);
 
-      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template'])
         .all();
 
@@ -175,7 +175,7 @@ describe('templates', () => {
       testTemplate!.commonProperties![0].label = 'Second New Title';
       await updateTemplate(testTemplate);
 
-      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title'])
         .all();
 
@@ -190,7 +190,7 @@ describe('templates', () => {
         { name: 'label_2', label: 'label 2', type: 'text' },
       ]);
       const template1 = await updateTemplate(newTemplate);
-      let dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
       expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
@@ -205,7 +205,7 @@ describe('templates', () => {
       template1.commonProperties[0].label = 'new title label';
       await updateTemplate(template1);
 
-      dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
 
@@ -226,7 +226,7 @@ describe('templates', () => {
     it('should update translations handling duplicate values properly', async () => {
       const { _id, ...newTemplate } = factory.template('Country');
       await updateTemplate(newTemplate);
-      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getAll()
         .all();
 
@@ -235,7 +235,7 @@ describe('templates', () => {
       // template1.commonProperties[0].label = 'Country name';
       // await templates.save(template1);
       //
-      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
       //   .getAll()
       //   .all();
       //
@@ -247,7 +247,7 @@ describe('templates', () => {
       // template1.commonProperties[0].label = 'Country';
       // await templates.save(template1);
       //
-      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
       //   .getAll()
       //   .all();
       //
@@ -259,7 +259,7 @@ describe('templates', () => {
       // template1.name = 'Country template';
       // await templates.save(template1);
       //
-      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      // dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
       //   .getAll()
       //   .all();
       //

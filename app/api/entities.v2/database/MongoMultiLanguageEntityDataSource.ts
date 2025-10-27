@@ -1,6 +1,6 @@
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoDataSource, MongoDSOptions } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { TemplateProperty } from 'api/core/domain/template/Template';

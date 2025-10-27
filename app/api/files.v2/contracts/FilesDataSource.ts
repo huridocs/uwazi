@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { UwaziFile } from '../model/UwaziFile';
 import { Segmentation } from '../model/Segmentation';
 import { Document } from '../model/Document';

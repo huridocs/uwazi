@@ -1,6 +1,6 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type RequestDto = void;

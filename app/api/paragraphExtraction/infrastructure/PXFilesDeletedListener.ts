@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { Document } from 'api/files.v2/model/Document';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
@@ -31,14 +31,14 @@ export class PXFilesDeletedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,
     });
 
     const filesDS = DefaultFilesDataSource(mongoTransactionManager);
-    const settingsDS = MongoSettingsDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 
     this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
   }

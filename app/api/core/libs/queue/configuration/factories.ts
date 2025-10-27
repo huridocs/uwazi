@@ -1,10 +1,10 @@
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import {
   getClient,
   getConnection,
   getSharedClient,
   getSharedConnection,
-} from 'api/common.v2/database/getConnectionForCurrentTenant';
+} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { DefaultLogger, SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { JobsRouter } from '../infrastructure/JobsRouter';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';

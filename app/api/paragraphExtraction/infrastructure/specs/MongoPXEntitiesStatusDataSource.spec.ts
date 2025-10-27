@@ -1,6 +1,6 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
@@ -16,9 +16,9 @@ import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 
 const createSut = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
 
-  const settingsDS = MongoSettingsDataSourceFactory.default(mongoTransactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,
     transactionManager: mongoTransactionManager,

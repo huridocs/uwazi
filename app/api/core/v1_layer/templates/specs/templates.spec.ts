@@ -2,7 +2,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { propertyTypes } from 'shared/propertyTypes';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FieldIsRequiredError } from 'api/core/domain/template/errors';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
@@ -60,7 +60,7 @@ describe('templates', () => {
 
       const response = await templates.save(newTemplate, 'en');
 
-      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
         .getContextAndKeys(response._id.toString(), [
           'created template',
           'Title',

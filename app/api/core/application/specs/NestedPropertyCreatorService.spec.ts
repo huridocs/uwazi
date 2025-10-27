@@ -1,8 +1,8 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { PropertyCreatorServiceStrategy } from '../propertyCreatorService/PropertyCreatorServiceStrategy';
@@ -10,13 +10,13 @@ import { NestedPropertyNotAvailableError } from '../../domain/template/errors';
 import { NestedProperty } from '../../domain/template/NestedProperty';
 
 const createSut = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const strategy = PropertyCreatorServiceStrategy.create({
     idGenerator: TestUtils.mockClass({ generate: () => 'id' }),
     thesauriDS: TestUtils.mockClass({}),
     relationshipTypesDS: TestUtils.mockClass({}),
-    settingsDS: MongoSettingsDataSourceFactory.default(transactionManager),
-    templatesDS: MongoTemplatesDataSourceFactory.default(transactionManager),
+    settingsDS: SettingsDataSourceFactory.default(transactionManager),
+    templatesDS: TemplatesDataSourceFactory.default(transactionManager),
   });
 
   return { sut: strategy.getStrategy('nested') };

@@ -1,4 +1,4 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { LanguageUtils } from 'shared/language';
 import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
 import { Settings as SettingsType } from 'shared/types/settingsType';

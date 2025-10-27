@@ -3,21 +3,21 @@ import { DefaultPermissionsDataSource } from 'api/authorization.v2/database/data
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import {
   DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+  TransactionManagerFactory,
+} from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { User } from 'api/users.v2/model/User';
 import { UserRole } from 'shared/types/userSchema';
 
 import { tenants } from 'api/tenants';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories';
@@ -72,7 +72,7 @@ const createUpdateStrategy = async (
   strategyKey: string | undefined,
   updater: GenericEntityRelationshipsUpdateService
 ) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   switch (strategyKey) {
     case QueuedRelationshipPropertyUpdateStrategy.name:
@@ -93,8 +93,8 @@ const createUpdateStrategy = async (
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
-  const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 
@@ -115,11 +115,11 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
 };
 
 const GetRelationshipService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
@@ -136,7 +136,7 @@ const GetRelationshipService = () => {
 };
 
 const CreateRelationshipService = async () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
@@ -162,7 +162,7 @@ const CreateRelationshipService = async () => {
 };
 
 const DeleteRelationshipService = async () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
@@ -181,10 +181,10 @@ const DeleteRelationshipService = async () => {
 
 const MigrationService = () => {
   const logger = DefaultLogger();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
-  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericMigrationService(
@@ -200,16 +200,16 @@ const MigrationService = () => {
 };
 
 const DeleteRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericDeleteRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetRelationshipMigrationFieldsService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const service = new GenericGetRelationshipMigrationFieldsService(
     transactionManager,
     fieldDS,
@@ -219,21 +219,21 @@ const GetRelationshipMigrationFieldsService = () => {
 };
 
 const CreateRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericCreateRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const UpsertRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetMigrationHubRecordsService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericGetMigrationHubRecordsService(hubRecordDS);
   return service;
@@ -241,7 +241,7 @@ const GetMigrationHubRecordsService = () => {
 
 const UpdateRelationshipPropertiesJob = () => {
   const tenant = tenants.current().name;
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const updater = EntityRelationshipsUpdateService(transactionManager);
   const indexEntity = async (sharedIds: string[]) =>
     tenants.run(async () => search.indexEntities({ sharedId: { $in: sharedIds } }), tenant);
@@ -251,7 +251,7 @@ const UpdateRelationshipPropertiesJob = () => {
 
 const UpdateTemplateRelationshipPropertiesJob = async () =>
   new GenericUpdateTemplateRelationshipPropertiesJob(
-    DefaultEntitiesDataSource(DefaultTransactionManager()),
+    DefaultEntitiesDataSource(TransactionManagerFactory.default()),
     await DefaultDispatcher(tenants.current().name)
   );
 

@@ -1,5 +1,5 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import entities from 'api/entities';
 import { Db, ObjectId } from 'mongodb';

@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { Property } from 'api/core/domain/template/Property';

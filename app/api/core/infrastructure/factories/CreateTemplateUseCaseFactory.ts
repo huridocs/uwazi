@@ -1,9 +1,9 @@
 import {
   DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
+  TransactionManagerFactory,
+} from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
@@ -12,11 +12,11 @@ import { LegacyPageService } from '../mongodb/page/LegacyPageService';
 
 class CreateTemplateUseCaseFactory {
   static create() {
-    const transactionManager = DefaultTransactionManager();
-    const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
+    const transactionManager = TransactionManagerFactory.default();
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
-    const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = DefaultIdGenerator;
     const pageService = new LegacyPageService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);

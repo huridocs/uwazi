@@ -1,4 +1,4 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import {
   ReadableV1Connection,
   V1Connection,

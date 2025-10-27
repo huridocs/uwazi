@@ -1,13 +1,13 @@
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import {
   DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
+  TransactionManagerFactory,
+} from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -17,10 +17,10 @@ import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
-  const transactionManager = DefaultTransactionManager();
-  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
+  const transactionManager = TransactionManagerFactory.default();
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const idGenerator = DefaultIdGenerator;
-  const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const translationService = new LegacyTranslationService();
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const pageService = new LegacyPageService();

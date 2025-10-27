@@ -1,4 +1,4 @@
-import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getTenant } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { Tenant } from 'api/tenants/tenantContext';
 import { Logger } from '../contracts/Logger';
 import { LogLevel, LogLevels } from './LogLevels';

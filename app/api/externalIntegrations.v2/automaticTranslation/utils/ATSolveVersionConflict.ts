@@ -1,4 +1,4 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
@@ -33,7 +33,7 @@ export const ATSolveVersionConflict = async (
   _newEntity: EntitySchema
 ) => {
   const ATConfig = await AutomaticTranslationFactory.defaultATConfigDataSource(
-    DefaultTransactionManager()
+    TransactionManagerFactory.default()
   ).get();
 
   if (!ATConfig.active) {

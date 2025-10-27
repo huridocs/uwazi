@@ -1,15 +1,15 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
-import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { MongoEntitiesDataSource } from './MongoEntitiesDataSource';
 
 const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();
   return new MongoEntitiesDataSource(
     db,
-    MongoTemplatesDataSourceFactory.default(transactionManager),
-    MongoSettingsDataSourceFactory.default(transactionManager),
+    TemplatesDataSourceFactory.default(transactionManager),
+    SettingsDataSourceFactory.default(transactionManager),
     transactionManager
   );
 };

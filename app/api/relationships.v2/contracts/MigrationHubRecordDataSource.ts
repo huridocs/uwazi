@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { SaveStream } from 'api/common.v2/contracts/SaveStream';
 import { MigrationHubRecord } from '../model/MigrationHubRecord';
 

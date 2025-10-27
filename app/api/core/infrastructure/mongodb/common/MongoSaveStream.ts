@@ -1,5 +1,5 @@
 import { Collection, Document, OptionalId } from 'mongodb';
-import { SaveStream } from '../contracts/SaveStream';
+import { SaveStream } from '../../../../common.v2/contracts/SaveStream';
 import { BulkWriteStream } from './BulkWriteStream';
 
 interface MapperFunc<U, T> {

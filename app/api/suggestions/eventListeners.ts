@@ -8,8 +8,8 @@ import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDe
 import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { Suggestions } from './suggestions';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
@@ -27,7 +27,7 @@ const featureIsEnabled = async () => {
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: MongoSettingsDataSourceFactory.default(DefaultTransactionManager()),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
     logger: DefaultLogger(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
@@ -67,7 +67,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: MongoSettingsDataSourceFactory.default(DefaultTransactionManager()),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: DefaultLogger(),
   })).start();

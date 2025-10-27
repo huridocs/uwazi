@@ -6,7 +6,7 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { createError } from 'api/utils';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
 import { QueryMapper } from '../../../infrastructure/mongodb/template/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';

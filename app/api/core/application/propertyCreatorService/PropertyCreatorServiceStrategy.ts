@@ -3,7 +3,7 @@ import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataS
 import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Context, Property } from '../../domain/template/Property';
-import { IdGenerator } from '../../libs/IdGenerator';
+import { IdGenerator } from '../contracts/IdGenerator';
 import { PropertyType } from '../../domain/template/PropertyType';
 import { PropertyFactoryCreateInput } from '../../domain/template/PropertyFactory';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';

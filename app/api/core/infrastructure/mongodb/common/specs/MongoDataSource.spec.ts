@@ -4,7 +4,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { getConnection } from '../getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from '../data_source_defaults';
+import { TransactionManagerFactory } from '../../../factories/TransactionManagerFactory';
 
 const blankState = [
   {
@@ -149,7 +149,7 @@ describe('session scoped collection', () => {
     it.each(casesForUpdates)(
       '$method should write changes transactionally',
       async ({ callback, expectedOnAbort, expectedOnSuccess }) => {
-        const transactionManager1 = DefaultTransactionManager();
+        const transactionManager1 = TransactionManagerFactory.default();
         const dataSource1 = new DataSource(getConnection(), transactionManager1, {
           useSyncedCollection: false,
         });
@@ -168,7 +168,7 @@ describe('session scoped collection', () => {
           );
         }
 
-        const transactionManager2 = DefaultTransactionManager();
+        const transactionManager2 = TransactionManagerFactory.default();
         const dataSource2 = new DataSource(getConnection(), transactionManager2, {
           useSyncedCollection: false,
         });
@@ -223,7 +223,7 @@ describe('session scoped collection', () => {
     it.each(casesForReads)(
       '$method should read data from the transaction',
       async ({ callback, expectedInTransaction }) => {
-        const transactionManager1 = DefaultTransactionManager();
+        const transactionManager1 = TransactionManagerFactory.default();
         const dataSource1 = new DataSource(getConnection(), transactionManager1, {
           useSyncedCollection: false,
         });
@@ -260,7 +260,7 @@ describe('session scoped collection', () => {
     it.each(otherCases)(
       '$method should return the information according to the transaction state',
       async ({ callback, expectedInTransaction, expectedNoTransaction }) => {
-        const transactionManager1 = DefaultTransactionManager();
+        const transactionManager1 = TransactionManagerFactory.default();
         const dataSource1 = new DataSource(getConnection(), transactionManager1, {
           useSyncedCollection: false,
         });
@@ -278,7 +278,7 @@ describe('session scoped collection', () => {
           expect(result).toEqual(expectedInTransaction);
         }
 
-        const transactionManager2 = DefaultTransactionManager();
+        const transactionManager2 = TransactionManagerFactory.default();
         const dataSource2 = new DataSource(getConnection(), transactionManager2, {
           useSyncedCollection: false,
         });
@@ -290,14 +290,14 @@ describe('session scoped collection', () => {
 
   describe('collectionExists', () => {
     it('should return true if the collection exists', async () => {
-      const dataSource = new DataSource(getConnection(), DefaultTransactionManager(), {
+      const dataSource = new DataSource(getConnection(), TransactionManagerFactory.default(), {
         useSyncedCollection: false,
       });
       expect(await dataSource.exists()).toBe(true);
     });
 
     it('should return false if the collection does not exist', async () => {
-      const dataSource = new DataSource(getConnection(), DefaultTransactionManager(), {
+      const dataSource = new DataSource(getConnection(), TransactionManagerFactory.default(), {
         useSyncedCollection: false,
       });
       dataSource.setCollectionName('some_other_collection');
@@ -307,7 +307,7 @@ describe('session scoped collection', () => {
 
   describe('dropCollection', () => {
     it('should remove the collection from the DB', async () => {
-      const dataSource = new DataSource(getConnection(), DefaultTransactionManager(), {
+      const dataSource = new DataSource(getConnection(), TransactionManagerFactory.default(), {
         useSyncedCollection: false,
       });
       expect(await dataSource.exists()).toBe(true);
@@ -318,7 +318,7 @@ describe('session scoped collection', () => {
 
   describe('createCollection', () => {
     it('should create the collection in the DB', async () => {
-      const dataSource = new DataSource(getConnection(), DefaultTransactionManager(), {
+      const dataSource = new DataSource(getConnection(), TransactionManagerFactory.default(), {
         useSyncedCollection: false,
       });
       dataSource.setCollectionName('some_other_collection');
