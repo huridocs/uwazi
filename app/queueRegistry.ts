@@ -29,7 +29,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 
@@ -138,16 +138,16 @@ export function registerJobs(
     const transactionManager = DefaultTransactionManager();
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: DefaultTemplatesDataSource(transactionManager),
+      templatesDS: MongoTemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: new MongoMultiLanguageEntityDataSource(
           getConnection(),
           transactionManager,
-          DefaultTemplatesDataSource(transactionManager)
+          MongoTemplatesDataSourceFactory.default(transactionManager)
         ),
         filesDS: DefaultFilesDataSource(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-        templatesDS: DefaultTemplatesDataSource(transactionManager),
+        templatesDS: MongoTemplatesDataSourceFactory.default(transactionManager),
         transactionManager,
       }),
     });

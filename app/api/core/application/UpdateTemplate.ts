@@ -14,7 +14,7 @@ import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreat
 import { UpdateTemplateDTO } from './TemplateDTOs';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
 import { Template } from '../domain/template/Template';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

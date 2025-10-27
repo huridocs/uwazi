@@ -1,6 +1,6 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { TestUtils } from 'api/common.v2/utils/Test';
@@ -16,7 +16,7 @@ const createSut = () => {
     thesauriDS: TestUtils.mockClass({}),
     relationshipTypesDS: TestUtils.mockClass({}),
     settingsDS: DefaultSettingsDataSource(transactionManager),
-    templatesDS: DefaultTemplatesDataSource(transactionManager),
+    templatesDS: MongoTemplatesDataSourceFactory.default(transactionManager),
   });
 
   return { sut: strategy.getStrategy('nested') };

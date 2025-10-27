@@ -1,5 +1,5 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoTemplatePropertyMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { MongoTemplatePropertyMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { propertyTypes } from 'shared/propertyTypes';

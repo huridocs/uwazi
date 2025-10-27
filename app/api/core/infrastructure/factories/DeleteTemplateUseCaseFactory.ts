@@ -1,5 +1,5 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
@@ -21,7 +21,7 @@ class DeleteTemplateUseCaseFactory {
   static async create() {
     const eventBus = applicationEventsBus;
     const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
+    const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = DefaultSettingsDataSource(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);

@@ -18,7 +18,7 @@ import { Template } from '../../../domain/template/Template';
 import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
 import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { TemplateDBO } from './DBOs/TemplateDBO';
-import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './Mapper';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper';
 import { mapPropertyQuery } from './QueryMapper';
 
 export class MongoTemplatesDataSource

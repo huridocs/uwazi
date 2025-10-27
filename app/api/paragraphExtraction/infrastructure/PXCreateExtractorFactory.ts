@@ -1,5 +1,5 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import relationshipTypeDS from 'api/relationtypes';
@@ -28,7 +28,7 @@ export class PXCreateExtractorFactory {
         mongoTransactionManager,
       }),
       idGenerator: MongoIdHandler,
-      templatesDS: DefaultTemplatesDataSource(mongoTransactionManager),
+      templatesDS: MongoTemplatesDataSourceFactory.default(mongoTransactionManager),
       transactionManager: mongoTransactionManager,
       dispatcher,
     });

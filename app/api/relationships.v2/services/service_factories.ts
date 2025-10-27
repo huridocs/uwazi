@@ -12,7 +12,7 @@ import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { User } from 'api/users.v2/model/User';
 import { UserRole } from 'shared/types/userSchema';
 
@@ -93,7 +93,7 @@ const createUpdateStrategy = async (
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const settingsDS = DefaultSettingsDataSource(transactionManager);
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
@@ -119,7 +119,7 @@ const GetRelationshipService = () => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
@@ -184,7 +184,7 @@ const MigrationService = () => {
   const transactionManager = DefaultTransactionManager();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericMigrationService(
@@ -209,7 +209,7 @@ const DeleteRelationshipMigrationFieldService = () => {
 const GetRelationshipMigrationFieldsService = () => {
   const transactionManager = DefaultTransactionManager();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const service = new GenericGetRelationshipMigrationFieldsService(
     transactionManager,
     fieldDS,

@@ -1,7 +1,7 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';

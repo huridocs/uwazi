@@ -2,7 +2,7 @@ import {
   DefaultIdGenerator,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
@@ -13,7 +13,7 @@ import { LegacyPageService } from '../mongodb/page/LegacyPageService';
 class CreateTemplateUseCaseFactory {
   static create() {
     const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
+    const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
     const settingsDS = DefaultSettingsDataSource(transactionManager);

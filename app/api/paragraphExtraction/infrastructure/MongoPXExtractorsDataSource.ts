@@ -4,7 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import entities from 'api/entities';
 import { Db, ObjectId } from 'mongodb';
 
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { PXExtractor } from '../domain/PXExtractor';
 import {
   DeleteParagraphsInput,

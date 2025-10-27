@@ -1,6 +1,6 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
@@ -101,7 +101,7 @@ describe('PropertyCreatorService', () => {
 
   it('should throw if the Property is not consistent', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+      templatesDS: MongoTemplatesDataSourceFactory.default(DefaultTransactionManager()),
     });
 
     await expect(
@@ -119,7 +119,7 @@ describe('PropertyCreatorService', () => {
 
   it('should NOT throw if the Property is unique on the system', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+      templatesDS: MongoTemplatesDataSourceFactory.default(DefaultTransactionManager()),
     });
 
     await expect(
@@ -137,7 +137,7 @@ describe('PropertyCreatorService', () => {
 
   it('should NOT consider the already created Property as duplicated', async () => {
     const sut = new PropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+      templatesDS: MongoTemplatesDataSourceFactory.default(DefaultTransactionManager()),
     });
 
     await expect(

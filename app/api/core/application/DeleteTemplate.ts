@@ -9,7 +9,7 @@ import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedE
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
 
 type Input = {
   templateId: string;

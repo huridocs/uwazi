@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import relationshipTypeDS from 'api/relationtypes';
@@ -23,7 +23,7 @@ const f = getFixturesFactory();
 const setUpUseCase = () => {
   const connection = getConnection();
   const mongoTransactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(mongoTransactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(mongoTransactionManager);
   const extractorDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

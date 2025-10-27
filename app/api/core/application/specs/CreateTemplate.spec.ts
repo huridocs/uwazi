@@ -1,4 +1,4 @@
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
@@ -18,7 +18,7 @@ import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
   const transactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const idGenerator = DefaultIdGenerator;
   const settingsDS = DefaultSettingsDataSource(transactionManager);
   const translationService = new LegacyTranslationService();

@@ -292,13 +292,6 @@ export class MongoTemplateMapper {
     };
   }
 
-  static toDTO(domain: Template): TemplateDBO {
-    return {
-      ...MongoTemplateMapper.toSchema(domain),
-      default: !!domain.isDefault,
-    };
-  }
-
   static toDomain(schema: TemplateDBO): Template {
     const templateId = schema._id.toHexString();
 

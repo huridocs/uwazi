@@ -5,8 +5,8 @@ import { RelationshipProperty } from 'api/core/domain/template/RelationshipPrope
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from '../../../../infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../../../../infrastructure/mongodb/template/QueryMapper';
+import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
+import { mapPropertyQuery } from '../QueryMapper';
 
 const factory = getFixturesFactory();
 
@@ -65,7 +65,7 @@ const fixtures = {
   ],
 };
 
-beforeEach(async () => {
+beforeAll(async () => {
   await testingEnvironment.setUp(fixtures);
 });
 

@@ -1,6 +1,6 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/core/v1_layer/templates.v2/database/data_source_defaults';
+import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
@@ -31,7 +31,7 @@ describe('SaveEntityTranslations', () => {
     const transactionManager = DefaultTransactionManager();
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
-      DefaultTemplatesDataSource(transactionManager),
+      MongoTemplatesDataSourceFactory.default(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger
