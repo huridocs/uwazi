@@ -29,7 +29,7 @@ Before anything else you will need to install the application dependencies:
 - [**MongoDB 7.0.24**](https://www.mongodb.com/docs/v5.0/installation/) The MongoDB installation needs to be configured as a Replica Set. It can be a single-node replica set, but Replica Set must be [initialized](https://www.mongodb.com/docs/v6.0/tutorial/deploy-replica-set/). If you have a previous version installed, please follow the instructions on how to [upgrade here](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-standalone/).
 - [**mongosh**](https://www.mongodb.com/docs/mongodb-shell/) The new mongosh dependency needs to be added.
 - [**Yarn**](https://yarnpkg.com/en/docs/install)
-- **pdftotext (Poppler)** tested to work on version 22.12 but it's recommended to use the [latest available for your platform](https://poppler.freedesktop.org/). Make sure to **install libjpeg-dev** if you build from source.
+- **pdftotext (Poppler)** tested to work on version 0.86 but it's recommended to use the [latest available for your platform](https://poppler.freedesktop.org/). Make sure to **install libjpeg-dev** if you build from source.
 
 # Production
 
