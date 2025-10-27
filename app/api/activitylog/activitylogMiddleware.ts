@@ -2,12 +2,12 @@ import { storage } from 'api/files';
 import date from 'api/utils/date';
 import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
-import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';
 import { handleError } from 'api/utils';
+import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
-export const IGNORED_ENDPOINTS = [
+const IGNORED_ENDPOINTS = [
   '/api/login',
   '/api/contact',
   '/api/unlockaccount',
@@ -21,12 +21,13 @@ export const IGNORED_ENDPOINTS = [
   '/api/sync/upload',
   '/api/export',
 ];
-export const BODY_REQUIRED_ENDPOINTS = [
+const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/document',
   '/api/files/upload/custom',
   '/api/attachments/upload',
   '/api/public',
   '/api/entities',
+  '/api/users',
 ];
 
 function mustBeLogged(baseurl: string, method: string, body: { [k: string]: any }) {
@@ -56,25 +57,53 @@ const createEntry = (req: Request, url: string) => {
   };
 };
 
-export default (req: Request, _res: Response, next: NextFunction) => {
-  const { url, method, body = {} } = req;
-  const baseurl = url.split('?').shift() || '';
-  if (mustBeLogged(baseurl, method, body)) {
-    const entry = createEntry(req, baseurl);
-
-    activitylog.save(entry).catch(e => {
-      handleError(e, { req });
-    });
-
-    storage
-      .storeFile(
-        `${tenants.current().name}_${entry.time}_activity.log`,
-        Readable.from([Buffer.from(JSON.stringify(entry))]),
-        'activitylog'
-      )
-      .catch(e => {
-        handleError(e, { req });
-      });
+export default (req: Request, res: Response, next: NextFunction) => {
+  if ((req as any).__activitylogAttached) {
+    next();
+    return;
   }
+  (req as any).__activitylogAttached = true;
+
+  const doLog = () => {
+    try {
+      const { url, method, body = {} } = req;
+      const baseurl = url.split('?').shift() || '';
+
+      // skip unknown endpoints that ended in 404 (runtime)
+      if ((res as any).statusCode === 404) {
+        return;
+      }
+
+      if (mustBeLogged(baseurl, method, body)) {
+        const entry = createEntry(req, baseurl);
+
+        activitylog.save(entry).catch(e => {
+          handleError(e, { req });
+        });
+
+        storage
+          .storeFile(
+            `${tenants.current().name}_${entry.time}_activity.log`,
+            Readable.from([Buffer.from(JSON.stringify(entry))]),
+            'activitylog'
+          )
+          .catch(e => {
+            handleError(e, { req });
+          });
+      }
+    } catch (e) {
+      handleError(e as any, { req });
+    }
+  };
+
+  // runtime: defer until response finishes; tests: fall back to immediate
+  if (typeof (res as any).on === 'function') {
+    res.on('finish', doLog);
+  } else {
+    doLog();
+  }
+
   next();
 };
+
+export { IGNORED_ENDPOINTS, BODY_REQUIRED_ENDPOINTS };
