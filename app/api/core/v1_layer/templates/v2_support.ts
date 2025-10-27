@@ -1,5 +1,5 @@
 import { WithId } from 'api/odm';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { validateCreateNewRelationshipProperty } from 'api/core/v1_layer/templates.v2/routes/validators/createNewRelationshipProperty';
 import { CreateTemplateService } from 'api/core/v1_layer/templates.v2/services/service_factories';
 import { ensure } from 'shared/tsUtils';
@@ -9,7 +9,7 @@ import templates from './templates';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const transactionManager = DefaultTransactionManager();
-  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+  if (!(await MongoSettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())) {
     return template;
   }
 
@@ -39,14 +39,14 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
 };
 
 const newRelationshipsAllowed = async () =>
-  DefaultSettingsDataSource(DefaultTransactionManager()).readNewRelationshipsAllowed();
+  MongoSettingsDataSourceFactory.default(DefaultTransactionManager()).readNewRelationshipsAllowed();
 
 const processNewRelationshipPropertiesOnUpdate = async (
   _oldTemplate: TemplateSchema,
   _newTemplate: TemplateSchema
 ) => {
   const transactionManager = DefaultTransactionManager();
-  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+  if (!(await MongoSettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())) {
     return _newTemplate;
   }
   const createTemplateService = await CreateTemplateService();
@@ -58,7 +58,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
 
 const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSchema['_id']) => {
   const transactionManager = DefaultTransactionManager();
-  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+  if (!(await MongoSettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())) {
     return;
   }
 

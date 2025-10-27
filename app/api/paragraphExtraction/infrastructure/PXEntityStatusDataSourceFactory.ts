@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
@@ -13,7 +13,7 @@ type Props = {
 
 export class PXEntitiesStatusDataSourceFactory {
   static createDefault(props: Props): MongoPXEntitiesStatusDataSource {
-    const settingsDS = DefaultSettingsDataSource(props.mongoTransactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(props.mongoTransactionManager);
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection: props.connection,
       transactionManager: props.mongoTransactionManager,

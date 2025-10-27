@@ -3,7 +3,7 @@ import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
 } from 'api/i18n.v2/errors/translationErrors';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
@@ -21,7 +21,7 @@ const createService = () => {
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      MongoSettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   );

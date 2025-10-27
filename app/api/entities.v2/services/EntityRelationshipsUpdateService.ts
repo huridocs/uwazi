@@ -2,7 +2,7 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { Template } from 'api/core/domain/template/Template';
 import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { RelationshipsDataSource } from 'api/relationships.v2/contracts/RelationshipsDataSource';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { Entity, EntityMetadata } from '../model/Entity';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 

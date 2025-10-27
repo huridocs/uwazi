@@ -1,7 +1,7 @@
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
 import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
-import { TemplatesDataSource } from '../../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Context, Property } from '../../domain/template/Property';
 import { IdGenerator } from '../../libs/IdGenerator';
 import { PropertyType } from '../../domain/template/PropertyType';

@@ -1,5 +1,5 @@
 import { UseCase } from 'api/core/libs/UseCase';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import {
   GetExtractedParagraphsOutput,
   PXExtractorsQueryService,

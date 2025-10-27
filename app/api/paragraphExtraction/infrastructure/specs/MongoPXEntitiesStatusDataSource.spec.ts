@@ -1,6 +1,6 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
@@ -18,7 +18,7 @@ const createSut = () => {
   const connection = getConnection();
   const mongoTransactionManager = DefaultTransactionManager();
 
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+  const settingsDS = MongoSettingsDataSourceFactory.default(mongoTransactionManager);
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,
     transactionManager: mongoTransactionManager,

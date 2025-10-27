@@ -7,7 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -20,7 +20,7 @@ const createSut = () => {
   const transactionManager = DefaultTransactionManager();
   const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
   const idGenerator = DefaultIdGenerator;
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
+  const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
   const translationService = new LegacyTranslationService();
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const pageService = new LegacyPageService();

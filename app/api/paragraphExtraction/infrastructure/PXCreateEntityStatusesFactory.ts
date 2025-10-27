@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -19,7 +19,7 @@ class PXCreateEntityStatusesFactory {
     const connection = props.connection || getConnection();
     const transactionManager = props.transactionManager || DefaultTransactionManager();
 
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
 
     const pxEntityStatusesQueryService = PXEntityStatusesQueryServiceFactory.createDefault({
       connection,

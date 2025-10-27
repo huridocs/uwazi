@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 
 import { PXGetEntityParagraphs } from '../application/PXGetEntityParagraphs';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
@@ -24,7 +24,7 @@ export class PXEntityParagraphsFactory {
       transactionManager: mongoTransactionManager,
     });
 
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(mongoTransactionManager);
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,

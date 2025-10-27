@@ -1,5 +1,5 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { TranslationResult } from './types/TranslationResult';

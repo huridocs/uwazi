@@ -12,14 +12,14 @@ import {
   CreateRelationshipService,
   DeleteRelationshipService,
 } from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();
-  return DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
+  return MongoSettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {

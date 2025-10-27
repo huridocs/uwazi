@@ -5,8 +5,8 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
@@ -51,7 +51,7 @@ export class PXEntityUpdatedListener {
 
     const filesDS = DefaultFilesDataSource(mongoTransactionManager);
 
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(mongoTransactionManager);
 
     this.dependencies = {
       entitiesStatusDS,

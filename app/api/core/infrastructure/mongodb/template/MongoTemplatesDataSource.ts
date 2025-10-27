@@ -15,7 +15,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Property } from '../../../domain/template/Property';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
 import { Template } from '../../../domain/template/Template';
-import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { TemplateDBO } from './DBOs/TemplateDBO';
 import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper';

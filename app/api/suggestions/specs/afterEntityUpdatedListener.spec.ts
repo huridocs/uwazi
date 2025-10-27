@@ -1,7 +1,7 @@
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';

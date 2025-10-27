@@ -13,7 +13,7 @@ import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsServ
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { EnforcedWithId, models } from 'api/odm';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { IndexedContextValues } from './translations';
@@ -45,7 +45,7 @@ export const resultsToV1TranslationType = async (
   onlyLanguage?: LanguageISO6391
 ) => {
   const transactionManager = DefaultTransactionManager();
-  const settings = DefaultSettingsDataSource(transactionManager);
+  const settings = MongoSettingsDataSourceFactory.default(transactionManager);
   let languageKeys = await settings.getLanguageKeys();
   if (onlyLanguage) {
     languageKeys = [onlyLanguage];
@@ -104,7 +104,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      MongoSettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).create(flattenTranslations(translation));
@@ -114,10 +114,10 @@ export const upsertTranslationEntries = async (translations: CreateTranslationsD
   const transactionManager = DefaultTransactionManager();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    DefaultSettingsDataSource(transactionManager),
+    MongoSettingsDataSourceFactory.default(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      MongoSettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).upsert(translations);
@@ -177,10 +177,10 @@ export const updateContextV2 = async (
   const transactionManager = DefaultTransactionManager();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    DefaultSettingsDataSource(transactionManager),
+    MongoSettingsDataSourceFactory.default(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      MongoSettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);

@@ -1,5 +1,5 @@
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { isEqual } from 'lodash';

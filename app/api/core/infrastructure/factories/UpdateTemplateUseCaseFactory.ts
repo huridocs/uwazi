@@ -6,7 +6,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -32,7 +32,7 @@ class UpdateTemplateUseCaseFactory {
     );
     const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = DefaultIdGenerator;
     const eventBus = applicationEventsBus;

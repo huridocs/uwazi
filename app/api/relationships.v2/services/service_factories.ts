@@ -11,7 +11,7 @@ import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaul
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { User } from 'api/users.v2/model/User';
 import { UserRole } from 'shared/types/userSchema';
@@ -94,7 +94,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = MongoTemplatesDataSourceFactory.default(transactionManager);
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
+  const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 

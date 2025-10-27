@@ -7,7 +7,7 @@ import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
@@ -26,7 +26,7 @@ const AutomaticTranslationFactory = {
     return new MongoATConfigDataSource(
       db,
       transactionManager,
-      DefaultSettingsDataSource(transactionManager),
+      MongoSettingsDataSourceFactory.default(transactionManager),
       MongoTemplatesDataSourceFactory.default(transactionManager),
       new ATExternalAPI()
     );

@@ -31,7 +31,7 @@ import express, { NextFunction, Request, RequestHandler, Response } from 'expres
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { Db, ObjectId } from 'mongodb';
@@ -374,7 +374,7 @@ describe('syncWorker', () => {
         DefaultTranslationsDataSource(transactionManager),
         new ValidateTranslationsService(
           DefaultTranslationsDataSource(transactionManager),
-          DefaultSettingsDataSource(transactionManager)
+          MongoSettingsDataSourceFactory.default(transactionManager)
         ),
         transactionManager
       ).create([

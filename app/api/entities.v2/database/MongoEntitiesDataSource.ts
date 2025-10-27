@@ -6,7 +6,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import entities from 'api/entities/entities';
 import v1EntitiesModel from 'api/entities/entitiesModel';
 import { search } from 'api/search';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from 'shared/types/commonTypes';

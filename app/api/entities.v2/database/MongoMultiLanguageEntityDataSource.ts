@@ -2,7 +2,7 @@ import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDat
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { search } from 'api/search';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { TemplateProperty } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { Db, Filter, ObjectId } from 'mongodb';

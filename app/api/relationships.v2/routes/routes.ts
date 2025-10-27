@@ -3,7 +3,7 @@ import { performance } from 'perf_hooks';
 import { Application, NextFunction, Request, Response } from 'express';
 
 import { needsAuthorization } from 'api/auth';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { parseQuery } from 'api/utils';
 import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
@@ -33,7 +33,7 @@ import { validateGetMigrationHubRecordsRequest } from './validators/getMigration
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
-    !(await DefaultSettingsDataSource(DefaultTransactionManager()).readNewRelationshipsAllowed())
+    !(await MongoSettingsDataSourceFactory.default(DefaultTransactionManager()).readNewRelationshipsAllowed())
   ) {
     return res.sendStatus(404);
   }

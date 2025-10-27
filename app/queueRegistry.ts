@@ -25,7 +25,7 @@ import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelF
 import { TrainModelForText } from 'api/services/informationextraction/TrainModelForText';
 import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
 import settings from 'api/settings';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
@@ -81,7 +81,7 @@ export function registerJobs(
       connection,
       transactionManager,
     });
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = MongoSettingsDataSourceFactory.default(transactionManager);
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),

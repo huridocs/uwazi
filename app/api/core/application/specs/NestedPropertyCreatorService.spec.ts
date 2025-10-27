@@ -2,7 +2,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { MongoTemplatesDataSourceFactory } from 'api/core/infrastructure/factories/MongoTemplatesDataSourceFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { PropertyCreatorServiceStrategy } from '../propertyCreatorService/PropertyCreatorServiceStrategy';
@@ -15,7 +15,7 @@ const createSut = () => {
     idGenerator: TestUtils.mockClass({ generate: () => 'id' }),
     thesauriDS: TestUtils.mockClass({}),
     relationshipTypesDS: TestUtils.mockClass({}),
-    settingsDS: DefaultSettingsDataSource(transactionManager),
+    settingsDS: MongoSettingsDataSourceFactory.default(transactionManager),
     templatesDS: MongoTemplatesDataSourceFactory.default(transactionManager),
   });
 

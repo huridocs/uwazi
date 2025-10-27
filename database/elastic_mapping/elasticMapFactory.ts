@@ -1,5 +1,5 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { RelationshipPropertyMappingFactory } from 'api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { TemplateSchema } from 'shared/types/templateType';

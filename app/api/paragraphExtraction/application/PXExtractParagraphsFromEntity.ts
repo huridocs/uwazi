@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/core/libs/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Document } from 'api/files.v2/model/Document';

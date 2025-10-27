@@ -8,7 +8,7 @@ import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDe
 import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSourceFactory } from 'api/core/infrastructure/factories/MongoSettingsDataSource';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { Suggestions } from './suggestions';
@@ -27,7 +27,7 @@ const featureIsEnabled = async () => {
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    settingsDS: MongoSettingsDataSourceFactory.default(DefaultTransactionManager()),
     logger: DefaultLogger(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
@@ -67,7 +67,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    settingsDS: MongoSettingsDataSourceFactory.default(DefaultTransactionManager()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: DefaultLogger(),
   })).start();

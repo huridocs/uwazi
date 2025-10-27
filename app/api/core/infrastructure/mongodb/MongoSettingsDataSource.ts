@@ -2,8 +2,8 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { LanguageUtils } from 'shared/language';
 import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
 import { Settings as SettingsType } from 'shared/types/settingsType';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { DefaultLanguageMissingError } from '../errors/settingsErrors';
+import { SettingsDataSource } from '../../application/contracts/SettingsDataSource';
+import { DefaultLanguageMissingError } from './errors/settingsErrors';
 
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>
