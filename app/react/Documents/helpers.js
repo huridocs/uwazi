@@ -31,7 +31,8 @@ export default {
       }
 
       if (property.type === 'date' && value) {
-        value = DateTime.fromSeconds(value).toFormat('MMM dd, yyyy');
+        const numericValue = typeof value === 'string' ? Number(value) : value;
+        value = DateTime.fromSeconds(numericValue).toFormat('MMM dd, yyyy');
       }
 
       return { label: property.label, value };

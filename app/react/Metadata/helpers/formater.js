@@ -58,7 +58,10 @@ const formatMetadataSortedProperties = (metadata, sortedProperties) =>
 
 const addCreationDate = (result, doc) =>
   result.push({
-    value: DateTime.fromMillis(doc.creationDate).toLocaleString(DateTime.DATE_MED),
+    value:
+      doc.creationDate != null
+        ? DateTime.fromMillis(doc.creationDate).toLocaleString(DateTime.DATE_MED)
+        : '',
     label: 'Date added',
     name: 'creationDate',
     translateContext: 'System',
@@ -67,7 +70,10 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: DateTime.fromMillis(doc.editDate).toLocaleString(DateTime.DATE_MED),
+    value:
+      doc.editDate != null
+        ? DateTime.fromMillis(doc.editDate).toLocaleString(DateTime.DATE_MED)
+        : '',
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',
@@ -119,8 +125,10 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
 };
 
 const propertyValueFormatter = {
-  date: timestamp =>
-    DateTime.fromSeconds(timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED),
+  date: timestamp => {
+    if (timestamp == null) return '';
+    return DateTime.fromSeconds(timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED);
+  },
 };
 
 //relationship v2
@@ -216,9 +224,10 @@ export default {
   multidate(property, timestamps = []) {
     const value = timestamps.map(timestamp => ({
       timestamp: timestamp.value,
-      value: DateTime.fromSeconds(timestamp.value, { zone: 'utc' }).toLocaleString(
-        DateTime.DATE_MED
-      ),
+      value:
+        timestamp.value != null
+          ? DateTime.fromSeconds(timestamp.value, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)
+          : '',
     }));
     return { label: property.get('label'), name: property.get('name'), value };
   },

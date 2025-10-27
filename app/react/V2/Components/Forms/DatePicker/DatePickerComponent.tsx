@@ -1,5 +1,5 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import { DateTime, Info } from 'luxon';
+import { Info } from 'luxon';
 import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //Module has no types
