@@ -7,6 +7,8 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import settings from 'api/settings/settings';
+import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
@@ -63,6 +65,54 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
     })
     .then((arr: { sharedId: string }[]) => new Set(arr.map(e => e.sharedId)));
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
+};
+
+const isFilePubliclyAccessible = async (
+  file: FileType,
+  isPrivateInstance: boolean
+): Promise<boolean> => {
+  if (isPrivateInstance) {
+    return false;
+  }
+
+  if (file.type === 'custom') {
+    return true;
+  }
+
+  if (!file.entity) {
+    return false;
+  }
+
+  try {
+    const relatedEntities: EntitySchema[] = await entities.get(
+      { sharedId: file.entity },
+      'published',
+      { withoutDocuments: true }
+    );
+
+    return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
+  } catch (error) {
+    return false;
+  }
+};
+
+const getCacheControlHeader = (
+  isPubliclyAccessible: boolean,
+  isPrivateInstance: boolean
+): string => {
+  if (isPrivateInstance) {
+    return 'private, max-age=3600';
+  }
+
+  if (isPubliclyAccessible) {
+    return 'public, no-cache';
+  }
+
+  return 'private, max-age=3600';
+};
+
+const timestampToHTTPDate = (timestamp: number): string => {
+  return new Date(timestamp).toUTCString();
 };
 
 export default (app: Application) => {
@@ -221,13 +271,45 @@ export default (app: Application) => {
         filename: req.params.filename,
       });
 
+      const currentUser = permissionsContext.getUserInContext();
+
       if (
         !file?.filename ||
         !file?.type ||
         !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
+        !(await checkEntityPermission(file, currentUser))
       ) {
         throw createError('file not found', 404);
+      }
+
+      // Set cache control and Last-Modified headers (only if feature flag is enabled)
+      // Wrapped in try-catch to ensure this never blocks file serving
+      try {
+        if (tenants.current().featureFlags?.fileCacheHeaders) {
+          // Optimization: Authenticated users always get private cache, skip complex logic
+          if (currentUser) {
+            res.setHeader('Cache-Control', 'private, max-age=3600');
+          } else {
+            // Unauthenticated access - determine if publicly cacheable
+            const appSettings = await settings.get();
+            const isPrivateInstance = appSettings.private || false;
+
+            // Check if file is publicly accessible
+            const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
+
+            const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+            res.setHeader('Cache-Control', cacheControl);
+          }
+
+          // Set Last-Modified header
+          if (file.creationDate) {
+            const lastModified = timestampToHTTPDate(file.creationDate);
+            res.setHeader('Last-Modified', lastModified);
+          }
+        }
+      } catch (error) {
+        // If any cache header logic fails, silently skip it and continue serving file
+        // This ensures backwards compatibility and prevents blocking file access
       }
 
       const headerFilename = file.originalname || file.filename;

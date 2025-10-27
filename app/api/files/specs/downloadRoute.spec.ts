@@ -4,6 +4,8 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import settings from 'api/settings/settings';
+import { testingTenants } from 'api/utils/testingTenants';
 import {
   fixtures,
   fileName1,
@@ -136,6 +138,109 @@ describe('files routes download', () => {
           .expect(200);
 
         expect(response.body instanceof Buffer).toBe(true);
+      });
+    });
+
+    describe('Cache-Control and Last-Modified headers', () => {
+      beforeEach(() => {
+        testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: true } });
+      });
+
+      describe('when instance is public', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should set "public, no-cache" for custom files accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set "public, no-cache" for documents from published entities accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set Last-Modified header based on file creationDate', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Last-Modified')).toBeDefined();
+          expect(response.get('Last-Modified')).toMatch(/GMT$/);
+        });
+      });
+
+      describe('when accessed by authenticated user', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+          app = setAppWithUser(uploadRoutes, adminUser);
+        });
+
+        it('should set "private, max-age=3600" for any file', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+
+        it('should set Last-Modified header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileName1}`)
+            .expect(200);
+
+          expect(response.get('Last-Modified')).toBeDefined();
+        });
+      });
+
+      describe('when instance is private', () => {
+        beforeEach(async () => {
+          await settings.save({ private: true });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should set "private, max-age=3600" for all files', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+      });
+
+      describe('when feature flag is disabled', () => {
+        beforeEach(async () => {
+          testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: false } });
+          await settings.save({ private: false });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should not set Cache-Control header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBeUndefined();
+        });
+
+        it('should not set Last-Modified header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Last-Modified')).toBeUndefined();
+        });
       });
     });
   });
