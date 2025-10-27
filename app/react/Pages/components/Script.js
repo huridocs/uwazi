@@ -39,8 +39,7 @@ class Script extends Component {
     const { children, scriptRendered } = this.props;
     if (children && scriptRendered === false) {
       const s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.text = `${children}`;
+      s.src = `data:text/javascript,(function(){${encodeURIComponent(`\n\n${children}\n\n`)}})()`;
       document.body.appendChild(s);
       this.scriptElement = s;
       this.props.dispatch(actions.setIn('page/pageView', 'scriptRendered', true));

@@ -8,12 +8,12 @@ import Script from '../Script';
 
 const workingScript = {
   input: 'console.log("works!");',
-  value: 'console.log("works!");',
+  value: 'data:text/javascript,(function(){%0A%0Aconsole.log(%22works!%22)%3B%0A%0A})()',
 };
 
 const newScript = {
   input: 'console.log("new script!");',
-  value: 'console.log("new script!");',
+  value: 'data:text/javascript,(function(){%0A%0Aconsole.log(%22new%20script!%22)%3B%0A%0A})()',
 };
 
 describe('PageCreator', () => {
@@ -42,7 +42,7 @@ describe('PageCreator', () => {
     expect(scripts).toHaveLength(amount);
     if (amount && content) {
       const scriptTag = scripts[index || scripts.length - 1];
-      expect(scriptTag.textContent).toBe(content);
+      expect(scriptTag.src).toBe(content);
     }
   };
 
