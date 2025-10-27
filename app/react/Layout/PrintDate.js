@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 const PrintDate = ({ utc, toLocal }) => {
   let date;
   if (!toLocal) {
-    date = moment.utc(utc).format('ll');
+    date = DateTime.fromMillis(utc, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED);
   }
 
   if (toLocal) {
-    date = moment(moment(utc).toDate()).format('ll');
+    date = DateTime.fromMillis(utc).toLocaleString(DateTime.DATE_MED);
   }
   return <span>{date}</span>;
 };

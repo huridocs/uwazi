@@ -1,5 +1,5 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import moment from 'moment';
+import { DateTime, Info } from 'luxon';
 import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //Module has no types
@@ -48,18 +48,19 @@ const titleFormat = (locale: string) => {
   }
 };
 const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
-  const localeData = moment.localeData(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
+  const locale = language || 'en';
+
   return {
-    days: localeData.weekdays(),
-    daysShort: localeData.weekdaysShort(),
-    daysMin: localeData.weekdaysMin(),
-    months: localeData.months(),
-    monthsShort: localeData.monthsShort(),
+    days: Info.weekdays('long', { locale }),
+    daysShort: Info.weekdays('short', { locale }),
+    daysMin: Info.weekdays('narrow', { locale }),
+    months: Info.months('long', { locale }),
+    monthsShort: Info.months('short', { locale }),
     today: labelToday,
     monthsTitle: t('System', 'Months', null, false),
     clear: labelClear,
-    weekStart: localeData.firstDayOfWeek(),
+    weekStart: Info.getStartOfWeek({ locale }) - 1, // Luxon returns 1-7, flowbite expects 0-6
     format: 'dd/mm/yyyy',
     titleFormat: titleFormat(language),
     rtl: isRTL,

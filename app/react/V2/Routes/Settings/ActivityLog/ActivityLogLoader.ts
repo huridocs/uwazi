@@ -2,7 +2,7 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientSettings } from 'app/apiResponseTypes';
 import * as activityLogAPI from 'V2/api/activityLog';
@@ -36,8 +36,8 @@ interface ActivityLogSearchParams {
 }
 
 const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
-  const fromDate = from && moment(from, dateFormat).toDate().getTime();
-  const toDate = to && moment(to, dateFormat).toDate().getTime();
+  const fromDate = from && DateTime.fromFormat(from, dateFormat.toLowerCase()).toMillis();
+  const toDate = to && DateTime.fromFormat(to, dateFormat.toLowerCase()).toMillis();
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 
