@@ -16,6 +16,7 @@ type CreateInput = {
   languages: LanguageISO6391[];
   template: Template;
   userId?: string;
+  icon?: Icon;
 };
 
 type Icon = {
@@ -75,14 +76,14 @@ class Entity {
   }
 
   static create(input: CreateInput, idGenerator: IdGenerator) {
-    const { languages, userId, template } = input;
+    const { languages, userId, template, icon } = input;
 
     const translations = languages.map(language => ({
       id: idGenerator.generate(),
       language,
     }));
 
-    const instance = new Entity({ userId, translations, template });
+    const instance = new Entity({ userId, translations, template, icon });
 
     return instance;
   }
@@ -112,7 +113,7 @@ class Entity {
     return this.getTranslation(language).title.value[0].value;
   }
 
-  setValues(propertyAssignments: PropertyAssignment[], language?: LanguageISO6391) {
+  setPropertyAssignments(propertyAssignments: PropertyAssignment[], language?: LanguageISO6391) {
     this.template.allProperties.forEach(property => {
       const propertyAssignment =
         propertyAssignments.find(pa => pa.name === property.name) ||

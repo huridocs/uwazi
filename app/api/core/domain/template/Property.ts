@@ -109,7 +109,7 @@ class Property {
     return { name: this.name, value: [], type: this.type };
   }
 
-  createPropertyAssignment(value: PropertyValue[]): PropertyAssignment {
+  createPropertyAssignment(value: PropertyValue[] = []): PropertyAssignment {
     return { name: this.name, value, type: this.type };
   }
 }

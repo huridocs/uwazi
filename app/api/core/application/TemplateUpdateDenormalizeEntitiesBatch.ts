@@ -99,7 +99,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         if (generatedIdProps.length) {
           modifiedEntities.forEach(entity => {
             generatedIdProps.forEach(prop => {
-              entity.setValues([prop.createPropertyAssignment()]);
+              entity.setPropertyAssignments([prop.createPropertyAssignment()]);
             });
           });
         }

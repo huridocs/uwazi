@@ -3,7 +3,7 @@ import { generateID } from 'shared/IDGenerator';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
-import { PropertyAssignment } from './PropertyValue';
+import { GeneratedIdEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.GeneratedId;
@@ -22,11 +22,11 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(): PropertyAssignment {
+  createPropertyAssignment(value?: GeneratedIdEntry[]): PropertyAssignment {
     return {
       name: this.name,
       type: this.type,
-      value: [{ value: generateID(3, 4, 4) }], // Todo: Internalize ID generation
+      value: value?.length ? value : [{ value: generateID(3, 4, 4) }], // Todo: Internalize ID generation
     };
   }
 }

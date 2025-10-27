@@ -12,7 +12,7 @@ type ValueInput =
   | { url: string; label?: string };
 
 type PropertyValueInput = {
-  value: ValueInput[];
+  value: ValueInput;
 };
 
 type PropertyAssignmentInput = {
@@ -44,6 +44,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         languages,
         userId: this.actor?.id,
         template,
+        icon: input.icon,
       },
       this.idGenerator
     );
@@ -52,7 +53,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       template.createPropertyAssignment(name, value)
     );
 
-    entity.setValues(propertyAssignments);
+    entity.setPropertyAssignments(propertyAssignments);
 
     await this.transactionManager.run(async () => {
       await this.deps.multiLanguageEntityDS.create(entity);

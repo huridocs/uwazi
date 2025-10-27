@@ -57,6 +57,7 @@ describe('Entity', () => {
     expect(entity.sharedId).toEqual(expect.any(String));
     expect(entity.published).toBe(false);
     expect(entity.userId).toBe('user-456');
+    expect(entity.getTranslation('en').creationDate.value[0].value).toEqual(expect.any(Number));
 
     expect(entity.translations).toEqual({
       en: entityLanguage,
@@ -75,7 +76,7 @@ describe('Entity', () => {
       { generate: () => 'id-789' }
     );
 
-    entity.setValues([
+    entity.setPropertyAssignments([
       entity.template.createPropertyAssignment('description', [
         { value: 'A description in multiple languages' },
       ]),
@@ -114,9 +115,11 @@ describe('Entity', () => {
       { generate: () => 'id-789' }
     );
 
-    entity.setValues([entity.template.createPropertyAssignment('age', [{ value: 42 }])]);
+    entity.setPropertyAssignments([
+      entity.template.createPropertyAssignment('age', [{ value: 42 }]),
+    ]);
 
-    entity.setValues([
+    entity.setPropertyAssignments([
       entity.template.createPropertyAssignment('description', [
         { value: 'A description in multiple languages' },
       ]),
@@ -157,7 +160,7 @@ describe('Entity', () => {
       { generate: () => 'id-789' }
     );
 
-    entity.setValues(
+    entity.setPropertyAssignments(
       [
         entity.template.createPropertyAssignment('title', [{ value: 'A title in English' }]),
         entity.template.createPropertyAssignment('description', [
@@ -168,7 +171,7 @@ describe('Entity', () => {
       'en'
     );
 
-    entity.setValues(
+    entity.setPropertyAssignments(
       [
         entity.template.createPropertyAssignment('title', [{ value: 'A title in Spanish' }]),
         entity.template.createPropertyAssignment('description', [
@@ -178,7 +181,7 @@ describe('Entity', () => {
       'es'
     );
 
-    entity.setValues(
+    entity.setPropertyAssignments(
       [
         entity.template.createPropertyAssignment('title', [{ value: 'A title in French' }]),
         entity.template.createPropertyAssignment('description', [
@@ -262,7 +265,7 @@ describe('Entity', () => {
       { generate: () => 'id-789' }
     );
 
-    entity.setValues(
+    entity.setPropertyAssignments(
       [entity.template.createPropertyAssignment('title', [{ value: 'A title in English' }])],
       'en'
     );
@@ -273,7 +276,7 @@ describe('Entity', () => {
     // eslint-disable-next-line no-promise-executor-return
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    entity.setValues(
+    entity.setPropertyAssignments(
       [entity.template.createPropertyAssignment('title', [{ value: 'A new title in English 2' }])],
       'en'
     );
@@ -300,7 +303,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Text Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Text Property is required');
     });
 
     it('should require Numeric', () => {
@@ -320,7 +323,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Numeric Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Numeric Property is required');
     });
 
     it('should require Date', () => {
@@ -340,7 +343,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Date Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Date Property is required');
     });
 
     it('should require Date Range', () => {
@@ -360,7 +363,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-2' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Date Range Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Date Range Property is required');
     });
 
     it('should require Multi Date', () => {
@@ -380,7 +383,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-3' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Multi Date Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Multi Date Property is required');
     });
 
     it('should require Multi Date Range', () => {
@@ -400,7 +403,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-4' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Multi Date Range Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow(
+        'Multi Date Range Property is required'
+      );
     });
 
     it('should require Select', () => {
@@ -421,7 +426,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-5' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Select Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Select Property is required');
     });
 
     it('should require MultiSelect', () => {
@@ -442,7 +447,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-6' }
       );
 
-      expect(() => entity.setValues([])).toThrow('MultiSelect Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('MultiSelect Property is required');
     });
 
     it('should require Geolocation', () => {
@@ -462,7 +467,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-7' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Geolocation Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Geolocation Property is required');
     });
 
     it('should require Link', () => {
@@ -482,7 +487,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-8' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Link Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Link Property is required');
     });
 
     it('should require Markdown', () => {
@@ -502,7 +507,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-9' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Markdown Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Markdown Property is required');
     });
 
     it('should require Image', () => {
@@ -522,7 +527,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-10' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Image Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Image Property is required');
     });
 
     it('should require Media', () => {
@@ -542,7 +547,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-11' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Media Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Media Property is required');
     });
 
     it('should require Preview', () => {
@@ -562,7 +567,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-12' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Preview Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Preview Property is required');
     });
 
     it('should require Nested', () => {
@@ -582,7 +587,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-13' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Nested Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Nested Property is required');
     });
 
     it('should require Relationship', () => {
@@ -605,7 +610,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-14' }
       );
 
-      expect(() => entity.setValues([])).toThrow('Relationship Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow('Relationship Property is required');
     });
   });
 });
