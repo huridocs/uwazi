@@ -142,8 +142,8 @@ describe('files routes download', () => {
     });
 
     describe('Cache-Control and Last-Modified headers', () => {
-      beforeEach(() => {
-        testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: true } });
+      beforeEach(async () => {
+        await testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: true } });
       });
 
       describe('when instance is public', () => {
@@ -174,8 +174,9 @@ describe('files routes download', () => {
             .get(`/api/files/${fileOnPublicEntity}`)
             .expect(200);
 
-          expect(response.get('Last-Modified')).toBeDefined();
-          expect(response.get('Last-Modified')).toMatch(/GMT$/);
+          const lastModified = response.get('Last-Modified');
+          expect(lastModified).toBeDefined();
+          await expect(lastModified).toMatch(/GMT$/);
         });
       });
 
@@ -220,7 +221,7 @@ describe('files routes download', () => {
 
       describe('when feature flag is disabled', () => {
         beforeEach(async () => {
-          testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: false } });
+          await testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: false } });
           await settings.save({ private: false });
           testingEnvironment.userInContextMockFactory.mock(undefined);
           app = setUpApp(uploadRoutes);
