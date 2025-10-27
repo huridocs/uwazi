@@ -64,7 +64,9 @@ const onChangePDFs =
         } catch (_e) {}
       }
     });
-
+    //clear input
+    input.value = '';
+    input.files = null;
     unselectAllDocuments();
   };
 
