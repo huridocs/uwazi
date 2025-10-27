@@ -2,11 +2,27 @@ import { connect } from 'react-redux';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import DatePickerComponent, { registerLocale } from 'react-datepicker';
-// Note: react-datepicker still requires date-fns for locale registration
-import * as localization from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DateTime } from 'luxon';
+import { DateTime, Info } from 'luxon';
+
+// Create react-datepicker compatible locale objects using Luxon
+const createLocaleFromLuxon = localeCode => {
+  const locale = localeCode || 'en';
+
+  return {
+    localize: {
+      month: n => Info.months('long', { locale })[n],
+      day: n => Info.weekdays('long', { locale })[n],
+    },
+    formatLong: {
+      date: () => 'MM/dd/yyyy',
+    },
+    options: {
+      weekStartsOn: Info.getStartOfWeek({ locale }) - 1, // Luxon: 1-7, react-datepicker: 0-6
+    },
+  };
+};
 
 const removeOffset = (useTimezone, value) => {
   let datePickerValue = null;
@@ -48,7 +64,7 @@ class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    registerLocale(props.locale || 'en', localization[props.locale] || localization.enGB);
+    registerLocale(props.locale || 'en', createLocaleFromLuxon(props.locale));
   }
 
   handleChange(datePickerValue) {
