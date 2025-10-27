@@ -19,7 +19,8 @@ type Props = {
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager = props.mongoTransactionManager ?? TransactionManagerFactory.default();
+    const mongoTransactionManager =
+      props.mongoTransactionManager ?? TransactionManagerFactory.default();
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??

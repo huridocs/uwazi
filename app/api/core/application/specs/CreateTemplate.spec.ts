@@ -1,8 +1,6 @@
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import {
-  DefaultIdGenerator,
-  TransactionManagerFactory,
-} from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
@@ -19,7 +17,7 @@ import { CreateTemplateUseCase } from '../CreateTemplate';
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-  const idGenerator = DefaultIdGenerator;
+  const idGenerator = IdGeneratorFactory.default();
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const translationService = new LegacyTranslationService();
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);

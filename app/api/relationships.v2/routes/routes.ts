@@ -33,7 +33,9 @@ import { validateGetMigrationHubRecordsRequest } from './validators/getMigration
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
-    !(await SettingsDataSourceFactory.default(TransactionManagerFactory.default()).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default(
+      TransactionManagerFactory.default()
+    ).readNewRelationshipsAllowed())
   ) {
     return res.sendStatus(404);
   }

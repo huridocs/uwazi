@@ -7,7 +7,9 @@ export const V2 = {
   async deleteTextReferencesToFiles(_ids: string[]) {
     const transactionManager = TransactionManagerFactory.default();
 
-    if (!(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())) {
+    if (
+      !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    ) {
       return;
     }
 

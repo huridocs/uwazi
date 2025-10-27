@@ -261,7 +261,10 @@ describe('filterRelationships()', () => {
   let allRelationships: Relationship[];
 
   beforeAll(async () => {
-    const ds = new MongoRelationshipsDataSource(getConnection(), TransactionManagerFactory.default());
+    const ds = new MongoRelationshipsDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     allRelationships = await ds.getAll().all();
   });
 

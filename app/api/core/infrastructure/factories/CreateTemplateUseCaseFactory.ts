@@ -1,7 +1,5 @@
-import {
-  DefaultIdGenerator,
-  TransactionManagerFactory,
-} from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
@@ -17,7 +15,7 @@ class CreateTemplateUseCaseFactory {
     const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const idGenerator = DefaultIdGenerator;
+    const idGenerator = IdGeneratorFactory.default();
     const pageService = new LegacyPageService();
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
 

@@ -1,7 +1,10 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-import { MongoDataSource, MongoDSOptions } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 

@@ -75,7 +75,10 @@ afterAll(async () => {
 
 describe('getAllProperties()', () => {
   it('should return all the properties properly typed', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     const result = await dataSource.getAllProperties().all();
     expect(result.length).toBe(4);
     expect(result[0]).toBeInstanceOf(RelationshipProperty);
@@ -105,7 +108,10 @@ describe('getAllProperties()', () => {
 
 describe('when requesting the relationship properties configured in the system', () => {
   it('should return all the relationship properties', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     const result = await dataSource.getAllRelationshipProperties().all();
     expect(result.length).toBe(3);
     result.forEach(property => {
@@ -171,7 +177,10 @@ describe('when requesting a property by name', () => {
 
 describe('getByIds()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     const result = await dataSource
       .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
       .all();
@@ -190,7 +199,10 @@ describe('getByIds()', () => {
 
 describe('getByNames()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     const result = await dataSource.getByNames(['template1', 'template3']).all();
 
     expect(result).toMatchObject([
@@ -208,7 +220,10 @@ describe('getByNames()', () => {
 
 describe('getById()', () => {
   it('should return the template', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     const result = await dataSource.getById(factory.id('template1').toString());
     expect(result.getData()).toMatchObject({
       id: factory.id('template1').toString(),

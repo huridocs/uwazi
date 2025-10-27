@@ -1,7 +1,5 @@
-import {
-  DefaultIdGenerator,
-  TransactionManagerFactory,
-} from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
@@ -34,7 +32,7 @@ class UpdateTemplateUseCaseFactory {
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-    const idGenerator = DefaultIdGenerator;
+    const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
     const filesDS = DefaultFilesDataSource(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(

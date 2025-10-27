@@ -60,7 +60,9 @@ describe('templates', () => {
 
       const response = await templates.save(newTemplate, 'en');
 
-      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      const dbTranslations = await DefaultTranslationsDataSource(
+        TransactionManagerFactory.default()
+      )
         .getContextAndKeys(response._id.toString(), [
           'created template',
           'Title',

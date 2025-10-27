@@ -159,7 +159,9 @@ describe('templates', () => {
       testTemplate.name = 'changed name';
       await updateTemplate(testTemplate);
 
-      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      const dbTranslations = await DefaultTranslationsDataSource(
+        TransactionManagerFactory.default()
+      )
         .getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template'])
         .all();
 
@@ -175,7 +177,9 @@ describe('templates', () => {
       testTemplate!.commonProperties![0].label = 'Second New Title';
       await updateTemplate(testTemplate);
 
-      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      const dbTranslations = await DefaultTranslationsDataSource(
+        TransactionManagerFactory.default()
+      )
         .getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title'])
         .all();
 
@@ -226,7 +230,9 @@ describe('templates', () => {
     it('should update translations handling duplicate values properly', async () => {
       const { _id, ...newTemplate } = factory.template('Country');
       await updateTemplate(newTemplate);
-      const dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      const dbTranslations = await DefaultTranslationsDataSource(
+        TransactionManagerFactory.default()
+      )
         .getAll()
         .all();
 

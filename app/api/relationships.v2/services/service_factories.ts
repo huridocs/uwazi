@@ -1,26 +1,25 @@
 /* eslint-disable max-statements */
 import { DefaultPermissionsDataSource } from 'api/authorization.v2/database/data_source_defaults';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import {
-  DefaultIdGenerator,
-  TransactionManagerFactory,
-} from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { User } from 'api/users.v2/model/User';
 import { UserRole } from 'shared/types/userSchema';
 
-import { tenants } from 'api/tenants';
 import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
@@ -28,22 +27,20 @@ import {
   DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
 } from '../database/data_source_defaults';
-
 import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from './CreateRelationshipMigrationFieldService';
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
+import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { GetMigrationHubRecordsService as GenericGetMigrationHubRecordsService } from './GetMigrationHubRecordsService';
 import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from './GetRelationshipMigrationFieldService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
-import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { MigrationService as GenericMigrationService } from './MigrationService';
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
-import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -140,7 +137,7 @@ const CreateRelationshipService = async () => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const idGenerator = DefaultIdGenerator;
+  const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const filesDS = DefaultFilesDataSource(transactionManager);
 
@@ -260,12 +257,12 @@ export {
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
-  GetMigrationHubRecordsService,
-  GetRelationshipService,
-  GetRelationshipMigrationFieldsService,
   DenormalizationService,
+  GetMigrationHubRecordsService,
+  GetRelationshipMigrationFieldsService,
+  GetRelationshipService,
   MigrationService,
-  UpsertRelationshipMigrationFieldService,
   UpdateRelationshipPropertiesJob,
   UpdateTemplateRelationshipPropertiesJob,
+  UpsertRelationshipMigrationFieldService,
 };

@@ -25,7 +25,10 @@ const preprocessEntitiesToIndex = async entitiesToIndex => {
     return entitiesToIndex;
   }
 
-  const templateDS = new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default());
+  const templateDS = new MongoTemplatesDataSource(
+    getConnection(),
+    TransactionManagerFactory.default()
+  );
   const transformer = new ElasticEntityMapper(templateDS);
   return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };
