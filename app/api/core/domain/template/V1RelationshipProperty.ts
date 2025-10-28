@@ -3,7 +3,7 @@ import {
   FilterablePropertyProps,
 } from 'api/core/domain/template/FilterableProperty';
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
-import { Context, Property, PropertyUpdateInfo } from './Property';
+import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
 import { PropertyType, PropertyTypeEnum } from './PropertyType';
 import { InheritedResultValue, PropertyAssignment } from './PropertyValue';
 
@@ -99,18 +99,20 @@ class V1RelationshipProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(input: InheritedResultValue[]): PropertyAssignment {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<InheritedResultValue>): PropertyAssignment {
     const normalizedItems: InheritedResultValue[] = [];
     const seen = new Set<string>();
 
-    input.forEach(item => {
-      const value = String(item?.value || '').trim();
-      if (!value || seen.has(value)) return;
+    value.forEach(item => {
+      const formattedValue = String(item?.value || '').trim();
+      if (!formattedValue || seen.has(formattedValue)) return;
 
-      seen.add(value);
+      seen.add(formattedValue);
 
       const normalized: InheritedResultValue = {
-        value,
+        value: formattedValue,
         label: item.label,
         inheritedValue: item.inheritedValue,
         inheritedType: item.inheritedType,

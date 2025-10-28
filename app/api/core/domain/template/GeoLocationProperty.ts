@@ -1,4 +1,9 @@
-import { Context, Property, PropertyProps } from 'api/core/domain/template/Property';
+import {
+  Context,
+  CreatePropertyAssignmentInput,
+  Property,
+  PropertyProps,
+} from 'api/core/domain/template/Property';
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
@@ -26,7 +31,9 @@ class GeolocationProperty extends Property {
   }
 
   // Todo: help about business rules for geolocation property
-  createPropertyAssignment(value: GeolocationEntry[]): PropertyAssignment<GeolocationEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<GeolocationEntry>): PropertyAssignment<GeolocationEntry> {
     const cleaned = value.filter(v => v?.value);
 
     if (this.required && cleaned.length === 0) {

@@ -1,4 +1,9 @@
-import { Property, PropertyProps, Context } from 'api/core/domain/template/Property';
+import {
+  Property,
+  PropertyProps,
+  Context,
+  CreatePropertyAssignmentInput,
+} from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
 import { LinkEntry, PropertyAssignment } from './PropertyValue';
@@ -20,7 +25,9 @@ class LinkProperty extends Property {
     }
   }
 
-  createPropertyAssignment(value: LinkEntry[]): PropertyAssignment<LinkEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<LinkEntry>): PropertyAssignment<LinkEntry> {
     if (value.length > 1) {
       throw new Error(`Link Property only accepts a single value. ${JSON.stringify(value)} given.`);
     }

@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -22,7 +22,9 @@ class MultiDateRangeProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value: DateRangeEntry[]): PropertyAssignment<DateRangeEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<DateRangeEntry>): PropertyAssignment<DateRangeEntry> {
     const isValid =
       value.length > 0 && value.every(v => v.value.from !== undefined && v.value.to !== undefined);
 

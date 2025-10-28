@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyName } from './PropertyName';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeInvalidTypeError } from './errors';
@@ -29,7 +29,9 @@ class NestedProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value: NestedEntry[]): PropertyAssignment<NestedEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<NestedEntry>): PropertyAssignment<NestedEntry> {
     const cleaned = (value || []).filter(v => v?.value);
 
     if (this.required && cleaned.length === 0) {

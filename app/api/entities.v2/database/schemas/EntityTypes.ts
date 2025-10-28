@@ -8,7 +8,7 @@ export interface EntityDBO {
   language: string; // Todo: should be LanguageISO6391
   template: ObjectId;
   title: string;
-  icon?: { _id: string; label: string; type: string }; // Todo: Missing an id ??
+  icon?: { _id: string; label: string; type: string };
   metadata: Record<string, { value: string; label: string }[]>;
   obsoleteMetadata: string[];
   user?: ObjectId;

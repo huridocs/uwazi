@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -22,7 +22,9 @@ class MarkdownProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value: MarkdownEntry[]): PropertyAssignment<MarkdownEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<MarkdownEntry>): PropertyAssignment<MarkdownEntry> {
     if (value.length > 1) {
       throw new Error(
         `Markdown Property only accepts a single value. ${JSON.stringify(value)} given.`

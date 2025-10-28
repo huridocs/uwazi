@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { generateID } from 'shared/IDGenerator';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
@@ -22,7 +22,9 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value?: GeneratedIdEntry[]): PropertyAssignment {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<GeneratedIdEntry>): PropertyAssignment {
     return {
       name: this.name,
       type: this.type,

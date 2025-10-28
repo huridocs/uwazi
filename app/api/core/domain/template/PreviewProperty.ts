@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -21,7 +21,9 @@ class PreviewProperty extends AbstractImageProperty {
     }
   }
 
-  createPropertyAssignment(value: PreviewEntry[]): PropertyAssignment<PreviewEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<PreviewEntry>): PropertyAssignment<PreviewEntry> {
     if (value.length > 1) {
       throw new Error(
         `Preview Property only accepts a single value. ${JSON.stringify(value)} given.`

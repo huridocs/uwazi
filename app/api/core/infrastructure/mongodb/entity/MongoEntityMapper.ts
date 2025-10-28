@@ -5,12 +5,14 @@ import { ObjectId } from 'mongodb';
 import { Template } from 'api/core/domain/template/Template';
 import { EntityTranslationProps } from 'api/core/domain/entity/EntityTranslation';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TemplateDBO } from '../template/DBOs/TemplateDBO';
 import { MongoTemplateMapper } from '../template/Mapper';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {
-    const commonProperties = {
+    const commonProperties: Record<string, PropertyAssignment> = {
       title: template.createPropertyAssignment('title', [{ value: dbo.title }]),
       creationDate: template.createPropertyAssignment('creationDate', [
         { value: dbo.creationDate },
@@ -21,13 +23,21 @@ class MongoEntityLanguageMapper {
     return {
       id: dbo._id.toHexString(),
       language: dbo.language as LanguageISO6391,
-      metadata: Object.entries(dbo.metadata).reduce(
-        (acc, [name, value]) => ({
+      metadata: Object.entries(dbo.metadata).reduce((acc, [name, value]) => {
+        const property = template.getPropertyByName(name);
+        if (!property) {
+          SystemLogger().info(
+            // eslint-disable-next-line max-len
+            `Property "${name}" not found in Template "${template.id}" while mapping Entity ${dbo.sharedId} on the language "${dbo.language}". Skipping it.`
+          );
+          return acc;
+        }
+
+        return {
           ...acc,
-          [name]: template.createPropertyAssignment(name, value),
-        }),
-        commonProperties
-      ),
+          [name]: { value, name, type: property.type },
+        };
+      }, commonProperties),
     };
   }
 }

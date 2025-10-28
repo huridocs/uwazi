@@ -1,5 +1,6 @@
 import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyType } from './PropertyType';
 import { PropertyValue, PropertyAssignment } from './PropertyValue';
 
@@ -23,6 +24,11 @@ type Props = {
 
 type Context = {
   newNameGeneration?: boolean;
+};
+
+type CreatePropertyAssignmentInput<T = PropertyValue> = {
+  value: T[];
+  language?: LanguageISO6391;
 };
 
 class Property {
@@ -109,10 +115,10 @@ class Property {
     return { name: this.name, value: [], type: this.type };
   }
 
-  createPropertyAssignment(value: PropertyValue[] = []): PropertyAssignment {
+  createPropertyAssignment({ value }: CreatePropertyAssignmentInput): PropertyAssignment {
     return { name: this.name, value, type: this.type };
   }
 }
 
 export { Property };
-export type { PropertyUpdateInfo, Props as PropertyProps, Context };
+export type { PropertyUpdateInfo, Props as PropertyProps, Context, CreatePropertyAssignmentInput };

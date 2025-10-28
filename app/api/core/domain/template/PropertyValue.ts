@@ -1,3 +1,4 @@
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyType } from './PropertyType';
 
 type Icon = {
@@ -52,6 +53,10 @@ export type PropertyValue =
   | LinkEntry
   | GeneratedIdEntry
   | BaseMetadataValue;
+
+export type SelectPropertyAssignment = {
+  language: LanguageISO6391;
+} & PropertyAssignment<SelectionEntry>;
 
 export type PropertyAssignment<Value = PropertyValue> = {
   name: string;

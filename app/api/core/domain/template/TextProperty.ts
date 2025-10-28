@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -26,7 +26,7 @@ class TextProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value: TextPropertyValue[]) {
+  createPropertyAssignment({ value }: CreatePropertyAssignmentInput<TextPropertyValue>) {
     if (value.length > 1) {
       throw new Error(`Text Property only accepts a single value. ${JSON.stringify(value)} given.`);
     }

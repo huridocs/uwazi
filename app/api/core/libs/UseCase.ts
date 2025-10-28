@@ -100,4 +100,4 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
 }
 
 export { AbstractUseCase };
-export type { UseCase, Deps as BaseDeps };
+export type { UseCase, Deps as BaseDeps, Context as UseCaseContext };

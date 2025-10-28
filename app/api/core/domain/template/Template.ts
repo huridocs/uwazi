@@ -3,12 +3,12 @@ import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { Property, PropertyUpdateInfo } from './Property';
+import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
 import { PropertyType } from './PropertyType';
 import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
-import { PropertyValue, PropertyAssignment } from './PropertyValue';
+import { PropertyAssignment } from './PropertyValue';
 
 type TemplateProperty = Property | V1RelationshipProperty;
 
@@ -173,6 +173,10 @@ class Template {
     return null;
   }
 
+  getPropertyByName<T = TemplateProperty>(propertyName: string) {
+    return this.allProperties.find(p => p.name === propertyName) as T | undefined;
+  }
+
   getPropertiesByType(type: PropertyType) {
     return this.properties.filter(p => p.type === type);
   }
@@ -211,13 +215,13 @@ class Template {
     return this.clone({ properties });
   }
 
-  createPropertyAssignment(name: string, value: PropertyValue[]) {
+  createPropertyAssignment(name: string, input: CreatePropertyAssignmentInput) {
     const property = this.allProperties.find(p => p.name === name);
     if (!property) {
       throw new Error(`Property with name ${name} not found in template ${JSON.stringify(this)}`);
     }
 
-    return property.createPropertyAssignment(value);
+    return property.createPropertyAssignment(input);
   }
 
   createDefaultPropertyAssignments(): Record<string, PropertyAssignment> {

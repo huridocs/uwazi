@@ -1,4 +1,4 @@
-import { Context } from 'api/core/domain/template/Property';
+import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -22,7 +22,9 @@ class DateRangeProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment(value: DateRangeEntry[]): PropertyAssignment<DateRangeEntry> {
+  createPropertyAssignment({
+    value,
+  }: CreatePropertyAssignmentInput<DateRangeEntry>): PropertyAssignment<DateRangeEntry> {
     if (value.length > 1) {
       throw new Error(`Date Property only accepts a single value. ${JSON.stringify(value)} given.`);
     }
