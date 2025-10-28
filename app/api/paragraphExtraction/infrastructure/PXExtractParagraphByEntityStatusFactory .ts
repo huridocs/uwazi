@@ -1,5 +1,5 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus';
@@ -12,7 +12,7 @@ type Props = {
 export class PXExtractParagraphsByEntityStatusFactory {
   static async createDefault({ tenantName }: Props) {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,

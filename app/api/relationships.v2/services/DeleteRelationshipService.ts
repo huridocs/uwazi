@@ -1,5 +1,5 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MissingRelationshipError } from '../errors/relationshipErrors';
 import { DenormalizationService } from './DenormalizationService';

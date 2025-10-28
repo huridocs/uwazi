@@ -1,5 +1,5 @@
 import { SyncConfig } from 'api/sync/syncWorker';
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from 'api/core/v1_layer/templates/templatesModel';
 import { model as updateLog, UpdateLog } from 'api/updatelogs';
 import { explicitOrdering } from 'shared/data_utils/arrayUtils';
 import { PropertySchema } from 'shared/types/commonTypes';

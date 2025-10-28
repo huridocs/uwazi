@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';

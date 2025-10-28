@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
 import {
   Dispatchable,
   HeartbeatCallback,

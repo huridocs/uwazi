@@ -1,6 +1,6 @@
 import { availableLanguages } from 'shared/language';
 import { typeParsers } from 'api/activitylog/migrationsParser';
-import templates from 'api/templates/templates';
+import templates from 'api/core/v1_layer/templates/templates';
 import entities from 'api/entities/entities';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';

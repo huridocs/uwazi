@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 
 type HubType = {
   _id: ObjectId;

@@ -1,14 +1,12 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import { config } from 'api/config';
-import { registerEventListeners } from 'api/eventListeners';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { Redis } from 'api/infrastructure/Redis';
-import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
-import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
-import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
-import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
-import { DB } from 'api/odm';
+import { LogEntry } from 'api/core/libs/logger/infrastructure/LogEntry';
+import { LogWriter } from 'api/core/libs/logger/infrastructure/LogWriter';
+import { withFeature } from 'api/core/libs/logger/infrastructure/StandardLogger';
+import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
 import { Dispatchable } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { RoundRobinQueueAdapter } from 'api/core/libs/queue/configuration/factories';
@@ -16,6 +14,9 @@ import {
   QueueWorker,
   QueueWorkerErrorHandler,
 } from 'api/core/libs/queue/infrastructure/QueueWorker';
+import { registerEventListeners } from 'api/eventListeners';
+import { Redis } from 'api/infrastructure/Redis';
+import { DB } from 'api/odm';
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
@@ -37,7 +38,7 @@ const replaceTenantWithJobNamespace =
     );
   };
 
-const logger = SystemLogger(
+const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
 );
 

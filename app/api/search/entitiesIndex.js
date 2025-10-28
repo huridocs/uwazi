@@ -5,10 +5,10 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { LanguageUtils } from 'shared/language';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { otherLanguageSchema } from 'shared/language/availableLanguages';
 import { getTenantESMapping } from 'api/tenants/tenantESMapping';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
@@ -18,14 +18,17 @@ class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const db = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return entitiesToIndex;
   }
 
-  const templateDS = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
+  const templateDS = new MongoTemplatesDataSource(
+    getConnection(),
+    TransactionManagerFactory.default()
+  );
   const transformer = new ElasticEntityMapper(templateDS);
   return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };

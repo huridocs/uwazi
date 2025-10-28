@@ -1,7 +1,7 @@
 import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { LanguageUtils } from 'shared/language';
 import { inspect } from 'util';
 import { PXValidationError } from '../domain/PXValidationError';
@@ -16,7 +16,7 @@ export class PXFileUpdatedListener {
 
   private static async afterFileUpdated(data: FileUpdatedEvent['data']) {
     const useCase = PXEntityStatusManagerFactory.createDefault();
-    const logger = DefaultLogger();
+    const logger = LoggerFactory.default();
 
     try {
       await useCase.execute({

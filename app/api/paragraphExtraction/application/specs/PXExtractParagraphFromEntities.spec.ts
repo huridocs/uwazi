@@ -2,8 +2,8 @@ import { ObjectId } from 'mongodb';
 
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
@@ -41,7 +41,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const connection = getConnection();
 
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({

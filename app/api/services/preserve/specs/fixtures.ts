@@ -1,4 +1,4 @@
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserSchema } from 'shared/types/userType';

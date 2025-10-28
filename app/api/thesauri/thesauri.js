@@ -5,10 +5,10 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
-} from 'api/templates/utils';
+} from 'api/utils/templateUtils';
 import entities from 'api/entities/entities';
 import { preloadOptionsLimit } from 'shared/config';
-import templates from 'api/templates/templates';
+import templates from 'api/core/v1_layer/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
 import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';

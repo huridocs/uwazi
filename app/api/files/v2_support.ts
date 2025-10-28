@@ -1,13 +1,15 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
 import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 
 export const V2 = {
   async deleteTextReferencesToFiles(_ids: string[]) {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
 
-    if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+    if (
+      !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    ) {
       return;
     }
 
