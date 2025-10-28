@@ -16,9 +16,8 @@ describe('DatePicker Locale', () => {
       cy.contains('a', 'Library').click();
       cy.get('.item-document').first().click();
 
-      // Edit the entity to open the metadata form
       clickOnEditEntity();
-
+      cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
       // Click on a date field to open the datepicker
       cy.get('.react-datepicker-wrapper').first().click();
 
@@ -28,7 +27,7 @@ describe('DatePicker Locale', () => {
       // Check that month is in English (e.g., "October", "November", "December")
       cy.get('.react-datepicker__current-month')
         .invoke('text')
-        .then(text => {
+        .should('satisfy', (text: string) => {
           // English month names
           const englishMonths = [
             'January',
@@ -44,15 +43,14 @@ describe('DatePicker Locale', () => {
             'November',
             'December',
           ];
-          const hasEnglishMonth = englishMonths.some(month => text.includes(month));
-          expect(hasEnglishMonth).to.be.true;
+          return englishMonths.some(month => text.includes(month));
         });
 
       // Check that day names are in English
       cy.get('.react-datepicker__day-name')
         .first()
         .invoke('text')
-        .then(text => {
+        .should('satisfy', (text: string) => {
           // English short day names
           const englishDays = [
             'Su',
@@ -70,14 +68,14 @@ describe('DatePicker Locale', () => {
             'Fri',
             'Sat',
           ];
-          const hasEnglishDay = englishDays.some(day => text.includes(day));
-          expect(hasEnglishDay).to.be.true;
+          return englishDays.some(day => text.includes(day));
         });
 
       // Close the datepicker
       cy.get('body').click(0, 0);
     });
 
+    // eslint-disable-next-line max-statements
     it('should display datepicker in Arabic for RTL language', () => {
       // Handle page reload errors when changing language
       cy.on('uncaught:exception', err => {
@@ -89,28 +87,40 @@ describe('DatePicker Locale', () => {
 
       changeLanguage('العربية');
 
-      // Wait for page to reload after language change
-      cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
+      // Wait for the page to be fully loaded after language change
+      cy.get('.item-document').should('exist');
 
-      // Click on first entity (should already be on library page)
+      // Click on first entity
       cy.get('.item-document').first().click();
 
-      // Edit the entity to open the metadata form (wait for it to appear)
-      cy.contains('button', 'تحرير', { timeout: 10000 }).click(); // "Edit" in Arabic
+      // Edit the entity - wait for Arabic button to be clickable
+      cy.contains('button', 'تحرير', { timeout: 10000 })
+        .should('be.visible')
+        .should('not.be.disabled')
+        .click();
 
-      // Wait for the metadata form to load
+      // Wait for the metadata form to be fully loaded and stable
       cy.get('#metadataForm').should('be.visible');
 
-      // Click on a date field input to open the datepicker
-      cy.get('.react-datepicker-wrapper input').first().click({ force: true });
+      // Wait for form to stabilize after opening
+      cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
 
-      // Wait for datepicker to be visible
-      cy.get('.react-datepicker', { timeout: 10000 }).should('be.visible');
+      cy.get('.react-datepicker-wrapper input')
+        .first()
+        .should('be.visible')
+        .should('not.be.disabled');
+
+      // Click on the date field input to open the datepicker
+      cy.get('.react-datepicker-wrapper input').first().click();
+
+      // Wait for datepicker to open and be fully rendered
+      cy.get('.react-datepicker').should('be.visible');
+      cy.get('.react-datepicker__current-month').should('be.visible');
 
       // Check that month is in Arabic (e.g., "أكتوبر" for October)
       cy.get('.react-datepicker__current-month')
         .invoke('text')
-        .then(text => {
+        .should('satisfy', (text: string) => {
           // Arabic month names
           const arabicMonths = [
             'يناير',
@@ -126,26 +136,25 @@ describe('DatePicker Locale', () => {
             'نوفمبر',
             'ديسمبر',
           ];
-          const hasArabicMonth = arabicMonths.some(month => text.includes(month));
-          expect(hasArabicMonth, 'Month should be in Arabic').to.be.true;
+          return arabicMonths.some(month => text.includes(month));
         });
 
       // Check that day names are in Arabic
       cy.get('.react-datepicker__day-name')
         .first()
         .invoke('text')
-        .then(text => {
+        .should('satisfy', (text: string) => {
           // Arabic short day names
           const arabicDays = ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'];
-          const hasArabicDay = arabicDays.some(day => text.includes(day));
-          expect(hasArabicDay, 'Day names should be in Arabic').to.be.true;
+          return arabicDays.some(day => text.includes(day));
         });
 
       // Check aria-labels are also in Arabic
       cy.get('.react-datepicker__day-name')
         .first()
-        .should('have.attr', 'aria-label')
-        .then(label => {
+        .invoke('attr', 'aria-label')
+        .should('satisfy', (label: string | undefined) => {
+          if (!label) return false;
           // Check if aria-label contains Arabic text
           const arabicDaysFull = [
             'السبت',
@@ -156,8 +165,7 @@ describe('DatePicker Locale', () => {
             'الخميس',
             'الجمعة',
           ];
-          const hasArabicLabel = arabicDaysFull.some(day => label.includes(day));
-          expect(hasArabicLabel, 'Aria-label should be in Arabic').to.be.true;
+          return arabicDaysFull.some(day => label.includes(day));
         });
 
       // Close the datepicker
