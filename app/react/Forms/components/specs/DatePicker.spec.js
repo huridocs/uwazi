@@ -154,4 +154,42 @@ describe('DatePicker', () => {
       expect(props.onChange).toHaveBeenCalledWith(Math.floor(expectedOnChangeValue.toSeconds()));
     });
   });
+
+  describe('Locale handling', () => {
+    it('should pass locale prop to DatePickerComponent', () => {
+      props.locale = 'ar';
+      render();
+      expect(input.props().locale).toBe('ar');
+    });
+
+    it('should use default locale "en" when no locale is provided', () => {
+      render();
+      expect(input.props().locale).toBe('en');
+    });
+
+    it('should get locale from Redux state when not provided as prop', () => {
+      const storeWithLocale = mockStore({ locale: 'ar' });
+      component = shallow(<DatePicker {...props} store={storeWithLocale} />).dive();
+      input = component.find(DatePickerComponent);
+
+      expect(input.props().locale).toBe('ar');
+    });
+
+    it('should prioritize prop locale over Redux state locale', () => {
+      props.locale = 'es';
+      const storeWithLocale = mockStore({ locale: 'ar' });
+      component = shallow(<DatePicker {...props} store={storeWithLocale} />).dive();
+      input = component.find(DatePickerComponent);
+
+      expect(input.props().locale).toBe('es');
+    });
+
+    it('should pass locale to DatePickerComponent for localization', () => {
+      props.locale = 'fr';
+      render();
+      const datePickerProps = input.props();
+
+      expect(datePickerProps.locale).toBe('fr');
+    });
+  });
 });
