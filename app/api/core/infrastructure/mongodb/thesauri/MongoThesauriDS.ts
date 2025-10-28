@@ -1,8 +1,8 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { Result, ResultType } from 'api/core/libs/Result';
 import thesauri from 'api/thesauri';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { MongoDataSource } from '../common/MongoDataSource';
 
 // Todo: This will eventually got removed from here to domain folder.
 interface ThesauriDataSource {
