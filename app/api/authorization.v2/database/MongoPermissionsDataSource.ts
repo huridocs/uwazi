@@ -1,6 +1,6 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { EntityPermissions } from '../model/EntityPermissions';
 import { EntityPermissionsDBO } from './schemas/permissionTypes';

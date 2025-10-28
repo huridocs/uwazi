@@ -3,14 +3,14 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/core/domain/template/events/TemplateUpdatedEvent';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { Suggestions } from './suggestions';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
@@ -27,8 +27,8 @@ const featureIsEnabled = async () => {
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
-    logger: DefaultLogger(),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
+    logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
   })).start();
@@ -67,9 +67,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
-    logger: DefaultLogger(),
+    logger: LoggerFactory.default(),
   })).start();
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {

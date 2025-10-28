@@ -3,7 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 import translations from 'api/i18n/translations';
-import templates from 'api/templates/templates';
+import templates from 'api/core/v1_layer/templates/templates';
 import entities from 'api/entities/entities';
 import { search } from 'api/search';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';

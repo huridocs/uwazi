@@ -1,12 +1,12 @@
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
 import { TemplateDiff } from '../domain/template/TemplateDiff';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { TranslationService } from '../domain/template/TranslationService';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
@@ -14,7 +14,7 @@ import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreat
 import { UpdateTemplateDTO } from './TemplateDTOs';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
 import { Template } from '../domain/template/Template';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

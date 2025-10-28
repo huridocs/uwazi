@@ -1,4 +1,4 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { ObjectId } from 'mongodb';
 import { EntityMappers } from 'api/entities.v2/database/EntityMapper';
 import { Entity } from 'api/entities.v2/model/Entity';

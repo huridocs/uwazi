@@ -2,7 +2,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db from 'api/utils/testing_db';
 import thesauri from 'api/thesauri';
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import translations from 'api/i18n/translations';
 import { TemplateSchema } from 'shared/types/templateType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';

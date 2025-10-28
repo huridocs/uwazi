@@ -1,5 +1,5 @@
 import { EnforcedWithId } from 'api/odm';
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from 'api/core/v1_layer/templates/templatesModel';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { ModelStatus } from 'shared/types/IXModelSchema';

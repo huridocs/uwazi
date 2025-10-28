@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 class PXEntityStatusesQueryServiceFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
-    const transactionManager = props?.transactionManager || DefaultTransactionManager();
+    const transactionManager = props?.transactionManager || TransactionManagerFactory.default();
     return new MongoPXEntityStatusesQueryService(db, transactionManager);
   }
 }

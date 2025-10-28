@@ -1,12 +1,10 @@
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -23,8 +21,8 @@ import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntit
 
 class UpdateTemplateUseCaseFactory {
   static async create() {
-    const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
+    const transactionManager = TransactionManagerFactory.default();
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(
       getConnection(),
       transactionManager,
@@ -32,9 +30,9 @@ class UpdateTemplateUseCaseFactory {
     );
     const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-    const idGenerator = DefaultIdGenerator;
+    const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
     const filesDS = DefaultFilesDataSource(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(

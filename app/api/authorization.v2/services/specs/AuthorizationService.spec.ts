@@ -1,13 +1,13 @@
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { User, UserRole } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { AccessLevels, AuthorizationService } from '../AuthorizationService';
 
 const factory = getFixturesFactory();
@@ -58,7 +58,7 @@ describe("When there's no authenticated user", () => {
   describe('and the entity is not public', () => {
     it('should return false', async () => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         undefined
       );
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(false);
@@ -67,7 +67,7 @@ describe("When there's no authenticated user", () => {
 
     it('should throw an error on validation', async () => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         undefined
       );
       await expect(async () => auth.validateAccess('read', ['entity1'])).rejects.toThrow(
@@ -82,7 +82,7 @@ describe("When there's no authenticated user", () => {
   describe('and the entity is public', () => {
     it('should only allow to read', async () => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         undefined
       );
       expect(await auth.isAuthorized('read', ['entity3'])).toBe(true);
@@ -93,7 +93,7 @@ describe("When there's no authenticated user", () => {
   describe('and not all the entities are public', () => {
     it('should not allow to read nor write', async () => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         undefined
       );
       expect(await auth.isAuthorized('read', ['entity3', 'entity1'])).toBe(false);
@@ -103,7 +103,7 @@ describe("When there's no authenticated user", () => {
 
   it('should allow empty read', async () => {
     const auth = new AuthorizationService(
-      new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+      new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
       undefined
     );
     expect(await auth.isAuthorized('read', [])).toBe(true);
@@ -116,7 +116,7 @@ describe("When there's an authenticated user", () => {
     it('should return true', async () => {
       const adminUser = new User(factory.id('admin').toHexString(), role, []);
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         adminUser
       );
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(true);
@@ -128,7 +128,7 @@ describe("When there's an authenticated user", () => {
     it('should not throw an error', async () => {
       const adminUser = new User(factory.id('admin').toHexString(), role, []);
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         adminUser
       );
 
@@ -161,7 +161,7 @@ describe("When there's an authenticated user", () => {
       'should return [$result] if [$user] wants to [$level] from/to $entities',
       async ({ user, entities, level, result }) => {
         const auth = new AuthorizationService(
-          new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+          new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
           new User(factory.id(user).toHexString(), 'collaborator', [])
         );
 
@@ -175,7 +175,7 @@ describe("When there's an authenticated user", () => {
       { entities: ['entity3'], level: 'write', result: true },
     ])('should consider the user groups', async ({ entities, level, result }) => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         new User(factory.id('grouped user').toHexString(), 'collaborator', [
           factory.id('group1').toHexString(),
           factory.id('group2').toHexString(),
@@ -246,7 +246,7 @@ describe('filterEntities()', () => {
     'should filter entities for a/an $usertype to $level',
     async ({ user, level, expectedResult }) => {
       const auth = new AuthorizationService(
-        new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+        new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
         user
       );
 
@@ -261,7 +261,10 @@ describe('filterRelationships()', () => {
   let allRelationships: Relationship[];
 
   beforeAll(async () => {
-    const ds = new MongoRelationshipsDataSource(getConnection(), DefaultTransactionManager());
+    const ds = new MongoRelationshipsDataSource(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
     allRelationships = await ds.getAll().all();
   });
 
@@ -297,7 +300,7 @@ describe('filterRelationships()', () => {
     },
   ])('should filter for $case', async ({ user, level, expectedIds }) => {
     const auth = new AuthorizationService(
-      new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+      new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
       user
     );
 
@@ -318,7 +321,7 @@ describe('filterRelationships()', () => {
   ])('$role should be able to $level everything', async ({ role: username, level }) => {
     const user = new User(factory.idString(username), username, []);
     const auth = new AuthorizationService(
-      new MongoPermissionsDataSource(getConnection(), DefaultTransactionManager()),
+      new MongoPermissionsDataSource(getConnection(), TransactionManagerFactory.default()),
       user
     );
 

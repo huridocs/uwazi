@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import {
   Dispatchable,

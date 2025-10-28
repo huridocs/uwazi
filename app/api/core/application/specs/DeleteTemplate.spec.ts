@@ -8,8 +8,8 @@ import fixtures, {
   thesaurusTemplate2Id,
   thesaurusTemplate3Id,
   thesaurusTemplateId,
-} from 'api/templates/specs/fixtures/fixtures';
-import templates from 'api/templates';
+} from 'api/core/v1_layer/templates/specs/fixtures/fixtures';
+import templates from 'api/core/v1_layer/templates';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents';
 import { TemplateDeletedEvent } from 'api/core/domain/template/events/TemplateDeletedEvent';

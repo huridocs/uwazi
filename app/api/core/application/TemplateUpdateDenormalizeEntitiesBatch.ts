@@ -7,9 +7,9 @@ import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { cloneDeep } from 'lodash';
 import { generateID } from 'shared/IDGenerator';
 import { search } from 'api/search';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { applicationEventsBus } from '../libs/eventsbus';
-import { TransactionManager } from '../libs/TransactionManager';
+import { TransactionManager } from './contracts/TransactionManager';
 import { UseCase } from '../libs/UseCase';
 
 type Input = {

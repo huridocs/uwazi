@@ -3,7 +3,7 @@ import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNod
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
@@ -88,7 +88,7 @@ let ds: MongoRelationshipsDataSource;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures, true);
-  ds = new MongoRelationshipsDataSource(testingDB.mongodb!, DefaultTransactionManager());
+  ds = new MongoRelationshipsDataSource(testingDB.mongodb!, TransactionManagerFactory.default());
 });
 
 afterAll(async () => {

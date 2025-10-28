@@ -1,5 +1,5 @@
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
 import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';

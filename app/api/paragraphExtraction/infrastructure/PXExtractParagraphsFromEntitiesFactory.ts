@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
@@ -19,7 +19,8 @@ type Props = {
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager = props.mongoTransactionManager ?? DefaultTransactionManager();
+    const mongoTransactionManager =
+      props.mongoTransactionManager ?? TransactionManagerFactory.default();
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??

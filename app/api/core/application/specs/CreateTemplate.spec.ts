@@ -1,13 +1,11 @@
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -17,10 +15,10 @@ import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
-  const transactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
-  const idGenerator = DefaultIdGenerator;
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
+  const transactionManager = TransactionManagerFactory.default();
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const idGenerator = IdGeneratorFactory.default();
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const translationService = new LegacyTranslationService();
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const pageService = new LegacyPageService();

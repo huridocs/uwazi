@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { UseCase } from 'api/core/libs/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import entities from 'api/entities';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import relationshipsDS from 'api/relationships';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
@@ -32,7 +32,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
 
   constructor(private dependencies: Dependencies) {
     this.createParagraph = new PXCreateParagraph({
-      logger: DefaultLogger(),
+      logger: LoggerFactory.default(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
       relationshipsDS,
     });
