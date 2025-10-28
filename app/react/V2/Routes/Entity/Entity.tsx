@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable max-lines */
+import React, { useMemo } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -18,26 +19,43 @@ import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
 import { TabLabel } from './Components/TabLabel';
 
+const MAIN_TAB_PARAM = 'm';
+const SIDE_TAB_PARAM = 's';
+const SKIP_REVALIDATE_PARAM = 'r';
+
 const MAIN_TABS = {
   DOCUMENT: 'document',
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
-} as const;
+};
 
 const SIDE_TABS = {
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
-} as const;
+};
+
+const SKIP_REVALIDATE_STATE = {
+  TRUE: 'true',
+  FALSE: 'false',
+};
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
 type SideTabId = (typeof SIDE_TABS)[keyof typeof SIDE_TABS];
 
 type LoaderResponse = EntityType | undefined;
 
+const MAIN_TAB_VALUES = new Set(Object.values(MAIN_TABS));
+const SIDE_TAB_VALUES = new Set(Object.values(SIDE_TABS));
+
+const isValidMainTab = (value: string | null): value is MainTabId =>
+  typeof value === 'string' && MAIN_TAB_VALUES.has(value);
+
+const isValidSideTab = (value: string | null): value is SideTabId =>
+  typeof value === 'string' && SIDE_TAB_VALUES.has(value);
+
 const shouldRevalidate = ({
   currentParams,
   nextParams,
-  currentUrl,
   nextUrl,
   defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean => {
@@ -45,7 +63,8 @@ const shouldRevalidate = ({
     return true;
   }
 
-  if (currentUrl?.pathname === nextUrl?.pathname && currentUrl?.search !== nextUrl?.search) {
+  const skipRevalidate = nextUrl?.searchParams?.get(SKIP_REVALIDATE_PARAM);
+  if (skipRevalidate === SKIP_REVALIDATE_STATE.TRUE) {
     return false;
   }
 
@@ -95,38 +114,37 @@ const Entity = () => {
   const entity = useLoaderData<LoaderResponse>();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeMainTab, setActiveMainTab] = useState<MainTabId>(() => {
-    const mainTab = searchParams.get('main');
-    if (mainTab) {
-      return mainTab as MainTabId;
+  const activeMainTab = useMemo<MainTabId>(() => {
+    const mainTab = searchParams.get(MAIN_TAB_PARAM);
+    if (isValidMainTab(mainTab)) {
+      return mainTab;
     }
     if (entity?.documents?.length) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
-  });
+  }, [searchParams, entity]);
 
-  const [activeSideTab, setActiveSideTab] = useState<SideTabId | undefined>(() => {
-    const sideTab = searchParams.get('side');
-    return sideTab ? (sideTab as SideTabId) : undefined;
-  });
+  const activeSideTab = useMemo<SideTabId | undefined>(() => {
+    const sideTab = searchParams.get(SIDE_TAB_PARAM);
+    return isValidSideTab(sideTab) ? sideTab : undefined;
+  }, [searchParams]);
 
   const onMainTabChange = (selectedMainTab: string) => {
-    setActiveMainTab(selectedMainTab as MainTabId);
-    setActiveSideTab(undefined);
     const next = new URLSearchParams(searchParams.toString());
-    next.set('main', selectedMainTab);
-    next.delete('side');
+    next.set(MAIN_TAB_PARAM, selectedMainTab);
+    next.set(SKIP_REVALIDATE_PARAM, SKIP_REVALIDATE_STATE.TRUE);
+    next.delete(SIDE_TAB_PARAM);
     setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
   const onSideTabChange = (selectedSideTab: string) => {
-    setActiveSideTab(selectedSideTab as SideTabId);
     const next = new URLSearchParams(searchParams.toString());
-    next.set('side', selectedSideTab);
-    if (!next.get('main')) {
-      next.set('main', activeMainTab);
+    next.set(SIDE_TAB_PARAM, selectedSideTab);
+    if (!next.get(MAIN_TAB_PARAM)) {
+      next.set(MAIN_TAB_PARAM, activeMainTab);
     }
+    next.set(SKIP_REVALIDATE_PARAM, SKIP_REVALIDATE_STATE.TRUE);
     setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
@@ -193,8 +211,8 @@ const Entity = () => {
               id={MAIN_TABS.DOCUMENT}
               label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
             >
-              {entity?.documents?.[0].filename ? (
-                <PDF fileUrl={`/api/files/${entity.documents[0].filename}`} />
+              {entity?.documents?.[0]?.filename ? (
+                <PDF fileUrl={`/api/files/${entity?.documents?.[0]?.filename}`} />
               ) : (
                 <Translate>Loading</Translate>
               )}
@@ -225,11 +243,7 @@ const Entity = () => {
             className="min-w-[300px] overflow-x-auto"
             key={activeMainTab}
             unmountTabs={false}
-            initialTabId={
-              (activeSideTab && sideTabsByMain[activeMainTab].some(t => t.id === activeSideTab)
-                ? activeSideTab
-                : sideTabsByMain[activeMainTab][0].id) as string
-            }
+            initialTabId={activeSideTab || sideTabsByMain[activeMainTab]?.[0]?.id}
             onTabSelected={onSideTabChange}
           >
             {sideTabsByMain[activeMainTab].map(tab => (
