@@ -1,6 +1,6 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DeleteTemplateUseCase } from 'api/core/application/DeleteTemplate';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
@@ -8,7 +8,7 @@ import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
@@ -20,9 +20,9 @@ import { TemplatePostProcessEntitiesJob } from '../jobs/TemplatePostProcessEntit
 class DeleteTemplateUseCaseFactory {
   static async create() {
     const eventBus = applicationEventsBus;
-    const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const transactionManager = TransactionManagerFactory.default();
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);
     const multiLanguageEntitiesDS = new MongoMultiLanguageEntityDataSource(

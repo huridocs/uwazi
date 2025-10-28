@@ -8,7 +8,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';

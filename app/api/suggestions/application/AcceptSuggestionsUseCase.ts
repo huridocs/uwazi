@@ -4,7 +4,7 @@ import ixmodels from 'api/services/informationextraction/ixmodels';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { DataType, UwaziFilterQuery } from 'api/odm';
 import { IXSuggestionType } from 'shared/types/suggestionType';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { updateStates } from '../updateState';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
@@ -105,7 +105,7 @@ export class AcceptSuggestionsUseCase {
       const acceptedQuery = { _id: { $in: acceptedIds } };
       await updateStates(acceptedQuery);
     } catch (e) {
-      DefaultLogger().info('IX accept: state recompute failed', {
+      LoggerFactory.default().info('IX accept: state recompute failed', {
         acceptedIdsCount: acceptedIds.length,
         error: (e as Error)?.message,
       });

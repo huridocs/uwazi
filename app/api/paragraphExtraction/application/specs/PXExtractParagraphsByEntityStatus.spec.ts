@@ -5,8 +5,8 @@ import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrast
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
 
@@ -54,7 +54,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const connection = getConnection();
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
     connection,

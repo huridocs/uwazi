@@ -1,6 +1,6 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FilesHealthCheck } from '../FilesHealthCheck';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
@@ -52,7 +52,7 @@ describe('FilesHealthCheck', () => {
   beforeEach(() => {
     filesHealthCheck = new FilesHealthCheck(
       new TestFileStorage(),
-      DefaultFilesDataSource(DefaultTransactionManager())
+      DefaultFilesDataSource(TransactionManagerFactory.default())
     );
   });
 

@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { GenerateATConfigError } from './errors/generateATErrors';
 import { Validator } from './infrastructure/Validator';

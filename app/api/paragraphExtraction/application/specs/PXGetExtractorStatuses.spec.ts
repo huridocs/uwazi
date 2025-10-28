@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { GetExtractorStatusesInput } from 'api/paragraphExtraction/domain/PXExtractorsQueryService';
@@ -15,10 +15,10 @@ import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses';
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
 const setupUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const connection = getConnection();
 
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const filesDS = DefaultFilesDataSource(mongoTransactionManager);
 
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({

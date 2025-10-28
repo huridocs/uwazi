@@ -4,7 +4,7 @@ import { uploadMiddleware } from 'api/files';
 import { search } from 'api/search';
 import { withTransaction } from 'api/utils/withTransaction';
 import needsAuthorization from '../auth/authMiddleware';
-import templates from '../templates/templates';
+import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';

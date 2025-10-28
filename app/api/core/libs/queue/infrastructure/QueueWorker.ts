@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 import { Dispatchable } from '../application/contracts/Dispatchable';

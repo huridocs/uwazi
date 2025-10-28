@@ -1,10 +1,10 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
 
@@ -19,8 +19,8 @@ describe('SelectPropertyCreatorService', () => {
 
   it('should throw if Thesaurus does not exist', async () => {
     const sut = new SelectPropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
-      thesauriDS: new MongoThesauriDataSource(getConnection(), DefaultTransactionManager()),
+      thesauriDS: new MongoThesauriDataSource(getConnection(), TransactionManagerFactory.default()),
+      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
     });
 
     await expect(

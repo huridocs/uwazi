@@ -2,14 +2,14 @@ import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DeleteTranslationsService } from '../DeleteTranslationsService';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   return new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     transactionManager

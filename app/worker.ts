@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import { config } from 'api/config';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { Redis } from 'api/infrastructure/Redis';
-import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { ocrManager } from 'api/services/ocr/OcrManager';
@@ -21,7 +21,7 @@ import { tocService } from 'api/toc_generation/tocService';
 import { sleep } from 'shared/tsUtils';
 import { handleError } from './api/utils/handleError';
 
-const systemLogger = SystemLogger();
+const systemLogger = LoggerFactory.systemLogger();
 
 const uncaughtError = (error: Error) => {
   handleError(error, { uncaught: true });

@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { RelationshipType } from '../model/RelationshipType';
 
 export interface RelationshipTypesDataSource {

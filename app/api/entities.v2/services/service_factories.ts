@@ -1,13 +1,13 @@
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from '../database/data_source_defaults';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from './EntityRelationshipsUpdateService';
 
 export const EntityRelationshipsUpdateService = (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
 
   return new GenericEntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS);
 };

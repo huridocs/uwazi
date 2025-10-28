@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { Job, QueueAdapter } from './QueueAdapter';
 
 export interface JobDBO {

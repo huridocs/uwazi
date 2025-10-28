@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { tenants } from 'api/tenants';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';

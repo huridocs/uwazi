@@ -7,10 +7,10 @@ import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelations
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
 import { cloneDeep } from 'lodash';
 import { search } from 'api/search';
-import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { applicationEventsBus } from '../libs/eventsbus';
-import { TransactionManager } from '../libs/TransactionManager';
+import { TransactionManager } from './contracts/TransactionManager';
 import { UseCase } from '../libs/UseCase';
 import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
 
@@ -99,7 +99,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         if (generatedIdProps.length) {
           modifiedEntities.forEach(entity => {
             generatedIdProps.forEach(prop => {
-              entity.setPropertyAssignments([prop.createPropertyAssignment()]);
+              entity.setPropertyAssignments([prop.createPropertyAssignment({ value: [] })]);
             });
           });
         }

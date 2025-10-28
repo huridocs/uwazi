@@ -7,7 +7,7 @@ import { PDF, files } from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
-import templates from 'api/templates/templates';
+import templates from 'api/core/v1_layer/templates/templates';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
 import { propertyTypes } from 'shared/propertyTypes';
