@@ -1,20 +1,21 @@
+import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
-import { uploadsPath, customUploadsPath, storage } from 'api/files';
-import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes';
-import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
+import { customUploadsPath, storage, uploadsPath } from 'api/files';
+import { search } from 'api/search';
+import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
+import { FileType } from 'shared/types/fileType';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { fixtures, templateId, importTemplate, adminUser, collabUser } from './fixtures';
+import { UserSchema } from 'shared/types/userType';
 import { files } from '../files';
 import uploadRoutes from '../routes';
-import { UserSchema } from 'shared/types/userType';
+import { adminUser, collabUser, fixtures, importTemplate, templateId } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -39,7 +40,7 @@ describe('upload routes', () => {
     testingEnvironment.setPermissions(user);
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
     await testingEnvironment.setUp(fixtures);
@@ -48,20 +49,29 @@ describe('upload routes', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
-    socketEmit('documentProcessed', async () =>
-      request(app)
-        .post('/api/files/upload/document')
-        .field('entity', 'sharedId1')
-        .attach('file', path.join(__dirname, filepath))
-    );
+    request(app)
+      .post('/api/files/upload/document')
+      .field('entity', 'sharedId1')
+      .attach('file', path.join(__dirname, filepath));
 
-  describe('POST/files/upload/documents', () => {
+  describe.each([
+    { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
+    // { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
+  ])('$title', ({ featureFlags }) => {
+    beforeAll(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags,
+      });
+      // await testingEnvironment.cleanupUploadPaths();
+    });
+
     it('should upload the file', async () => {
-      await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
+      const response = await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
+      expect(response).toHaveStatus(200);
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
       expect(await storage.fileExists(upload.filename!, 'document')).toBe(true);
-    }, 10000);
+    });
 
     it('should process and reindex the document after upload', async () => {
       const res: SuperTestResponse = await uploadDocument(

@@ -72,6 +72,16 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
+const cleanupTestUploadedPaths = async (subPath: string = '') => {
+  const base = `${__dirname}/specs`;
+  const dirs = [
+    path.join(base, 'uploads', subPath),
+    path.join(base, 'customUploads', subPath),
+    path.join(base, 'uploads', 'segmentation', subPath),
+  ];
+  await Promise.all(dirs.map(async dir => fs.rm(dir, { recursive: true, force: true })));
+};
+
 const getExtension = (mimetype = '') => {
   const result = mimetypes.extension(mimetype);
 
@@ -137,6 +147,7 @@ const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
 
 export {
   setupTestUploadedPaths,
+  cleanupTestUploadedPaths,
   createDirIfNotExists,
   deleteFiles,
   deleteFile,
