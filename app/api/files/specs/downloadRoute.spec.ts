@@ -18,6 +18,8 @@ import {
 
 import uploadRoutes from '../routes';
 import { files } from '../files';
+import { copyFile } from 'fs/promises';
+import path from 'path';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);
@@ -30,7 +32,23 @@ const setAppWithUser = (routes: any, user: any) => {
 describe('files routes download', () => {
   let app: Application;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    await copyFile(
+      path.join(__dirname, `testing_files/${fileName1}`),
+      path.join(__dirname, `uploads/${fileName1}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${restrictedFileName}`),
+      path.join(__dirname, `uploads/${restrictedFileName}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${customPdfFileName}`),
+      path.join(__dirname, `customUploads/${customPdfFileName}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${fileOnPublicEntity}`),
+      path.join(__dirname, `uploads/${fileOnPublicEntity}`)
+    );
     app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
   });

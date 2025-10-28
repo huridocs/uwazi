@@ -79,7 +79,21 @@ const cleanupTestUploadedPaths = async (subPath: string = '') => {
     path.join(base, 'customUploads', subPath),
     path.join(base, 'uploads', 'segmentation', subPath),
   ];
-  await Promise.all(dirs.map(async dir => fs.rm(dir, { recursive: true, force: true })));
+  for (const dir of dirs) {
+    try {
+      const items = await fs.readdir(dir);
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = await fs.stat(itemPath);
+        if (stat.isFile()) {
+          await fs.unlink(itemPath);
+        }
+        // skip directories
+      }
+    } catch (e) {
+      // ignore if dir not exists
+    }
+  }
 };
 
 const getExtension = (mimetype = '') => {

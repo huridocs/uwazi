@@ -59,23 +59,25 @@ describe('upload routes', () => {
     // { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
   ])('$title', ({ featureFlags }) => {
     beforeAll(async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags,
-      });
+      // testingTenants.changeCurrentTenant({
+      //   featureFlags,
+      // });
       // await testingEnvironment.cleanupUploadPaths();
     });
 
     it('should upload the file', async () => {
-      const response = await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
-
+      const response = await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
       expect(response).toHaveStatus(200);
-      const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
+      const [upload] = await files.get(
+        { entity: 'sharedId1', originalname: 'f2082bf51b6ef839690485d7153e847a.pdf' },
+        '+fullText'
+      );
       expect(await storage.fileExists(upload.filename!, 'document')).toBe(true);
     });
 
     it('should process and reindex the document after upload', async () => {
       const res: SuperTestResponse = await uploadDocument(
-        'uploads/f2082bf51b6ef839690485d7153e847a.pdf'
+        'testing_files/f2082bf51b6ef839690485d7153e847a.pdf'
       );
 
       expect(res.body).toEqual(
@@ -119,7 +121,7 @@ describe('upload routes', () => {
     }, 10000);
 
     it('should generate a thumbnail for the document', async () => {
-      await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
+      await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [{ filename = '', language, mimetype }] = await files.get({
         entity: 'sharedId1',
@@ -133,14 +135,14 @@ describe('upload routes', () => {
 
     describe('Language detection', () => {
       it('should detect English documents and store the result', async () => {
-        await uploadDocument('uploads/eng.pdf');
+        await uploadDocument('testing_files/eng.pdf');
 
         const [upload] = await files.get({ originalname: 'eng.pdf' });
         expect(upload.language).toBe('eng');
       }, 10000);
 
       it('should detect Spanish documents and store the result', async () => {
-        await uploadDocument('uploads/spn.pdf');
+        await uploadDocument('testing_files/spn.pdf');
 
         const [upload] = await files.get({ originalname: 'spn.pdf' });
         expect(upload.language).toBe('spa');
@@ -153,7 +155,7 @@ describe('upload routes', () => {
           request(app)
             .post('/api/files/upload/document')
             .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
+            .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
         );
 
         const [upload] = await files.get({ originalname: 'invalid_document.txt' }, '+fullText');
@@ -164,7 +166,7 @@ describe('upload routes', () => {
         const response: SuperTestResponse = await request(app)
           .post('/api/files/upload/document')
           .field('entity', 'sharedId1')
-          .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'));
+          .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'));
 
         expect(response.body.status).toBe('failed');
         expect(response.body._id).toBeDefined();
@@ -207,7 +209,7 @@ describe('upload routes', () => {
         request(app)
           .post('/api/import')
           .field('template', importTemplate.toString())
-          .attach('file', `${__dirname}/uploads/importcsv.csv`)
+          .attach('file', `${__dirname}/testing_files/importcsv.csv`)
       );
 
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
@@ -228,7 +230,7 @@ imported entity two, "Normal Item", "normal text"
 imported entity three, "  Only spaces"
 imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
 
-      const tempCsvPath = `${__dirname}/uploads/temp_import_with_warnings.csv`;
+      const tempCsvPath = `${__dirname}/testing_files/temp_import_with_warnings.csv`;
       await fs.writeFile(tempCsvPath, csvWithWarnings);
 
       try {
@@ -268,7 +270,7 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
           request(app)
             .post('/api/import')
             .field('template', templateId.toString())
-            .attach('file', `${__dirname}/uploads/import.zip`)
+            .attach('file', `${__dirname}/testing_files/import.zip`)
         );
 
         expect(iosocket.emit).toHaveBeenCalledWith(
@@ -283,7 +285,7 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
   describe('DELETE/files', () => {
     it('should delete thumbnails asociated with documents deleted', async () => {
       mockCurrentUser(adminUser);
-      await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
+      await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [file]: FileType[] = await files.get({
         originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
