@@ -1,5 +1,3 @@
-import { Application, Request } from 'express';
-
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
@@ -7,8 +5,10 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
+import { Application, Request } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -16,8 +16,6 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { tenants } from 'api/tenants';
-import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -77,7 +75,8 @@ export default (app: Application) => {
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
         if (tenants.current().featureFlags?.v2UploadFile) {
-          const savedFile = await FileUploadUseCaseFactory.default().execute();
+          // const savedFile = await FileUploadUseCaseFactory.default().execute();
+          // res.json(savedFile);
         } else {
           const savedFile = await processDocument(req.body.entity, req.file);
           res.json(savedFile);

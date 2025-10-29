@@ -14,7 +14,9 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { copyFile, rmdir } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+import path from 'path';
 import { Readable } from 'stream';
+import { FileNotFound } from '../FileNotFound';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -25,14 +27,10 @@ import {
   uploadsPath,
 } from '../filesystem';
 import { storage } from '../storage';
-import { FileNotFound } from '../FileNotFound';
-import path from 'path';
 
 let s3: S3Client;
 
-const testingFilesPath = filename => {
-  return path.join(__dirname, 'testing_files', filename);
-};
+const testingFilesPath = (filename: string) => path.join(__dirname, 'testing_files', filename);
 
 describe('storage', () => {
   beforeAll(async () => {

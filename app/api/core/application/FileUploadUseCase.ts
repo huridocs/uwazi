@@ -27,13 +27,12 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
     const document = new Document('id', input.entityId, 5, input.file.filename, 'en');
 
     await this.transactionManager.run(async () => {
-      this.deps.filesDS.insert(document);
+      // this.deps.filesDS.insert(document);
     });
 
-    return {};
+    return document;
   }
 }
 
 export { FileUploadUseCase };
 export type { Input as CreateEntityUseCaseInput };
-

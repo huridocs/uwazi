@@ -1,10 +1,10 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import relationships from 'api/relationships';
 import { storage } from 'api/files';
+import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';
@@ -19,11 +19,12 @@ import { UserSchema } from 'shared/types/userType';
 import * as setupSockets from 'api/socketio/setupSockets';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { files } from '../files';
-import { ocrRoutes } from '../ocrRoutes';
+// eslint-disable-next-line node/no-restricted-import
+import { copyFile } from 'fs/promises';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
-import { copyFile } from 'fs/promises';
+import { files } from '../files';
+import { ocrRoutes } from '../ocrRoutes';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 

@@ -9,7 +9,6 @@ import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testi
 import { FileType } from 'shared/types/fileType';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { UserSchema } from 'shared/types/userType';
@@ -57,7 +56,7 @@ describe('upload routes', () => {
   describe.each([
     { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
     // { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
-  ])('$title', ({ featureFlags }) => {
+  ])('$title', ({ _featureFlags }) => {
     beforeAll(async () => {
       // testingTenants.changeCurrentTenant({
       //   featureFlags,

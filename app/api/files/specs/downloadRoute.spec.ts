@@ -1,25 +1,24 @@
-import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
-
-import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import {
-  fixtures,
-  fileName1,
-  restrictedFileName,
-  uploadId,
-  collabUser,
-  writerUser,
-  adminUser,
-  customPdfFileName,
-  fileOnPublicEntity,
-} from './fixtures';
-
-import uploadRoutes from '../routes';
-import { files } from '../files';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { Application, NextFunction, Request, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
 import path from 'path';
+import request, { Response as SuperTestResponse } from 'supertest';
+import { files } from '../files';
+import uploadRoutes from '../routes';
+import {
+  adminUser,
+  collabUser,
+  customPdfFileName,
+  fileName1,
+  fileOnPublicEntity,
+  fixtures,
+  restrictedFileName,
+  uploadId,
+  writerUser,
+} from './fixtures';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);
