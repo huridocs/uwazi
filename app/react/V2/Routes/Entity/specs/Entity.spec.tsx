@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { Entity, shouldRevalidate } from '../Entity';
 
@@ -10,12 +11,12 @@ jest.mock('V2/Components/PDFViewer', () => ({
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
-const sampleEntity = {
+const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
   title: 'Sample Entity',
-  template: { _id: 'template1', label: 'Template 1' },
-  documents: [{ filename: 'file.pdf' }],
+  template: { _id: 'template1', label: 'Template 1', name: 'template1' },
+  mainDocument: { filename: 'file.pdf' },
   metadata: [],
 };
 
