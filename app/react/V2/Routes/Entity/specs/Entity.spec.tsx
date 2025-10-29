@@ -113,12 +113,36 @@ describe('Entity view', () => {
 });
 
 describe('shouldRevalidate', () => {
-  it('should not revalidate when same sharedId and only search changes', () => {
+  it('should not revalidate when switching search params', () => {
     const currentParams: any = { sharedId: 's1' };
     const nextParams: any = { sharedId: 's1' };
     const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
     const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
     const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
     expect(result).toBe(false);
+  });
+
+  it('should revalidate when sharedId changes', () => {
+    const currentParams: any = { sharedId: 's1' };
+    const nextParams: any = { sharedId: 's2' };
+    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
+    const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
+    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+    expect(result).toBe(true);
+  });
+
+  it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
+    const currentParams: any = { sharedId: 's1' };
+    const nextParams: any = { sharedId: 's1' };
+    const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+    const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+    const result = shouldRevalidate({
+      currentParams,
+      nextParams,
+      currentUrl,
+      nextUrl,
+      defaultShouldRevalidate: true,
+    } as any);
+    expect(result).toBe(true);
   });
 });

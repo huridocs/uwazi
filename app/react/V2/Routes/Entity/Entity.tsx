@@ -21,7 +21,6 @@ import { TabLabel } from './Components/TabLabel';
 
 const MAIN_TAB_PARAM = 'm';
 const SIDE_TAB_PARAM = 's';
-const SKIP_REVALIDATE_PARAM = 'r';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -34,15 +33,8 @@ const SIDE_TABS = {
   RELATIONSHIPS: 'relationships',
 };
 
-const SKIP_REVALIDATE_STATE = {
-  TRUE: 'true',
-  FALSE: 'false',
-};
-
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
 type SideTabId = (typeof SIDE_TABS)[keyof typeof SIDE_TABS];
-
-type LoaderResponse = EntityType | undefined;
 
 const MAIN_TAB_VALUES = new Set(Object.values(MAIN_TABS));
 const SIDE_TAB_VALUES = new Set(Object.values(SIDE_TABS));
@@ -53,9 +45,12 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
+type LoaderResponse = EntityType | undefined;
+
 const shouldRevalidate = ({
   currentParams,
   nextParams,
+  currentUrl,
   nextUrl,
   defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs): boolean => {
@@ -63,12 +58,11 @@ const shouldRevalidate = ({
     return true;
   }
 
-  const skipRevalidate = nextUrl?.searchParams?.get(SKIP_REVALIDATE_PARAM);
-  if (skipRevalidate === SKIP_REVALIDATE_STATE.TRUE) {
-    return false;
+  if (nextUrl.search === currentUrl.search && defaultShouldRevalidate) {
+    return true;
   }
 
-  return defaultShouldRevalidate;
+  return false;
 };
 
 const entityLoader =
@@ -133,7 +127,6 @@ const Entity = () => {
   const onMainTabChange = (selectedMainTab: string) => {
     const next = new URLSearchParams(searchParams.toString());
     next.set(MAIN_TAB_PARAM, selectedMainTab);
-    next.set(SKIP_REVALIDATE_PARAM, SKIP_REVALIDATE_STATE.TRUE);
     next.delete(SIDE_TAB_PARAM);
     setSearchParams(next, { replace: true, preventScrollReset: true });
   };
@@ -144,7 +137,6 @@ const Entity = () => {
     if (!next.get(MAIN_TAB_PARAM)) {
       next.set(MAIN_TAB_PARAM, activeMainTab);
     }
-    next.set(SKIP_REVALIDATE_PARAM, SKIP_REVALIDATE_STATE.TRUE);
     setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
