@@ -5,16 +5,15 @@ import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom, localeAtom } from 'app/V2/atoms';
+import { localeAtom } from 'app/V2/atoms';
 
 interface ActivityLogSearch {
   username: string;
   search: string;
   page: number;
   dateRange: {
-    from: string;
-    to: string;
+    from: number | null;
+    to: number | null;
   };
   to: string;
   sort: string;
@@ -35,7 +34,6 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 }));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
-  const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const locale = useAtomValue(localeAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
 
@@ -125,26 +123,25 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     labelToday={t('System', 'Today', null, false)}
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
-                    from={value?.from || ''}
-                    to={value?.to || ''}
-                    onFromDateSelected={e => {
-                      setValue('dateRange.from', e.target.value);
+                    from={value?.from || undefined}
+                    to={value?.to || undefined}
+                    onFromDateSelected={timestamp => {
+                      setValue('dateRange.from', timestamp);
                       if (!getValues('dateRange.to')) {
-                        setValue('dateRange.to', e.target.value);
+                        setValue('dateRange.to', timestamp);
                       }
                     }}
-                    onToDateSelected={e => {
-                      setValue('dateRange.to', e.target.value);
+                    onToDateSelected={timestamp => {
+                      setValue('dateRange.to', timestamp);
                       if (!getValues('dateRange.from')) {
-                        setValue('dateRange.from', e.target.value);
+                        setValue('dateRange.from', timestamp);
                       }
                     }}
-                    dateFormat={dateFormat}
                     onClear={(field: 'from' | 'to') => {
-                      setValue(`dateRange.${field}`, '');
+                      setValue(`dateRange.${field}`, null);
                       setCurrentFilters({
                         ...currentFilters,
-                        dateRange: { ...currentFilters.dateRange, [field]: '' },
+                        dateRange: { ...currentFilters.dateRange, [field]: null },
                       });
                     }}
                   />
@@ -162,11 +159,16 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
               onClick={() => {
                 setCurrentFilters({
                   ...currentFilters,
-                  dateRange: { from: '', to: '' },
+                  dateRange: { from: null, to: null },
                   to: '',
                   method: [],
                 });
-                reset({ username: '', method: [], search: '', dateRange: { from: '', to: '' } });
+                reset({
+                  username: '',
+                  method: [],
+                  search: '',
+                  dateRange: { from: null, to: null },
+                });
               }}
             >
               <Translate>Clear all</Translate>

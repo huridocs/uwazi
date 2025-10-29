@@ -35,9 +35,10 @@ interface ActivityLogSearchParams {
   limit?: number;
 }
 
-const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
-  const fromDate = from && DateTime.fromFormat(from, dateFormat.toLowerCase()).toMillis();
-  const toDate = to && DateTime.fromFormat(to, dateFormat.toLowerCase()).toMillis();
+const timeFilter = (from?: string | number, to?: string | number) => {
+  // Expect timestamps (numbers) or string representations of timestamps
+  const fromDate = from ? Number(from) : undefined;
+  const toDate = to ? Number(to) : undefined;
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 
@@ -46,10 +47,7 @@ const sortParam = (sort = '', order = '') =>
 
 const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {});
 
-const getQueryParamsBySearchParams = (
-  searchParams: ActivityLogSearchParams,
-  dateFormat = 'YYYY-MM-DD'
-) => {
+const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
   const {
     username,
     search,
@@ -61,7 +59,7 @@ const getQueryParamsBySearchParams = (
     page = 1,
     limit = ITEMS_PER_PAGE,
   } = searchParams;
-  const time = timeFilter(from, to, dateFormat.toUpperCase());
+  const time = timeFilter(from, to);
   const sortOptions = sortParam(sort, order);
   const methodList = isArray(method) ? method : [method];
   const params = {
@@ -89,10 +87,9 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
 const activityLogLoader =
   (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
   async ({ request }) => {
-    const { settings } = handlerContext || { dateFormat: 'YYYY-MM-DD' };
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams, settings?.dateFormat);
+    const params = getQueryParamsBySearchParams(searchParams);
     const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
     if (activityLogList.message !== undefined) {
       return {

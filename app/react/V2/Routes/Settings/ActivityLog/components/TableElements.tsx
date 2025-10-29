@@ -89,13 +89,16 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
 };
 
 const TimeCell =
-  (dateFormat: string) =>
+  () =>
   ({ cell }: CellContext<LogEntry, number>) => {
     const date = DateTime.fromMillis(cell.getValue());
+    // Use locale user format for date
+    const daysFormat = date.toLocaleString(DateTime.DATE_MED);
+    const timeFormat = date.toLocaleString(DateTime.TIME_24_SIMPLE);
     return (
       <>
-        <span className="font-semibold">{date.toFormat(dateFormat.toLowerCase())}</span>
-        <span className="font-medium">&nbsp;-&nbsp;{date.toFormat('hh:mm a')}</span>
+        <span className="font-semibold">{daysFormat}</span>
+        <span className="font-medium">&nbsp;-&nbsp;{timeFormat}</span>
       </>
     );
   };
@@ -110,7 +113,7 @@ const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   </Button>
 );
 
-const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
+const getActivityLogColumns = (setSelectedEntry: any) => [
   columnHelper.accessor('method', {
     header: ActionHeader,
     cell: ActionCell,
@@ -129,7 +132,7 @@ const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
   }),
   columnHelper.accessor('time', {
     header: TimeHeader,
-    cell: TimeCell(dateFormat),
+    cell: TimeCell(),
     meta: { headerClassName: 'text-center w-2/12' },
   }),
   columnHelper.accessor('_id', {

@@ -1,7 +1,5 @@
-import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import { Info } from 'luxon';
-import { isNumber } from 'lodash';
-import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
+import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
+import { DateTime, Info } from 'luxon';
 //Module has no types
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
@@ -11,8 +9,8 @@ import { t } from 'app/I18N';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 
-interface DatePickerProps extends FlowbiteDatepickerProps {
-  dateFormat: string;
+interface DatePickerProps {
+  dateFormat?: string;
   language: string;
   labelToday: string;
   labelClear: string;
@@ -23,13 +21,13 @@ interface DatePickerProps extends FlowbiteDatepickerProps {
   placeholder?: string;
   hasErrors?: boolean;
   errorMessage?: string | React.ReactNode;
-  value?: string | number;
+  value?: number;
   inputClassName?: string;
   autoComplete?: 'on' | 'off';
   name?: string;
   clearFieldAction?: () => any;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: (timestamp: number | null) => void;
+  onBlur?: (timestamp: number | null) => void;
   className?: string;
 }
 
@@ -90,13 +88,12 @@ const DatePickerComponent = React.forwardRef(
       autoComplete,
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'YYYY-MM-DD',
+      dateFormat,
       hideLabel = true,
       inputClassName = '',
       className = '',
       name = '',
-      onChange = () => {},
-      onBlur = () => {},
+      onChange,
       clearFieldAction = () => {},
     }: DatePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
@@ -104,7 +101,6 @@ const DatePickerComponent = React.forwardRef(
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     useImperativeHandle(forwardedRef, () => ref.current);
 
-    const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
         `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
@@ -114,13 +110,15 @@ const DatePickerComponent = React.forwardRef(
     const locale = validateLocale(language);
 
     useEffect(() => {
+      const localeConfig = {
+        ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+        ...(dateFormat && { format: dateFormat }),
+      };
       Object.assign(Datepicker.locales, {
-        [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
-          format: datePickerFormat,
-        },
+        [locale]: localeConfig,
       });
-      instance.current = new Datepicker(ref.current, {
+
+      const datepickerConfig = {
         container: '#tw-container',
         language: locale,
         labelToday,
@@ -131,14 +129,39 @@ const DatePickerComponent = React.forwardRef(
         clearBtn: true,
         autohide: true,
         clearFieldAction,
-        format: datePickerFormat,
-      });
-      return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-    }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
+        ...(dateFormat && { format: dateFormat }),
+      };
+
+      instance.current = new Datepicker(ref.current, datepickerConfig);
+
+      // Set initial value from timestamp - Flowbite accepts Date objects
+      if (value) {
+        instance.current.setDate(new Date(value));
+      }
+
+      // Listen to Flowbite's changeDate event which provides a Date object
+      const el = ref.current;
+      const changeHandler = (e: any) => {
+        const date = e.detail?.date;
+        const timestamp = date ? date.getTime() : null;
+        onChange?.(timestamp);
+      };
+
+      el?.addEventListener('changeDate', changeHandler);
+
+      return () => {
+        el?.removeEventListener('changeDate', changeHandler);
+        if (instance?.current?.hide instanceof Function) instance?.current?.hide();
+      };
+    }, [id, locale, labelToday, labelClear, dateFormat, clearFieldAction, value, onChange]);
 
     useEffect(() => {
-      if (instance?.current && ref?.current) {
-        ref.current.value = isNumber(value) ? value.toString() : value || '';
+      if (instance?.current) {
+        if (value) {
+          instance.current.setDate(new Date(value));
+        } else {
+          instance.current.setDate({ clear: true });
+        }
       }
     }, [instance, value]);
 
@@ -159,13 +182,9 @@ const DatePickerComponent = React.forwardRef(
               datepicker-autoselect-today="true"
               type="text"
               lang={locale}
-              onChange={onChange}
-              onSelect={onChange}
-              onBlur={onBlur}
               name={name}
               ref={ref}
               disabled={disabled}
-              value={value}
               className={`block flex-1 w-full text-sm ${fieldStyles} disabled:text-gray-500`}
               placeholder={placeholder}
               autoComplete={autoComplete}
@@ -201,14 +220,15 @@ DatePickerComponent.defaultProps = {
   placeholder: 'Select a date',
   hasErrors: false,
   errorMessage: '',
-  value: '',
+  value: undefined,
   inputClassName: '',
   className: '',
   autoComplete: 'off',
   name: 'datePicker',
+  dateFormat: undefined,
   clearFieldAction: () => {},
-  onChange: () => {},
-  onBlur: () => {},
+  onChange: undefined,
+  onBlur: undefined,
 };
 
 export type { DatePickerProps };
