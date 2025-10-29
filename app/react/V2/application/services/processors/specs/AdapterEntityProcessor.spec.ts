@@ -717,7 +717,7 @@ describe('Adapter Entity Processor Tests', () => {
 
     const processor = new AdapterEntityProcessor(contextWithOptions);
     const result = processor.processEntity(rawEntity);
-    const { documents, attachments } = result.entity;
+    const { documents, attachments, mainDocument } = result.entity;
 
     expect(documents).toMatchObject([
       {
@@ -733,7 +733,63 @@ describe('Adapter Entity Processor Tests', () => {
         totalPages: 1,
         type: 'document',
       },
+      {
+        _id: 'd2',
+        originalname: 'Another.pdf',
+        mimetype: 'application/pdf',
+        filename: 'someotherfile.pdf',
+        size: 1,
+        entity: 'test-incident-001',
+        type: 'document',
+        status: 'ready',
+        creationDate: 1,
+        language: 'en',
+        totalPages: 1,
+      },
     ]);
+
+    expect(attachments).toMatchObject([
+      {
+        _id: 'a1',
+        creationDate: 1,
+        entity: 'test-incident-001',
+        filename: 'a1.jpg',
+        mimetype: 'image/jpg',
+        originalname: 'my_image.jpg',
+        size: 1,
+        type: 'attachment',
+      },
+    ]);
+
+    expect(mainDocument).toMatchObject({
+      _id: 'd1',
+      creationDate: 1,
+      entity: 'test-incident-001',
+      filename: '16116590902796ifv9bxjnvk.pdf',
+      language: 'en',
+      mimetype: 'application/pdf',
+      originalname: 'MockPDF.pdf',
+      size: 1,
+      status: 'ready',
+      totalPages: 1,
+      type: 'document',
+    });
+  });
+
+  it('should not include empty keys', () => {
+    const contextWithOptions = {
+      ...processingContext,
+      includeSupportingFiles: true,
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithOptions);
+    const result = processor.processEntity({ ...rawEntity, documents: [] });
+
+    const { documents, mainDocument, attachments } = result.entity;
+
+    expect(documents).toBeUndefined();
+
+    expect(mainDocument).toBeUndefined();
 
     expect(attachments).toMatchObject([
       {

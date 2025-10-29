@@ -325,6 +325,19 @@ export const rawEntity: EntitySchema = {
       language: 'en',
       totalPages: 1,
     },
+    {
+      _id: 'd2',
+      originalname: 'Another.pdf',
+      mimetype: 'application/pdf',
+      filename: 'someotherfile.pdf',
+      size: 1,
+      entity: 'test-incident-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'en',
+      totalPages: 1,
+    },
   ],
   attachments: [
     {
