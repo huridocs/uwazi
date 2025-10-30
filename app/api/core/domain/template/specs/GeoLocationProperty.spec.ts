@@ -48,16 +48,6 @@ describe('GeoLocationProperty', () => {
       expect(assignment).toEqual({ name: prop.name, type: prop.type, value: [] });
     });
 
-    it('should throw if more than one value is provided', () => {
-      const prop = new GeolocationProperty({ id: 'any_id', label: 'A label', template: 'any' });
-
-      expect(() =>
-        prop.createPropertyAssignment({
-          value: [{ value: { lat: 10, lon: 20 } }, { value: { lat: 30, lon: 40 } }],
-        })
-      ).toThrow('Geolocation Property only accepts a single value.');
-    });
-
     it('should throw if required and no value is provided', () => {
       const prop = new GeolocationProperty({
         id: 'any_id',

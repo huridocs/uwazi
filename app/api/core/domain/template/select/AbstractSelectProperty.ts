@@ -45,9 +45,16 @@ class AbstractSelectProperty extends FilterableProperty {
   createPropertyAssignment(
     input: CreatePropertyAssignmentInput<SelectionEntry>
   ): SelectPropertyAssignment {
+    const seen = new Set<string>();
+    const cleanedValues = input.value.filter(v => {
+      if (seen.has(v.value)) return false;
+      seen.add(v.value);
+      return true;
+    });
+
     const { language, value } = createSchema(this.required, this.type).parse({
       ...input,
-      value: input.value.filter(v => !!v.value.length),
+      value: cleanedValues,
     });
 
     return {

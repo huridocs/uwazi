@@ -35,7 +35,9 @@ class NumericProperty extends FilterableProperty {
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<NumericPropertyValue>): PropertyAssignment {
-    const parsedValue = createSchema(this.required).parse(value);
+    const parsedValue = createSchema(this.required).parse(
+      value.filter(v => (v.value as any) !== '')
+    );
 
     return {
       name: this.name,

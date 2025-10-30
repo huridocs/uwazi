@@ -23,10 +23,7 @@ const EntrySchema = z.object({
 });
 
 const createSchema = (isRequired: boolean) =>
-  z
-    .array(EntrySchema)
-    .min(isRequired ? 1 : 0, 'Geolocation Property is required')
-    .max(1, 'Geolocation Property only accepts a single value.');
+  z.array(EntrySchema).min(isRequired ? 1 : 0, 'Geolocation Property is required');
 
 class GeolocationProperty extends Property {
   constructor(props: Props, context?: Context) {

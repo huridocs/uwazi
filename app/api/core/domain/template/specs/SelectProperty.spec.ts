@@ -145,27 +145,6 @@ describe('SelectProperty', () => {
       });
     });
 
-    it('should sanitize values by removing entries with empty value', () => {
-      const select = new SelectProperty({
-        id: 'any_id',
-        label: 'A Title',
-        template: 'any',
-        content: 'any_content',
-      });
-
-      expect(
-        select.createPropertyAssignment({
-          value: [{ value: '', label: '' }],
-          language: 'en',
-        })
-      ).toEqual({
-        language: 'en',
-        name: select.name,
-        type: select.type,
-        value: [],
-      });
-    });
-
     it('should throw if more than one value is provided', () => {
       const select = new SelectProperty({
         id: 'any_id',

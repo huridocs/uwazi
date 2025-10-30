@@ -84,5 +84,17 @@ describe('NumericProperty', () => {
         'Numeric Property is required'
       );
     });
+
+    it('should delete the value when proving empty string', () => {
+      const numeric = new NumericProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = numeric.createPropertyAssignment({ value: [{ value: '' } as any] });
+
+      expect(assignment).toEqual({
+        name: numeric.name,
+        value: [],
+        type: numeric.type,
+      });
+    });
   });
 });
