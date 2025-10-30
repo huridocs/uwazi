@@ -16,6 +16,7 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
+import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 
 const checkEntityPermission = async (
   file: FileType,

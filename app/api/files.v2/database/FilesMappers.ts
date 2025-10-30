@@ -7,40 +7,54 @@ import { Attachment } from '../model/Attachment';
 import { CustomUpload } from '../model/CustomUpload';
 
 const toDocumentModel = (fileDBO: FileDBOType) =>
-  new Document(
-    fileDBO._id.toString(),
-    fileDBO.entity,
-    fileDBO.totalPages,
-    fileDBO.filename,
-    LanguageUtils.fromISO639_3(fileDBO.language).ISO639_1!
-  ).withCreationDate(new Date(fileDBO.creationDate));
+  new Document({
+    id: fileDBO._id.toString(),
+    entity: fileDBO.entity,
+    originalname: fileDBO.originalname,
+    filename: fileDBO.filename,
+    mimetype: fileDBO.mimetype,
+    size: fileDBO.size,
+    creationDate: fileDBO.creationDate,
+    language: LanguageUtils.fromISO639_3(fileDBO.language).key,
+    totalPages: fileDBO.totalPages,
+    status: fileDBO.status,
+  });
 
 export const FileMappers = {
   toModel(fileDBO: FileDBOType): UwaziFile {
     if (fileDBO.type === 'attachment' && fileDBO.url) {
-      return new URLAttachment(
-        fileDBO._id.toString(),
-        fileDBO.entity,
-        fileDBO.totalPages,
-        fileDBO.url
-      ).withCreationDate(new Date(fileDBO.creationDate));
+      return new URLAttachment({
+        id: fileDBO._id.toString(),
+        entity: fileDBO.entity,
+        url: fileDBO.url,
+        originalname: fileDBO.originalname,
+        filename: fileDBO.filename,
+        mimetype: fileDBO.mimetype,
+        size: fileDBO.size,
+        creationDate: fileDBO.creationDate,
+      });
     }
     if (fileDBO.type === 'attachment') {
-      return new Attachment(
-        fileDBO._id.toString(),
-        fileDBO.entity,
-        fileDBO.totalPages,
-        fileDBO.filename
-      ).withCreationDate(new Date(fileDBO.creationDate));
+      return new Attachment({
+        id: fileDBO._id.toString(),
+        entity: fileDBO.entity,
+        originalname: fileDBO.originalname,
+        filename: fileDBO.filename,
+        mimetype: fileDBO.mimetype,
+        size: fileDBO.size,
+        creationDate: fileDBO.creationDate,
+      });
     }
 
     if (fileDBO.type === 'custom') {
-      return new CustomUpload(
-        fileDBO._id.toString(),
-        fileDBO.entity,
-        fileDBO.totalPages,
-        fileDBO.filename
-      ).withCreationDate(new Date(fileDBO.creationDate));
+      return new CustomUpload({
+        id: fileDBO._id.toString(),
+        originalname: fileDBO.originalname,
+        filename: fileDBO.filename,
+        mimetype: fileDBO.mimetype,
+        size: fileDBO.size,
+        creationDate: fileDBO.creationDate,
+      });
     }
     return toDocumentModel(fileDBO);
   },

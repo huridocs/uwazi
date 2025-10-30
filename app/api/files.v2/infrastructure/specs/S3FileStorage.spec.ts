@@ -137,11 +137,30 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new Document('id', 'entity', 1, 'document', 'ab'),
+        file: new Document({
+          id: 'id',
+          entity: 'entity',
+          language: 'ab',
+          mimetype: 'application/pdf',
+          totalPages: 1,
+          status: 'processing',
+          creationDate: 1,
+          size: 1,
+          filename: 'document',
+          originalname: 'original.pdf',
+        }),
         expected: 'test-tenant/documents/document',
       },
       {
-        file: new Attachment('id', 'entity', 1, 'attachment'),
+        file: new Attachment({
+          id: 'id',
+          entity: 'entity',
+          mimetype: 'application/pdf',
+          creationDate: 1,
+          size: 1,
+          filename: 'attachment',
+          originalname: 'original.pdf',
+        }),
         expected: 'test-tenant/attachments/attachment',
       },
     ])(

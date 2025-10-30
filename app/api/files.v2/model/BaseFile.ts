@@ -1,20 +1,36 @@
+type Props = {
+  id: string;
+  originalname: string;
+  filename: string;
+  mimetype: string;
+  size: number;
+  creationDate: number;
+  uploaded?: boolean;
+};
+
 export class BaseFile {
   readonly id: string;
 
-  readonly entity: string;
+  readonly originalname: string;
 
-  readonly totalPages: number;
+  readonly filename: string;
 
-  creationDate?: Date;
+  readonly mimetype: string;
 
-  constructor(id: string, entity: string, totalPages: number) {
-    this.id = id;
-    this.entity = entity;
-    this.totalPages = totalPages;
-  }
+  readonly size: number;
 
-  withCreationDate(date: Date) {
-    this.creationDate = date;
-    return this;
+  readonly creationDate: number;
+
+  readonly uploaded?: boolean;
+
+  constructor(props: Props) {
+    this.id = props.id;
+    this.originalname = props.originalname;
+    this.filename = props.filename;
+    this.mimetype = props.mimetype;
+    this.size = props.size;
+    this.creationDate = props.creationDate;
   }
 }
+
+export type { Props as BaseFileProps };

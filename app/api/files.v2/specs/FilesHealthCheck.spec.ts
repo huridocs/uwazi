@@ -252,8 +252,8 @@ describe('FilesHealthCheck', () => {
     await filesHealthCheck.execute();
 
     expect(events).toEqual([
-      { _id: factory.idString('file1'), filename: 'file1', creationDate: new Date(creationDate) },
-      { _id: factory.idString('file2'), filename: 'file2', creationDate: new Date(creationDate) },
+      { _id: factory.idString('file1'), filename: 'file1', creationDate: creationDate },
+      { _id: factory.idString('file2'), filename: 'file2', creationDate: creationDate },
     ]);
   });
 });

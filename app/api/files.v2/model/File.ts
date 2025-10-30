@@ -1,4 +1,9 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+import { tmpdir } from 'os';
+import path from 'path';
 import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 
 type Source = Readable;
 
@@ -28,7 +33,15 @@ export class File {
 
   async asContentString(): Promise<string> {
     const buffer = await this.toBuffer();
-
     return buffer.toString('utf8');
+  }
+
+  async asTmpDiskFile() {
+    const filePath = path.join(
+      tmpdir(),
+      `${Date.now()}_${Math.random()}.${path.extname(this.filename)}`
+    );
+    await pipeline(this.source, createWriteStream(filePath));
+    return filePath;
   }
 }

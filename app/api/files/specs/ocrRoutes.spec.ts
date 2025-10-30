@@ -4,7 +4,7 @@ import path from 'path';
 import request from 'supertest';
 
 import { storage } from 'api/files';
-import relationships from 'api/relationships';
+import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';
