@@ -8,7 +8,7 @@ import db from 'api/utils/testing_db';
 import * as entitySavingManager from 'api/entities/entitySavingManager';
 import routes from 'api/entities/routes';
 import { legacyLogger } from 'api/log';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import thesauri from 'api/thesauri';
 import { appContext } from 'api/utils/AppContext';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';

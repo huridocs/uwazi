@@ -294,9 +294,16 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { connection, ...headers } = req.headers;
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
+
+  if (matched === null) {
+    res.redirect('/404');
+    return;
+  }
+
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
   const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
   const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+
   if (isProtectedRoute) {
     const userId = req.user?._id;
     const userRole = req.user?.role || '';

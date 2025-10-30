@@ -2,7 +2,7 @@
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { IXExtractorType } from 'shared/types/extractorType';
 import {

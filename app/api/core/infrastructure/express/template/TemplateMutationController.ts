@@ -2,8 +2,8 @@ import { AbstractController } from 'api/common.v2/infrastructure/AbstractControl
 import settings from 'api/settings';
 import { createError } from 'api/utils';
 import { inspect } from 'util';
-import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO';
 import { TemplateFacade } from '../../facades/TemplateFacade';
+import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO';
 
 type TemplateMutationResponseDTO = TemplateDBO;
 

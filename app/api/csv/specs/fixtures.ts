@@ -1,6 +1,6 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 

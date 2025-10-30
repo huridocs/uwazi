@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
@@ -127,7 +127,7 @@ const createFixtures = (): DBFixture => ({
 
 const setUpUseCase = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

@@ -1,9 +1,9 @@
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { FileType } from 'shared/types/fileType';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { inspect } from 'util';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
 import { IXValidationError } from '../ixValidationError';
 

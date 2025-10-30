@@ -1,7 +1,7 @@
 import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';

@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 import { files } from 'api/files/files';
 import { EnforcedWithId } from 'api/odm';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';

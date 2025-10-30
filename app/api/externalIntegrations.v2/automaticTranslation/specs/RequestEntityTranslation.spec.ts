@@ -1,11 +1,11 @@
 /* eslint-disable max-classes-per-file */
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { Redis } from 'api/infrastructure/Redis';
-import { Logger } from 'api/log.v2/contracts/Logger';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
@@ -76,7 +76,7 @@ beforeEach(async () => {
   });
   jest.spyOn(taskManager, 'startTask').mockImplementation(async () => '');
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   requestEntityTranslation = new RequestEntityTranslation(
     taskManager,

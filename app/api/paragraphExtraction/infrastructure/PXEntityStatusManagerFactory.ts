@@ -1,6 +1,6 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
@@ -11,7 +11,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 export class PXEntityStatusManagerFactory {
   static createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
@@ -23,7 +23,7 @@ export class PXEntityStatusManagerFactory {
       mongoTransactionManager,
     });
 
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 
     const filesDS = DefaultFilesDataSource(mongoTransactionManager);
     const entitiesDS = DefaultEntitiesDataSource(mongoTransactionManager);

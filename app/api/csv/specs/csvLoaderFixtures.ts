@@ -1,6 +1,6 @@
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';

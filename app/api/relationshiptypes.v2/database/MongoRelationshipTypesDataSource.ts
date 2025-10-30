@@ -1,6 +1,6 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { RelationshipTypesDataSource } from '../contracts/RelationshipTypesDataSource';
 import { RelationshipTypeDBO } from './schemas/RelationshipTypeDBO';
 import { mapRelationshipTypeToApp } from './mappings/RelationshipTypeMappers';

@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { EntitySchema } from 'shared/types/entityType';
 
