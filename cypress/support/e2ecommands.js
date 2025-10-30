@@ -19,4 +19,3 @@ Cypress.Commands.overwrite(
 );
 
 export {};
-
