@@ -8,6 +8,7 @@ import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { Entity, shouldRevalidate } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
+  ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
@@ -28,6 +29,11 @@ afterEach(() => {
   mediaMock = setupMatchMediaMock();
 });
 
+const checkEntityRendered = async () => {
+  const titleElements = await screen.findAllByText('Sample Entity');
+  expect(titleElements.length).toBeGreaterThan(0);
+};
+
 describe('Entity view', () => {
   it('should show loading when no entity', async () => {
     render(
@@ -41,13 +47,12 @@ describe('Entity view', () => {
 
   it('should render PDF and metadata', async () => {
     render(
-      <TestRouterContext loaderData={sampleEntity}>
+      <TestRouterContext loaderData={{ entity: sampleEntity }}>
         <Entity />
       </TestRouterContext>
     );
 
-    const titleElements = await screen.findAllByText('Sample Entity');
-    expect(titleElements.length).toBeGreaterThan(0);
+    await checkEntityRendered();
 
     expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.getByTestId('mock-pdf')).toHaveTextContent('/api/files/file.pdf');
@@ -56,13 +61,12 @@ describe('Entity view', () => {
   describe('Tabs', () => {
     beforeEach(async () => {
       render(
-        <TestRouterContext loaderData={sampleEntity}>
+        <TestRouterContext loaderData={{ entity: sampleEntity }}>
           <Entity />
         </TestRouterContext>
       );
 
-      const titleElems = await screen.findAllByText('Sample Entity');
-      expect(titleElems.length).toBeGreaterThan(0);
+      await checkEntityRendered();
     });
 
     it('should render the expected main tabs', () => {
@@ -111,39 +115,95 @@ describe('Entity view', () => {
       });
     });
   });
-});
 
-describe('shouldRevalidate', () => {
-  it('should not revalidate when switching search params', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's1' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-    const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
-    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-    expect(result).toBe(false);
+  describe('Plain text view', () => {
+    it('should switch to plain text view', async () => {
+      const mainDocumentFile = {
+        fullText: { 1: 'This is the plain text' },
+        filename: 'file.pdf',
+      };
+
+      render(
+        <TestRouterContext loaderData={{ entity: sampleEntity, mainDocumentFile }}>
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
+
+      expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
+        'hidden'
+      );
+
+      const select = screen.getByRole('combobox');
+      fireEvent.change(select, { target: { value: 'raw' } });
+
+      await waitFor(() => {
+        expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
+          'block'
+        );
+      });
+    });
+
+    it('shoul display the plain text view page based on the url', async () => {
+      const mainDocumentFile = {
+        fullText: { 1: 'Shown from url plain text', 5: 'Page 5 content' },
+        filename: 'file.pdf',
+      };
+
+      render(
+        <TestRouterContext
+          path="/entity/:sharedId"
+          loaderData={{ entity: sampleEntity, mainDocumentFile }}
+          initialEntries={['/entity/shared1?raw=true&page=5']}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Shown from url plain text')).not.toBeInTheDocument();
+        expect(screen.getByText('Page 5 content').parentElement?.classList).toContain('block');
+      });
+    });
   });
 
-  it('should revalidate when sharedId changes', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's2' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-    const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
-    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-    expect(result).toBe(true);
-  });
+  describe('shouldRevalidate', () => {
+    it('should not revalidate when switching search params', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's1' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
+      const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
+      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+      expect(result).toBe(false);
+    });
 
-  it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's1' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-    const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-    const result = shouldRevalidate({
-      currentParams,
-      nextParams,
-      currentUrl,
-      nextUrl,
-      defaultShouldRevalidate: true,
-    } as any);
-    expect(result).toBe(true);
+    it('should revalidate when sharedId changes', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's2' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
+      const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
+      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+      expect(result).toBe(true);
+    });
+
+    it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's1' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+      const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+      const result = shouldRevalidate({
+        currentParams,
+        nextParams,
+        currentUrl,
+        nextUrl,
+        defaultShouldRevalidate: true,
+      } as any);
+      expect(result).toBe(true);
+    });
   });
 });

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { FileType } from 'shared/types/fileType';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { PDF, PlainText } from 'V2/Components/PDFViewer';
 import { Entity } from 'V2/domain';
 import { TemplateLabel } from 'V2/Components/Metadata';
@@ -54,12 +54,8 @@ const PDFView = ({ entity, mainDocumentFile }: { entity: Entity; mainDocumentFil
               value={isRaw ? 'raw' : 'normal'}
               onChange={onSelect}
             >
-              <option value="raw">
-                <Translate>Plain text</Translate>
-              </option>
-              <option value="normal">
-                <Translate>Normal view</Translate>
-              </option>
+              <option value="raw">{t('System', 'Plain text', null, false)}</option>
+              <option value="normal">{t('System', 'Normal view', null, false)}</option>
             </select>
           </div>
         </div>
