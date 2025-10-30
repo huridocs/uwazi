@@ -1,4 +1,5 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -7,6 +8,16 @@ import { PropertyAssignment, ImageEntry } from './PropertyValue';
 type Props = {
   type?: PropertyTypeEnum.Image;
 } & Omit<AbstractImagePropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.string().trim().min(1, 'Image Property must be a non-empty string.'),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Image Property is required')
+    .max(1, 'Image Property only accepts a single value.');
 
 class ImageProperty extends AbstractImageProperty {
   constructor(props: Props, context?: Context) {
@@ -25,23 +36,17 @@ class ImageProperty extends AbstractImageProperty {
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<ImageEntry>): PropertyAssignment<ImageEntry> {
-    if (value.length > 1) {
-      throw new Error(
-        `Image Property only accepts a single value. ${JSON.stringify(value)} given.`
-      );
-    }
-
-    const isValid = !!value?.[0]?.value;
-
-    if (this.required && !isValid) {
-      throw new Error('Image Property is required');
-    }
+    const parsed = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: isValid ? [{ value: value[0].value }] : [],
+      value: parsed,
       type: this.type,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<ImageEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

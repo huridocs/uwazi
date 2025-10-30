@@ -1,16 +1,17 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { ObjectId } from 'mongodb';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -25,7 +26,83 @@ const fixtures: DBFixture = {
     },
   ],
 
-  dictionaries: [factory.thesauri('thesaurus_fruits', ['Apple', 'Banana', 'Orange'])],
+  translationsV2: [
+    {
+      _id: new ObjectId(),
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+      key: 'Apple',
+      language: 'en',
+      value: 'Apple in English',
+    },
+    {
+      _id: new ObjectId(),
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+      key: 'Banana',
+      language: 'en',
+      value: 'Banana in English',
+    },
+    {
+      _id: new ObjectId(),
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+      key: 'thesaurus_fruits',
+      language: 'en',
+      value: 'thesaurus_fruits in English',
+    },
+
+    {
+      _id: new ObjectId(),
+      key: 'Apple',
+      value: 'Apple in Spanish',
+      language: 'es',
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+    },
+    {
+      _id: new ObjectId(),
+      key: 'Banana',
+      value: 'Banana in Spanish',
+      language: 'es',
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+    },
+    {
+      _id: new ObjectId(),
+      key: 'thesaurus_fruits',
+      value: 'thesaurus_fruits in Spanish',
+      language: 'es',
+      context: {
+        type: 'Thesaurus',
+        label: 'thesaurus_fruits',
+        id: factory.id('thesaurus_fruits').toHexString(),
+      },
+    },
+  ],
+
+  dictionaries: [
+    factory.thesauri('thesaurus_fruits', [
+      ['apple_id', 'Apple'],
+      ['banana_id', 'Banana'],
+      ['orange_id', 'Orange'],
+    ]),
+  ],
 
   templates: [
     factory.template('Document', [
@@ -60,10 +137,12 @@ type CreateSutProps = {
 
 const createSut = (props: CreateSutProps = {}) => {
   const { context } = props;
-  const transactionManager = DefaultTransactionManager();
-  const idGenerator = DefaultIdGenerator;
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const transactionManager = TransactionManagerFactory.default();
+  const idGenerator = IdGeneratorFactory.default();
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
   const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
     getConnection(),
@@ -78,6 +157,8 @@ const createSut = (props: CreateSutProps = {}) => {
       settingsDS,
       multiLanguageEntityDS,
       templatesDS,
+      thesauriDS,
+      translationsDS,
     },
     context
   );
@@ -119,14 +200,11 @@ describe('CreateEntityUseCase', () => {
         },
         { name: 'link', value: [{ value: { url: 'https://uwazi.io', label: 'Uwazi' } }] },
         { name: 'geolocation_geolocation', value: [{ value: { lat: 10, lon: 20 } }] },
-        // {
-        //   name: 'multiselect',
-        //   value: [
-        //     { value: factory.id('Apple').toHexString() },
-        //     { value: factory.id('Banana').toHexString() },
-        //   ],
-        // },
-        // { name: 'select', value: [{ value: factory.id('Apple').toHexString() }] },
+        {
+          name: 'multiselect',
+          value: [{ value: 'apple_id' }, { value: 'banana_id' }],
+        },
+        { name: 'select', value: [{ value: 'apple_id' }] },
         // { name: 'image', value: [] },
         // { name: 'relationship', value: [] },
       ],
@@ -160,25 +238,40 @@ describe('CreateEntityUseCase', () => {
         link: [{ value: { url: 'https://uwazi.io', label: 'Uwazi' } }],
         image: [],
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
-        select: [],
-        multiselect: [],
         relationship: [],
-        media: [],
         nested: [],
         preview: [],
+        media: [],
       },
     };
 
     expect(entities).toEqual([
       {
+        ...commonFields,
         _id: expect.any(ObjectId),
         language: 'en',
-        ...commonFields,
+
+        metadata: {
+          ...commonFields.metadata,
+          select: [{ value: 'apple_id', label: 'Apple in English' }],
+          multiselect: [
+            { value: 'apple_id', label: 'Apple in English' },
+            { value: 'banana_id', label: 'Banana in English' },
+          ],
+        },
       },
       {
+        ...commonFields,
         _id: expect.any(ObjectId),
         language: 'es',
-        ...commonFields,
+        metadata: {
+          ...commonFields.metadata,
+          select: [{ value: 'apple_id', label: 'Apple in Spanish' }],
+          multiselect: [
+            { value: 'apple_id', label: 'Apple in Spanish' },
+            { value: 'banana_id', label: 'Banana in Spanish' },
+          ],
+        },
       },
     ]);
 

@@ -118,6 +118,8 @@ class Property {
   createPropertyAssignment({ value }: CreatePropertyAssignmentInput): PropertyAssignment {
     return { name: this.name, value, type: this.type };
   }
+
+  validatePropertyAssignment(_propertyAssignment: PropertyAssignment) {}
 }
 
 export { Property };

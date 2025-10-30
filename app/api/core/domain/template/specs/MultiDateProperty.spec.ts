@@ -43,4 +43,49 @@ describe('MultiDateProperty', () => {
 
     expect(() => multiDate.ensurePropertyIsConsistent(date)).not.toThrow();
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should create assignment with multiple date values', () => {
+      const multiDate = new MultiDateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = multiDate.createPropertyAssignment({
+        value: [{ value: 1700000000 }, { value: 1800000000 }],
+      });
+
+      expect(assignment).toEqual({
+        name: multiDate.name,
+        type: multiDate.type,
+        value: [{ value: 1700000000 }, { value: 1800000000 }],
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const multiDate = new MultiDateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = multiDate.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({ name: multiDate.name, type: multiDate.type, value: [] });
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const multiDate = new MultiDateProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() => multiDate.createPropertyAssignment({ value: [] })).toThrow(
+        'Multi Date Property is required'
+      );
+    });
+
+    it('should throw if any value is not a number', () => {
+      const multiDate = new MultiDateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        multiDate.createPropertyAssignment({ value: [{ value: 'oops' } as any] })
+      ).toThrow();
+    });
+  });
 });

@@ -1,72 +1,108 @@
 import { PropertyAssignment, SelectionEntry } from 'api/core/domain/template/PropertyValue';
-import { SelectProperty } from 'api/core/domain/template/SelectProperty';
-import { Template } from 'api/core/domain/template/Template';
+import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
-
-type CreateInput = {
-  template: Template;
-  propertyAssignment: { name: string; value: string[] };
-};
+import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import {
+  CreateInputPropertyAssignment,
+  PropertyAssignmentCreatorService,
+} from './PropertyAssignmentCreatorService';
 
 type Deps = {
+  settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   thesauriDS: ThesauriDataSource;
 };
 
-export class DefaultPropertyAssignmentCreatorService {
+export class SelectPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
   constructor(private deps: Deps) {}
 
   // eslint-disable-next-line max-statements
-  async create({ propertyAssignment, template }: CreateInput): Promise<PropertyAssignment[]> {
-    const property = template.getPropertyByName<SelectProperty>(propertyAssignment.name);
-    if (!property) {
-      throw new Error(
-        `Property with name ${propertyAssignment.name} does not exist in template ${template.name}`
-      );
-    }
-
-    if (property.type !== 'select') {
-      throw new Error(
-        `Property with name ${propertyAssignment.name} is not of type select in template ${template.name}`
-      );
-    }
+  async create({
+    propertyAssignment,
+    template,
+  }: CreateInputPropertyAssignment<string>): Promise<PropertyAssignment[]> {
+    const property = template
+      .getPropertyByName<SelectProperty>(propertyAssignment.name)
+      .getDataOrThrow();
 
     const thesaurus = (await this.deps.thesauriDS.getById(property.content)).getDataOrThrow();
+
+    const valueIdToLabel = new Map<string, string>();
+    const valueIdToParent: Map<string, { id: string; label: string }> = new Map();
+
+    thesaurus?.values?.forEach(v => {
+      if (v.values && v.values.length) {
+        v.values.forEach(child => {
+          if (child.id) {
+            valueIdToLabel.set(child.id, child.label);
+            if (v.id) {
+              valueIdToParent.set(child.id, { id: v.id, label: v.label });
+            }
+          }
+        });
+      } else if (v.id) {
+        valueIdToLabel.set(v.id, v.label);
+      }
+    });
+
+    const enrichedValues = propertyAssignment.value.map(({ value }) => {
+      if (!value.length) {
+        return { key: '', value: '' };
+      }
+
+      const key = valueIdToLabel.get(value);
+      if (!key) {
+        throw new Error(
+          `The value "${value}" does not exist in the referenced Thesaurus "${thesaurus.name}"`
+        );
+      }
+      return { key, value };
+    });
 
     const translations = await this.deps.translationsDS
       .getByContext(thesaurus._id!.toString())
       .all();
 
-    const enrichedValues = propertyAssignment.value.map(value => ({
-      key: thesaurus.values?.find(v => v.id === value)?.label,
-      value,
-    }));
+    const translationsByLang = new Map<LanguageISO6391, Map<string, string>>();
 
-    const localizedSelectValues = new Map<LanguageISO6391, SelectionEntry[]>();
+    translations.forEach(t => {
+      const byKey = translationsByLang.get(t.language) || new Map<string, string>();
+      byKey.set(t.key, t.value);
+      translationsByLang.set(t.language, byKey);
+    });
 
-    enrichedValues.forEach(value =>
-      translations
-        .filter(t => t.key === value.key)
-        .forEach(t =>
-          localizedSelectValues.set(t.language, [
-            ...(localizedSelectValues.get(t.language) || []),
-            {
-              value: value.value,
-              label: t.value,
-            },
-          ])
-        )
-    );
+    const languages = await this.deps.settingsDS.getLanguageKeys();
 
     const propertyAssignments: PropertyAssignment[] = [];
 
-    localizedSelectValues.forEach((value, language) =>
+    languages.forEach(language => {
+      const byKey = translationsByLang.get(language) || new Map<string, string>();
+
+      const value: SelectionEntry[] = enrichedValues.map(ev => {
+        const baseLabel = ev.key;
+        const label = byKey.get(baseLabel) || baseLabel;
+
+        const parentInfo = valueIdToParent.get(ev.value);
+        const parent = parentInfo
+          ? {
+              value: parentInfo.id,
+              label: byKey.get(parentInfo.label) || parentInfo.label,
+            }
+          : undefined;
+
+        return {
+          value: ev.value,
+          label,
+          ...(parent ? { parent } : {}),
+        };
+      });
+
       propertyAssignments.push(
         template.createPropertyAssignment(property.name, { value, language })
-      )
-    );
+      );
+    });
 
     return propertyAssignments;
   }

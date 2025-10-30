@@ -17,15 +17,13 @@ import ID from 'shared/uniqueID';
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import { tenants } from 'api/tenants';
 import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -393,13 +391,13 @@ export default {
 
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     if (v2CreateEntity) {
-      const transactionManager = DefaultTransactionManager();
-      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const transactionManager = TransactionManagerFactory.default();
+      const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
       const useCase = new CreateEntityUseCase(
         {
           templatesDS,
-          settingsDS: DefaultSettingsDataSource(transactionManager),
-          idGenerator: DefaultIdGenerator,
+          settingsDS: SettingsDataSourceFactory.default(transactionManager),
+          idGenerator: IdGeneratorFactory.default(),
           multiLanguageEntityDS: new MongoMultiLanguageEntityDataSource(
             getConnection(),
             transactionManager,

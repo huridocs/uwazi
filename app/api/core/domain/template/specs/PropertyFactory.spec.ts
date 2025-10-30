@@ -8,12 +8,12 @@ import { MarkdownProperty } from '../MarkdownProperty';
 import { MediaProperty } from '../MediaProperty';
 import { MultiDateProperty } from '../MultiDateProperty';
 import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
-import { MultiSelectProperty } from '../MultiSelectProperty';
+import { MultiSelectProperty } from '../select/MultiSelectProperty';
 import { NumericProperty } from '../NumericProperty';
 import { PreviewProperty } from '../PreviewProperty';
 import { PropertyFactory } from '../PropertyFactory';
 import { PropertyTypeEnum } from '../PropertyType';
-import { SelectProperty } from '../SelectProperty';
+import { SelectProperty } from '../select/SelectProperty';
 import { TextProperty } from '../TextProperty';
 
 describe('PropertyFactory', () => {

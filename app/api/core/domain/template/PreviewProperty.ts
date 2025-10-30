@@ -1,4 +1,5 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -7,6 +8,16 @@ import { PreviewEntry, PropertyAssignment } from './PropertyValue';
 type Props = {
   type?: PropertyTypeEnum.Preview;
 } & Omit<AbstractImagePropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.string().min(1, 'Preview Property value must be a non-empty string.'),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Preview Property is required')
+    .max(1, 'Preview Property only accepts a single value.');
 
 class PreviewProperty extends AbstractImageProperty {
   constructor(props: Props, context?: Context) {
@@ -24,23 +35,17 @@ class PreviewProperty extends AbstractImageProperty {
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<PreviewEntry>): PropertyAssignment<PreviewEntry> {
-    if (value.length > 1) {
-      throw new Error(
-        `Preview Property only accepts a single value. ${JSON.stringify(value)} given.`
-      );
-    }
-
-    if (this.required) {
-      if (!value?.[0]?.value) {
-        throw new Error('Preview Property is required');
-      }
-    }
+    const parsed = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: value[0]?.value ? [{ value: value[0].value }] : [],
+      value: parsed,
       type: this.type,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<PreviewEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

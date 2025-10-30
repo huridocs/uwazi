@@ -16,12 +16,22 @@ export class ArrayUtils {
   /**
    * Executes promises in sequence.
    */
-  static async sequentialFor<Item>(array: Item[], callback: Callback<Item>): Promise<void> {
+  static async sequentialFor<Item, Result>(
+    array: Item[],
+    callback: Callback<Item, Result>
+  ): Promise<Result[]> {
+    const results: Result[] = [];
+
     await array.reduce(async (promise, item, index) => {
       await promise;
 
-      return callback(item, index, array);
+      const result = await callback(item, index, array);
+      results.push(result);
+
+      return Promise.resolve();
     }, Promise.resolve());
+
+    return results;
   }
 
   /**

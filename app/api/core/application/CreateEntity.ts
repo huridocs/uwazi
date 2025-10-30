@@ -1,23 +1,26 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { SettingsDataSource } from './contracts/SettingsDataSource';
+import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
 
-type ValueInput =
+export type ValueInput =
   | string
   | number
   | { from: number; to: number }
   | { lat: number; lon: number }
   | { url: string; label?: string };
 
-type PropertyValueInput = {
-  value: ValueInput;
+type PropertyValueInput<V> = {
+  value: V;
 };
 
-type PropertyAssignmentInput = {
+export type PropertyAssignmentInput<V = ValueInput> = {
   name: string;
-  value: PropertyValueInput[];
+  value: PropertyValueInput<V>[];
 };
 
 type Input = {
@@ -29,6 +32,8 @@ type Input = {
 type Output = Entity;
 
 type Deps = {
+  thesauriDS: ThesauriDataSource;
+  translationsDS: TranslationsDataSource;
   settingsDS: SettingsDataSource;
   templatesDS: TemplatesDataSource;
   multiLanguageEntityDS: MultiLanguageEntityDataSource;
@@ -36,6 +41,8 @@ type Deps = {
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync(input: Input): Promise<Output> {
+    const service = PropertyAssignmentCreatorServiceStrategy.create(this.deps);
+
     const template = await this.getTemplateByIdOrDefault(input.templateId);
     const languages = await this.deps.settingsDS.getLanguageKeys();
 
@@ -49,9 +56,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       this.idGenerator
     );
 
-    const propertyAssignments = input.propertyAssignments.map(({ name, value }) =>
-      template.createPropertyAssignment(name, value)
-    );
+    const propertyAssignments = await service.bulkCreate(input.propertyAssignments, template);
 
     entity.setPropertyAssignments(propertyAssignments);
 

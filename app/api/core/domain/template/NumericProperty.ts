@@ -1,4 +1,5 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -7,6 +8,16 @@ import { NumericPropertyValue, PropertyAssignment } from './PropertyValue';
 type Props = {
   type?: PropertyTypeEnum.Numeric;
 } & Omit<FilterablePropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.coerce.number({ required_error: 'Numeric Property value must be provided.' }),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Numeric Property is required')
+    .max(1, 'Numeric Property only accepts a single value.');
 
 class NumericProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
@@ -24,25 +35,17 @@ class NumericProperty extends FilterableProperty {
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<NumericPropertyValue>): PropertyAssignment {
-    if (value.length > 1) {
-      throw new Error(
-        `Numeric Property only accepts a single value. ${JSON.stringify(value)} given.`
-      );
-    }
-
-    if (this.required) {
-      if (value?.[0]?.value === undefined || value?.[0]?.value === null) {
-        throw new Error('Numeric Property is required');
-      }
-    }
-
-    const hasValue = value[0] && (value[0].value === 0 || value[0].value);
+    const parsedValue = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: hasValue ? [{ value: Number(value[0]!.value) }] : [],
+      value: parsedValue,
       type: this.type,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<NumericPropertyValue>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

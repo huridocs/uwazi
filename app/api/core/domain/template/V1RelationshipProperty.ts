@@ -3,6 +3,7 @@ import {
   FilterablePropertyProps,
 } from 'api/core/domain/template/FilterableProperty';
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
+import { z } from 'zod';
 import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
 import { PropertyType, PropertyTypeEnum } from './PropertyType';
 import { InheritedResultValue, PropertyAssignment } from './PropertyValue';
@@ -18,6 +19,9 @@ type Props = {
   inherit?: Inherit;
   type?: PropertyTypeEnum.Relationship;
 } & Omit<FilterablePropertyProps, 'type'>;
+
+const createSchema = (isRequired: boolean) =>
+  z.array(z.any()).min(isRequired ? 1 : 0, 'Relationship Property is required');
 
 class V1RelationshipProperty extends FilterableProperty {
   readonly relationType: string;
@@ -122,11 +126,13 @@ class V1RelationshipProperty extends FilterableProperty {
       normalizedItems.push(normalized);
     });
 
-    if (this.required && normalizedItems.length === 0) {
-      throw new Error('Relationship Property is required');
-    }
+    const parsed = createSchema(this.required).parse(normalizedItems);
 
-    return { name: this.name, type: this.type, value: normalizedItems };
+    return { name: this.name, type: this.type, value: parsed };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<InheritedResultValue>): void {
+    createSchema(this.required).parse(value);
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {

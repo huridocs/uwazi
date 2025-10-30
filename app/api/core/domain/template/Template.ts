@@ -1,8 +1,12 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
-import { DefaultTemplateConflictError } from 'api/core/domain/template/errors';
+import {
+  DefaultTemplateConflictError,
+  PropertyNotFoundError,
+} from 'api/core/domain/template/errors';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { Result } from 'api/core/libs/Result';
 import { CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -174,7 +178,13 @@ class Template {
   }
 
   getPropertyByName<T = TemplateProperty>(propertyName: string) {
-    return this.allProperties.find(p => p.name === propertyName) as T | undefined;
+    const property = this.allProperties.find(p => p.name === propertyName) as T | undefined;
+
+    if (!property) {
+      return Result.fail(new PropertyNotFoundError(propertyName));
+    }
+
+    return Result.ok(property);
   }
 
   getPropertiesByType(type: PropertyType) {

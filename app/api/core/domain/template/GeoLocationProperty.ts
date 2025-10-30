@@ -4,6 +4,7 @@ import {
   Property,
   PropertyProps,
 } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
@@ -12,6 +13,20 @@ import { GeolocationEntry, PropertyAssignment } from './PropertyValue';
 type Props = {
   type?: PropertyTypeEnum.Geolocation;
 } & Omit<PropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.object({
+    lat: z.number({ required_error: 'Geolocation Property latitude must be provided.' }),
+    lon: z.number({ required_error: 'Geolocation Property longitude must be provided.' }),
+    label: z.string().optional(),
+  }),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Geolocation Property is required')
+    .max(1, 'Geolocation Property only accepts a single value.');
 
 class GeolocationProperty extends Property {
   constructor(props: Props, context?: Context) {
@@ -30,21 +45,20 @@ class GeolocationProperty extends Property {
     }
   }
 
-  // Todo: help about business rules for geolocation property
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<GeolocationEntry>): PropertyAssignment<GeolocationEntry> {
-    const cleaned = value.filter(v => v?.value);
-
-    if (this.required && cleaned.length === 0) {
-      throw new Error('Geolocation Property is required');
-    }
+    const parsed = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: cleaned,
+      value: parsed,
       type: this.type,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<GeolocationEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

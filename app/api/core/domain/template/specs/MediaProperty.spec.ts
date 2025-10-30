@@ -27,4 +27,47 @@ describe('MediaProperty', () => {
         })
     ).toThrow(new PropertyTypeInvalidTypeError('text', 'MediaProperty'));
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should create assignment with a single media value', () => {
+      const media = new MediaProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = media.createPropertyAssignment({ value: [{ value: 'file.mp4' }] });
+
+      expect(assignment).toEqual({
+        name: media.name,
+        type: media.type,
+        value: [{ value: 'file.mp4' }],
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const media = new MediaProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = media.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({ name: media.name, type: media.type, value: [] });
+    });
+
+    it('should throw if more than one value is provided', () => {
+      const media = new MediaProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        media.createPropertyAssignment({ value: [{ value: 'a.mp4' }, { value: 'b.mp4' }] })
+      ).toThrow('Media Property only accepts a single value.');
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const media = new MediaProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() => media.createPropertyAssignment({ value: [] })).toThrow(
+        'Media Property is required'
+      );
+    });
+  });
 });

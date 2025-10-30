@@ -3,7 +3,6 @@ import { Template } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { IndexTypes } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { IdGenerator } from 'api/core/libs/IdGenerator';
 import { SharedId } from 'api/core/domain/entity/SharedId';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
@@ -11,6 +10,7 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -113,29 +113,32 @@ class Entity {
     return this.getTranslation(language).title.value[0].value;
   }
 
-  setPropertyAssignments(propertyAssignments: PropertyAssignment[], language?: LanguageISO6391) {
-    this.template.allProperties.forEach(property => {
-      const propertyAssignment =
-        propertyAssignments.find(pa => pa.name === property.name) ||
-        property.createPropertyAssignment(
-          this.getValue(property.name, language || this.languages[0]).value
-        );
-
-      if (language) {
-        this.setValue(propertyAssignment, language);
-      } else {
-        this.setValueInAllLanguages(propertyAssignment);
-      }
-    });
+  getPropertyAssignments(name: string): PropertyAssignment[] {
+    return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
-  private setValue(value: PropertyAssignment, language: LanguageISO6391) {
-    const sync: PropertyType[] = ['numeric'];
+  setPropertyAssignments(
+    propertyAssignments: PropertyAssignment[],
+    targetLanguage?: LanguageISO6391
+  ) {
+    propertyAssignments.forEach(pa =>
+      targetLanguage ? this.setValue(pa, targetLanguage) : this.setValueInAllLanguages(pa)
+    );
+
+    this.template.allProperties.forEach(property =>
+      this.getPropertyAssignments(property.name).forEach(pa => {
+        property.validatePropertyAssignment(pa);
+      })
+    );
+  }
+
+  private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
+    const sync: PropertyType[] = ['numeric', 'select', 'multiselect'];
 
     if (sync.includes(value.type)) {
       this.setValueInAllLanguages(value);
     } else {
-      this.setValueInLanguage(value, language);
+      this.setValueInLanguage(value, targetLanguage);
     }
   }
 
@@ -155,8 +158,8 @@ class Entity {
 
     properties.forEach(property => {
       this.setValueInAllLanguages(
-        property.createPropertyAssignment(
-          Array.from(
+        property.createPropertyAssignment({
+          value: Array.from(
             relationsForEntity
               .getRelationsBelongingToProperty(property)
               .uniqueByEntity()
@@ -164,8 +167,8 @@ class Entity {
                 value: r.entity,
                 label: r.entityData.title,
               }))
-          )
-        )
+          ),
+        })
       );
     });
   }
@@ -195,7 +198,7 @@ class Entity {
           };
         });
 
-        this.setValue(property.createPropertyAssignment(denormalizedItems), language);
+        this.setValue(property.createPropertyAssignment({ value: denormalizedItems }), language);
       });
     });
   }

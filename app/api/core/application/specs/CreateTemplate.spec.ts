@@ -12,7 +12,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {

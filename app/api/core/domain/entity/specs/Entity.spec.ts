@@ -7,8 +7,8 @@ import { DateProperty } from '../../template/DateProperty';
 import { DateRangeProperty } from '../../template/DateRangeProperty';
 import { MultiDateProperty } from '../../template/MultiDateProperty';
 import { MultiDateRangeProperty } from '../../template/MultiDateRangeProperty';
-import { SelectProperty } from '../../template/SelectProperty';
-import { MultiSelectProperty } from '../../template/MultiSelectProperty';
+import { SelectProperty } from '../../template/select/SelectProperty';
+import { MultiSelectProperty } from '../../template/select/MultiSelectProperty';
 import { GeolocationProperty } from '../../template/GeoLocationProperty';
 import { LinkProperty } from '../../template/LinkProperty';
 import { MarkdownProperty } from '../../template/MarkdownProperty';
@@ -77,10 +77,10 @@ describe('Entity', () => {
     );
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('description', [
-        { value: 'A description in multiple languages' },
-      ]),
-      entity.template.createPropertyAssignment('age', [{ value: 42 }]),
+      entity.template.createPropertyAssignment('description', {
+        value: [{ value: 'A description in multiple languages' }],
+      }),
+      entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
     ]);
 
     const entityLanguage = new EntityTranslation({
@@ -88,13 +88,13 @@ describe('Entity', () => {
       language: 'en',
       metadata: {
         ...entity.template.createDefaultPropertyAssignments(),
-        description: entity.template.createPropertyAssignment('description', [
-          { value: 'A description in multiple languages' },
-        ]),
-        age: entity.template.createPropertyAssignment('age', [{ value: 42 }]),
-        editDate: entity.template.createPropertyAssignment('editDate', [
-          { value: expect.any(Number) },
-        ]),
+        description: entity.template.createPropertyAssignment('description', {
+          value: [{ value: 'A description in multiple languages' }],
+        }),
+        age: entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
+        editDate: entity.template.createPropertyAssignment('editDate', {
+          value: [{ value: expect.any(Number) }],
+        }),
       },
     });
 
@@ -116,30 +116,30 @@ describe('Entity', () => {
     );
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('age', [{ value: 42 }]),
+      entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
     ]);
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('description', [
-        { value: 'A description in multiple languages' },
-      ]),
+      entity.template.createPropertyAssignment('description', {
+        value: [{ value: 'A description in multiple languages' }],
+      }),
     ]);
 
     const entityLanguage = new EntityTranslation({
       id: 'id-789',
       language: 'en',
       metadata: {
-        creationDate: entity.template.createPropertyAssignment('creationDate', [
-          { value: expect.any(Number) },
-        ]),
-        description: entity.template.createPropertyAssignment('description', [
-          { value: 'A description in multiple languages' },
-        ]),
-        age: entity.template.createPropertyAssignment('age', [{ value: 42 }]),
-        title: entity.template.createPropertyAssignment('title', []),
-        editDate: entity.template.createPropertyAssignment('editDate', [
-          { value: expect.any(Number) },
-        ]),
+        creationDate: entity.template.createPropertyAssignment('creationDate', {
+          value: [{ value: expect.any(Number) }],
+        }),
+        description: entity.template.createPropertyAssignment('description', {
+          value: [{ value: 'A description in multiple languages' }],
+        }),
+        age: entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
+        title: entity.template.createPropertyAssignment('title', { value: [] }),
+        editDate: entity.template.createPropertyAssignment('editDate', {
+          value: [{ value: expect.any(Number) }],
+        }),
       },
     });
 
@@ -162,31 +162,37 @@ describe('Entity', () => {
 
     entity.setPropertyAssignments(
       [
-        entity.template.createPropertyAssignment('title', [{ value: 'A title in English' }]),
-        entity.template.createPropertyAssignment('description', [
-          { value: 'A description in English' },
-        ]),
-        entity.template.createPropertyAssignment('age', [{ value: 42 }]),
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'A title in English' }],
+        }),
+        entity.template.createPropertyAssignment('description', {
+          value: [{ value: 'A description in English' }],
+        }),
+        entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
       ],
       'en'
     );
 
     entity.setPropertyAssignments(
       [
-        entity.template.createPropertyAssignment('title', [{ value: 'A title in Spanish' }]),
-        entity.template.createPropertyAssignment('description', [
-          { value: 'A description in Spanish' },
-        ]),
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'A title in Spanish' }],
+        }),
+        entity.template.createPropertyAssignment('description', {
+          value: [{ value: 'A description in Spanish' }],
+        }),
       ],
       'es'
     );
 
     entity.setPropertyAssignments(
       [
-        entity.template.createPropertyAssignment('title', [{ value: 'A title in French' }]),
-        entity.template.createPropertyAssignment('description', [
-          { value: 'A description in French' },
-        ]),
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'A title in French' }],
+        }),
+        entity.template.createPropertyAssignment('description', {
+          value: [{ value: 'A description in French' }],
+        }),
       ],
       'fr'
     );
@@ -266,7 +272,11 @@ describe('Entity', () => {
     );
 
     entity.setPropertyAssignments(
-      [entity.template.createPropertyAssignment('title', [{ value: 'A title in English' }])],
+      [
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'A title in English' }],
+        }),
+      ],
       'en'
     );
 
@@ -277,12 +287,81 @@ describe('Entity', () => {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     entity.setPropertyAssignments(
-      [entity.template.createPropertyAssignment('title', [{ value: 'A new title in English 2' }])],
+      [
+        entity.template.createPropertyAssignment('title', {
+          value: [{ value: 'A new title in English 2' }],
+        }),
+      ],
       'en'
     );
 
     expect(entity.getTranslation('en').editDate.value[0].value).toBeGreaterThan(firstEditDateEn);
     expect(entity.getTranslation('pt').editDate.value).toEqual(firstEditDatePt);
+  });
+
+  it('should only sync non-language specific properties when setting values for Select/Multiselect Properties', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+      .withProperties([
+        new SelectProperty({
+          id: 'fruits',
+          template: 'template-123',
+          label: 'select',
+          content: 'thes-123',
+        }),
+        new MultiSelectProperty({
+          id: 'fruits',
+          template: 'template-123',
+          label: 'multiselect',
+          content: 'thes-123',
+        }),
+      ])
+      .build();
+
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr'],
+        template,
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    const selectAssignments = [
+      template.createPropertyAssignment('select', {
+        value: [{ value: 'apple', label: 'Apple in English' }],
+        language: 'en',
+      }),
+
+      template.createPropertyAssignment('select', {
+        value: [{ value: 'apple', label: 'Apple in French' }],
+        language: 'fr',
+      }),
+    ];
+
+    const multiSelectAssignments = [
+      template.createPropertyAssignment('multiselect', {
+        value: [
+          { value: 'banana', label: 'Banana in English' },
+          { value: 'orange', label: 'Orange in English' },
+        ],
+        language: 'en',
+      }),
+      template.createPropertyAssignment('multiselect', {
+        value: [
+          { value: 'banana', label: 'Banana in French' },
+          { value: 'orange', label: 'Orange in French' },
+        ],
+        language: 'fr',
+      }),
+    ];
+
+    entity.setPropertyAssignments(selectAssignments, 'en');
+    expect(entity.getTranslation('en').metadata.select).toEqual(selectAssignments[0]);
+    expect(entity.getTranslation('fr').metadata.select).toEqual(selectAssignments[1]);
+
+    entity.setPropertyAssignments(multiSelectAssignments);
+    expect(entity.getTranslation('en').metadata.multiselect).toEqual(multiSelectAssignments[0]);
+    expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
   });
 
   describe('validate for required Properties when settings values', () => {
@@ -447,7 +526,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-6' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('MultiSelect Property is required');
+      expect(() => entity.setPropertyAssignments([])).toThrow(
+        'Select/MultiSelect Property is required'
+      );
     });
 
     it('should require Geolocation', () => {

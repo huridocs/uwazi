@@ -1,13 +1,24 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
-import { TextPropertyValue } from './PropertyValue';
+import { PropertyAssignment, TextPropertyValue } from './PropertyValue';
 
 type Props = {
   type?: PropertyTypeEnum.Text;
   generatedId?: boolean;
 } & Omit<FilterablePropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.string().trim().min(1, 'Text Property must be a non-empty string.'),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Text Property is required')
+    .max(1, 'Text Property only accepts a single value.');
 
 class TextProperty extends FilterableProperty {
   generatedId: boolean;
@@ -27,21 +38,17 @@ class TextProperty extends FilterableProperty {
   }
 
   createPropertyAssignment({ value }: CreatePropertyAssignmentInput<TextPropertyValue>) {
-    if (value.length > 1) {
-      throw new Error(`Text Property only accepts a single value. ${JSON.stringify(value)} given.`);
-    }
-
-    if (this.required) {
-      if (!value?.[0]?.value || value?.[0]?.value === '') {
-        throw new Error('Text Property is required');
-      }
-    }
+    const parsedValue = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: value[0]?.value ? [{ value: String(value[0].value).trim() }] : [],
       type: this.type,
+      value: parsedValue,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<TextPropertyValue>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

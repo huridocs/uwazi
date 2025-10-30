@@ -6,18 +6,18 @@ import { Template } from 'api/core/domain/template/Template';
 import { EntityTranslationProps } from 'api/core/domain/entity/EntityTranslation';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TemplateDBO } from '../template/DBOs/TemplateDBO';
-import { MongoTemplateMapper } from '../template/Mapper';
+import { LoggerFactory } from '../../factories/LoggerFactory';
+import { MongoTemplateMapper } from '../template/MongoTemplateMapper';
 
 class MongoEntityLanguageMapper {
   static toDomain(dbo: EntityDBO, template: Template): EntityTranslationProps {
     const commonProperties: Record<string, PropertyAssignment> = {
-      title: template.createPropertyAssignment('title', [{ value: dbo.title }]),
-      creationDate: template.createPropertyAssignment('creationDate', [
-        { value: dbo.creationDate },
-      ]),
-      editDate: template.createPropertyAssignment('editDate', [{ value: dbo.editDate }]),
+      title: template.createPropertyAssignment('title', { value: [{ value: dbo.title }] }),
+      creationDate: template.createPropertyAssignment('creationDate', {
+        value: [{ value: dbo.creationDate }],
+      }),
+      editDate: template.createPropertyAssignment('editDate', { value: [{ value: dbo.editDate }] }),
     };
 
     return {
@@ -25,8 +25,8 @@ class MongoEntityLanguageMapper {
       language: dbo.language as LanguageISO6391,
       metadata: Object.entries(dbo.metadata).reduce((acc, [name, value]) => {
         const property = template.getPropertyByName(name);
-        if (!property) {
-          SystemLogger().info(
+        if (property.isError()) {
+          LoggerFactory.systemLogger().info(
             // eslint-disable-next-line max-len
             `Property "${name}" not found in Template "${template.id}" while mapping Entity ${dbo.sharedId} on the language "${dbo.language}". Skipping it.`
           );
@@ -35,7 +35,7 @@ class MongoEntityLanguageMapper {
 
         return {
           ...acc,
-          [name]: { value, name, type: property.type },
+          [name]: { value, name, type: property.getData().type },
         };
       }, commonProperties),
     };

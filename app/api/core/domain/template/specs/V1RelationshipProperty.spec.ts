@@ -133,4 +133,78 @@ describe('V1RelationshipProperty', () => {
 
     expect(() => relationship.ensurePropertyIsConsistent(relationship)).not.toThrow();
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should normalize, trim, and deduplicate values', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+      });
+
+      const assignment = relationship.createPropertyAssignment({
+        value: [
+          { value: '  A  ' },
+          { value: 'A' },
+          { value: '' },
+          {
+            value: 'B',
+            label: 'Label B',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'valueB' }],
+            icon: { label: 'iconB', type: 'img' },
+          },
+        ],
+      });
+
+      expect(assignment).toEqual({
+        name: relationship.name,
+        type: relationship.type,
+        value: [
+          {
+            value: 'A',
+            label: undefined,
+            inheritedValue: undefined,
+            inheritedType: undefined,
+            icon: undefined,
+          },
+          {
+            value: 'B',
+            label: 'Label B',
+            inheritedValue: [{ value: 'valueB' }],
+            inheritedType: 'text',
+            icon: { label: 'iconB', type: 'img' },
+          },
+        ],
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+      });
+
+      const assignment = relationship.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({ name: relationship.name, type: relationship.type, value: [] });
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+        required: true,
+      });
+
+      expect(() => relationship.createPropertyAssignment({ value: [] })).toThrow(
+        'Relationship Property is required'
+      );
+    });
+  });
 });

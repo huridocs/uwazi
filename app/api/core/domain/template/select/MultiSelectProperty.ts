@@ -1,8 +1,7 @@
-import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
-import { PropertyTypeInvalidTypeError } from './errors';
+import { Context } from 'api/core/domain/template/Property';
+import { PropertyTypeInvalidTypeError } from '../errors';
 import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { PropertyAssignment, SelectionEntry } from './PropertyValue';
+import { PropertyTypeEnum } from '../PropertyType';
 
 type Props = {
   type?: PropertyTypeEnum.MultiSelect;
@@ -20,22 +19,6 @@ class MultiSelectProperty extends AbstractSelectProperty {
     if (this.type !== PropertyTypeEnum.MultiSelect) {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiSelectProperty');
     }
-  }
-
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<SelectionEntry>): PropertyAssignment<SelectionEntry> {
-    if (this.required) {
-      if (!value?.length) {
-        throw new Error('MultiSelect Property is required');
-      }
-    }
-
-    return {
-      name: this.name,
-      value,
-      type: this.type,
-    };
   }
 }
 

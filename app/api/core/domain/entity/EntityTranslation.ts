@@ -1,6 +1,12 @@
+/* eslint-disable max-statements */
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { DateEntry, PropertyAssignment, PropertyValue } from '../template/PropertyValue';
+import {
+  DateEntry,
+  PropertyAssignment,
+  PropertyValue,
+  SelectPropertyAssignment,
+} from '../template/PropertyValue';
 
 type Props = {
   id: string;
@@ -48,7 +54,20 @@ class EntityTranslation {
       throw new Error(`Property ${propertyValue.name} does not exist in entity metadata`);
     }
 
+    if (currentValue.type !== propertyValue.type) {
+      throw new Error(
+        `Cannot change the type of property ${propertyValue.name} from ${currentValue.type} to ${propertyValue.type}`
+      );
+    }
+
     if (JSON.stringify(currentValue) === JSON.stringify(propertyValue)) {
+      return;
+    }
+
+    if (
+      ['select', 'multiselect'].includes(propertyValue.type) &&
+      this.language !== (propertyValue as SelectPropertyAssignment).language
+    ) {
       return;
     }
 

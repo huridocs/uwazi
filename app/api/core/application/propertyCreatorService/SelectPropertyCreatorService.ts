@@ -4,8 +4,8 @@ import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/e
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
-} from '../../domain/template/MultiSelectProperty';
-import { SelectPropertyProps, SelectProperty } from '../../domain/template/SelectProperty';
+} from '../../domain/template/select/MultiSelectProperty';
+import { SelectPropertyProps, SelectProperty } from '../../domain/template/select/SelectProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 
 type Deps = {

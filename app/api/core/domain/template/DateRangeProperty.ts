@@ -1,4 +1,5 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
+import { z } from 'zod';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';
@@ -7,6 +8,31 @@ import { DateRangeEntry, PropertyAssignment } from './PropertyValue';
 type Props = {
   type?: PropertyTypeEnum.DateRange;
 } & Omit<FilterablePropertyProps, 'type'>;
+
+const RangeSchema = z
+  .object({
+    from: z.number({ required_error: 'Date Range Property "from" value must be provided.' }),
+    to: z.number({ required_error: 'Date Range Property "to" value must be provided.' }),
+  })
+  .superRefine((range, ctx) => {
+    if (range.to < range.from) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date Range Property "to" cannot be before "from".',
+        path: ['to'],
+      });
+    }
+  });
+
+const EntrySchema = z.object({
+  value: RangeSchema,
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Date Range Property is required')
+    .max(1, 'Date Range Property only accepts a single value.');
 
 class DateRangeProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
@@ -25,23 +51,17 @@ class DateRangeProperty extends FilterableProperty {
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<DateRangeEntry>): PropertyAssignment<DateRangeEntry> {
-    if (value.length > 1) {
-      throw new Error(`Date Property only accepts a single value. ${JSON.stringify(value)} given.`);
-    }
-
-    const isValid = value?.[0]?.value?.from !== undefined && value?.[0]?.value?.to !== undefined;
-
-    if (this.required && !isValid) {
-      throw new Error('Date Range Property is required');
-    }
+    const parsedValue = createSchema(this.required).parse(value);
 
     return {
       name: this.name,
-      value: isValid
-        ? [{ value: { from: Number(value[0].value.from), to: Number(value[0].value.to) } }]
-        : [],
+      value: parsedValue,
       type: this.type,
     };
+  }
+
+  validatePropertyAssignment({ value }: PropertyAssignment<DateRangeEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

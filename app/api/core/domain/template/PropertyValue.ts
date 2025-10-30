@@ -25,7 +25,14 @@ export type MarkdownEntry = { value: string };
 export type DateEntry = { value: number };
 export type DateRangeEntry = { value: { from: number; to: number } };
 export type GeolocationEntry = { value: { lat: number; lon: number; label?: string } };
-export type SelectionEntry = { value: string; label: string };
+export type SelectionEntry = {
+  value: string;
+  label: string;
+  parent?: {
+    value: string;
+    label: string;
+  };
+};
 export type LinkEntry = { value: { url: string; label?: string } };
 
 export type RelationshipEntry = InheritedResultValue & { value: string };
