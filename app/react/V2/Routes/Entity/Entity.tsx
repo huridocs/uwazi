@@ -14,10 +14,9 @@ import { getEntityCompositionUseCase } from 'V2/application/container/singletons
 import { fullDetailOptions } from 'V2/application/optionsPresets';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
-import { PDF } from 'V2/Components/PDFViewer';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
-import { TabLabel } from './Components/TabLabel';
+import { TabLabel, PDFView } from './Components';
 
 const MAIN_TAB_PARAM = 'm';
 const SIDE_TAB_PARAM = 's';
@@ -192,7 +191,7 @@ const Entity = () => {
   return (
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="py-4 px-2 h-full">
+        <PaneLayout.Pane className="p-2 h-full">
           <Tabs
             className="min-w-fit overflow-x-auto"
             unmountTabs={false}
@@ -203,11 +202,7 @@ const Entity = () => {
               id={MAIN_TABS.DOCUMENT}
               label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
             >
-              {entity?.mainDocument?.filename ? (
-                <PDF fileUrl={`/api/files/${entity.mainDocument.filename}`} />
-              ) : (
-                <Translate>Loading</Translate>
-              )}
+              <PDFView entity={entity} />
             </Tabs.Tab>
             <Tabs.Tab
               id={MAIN_TABS.METADATA}
@@ -230,7 +225,7 @@ const Entity = () => {
             </Tabs.Tab>
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="py-4 px-2 h-full">
+        <PaneLayout.Pane className="p-2 h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             key={activeMainTab}
