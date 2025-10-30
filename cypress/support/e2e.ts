@@ -16,6 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import 'cypress-plugin-snapshots/commands';
 import 'cypress-fail-fast';
+import 'cypress-axe'; // Import before commands.js so checkA11y exists for overwrite
 import './commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
