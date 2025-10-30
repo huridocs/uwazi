@@ -2,8 +2,8 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import {
@@ -33,7 +33,7 @@ const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
 const setUpSut = () => {
   const db = getConnection();
-  const transaction = DefaultTransactionManager();
+  const transaction = TransactionManagerFactory.default();
 
   const extractorsQueryService = new MongoPXExtractorsQueryService(db, transaction);
 

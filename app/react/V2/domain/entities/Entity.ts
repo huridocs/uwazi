@@ -14,6 +14,7 @@ export interface Entity {
   readonly permissions?: EntityPermissions;
   metadata: MetadataProperty[];
   rawEntity?: EntityWithFilesSchema;
+  mainDocument?: FileType;
   documents?: FileType[];
   attachments?: FileType[];
 }

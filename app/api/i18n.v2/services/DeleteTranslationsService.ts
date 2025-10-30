@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 
 export class DeleteTranslationsService {

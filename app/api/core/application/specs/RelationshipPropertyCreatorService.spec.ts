@@ -1,7 +1,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
@@ -17,10 +17,10 @@ import { RelationshipPropertyCreatorService } from '../propertyCreatorService/Re
 const factory = getFixturesFactory();
 
 const createSut = () => {
-  const transactionManger = DefaultTransactionManager();
+  const transactionManger = TransactionManagerFactory.default();
 
   const sut = new RelationshipPropertyCreatorService({
-    templatesDS: DefaultTemplatesDataSource(transactionManger),
+    templatesDS: TemplatesDataSourceFactory.default(transactionManger),
     relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManger),
   });
 

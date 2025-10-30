@@ -3,7 +3,7 @@ import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLa
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent';
 import { TemplateDiff } from '../domain/template/TemplateDiff';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { Dispatchable } from '../libs/queue/application/contracts/Dispatchable';
 import {

@@ -1,6 +1,6 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import thesauri from 'api/thesauri';
 import request from 'shared/JSONRequest';
 import { PreserveConfig } from 'shared/types/settingsType.js';

@@ -1,5 +1,5 @@
 import { Template } from '../domain/template/Template';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 
 type Input = {

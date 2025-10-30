@@ -1,4 +1,4 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 
 import { V1Connection, ReadableV1Connection } from '../model/V1Connection';
 

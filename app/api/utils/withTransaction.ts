@@ -1,6 +1,6 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { storage } from 'api/files/storage';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { dbSessionContext } from 'api/odm/sessionsContext';
 import { search } from 'api/search';
 import { performance } from 'perf_hooks';
@@ -42,11 +42,11 @@ const withTransaction = async <T>(
   operation: (context: TransactionOperation) => Promise<T>,
   namespace?: string
 ): Promise<T> => {
-  const logger = DefaultLogger();
+  const logger = LoggerFactory.default();
   const startTime = performance.now();
   const logNamespace = namespace ? `(${namespace})` : '';
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   let wasManuallyAborted = false;
   try {

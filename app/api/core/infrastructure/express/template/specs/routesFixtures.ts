@@ -54,11 +54,7 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    {
-      ...fixtureFactory.template('template1', []),
-      commonProperties: templateCommonProperties,
-      default: true,
-    },
+    fixtureFactory.template('template1', [], { default: true }),
     fixtureFactory.template('template2', [
       fixtureFactory.property('select_property', 'select', {
         content: fixtureFactory.id('select_thesaurus'),
@@ -72,19 +68,11 @@ const fixtures: DBFixture = {
         content: fixtureFactory.id('select_thesaurus'),
       }),
     ]),
-    {
-      _id: 'template_with_select_id',
-      name: 'template_with_select',
-      properties: [
-        {
-          _id: 'zxc',
-          label: 'select_property',
-          name: 'select_property',
-          type: 'select',
-          content: fixtureFactory.id('123456789').toHexString(),
-        },
-      ],
-    },
+    fixtureFactory.template('template_with_select_id', [
+      fixtureFactory.property('select_property', 'select', {
+        content: fixtureFactory.id('123456789').toHexString(),
+      }),
+    ]),
   ],
   translationsV2: [],
   relationtypes: [

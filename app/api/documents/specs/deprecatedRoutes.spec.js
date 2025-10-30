@@ -6,7 +6,7 @@ import { legacyLogger } from 'api/log';
 import documentRoutes from '../deprecatedRoutes.js';
 import documents from '../documents';
 import { fixtures } from './fixtures';
-import templates from '../../templates';
+import templates from '../../core/v1_layer/templates/index.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   req.language = 'es';

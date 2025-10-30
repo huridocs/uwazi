@@ -2,7 +2,7 @@
 import entities from 'api/entities';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
@@ -50,7 +50,7 @@ export const files = {
       );
     } else {
       if (!savedFile.url && !savedFile.filename) {
-        DefaultLogger().error([
+        LoggerFactory.default().error([
           inspect(new Error('[Files] a file was created without url or filename')),
           inspect(savedFile),
         ]);

@@ -1,4 +1,4 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';

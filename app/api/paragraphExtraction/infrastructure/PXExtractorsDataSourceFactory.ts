@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
@@ -17,7 +17,8 @@ type Props = {
 export class PXExtractorsDataSourceFactory {
   static createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager = props.mongoTransactionManager ?? DefaultTransactionManager();
+    const mongoTransactionManager =
+      props.mongoTransactionManager ?? TransactionManagerFactory.default();
 
     const extractorsQueryService =
       props.extractorsQueryService ??

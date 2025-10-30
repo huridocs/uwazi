@@ -1,5 +1,5 @@
 import { ObjectWritableMock } from 'stream-mock';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import translations from 'api/i18n/translations';
 import * as translate from 'shared/translate';
 import moment from 'moment-timezone';

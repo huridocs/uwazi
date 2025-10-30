@@ -14,7 +14,7 @@ import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,
@@ -50,7 +50,7 @@ const buildS3Client = (params: {}) => {
       const duration = Date.now() - startTime;
 
       if (process.env.NODE_ENV !== 'test') {
-        DefaultLogger().info('S3 operation completed', {
+        LoggerFactory.default().info('S3 operation completed', {
           operation: context.commandName,
           duration,
           key: input.Key,
@@ -63,7 +63,7 @@ const buildS3Client = (params: {}) => {
       return result;
     } catch (error) {
       if (process.env.NODE_ENV !== 'test') {
-        DefaultLogger().info('S3 operation failed', {
+        LoggerFactory.default().info('S3 operation failed', {
           operation: context.commandName,
           duration: Date.now() - startTime,
           key: input.Key,

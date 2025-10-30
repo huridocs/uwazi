@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { RetrieveStatsService } from 'api/stats/services/RetrieveStatsService';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
 export default (app: Application) => {
   app.get('/api/stats', needsAuthorization(['admin']), async (_req, res, _next) => {

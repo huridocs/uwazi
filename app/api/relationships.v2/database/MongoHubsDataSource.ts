@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoDataSource } from '../../core/infrastructure/mongodb/common/MongoDataSource';
 import { HubDataSource, HubType } from '../contracts/HubDataSource';
 
 class TemporaryDataSourceError extends Error {}

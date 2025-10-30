@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import relationshipTypeDS from 'api/relationtypes';
@@ -22,8 +22,8 @@ const f = getFixturesFactory();
 
 const setUpUseCase = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(mongoTransactionManager);
+  const mongoTransactionManager = TransactionManagerFactory.default();
+  const templatesDS = TemplatesDataSourceFactory.default(mongoTransactionManager);
   const extractorDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

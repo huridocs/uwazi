@@ -11,7 +11,7 @@ import {
   fixturesTenantWithoutTwitter,
 } from 'api/services/twitterintegration/specs/fixtures';
 import EntitiesModel from 'api/entities/entitiesModel';
-import templates from 'api/templates/templates';
+import templates from 'api/core/v1_layer/templates/templates';
 import { testingTenants } from 'api/utils/testingTenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';

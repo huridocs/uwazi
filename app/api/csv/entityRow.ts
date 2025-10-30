@@ -1,4 +1,4 @@
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import { CSVRow } from 'api/csv/csv';
 import { csvConstants, headerWithLanguage, languageCodeSuffix } from './csvDefinitions';
 

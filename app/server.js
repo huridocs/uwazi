@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 
-import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
@@ -18,6 +17,7 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
 import { maskMongoPassword } from 'api/utils/maskMongoPassword';
+import { elasticClient } from 'api/search/elastic';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -37,7 +37,6 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
 import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
-import { elasticClient } from 'api/search/elastic';
 
 mongoose.Promise = Promise;
 
@@ -124,7 +123,6 @@ if (app.get('env') === 'production') {
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
-app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '5mb' }));
 
 app.use(appContextMiddleware);
 
@@ -134,6 +132,7 @@ app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
+// eslint-disable-next-line max-statements
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();

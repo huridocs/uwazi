@@ -1,6 +1,6 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { TranslationResult } from './types/TranslationResult';
 import { Validator } from './infrastructure/Validator';

@@ -1,11 +1,11 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { MongoPermissionsDataSource } from './MongoPermissionsDataSource';
 
 const DefaultPermissionsDataSource = (_transactionManager?: MongoTransactionManager) => {
   const connection = getConnection();
-  const transactionManager = _transactionManager || DefaultTransactionManager();
+  const transactionManager = _transactionManager || TransactionManagerFactory.default();
   return new MongoPermissionsDataSource(connection, transactionManager);
 };
 

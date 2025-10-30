@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService';
 

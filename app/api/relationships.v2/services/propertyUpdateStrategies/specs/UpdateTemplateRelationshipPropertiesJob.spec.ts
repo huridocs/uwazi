@@ -1,5 +1,5 @@
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
@@ -35,7 +35,7 @@ describe('when handled', () => {
   beforeEach(async () => {
     adapter = DefaultTestingQueueAdapter();
 
-    const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+    const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
     const dispatcher = new NamespacedDispatcher(tenants.current().name, 'test queue', adapter);
 
     const job = new UpdateTemplateRelationshipPropertiesJob(entitiesDataSource, dispatcher);

@@ -1,5 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { config } from 'api/config';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
@@ -35,7 +35,7 @@ async function handleTenant(tenantName: string) {
       ...config.s3,
     });
 
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const filesHealthCheck = new FilesHealthCheck(
       new S3FileStorage(s3Client, tenants.current()),
       DefaultFilesDataSource(transactionManager)

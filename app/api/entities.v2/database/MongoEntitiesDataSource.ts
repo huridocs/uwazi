@@ -1,12 +1,12 @@
-import { ResultSet } from 'api/core/libs/ResultSet';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import entities from 'api/entities/entities';
 import v1EntitiesModel from 'api/entities/entitiesModel';
 import { search } from 'api/search';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from 'shared/types/commonTypes';

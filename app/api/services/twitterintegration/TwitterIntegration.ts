@@ -2,7 +2,7 @@ import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManag
 import { tenants } from 'api/tenants';
 import settings from 'api/settings/settings';
 import entities from 'api/entities/entities';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import relationtypes from 'api/relationtypes';
 import {
   getTextWithAttachedImages,

@@ -1,4 +1,4 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { UseCase } from 'api/core/libs/UseCase';

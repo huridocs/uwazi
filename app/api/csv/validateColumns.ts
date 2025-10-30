@@ -1,4 +1,4 @@
-import { templateUtils } from 'api/templates';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import _ from 'lodash';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
