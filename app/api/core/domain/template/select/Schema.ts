@@ -12,24 +12,14 @@ const EntrySchema = z.object({
     .optional(),
 });
 
-export const createSchema = (required: boolean, type: PropertyType) =>
+export const createSchema = (isRequired: boolean, type: PropertyType) =>
   z.object({
     language: z.string().min(1, 'Language must be provided.'),
-    value: z.array(EntrySchema).superRefine((arr, ctx) => {
-      if (type === 'select' && arr.length > 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Select/MultiSelect Property only accepts a single value.',
-          path: ['value'],
-        });
-      }
-
-      if (required && arr.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Select/MultiSelect Property is required',
-          path: ['value'],
-        });
-      }
-    }),
+    value: z
+      .array(EntrySchema)
+      .min(isRequired ? 1 : 0, 'Select/MultiSelect Property is required')
+      .max(
+        type === 'select' ? 1 : Infinity,
+        'Select/MultiSelect Property only accepts a single value.'
+      ),
   });
