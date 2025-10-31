@@ -49,7 +49,7 @@ const Tabs = ({
   const inactiveClass = 'text-gray-500';
 
   return (
-    <div className={`flex flex-col h-full ${className ?? ''}`}>
+    <div className={`flex flex-col h-full gap-4 ${className ?? ''}`}>
       <div
         role="tablist"
         aria-orientation="horizontal"
@@ -74,7 +74,7 @@ const Tabs = ({
           </button>
         ))}
       </div>
-      <div className="py-4 grow overflow-y-auto">
+      <div className="grow overflow-y-auto">
         {tabChildren.map(child => {
           const isActive = child.props.id === activeTab;
 
