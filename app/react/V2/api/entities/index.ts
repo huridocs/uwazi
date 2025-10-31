@@ -5,22 +5,19 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as formatter from './formatter';
 
-type EntityApiParams = {
-  omitRelationships?: boolean;
-};
+type EntityApiParams = { omitRelationships?: boolean; documentsFullText?: boolean };
 
 const getById = async ({
   _id,
   language,
   omitRelationships = true,
-}: EntityApiParams & {
-  _id: string;
-  language: string;
-}): Promise<EntitySchema[]> => {
+  documentsFullText = false,
+}: EntityApiParams & { _id: string; language: string }): Promise<EntitySchema[]> => {
   try {
     const requestParams = new RequestParams({
       _id,
       omitRelationships,
+      documentsFullText,
     });
 
     api.locale(language);
@@ -39,10 +36,8 @@ const getBySharedId = async (
     sharedId,
     language,
     omitRelationships = true,
-  }: EntityApiParams & {
-    sharedId: string;
-    language: string;
-  },
+    documentsFullText = false,
+  }: EntityApiParams & { sharedId: string; language: string },
   headers?: IncomingHttpHeaders
 ): Promise<EntitySchema[]> => {
   try {
@@ -50,6 +45,7 @@ const getBySharedId = async (
       {
         sharedId,
         omitRelationships,
+        documentsFullText,
       },
       headers
     );

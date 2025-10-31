@@ -7,6 +7,7 @@ export interface EntityRepository {
       sharedId: string;
       language: string;
       omitRelationships?: boolean;
+      documentsFullText?: boolean;
     },
     headers?: IncomingHttpHeaders
   ): Promise<EntitySchema[]>;

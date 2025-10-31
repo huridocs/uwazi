@@ -163,13 +163,14 @@ export default app => {
             _id: { type: 'string' },
             withPdf: { type: 'string' },
             omitRelationships: { type: 'boolean' },
+            documentsFullText: { type: 'boolean' },
             include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
           },
         },
       },
     }),
     (req, res, next) => {
-      const { omitRelationships, include = [], ...query } = req.query;
+      const { omitRelationships, include = [], documentsFullText, ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
@@ -178,6 +179,7 @@ export default app => {
         include.map(field => `+${field}`).join(' '),
         {
           limit: 1,
+          documentsFullText,
         }
       )
         .then(_entities => {

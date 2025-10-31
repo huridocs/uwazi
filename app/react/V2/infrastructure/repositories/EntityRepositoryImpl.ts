@@ -6,15 +6,23 @@ import * as searchEntitiesApi from '../../api/search/index';
 
 export class EntityRepositoryImpl implements EntityRepository {
   constructor() {}
+
   async getBySharedId(
-    options: { sharedId: string; language: string; omitRelationships?: boolean },
+    options: {
+      sharedId: string;
+      language: string;
+      omitRelationships?: boolean;
+      documentsFullText?: boolean;
+    },
     headers?: IncomingHttpHeaders
   ): Promise<EntitySchema[]> {
     return entitiesApi.getBySharedId(options, headers);
   }
+
   async save(_entity: EntitySchema): Promise<EntitySchema> {
     throw new Error('Method not implemented.');
   }
+
   async getBySharedIds(
     options: { sharedIds: string[]; language: string; omitRelationships?: boolean },
     headers?: IncomingHttpHeaders

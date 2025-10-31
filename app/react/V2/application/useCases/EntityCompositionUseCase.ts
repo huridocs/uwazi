@@ -65,7 +65,11 @@ export class EntityCompositionUseCase {
   ): Promise<CompositionResult> {
     try {
       const response = await this.repository.getBySharedId(
-        { sharedId: entityId, language: this.atomStore.get(localeAtom) || 'en' },
+        {
+          sharedId: entityId,
+          language: this.atomStore.get(localeAtom) || 'en',
+          documentsFullText: options.includeSupportingFiles,
+        },
         context.headers || {}
       );
       if (!response || response.length === 0) {
