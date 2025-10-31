@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
-import { FileType } from 'shared/types/fileType';
 import { t, Translate } from 'app/I18N';
 import { PDF, PlainText } from 'V2/Components/PDFViewer';
 import { Entity } from 'V2/domain';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { Truncate } from 'V2/Components/UI';
 
-const PDFView = ({ entity, mainDocumentFile }: { entity: Entity; mainDocumentFile?: FileType }) => {
+const PDFView = ({ entity }: { entity: Entity }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onSelect = useCallback(
@@ -67,7 +66,7 @@ const PDFView = ({ entity, mainDocumentFile }: { entity: Entity; mainDocumentFil
         <PDF fileUrl={`/api/files/${filename}`} scrollToPage={pageParam} />
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
-        <PlainText file={mainDocumentFile} page={pageParam} />
+        <PlainText file={entity.mainDocument} page={pageParam} />
       </div>
       <div>footer</div>
     </div>

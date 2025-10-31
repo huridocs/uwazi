@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 
-const getById = async (_id: string, fullText = false): Promise<FileType[]> => {
+const getById = async (_id: string): Promise<FileType[]> => {
   try {
     const requestParams = new RequestParams({ _id });
     const { json: response } = await api.get('files', requestParams);

@@ -8,13 +8,10 @@ import {
   useSearchParams,
 } from 'react-router';
 import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
-import * as filesApi from 'V2/api/files';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
 import { fullDetailOptions } from 'V2/application/optionsPresets';
-import { reportErrorToSentry } from 'V2/shared/errorUtils';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -47,7 +44,7 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
-type LoaderResponse = { entity?: EntityType; mainDocumentFile?: EntityType['mainDocument'] };
+type LoaderResponse = EntityType | undefined;
 
 const shouldRevalidate = ({
   currentParams,
@@ -71,10 +68,9 @@ const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
-    let mainDocumentFile: FileType | undefined;
 
     if (!entitySharedId) {
-      return {};
+      return undefined;
     }
 
     const entityCompositionUseCase = await getEntityCompositionUseCase();
@@ -104,21 +100,11 @@ const entityLoader =
       );
     }
 
-    if (composition.entity.mainDocument?._id) {
-      try {
-        [mainDocumentFile] = await filesApi.getById(
-          composition.entity.mainDocument._id?.toString()
-        );
-      } catch (e) {
-        reportErrorToSentry(e, `Error fetching ${composition.entity.mainDocument.filename}`);
-      }
-    }
-
-    return { entity: composition.entity, mainDocumentFile };
+    return composition.entity;
   };
 
 const Entity = () => {
-  const { entity, mainDocumentFile } = useLoaderData<LoaderResponse>();
+  const entity = useLoaderData<LoaderResponse>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeMainTab = useMemo<MainTabId>(() => {
@@ -216,7 +202,7 @@ const Entity = () => {
               id={MAIN_TABS.DOCUMENT}
               label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
             >
-              <PDFView entity={entity} mainDocumentFile={mainDocumentFile} />
+              <PDFView entity={entity} />
             </Tabs.Tab>
             <Tabs.Tab
               id={MAIN_TABS.METADATA}

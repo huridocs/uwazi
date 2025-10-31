@@ -47,7 +47,7 @@ describe('Entity view', () => {
 
   it('should render PDF and metadata', async () => {
     render(
-      <TestRouterContext loaderData={{ entity: sampleEntity }}>
+      <TestRouterContext loaderData={sampleEntity}>
         <Entity />
       </TestRouterContext>
     );
@@ -61,7 +61,7 @@ describe('Entity view', () => {
   describe('Tabs', () => {
     beforeEach(async () => {
       render(
-        <TestRouterContext loaderData={{ entity: sampleEntity }}>
+        <TestRouterContext loaderData={sampleEntity}>
           <Entity />
         </TestRouterContext>
       );
@@ -124,7 +124,7 @@ describe('Entity view', () => {
       };
 
       render(
-        <TestRouterContext loaderData={{ entity: sampleEntity, mainDocumentFile }}>
+        <TestRouterContext loaderData={{ ...sampleEntity, mainDocument: mainDocumentFile }}>
           <Entity />
         </TestRouterContext>
       );
@@ -156,7 +156,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           path="/entity/:sharedId"
-          loaderData={{ entity: sampleEntity, mainDocumentFile }}
+          loaderData={{ ...sampleEntity, mainDocument: mainDocumentFile }}
           initialEntries={['/entity/shared1?raw=true&page=5']}
         >
           <Entity />
