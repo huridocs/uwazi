@@ -86,7 +86,7 @@ export const config = {
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
-      fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || true,
+      fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
