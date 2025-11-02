@@ -2,6 +2,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyType } from './PropertyType';
 
 type Icon = {
+  id: string;
   label: string;
   type: string;
 };
@@ -9,14 +10,6 @@ type Icon = {
 type BaseMetadataValue = {
   value: any;
   label?: string;
-};
-
-export type InheritedResultValue = BaseMetadataValue & {
-  inheritedValue?: BaseMetadataValue[];
-  inheritedType?: string;
-  icon?: Icon;
-  // legacy tag occasionally present in v1 relationship entries
-  type?: 'entity';
 };
 
 export type TextPropertyValue = { value: string };
@@ -33,9 +26,32 @@ export type SelectionEntry = {
     label: string;
   };
 };
+
 export type LinkEntry = { value: { url: string; label?: string } };
 
-export type RelationshipEntry = InheritedResultValue & { value: string };
+export type InheritedValue =
+  | TextPropertyValue
+  | MarkdownEntry
+  | NumericPropertyValue
+  | DateEntry
+  | DateRangeEntry
+  | GeolocationEntry
+  | SelectionEntry
+  | NestedEntry
+  | ImageEntry
+  | MediaEntry
+  | PreviewEntry
+  | LinkEntry
+  | GeneratedIdEntry;
+
+export type RelationshipEntry = {
+  value: string;
+  label: string;
+  type: string;
+  icon?: Icon;
+  inheritedType?: PropertyType;
+  inheritedValue?: InheritedValue[];
+};
 
 export type NestedEntry = { value: { [childName: string]: BaseMetadataValue[] } };
 
@@ -58,12 +74,15 @@ export type PropertyValue =
   | MediaEntry
   | PreviewEntry
   | LinkEntry
-  | GeneratedIdEntry
-  | BaseMetadataValue;
+  | GeneratedIdEntry;
 
 export type SelectPropertyAssignment = {
   language: LanguageISO6391;
 } & PropertyAssignment<SelectionEntry>;
+
+export type RelationshipPropertyAssignment = {
+  language: LanguageISO6391;
+} & PropertyAssignment<RelationshipEntry>;
 
 export type PropertyAssignment<Value = PropertyValue> = {
   name: string;

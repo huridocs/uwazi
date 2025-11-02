@@ -1,10 +1,10 @@
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { TemplateProperty } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
+import { Property } from 'api/core/domain/template/Property';
 import { Entity } from '../../core/domain/entity/Entity';
 
 export interface MultiLanguageEntityDataSource {
-  bulkUpdate(entitiesToSave: Entity[], properties: TemplateProperty[]): Promise<void>;
+  bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
 

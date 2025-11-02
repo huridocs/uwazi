@@ -145,26 +145,30 @@ describe('V1RelationshipProperty', () => {
 
       const assignment = relationship.createPropertyAssignment({
         value: [
-          { value: '  A  ' },
-          { value: 'A' },
-          { value: '' },
+          { value: 'A', label: '', type: 'entity' },
+          { value: 'A', label: '', type: 'entity' },
+          { value: '', label: 'Label C', type: 'entity' },
           {
             value: 'B',
             label: 'Label B',
             inheritedType: 'text',
             inheritedValue: [{ value: 'valueB' }],
-            icon: { label: 'iconB', type: 'img' },
+            icon: { id: 'any', label: 'iconB', type: 'img' },
+            type: 'entity',
           },
         ],
+        language: 'en',
       });
 
       expect(assignment).toEqual({
+        language: 'en',
         name: relationship.name,
         type: relationship.type,
         value: [
           {
             value: 'A',
-            label: undefined,
+            type: 'entity',
+            label: '',
             inheritedValue: undefined,
             inheritedType: undefined,
             icon: undefined,
@@ -174,7 +178,8 @@ describe('V1RelationshipProperty', () => {
             label: 'Label B',
             inheritedValue: [{ value: 'valueB' }],
             inheritedType: 'text',
-            icon: { label: 'iconB', type: 'img' },
+            icon: { id: 'any', label: 'iconB', type: 'img' },
+            type: 'entity',
           },
         ],
       });
@@ -188,9 +193,14 @@ describe('V1RelationshipProperty', () => {
         template: 'template',
       });
 
-      const assignment = relationship.createPropertyAssignment({ value: [] });
+      const assignment = relationship.createPropertyAssignment({ value: [], language: 'en' });
 
-      expect(assignment).toEqual({ name: relationship.name, type: relationship.type, value: [] });
+      expect(assignment).toEqual({
+        language: 'en',
+        name: relationship.name,
+        type: relationship.type,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {
@@ -202,7 +212,7 @@ describe('V1RelationshipProperty', () => {
         required: true,
       });
 
-      expect(() => relationship.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => relationship.createPropertyAssignment({ value: [], language: 'en' })).toThrow(
         'Relationship Property is required'
       );
     });

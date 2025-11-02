@@ -3,22 +3,28 @@ import { Template } from 'api/core/domain/template/Template';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
-import { PropertyAssignmentInput } from '../CreateEntity';
-import { PropertyAssignmentCreatorService } from './PropertyAssignmentCreatorService';
+import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
+import {
+  PropertyAssignmentCreatorService,
+  PropertyAssignmentInput,
+} from './PropertyAssignmentCreatorService';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
   select: SelectPropertyAssignmentCreatorService;
+  relationship: RelationshipPropertyAssignmentCreatorService;
 };
 
 type CreateProps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   thesauriDS: ThesauriDataSource;
+  multiLanguageEntityDS: MultiLanguageEntityDataSource;
 };
 
 class PropertyAssignmentCreatorServiceStrategy {
@@ -29,6 +35,8 @@ class PropertyAssignmentCreatorServiceStrategy {
       case 'select':
       case 'multiselect':
         return this.props.select;
+      case 'relationship':
+        return this.props.relationship;
 
       default:
         return this.props.default;
@@ -52,12 +60,16 @@ class PropertyAssignmentCreatorServiceStrategy {
     return created.flat();
   }
 
-  static create({ settingsDS, thesauriDS, translationsDS }: CreateProps) {
+  static create({ settingsDS, thesauriDS, translationsDS, multiLanguageEntityDS }: CreateProps) {
     return new PropertyAssignmentCreatorServiceStrategy({
       select: new SelectPropertyAssignmentCreatorService({
         settingsDS,
         thesauriDS,
         translationsDS,
+      }),
+      relationship: new RelationshipPropertyAssignmentCreatorService({
+        settingsDS,
+        multiLanguageEntityDS,
       }),
       default: new DefaultPropertyAssignmentCreatorService(),
     });

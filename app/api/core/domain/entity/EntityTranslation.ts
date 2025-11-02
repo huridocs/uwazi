@@ -5,7 +5,9 @@ import {
   DateEntry,
   PropertyAssignment,
   PropertyValue,
+  RelationshipPropertyAssignment,
   SelectPropertyAssignment,
+  TextPropertyValue,
 } from '../template/PropertyValue';
 
 type Props = {
@@ -37,7 +39,7 @@ class EntityTranslation {
   }
 
   get title() {
-    return this.getValue('title');
+    return this.getValue<TextPropertyValue>('title');
   }
 
   get creationDate() {
@@ -65,8 +67,9 @@ class EntityTranslation {
     }
 
     if (
-      ['select', 'multiselect'].includes(propertyValue.type) &&
-      this.language !== (propertyValue as SelectPropertyAssignment).language
+      ['select', 'multiselect', 'relationship'].includes(propertyValue.type) &&
+      this.language !==
+        (propertyValue as SelectPropertyAssignment | RelationshipPropertyAssignment).language
     ) {
       return;
     }

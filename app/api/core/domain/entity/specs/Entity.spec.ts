@@ -364,6 +364,92 @@ describe('Entity', () => {
     expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
   });
 
+  it('should localize Relationship property assignments correctly', async () => {
+    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+      .withProperties([
+        V1RelationshipProperty.create({
+          id: 'text_rel',
+          template: 'template-123',
+          label: 'text_rel',
+          required: true,
+          relationType: 'relationType',
+          inherit: {
+            type: 'text',
+            property: 'text',
+          },
+        }),
+      ])
+      .build();
+
+    const entity = Entity.create(
+      { languages: ['en', 'fr'], template, userId: 'user-456' },
+      { generate: () => 'id-789' }
+    );
+
+    entity.setPropertyAssignments([
+      template.createPropertyAssignment('text_rel', {
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 EN',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'Text EN' }],
+            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+        language: 'en',
+      }),
+
+      template.createPropertyAssignment('text_rel', {
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 FR',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'Text FR' }],
+            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+        language: 'fr',
+      }),
+    ]);
+
+    expect(entity.getPropertyAssignments('text_rel')).toEqual([
+      {
+        name: 'text_rel',
+        type: 'relationship',
+        language: 'en',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 EN',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'Text EN' }],
+            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      },
+      {
+        name: 'text_rel',
+        type: 'relationship',
+        language: 'fr',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 FR',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'Text FR' }],
+            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      },
+    ]);
+  });
+
   describe('validate for required Properties when settings values', () => {
     it('should require Text', () => {
       const template = TemplateBuilder.aTemplate({ id: 'template-req-text' })

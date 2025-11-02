@@ -104,7 +104,18 @@ const fixtures: DBFixture = {
     ]),
   ],
 
+  relationtypes: [
+    {
+      _id: factory.id('relation_type'),
+      name: 'relation_type',
+      properties: [],
+      __v: 0,
+    },
+  ],
+
   templates: [
+    factory.template('Document B', [factory.property('text_1', 'text')]),
+
     factory.template('Document', [
       factory.property('text', 'text'),
       factory.property('numeric', 'numeric'),
@@ -123,11 +134,42 @@ const fixtures: DBFixture = {
       factory.property('multiselect', 'multiselect', {
         content: factory.id('thesaurus_fruits').toHexString(),
       }),
-      factory.property('relationship', 'relationship'),
+      factory.property('text_rel', 'relationship', {
+        relationType: factory.id('relation_type').toHexString(),
+        content: factory.id('Document B').toHexString(),
+        inherit: {
+          property: factory.id('text_1').toHexString(),
+          type: 'text',
+        },
+      }),
       factory.property('nested', 'nested'),
       factory.property('preview', 'preview'),
       factory.property('media', 'media'),
     ]),
+  ],
+
+  entities: [
+    ...factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'B1',
+      'Document B',
+      {},
+      { title: 'B1' },
+      {
+        en: {
+          title: 'B1 EN',
+          metadata: {
+            text_1: [factory.metadataValue('B1 Text EN')],
+          },
+        },
+        es: {
+          title: 'B1 ES',
+          metadata: {
+            text_1: [factory.metadataValue('B1 Text ES')],
+          },
+        },
+      }
+    ),
   ],
 };
 
@@ -180,7 +222,7 @@ describe('CreateEntityUseCase', () => {
   it('should create an Entity', async () => {
     const { sut } = createSut();
 
-    await sut.execute({
+    const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
@@ -205,13 +247,19 @@ describe('CreateEntityUseCase', () => {
           value: [{ value: 'apple_id' }, { value: 'banana_id' }],
         },
         { name: 'select', value: [{ value: 'apple_id' }] },
+        { name: 'text_rel', value: [{ value: 'B1' }] },
         // { name: 'image', value: [] },
-        // { name: 'relationship', value: [] },
+        // { name: 'media', value: [] },
+        // { name: 'nested', value: [] },
+        // { name: 'preview', value: [] },
       ],
       icon: { id: 'iconId', label: 'iconLabel', type: 'iconType' },
     });
 
-    const entities = await testingEnvironment.db.getAllFrom('entities');
+    const entities = await testingEnvironment.db
+      .getCollection('entities')
+      ?.find({ sharedId: entity.sharedId })
+      .toArray();
 
     const commonFields = {
       template: factory.id('Document'),
@@ -238,7 +286,6 @@ describe('CreateEntityUseCase', () => {
         link: [{ value: { url: 'https://uwazi.io', label: 'Uwazi' } }],
         image: [],
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
-        relationship: [],
         nested: [],
         preview: [],
         media: [],
@@ -258,6 +305,16 @@ describe('CreateEntityUseCase', () => {
             { value: 'apple_id', label: 'Apple in English' },
             { value: 'banana_id', label: 'Banana in English' },
           ],
+          text_rel: [
+            {
+              value: 'B1',
+              label: 'B1 EN',
+              icon: null,
+              type: 'entity',
+              inheritedType: 'text',
+              inheritedValue: [{ value: 'B1 Text EN' }],
+            },
+          ],
         },
       },
       {
@@ -270,6 +327,16 @@ describe('CreateEntityUseCase', () => {
           multiselect: [
             { value: 'apple_id', label: 'Apple in Spanish' },
             { value: 'banana_id', label: 'Banana in Spanish' },
+          ],
+          text_rel: [
+            {
+              value: 'B1',
+              label: 'B1 ES',
+              icon: null,
+              type: 'entity',
+              inheritedType: 'text',
+              inheritedValue: [{ value: 'B1 Text ES' }],
+            },
           ],
         },
       },

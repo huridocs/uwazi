@@ -4,9 +4,11 @@ import {
 } from 'api/core/domain/template/FilterableProperty';
 import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
 import { z } from 'zod';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from './Property';
 import { PropertyType, PropertyTypeEnum } from './PropertyType';
-import { InheritedResultValue, PropertyAssignment } from './PropertyValue';
+import { RelationshipEntry, RelationshipPropertyAssignment } from './PropertyValue';
 
 type Inherit = {
   property: string;
@@ -21,7 +23,12 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 const createSchema = (isRequired: boolean) =>
-  z.array(z.any()).min(isRequired ? 1 : 0, 'Relationship Property is required');
+  z.object({
+    value: z.array(z.any()).min(isRequired ? 1 : 0, 'Relationship Property is required'),
+    language: z
+      .string({ required_error: 'Language is required.' })
+      .min(1, 'Language must be provided.'),
+  });
 
 class V1RelationshipProperty extends FilterableProperty {
   readonly relationType: string;
@@ -103,36 +110,36 @@ class V1RelationshipProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<InheritedResultValue>): PropertyAssignment {
-    const normalizedItems: InheritedResultValue[] = [];
-    const seen = new Set<string>();
-
-    value.forEach(item => {
-      const formattedValue = String(item?.value || '').trim();
-      if (!formattedValue || seen.has(formattedValue)) return;
-
-      seen.add(formattedValue);
-
-      const normalized: InheritedResultValue = {
-        value: formattedValue,
-        label: item.label,
-        inheritedValue: item.inheritedValue,
-        inheritedType: item.inheritedType,
-        icon: item.icon,
-      };
-
-      normalizedItems.push(normalized);
-    });
-
-    const parsed = createSchema(this.required).parse(normalizedItems);
-
-    return { name: this.name, type: this.type, value: parsed };
+  createDefaultValue(): RelationshipPropertyAssignment {
+    return {
+      name: this.name,
+      type: this.type,
+      language: 'n/a' as LanguageISO6391,
+      value: [],
+    };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<InheritedResultValue>): void {
-    createSchema(this.required).parse(value);
+  createPropertyAssignment({
+    value,
+    language,
+  }: CreatePropertyAssignmentInput<RelationshipEntry>): RelationshipPropertyAssignment {
+    const deduplicated = ArrayUtils.deduplicate(value, item => item.value.trim());
+
+    const parsed = createSchema(this.required).parse({
+      value: deduplicated,
+      language,
+    });
+
+    return {
+      name: this.name,
+      type: this.type,
+      value: parsed.value,
+      language: parsed.language as LanguageISO6391,
+    };
+  }
+
+  validatePropertyAssignment(property: RelationshipPropertyAssignment): void {
+    createSchema(this.required).parse(property);
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {

@@ -6,10 +6,10 @@ import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResu
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { TemplateProperty } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { Property } from 'api/core/domain/template/Property';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -65,7 +65,7 @@ export class MongoMultiLanguageEntityDataSource
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
   }
 
-  async bulkUpdate(entitiesToSave: Entity[], properties: TemplateProperty[] = []) {
+  async bulkUpdate(entitiesToSave: Entity[], properties: Property[] = []) {
     await this.getCollection().bulkWrite(
       entitiesToSave
         .map(entity =>

@@ -6,22 +6,7 @@ import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { SettingsDataSource } from './contracts/SettingsDataSource';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
-
-export type ValueInput =
-  | string
-  | number
-  | { from: number; to: number }
-  | { lat: number; lon: number }
-  | { url: string; label?: string };
-
-type PropertyValueInput<V> = {
-  value: V;
-};
-
-export type PropertyAssignmentInput<V = ValueInput> = {
-  name: string;
-  value: PropertyValueInput<V>[];
-};
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 
 type Input = {
   templateId?: string;

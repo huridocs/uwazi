@@ -5,7 +5,12 @@ import { IndexTypes } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { SharedId } from 'api/core/domain/entity/SharedId';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
+import {
+  PropertyAssignment,
+  PropertyValue,
+  RelationshipEntry,
+  TextPropertyValue,
+} from 'api/core/domain/template/PropertyValue';
 import {
   EntityTranslation,
   EntityTranslationProps,
@@ -105,12 +110,12 @@ class Entity {
     return this.translations[language];
   }
 
-  getValue(name: string, language: LanguageISO6391) {
+  getValue<V = PropertyValue>(name: string, language: LanguageISO6391): PropertyAssignment<V> {
     return this.getTranslation(language).getValue(name);
   }
 
   getTitle(language: LanguageISO6391): string {
-    return this.getTranslation(language).title.value[0].value;
+    return this.getValue<TextPropertyValue>('title', language).value[0].value;
   }
 
   getPropertyAssignments(name: string): PropertyAssignment[] {
@@ -157,18 +162,19 @@ class Entity {
     const relationsForEntity = allRelations.getEntityRelations(this.sharedId);
 
     properties.forEach(property => {
-      this.setValueInAllLanguages(
-        property.createPropertyAssignment({
-          value: Array.from(
-            relationsForEntity
-              .getRelationsBelongingToProperty(property)
-              .uniqueByEntity()
-              .map(r => ({
-                value: r.entity,
-                label: r.entityData.title,
-              }))
-          ),
-        })
+      const value = Array.from(
+        relationsForEntity
+          .getRelationsBelongingToProperty(property)
+          .uniqueByEntity()
+          .map(r => ({
+            value: r.entity,
+            label: r.entityData.title,
+            type: 'entity',
+          }))
+      );
+
+      this.languages.map(language =>
+        this.setValue(property.createPropertyAssignment({ value, language }), language)
       );
     });
   }
@@ -176,7 +182,7 @@ class Entity {
   denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>) {
     this.template.getRelationshipProperties().forEach(property => {
       this.languages.forEach(language => {
-        const current = this.getValue(property.name, language);
+        const current = this.getValue<RelationshipEntry>(property.name, language);
         const denormalizedItems = current.value.map(item => {
           const related = relatedEntities[item.value as string];
           if (!related) return item;
@@ -186,6 +192,7 @@ class Entity {
           );
 
           return {
+            type: 'entity',
             value: item.value,
             label: related.getTitle(language),
             icon: related.icon,
@@ -198,7 +205,10 @@ class Entity {
           };
         });
 
-        this.setValue(property.createPropertyAssignment({ value: denormalizedItems }), language);
+        this.setValue(
+          property.createPropertyAssignment({ value: denormalizedItems, language }),
+          language
+        );
       });
     });
   }

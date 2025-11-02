@@ -14,8 +14,6 @@ import { PropertyType } from './PropertyType';
 import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
 import { PropertyAssignment } from './PropertyValue';
 
-type TemplateProperty = Property | V1RelationshipProperty;
-
 type CloneProps = {
   name?: string;
   properties?: Property[];
@@ -30,7 +28,7 @@ class Template {
 
   readonly name: string;
 
-  properties: TemplateProperty[] = [];
+  properties: Property[] = [];
 
   readonly commonProperties: CommonProperty[] = [];
 
@@ -126,7 +124,7 @@ class Template {
   }
 
   private checkForConflictingPropertyNames(newTemplate: Template) {
-    let property: TemplateProperty | undefined;
+    let property: Property | undefined;
 
     this.properties.forEach(prop => {
       if (!property) {
@@ -177,7 +175,7 @@ class Template {
     return null;
   }
 
-  getPropertyByName<T = TemplateProperty>(propertyName: string) {
+  getPropertyByName<T = Property>(propertyName: string) {
     const property = this.allProperties.find(p => p.name === propertyName) as T | undefined;
 
     if (!property) {
@@ -276,4 +274,3 @@ class Template {
 }
 
 export { Template };
-export type { TemplateProperty };

@@ -1,14 +1,32 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { Template } from 'api/core/domain/template/Template';
-import { PropertyAssignmentInput, ValueInput } from '../CreateEntity';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-type CreateInput<Value = ValueInput> = {
+type PropertyValueInput =
+  | { value: string }
+  | { value: number }
+  | { value: { from: number; to: number } }
+  | { value: { lat: number; lon: number; label?: string } }
+  | { value: { url: string; label?: string } }
+  | { value: { [childName: string]: { value: unknown; label?: string }[] } };
+
+type PropertyAssignmentInput<Value = PropertyValueInput> = {
+  name: string;
+  value: Value[];
+  language?: LanguageISO6391;
+};
+
+type CreateInput<V = PropertyValueInput> = {
   template: Template;
-  propertyAssignment: PropertyAssignmentInput<Value>;
+  propertyAssignment: PropertyAssignmentInput<V>;
 };
 
 interface PropertyAssignmentCreatorService {
   create(input: CreateInput): Promise<PropertyAssignment | PropertyAssignment[]>;
 }
 
-export type { PropertyAssignmentCreatorService, CreateInput as CreateInputPropertyAssignment };
+export type {
+  PropertyAssignmentCreatorService,
+  CreateInput as CreatePropertyAssignmentInput,
+  PropertyAssignmentInput,
+};

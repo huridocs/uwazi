@@ -70,4 +70,20 @@ export class ArrayUtils {
       await ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches));
     });
   }
+
+  static deduplicate<T>(array: T[], checker: (item: T) => string | number | undefined | null): T[] {
+    const seen = new Set();
+    const result: T[] = [];
+
+    array.forEach(item => {
+      const key = checker(item);
+
+      if (Boolean(key) && !seen.has(key)) {
+        seen.add(key);
+        result.push(item);
+      }
+    });
+
+    return result;
+  }
 }

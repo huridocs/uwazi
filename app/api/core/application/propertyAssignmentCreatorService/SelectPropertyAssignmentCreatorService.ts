@@ -5,7 +5,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import {
-  CreateInputPropertyAssignment,
+  CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService';
 
@@ -22,7 +22,7 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
   async create({
     propertyAssignment,
     template,
-  }: CreateInputPropertyAssignment<string>): Promise<PropertyAssignment[]> {
+  }: CreatePropertyAssignmentInput<{ value: string }>): Promise<PropertyAssignment[]> {
     const property = template
       .getPropertyByName<SelectProperty>(propertyAssignment.name)
       .getDataOrThrow();
