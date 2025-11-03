@@ -23,6 +23,7 @@ import { MediaPropertyProcessor } from './MediaPropertyProcessor';
 import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
 import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
+import { SupportingFilesProcessor } from './SupportingFilesProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -31,9 +32,12 @@ export class AdapterEntityProcessor {
 
   private readonly templateProcessor: AdapterTemplateProcessor;
 
+  private readonly supportingFilesProcessor: SupportingFilesProcessor;
+
   constructor(context: ProcessingContext) {
     this.context = context;
     this.templateProcessor = new AdapterTemplateProcessor(context);
+    this.supportingFilesProcessor = new SupportingFilesProcessor();
 
     this.initializeProcessors();
   }
@@ -313,6 +317,10 @@ export class AdapterEntityProcessor {
           entity.metadata.splice(index, 0, formattedProperty);
         }
       });
+
+      if (this.context.includeSupportingFiles) {
+        this.supportingFilesProcessor.attachSupportingFiles(formattedEntities);
+      }
     } catch (error) {
       allErrors.push({
         entityId: 'batch',
@@ -387,9 +395,6 @@ export class AdapterEntityProcessor {
       editDate: cleanEditDate as DateMetadataProperty,
       ...(this.context.includeTemplate ? { template: template as EntityTemplate } : {}),
       ...(this.context.includeRawEntity ? { rawEntity } : {}),
-      ...(this.context.includeSupportingFiles
-        ? { attachments: rawEntity?.attachments, documents: rawEntity?.documents }
-        : {}),
     };
   }
 }

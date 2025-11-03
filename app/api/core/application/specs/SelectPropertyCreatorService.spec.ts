@@ -1,7 +1,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
@@ -18,7 +18,7 @@ describe('SelectPropertyCreatorService', () => {
 
   it('should throw if Thesaurus does not exist', async () => {
     const sut = new SelectPropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+      templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
       thesauriDS: new MongoThesauriDataSource(),
     });
 

@@ -1,12 +1,15 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 
-import { ResultSet } from 'api/core/libs/ResultSet';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import {
   CreateInput,

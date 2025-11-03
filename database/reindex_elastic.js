@@ -7,7 +7,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import { legacyLogger } from '../app/api/log';
-import templatesModel from '../app/api/templates';
+import templatesModel from '../app/api/core/v1_layer/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import { tenantsModel } from 'api/tenants/tenantsModel';
 

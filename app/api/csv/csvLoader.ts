@@ -4,7 +4,7 @@ import { groupBy } from 'lodash';
 import translations from 'api/i18n';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
 

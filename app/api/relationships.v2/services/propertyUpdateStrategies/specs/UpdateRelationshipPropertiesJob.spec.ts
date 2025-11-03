@@ -1,6 +1,6 @@
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 
 it('should execute the updater and reindex the entity', async () => {

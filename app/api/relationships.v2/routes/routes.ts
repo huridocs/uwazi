@@ -3,14 +3,14 @@ import { performance } from 'perf_hooks';
 import { Application, NextFunction, Request, Response } from 'express';
 
 import { needsAuthorization } from 'api/auth';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { parseQuery } from 'api/utils';
 import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
 import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
 import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
 import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -33,7 +33,9 @@ import { validateGetMigrationHubRecordsRequest } from './validators/getMigration
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
-    !(await DefaultSettingsDataSource(DefaultTransactionManager()).readNewRelationshipsAllowed())
+    !(await SettingsDataSourceFactory.default(
+      TransactionManagerFactory.default()
+    ).readNewRelationshipsAllowed())
   ) {
     return res.sendStatus(404);
   }

@@ -1,7 +1,7 @@
-import { TransactionManager } from 'api/core/libs/TransactionManager';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/core/domain/template/TemplatesDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';

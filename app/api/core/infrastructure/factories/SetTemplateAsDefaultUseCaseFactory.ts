@@ -1,11 +1,11 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { SetTemplateAsDefaultUseCase } from 'api/core/application/SetTemplateAsDefault';
 
 class SetTemplateAsDefaultUseCaseFactory {
   static create() {
-    const transactionManager = DefaultTransactionManager();
-    const templatesDS = DefaultTemplatesDataSource(transactionManager);
+    const transactionManager = TransactionManagerFactory.default();
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
 
     const useCase = new SetTemplateAsDefaultUseCase({ templatesDS, transactionManager });
 

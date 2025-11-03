@@ -1,9 +1,9 @@
 import { CommonProperty } from 'api/core/domain/template/CommonProperty';
 import { Context } from 'api/core/domain/template/Property';
-import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { TitleProperty, TitlePropertyProps } from './TitleProperty';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { CreationDateProperty } from './CreationDateProperty';
 import { ModifiedDateProperty } from './ModifiedDateProperty';
+import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 
 type CreateInput = TitlePropertyProps;
 
@@ -16,7 +16,7 @@ class CommonPropertyFactory {
       if (input.name === 'editDate') return new ModifiedDateProperty(input, context);
     }
 
-    SystemLogger().warning(
+    LoggerFactory.systemLogger().warning(
       `The following CommonProperty was not properly handled. ${JSON.stringify(input, null, 2)}`
     );
 

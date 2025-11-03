@@ -8,7 +8,7 @@ import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
 import { CreateTemplateUseCaseFactory } from '../factories/CreateTemplateUseCaseFactory';
 import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO';
 import { UpdateTemplateUseCaseFactory } from '../factories/UpdateTemplateUseCaseFactory';
-import { MongoTemplateMapper } from '../mongodb/template/Mapper';
+import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper';
 import {
   DeleteTemplateRequestDto,
   DeleteTemplateSchema,

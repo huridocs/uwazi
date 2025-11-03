@@ -14,7 +14,7 @@ import { ContextType } from 'shared/translationSchema';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { settingsModel } from './settingsModel';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];

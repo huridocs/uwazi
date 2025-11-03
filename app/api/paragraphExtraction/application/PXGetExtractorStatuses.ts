@@ -1,7 +1,7 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 import { UseCase } from 'api/core/libs/UseCase';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 
 import {

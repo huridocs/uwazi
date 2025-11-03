@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { UseCase } from 'api/core/libs/UseCase';
 import { EntitySchema } from 'shared/types/entityType';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import entities from 'api/entities';
 import relationshipsDS from 'api/relationships';
 

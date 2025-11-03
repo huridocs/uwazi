@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { Entity, shouldRevalidate } from '../Entity';
 
@@ -10,12 +11,12 @@ jest.mock('V2/Components/PDFViewer', () => ({
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
-const sampleEntity = {
+const sampleEntity: Partial<EntityType> = {
   _id: 'ent1',
   sharedId: 'shared1',
   title: 'Sample Entity',
-  template: { _id: 'template1', label: 'Template 1' },
-  documents: [{ filename: 'file.pdf' }],
+  template: { _id: 'template1', label: 'Template 1', name: 'template1' },
+  mainDocument: { filename: 'file.pdf' },
   metadata: [],
 };
 
@@ -113,12 +114,36 @@ describe('Entity view', () => {
 });
 
 describe('shouldRevalidate', () => {
-  it('should not revalidate when same sharedId and only search changes', () => {
+  it('should not revalidate when switching search params', () => {
     const currentParams: any = { sharedId: 's1' };
     const nextParams: any = { sharedId: 's1' };
     const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
     const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
     const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
     expect(result).toBe(false);
+  });
+
+  it('should revalidate when sharedId changes', () => {
+    const currentParams: any = { sharedId: 's1' };
+    const nextParams: any = { sharedId: 's2' };
+    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
+    const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
+    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+    expect(result).toBe(true);
+  });
+
+  it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
+    const currentParams: any = { sharedId: 's1' };
+    const nextParams: any = { sharedId: 's1' };
+    const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+    const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+    const result = shouldRevalidate({
+      currentParams,
+      nextParams,
+      currentUrl,
+      nextUrl,
+      defaultShouldRevalidate: true,
+    } as any);
+    expect(result).toBe(true);
   });
 });

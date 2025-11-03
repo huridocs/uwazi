@@ -2,14 +2,14 @@ import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource'; // Todo
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors';
 import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatePostProcessService } from './TemplatePostProcessService';
-import { MongoTemplateMapper } from '../infrastructure/mongodb/template/Mapper';
+import { MongoTemplateMapper } from '../infrastructure/mongodb/template/MongoTemplateMapper';
 
 type Input = {
   templateId: string;

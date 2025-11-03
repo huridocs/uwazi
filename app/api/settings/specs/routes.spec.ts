@@ -2,7 +2,7 @@ import entities from 'api/entities';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import users from 'api/users/users';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { NextFunction, Request, Response } from 'express';

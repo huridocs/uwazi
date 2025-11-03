@@ -20,7 +20,7 @@ import { inspect } from 'util';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
-import templatesModel from '../templates';
+import templatesModel from '../core/v1_layer/templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';

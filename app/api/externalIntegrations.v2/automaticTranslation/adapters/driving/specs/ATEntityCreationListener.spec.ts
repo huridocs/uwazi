@@ -1,4 +1,4 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
@@ -15,7 +15,7 @@ const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
     defaultATConfigDataSource() {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       return AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager);
     },
     defaultRequestEntityTranslation() {

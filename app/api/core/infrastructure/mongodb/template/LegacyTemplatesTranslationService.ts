@@ -3,7 +3,7 @@ import translations from 'api/i18n/translations';
 import { Template } from 'api/core/domain/template/Template';
 import { ContextType } from 'shared/translationSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { MongoTemplateMapper } from './Mapper';
+import { MongoTemplateMapper } from './MongoTemplateMapper';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {

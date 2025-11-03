@@ -1,7 +1,7 @@
 import { search } from 'api/search';
 import 'api/utils/jasmineHelpers';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import templates from '../../templates/templates';
+import templates from '../../core/v1_layer/templates/templates';
 import thesauri from '../../thesauri';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';

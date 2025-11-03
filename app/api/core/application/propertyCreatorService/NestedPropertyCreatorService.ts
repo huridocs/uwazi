@@ -1,4 +1,4 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource'; // Todo
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource'; // Todo
 import { Context, Property } from '../../domain/template/Property';
 import { NestedPropertyNotAvailableError } from '../../domain/template/errors';
 import { NestedPropertyProps, NestedProperty } from '../../domain/template/NestedProperty';

@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import templatesAPI from 'api/templates';
+import templatesAPI from 'api/core/v1_layer/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
 import entities from 'api/entities/entities';
@@ -11,7 +11,7 @@ import { createError } from 'api/utils';
 import { ObjectId } from 'mongodb';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import model from './model';
-import { generateNames } from '../templates/utils';
+import { generateNames } from '../utils/templateUtils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
 import {
