@@ -24,11 +24,11 @@ describe('DatePicker (V2 Forms)', () => {
 
     // Wait for datepicker to initialize
     cy.get('input[datepicker="true"]').should('exist');
-    
+
     // Click to open and verify the correct date is selected in the calendar
     cy.get('input[datepicker="true"]').click();
     cy.get('.datepicker').should('be.visible');
-    
+
     // The date should be October 29, 2023 - verify in the calendar
     cy.get('.datepicker-picker').within(() => {
       // Check the month/year header shows October 2023
@@ -46,9 +46,7 @@ describe('DatePicker (V2 Forms)', () => {
 
     // Wait for datepicker to be visible and select a date
     cy.get('.datepicker').should('be.visible');
-    cy.get('.days .day')
-      .contains('15')
-      .click({ force: true });
+    cy.get('.days .day').contains('15').click({ force: true });
 
     // Verify callback was called with a timestamp (number)
     cy.get('@onChange').should('have.been.calledOnce');
@@ -62,13 +60,13 @@ describe('DatePicker (V2 Forms)', () => {
   it('should clear the date by clicking clear button', () => {
     const onChange = cy.stub().as('onChange');
     const timestamp = 1698537600000;
-    
+
     mount(<DatePicker {...defaultProps} onChange={onChange} value={timestamp} />);
 
     // Open datepicker
     cy.get('input[datepicker="true"]').click();
     cy.get('.datepicker').should('be.visible');
-    
+
     // Click the clear button
     cy.get('.clear-btn').click();
 
@@ -76,6 +74,7 @@ describe('DatePicker (V2 Forms)', () => {
     cy.get('@onChange').should('have.been.called');
     cy.get('@onChange').then(stub => {
       const callArg = (stub as any).getCall(0).args[0];
+      // eslint-disable-next-line no-unused-expressions
       expect(callArg).to.be.null;
     });
   });
@@ -88,7 +87,7 @@ describe('DatePicker (V2 Forms)', () => {
 
     // Component should render without errors
     cy.get('input[datepicker="true"]').should('exist');
-    
+
     // Should be able to open the datepicker
     cy.get('input[datepicker="true"]').click();
     cy.get('.datepicker').should('be.visible');

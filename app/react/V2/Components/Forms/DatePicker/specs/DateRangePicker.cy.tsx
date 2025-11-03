@@ -35,7 +35,7 @@ describe('DateRangePicker (V2 Forms)', () => {
     // Both inputs should exist and be able to open
     cy.get('#from').should('exist');
     cy.get('#to').should('exist');
-    
+
     // Click to verify datepicker opens
     cy.get('#from').click();
     cy.get('.datepicker').should('be.visible');
@@ -60,9 +60,7 @@ describe('DateRangePicker (V2 Forms)', () => {
 
     // Select a date
     cy.get('.datepicker').should('be.visible');
-    cy.get('.days .day')
-      .contains('15')
-      .click({ force: true });
+    cy.get('.days .day').contains('15').click({ force: true });
 
     // Verify callback was called with a timestamp (number)
     cy.get('@onFromDateSelected').should('have.been.calledOnce');
@@ -78,17 +76,14 @@ describe('DateRangePicker (V2 Forms)', () => {
 
     mount(
       <div className="tw-container">
-        <DateRangePicker
-          {...defaultProps}
-          onFromDateSelected={onFromDateSelected}
-        />
+        <DateRangePicker {...defaultProps} onFromDateSelected={onFromDateSelected} />
       </div>
     );
 
     // Click on from input to open datepicker
     cy.get('#from').click();
     cy.get('.datepicker').should('be.visible');
-    
+
     // Click the today button (Spanish: "Hoy")
     cy.contains('button', 'Hoy').click();
 
@@ -138,7 +133,7 @@ describe('DateRangePicker (V2 Forms)', () => {
     // Component should render without errors
     cy.get('#from').should('exist');
     cy.get('#to').should('exist');
-    
+
     // Should be able to open the datepicker
     cy.get('#from').click();
     cy.get('.datepicker').should('be.visible');

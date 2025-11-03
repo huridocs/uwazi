@@ -6,20 +6,7 @@ import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from 'app/V2/atoms';
-
-interface ActivityLogSearch {
-  username: string;
-  search: string;
-  page: number;
-  dateRange: {
-    from: number | null;
-    to: number | null;
-  };
-  to: string;
-  sort: string;
-  order: string;
-  method: string[];
-}
+import type { ActivityLogSearch } from '../ActivityLogLoader';
 
 interface FiltersSidePanelProps {
   isOpen: boolean;
@@ -140,9 +127,14 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     }}
                     onClear={(field: 'from' | 'to') => {
                       setValue(`dateRange.${field}`, null);
+                      const updatedDateRange = {
+                        from: currentFilters.dateRange?.from ?? null,
+                        to: currentFilters.dateRange?.to ?? null,
+                        [field]: null,
+                      };
                       setCurrentFilters({
                         ...currentFilters,
-                        dateRange: { ...currentFilters.dateRange, [field]: null },
+                        dateRange: updatedDateRange,
                       });
                     }}
                   />
@@ -161,7 +153,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 setCurrentFilters({
                   ...currentFilters,
                   dateRange: { from: null, to: null },
-                  to: '',
                   method: [],
                 });
                 reset({

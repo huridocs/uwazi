@@ -2,7 +2,6 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
-import { DateTime } from 'luxon';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientSettings } from 'app/apiResponseTypes';
 import * as activityLogAPI from 'V2/api/activityLog';
@@ -81,18 +80,21 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
       ? { ...appliedFilters, method: [appliedFilters.method] }
       : appliedFilters;
   const { from, to, ...rest } = appliedFilters;
-  
+
   // Convert string timestamps from URL to numbers for DateRangePicker
   const dateRange = {
     from: from ? Number(from) : null,
     to: to ? Number(to) : null,
   };
-  
+
   return { ...rest, ...((from || to) && { dateRange }) };
 };
 
 const activityLogLoader =
-  (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
+  (
+    headers?: IncomingHttpHeaders,
+    _handlerContext?: { settings?: ClientSettings }
+  ): LoaderFunction =>
   async ({ request }) => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
@@ -117,13 +119,14 @@ const activityLogLoader =
     };
   };
 
-interface ActivityLogSearch {
+export interface ActivityLogSearch {
   username?: string;
   search?: string;
+  method?: string[];
   page?: number;
   dateRange?: {
-    from?: string;
-    to?: string;
+    from: number | null;
+    to: number | null;
   };
   sort?: string;
   order?: string;
@@ -204,7 +207,7 @@ const buildPageURL = (appliedFilters: any, pageTo: string | number, location: Lo
   return `${location.pathname}?${createSearchParams(newParams)}`;
 };
 
-export type { LoaderData, ActivityLogSearch, LogEntry };
+export type { LoaderData, LogEntry };
 export {
   activityLogLoader,
   getAppliedFilters,

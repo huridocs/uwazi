@@ -1,5 +1,5 @@
 import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
-import { DateTime, Info } from 'luxon';
+import { Info } from 'luxon';
 //Module has no types
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
