@@ -416,20 +416,6 @@ describe('files routes', () => {
     });
   });
 
-  describe('POST/files/upload/document', () => {
-    it('should save the attached file', async () => {
-      jest.spyOn(legacyLogger, 'debug').mockImplementation(() => ({}));
-      const response = await request(app)
-        .post('/api/files/upload/document')
-        .attach('file', path.join(__dirname, 'test.txt'));
-      expect(response.status).toBe(200);
-      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-
-      expect(await storage.fileExists(file.filename!, 'document')).toBe(true);
-      expect(legacyLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
-    });
-  });
-
   describe('POST/files/upload/*', () => {
     describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
       it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(

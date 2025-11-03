@@ -1,5 +1,5 @@
-import { exec } from 'child_process';
-import { Result, ResultType } from './Result';
+import { spawn } from 'child_process';
+import { Result, ResultType } from '../Result';
 
 export class ShellError extends Error {
   constructor(error: Error) {
@@ -7,13 +7,33 @@ export class ShellError extends Error {
   }
 }
 
-export const shell = async (command: string) =>
-  new Promise<ResultType<string, Error>>(resolve => {
-    exec(command, (error, stdout) => {
-      if (error) {
-        resolve(Result.fail(new ShellError(error)));
-        return;
+export async function shell(
+  command: string,
+  args: string[] = []
+): Promise<ResultType<string, ShellError>> {
+  return new Promise(resolve => {
+    const child = spawn(command, args, { shell: true });
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', data => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', data => {
+      stderr += data.toString();
+    });
+
+    child.on('close', code => {
+      if (code === 0) {
+        resolve(Result.ok(stdout));
+      } else {
+        resolve(Result.fail(new ShellError(new Error(stderr))));
       }
-      resolve(Result.ok(stdout));
+    });
+
+    child.on('error', error => {
+      resolve(Result.fail(new ShellError(error)));
     });
   });
+}
