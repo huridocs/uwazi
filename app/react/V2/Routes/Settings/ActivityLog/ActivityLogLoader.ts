@@ -81,7 +81,14 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
       ? { ...appliedFilters, method: [appliedFilters.method] }
       : appliedFilters;
   const { from, to, ...rest } = appliedFilters;
-  return { ...rest, ...((from || to) && { dateRange: { from, to } }) };
+  
+  // Convert string timestamps from URL to numbers for DateRangePicker
+  const dateRange = {
+    from: from ? Number(from) : null,
+    to: to ? Number(to) : null,
+  };
+  
+  return { ...rest, ...((from || to) && { dateRange }) };
 };
 
 const activityLogLoader =

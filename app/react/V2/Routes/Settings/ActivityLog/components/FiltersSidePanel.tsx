@@ -37,10 +37,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
   const locale = useAtomValue(localeAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
 
-  useEffect(() => {
-    setCurrentFilters(appliedFilters);
-  }, [appliedFilters]);
-
   const {
     register,
     control,
@@ -54,6 +50,11 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     reValidateMode: 'onSubmit',
     defaultValues: currentFilters,
   });
+
+  useEffect(() => {
+    setCurrentFilters(appliedFilters);
+    reset(appliedFilters); // Reset form values when appliedFilters change (e.g., from URL)
+  }, [appliedFilters, reset]);
 
   const handleInputSubmit =
     (field: 'username' | 'search' | 'method') => (e: React.ChangeEvent<HTMLInputElement>) => {
