@@ -15,7 +15,7 @@ import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationMode
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { FileType } from 'shared/types/fileType';
-import templatesModel from 'api/templates/templates';
+import templatesModel from 'api/core/v1_layer/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';

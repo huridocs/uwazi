@@ -1,14 +1,14 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DenormalizationService } from '../DenormalizationService';
 import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
 
@@ -337,7 +337,7 @@ beforeEach(async () => {
   updateByTemplateMock = jest.fn();
 
   db = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);

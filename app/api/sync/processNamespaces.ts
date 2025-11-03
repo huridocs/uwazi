@@ -3,7 +3,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { filesModel } from 'api/files/filesModel';
 import { DataType, models, WithId } from 'api/odm';
 import { settingsModel } from 'api/settings/settingsModel';
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from 'api/core/v1_layer/templates/templatesModel';
 import { UpdateLog } from 'api/updatelogs';
 import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';

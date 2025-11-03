@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses';
 import { PXEntityStatusesQueryServiceFactory } from './PXEntityStatusesQueryServiceFactory';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
@@ -17,9 +17,9 @@ type Props = {
 class PXCreateEntityStatusesFactory {
   static createDefault(props: Props) {
     const connection = props.connection || getConnection();
-    const transactionManager = props.transactionManager || DefaultTransactionManager();
+    const transactionManager = props.transactionManager || TransactionManagerFactory.default();
 
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
     const pxEntityStatusesQueryService = PXEntityStatusesQueryServiceFactory.createDefault({
       connection,

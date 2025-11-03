@@ -6,7 +6,7 @@ import ValidationError from 'ajv/dist/runtime/validation_error';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { TemplateSchema } from 'shared/types/templateType';
 import * as entitiesIndex from 'api/search/entitiesIndex';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';

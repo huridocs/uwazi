@@ -1,4 +1,4 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
 import { withConnectedData } from './relationshipsHelpers';
 import { Relation } from './RelationsV1Collection';

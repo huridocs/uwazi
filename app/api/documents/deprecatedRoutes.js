@@ -3,7 +3,7 @@ import { legacyLogger } from 'api/log';
 import { validation } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
-import templates from '../templates';
+import templates from '../core/v1_layer/templates';
 
 export default app => {
   app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) =>

@@ -2,7 +2,7 @@ import ID from 'shared/uniqueID';
 import { PageType } from 'shared/types/pageType';
 import { validatePage } from 'shared/types/pageSchema';
 import date from 'api/utils/date.js';
-import templates from 'api/templates';
+import templates from 'api/core/v1_layer/templates';
 import { createError } from 'api/utils';
 import { UwaziFilterQuery } from 'api/odm';
 import { User } from 'api/users/usersModel';

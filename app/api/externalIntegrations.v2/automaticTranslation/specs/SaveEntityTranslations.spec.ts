@@ -1,12 +1,12 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { SaveEntityTranslations } from '../SaveEntityTranslations';
 import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
 import { ValidationError, Validator } from '../infrastructure/Validator';
@@ -28,10 +28,10 @@ describe('SaveEntityTranslations', () => {
   let mockLogger: Logger;
 
   beforeEach(() => {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
-      DefaultTemplatesDataSource(transactionManager),
+      TemplatesDataSourceFactory.default(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
       mockLogger

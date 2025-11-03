@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ResultSet } from 'api/core/libs/ResultSet';
+import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 
 import { EntityStatus } from './PXEntityStatusModel';

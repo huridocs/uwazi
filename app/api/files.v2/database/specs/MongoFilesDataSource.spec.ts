@@ -1,7 +1,7 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
 
 const factory = getFixturesFactory();
@@ -39,7 +39,7 @@ describe('MongoFilesDataSource', () => {
   describe('deleteExtractedMetadata', () => {
     it('should delete extractedMetadata by name for files belonging to specified entities', async () => {
       const extractedMetadataToDelete = ['to_be_deleted', 'to_be_deleted_2'];
-      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
       await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
@@ -74,7 +74,7 @@ describe('MongoFilesDataSource', () => {
   describe('renameExtractedMetadata', () => {
     it('should rename extractedMetadata names based on a oldName:newName map for specified entities', async () => {
       const toRenameProperties = { property1: 'renamed1', property2: 'renamed2' };
-      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
       await ds.renameExtractedMetadata(toRenameProperties, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
@@ -120,7 +120,7 @@ describe('MongoFilesDataSource', () => {
   });
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
 
       expect(
         await ds.filesExistForEntities([
@@ -140,14 +140,14 @@ describe('MongoFilesDataSource', () => {
 
   describe('getDocumentsForEntity', () => {
     it('should return the documents for an entity', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
 
       const documentsForEntity = await ds.getDocumentsForEntity('entity1').all();
       expect(documentsForEntity.length).toBe(4);
     });
 
     it('should allow fetching documents only in specific languages', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
 
       const documentsForEntity = await ds
         .getDocumentsForEntity('entity1', { languages: ['en', 'it'] })

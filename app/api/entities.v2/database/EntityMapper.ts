@@ -1,4 +1,4 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import { MetadataSchema } from 'shared/types/commonTypes';
 import { Entity } from '../model/Entity';

@@ -1,8 +1,11 @@
 /* eslint-disable max-lines */
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import {
   DefaultTemplateNotFoundError,
   TemplateDoesNotExistError,
@@ -15,10 +18,10 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Property } from '../../../domain/template/Property';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
 import { Template } from '../../../domain/template/Template';
-import { TemplatesDataSource } from '../../../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from '../../../domain/template/V1RelationshipProperty';
 import { TemplateDBO } from './DBOs/TemplateDBO';
-import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './Mapper';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from './MongoTemplateMapper';
 import { mapPropertyQuery } from './QueryMapper';
 
 export class MongoTemplatesDataSource

@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { FileType as LegacyFileType } from 'shared/types/fileType';
 import { FileType } from 'api/files.v2/model/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Document } from 'api/files.v2/model/Document';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';

@@ -1,9 +1,9 @@
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 import { PageService } from '../domain/template/PageService';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
+import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { TranslationService } from '../domain/template/TranslationService';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy';
