@@ -39,7 +39,7 @@ export class File {
   async asTmpDiskFile() {
     const filePath = path.join(
       tmpdir(),
-      `${Date.now()}_${Math.random()}.${path.extname(this.filename)}`
+      `${Date.now()}_${Math.random()}${path.extname(this.filename)}`
     );
     await pipeline(this.source, createWriteStream(filePath));
     return filePath;

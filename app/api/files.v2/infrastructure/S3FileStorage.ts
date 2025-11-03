@@ -1,16 +1,22 @@
-import { Readable } from 'stream';
-import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import {
+  _Object,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
+import { Readable } from 'stream';
+import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
 import { Attachment } from '../model/Attachment';
-import { UwaziFile } from '../model/UwaziFile';
-import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
-import { StoredFile } from '../model/StoredFile';
-import { PathManager } from './PathManager';
 import { File } from '../model/File';
+import { StoredFile } from '../model/StoredFile';
+import { URLAttachment } from '../model/URLAttachment';
+import { UwaziFile } from '../model/UwaziFile';
+import { PathManager } from './PathManager';
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;
@@ -25,6 +31,16 @@ export class S3FileStorage implements FileStorage {
     this.s3Client = s3Client;
     this.tenant = tenant;
     this.pathManager = new PathManager({ tenant });
+  }
+
+  async storeFile(input: UploadFileInput) {
+    await this.s3Client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: this.pathManager.createPath({ filename: input.file.filename, type: input.type }),
+        Body: await input.file.toBuffer(),
+      })
+    );
   }
 
   async getFile(input: GetFileInput) {

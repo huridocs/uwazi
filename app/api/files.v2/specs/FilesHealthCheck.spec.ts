@@ -2,7 +2,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FilesHealthCheck } from '../FilesHealthCheck';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
+import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
@@ -22,6 +22,9 @@ afterAll(async () => {
 
 let testStorageFiles: StoredFile[] = [];
 class TestFileStorage implements FileStorage {
+  async storeFile(_input: UploadFileInput) {
+    throw new Error('Method not implemented.');
+  }
   async getFiles(_inputs: GetFileInput[]): Promise<File[]> {
     throw new Error('Method not implemented.');
   }

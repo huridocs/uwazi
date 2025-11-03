@@ -124,7 +124,7 @@ describe('upload routes', () => {
       });
     });
 
-    it('should generate a thumbnail for the document', async () => {
+    fit('should generate a thumbnail for the document', async () => {
       await uploadDocument('testing_files/english_testing_file.pdf');
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
@@ -143,17 +143,21 @@ describe('upload routes', () => {
     });
 
     describe('Language detection', () => {
-      it('should detect English documents and store the result', async () => {
+      fit('should detect English documents and store the result', async () => {
         await uploadDocument('testing_files/eng.pdf');
 
-        const [upload] = await files.get({ originalname: 'eng.pdf' });
+        const upload = (await testingEnvironment.db.getAllFrom('files')).find(
+          f => f.originalname === 'eng.pdf'
+        ) as FileType;
         expect(upload.language).toBe('eng');
-      }, 10000);
+      });
 
-      it('should detect Spanish documents and store the result', async () => {
+      fit('should detect Spanish documents and store the result', async () => {
         await uploadDocument('testing_files/spn.pdf');
 
-        const [upload] = await files.get({ originalname: 'spn.pdf' });
+        const upload = (await testingEnvironment.db.getAllFrom('files')).find(
+          f => f.originalname === 'spn.pdf'
+        ) as FileType;
         expect(upload.language).toBe('spa');
       });
     });

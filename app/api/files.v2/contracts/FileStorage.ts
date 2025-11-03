@@ -8,7 +8,13 @@ export type GetFileInput = {
   filename: string;
 };
 
+export type UploadFileInput = {
+  file: File;
+  type: FileType;
+};
+
 export interface FileStorage {
+  storeFile(input: UploadFileInput): Promise<void>;
   list(): Promise<StoredFile[]>;
   getPath(file: UwaziFile): string;
   getFiles(inputs: GetFileInput[]): Promise<File[]>;

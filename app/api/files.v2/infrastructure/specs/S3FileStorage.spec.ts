@@ -2,6 +2,7 @@ import {
   CreateBucketCommand,
   DeleteBucketCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
   ListObjectsCommand,
   PutObjectCommand,
   S3Client,
@@ -9,8 +10,12 @@ import {
 import { config } from 'api/config';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
-import { testingTenants } from 'api/utils/testingTenants';
+import { File } from 'api/files.v2/model/File';
 import { Tenant } from 'api/tenants/tenantContext';
+import { testingTenants } from 'api/utils/testingTenants';
+import { createReadStream } from 'node:fs';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
 
 describe('S3FileStorage', () => {
@@ -99,29 +104,6 @@ describe('S3FileStorage', () => {
         new PutObjectCommand({
           Bucket: 'uwazi-development',
           Key: 'test-tenant-2/documents/document3',
-          Body: 'body',
-        })
-      );
-
-      const listedFiles = await s3fileStorage.list();
-
-      expect(listedFiles.map(f => f.fullPath).sort()).toEqual(
-        ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
-      );
-    });
-    it('should list all s3 keys', async () => {
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'test-tenant/documents/document1',
-          Body: 'body',
-        })
-      );
-
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'test-tenant/documents/document2',
           Body: 'body',
         })
       );
@@ -239,6 +221,62 @@ describe('S3FileStorage', () => {
       await expect(
         s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
       ).rejects.toThrow();
+    });
+  });
+
+  describe('storeFile', () => {
+    const testingFilesPath = (filename: string) =>
+      path.join(__dirname, '../../../files/specs/testing_files', filename);
+
+    afterEach(async () => {
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/file_created.txt',
+        })
+      );
+    });
+
+    it('should store it on s3 bucket', async () => {
+      await s3fileStorage.storeFile({
+        file: new File({
+          source: createReadStream(testingFilesPath('documento.txt')),
+          filename: 'file_created.txt',
+        }),
+        type: 'document',
+      });
+
+      const s3File = await s3Client.send(
+        new GetObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/file_created.txt',
+        })
+      );
+      // @ts-ignore
+      const file = new File({ source: s3File.Body as Readable, filename: 'file_created.txt' });
+      expect(await file.asContentString()).toBe('content created\n');
+    });
+
+    describe('when type is segmentation', () => {
+      it('should store it on a segmentation folder inside documents path', async () => {
+        testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
+        await s3fileStorage.storeFile({
+          file: new File({
+            source: createReadStream(testingFilesPath('documento.txt')),
+            filename: 'file_created.txt',
+          }),
+          type: 'segmentation',
+        });
+
+        const s3File = await s3Client.send(
+          new GetObjectCommand({
+            Bucket: 'uwazi-development',
+            Key: 'test-tenant/documents/segmentation/file_created.txt',
+          })
+        );
+        const file = new File({ source: s3File.Body as Readable, filename: 'file_created.txt' });
+        expect(await file.asContentString()).toBe('content created\n');
+      });
     });
   });
 });

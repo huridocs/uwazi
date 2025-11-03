@@ -1,5 +1,5 @@
 import { Tenant } from 'api/tenants/tenantContext';
-import { FileStorage, GetFileInput } from './FileStorage';
+import { FileStorage, GetFileInput, UploadFileInput } from './FileStorage';
 import { File } from '../model/File';
 import { StoredFile } from '../model/StoredFile';
 import { UwaziFile } from '../model/UwaziFile';
@@ -16,6 +16,10 @@ type FileStorageStrategyProps = {
 
 export class FileStorageStrategy implements FileStorage {
   constructor(private props: FileStorageStrategyProps) {}
+
+  async storeFile(_input: UploadFileInput) {
+    throw new Error('Method not implemented.');
+  }
 
   private get currentStrategy() {
     if (this.props.tenant.featureFlags?.s3Storage) return this.props.strategy.s3Storage;

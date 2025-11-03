@@ -85,6 +85,7 @@ export const config = {
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
+      v2UploadFile: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

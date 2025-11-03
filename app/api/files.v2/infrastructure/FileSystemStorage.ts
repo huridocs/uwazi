@@ -1,17 +1,27 @@
 /* eslint-disable node/no-restricted-import */
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 
-import { PathManager } from './PathManager';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
+import { pipeline } from 'stream/promises';
+import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
+import { File } from '../model/File';
 import { StoredFile } from '../model/StoredFile';
 import { UwaziFile } from '../model/UwaziFile';
-import { File } from '../model/File';
+import { PathManager } from './PathManager';
 
 export class FileSystemStorage implements FileStorage {
   private pathManager: PathManager;
 
   constructor(pathManager: PathManager) {
     this.pathManager = pathManager;
+  }
+
+  async storeFile(input: UploadFileInput) {
+    await pipeline(
+      input.file.source,
+      createWriteStream(
+        this.pathManager.createPath({ filename: input.file.filename, type: input.type })
+      )
+    );
   }
 
   async getFile(input: GetFileInput): Promise<File> {
