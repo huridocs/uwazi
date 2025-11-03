@@ -7,6 +7,7 @@ import { createReadStream } from 'fs';
 import path from 'path';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
+import { Thumbnail } from 'api/files.v2/model/Thumbnail';
 
 type Input = {
   file: {
@@ -38,18 +39,41 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
     const pdfInfo = (await this.deps.pdfService.extractText(tmpFile)).getDataOrThrow();
 
     const document = new Document({
-      id: 'should generate',
+      id: this.idGenerator.generate(),
       entity: input.entityId,
       ...input.file,
       language: pdfInfo.language.key,
       totalPages: pdfInfo.totalPages,
-      status: 'processing',
+      status: 'ready',
       creationDate: date.currentUTC(),
+      uploaded: true,
+      fullText: pdfInfo.pages,
+    });
+
+    const thumbnail = new Thumbnail({
+      originalname: 'originalThumbnailName.jpg',
+      filename: 'filename.jpg',
+      mimetype: 'image/jpeg',
+      size: 1,
+      id: this.idGenerator.generate(),
+      entity: input.entityId,
+      language: pdfInfo.language.key,
+      creationDate: date.currentUTC(),
+      uploaded: true,
     });
 
     await this.transactionManager.run(async () => {
-      // this.deps.filesDS.insert(document);
+      //delete entity
+      //delete file
+      //delete relationships
+      //
+      //denormalize all related entities
+      //
+      //delete entity from index
     });
+
+    //JOB
+      //delete from storage
 
     return document;
   }

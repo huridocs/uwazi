@@ -30,7 +30,7 @@ jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 const fixturesFactory = getFixturesFactory();
 
-const fileNameToProcess = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const fileNameToProcess = 'english_testing_file.pdf';
 const attachmentFile = 'spn.pdf';
 const fixtures: DBFixture = {
   entities: [fixturesFactory.entity('parentEntity')],

@@ -3,7 +3,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
-import { customUploadsPath, storage, uploadsPath } from 'api/files';
+import { customUploadsPath, fileExistsOnPath } from 'api/files';
 import { search } from 'api/search';
 import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
@@ -12,6 +12,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { tenants } from 'api/tenants';
 import { UserSchema } from 'shared/types/userType';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -56,34 +58,38 @@ describe('upload routes', () => {
 
   describe.each([
     { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
-    //{ title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
+    { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
   ])('$title', ({ featureFlags }) => {
+    let pathManager: PathManager;
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
       testingTenants.changeCurrentTenant({
         featureFlags,
       });
       await testingEnvironment.cleanupUploadPaths();
+      pathManager = new PathManager({ tenant: tenants.current() });
     });
 
-    it('should upload the file', async () => {
-      const response = await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
+    fit('should upload the file', async () => {
+      const response = await uploadDocument('testing_files/english_testing_file.pdf');
       expect(response).toHaveStatus(200);
-      const [upload] = await files.get(
-        { entity: 'sharedId1', originalname: 'f2082bf51b6ef839690485d7153e847a.pdf' },
-        '+fullText'
-      );
-      expect(await storage.fileExists(upload.filename!, 'document')).toBe(true);
+
+      const { filename } = (await testingEnvironment.db.getAllFrom('files')).find(
+        f => f.originalname === 'english_testing_file.pdf'
+      ) as FileType;
+
+      expect(
+        await fileExistsOnPath(pathManager.createPath({ filename: filename!, type: 'document' }))
+      ).toBe(true);
     });
 
-    it('should process and reindex the document after upload', async () => {
-      const res: SuperTestResponse = await uploadDocument(
-        'testing_files/f2082bf51b6ef839690485d7153e847a.pdf'
-      );
+    fit('should process and reindex the document after upload', async () => {
+      const res = await uploadDocument('testing_files/english_testing_file.pdf');
+      expect(res).toHaveStatus(200);
 
       expect(res.body).toEqual(
         expect.objectContaining({
-          originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          originalname: 'english_testing_file.pdf',
           status: 'ready',
         })
       );
@@ -99,39 +105,41 @@ describe('upload routes', () => {
         'sharedId1'
       );
 
-      const [upload] = await files.get(
-        { originalname: 'f2082bf51b6ef839690485d7153e847a.pdf' },
-        '+fullText'
-      );
+      const upload = (await testingEnvironment.db.getAllFrom('files')).find(
+        f => f.originalname === 'english_testing_file.pdf'
+      ) as FileType;
 
-      expect(upload).toEqual(
-        expect.objectContaining({
-          entity: 'sharedId1',
-          type: 'document',
-          status: 'ready',
-          fullText: {
-            1: 'This[[1]] is[[1]] a[[1]] dumb[[1]] text[[1]] file[[1]] used[[1]] to[[1]] text[[1]] language[[1]] detecting,[[1]] it[[1]] should[[1]] be[[1]] detected[[1]] as[[1]] english[[1]]\n\n',
-          },
-          totalPages: 1,
-          language: 'eng',
-          filename: expect.stringMatching(/.*\.pdf/),
-          originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
-          creationDate: 1000,
-        })
-      );
-    }, 10000);
+      expect(upload).toMatchObject({
+        entity: 'sharedId1',
+        type: 'document',
+        status: 'ready',
+        fullText: {
+          1: 'This[[1]] is[[1]] a[[1]] dumb[[1]] text[[1]] file[[1]] used[[1]] to[[1]] text[[1]] language[[1]] detecting,[[1]] it[[1]] should[[1]] be[[1]] detected[[1]] as[[1]] english[[1]]\n\n',
+        },
+        totalPages: 1,
+        language: 'eng',
+        filename: expect.stringMatching(/.*\.pdf/),
+        originalname: 'english_testing_file.pdf',
+        creationDate: 1000,
+      });
+    });
 
     it('should generate a thumbnail for the document', async () => {
-      await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
+      await uploadDocument('testing_files/english_testing_file.pdf');
 
-      const [{ filename = '', language, mimetype }] = await files.get({
-        entity: 'sharedId1',
-        type: 'thumbnail',
-      });
+      const dbFiles = await testingEnvironment.db.getAllFrom('files');
+      const {
+        filename = '',
+        language,
+        mimetype,
+      } = dbFiles.find(f => f.type === 'thumbnail' && f.entity === 'sharedId1') as FileType;
 
       expect(language).toBe('eng');
       expect(mimetype).toEqual('image/jpeg');
-      expect(await fs.readFile(uploadsPath(filename))).toBeDefined();
+
+      expect(await fileExistsOnPath(pathManager.createPath({ filename, type: 'thumbnail' }))).toBe(
+        true
+      );
     });
 
     describe('Language detection', () => {
@@ -286,10 +294,10 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
   describe('DELETE/files', () => {
     it('should delete thumbnails asociated with documents deleted', async () => {
       mockCurrentUser(adminUser);
-      await uploadDocument('testing_files/f2082bf51b6ef839690485d7153e847a.pdf');
+      await uploadDocument('testing_files/english_testing_file.pdf');
 
       const [file]: FileType[] = await files.get({
-        originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
+        originalname: 'english_testing_file.pdf',
       });
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });

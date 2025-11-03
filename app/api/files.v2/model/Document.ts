@@ -1,33 +1,5 @@
-import { ExtractedMetadataSchema, LanguageISO6391, TocSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile, BaseFileProps } from './BaseFile';
-
-// export interface FileType {
-//   //Base
-//   _id?: ObjectIdSchema;
-//   originalname?: string;
-//   filename?: string;
-//   mimetype?: string;
-//   size?: number;
-//   creationDate?: number;
-//   type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
-//   uploaded?: boolean;
-//   //
-//   entity?: string;
-//   language?: string;
-//   url?: string;
-//   status?: 'processing' | 'failed' | 'ready';
-//   totalPages?: number;
-//   generatedToc?: boolean;
-//   fullText?: {
-//     /**
-//      * This interface was referenced by `undefined`'s JSON-Schema definition
-//      * via the `patternProperty` "^[0-9]+$".
-//      */
-//     [k: string]: string;
-//   };
-//   toc?: TocSchema[];
-//   extractedMetadata?: ExtractedMetadataSchema[];
-// }
 
 type Props = BaseFileProps & {
   entity: string;
@@ -47,7 +19,7 @@ export class Document extends BaseFile {
 
   readonly language: LanguageISO6391;
 
-  readonly status: string;
+  readonly status: 'processing' | 'failed' | 'ready';
 
   readonly totalPages: number;
 

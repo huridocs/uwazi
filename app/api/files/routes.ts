@@ -17,6 +17,8 @@ import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
+import multer from 'multer';
+import { generateFileName } from './filesystem';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -70,24 +72,45 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('document'),
-    async (req, res) => {
+    async (req, res, next) => {
+      if (tenants.current().featureFlags?.v2UploadFile) {
+        const defaultStorage = multer.diskStorage({
+          filename(_req, file: Express.Multer.File, cb) {
+            cb(null, generateFileName(file));
+          },
+        });
+        await new Promise<void>((resolve, reject) => {
+          multer({ storage: defaultStorage }).single('file')(req, res, err => {
+            if (!err) resolve();
+            reject(err);
+          });
+        });
+        next();
+      } else {
+        await uploadMiddleware('document')(req, res, next);
+      }
+    },
+    async (req, res, next) => {
       if (!req.file) throw new Error('File is not available on request object');
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
         if (tenants.current().featureFlags?.v2UploadFile) {
-          // const savedFile = await FileUploadUseCaseFactory.default().execute();
-          // res.json(savedFile);
+          const savedFile = await FileUploadUseCaseFactory.default().execute({
+            file: req.file,
+            entityId: req.body.entity,
+          });
+          res.json(savedFile);
         } else {
           const savedFile = await processDocument(req.body.entity, req.file);
           res.json(savedFile);
         }
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
-        handleError(err);
-        const [file] = await files.get({ filename: req.file.filename });
-        res.json(file);
-        req.emitToSessionSocket('conversionFailed', req.body.entity);
+        next(err);
+        // handleError(err);
+        // const [file] = await files.get({ filename: req.file.filename });
+        // res.json(file);
+        // req.emitToSessionSocket('conversionFailed', req.body.entity);
       }
     },
     activitylogMiddleware
