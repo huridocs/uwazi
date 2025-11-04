@@ -35,7 +35,7 @@ describe('upload routes', () => {
       'invalid_document.txt',
       'spn.pdf',
       'importcsv.csv',
-      'f2082bf51b6ef839690485d7153e847a.pdf',
+      'english_testing_file.pdf',
     ];
     const filesToDelete = (await fs.readdir(directory)).filter(filename =>
       dontDeleteFiles.includes(filename)
@@ -56,8 +56,8 @@ describe('upload routes', () => {
         encoding: '7bit',
         mimetype: 'application/octet-stream',
         destination: `${__dirname}/uploads/`,
-        filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-        path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
+        filename: 'english_testing_file.pdf',
+        path: `${__dirname}/uploads/english_testing_file.pdf`,
         size: 171411271,
       };
       req = {

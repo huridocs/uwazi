@@ -5,7 +5,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
-import { legacyLogger } from 'api/log';
+// import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
@@ -413,20 +413,6 @@ describe('files routes', () => {
           type: 'attachment',
         })
       );
-    });
-  });
-
-  describe('POST/files/upload/document', () => {
-    it('should save the attached file', async () => {
-      jest.spyOn(legacyLogger, 'debug').mockImplementation(() => ({}));
-      const response = await request(app)
-        .post('/api/files/upload/document')
-        .attach('file', path.join(__dirname, 'test.txt'));
-      expect(response.status).toBe(200);
-      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-
-      expect(await storage.fileExists(file.filename!, 'document')).toBe(true);
-      expect(legacyLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 

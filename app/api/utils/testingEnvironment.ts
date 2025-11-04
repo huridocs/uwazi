@@ -1,4 +1,4 @@
-import { setupTestUploadedPaths } from 'api/files';
+import { setupTestUploadedPaths, cleanupTestUploadedPaths } from 'api/files';
 import { appContext } from 'api/utils/AppContext';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
@@ -11,6 +11,7 @@ let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], 
 
 const testingEnvironment = {
   elasticIndex: '',
+  uploadSubPath: '',
   userInContextMockFactory: new UserInContextMockFactory(),
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
@@ -28,6 +29,11 @@ const testingEnvironment = {
       indexName: 'index',
     });
     await setupTestUploadedPaths(subPath);
+    this.uploadSubPath = subPath;
+  },
+
+  async cleanupUploadPaths() {
+    await cleanupTestUploadedPaths(this.uploadSubPath);
   },
 
   setFakeContext() {

@@ -26,7 +26,7 @@ export class FilesHealthCheck {
   private onMissingInStorageCB: (fileDTO: {
     _id: string;
     filename: string;
-    creationDate?: Date;
+    creationDate?: number;
   }) => void = () => {};
 
   private fileStorage: FileStorage;

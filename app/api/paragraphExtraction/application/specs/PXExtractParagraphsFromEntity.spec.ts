@@ -81,6 +81,7 @@ const setUpUseCase = () => {
   };
 
   const fileStorage = {
+    storeFile: jest.fn(),
     getFiles: jest.fn().mockResolvedValue(files),
     getFile: jest.fn(),
     getPath: jest.fn(),
