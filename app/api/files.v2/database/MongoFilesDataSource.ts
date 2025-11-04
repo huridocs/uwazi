@@ -13,7 +13,7 @@ import { Segmentation } from '../model/Segmentation';
 import { Document } from '../model/Document';
 
 import { FileMappers } from './FilesMappers';
-import { FileDBOType } from './schemas/filesTypes';
+import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
 
 type GetDocumentsForEntityQuery = {
@@ -27,8 +27,12 @@ export type SegmentationDBO = SegmentationType & {
   fileID: ObjectId;
 };
 
-export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
+export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
   protected collectionName = 'files';
+
+  async create(file: UwaziFile): Promise<void> {
+    await this.getCollection().insertOne(FileMappers.toDBO(file));
+  }
 
   async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
     await this.getCollection().updateMany(
@@ -110,14 +114,14 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
       }
     }
 
-    return new MongoResultSet<FileDBOType, Document>(
+    return new MongoResultSet<fileDBO, Document>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      FileMappers.toDocumentModel
+      FileMappers.toModel<Document>
     );
   }
 
   getAll() {
-    return new MongoResultSet<FileDBOType, UwaziFile>(
+    return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
       FileMappers.toModel
     );
