@@ -1,7 +1,7 @@
+import { Document } from 'api/files.v2/model/Document';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Document } from 'api/files.v2/model/Document';
-import { File } from 'api/files.v2/model/File';
 import { PXExtractionKey } from './PXExtractionKey';
 
 type ExtractParagraphInput = {
@@ -9,7 +9,7 @@ type ExtractParagraphInput = {
   documents: Document[];
   mainLanguage: LanguageISO6391;
   extractionKey: PXExtractionKey;
-  files: File[];
+  files: FileContents[];
 };
 
 type TranslationOutput = {
@@ -38,8 +38,8 @@ interface PXExtractionService {
 
 export type {
   ExtractParagraphInput,
-  PXExtractionService,
   GetParagraphsResultOutput,
   ParagraphOutput,
+  PXExtractionService,
   TranslationOutput,
 };

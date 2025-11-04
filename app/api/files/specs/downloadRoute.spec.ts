@@ -1,23 +1,24 @@
-import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
-
-import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { Application, NextFunction, Request, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
+import { copyFile } from 'fs/promises';
+import path from 'path';
+import request, { Response as SuperTestResponse } from 'supertest';
+import { files } from '../files';
+import uploadRoutes from '../routes';
 import {
-  fixtures,
+  adminUser,
+  collabUser,
+  customPdfFileName,
   fileName1,
+  fileOnPublicEntity,
+  fixtures,
   restrictedFileName,
   uploadId,
-  collabUser,
   writerUser,
-  adminUser,
-  customPdfFileName,
-  fileOnPublicEntity,
 } from './fixtures';
-
-import uploadRoutes from '../routes';
-import { files } from '../files';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);
@@ -30,7 +31,23 @@ const setAppWithUser = (routes: any, user: any) => {
 describe('files routes download', () => {
   let app: Application;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    await copyFile(
+      path.join(__dirname, `testing_files/${fileName1}`),
+      path.join(__dirname, `uploads/${fileName1}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${restrictedFileName}`),
+      path.join(__dirname, `uploads/${restrictedFileName}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${customPdfFileName}`),
+      path.join(__dirname, `customUploads/${customPdfFileName}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${fileOnPublicEntity}`),
+      path.join(__dirname, `uploads/${fileOnPublicEntity}`)
+    );
     app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
   });

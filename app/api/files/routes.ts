@@ -1,5 +1,3 @@
-import { Application, Request } from 'express';
-
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
@@ -7,7 +5,10 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { withTransaction } from 'api/utils/withTransaction';
+import { Application, Request } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -15,7 +16,9 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { withTransaction } from 'api/utils/withTransaction';
+import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
+import multer from 'multer';
+import { generateFileName } from './filesystem';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -69,13 +72,38 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('document'),
+    async (req, res, next) => {
+      if (tenants.current().featureFlags?.v2UploadFile) {
+        const defaultStorage = multer.diskStorage({
+          filename(_req, file: Express.Multer.File, cb) {
+            cb(null, generateFileName(file));
+          },
+        });
+        await new Promise<void>((resolve, reject) => {
+          multer({ storage: defaultStorage }).single('file')(req, res, err => {
+            if (!err) resolve();
+            reject(err);
+          });
+        });
+        next();
+      } else {
+        await uploadMiddleware('document')(req, res, next);
+      }
+    },
     async (req, res) => {
       if (!req.file) throw new Error('File is not available on request object');
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
-        const savedFile = await processDocument(req.body.entity, req.file);
-        res.json(savedFile);
+        if (tenants.current().featureFlags?.v2UploadFile) {
+          const savedFile = await FileUploadUseCaseFactory.default().execute({
+            file: req.file,
+            entityId: req.body.entity,
+          });
+          res.json(savedFile);
+        } else {
+          const savedFile = await processDocument(req.body.entity, req.file);
+          res.json(savedFile);
+        }
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
         handleError(err);
