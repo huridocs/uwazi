@@ -1,16 +1,14 @@
-import path from 'path';
-import { Readable } from 'stream';
-import mimetypes from 'mime-types';
-
-import ID from 'shared/uniqueID';
-// eslint-disable-next-line node/no-restricted-import
-import fs, { access } from 'fs/promises';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
-
-import { FileType } from '../../shared/types/fileType';
+import mimetypes from 'mime-types';
+import path from 'path';
+import ID from 'shared/uniqueID';
+import { Readable } from 'stream';
+// eslint-disable-next-line node/no-restricted-import
+import fs, { access } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
+import { FileType } from '../../shared/types/fileType';
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -70,6 +68,35 @@ const testingUploadPaths = async (subPath: string = '') => {
 
 const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
+};
+
+const cleanupTestUploadedPaths = async (subPath: string = '') => {
+  const base = `${__dirname}/specs`;
+  const dirs = [
+    path.join(base, 'uploads', subPath),
+    path.join(base, 'customUploads', subPath),
+    path.join(base, 'uploads', 'segmentation', subPath),
+  ];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const dir of dirs) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const items = await fs.readdir(dir);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        // eslint-disable-next-line no-await-in-loop
+        const stat = await fs.stat(itemPath);
+        if (stat.isFile()) {
+          // eslint-disable-next-line no-await-in-loop
+          await fs.unlink(itemPath);
+        }
+        // skip directories
+      }
+    } catch (e) {
+      // ignore if dir not exists
+    }
+  }
 };
 
 const getExtension = (mimetype = '') => {
@@ -136,21 +163,22 @@ const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
 };
 
 export {
-  setupTestUploadedPaths,
-  createDirIfNotExists,
-  deleteFiles,
-  deleteFile,
-  generateFileName,
-  fileFromReadStream,
-  streamToString,
-  customUploadsPath,
-  uploadsPath,
-  temporalFilesPath,
-  attachmentsPath,
   activityLogPath,
-  testingUploadPaths,
+  attachmentsPath,
+  cleanupTestUploadedPaths,
+  createDirIfNotExists,
+  customUploadsPath,
+  deleteFile,
+  deleteFiles,
   fileExistsOnPath,
+  fileFromReadStream,
+  generateFileName,
   getMimetypeFromOriginalName,
+  setupTestUploadedPaths,
+  streamToString,
+  temporalFilesPath,
+  testingUploadPaths,
+  uploadsPath,
 };
 
 export type { FilePath, pathFunction };

@@ -2,6 +2,8 @@ import {
   CreateBucketCommand,
   DeleteBucketCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
+  GetObjectCommandOutput,
   ListObjectsCommand,
   PutObjectCommand,
   S3Client,
@@ -9,14 +11,27 @@ import {
 import { config } from 'api/config';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
-import { testingTenants } from 'api/utils/testingTenants';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { Tenant } from 'api/tenants/tenantContext';
+import { testingTenants } from 'api/utils/testingTenants';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;
   let s3fileStorage: S3FileStorage;
   let tenant: Tenant;
+
+  const toString = async (s3File: GetObjectCommandOutput) => {
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
+      const _buf: Buffer[] = [];
+      (s3File.Body as Readable).on('data', (chunk: any) => _buf.push(chunk));
+      (s3File.Body as Readable).on('end', () => resolve(Buffer.concat(_buf)));
+      (s3File.Body as Readable).on('error', (err: unknown) => reject(err));
+    });
+    return buffer.toString('utf8');
+  };
 
   beforeEach(async () => {
     config.s3 = {
@@ -109,39 +124,35 @@ describe('S3FileStorage', () => {
         ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
       );
     });
-    it('should list all s3 keys', async () => {
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'test-tenant/documents/document1',
-          Body: 'body',
-        })
-      );
-
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'test-tenant/documents/document2',
-          Body: 'body',
-        })
-      );
-
-      const listedFiles = await s3fileStorage.list();
-
-      expect(listedFiles.map(f => f.fullPath).sort()).toEqual(
-        ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
-      );
-    });
   });
 
   describe('getPath', () => {
     it.each([
       {
-        file: new Document('id', 'entity', 1, 'document', 'ab'),
+        file: new Document({
+          id: 'id',
+          entity: 'entity',
+          language: 'ab',
+          mimetype: 'application/pdf',
+          totalPages: 1,
+          status: 'processing',
+          creationDate: 1,
+          size: 1,
+          filename: 'document',
+          originalname: 'original.pdf',
+        }),
         expected: 'test-tenant/documents/document',
       },
       {
-        file: new Attachment('id', 'entity', 1, 'attachment'),
+        file: new Attachment({
+          id: 'id',
+          entity: 'entity',
+          mimetype: 'application/pdf',
+          creationDate: 1,
+          size: 1,
+          filename: 'attachment',
+          originalname: 'original.pdf',
+        }),
         expected: 'test-tenant/attachments/attachment',
       },
     ])(
@@ -210,7 +221,7 @@ describe('S3FileStorage', () => {
 
         const content = await file.asContentString();
 
-        expect(content).toBe(Body);
+        expect(content.getDataOrThrow()).toBe(Body);
       });
 
       await Promise.all(promises);
@@ -218,8 +229,57 @@ describe('S3FileStorage', () => {
 
     it('should throw an error if the file does not exist', async () => {
       await expect(
-        s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
+        (
+          await s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
+        ).getReadable()
       ).rejects.toThrow();
+    });
+  });
+
+  describe('storeFile', () => {
+    const testingFilesPath = (filename: string) =>
+      path.join(__dirname, '../../../files/specs/testing_files', filename);
+
+    afterEach(async () => {
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/file_created.txt',
+        })
+      );
+    });
+
+    it('should store it on s3 bucket', async () => {
+      await s3fileStorage.storeFile({
+        file: new FileContents(testingFilesPath('documento.txt')),
+        type: 'document',
+      });
+
+      const s3File = await s3Client.send(
+        new GetObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/documento.txt',
+        })
+      );
+
+      expect(await toString(s3File)).toBe('content created\n');
+    });
+
+    describe('when type is segmentation', () => {
+      it('should store it on a segmentation folder inside documents path', async () => {
+        await s3fileStorage.storeFile({
+          file: new FileContents(testingFilesPath('documento.txt')),
+          type: 'segmentation',
+        });
+
+        const s3File = await s3Client.send(
+          new GetObjectCommand({
+            Bucket: 'uwazi-development',
+            Key: 'test-tenant/documents/segmentation/documento.txt',
+          })
+        );
+        expect(await toString(s3File)).toBe('content created\n');
+      });
     });
   });
 });

@@ -1,14 +1,15 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { UwaziFile } from '../model/UwaziFile';
-import { Segmentation } from '../model/Segmentation';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Document } from '../model/Document';
+import { Segmentation } from '../model/Segmentation';
+import { UwaziFile } from '../model/UwaziFile';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];
 };
 
 interface FilesDataSource {
+  create(file: UwaziFile): Promise<void>;
   deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
   renameExtractedMetadata(
     renamedPropertyNames: { [previousName: string]: string },

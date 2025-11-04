@@ -130,7 +130,7 @@ export class PXFilesDeletedListener {
 
     const deletedDocuments = files
       .filter(f => f.type === 'document')
-      .map(d => FileMappers.toDocumentModel(d as any));
+      .map(d => FileMappers.toModel<Document>(d as any));
 
     if (!deletedDocuments.length) {
       return;

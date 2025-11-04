@@ -87,6 +87,7 @@ export const config = {
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
+      v2UploadFile: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
@@ -105,11 +106,11 @@ export const config = {
     tracesSampleRate: 0.1,
   },
   s3: {
-    endpoint: process.env.S3_ENDPOINT || '',
-    bucket: process.env.S3_BUCKET || '',
+    endpoint: process.env.S3_ENDPOINT || 'http://127.0.0.1:9000',
+    bucket: process.env.S3_BUCKET || 'uwazi-development',
     credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',
     },
     batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },

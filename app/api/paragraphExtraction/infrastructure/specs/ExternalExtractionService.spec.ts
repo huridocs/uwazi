@@ -1,13 +1,14 @@
 import { Buffer } from 'buffer';
-import multer from 'multer';
 import express from 'express';
 import { Server } from 'http';
+import multer from 'multer';
 
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
-import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
+import { FileContents } from 'api/files.v2/model/FileContents';
+import { Readable } from 'stream';
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
@@ -69,9 +70,18 @@ describe('ExternalExtractionService', () => {
         mainLanguage: 'pt',
         extractionKey,
         files: [
-          FileBuilder.create().withFilename('file1.txt').build(),
-          FileBuilder.create().withFilename('file2.txt').build(),
-          FileBuilder.create().withFilename('file3.txt').build(),
+          new FileContents({
+            filename: 'file1.txt',
+            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+          }),
+          new FileContents({
+            filename: 'file2.txt',
+            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+          }),
+          new FileContents({
+            filename: 'file3.txt',
+            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+          }),
         ],
       });
 
