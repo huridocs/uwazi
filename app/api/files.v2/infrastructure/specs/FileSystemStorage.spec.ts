@@ -2,20 +2,31 @@
 import * as fs from 'fs/promises';
 
 import { FileContents } from 'api/files.v2/model/FileContents';
-import { FileType } from 'api/files.v2/model/FileType';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { createReadStream } from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
-const createFileName = (fileType: FileType) => `TestFileSystemStorage${fileType}.txt`;
+const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
 
 describe('FileSystemStorage', () => {
   let fileSystemStorage: FileSystemStorage;
   let tenant: Tenant;
   let pathManager: PathManager;
+
+  const toString = async (file: Readable) => {
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
+      const _buf: Buffer[] = [];
+      file.on('data', (chunk: any) => _buf.push(chunk));
+      file.on('end', () => resolve(Buffer.concat(_buf)));
+      file.on('error', (err: unknown) => reject(err));
+    });
+    return buffer.toString('utf8');
+  };
 
   beforeAll(async () => {
     await testingEnvironment.setTenant('testTenant');
@@ -34,10 +45,25 @@ describe('FileSystemStorage', () => {
     );
 
     await Promise.all(promises);
+
+    const customPath = pathManager.createPath({
+      filename: createFileName('customPath'),
+      type: 'customPath',
+      destination: 'custom/path',
+    });
+    await fs.mkdir(path.dirname(customPath), { recursive: true });
+    await fs.writeFile(customPath, createFileContent('customPath'));
   });
 
   afterAll(async () => {
     await testingEnvironment.cleanupUploadPaths();
+    await fs.rm(
+      pathManager.createPath({
+        filename: createFileName('customPath'),
+        type: 'customPath',
+        destination: 'custom/path',
+      })
+    );
   });
 
   describe('getFile', () => {
@@ -54,6 +80,18 @@ describe('FileSystemStorage', () => {
       });
 
       await Promise.all(promises);
+    });
+
+    it('should return a customPath file', async () => {
+      const file = await fileSystemStorage.getFile({
+        filename: createFileName('customPath'),
+        type: 'customPath',
+        destination: 'custom/path',
+      });
+
+      const content = await file.asContentString();
+
+      expect(content.getDataOrThrow()).toBe(createFileContent('customPath'));
     });
   });
 
@@ -104,10 +142,10 @@ describe('FileSystemStorage', () => {
         type: 'document',
       });
 
-      const file = new FileContents(
-        pathManager.createPath({ filename: 'documento.txt', type: 'document' })
+      const contents = await toString(
+        createReadStream(pathManager.createPath({ filename: 'documento.txt', type: 'document' }))
       );
-      expect((await file.asContentString()).getDataOrThrow()).toBe('content created\n');
+      expect(contents).toBe('content created\n');
     });
 
     describe('when type is segmentation', () => {
@@ -117,10 +155,30 @@ describe('FileSystemStorage', () => {
           type: 'segmentation',
         });
 
-        const file = new FileContents(
-          pathManager.createPath({ filename: 'documento.txt', type: 'document' })
+        const contents = await toString(
+          createReadStream(pathManager.createPath({ filename: 'documento.txt', type: 'document' }))
         );
-        expect((await file.asContentString()).getDataOrThrow()).toBe('content created\n');
+        expect(contents).toBe('content created\n');
+      });
+    });
+
+    describe('when type is customPath', () => {
+      it('should store it on the destination', async () => {
+        await fileSystemStorage.storeFile({
+          file: new FileContents(testingFilesPath('documento.txt')),
+          destination: 'custom_path/deep/',
+          type: 'customPath',
+        });
+
+        const contents = await toString(
+          createReadStream(
+            path.join(
+              path.dirname(tenants.current().uploadedDocuments),
+              'custom_path/deep/documento.txt'
+            )
+          )
+        );
+        expect(contents).toBe('content created\n');
       });
     });
   });

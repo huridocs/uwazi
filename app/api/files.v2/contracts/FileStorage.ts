@@ -4,13 +4,15 @@ import { FileType } from '../model/FileType';
 import { FileContents } from '../model/FileContents';
 
 export type GetFileInput = {
-  type: FileType;
+  type: FileType | 'customPath';
   filename: string;
+  destination?: string;
 };
 
 export type UploadFileInput = {
   file: FileContents;
-  type: FileType;
+  type: FileType | 'customPath';
+  destination?: string;
 };
 
 export interface FileStorage {

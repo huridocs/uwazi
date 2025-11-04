@@ -37,7 +37,11 @@ export class S3FileStorage implements FileStorage {
     await this.s3Client.send(
       new PutObjectCommand({
         Bucket: this.bucket,
-        Key: this.pathManager.createPath({ filename: input.file.filename, type: input.type }),
+        Key: this.pathManager.createPath({
+          filename: input.file.filename,
+          type: input.type,
+          destination: input.destination,
+        }),
         Body: (await input.file.toBuffer()).getDataOrThrow(),
       })
     );
