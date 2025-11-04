@@ -1,0 +1,89 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import { readFile } from 'fs/promises';
+
+import { Result } from 'api/core/libs/Result';
+import path from 'path';
+import { Readable } from 'stream';
+
+export type ReadableCallback = () => Promise<Readable>;
+
+export interface FileContentsCallbackOptions {
+  filename: string;
+  readableCallback: ReadableCallback;
+}
+
+export class FileContents {
+  filename: string;
+
+  private filepath?: string;
+
+  private readableCallback?: ReadableCallback;
+
+  constructor(input: string | FileContentsCallbackOptions) {
+    if (typeof input === 'string') {
+      this.filepath = input;
+      this.filename = path.basename(input);
+    } else {
+      this.filename = input.filename;
+      this.readableCallback = input.readableCallback;
+    }
+  }
+
+  async getReadable() {
+    if (this.readableCallback) {
+      return Result.ok(await this.readableCallback());
+    }
+
+    if (!this.filepath) {
+      return Result.fail(new Error('No file path or readable callback provided'));
+    }
+
+    return Result.ok(createReadStream(this.filepath));
+  }
+
+  async toBuffer() {
+    if (this.readableCallback) {
+      const readable = await this.readableCallback();
+      return Result.ok(await this.streamToBuffer(readable));
+    }
+
+    if (!this.filepath) {
+      return Result.fail(new Error('No file path or readable callback provided'));
+    }
+    return Result.ok(await readFile(this.filepath));
+  }
+
+  async asContentString() {
+    const buffer = await this.toBuffer();
+    if (buffer.isOk()) {
+      return Result.ok(buffer.getData().toString('utf8'));
+    }
+    return buffer;
+  }
+
+  getFullPath() {
+    if (!this.filepath) {
+      return Result.fail(new Error('this file has no full path'));
+    }
+    return Result.ok(this.filepath);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private async streamToBuffer(stream: Readable): Promise<Buffer> {
+    const chunks: Buffer[] = [];
+
+    return new Promise((resolve, reject) => {
+      stream.on('data', chunk => {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      });
+
+      stream.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+
+      stream.on('error', reject);
+    });
+  }
+}

@@ -1,10 +1,10 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import relationships from 'api/relationships';
 import { storage } from 'api/files';
+import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';
@@ -19,18 +19,20 @@ import { UserSchema } from 'shared/types/userType';
 import * as setupSockets from 'api/socketio/setupSockets';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { files } from '../files';
-import { ocrRoutes } from '../ocrRoutes';
+// eslint-disable-next-line node/no-restricted-import
+import { copyFile } from 'fs/promises';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
 import { TaskManager } from '../../services/tasksmanager/TaskManager';
+import { files } from '../files';
+import { ocrRoutes } from '../ocrRoutes';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 const fixturesFactory = getFixturesFactory();
 
-const fileNameToProcess = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const fileNameToProcess = 'english_testing_file.pdf';
 const attachmentFile = 'spn.pdf';
-const FIXTURES: DBFixture = {
+const fixtures: DBFixture = {
   entities: [fixturesFactory.entity('parentEntity')],
   files: [
     fixturesFactory.fileDeprecated(
@@ -63,8 +65,8 @@ const FIXTURES: DBFixture = {
 };
 
 describe('OCR service', () => {
-  const collabUser = FIXTURES.users!.find(u => u.username === 'collab');
-  const adminUser = FIXTURES.users!.find(u => u.username === 'admin');
+  const collabUser = fixtures.users!.find(u => u.username === 'collab');
+  const adminUser = fixtures.users!.find(u => u.username === 'admin');
   let requestMockedUser: UserSchema | undefined;
 
   const app: Application = setUpApp(
@@ -86,8 +88,16 @@ describe('OCR service', () => {
   }
 
   beforeEach(async () => {
+    await copyFile(
+      path.join(__dirname, `testing_files/${fileNameToProcess}`),
+      path.join(__dirname, `uploads/${fileNameToProcess}`)
+    );
+    await copyFile(
+      path.join(__dirname, `testing_files/${attachmentFile}`),
+      path.join(__dirname, `uploads/${attachmentFile}`)
+    );
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    await testingEnvironment.setUp(FIXTURES);
+    await testingEnvironment.setUp(fixtures);
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
     jest.spyOn(Date, 'now').mockReturnValue(1000);
@@ -101,6 +111,7 @@ describe('OCR service', () => {
   afterAll(async () => {
     jest.restoreAllMocks();
     await testingEnvironment.tearDown();
+    await testingEnvironment.cleanupUploadPaths();
   });
 
   it('should return the status on get', async () => {
@@ -224,11 +235,13 @@ describe('OCR service', () => {
 
   describe('when the file is not a document', () => {
     it('should not allow request status if the file is unprocessed', async () => {
-      await request(app).get(`/api/files/${attachmentFile}/ocr`).expect(400);
+      const response = await request(app).get(`/api/files/${attachmentFile}/ocr`);
+      expect(response).toHaveStatus(400);
     });
 
     it('should not allow to create a task', async () => {
-      await request(app).post(`/api/files/${attachmentFile}/ocr`).expect(400);
+      const response = await request(app).post(`/api/files/${attachmentFile}/ocr`);
+      expect(response).toHaveStatus(400);
     });
   });
 });

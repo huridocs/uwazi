@@ -10,11 +10,11 @@ class Result<Data, ErrorType> {
     this.error = error;
   }
 
-  static ok<Data>(data: Data) {
+  static ok<Success>(data: Success): Result<Success, undefined> {
     return new Result(data, undefined);
   }
 
-  static fail<ErrorType extends Error>(error: ErrorType) {
+  static fail<Fail extends Error>(error: Fail): Result<undefined, Fail> {
     return new Result(undefined, error);
   }
 
