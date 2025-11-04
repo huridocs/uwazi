@@ -27,13 +27,15 @@ const Primary: Story = {
         <DateRangePicker
           className="mx-2"
           language={args.language}
-          dateFormat={args.dateFormat}
           labelToday={args.labelToday}
           labelClear={args.labelClear}
           placeholderStart={args.placeholderStart}
           placeholderEnd={args.placeholderEnd}
           onFromDateSelected={args.onFromDateSelected}
           onToDateSelected={args.onToDateSelected}
+          from={args.from}
+          to={args.to}
+          onClear={args.onClear}
         />
       </div>
     </div>
@@ -44,13 +46,13 @@ const Basic: Story = {
   ...Primary,
   args: {
     language: 'es',
-    dateFormat: 'dd-mm-yyyy',
     labelToday: 'Hoy',
     labelClear: 'Limpiar',
     placeholderStart: 'Inicio',
     placeholderEnd: 'Fin',
-    onFromDateSelected: action('changed'),
-    onToDateSelected: action('blurred'),
+    onFromDateSelected: action('from-changed'),
+    onToDateSelected: action('to-changed'),
+    onClear: action('cleared'),
   },
 };
 

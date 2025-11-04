@@ -3,13 +3,10 @@ import React, { useState } from 'react';
 import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
-import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
-import { settingsAtom } from 'app/V2/atoms';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
@@ -37,7 +34,6 @@ const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
@@ -68,7 +64,7 @@ const ActivityLog = () => {
     setShowFilters(false);
   };
 
-  const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
+  const columns = getActivityLogColumns(setSelectedEntry);
 
   return (
     <div

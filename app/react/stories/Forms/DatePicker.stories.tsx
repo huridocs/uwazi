@@ -25,20 +25,20 @@ type Story = StoryObj<typeof DatePicker>;
 
 const Primary: Story = {
   render: args => (
-    <TestAtomStoreProvider initialValues={[[settingsAtom, { dateFormat: 'dd-mm-yyyy' }]]}>
+    <TestAtomStoreProvider initialValues={[[settingsAtom, {}]]}>
       <DatePicker
         name={args.name}
         label={args.label}
         language={args.language}
         labelToday={args.labelToday}
         labelClear={args.labelClear}
-        dateFormat={args.dateFormat}
         placeholder={args.placeholder}
         hideLabel={args.hideLabel}
         className={args.className}
         onChange={args.onChange}
         onBlur={args.onBlur}
         clearFieldAction={args.clearFieldAction}
+        value={args.value}
       />
     </TestAtomStoreProvider>
   ),
@@ -50,7 +50,6 @@ const Basic: Story = {
     name: 'dateField',
     label: 'Fecha',
     language: 'es',
-    dateFormat: 'dd-mm-yyyy',
     labelToday: 'Hoy',
     labelClear: 'Limpiar',
     placeholder: 'Seleccione una fecha',
