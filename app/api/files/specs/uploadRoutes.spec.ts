@@ -70,7 +70,7 @@ describe('upload routes', () => {
       pathManager = new PathManager({ tenant: tenants.current() });
     });
 
-    fit('should upload the file', async () => {
+    it('should upload the file', async () => {
       const response = await uploadDocument('testing_files/english_testing_file.pdf');
       expect(response).toHaveStatus(200);
 
@@ -83,7 +83,7 @@ describe('upload routes', () => {
       ).toBe(true);
     });
 
-    fit('should process and reindex the document after upload', async () => {
+    it('should process and reindex the document after upload', async () => {
       const res = await uploadDocument('testing_files/english_testing_file.pdf');
       expect(res).toHaveStatus(200);
 
@@ -124,7 +124,7 @@ describe('upload routes', () => {
       });
     });
 
-    fit('should generate a thumbnail for the document', async () => {
+    it('should generate a thumbnail for the document', async () => {
       await uploadDocument('testing_files/english_testing_file.pdf');
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
@@ -143,7 +143,7 @@ describe('upload routes', () => {
     });
 
     describe('Language detection', () => {
-      fit('should detect English documents and store the result', async () => {
+      it('should detect English documents and store the result', async () => {
         await uploadDocument('testing_files/eng.pdf');
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
@@ -152,7 +152,7 @@ describe('upload routes', () => {
         expect(upload.language).toBe('eng');
       });
 
-      fit('should detect Spanish documents and store the result', async () => {
+      it('should detect Spanish documents and store the result', async () => {
         await uploadDocument('testing_files/spn.pdf');
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
@@ -171,7 +171,9 @@ describe('upload routes', () => {
             .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
         );
 
-        const [upload] = await files.get({ originalname: 'invalid_document.txt' }, '+fullText');
+        const upload = (await testingEnvironment.db.getAllFrom('files')).find(
+          f => f.originalname === 'invalid_document.txt'
+        ) as FileType;
         expect(upload.status).toBe('failed');
       });
 

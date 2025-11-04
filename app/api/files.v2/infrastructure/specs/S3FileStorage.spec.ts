@@ -3,6 +3,7 @@ import {
   DeleteBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  GetObjectCommandOutput,
   ListObjectsCommand,
   PutObjectCommand,
   S3Client,
@@ -10,10 +11,9 @@ import {
 import { config } from 'api/config';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
-import { File } from 'api/files.v2/model/File';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { Tenant } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
-import { createReadStream } from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
@@ -22,6 +22,16 @@ describe('S3FileStorage', () => {
   let s3Client: S3Client;
   let s3fileStorage: S3FileStorage;
   let tenant: Tenant;
+
+  const toString = async (s3File: GetObjectCommandOutput) => {
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
+      const _buf: Buffer[] = [];
+      (s3File.Body as Readable).on('data', (chunk: any) => _buf.push(chunk));
+      (s3File.Body as Readable).on('end', () => resolve(Buffer.concat(_buf)));
+      (s3File.Body as Readable).on('error', (err: unknown) => reject(err));
+    });
+    return buffer.toString('utf8');
+  };
 
   beforeEach(async () => {
     config.s3 = {
@@ -211,7 +221,7 @@ describe('S3FileStorage', () => {
 
         const content = await file.asContentString();
 
-        expect(content).toBe(Body);
+        expect(content.getDataOrThrow()).toBe(Body);
       });
 
       await Promise.all(promises);
@@ -219,7 +229,9 @@ describe('S3FileStorage', () => {
 
     it('should throw an error if the file does not exist', async () => {
       await expect(
-        s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
+        (
+          await s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
+        ).getReadable()
       ).rejects.toThrow();
     });
   });
@@ -239,43 +251,34 @@ describe('S3FileStorage', () => {
 
     it('should store it on s3 bucket', async () => {
       await s3fileStorage.storeFile({
-        file: new File({
-          source: createReadStream(testingFilesPath('documento.txt')),
-          filename: 'file_created.txt',
-        }),
+        file: new FileContents(testingFilesPath('documento.txt')),
         type: 'document',
       });
 
       const s3File = await s3Client.send(
         new GetObjectCommand({
           Bucket: 'uwazi-development',
-          Key: 'test-tenant/documents/file_created.txt',
+          Key: 'test-tenant/documents/documento.txt',
         })
       );
-      // @ts-ignore
-      const file = new File({ source: s3File.Body as Readable, filename: 'file_created.txt' });
-      expect(await file.asContentString()).toBe('content created\n');
+
+      expect(await toString(s3File)).toBe('content created\n');
     });
 
     describe('when type is segmentation', () => {
       it('should store it on a segmentation folder inside documents path', async () => {
-        testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
         await s3fileStorage.storeFile({
-          file: new File({
-            source: createReadStream(testingFilesPath('documento.txt')),
-            filename: 'file_created.txt',
-          }),
+          file: new FileContents(testingFilesPath('documento.txt')),
           type: 'segmentation',
         });
 
         const s3File = await s3Client.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'test-tenant/documents/segmentation/file_created.txt',
+            Key: 'test-tenant/documents/segmentation/documento.txt',
           })
         );
-        const file = new File({ source: s3File.Body as Readable, filename: 'file_created.txt' });
-        expect(await file.asContentString()).toBe('content created\n');
+        expect(await toString(s3File)).toBe('content created\n');
       });
     });
   });

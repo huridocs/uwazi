@@ -1,9 +1,9 @@
 import { ResultType } from 'api/core/libs/Result';
-import { File } from 'api/files.v2/model/File';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
 export interface PDFService {
-  extractText(file: File): Promise<
+  extractText(file: FileContents): Promise<
     ResultType<
       {
         pages: { [pageNumber: string]: string };
@@ -13,5 +13,5 @@ export interface PDFService {
       Error
     >
   >;
-  createThumbnail(file: File): Promise<ResultType<File, Error>>;
+  createThumbnail(file: FileContents): Promise<ResultType<FileContents, Error>>;
 }

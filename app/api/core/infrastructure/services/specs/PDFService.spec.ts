@@ -1,9 +1,9 @@
-import { File } from 'api/files.v2/model/File';
 import { legacyLogger } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createHash } from 'crypto';
+import { FileContents } from 'api/files.v2/model/FileContents';
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream, createWriteStream } from 'fs';
+import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile } from 'fs/promises';
 import { tmpdir } from 'os';
@@ -28,10 +28,7 @@ describe('PDFService', () => {
 
   describe('extractText', () => {
     it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
-      const testFile = new File({
-        filename: '12345.test.pdf',
-        source: createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
-      });
+      const testFile = new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf'));
       const conversion = (await pdf.extractText(testFile)).getDataOrThrow();
 
       expect(conversion.pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
@@ -43,10 +40,9 @@ describe('PDFService', () => {
     });
 
     it('should throw error with proper error message pdf is invalid or malformed', async () => {
-      const invalidFile = new File({
-        filename: '1invalid.test.pdf',
-        source: createReadStream(path.join(__dirname, 'testing_files', '1invalid.test.pdf')),
-      });
+      const invalidFile = new FileContents(
+        path.join(__dirname, 'testing_files', '1invalid.test.pdf')
+      );
       pdf = new PDFService();
 
       const result = await pdf.extractText(invalidFile);
@@ -58,16 +54,16 @@ describe('PDFService', () => {
 
   describe('createThumbnail', () => {
     it('should create thumbnail', async () => {
-      const testFile = new File({
-        filename: '12345.test.pdf',
-        source: createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
-      });
+      const testFile = new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf'));
 
       const thumbnail = (await pdf.createThumbnail(testFile)).getDataOrThrow();
-      expect(thumbnail).toBeInstanceOf(File);
+      expect(thumbnail).toBeInstanceOf(FileContents);
 
       const thumbnailPath = path.join(tmpdir(), `thumbnail_${Date.now()}_${Math.random()}.jpg`);
-      await pipeline(thumbnail.source, createWriteStream(thumbnailPath));
+      await pipeline(
+        (await thumbnail.getReadable()).getDataOrThrow(),
+        createWriteStream(thumbnailPath)
+      );
 
       expect(
         await filesAreIdentical(
@@ -80,10 +76,7 @@ describe('PDFService', () => {
     it('should return the error when there is one', async () => {
       legacyLogger.error = jest.fn();
 
-      const invalidFile = new File({
-        filename: 'not_a_pdf.pdf',
-        source: createReadStream(path.join(__dirname, 'testing_files', 'not_a_pdf.pdf')),
-      });
+      const invalidFile = new FileContents(path.join(__dirname, 'testing_files', 'not_a_pdf.pdf'));
 
       const result = await pdf.createThumbnail(invalidFile);
       expect(

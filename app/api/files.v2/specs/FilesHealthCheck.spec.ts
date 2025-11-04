@@ -1,14 +1,13 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { FilesHealthCheck } from '../FilesHealthCheck';
-import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
+import { FileStorage } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
-import { UwaziFile } from '../model/UwaziFile';
-import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
 import { StoredFile } from '../model/StoredFile';
-import { File } from '../model/File';
+import { URLAttachment } from '../model/URLAttachment';
+import { UwaziFile } from '../model/UwaziFile';
 
 const factory = getFixturesFactory();
 
@@ -21,17 +20,8 @@ afterAll(async () => {
 });
 
 let testStorageFiles: StoredFile[] = [];
+//@ts-ignore
 class TestFileStorage implements FileStorage {
-  async storeFile(_input: UploadFileInput) {
-    throw new Error('Method not implemented.');
-  }
-  async getFiles(_inputs: GetFileInput[]): Promise<File[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  async getFile(_input: GetFileInput): Promise<File> {
-    throw new Error('Method not implemented.');
-  }
   // eslint-disable-next-line class-methods-use-this
   getPath(file: UwaziFile): string {
     if (file instanceof URLAttachment) {
@@ -54,6 +44,7 @@ let filesHealthCheck: FilesHealthCheck;
 describe('FilesHealthCheck', () => {
   beforeEach(() => {
     filesHealthCheck = new FilesHealthCheck(
+      //@ts-ignore
       new TestFileStorage(),
       DefaultFilesDataSource(TransactionManagerFactory.default())
     );

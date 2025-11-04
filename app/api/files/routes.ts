@@ -90,7 +90,7 @@ export default (app: Application) => {
         await uploadMiddleware('document')(req, res, next);
       }
     },
-    async (req, res, next) => {
+    async (req, res) => {
       if (!req.file) throw new Error('File is not available on request object');
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
@@ -106,11 +106,10 @@ export default (app: Application) => {
         }
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
-        next(err);
-        // handleError(err);
-        // const [file] = await files.get({ filename: req.file.filename });
-        // res.json(file);
-        // req.emitToSessionSocket('conversionFailed', req.body.entity);
+        handleError(err);
+        const [file] = await files.get({ filename: req.file.filename });
+        res.json(file);
+        req.emitToSessionSocket('conversionFailed', req.body.entity);
       }
     },
     activitylogMiddleware

@@ -12,7 +12,7 @@ import { Readable } from 'stream';
 import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
 import { Attachment } from '../model/Attachment';
 import { CustomUpload } from '../model/CustomUpload';
-import { File } from '../model/File';
+import { FileContents } from '../model/FileContents';
 import { StoredFile } from '../model/StoredFile';
 import { URLAttachment } from '../model/URLAttachment';
 import { UwaziFile } from '../model/UwaziFile';
@@ -38,7 +38,7 @@ export class S3FileStorage implements FileStorage {
       new PutObjectCommand({
         Bucket: this.bucket,
         Key: this.pathManager.createPath({ filename: input.file.filename, type: input.type }),
-        Body: await input.file.toBuffer(),
+        Body: (await input.file.toBuffer()).getDataOrThrow(),
       })
     );
   }
@@ -49,12 +49,13 @@ export class S3FileStorage implements FileStorage {
       Key: this.pathManager.createPath(input),
     });
 
-    const response = await this.s3Client.send(command);
-
-    return new File({ source: response.Body as Readable, filename: input.filename });
+    return new FileContents({
+      readableCallback: async () => (await this.s3Client.send(command)).Body as Readable,
+      filename: input.filename,
+    });
   }
 
-  async getFiles(inputs: GetFileInput[]): Promise<File[]> {
+  async getFiles(inputs: GetFileInput[]) {
     const promises = inputs.map(async input => this.getFile(input));
 
     return Promise.all(promises);

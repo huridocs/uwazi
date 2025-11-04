@@ -2,10 +2,9 @@
 import { PDFService } from 'api/core/application/contracts/PDFService';
 import { Result } from 'api/core/libs/Result';
 import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
-import { File } from 'api/files.v2/model/File';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import franc from 'franc';
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
 import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from 'shared/language';
@@ -17,9 +16,11 @@ class PDFServiceAdapter implements PDFService {
     this.shell = shell || new ShellExecutor();
   }
 
-  async extractText(file: File) {
-    const tempPath = await file.asTmpDiskFile();
-    const commandResult = await this.shell.execute('pdftotext', [tempPath, '-']);
+  async extractText(file: FileContents) {
+    const commandResult = await this.shell.execute('pdftotext', [
+      file.getFullPath().getDataOrThrow(),
+      '-',
+    ]);
     if (commandResult.isError()) {
       return commandResult;
     }
@@ -39,10 +40,9 @@ class PDFServiceAdapter implements PDFService {
     });
   }
 
-  async createThumbnail(file: File) {
-    const pdfPath = await file.asTmpDiskFile();
-
-    const thumbnailPath = path.join(os.tmpdir(), `thumbnail_${Date.now()}_${Math.random()}`);
+  async createThumbnail(file: FileContents) {
+    const thumbFileName = `thumbnail_${Date.now()}_${Math.random()}`;
+    const thumbnailPath = path.join(os.tmpdir(), thumbFileName);
 
     const commandResult = await this.shell.execute('pdftoppm', [
       '-f',
@@ -51,19 +51,14 @@ class PDFServiceAdapter implements PDFService {
       '-scale-to',
       '320',
       '-jpeg',
-      pdfPath,
+      file.getFullPath().getDataOrThrow(),
       thumbnailPath,
     ]);
 
     if (commandResult.isError()) {
       return commandResult;
     }
-    return Result.ok(
-      new File({
-        filename: path.basename(pdfPath),
-        source: createReadStream(`${thumbnailPath}.jpg`),
-      })
-    );
+    return Result.ok(new FileContents(`${thumbnailPath}.jpg`));
   }
 }
 
