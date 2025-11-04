@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 
 import Immutable from 'immutable';
-import moment from 'moment-timezone';
+import { Settings } from 'luxon';
 
 import { metadataSelectors } from '../../selectors';
 
@@ -502,31 +502,37 @@ describe('metadata formater', () => {
 
       describe('creationDate', () => {
         it('should be formated using local time', async () => {
-          moment.tz.setDefault('Europe/Madrid');
+          const originalZone = Settings.defaultZone;
+
+          Settings.defaultZone = 'Europe/Madrid';
           let formated = prepareMetadata('creationDate');
           let formatedCreationDate = formated[formated.length - 1];
           expect(formatedCreationDate.value).toBe('Jan 1, 1970');
 
-          moment.tz.setDefault('Pacific/Honolulu');
+          Settings.defaultZone = 'Pacific/Honolulu';
           formated = prepareMetadata('creationDate');
           formatedCreationDate = formated[formated.length - 1];
           expect(formatedCreationDate.value).toBe('Dec 31, 1969');
-          moment.tz.setDefault();
+
+          Settings.defaultZone = originalZone;
         });
       });
 
       describe('editDate', () => {
         it('should be formated using local time', async () => {
-          moment.tz.setDefault('Europe/Madrid');
+          const originalZone = Settings.defaultZone;
+
+          Settings.defaultZone = 'Europe/Madrid';
           let formated = prepareMetadata('editDate');
           let formatedEditDate = formated[formated.length - 1];
           expect(formatedEditDate.value).toBe('Jan 1, 1970');
 
-          moment.tz.setDefault('Pacific/Honolulu');
+          Settings.defaultZone = 'Pacific/Honolulu';
           formated = prepareMetadata('editDate');
           formatedEditDate = formated[formated.length - 1];
           expect(formatedEditDate.value).toBe('Dec 31, 1969');
-          moment.tz.setDefault();
+
+          Settings.defaultZone = originalZone;
         });
       });
 
