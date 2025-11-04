@@ -5,12 +5,8 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-<<<<<<< HEAD
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
-=======
-import { tenants } from 'api/tenants';
->>>>>>> origin/production
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request } from 'express';
@@ -95,9 +91,9 @@ const isFilePubliclyAccessible = async (
       'published',
       { withoutDocuments: true }
     );
-
     return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
   } catch (error) {
+    console.log(error);
     return false;
   }
 };
@@ -135,25 +131,25 @@ export default (app: Application) => {
         await new Promise<void>((resolve, reject) => {
           multer({ storage: defaultStorage }).single('file')(req, res, err => {
             if (!err) resolve();
-            reject(err);
+              reject(err);
+            });
           });
-        });
-        next();
-      } else {
-        await uploadMiddleware('document')(req, res, next);
-      }
-    },
-    async (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-      try {
-        req.emitToSessionSocket('conversionStart', req.body.entity);
-        if (tenants.current().featureFlags?.v2UploadFile) {
-          const savedFile = await FileUploadUseCaseFactory.default().execute({
-            file: req.file,
-            entityId: req.body.entity,
-          });
-          res.json(savedFile);
+          next();
         } else {
+          await uploadMiddleware('document')(req, res, next);
+        }
+      },
+      async (req, res) => {
+        if (!req.file) throw new Error('File is not available on request object');
+        try {
+          req.emitToSessionSocket('conversionStart', req.body.entity);
+          if (tenants.current().featureFlags?.v2UploadFile) {
+            const savedFile = await FileUploadUseCaseFactory.default().execute({
+              file: req.file,
+              entityId: req.body.entity,
+            });
+            res.json(savedFile);
+          } else {
           const savedFile = await processDocument(req.body.entity, req.file);
           res.json(savedFile);
         }
