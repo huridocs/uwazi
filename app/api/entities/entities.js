@@ -424,10 +424,9 @@ export default {
         ..._doc,
         templateId: _doc.template,
         propertyAssignments: [
-          ...Object.entries(_doc.metadata || {}).map(([name, value, ...rest]) => ({
+          ...Object.entries(_doc.metadata || {}).map(([name, value]) => ({
             name,
             value,
-            ...rest,
           })),
           {
             name: 'title',
