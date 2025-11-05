@@ -138,7 +138,17 @@ class Entity {
   }
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
-    const sync: PropertyType[] = ['numeric', 'select', 'multiselect'];
+    const sync: PropertyType[] = [
+      'numeric',
+      'select',
+      'multiselect',
+      'date',
+      'multidate',
+      'multidaterange',
+      'nested',
+      'relationship',
+      'geolocation',
+    ];
 
     if (sync.includes(value.type)) {
       this.setValueInAllLanguages(value);

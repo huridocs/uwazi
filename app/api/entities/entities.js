@@ -24,6 +24,10 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -385,13 +389,18 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async save(_doc, { user, language }, options = {}) {
+  async save(_doc, { user, language, attachments }, options = {}) {
     const { v2CreateEntity } = tenants.current().featureFlags;
 
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     if (v2CreateEntity) {
       const transactionManager = TransactionManagerFactory.default();
       const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+      const filesStorage = FileStorageStrategyFactory.createDefault();
+      const filesDS = DefaultFilesDataSource(transactionManager);
+      const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+
       const useCase = new CreateEntityUseCase(
         {
           templatesDS,
@@ -403,6 +412,10 @@ export default {
             templatesDS
           ),
           transactionManager,
+          filesDS,
+          filesStorage,
+          thesauriDS,
+          translationsDS,
         },
         { actor: user }
       );
@@ -421,6 +434,7 @@ export default {
             value: [{ value: _doc.title }],
           },
         ],
+        attachments: attachments?.length ? attachments : [],
       });
 
       return MongoEntityMapper.toDBO(output).find(e => e.language === language);

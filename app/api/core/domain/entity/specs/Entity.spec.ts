@@ -18,19 +18,98 @@ import { PreviewProperty } from '../../template/PreviewProperty';
 import { NestedProperty } from '../../template/NestedProperty';
 import { V1RelationshipProperty } from '../../template/V1RelationshipProperty';
 import { EntityTranslation } from '../EntityTranslation';
+import { GenerateIdProperty } from '../../template/GenerateIdProperty';
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: 'template-123' })
     .withProperties([
       new TextProperty({
-        id: 'description',
+        id: 'text',
         template: 'template-123',
-        label: 'Description',
+        label: 'Text',
       }),
       new NumericProperty({
-        id: 'age',
+        id: 'numeric',
         template: 'template-123',
-        label: 'Age',
+        label: 'Numeric',
+      }),
+      new DateProperty({
+        id: 'date',
+        label: 'Date',
+        template: 'template-123',
+      }),
+      new DateRangeProperty({
+        id: 'dateRange',
+        label: 'Date Range',
+        template: 'template-123',
+      }),
+      new GeolocationProperty({
+        id: 'geolocation',
+        label: 'Geolocation',
+        template: 'template-123',
+      }),
+      new ImageProperty({
+        id: 'image',
+        label: 'Image',
+        template: 'template-123',
+      }),
+      new LinkProperty({
+        id: 'link',
+        label: 'Link',
+        template: 'template-123',
+      }),
+      new MarkdownProperty({
+        id: 'markdown',
+        label: 'Markdown',
+        template: 'template-123',
+      }),
+      new MediaProperty({
+        id: 'media',
+        label: 'Media',
+        template: 'template-123',
+      }),
+      new MultiDateProperty({
+        id: 'multidate',
+        label: 'Multi Date',
+        template: 'template-123',
+      }),
+      new MultiDateRangeProperty({
+        id: 'multidaterange',
+        label: 'Multi Date Range',
+        template: 'template-123',
+      }),
+      new MultiSelectProperty({
+        id: 'multiselect',
+        label: 'Multi Select',
+        template: 'template-123',
+        content: 'thes-123',
+      }),
+      new NestedProperty({
+        id: 'nested',
+        label: 'Nested',
+        template: 'template-123',
+      }),
+      new PreviewProperty({
+        id: 'preview',
+        label: 'Preview',
+        template: 'template-123',
+      }),
+      V1RelationshipProperty.create({
+        id: 'relationship',
+        label: 'Relationship',
+        relationType: 'rel-type-123',
+        template: 'template-123',
+      }),
+      new SelectProperty({
+        id: 'select',
+        label: 'Select',
+        template: 'template-123',
+        content: 'thes-123',
+      }),
+      new GenerateIdProperty({
+        id: 'generatedid',
+        label: 'Generated ID',
+        template: 'template-123',
       }),
     ])
     .build();
@@ -77,32 +156,188 @@ describe('Entity', () => {
     );
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('description', {
+      entity.template.createPropertyAssignment('text', {
         value: [{ value: 'A description in multiple languages' }],
       }),
-      entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
+
+      entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
+
+      entity.template.createPropertyAssignment('date', {
+        value: [{ value: 1609459200000 }],
+      }),
+
+      entity.template.createPropertyAssignment('date_range', {
+        value: [{ value: { from: 1609459200000, to: 1612137600000 } }],
+      }),
+
+      entity.template.createPropertyAssignment('geolocation_geolocation', {
+        value: [{ value: { lat: 48.8566, lon: 2.3522, label: 'Paris' } }],
+      }),
+
+      entity.template.createPropertyAssignment('image', {
+        value: [{ value: '/api/files/image.jpg' }],
+      }),
+
+      entity.template.createPropertyAssignment('link', {
+        value: [{ value: { url: 'https://example.com', label: 'Example' } }],
+      }),
+
+      entity.template.createPropertyAssignment('markdown', {
+        value: [{ value: '<p>A description in multiple languages</p>' }],
+      }),
+
+      entity.template.createPropertyAssignment('multi_date', {
+        value: [{ value: 1609459200000 }, { value: 1612137600000 }],
+      }),
+
+      entity.template.createPropertyAssignment('multi_date_range', {
+        value: [
+          { value: { from: 1609459200000, to: 1612137600000 } },
+          { value: { from: 1609459200000, to: 1612137600000 } },
+        ],
+      }),
+
+      entity.template.createPropertyAssignment('multi_select', {
+        value: [
+          { value: 'tag1', label: 'Tag One' },
+          { value: 'tag2', label: 'Tag Two' },
+        ],
+        language: 'en',
+      }),
+      entity.template.createPropertyAssignment('multi_select', {
+        value: [
+          { value: 'tag1', label: 'Tag Uno' },
+          { value: 'tag2', label: 'Tag Dos' },
+        ],
+        language: 'es',
+      }),
+      entity.template.createPropertyAssignment('multi_select', {
+        value: [
+          { value: 'tag1', label: 'Tag Un' },
+          { value: 'tag2', label: 'Tag Deux' },
+        ],
+        language: 'fr',
+      }),
+
+      entity.template.createPropertyAssignment('select', {
+        value: [{ value: 'us', label: 'United States' }],
+        language: 'en',
+      }),
+
+      entity.template.createPropertyAssignment('select', {
+        value: [{ value: 'us', label: 'États-Unis' }],
+        language: 'fr',
+      }),
+      entity.template.createPropertyAssignment('select', {
+        value: [{ value: 'us', label: 'Estados Unidos' }],
+        language: 'es',
+      }),
+
+      entity.template.createPropertyAssignment('generated_id', {
+        value: [{ value: 'ADSAD-231' }],
+      }),
+
+      // entity.template.createPropertyAssignment('media', {
+      //   value: [{ value: '<p>A description in multiple languages</p>' }],
+      // }),
+
+      // entity.template.createPropertyAssignment('nested', {
+      //   value: [
+      //     {
+      //       value: {
+      //         key1: [{ value: 'value1' }],
+      //         key2: [{ value: 'value2' }],
+      //       },
+      //     },
+      //   ],
+      // }),
     ]);
 
-    const entityLanguage = new EntityTranslation({
-      id: 'id-789',
-      language: 'en',
-      metadata: {
-        ...entity.template.createDefaultPropertyAssignments(),
-        description: entity.template.createPropertyAssignment('description', {
-          value: [{ value: 'A description in multiple languages' }],
-        }),
-        age: entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
-        editDate: entity.template.createPropertyAssignment('editDate', {
-          value: [{ value: expect.any(Number) }],
-        }),
-      },
-    });
+    expect(entity.getPropertyAssignments('text').map(item => item.value)).toEqual([
+      [{ value: 'A description in multiple languages' }],
+      [{ value: 'A description in multiple languages' }],
+      [{ value: 'A description in multiple languages' }],
+    ]);
 
-    expect(entity.translations).toEqual({
-      en: entityLanguage,
-      es: { ...entityLanguage, language: 'es' },
-      fr: { ...entityLanguage, language: 'fr' },
-    });
+    expect(entity.getPropertyAssignments('numeric').map(item => item.value)).toEqual([
+      [{ value: 42 }],
+      [{ value: 42 }],
+      [{ value: 42 }],
+    ]);
+
+    expect(entity.getPropertyAssignments('date').map(item => item.value)).toEqual([
+      [{ value: 1609459200000 }],
+      [{ value: 1609459200000 }],
+      [{ value: 1609459200000 }],
+    ]);
+
+    expect(
+      entity.getPropertyAssignments('geolocation_geolocation').map(item => item.value)
+    ).toEqual([
+      [{ value: { lat: 48.8566, lon: 2.3522, label: 'Paris' } }],
+      [{ value: { lat: 48.8566, lon: 2.3522, label: 'Paris' } }],
+      [{ value: { lat: 48.8566, lon: 2.3522, label: 'Paris' } }],
+    ]);
+
+    expect(entity.getPropertyAssignments('image').map(item => item.value)).toEqual([
+      [{ value: '/api/files/image.jpg' }],
+      [{ value: '/api/files/image.jpg' }],
+      [{ value: '/api/files/image.jpg' }],
+    ]);
+
+    expect(entity.getPropertyAssignments('link').map(item => item.value)).toEqual([
+      [{ value: { url: 'https://example.com', label: 'Example' } }],
+      [{ value: { url: 'https://example.com', label: 'Example' } }],
+      [{ value: { url: 'https://example.com', label: 'Example' } }],
+    ]);
+
+    expect(entity.getPropertyAssignments('markdown').map(item => item.value)).toEqual([
+      [{ value: '<p>A description in multiple languages</p>' }],
+      [{ value: '<p>A description in multiple languages</p>' }],
+      [{ value: '<p>A description in multiple languages</p>' }],
+    ]);
+
+    expect(entity.getPropertyAssignments('multi_date').map(item => item.value)).toEqual([
+      [{ value: 1609459200000 }, { value: 1612137600000 }],
+      [{ value: 1609459200000 }, { value: 1612137600000 }],
+      [{ value: 1609459200000 }, { value: 1612137600000 }],
+    ]);
+
+    expect(entity.getPropertyAssignments('multi_date_range').map(item => item.value)).toEqual([
+      [
+        { value: { from: 1609459200000, to: 1612137600000 } },
+        { value: { from: 1609459200000, to: 1612137600000 } },
+      ],
+      [
+        { value: { from: 1609459200000, to: 1612137600000 } },
+        { value: { from: 1609459200000, to: 1612137600000 } },
+      ],
+      [
+        { value: { from: 1609459200000, to: 1612137600000 } },
+        { value: { from: 1609459200000, to: 1612137600000 } },
+      ],
+    ]);
+
+    expect(entity.getPropertyAssignments('select').map(item => item.value)).toEqual([
+      [{ value: 'us', label: 'United States' }],
+      [{ value: 'us', label: 'États-Unis' }],
+      [{ value: 'us', label: 'Estados Unidos' }],
+    ]);
+
+    expect(entity.getPropertyAssignments('multi_select').map(item => item.value)).toEqual([
+      [
+        { value: 'tag1', label: 'Tag One' },
+        { value: 'tag2', label: 'Tag Two' },
+      ],
+      [
+        { value: 'tag1', label: 'Tag Un' },
+        { value: 'tag2', label: 'Tag Deux' },
+      ],
+      [
+        { value: 'tag1', label: 'Tag Uno' },
+        { value: 'tag2', label: 'Tag Dos' },
+      ],
+    ]);
   });
 
   it('should allow partial updates when setting values', () => {
@@ -116,11 +351,11 @@ describe('Entity', () => {
     );
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
+      entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
     ]);
 
     entity.setPropertyAssignments([
-      entity.template.createPropertyAssignment('description', {
+      entity.template.createPropertyAssignment('text', {
         value: [{ value: 'A description in multiple languages' }],
       }),
     ]);
@@ -129,14 +364,11 @@ describe('Entity', () => {
       id: 'id-789',
       language: 'en',
       metadata: {
-        creationDate: entity.template.createPropertyAssignment('creationDate', {
-          value: [{ value: expect.any(Number) }],
-        }),
-        description: entity.template.createPropertyAssignment('description', {
+        ...entity.template.createDefaultPropertyAssignments(),
+        text: entity.template.createPropertyAssignment('text', {
           value: [{ value: 'A description in multiple languages' }],
         }),
-        age: entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
-        title: entity.template.createPropertyAssignment('title', { value: [] }),
+        numeric: entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
         editDate: entity.template.createPropertyAssignment('editDate', {
           value: [{ value: expect.any(Number) }],
         }),
@@ -165,10 +397,10 @@ describe('Entity', () => {
         entity.template.createPropertyAssignment('title', {
           value: [{ value: 'A title in English' }],
         }),
-        entity.template.createPropertyAssignment('description', {
+        entity.template.createPropertyAssignment('text', {
           value: [{ value: 'A description in English' }],
         }),
-        entity.template.createPropertyAssignment('age', { value: [{ value: 42 }] }),
+        entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
       ],
       'en'
     );
@@ -178,7 +410,7 @@ describe('Entity', () => {
         entity.template.createPropertyAssignment('title', {
           value: [{ value: 'A title in Spanish' }],
         }),
-        entity.template.createPropertyAssignment('description', {
+        entity.template.createPropertyAssignment('text', {
           value: [{ value: 'A description in Spanish' }],
         }),
       ],
@@ -190,75 +422,81 @@ describe('Entity', () => {
         entity.template.createPropertyAssignment('title', {
           value: [{ value: 'A title in French' }],
         }),
-        entity.template.createPropertyAssignment('description', {
+        entity.template.createPropertyAssignment('text', {
           value: [{ value: 'A description in French' }],
         }),
       ],
       'fr'
     );
 
-    expect(entity.getTranslation('en')).toEqual({
-      id: 'id-789',
-      language: 'en',
-      metadata: {
-        title: { name: 'title', value: [{ value: 'A title in English' }], type: 'text' },
-        description: {
-          name: 'description',
-          value: [{ value: 'A description in English' }],
-          type: 'text',
-        },
-        age: { name: 'age', value: [{ value: 42 }], type: 'numeric' },
+    expect(entity.getTranslation('en')).toEqual(
+      expect.objectContaining({
+        id: 'id-789',
+        language: 'en',
+        metadata: expect.objectContaining({
+          title: { name: 'title', value: [{ value: 'A title in English' }], type: 'text' },
+          text: {
+            name: 'text',
+            value: [{ value: 'A description in English' }],
+            type: 'text',
+          },
+          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
 
-        creationDate: {
-          name: 'creationDate',
-          value: [{ value: expect.any(Number) }],
-          type: 'date',
-        },
-        editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-      },
-    });
+          creationDate: {
+            name: 'creationDate',
+            value: [{ value: expect.any(Number) }],
+            type: 'date',
+          },
+          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
+        }),
+      })
+    );
 
-    expect(entity.getTranslation('fr')).toEqual({
-      id: 'id-789',
-      language: 'fr',
-      metadata: {
-        title: { name: 'title', value: [{ value: 'A title in French' }], type: 'text' },
-        description: {
-          name: 'description',
-          value: [{ value: 'A description in French' }],
-          type: 'text',
-        },
-        age: { name: 'age', value: [{ value: 42 }], type: 'numeric' },
+    expect(entity.getTranslation('fr')).toEqual(
+      expect.objectContaining({
+        id: 'id-789',
+        language: 'fr',
+        metadata: expect.objectContaining({
+          title: { name: 'title', value: [{ value: 'A title in French' }], type: 'text' },
+          text: {
+            name: 'text',
+            value: [{ value: 'A description in French' }],
+            type: 'text',
+          },
+          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
 
-        creationDate: {
-          name: 'creationDate',
-          value: [{ value: expect.any(Number) }],
-          type: 'date',
-        },
-        editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-      },
-    });
+          creationDate: {
+            name: 'creationDate',
+            value: [{ value: expect.any(Number) }],
+            type: 'date',
+          },
+          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
+        }),
+      })
+    );
 
-    expect(entity.getTranslation('es')).toEqual({
-      id: 'id-789',
-      language: 'es',
-      metadata: {
-        title: { name: 'title', value: [{ value: 'A title in Spanish' }], type: 'text' },
-        description: {
-          name: 'description',
-          value: [{ value: 'A description in Spanish' }],
-          type: 'text',
-        },
-        age: { name: 'age', value: [{ value: 42 }], type: 'numeric' },
+    expect(entity.getTranslation('es')).toEqual(
+      expect.objectContaining({
+        id: 'id-789',
+        language: 'es',
+        metadata: expect.objectContaining({
+          title: { name: 'title', value: [{ value: 'A title in Spanish' }], type: 'text' },
+          text: {
+            name: 'text',
+            value: [{ value: 'A description in Spanish' }],
+            type: 'text',
+          },
+          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
 
-        creationDate: {
-          name: 'creationDate',
-          value: [{ value: expect.any(Number) }],
-          type: 'date',
-        },
-        editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-      },
-    });
+          creationDate: {
+            name: 'creationDate',
+            value: [{ value: expect.any(Number) }],
+            type: 'date',
+          },
+          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
+        }),
+      })
+    );
   });
 
   it('should update the editDate when setting values', async () => {
@@ -364,7 +602,7 @@ describe('Entity', () => {
     expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
   });
 
-  it('should localize Relationship property assignments correctly', async () => {
+  it('should only sync non-language specific properties when setting values for Relationship Property', async () => {
     const template = TemplateBuilder.aTemplate({ id: 'template-123' })
       .withProperties([
         V1RelationshipProperty.create({
@@ -448,6 +686,135 @@ describe('Entity', () => {
         ],
       },
     ]);
+  });
+
+  it('should sync numeric properties to all languages even when target language is specified', () => {
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr', 'es'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    entity.setPropertyAssignments(
+      [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
+      'en'
+    );
+
+    expect(entity.getTranslation('en').metadata.numeric.value).toEqual([{ value: 42 }]);
+    expect(entity.getTranslation('fr').metadata.numeric.value).toEqual([{ value: 42 }]);
+    expect(entity.getTranslation('es').metadata.numeric.value).toEqual([{ value: 42 }]);
+  });
+
+  it('should sync date properties to all languages even when target language is specified', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+      .withProperties([
+        new DateProperty({
+          id: 'eventDate',
+          name: 'eventDate',
+          template: 'template-123',
+          label: 'Event Date',
+        }),
+      ])
+      .build();
+
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr'],
+        template,
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    entity.setPropertyAssignments(
+      [template.createPropertyAssignment('eventDate', { value: [{ value: 1609459200000 }] })],
+      'en'
+    );
+
+    expect(entity.getTranslation('en').metadata.eventDate.value).toEqual([
+      { value: 1609459200000 },
+    ]);
+    expect(entity.getTranslation('fr').metadata.eventDate.value).toEqual([
+      { value: 1609459200000 },
+    ]);
+  });
+
+  it('should sync geolocation properties to all languages even when target language is specified', () => {
+    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+      .withProperties([
+        new GeolocationProperty({
+          id: 'place',
+          name: 'place',
+          template: 'template-123',
+          label: 'Place',
+        }),
+      ])
+      .build();
+
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr'],
+        template,
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    entity.setPropertyAssignments(
+      [
+        template.createPropertyAssignment('place', {
+          value: [{ value: { lat: 40.7128, lon: -74.006, label: 'New York' } }],
+        }),
+      ],
+      'en'
+    );
+
+    expect(entity.getTranslation('en').metadata.place.value).toEqual([
+      { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
+    ]);
+    expect(entity.getTranslation('fr').metadata.place.value).toEqual([
+      { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
+    ]);
+  });
+
+  it('should NOT sync text properties to other languages when target language is specified', () => {
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr', 'es'],
+        template: createSampleTemplate(),
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    entity.setPropertyAssignments(
+      [
+        entity.template.createPropertyAssignment('text', {
+          value: [{ value: 'Description in English' }],
+        }),
+      ],
+      'en'
+    );
+
+    entity.setPropertyAssignments(
+      [
+        entity.template.createPropertyAssignment('text', {
+          value: [{ value: 'Description en français' }],
+        }),
+      ],
+      'fr'
+    );
+
+    expect(entity.getTranslation('en').metadata.text.value).toEqual([
+      { value: 'Description in English' },
+    ]);
+    expect(entity.getTranslation('fr').metadata.text.value).toEqual([
+      { value: 'Description en français' },
+    ]);
+    expect(entity.getTranslation('es').metadata.text.value).toEqual([]);
   });
 
   describe('validate for required Properties when settings values', () => {

@@ -1,5 +1,6 @@
 import { Context, CreatePropertyAssignmentInput } from 'api/core/domain/template/Property';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '../errors';
 import { FilterableProperty, FilterablePropertyProps } from '../FilterableProperty';
 import { SelectionEntry, SelectPropertyAssignment } from '../PropertyValue';
@@ -45,16 +46,11 @@ class AbstractSelectProperty extends FilterableProperty {
   createPropertyAssignment(
     input: CreatePropertyAssignmentInput<SelectionEntry>
   ): SelectPropertyAssignment {
-    const seen = new Set<string>();
-    const cleanedValues = input.value.filter(v => {
-      if (seen.has(v.value)) return false;
-      seen.add(v.value);
-      return true;
-    });
+    const deduplicated = ArrayUtils.deduplicate(input.value, v => v.value);
 
     const { language, value } = createSchema(this.required, this.type).parse({
       ...input,
-      value: cleanedValues,
+      value: deduplicated,
     });
 
     return {
