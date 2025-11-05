@@ -3,6 +3,7 @@ import needsAuthorization from 'api/auth/authMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -140,7 +141,7 @@ export default (app: Application) => {
         req.emitToSessionSocket('conversionStart', req.body.entity);
         if (tenants.current().featureFlags?.v2UploadFile) {
           const savedFile = await FileUploadUseCaseFactory.default().execute({
-            file: req.file,
+            uploadedFile: new InputFile(req.file),
             entityId: req.body.entity,
           });
           res.json(savedFile);

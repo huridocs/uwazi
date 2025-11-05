@@ -3,6 +3,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
+import { Document } from 'api/files.v2/model/Document';
+import { elasticTesting } from 'api/utils/elastic_testing';
 
 const factory = getFixturesFactory();
 
@@ -25,10 +27,14 @@ const fixtures = {
     factory.document('file5', { entity: 'entity1', language: 'es' }),
     factory.document('file6', { entity: 'entity1', language: 'it' }),
   ],
+
+  templates: [factory.template('template')],
+
+  entities: [factory.entity('entity_to_reindex', 'template', {})],
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {
@@ -36,6 +42,36 @@ afterAll(async () => {
 });
 
 describe('MongoFilesDataSource', () => {
+  describe('create', () => {
+    it('should reindex related entity if file type is "document"', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      await transactionManager.run(async () => {
+        await ds.create(
+          new Document({
+            id: factory.idString('new document'),
+            entity: 'entity_to_reindex',
+            originalname: 'file.pdf',
+            mimetype: 'application/pdf',
+            size: 1,
+            filename: 'file.pdf',
+            language: 'en',
+            totalPages: 1,
+            status: 'ready',
+            creationDate: 0,
+            uploaded: true,
+            fullText: { 1: 'fullText' },
+          })
+        );
+      });
+
+      await elasticTesting.refresh();
+      expect((await elasticTesting.getIndexedFullTextFromFiles())[0].fullText_english).toBe(
+        'fullText'
+      );
+    });
+  });
+
   describe('deleteExtractedMetadata', () => {
     it('should delete extractedMetadata by name for files belonging to specified entities', async () => {
       const extractedMetadataToDelete = ['to_be_deleted', 'to_be_deleted_2'];
