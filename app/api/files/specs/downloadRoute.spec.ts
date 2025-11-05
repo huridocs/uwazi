@@ -1,5 +1,7 @@
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import settings from 'api/settings/settings';
+import { testingTenants } from 'api/utils/testingTenants';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { Application, NextFunction, Request, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
@@ -32,30 +34,32 @@ describe('files routes download', () => {
   let app: Application;
 
   beforeAll(async () => {
+    await testingEnvironment.cleanupUploadPaths();
     await copyFile(
       path.join(__dirname, `testing_files/${fileName1}`),
-      path.join(__dirname, `uploads/${fileName1}`)
+      path.join(__dirname, `uploads/downloadRoutes/${fileName1}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${restrictedFileName}`),
-      path.join(__dirname, `uploads/${restrictedFileName}`)
+      path.join(__dirname, `uploads/downloadRoutes/${restrictedFileName}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${customPdfFileName}`),
-      path.join(__dirname, `customUploads/${customPdfFileName}`)
+      path.join(__dirname, `customUploads/downloadRoutes/${customPdfFileName}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${fileOnPublicEntity}`),
-      path.join(__dirname, `uploads/${fileOnPublicEntity}`)
+      path.join(__dirname, `uploads/downloadRoutes/${fileOnPublicEntity}`)
     );
     app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setTenant(undefined, 'downloadRoutes');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/', () => {
-    it.each([fileName1, customPdfFileName])('should send the file (%s)', async filename => {
+    it.each([fileName1, customPdfFileName])('should get the file (%s)', async filename => {
       const response = await request(app).get(`/api/files/${filename}`);
 
       expect(response.status).toBe(200);
@@ -153,6 +157,110 @@ describe('files routes download', () => {
           .expect(200);
 
         expect(response.body instanceof Buffer).toBe(true);
+      });
+    });
+
+    describe('Cache-Control and Last-Modified headers', () => {
+      beforeEach(async () => {
+        await testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: true } });
+      });
+
+      describe('when instance is public', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should set "public, no-cache" for custom files accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set "public, no-cache" for documents from published entities accessed without authentication', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('public, no-cache');
+        });
+
+        it('should set Last-Modified header based on file creationDate', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileOnPublicEntity}`)
+            .expect(200);
+
+          const lastModified = response.get('Last-Modified');
+          expect(lastModified).toBeDefined();
+          await expect(lastModified).toMatch(/GMT$/);
+        });
+      });
+
+      describe('when accessed by authenticated user', () => {
+        beforeEach(async () => {
+          await settings.save({ private: false });
+          app = setAppWithUser(uploadRoutes, adminUser);
+        });
+
+        it('should set "private, max-age=3600" for any file', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+
+        it('should set Last-Modified header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${fileName1}`)
+            .expect(200);
+
+          expect(response.get('Last-Modified')).toBeDefined();
+        });
+      });
+
+      describe('when instance is private', () => {
+        beforeEach(async () => {
+          await settings.save({ private: true });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should set "private, max-age=3600" for all files', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
+        });
+      });
+
+      describe('when feature flag is disabled', () => {
+        beforeEach(async () => {
+          await testingTenants.changeCurrentTenant({ featureFlags: { fileCacheHeaders: false } });
+          await settings.save({ private: false });
+          testingEnvironment.userInContextMockFactory.mock(undefined);
+          app = setUpApp(uploadRoutes);
+        });
+
+        it('should not set Cache-Control header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Cache-Control')).toBeUndefined();
+        });
+
+        it('should not set Last-Modified header', async () => {
+          const response: SuperTestResponse = await request(app)
+            .get(`/api/files/${customPdfFileName}`)
+            .expect(200);
+
+          expect(response.get('Last-Modified')).toBeUndefined();
+        });
       });
     });
   });

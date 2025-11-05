@@ -34,6 +34,7 @@ const mongoSchema = new mongoose.Schema({
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
+    fileCacheHeaders: Boolean,
     v2UploadFile: Boolean,
   },
   globalMatomo: { id: String, url: String },

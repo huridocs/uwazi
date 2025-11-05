@@ -88,16 +88,18 @@ describe('OCR service', () => {
   }
 
   beforeEach(async () => {
+    await testingEnvironment.cleanupUploadPaths();
     await copyFile(
       path.join(__dirname, `testing_files/${fileNameToProcess}`),
-      path.join(__dirname, `uploads/${fileNameToProcess}`)
+      path.join(__dirname, `uploads/ocrRoutes/${fileNameToProcess}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${attachmentFile}`),
-      path.join(__dirname, `uploads/${attachmentFile}`)
+      path.join(__dirname, `uploads/ocrRoutes/${attachmentFile}`)
     );
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setTenant(undefined, 'ocrRoutes');
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
     jest.spyOn(Date, 'now').mockReturnValue(1000);
@@ -111,7 +113,6 @@ describe('OCR service', () => {
   afterAll(async () => {
     jest.restoreAllMocks();
     await testingEnvironment.tearDown();
-    await testingEnvironment.cleanupUploadPaths();
   });
 
   it('should return the status on get', async () => {
@@ -136,7 +137,9 @@ describe('OCR service', () => {
     beforeEach(async () => {
       setSupportedLang(['en']);
       jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
-      const resultTestFile = createReadStream(path.join(__dirname, `uploads/${fileNameToProcess}`));
+      const resultTestFile = createReadStream(
+        path.join(__dirname, `uploads/ocrRoutes/${fileNameToProcess}`)
+      );
       fetchMock.mock(
         'protocol://link/to/result/file',
         {
