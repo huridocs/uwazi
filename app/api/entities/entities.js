@@ -389,7 +389,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async save(_doc, { user, language, attachments }, options = {}) {
+  async save(_doc, { user, language, attachments = [] }, options = {}) {
     const { v2CreateEntity } = tenants.current().featureFlags;
 
     const { updateRelationships = true, index = true, includeDocuments = true } = options;

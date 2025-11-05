@@ -53,7 +53,7 @@ const saveEntity = async (
 
   const updatedEntity = await entities.save(
     entity,
-    { user, language, attachments },
+    { user, language, attachments: attachments as never[] },
     { includeDocuments: false }
   );
 
