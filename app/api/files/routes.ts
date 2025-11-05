@@ -1,7 +1,6 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { processDocument } from 'api/files/processDocument';
@@ -109,9 +108,7 @@ const getCacheControlHeader = (
   return 'private, max-age=3600';
 };
 
-const timestampToHTTPDate = (timestamp: number): string => {
-  return new Date(timestamp).toUTCString();
-};
+const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
 export default (app: Application) => {
   app.post(
@@ -408,57 +405,5 @@ export default (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/import',
-
-    needsAuthorization(['admin']),
-
-    uploadMiddleware(),
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['template'],
-          properties: {
-            template: { type: 'string' },
-          },
-        },
-      },
-    }),
-
-    (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-
-      const loader = new CSVLoader();
-      let loaded = 0;
-
-      loader.on('entityLoaded', () => {
-        loaded += 1;
-        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
-      });
-
-      loader.on('rowExceptions', exceptions => {
-        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
-      });
-
-      loader.on('loadError', error => {
-        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
-      });
-
-      req.emitToSessionSocket('IMPORT_CSV_START');
-
-      loader
-        .load(req.file.path, req.body.template, { language: req.language, user: req.user })
-        .then(() => {
-          req.emitToSessionSocket('IMPORT_CSV_END');
-        })
-        .catch((e: Error) => {
-          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
-        });
-
-      res.json('ok');
-    }
-  );
+  // CSV Import route now handled in csv.v2/routes/routes.ts
 };
