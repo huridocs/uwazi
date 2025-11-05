@@ -1,6 +1,8 @@
 import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyType } from './PropertyType';
+import { PropertyValue, PropertyAssignment } from './PropertyValue';
 
 type PropertyUpdateInfo = {
   id: string;
@@ -22,6 +24,11 @@ type Props = {
 
 type Context = {
   newNameGeneration?: boolean;
+};
+
+type CreatePropertyAssignmentInput<T = PropertyValue> = {
+  value: T[];
+  language?: LanguageISO6391;
 };
 
 class Property {
@@ -103,7 +110,17 @@ class Property {
 
     return updateInfo;
   }
+
+  createDefaultValue(): PropertyAssignment {
+    return { name: this.name, value: [], type: this.type };
+  }
+
+  createPropertyAssignment({ value }: CreatePropertyAssignmentInput): PropertyAssignment {
+    return { name: this.name, value, type: this.type };
+  }
+
+  validatePropertyAssignment(_propertyAssignment: PropertyAssignment) {}
 }
 
 export { Property };
-export type { PropertyUpdateInfo, Props as PropertyProps, Context };
+export type { PropertyUpdateInfo, Props as PropertyProps, Context, CreatePropertyAssignmentInput };

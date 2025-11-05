@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
@@ -5,12 +6,13 @@ import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
 import { cloneDeep } from 'lodash';
-import { generateID } from 'shared/IDGenerator';
 import { search } from 'api/search';
+import { EntitySchema } from 'shared/types/entityType';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
 import { applicationEventsBus } from '../libs/eventsbus';
 import { TransactionManager } from './contracts/TransactionManager';
 import { UseCase } from '../libs/UseCase';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
 
 type Input = {
   entitiesIds: string[];
@@ -97,9 +99,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         if (generatedIdProps.length) {
           modifiedEntities.forEach(entity => {
             generatedIdProps.forEach(prop => {
-              entity.translations.setValueInAllLanguages(prop.name, [
-                { value: generateID(3, 4, 4), label: '' },
-              ]);
+              entity.setPropertyAssignments([prop.createPropertyAssignment({ value: [] })]);
             });
           });
         }
@@ -107,8 +107,8 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         await ArrayUtils.sequentialFor(entities, async (entity, i) =>
           applicationEventsBus.emit(
             new EntityUpdatedEvent({
-              before: entity.getEntitiesAsLegacySchemaArray(),
-              after: modifiedEntities[i].getEntitiesAsLegacySchemaArray(),
+              before: MongoEntityMapper.toDBO(entity) as any as EntitySchema[],
+              after: MongoEntityMapper.toDBO(modifiedEntities[i]) as any as EntitySchema[],
               targetLanguageKey: language,
             })
           )
