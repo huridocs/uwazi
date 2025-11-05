@@ -8,7 +8,8 @@ type PathManagerProps = {
 
 type CreatePathInput = {
   filename: string;
-  type: FileType;
+  type: FileType | 'customPath';
+  destination?: string;
 };
 
 export class PathManager {
@@ -26,7 +27,16 @@ export class PathManager {
   }
 
   createPath(input: CreatePathInput) {
-    const directory = this.directory?.[input.type];
+    if (input.type === 'customPath' && input.destination) {
+      const basePath = path.dirname(this.directory.document);
+      return path.join(basePath, input.destination, input.filename);
+    }
+
+    if (input.type === 'customPath') {
+      throw new Error('customPath type requires a destination');
+    }
+
+    const directory = this.directory[input.type];
     if (!directory) throw new Error(`The following File Type is not supported ${input.type}`);
 
     return path.join(directory, input.filename);
