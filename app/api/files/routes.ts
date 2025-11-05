@@ -1,5 +1,6 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
@@ -10,16 +11,15 @@ import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request } from 'express';
+import multer from 'multer';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
-import { storage } from './storage';
-import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import multer from 'multer';
 import { generateFileName } from './filesystem';
+import { storage } from './storage';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -85,17 +85,12 @@ const isFilePubliclyAccessible = async (
     return false;
   }
 
-  try {
-    const relatedEntities: EntitySchema[] = await entities.get(
-      { sharedId: file.entity },
-      'published',
-      { withoutDocuments: true }
-    );
-    return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
+  const relatedEntities: EntitySchema[] = await entities.get(
+    { sharedId: file.entity },
+    'published',
+    { withoutDocuments: true }
+  );
+  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
 };
 
 const getCacheControlHeader = (
@@ -131,25 +126,25 @@ export default (app: Application) => {
         await new Promise<void>((resolve, reject) => {
           multer({ storage: defaultStorage }).single('file')(req, res, err => {
             if (!err) resolve();
-              reject(err);
-            });
+            reject(err);
           });
-          next();
+        });
+        next();
+      } else {
+        await uploadMiddleware('document')(req, res, next);
+      }
+    },
+    async (req, res) => {
+      if (!req.file) throw new Error('File is not available on request object');
+      try {
+        req.emitToSessionSocket('conversionStart', req.body.entity);
+        if (tenants.current().featureFlags?.v2UploadFile) {
+          const savedFile = await FileUploadUseCaseFactory.default().execute({
+            file: req.file,
+            entityId: req.body.entity,
+          });
+          res.json(savedFile);
         } else {
-          await uploadMiddleware('document')(req, res, next);
-        }
-      },
-      async (req, res) => {
-        if (!req.file) throw new Error('File is not available on request object');
-        try {
-          req.emitToSessionSocket('conversionStart', req.body.entity);
-          if (tenants.current().featureFlags?.v2UploadFile) {
-            const savedFile = await FileUploadUseCaseFactory.default().execute({
-              file: req.file,
-              entityId: req.body.entity,
-            });
-            res.json(savedFile);
-          } else {
           const savedFile = await processDocument(req.body.entity, req.file);
           res.json(savedFile);
         }
@@ -310,33 +305,23 @@ export default (app: Application) => {
       }
 
       // Set cache control and Last-Modified headers (only if feature flag is enabled)
-      // Wrapped in try-catch to ensure this never blocks file serving
-      try {
-        if (tenants.current().featureFlags?.fileCacheHeaders) {
-          // Optimization: Authenticated users always get private cache, skip complex logic
-          if (currentUser) {
-            res.setHeader('Cache-Control', 'private, max-age=3600');
-          } else {
-            // Unauthenticated access - determine if publicly cacheable
-            const appSettings = await settings.get();
-            const isPrivateInstance = appSettings.private || false;
+      if (tenants.current().featureFlags?.fileCacheHeaders) {
+        if (currentUser) {
+          res.setHeader('Cache-Control', 'private, max-age=3600');
+        } else {
+          const appSettings = await settings.get();
+          const isPrivateInstance = appSettings.private || false;
 
-            // Check if file is publicly accessible
-            const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
+          const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
 
-            const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
-            res.setHeader('Cache-Control', cacheControl);
-          }
-
-          // Set Last-Modified header
-          if (file.creationDate) {
-            const lastModified = timestampToHTTPDate(file.creationDate);
-            res.setHeader('Last-Modified', lastModified);
-          }
+          const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+          res.setHeader('Cache-Control', cacheControl);
         }
-      } catch (error) {
-        // If any cache header logic fails, silently skip it and continue serving file
-        // This ensures backwards compatibility and prevents blocking file access
+
+        if (file.creationDate) {
+          const lastModified = timestampToHTTPDate(file.creationDate);
+          res.setHeader('Last-Modified', lastModified);
+        }
       }
 
       const headerFilename = file.originalname || file.filename;

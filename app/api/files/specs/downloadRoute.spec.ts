@@ -34,30 +34,32 @@ describe('files routes download', () => {
   let app: Application;
 
   beforeAll(async () => {
+    await testingEnvironment.cleanupUploadPaths();
     await copyFile(
       path.join(__dirname, `testing_files/${fileName1}`),
-      path.join(__dirname, `uploads/${fileName1}`)
+      path.join(__dirname, `uploads/downloadRoutes/${fileName1}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${restrictedFileName}`),
-      path.join(__dirname, `uploads/${restrictedFileName}`)
+      path.join(__dirname, `uploads/downloadRoutes/${restrictedFileName}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${customPdfFileName}`),
-      path.join(__dirname, `customUploads/${customPdfFileName}`)
+      path.join(__dirname, `customUploads/downloadRoutes/${customPdfFileName}`)
     );
     await copyFile(
       path.join(__dirname, `testing_files/${fileOnPublicEntity}`),
-      path.join(__dirname, `uploads/${fileOnPublicEntity}`)
+      path.join(__dirname, `uploads/downloadRoutes/${fileOnPublicEntity}`)
     );
     app = setUpApp(uploadRoutes);
     await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setTenant(undefined, 'downloadRoutes');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/', () => {
-    it.each([fileName1, customPdfFileName])('should send the file (%s)', async filename => {
+    it.each([fileName1, customPdfFileName])('should get the file (%s)', async filename => {
       const response = await request(app).get(`/api/files/${filename}`);
 
       expect(response.status).toBe(200);
