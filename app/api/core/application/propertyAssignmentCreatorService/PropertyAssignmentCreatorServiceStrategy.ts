@@ -13,11 +13,13 @@ import {
   PropertyAssignmentInput,
 } from './PropertyAssignmentCreatorService';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
+import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
   select: SelectPropertyAssignmentCreatorService;
   relationship: RelationshipPropertyAssignmentCreatorService;
+  image: ImagePropertyAssignmentCreatorService;
 };
 
 type CreateProps = {
@@ -37,6 +39,8 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.select;
       case 'relationship':
         return this.props.relationship;
+      case 'image':
+        return this.props.image;
 
       default:
         return this.props.default;
@@ -45,7 +49,8 @@ class PropertyAssignmentCreatorServiceStrategy {
 
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
-    template: Template
+    template: Template,
+    attachments: Express.Multer.File[]
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,
@@ -53,7 +58,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         const property = template.getPropertyByName(propertyAssignment.name).getDataOrThrow();
         const strategy = this.getStrategy(property.type);
 
-        return strategy.create({ propertyAssignment, template });
+        return strategy.create({ propertyAssignment, template, attachments });
       }
     );
 
@@ -71,6 +76,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         settingsDS,
         multiLanguageEntityDS,
       }),
+      image: new ImagePropertyAssignmentCreatorService({}),
       default: new DefaultPropertyAssignmentCreatorService(),
     });
   }

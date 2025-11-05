@@ -28,6 +28,80 @@ describe('ImageProperty', () => {
   });
 
   describe('createPropertyAssignment()', () => {
+    it('should create from an URL', () => {
+      const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = image.createPropertyAssignment({
+        value: [{ value: 'http://url.to/image.png' }],
+      });
+
+      const assignment2 = image.createPropertyAssignment({
+        value: [{ value: 'https://url.to/image.png' }],
+      });
+
+      expect(assignment).toEqual({
+        name: image.name,
+        type: image.type,
+        value: [{ value: 'http://url.to/image.png' }],
+      });
+
+      expect(assignment2).toEqual({
+        name: image.name,
+        type: image.type,
+        value: [{ value: 'https://url.to/image.png' }],
+      });
+    });
+
+    it('should prepend "/api/files/" if is not an URL ', () => {
+      const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(
+        image.createPropertyAssignment({
+          value: [{ value: 'file.jpg' }],
+        })
+      ).toEqual({
+        name: image.name,
+        type: image.type,
+        value: [{ value: '/api/files/file.jpg' }],
+      });
+
+      expect(
+        image.createPropertyAssignment({
+          value: [{ value: 'https://domain.com/file.jpg' }],
+        })
+      ).toEqual({
+        name: image.name,
+        type: image.type,
+        value: [{ value: 'https://domain.com/file.jpg' }],
+      });
+
+      expect(
+        image.createPropertyAssignment({
+          value: [{ value: '/api/files/file.jpg' }],
+        })
+      ).toEqual({
+        name: image.name,
+        type: image.type,
+        value: [{ value: '/api/files/file.jpg' }],
+      });
+    });
+
+    it('should throw if url is invalid', () => {
+      const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        image.createPropertyAssignment({
+          value: [{ value: 'http' }],
+        })
+      ).toThrow('Image Property must be a valid URL.');
+
+      expect(() =>
+        image.createPropertyAssignment({
+          value: [{ value: 'https' }],
+        })
+      ).toThrow('Image Property must be a valid URL.');
+    });
+
     it('should create assignment with a single image value', () => {
       const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
@@ -36,7 +110,7 @@ describe('ImageProperty', () => {
       expect(assignment).toEqual({
         name: image.name,
         type: image.type,
-        value: [{ value: 'file.jpg' }],
+        value: [{ value: '/api/files/file.jpg' }],
       });
     });
 

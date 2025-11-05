@@ -9,17 +9,23 @@ type Props = {
   type?: PropertyTypeEnum.Image;
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
-const EntrySchema = z.object({
+const FilePathEntrySchema = z.object({
   value: z.string().trim().min(1, 'Image Property must be a non-empty string.'),
 });
 
-const createSchema = (isRequired: boolean) =>
+const URLEntrySchema = z.object({
+  value: z.string().trim().url('Image Property must be a valid URL.'),
+});
+
+const createSchema = (isRequired: boolean, isFromURL: boolean) =>
   z
-    .array(EntrySchema)
+    .array(isFromURL ? URLEntrySchema : FilePathEntrySchema)
     .min(isRequired ? 1 : 0, 'Image Property is required')
     .max(1, 'Image Property only accepts a single value.');
 
 class ImageProperty extends AbstractImageProperty {
+  private FILE_PATH = '/api/files/';
+
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || PropertyTypeEnum.Image }, context);
     this.fullWidth = props.fullWidth || false;
@@ -33,20 +39,36 @@ class ImageProperty extends AbstractImageProperty {
     }
   }
 
+  private isFromURL(value: ImageEntry[]) {
+    return !!value?.[0]?.value && value[0].value.startsWith('http');
+  }
+
+  private isFromFilePath(value: ImageEntry[]) {
+    return !!value?.[0]?.value && value[0].value.startsWith(this.FILE_PATH);
+  }
+
   createPropertyAssignment({
     value,
   }: CreatePropertyAssignmentInput<ImageEntry>): PropertyAssignment<ImageEntry> {
-    const parsed = createSchema(this.required).parse(value);
+    const isFromURL = this.isFromURL(value);
+    const isFromFilePath = this.isFromFilePath(value);
+    const parsed = createSchema(this.required, isFromURL).parse(value);
+
+    let postProcessed = parsed;
+
+    if (!isFromURL && !isFromFilePath) {
+      postProcessed = parsed.map(v => ({ value: `${this.FILE_PATH}${v.value}` }));
+    }
 
     return {
       name: this.name,
-      value: parsed,
+      value: postProcessed,
       type: this.type,
     };
   }
 
   validatePropertyAssignment({ value }: PropertyAssignment<ImageEntry>): void {
-    createSchema(this.required).parse(value);
+    createSchema(this.required, this.isFromURL(value)).parse(value);
   }
 }
 

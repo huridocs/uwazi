@@ -86,4 +86,8 @@ export class FileContents {
       stream.on('error', reject);
     });
   }
+
+  static fromPath(paths: string[]) {
+    return new FileContents(path.join(...paths));
+  }
 }

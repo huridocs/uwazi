@@ -201,7 +201,6 @@ async function createEntity(doc, [currentLanguage, languages], sharedId, docTemp
         { thesauriByKey }
       );
 
-      console.log(JSON.stringify(langDoc));
       return model.save(langDoc);
     })
   );

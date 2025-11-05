@@ -83,7 +83,6 @@ export default app => {
       try {
         const result = await withTransaction(async ({ abort }) => {
           const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-          console.log('to save', JSON.stringify(entityToSave));
           const saveResult = await saveEntity(entityToSave, {
             user: req.user,
             language: req.language,

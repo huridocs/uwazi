@@ -2,8 +2,8 @@ import { set } from 'lodash';
 import entities from 'api/entities/entities';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { UserSchema } from 'shared/types/userType';
-import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 import { isValidUrl, sanitizeUrl } from 'shared/urlValidationUtils';
+import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 
 const validateAndSanitizeUrls = (entity: EntityWithFilesSchema): EntityWithFilesSchema => {
   if (!entity.metadata) return entity;

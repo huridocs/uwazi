@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -12,6 +13,11 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { Readable } from 'stream';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -127,6 +133,8 @@ const fixtures: DBFixture = {
       factory.property('multidaterange', 'multidaterange'),
       factory.property('link', 'link'),
       factory.property('image', 'image'),
+      factory.property('attached_image_1', 'image'),
+      factory.property('attached_image_2', 'image'),
       factory.property('geolocation_geolocation', 'geolocation'),
       factory.property('select', 'select', {
         content: factory.id('thesaurus_fruits').toHexString(),
@@ -192,6 +200,10 @@ const createSut = (props: CreateSutProps = {}) => {
     templatesDS
   );
 
+  const filesDS = DefaultFilesDataSource(transactionManager);
+
+  const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+
   const sut = new CreateEntityUseCase(
     {
       transactionManager,
@@ -201,11 +213,13 @@ const createSut = (props: CreateSutProps = {}) => {
       templatesDS,
       thesauriDS,
       translationsDS,
+      filesDS,
+      filesStorage,
     },
     context
   );
 
-  return { sut };
+  return { sut, filesStorage };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -220,10 +234,36 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut } = createSut();
+    const { sut, filesStorage } = createSut();
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
+      attachments: [
+        {
+          fieldname: 'attachments[0]',
+          encoding: '7bit',
+          mimetype: 'image/png',
+          destination: '/tmp',
+          originalname: 'Attachment 1.png',
+          filename: '1762280821775nhs3epb55g7.png',
+          path: '/tmp/1762280821775nhs3epb55g7.png',
+          size: 78636,
+          buffer: Buffer.from(''),
+          stream: Readable.from([]),
+        },
+        {
+          fieldname: 'attachments[1]',
+          encoding: '7bit',
+          mimetype: 'image/png',
+          destination: '/tmp',
+          originalname: 'Attachment 2.png',
+          filename: '1162280821775nhs3epb55g7.png',
+          path: '/tmp/1162280821775nhs3epb55g7.png',
+          size: 78636,
+          buffer: Buffer.from(''),
+          stream: Readable.from([]),
+        },
+      ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
         { name: 'text', value: [{ value: 'Some text' }] },
@@ -248,7 +288,9 @@ describe('CreateEntityUseCase', () => {
         },
         { name: 'select', value: [{ value: 'apple_id' }] },
         { name: 'text_rel', value: [{ value: 'B1' }] },
-        // { name: 'image', value: [] },
+        { name: 'image', value: [{ value: 'https://example.com/image.jpg' }] },
+        { name: 'attached_image_1', value: [{ attachment: 0 }] },
+        { name: 'attached_image_2', value: [{ attachment: 1 }] },
         // { name: 'media', value: [] },
         // { name: 'nested', value: [] },
         // { name: 'preview', value: [] },
@@ -259,6 +301,11 @@ describe('CreateEntityUseCase', () => {
     const entities = await testingEnvironment.db
       .getCollection('entities')
       ?.find({ sharedId: entity.sharedId })
+      .toArray();
+
+    const attachments = await testingEnvironment.db
+      .getCollection('files')
+      ?.find({ type: 'attachment' })
       .toArray();
 
     const commonFields = {
@@ -284,7 +331,9 @@ describe('CreateEntityUseCase', () => {
           { value: { from: 1761576489, to: 1761576490 } },
         ],
         link: [{ value: { url: 'https://uwazi.io', label: 'Uwazi' } }],
-        image: [],
+        image: [{ value: 'https://example.com/image.jpg' }],
+        attached_image_1: [{ value: '/api/files/1762280821775nhs3epb55g7.png' }],
+        attached_image_2: [{ value: '/api/files/1162280821775nhs3epb55g7.png' }],
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
         nested: [],
         preview: [],
@@ -343,5 +392,41 @@ describe('CreateEntityUseCase', () => {
     ]);
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
+
+    expect(attachments).toHaveLength(2);
+    expect(attachments).toEqual([
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 1.png',
+        filename: '1762280821775nhs3epb55g7.png',
+        mimetype: 'image/png',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 2.png',
+        filename: '1162280821775nhs3epb55g7.png',
+        mimetype: 'image/png',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
+    ]);
+
+    expect(filesStorage.storeFile).toHaveBeenCalledTimes(2);
+    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(1, {
+      type: 'attachment',
+      file: expect.any(FileContents),
+    });
+    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(2, {
+      type: 'attachment',
+      file: expect.any(FileContents),
+    });
   });
 });

@@ -1,3 +1,4 @@
+import { PropertyValue } from 'api/core/domain/template/PropertyValue';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
@@ -8,6 +9,6 @@ export class DefaultPropertyAssignmentCreatorService implements PropertyAssignme
   async create({ propertyAssignment, template }: CreatePropertyAssignmentInput) {
     const { name, value, language } = propertyAssignment;
 
-    return template.createPropertyAssignment(name, { value, language });
+    return template.createPropertyAssignment(name, { value: value as PropertyValue[], language });
   }
 }
