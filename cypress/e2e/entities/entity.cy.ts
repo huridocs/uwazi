@@ -179,7 +179,9 @@ describe('Entities', () => {
         cy.contains('aside button', 'Add property').click();
       });
 
+      cy.intercept('POST', 'api/templates').as('postTemplate');
       cy.contains('button', 'Save').click();
+      cy.wait('@postTemplate');
       cy.contains('success').should('exist');
       cy.contains('Dismiss').click();
     });
@@ -307,7 +309,10 @@ describe('Entities', () => {
       cy.contains('Text');
       cy.intercept('GET', 'api/files/*').as('getFile');
       clickOnEditEntity();
-      cy.wait('@getFile');
+      // Wait for the video element to exist in the edit form (it may not be visible due to scrolling)
+      cy.contains('.form-group.media', 'Media').within(() => {
+        cy.get('video').should('exist');
+      });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1000);
       cy.addTimeLink(1000, 'Control point', 1, 12, 0);
       saveEntity('Entity updated');
@@ -331,9 +336,13 @@ describe('Entities', () => {
       clickOnEditEntity();
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1500);
       cy.contains('Update');
-      cy.wait('@getFile');
-      cy.wait('@getFile');
-      cy.wait('@getFile');
+      // Wait for media elements to load in the edit form
+      cy.contains('.form-group.image', 'Image').within(() => {
+        cy.get('img').should('exist');
+      });
+      cy.contains('.form-group.media', 'Media').within(() => {
+        cy.get('video').should('exist');
+      });
       clickMediaAction('Media', 'Update');
       addVideo('', false);
       cy.contains('button', 'Add timelink').click();
