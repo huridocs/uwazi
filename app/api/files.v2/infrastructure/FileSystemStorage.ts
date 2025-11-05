@@ -1,6 +1,8 @@
 /* eslint-disable node/no-restricted-import */
 import { createWriteStream } from 'fs';
+import { mkdir } from 'fs/promises';
 
+import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
 import { FileContents } from '../model/FileContents';
@@ -16,12 +18,21 @@ export class FileSystemStorage implements FileStorage {
   }
 
   async storeFile(input: UploadFileInput) {
-    await pipeline(
-      (await input.file.getReadable()).getDataOrThrow(),
-      createWriteStream(
-        this.pathManager.createPath({ filename: input.file.filename, type: input.type })
-      )
-    );
+    const filepath = this.pathManager.createPath({
+      filename: input.file.filename,
+      type: input.type,
+      destination: input.destination,
+    });
+
+    try {
+      await mkdir(path.dirname(filepath), { recursive: true });
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+    }
+
+    await pipeline((await input.file.getReadable()).getDataOrThrow(), createWriteStream(filepath));
   }
 
   async getFile(input: GetFileInput): Promise<FileContents> {

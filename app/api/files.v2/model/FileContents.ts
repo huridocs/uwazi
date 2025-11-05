@@ -21,13 +21,13 @@ export class FileContents {
 
   private readableCallback?: ReadableCallback;
 
-  constructor(input: string | FileContentsCallbackOptions) {
-    if (typeof input === 'string') {
-      this.filepath = input;
-      this.filename = path.basename(input);
+  constructor(filePath: string | FileContentsCallbackOptions) {
+    if (typeof filePath === 'string') {
+      this.filepath = filePath;
+      this.filename = path.basename(filePath);
     } else {
-      this.filename = input.filename;
-      this.readableCallback = input.readableCallback;
+      this.filename = filePath.filename;
+      this.readableCallback = filePath.readableCallback;
     }
   }
 
