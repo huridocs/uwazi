@@ -102,6 +102,49 @@ Note: Keep MVP minimal; we can extend as we introduce more stages.
 - Basic error handling and consistent API responses.
 - Unit/integration tests for route + persistence + storage handoff.
 
+### Implementation progress (current status)
+
+- Route ownership moved to `app/api/csv.v2/routes/routes.ts` and wired in `app/api/api.js`.
+- Feature flag `v2CSVImport` switches between v1 and v2 flow on `POST /api/import`.
+- V2 controller uses Zod and the common v2 `AbstractController`:
+  - Controller: `app/api/csv.v2/routes/RegisterCsvImportController.ts`.
+  - Validates `{ template: string }`, reads `req.file`, returns 200 JSON.
+- Use Case implemented following entities.v2 style:
+  - `RegisterCsvImportUseCase` extends `AbstractUseCase`.
+  - Factory: `RegisterCsvImportUseCaseFactory()` in `app/api/csv.v2/services/service_factories.ts`.
+  - Types: `app/api/csv.v2/types/RegisterCsvImport.ts`.
+  - Contracts/Adapters: `contracts/*`, `database/*` for Mongo and storage adapters.
+- Upload middleware mirrors v2 document upload:
+  - If `v2UploadFile` is enabled: use `multer.diskStorage` with `generateFileName` and `single('file')`.
+  - Else: `uploadMiddleware()`.
+- Legacy v1 path preserved:
+  - Extracted to a helper function `v1Import(req, res)` inside `routes.ts` to reduce statements and allow quick removal later.
+  - Minimal validation performed (ensures `body.template` is a string), then runs existing `CSVLoader` with socket events.
+- Naming aligned to RegisterCsvImport (not CreateImport) across controller, use case, factory, and types.
+
+### How to code (conventions for this module)
+
+- Prefer entities.v2 structure/patterns over paragraph extraction when in doubt.
+- Hexagonal boundaries:
+  - Controllers are thin; validation with Zod lives in the controller.
+  - Business logic in Use Cases (extend `api/core/libs/UseCase` AbstractUseCase).
+  - Persistence/storage via contracts (`contracts/*`) with adapters (`database/*`).
+  - Models in `model/*`; public types/DTOs in `types/*`.
+- Routing:
+  - Co-locate routes under `csv.v2` and register from `api.js`.
+  - Use feature flag `v2CSVImport` to switch v1/v2; keep v1 fallback until fully migrated.
+  - For uploads: mirror `files/upload/document` v2 pattern (conditional `multer` vs `uploadMiddleware`).
+- Validation:
+  - V2 path: Zod in controller via `AbstractController`.
+  - V1 path: keep minimal equivalent validation to prior AJV requirements (no schema drift).
+- Responses/permissions:
+  - Maintain 200 OK with JSON response for compatibility.
+  - Admin-only access (for now).
+- Style and typing:
+  - Avoid using `as any` unless absolutely indispensable; prefer proper typings, narrowing, or adapter types.
+  - Extract legacy blocks into helpers to reduce lint noise and ease future removal.
+  - Use explicit, descriptive names (e.g., `RegisterCsvImport*`).
+
 ### Open questions / pending decisions
 
 - CSV of problematic rows: generate on-demand or persist artifact?
