@@ -203,9 +203,16 @@ describe('S3FileStorage', () => {
           type: 'segmentation',
           filename: 'segmentation.txt',
         },
+        {
+          Body: 'customPathFile',
+          Key: 'test-tenant/my/custom/path/customPathFile.txt',
+          destination: 'my/custom/path',
+          type: 'customPath',
+          filename: 'customPathFile.txt',
+        },
       ];
 
-      const promises = inputs.map(async ({ Key, Body, type, filename }) => {
+      const promises = inputs.map(async ({ Key, Body, type, filename, destination }) => {
         await s3Client.send(
           new PutObjectCommand({
             Bucket: 'uwazi-development',
@@ -217,6 +224,7 @@ describe('S3FileStorage', () => {
         const file = await s3fileStorage.getFile({
           filename,
           type: type as any,
+          destination,
         });
 
         const content = await file.asContentString();
@@ -276,6 +284,24 @@ describe('S3FileStorage', () => {
           new GetObjectCommand({
             Bucket: 'uwazi-development',
             Key: 'test-tenant/documents/segmentation/documento.txt',
+          })
+        );
+        expect(await toString(s3File)).toBe('content created\n');
+      });
+    });
+
+    describe('when type is customPath', () => {
+      it('should store it on the destination', async () => {
+        await s3fileStorage.storeFile({
+          file: new FileContents(testingFilesPath('documento.txt')),
+          destination: 'custom_path/deep/',
+          type: 'customPath',
+        });
+
+        const s3File = await s3Client.send(
+          new GetObjectCommand({
+            Bucket: 'uwazi-development',
+            Key: 'test-tenant/custom_path/deep/documento.txt',
           })
         );
         expect(await toString(s3File)).toBe('content created\n');

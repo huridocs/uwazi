@@ -17,6 +17,7 @@ uploads/*
 cejil-fixtures
 conversions/*.json
 app/api/files/specs/uploads/*
+app/api/files/specs/custom_path/
 app/api/migrations/**/uploads/*
 !app/api/migrations/**/uploads/index.html
 !app/api/files/specs/uploads/listFilesUsingDisk
