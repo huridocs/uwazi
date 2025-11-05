@@ -76,7 +76,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         settingsDS,
         multiLanguageEntityDS,
       }),
-      image: new ImagePropertyAssignmentCreatorService({}),
+      image: new ImagePropertyAssignmentCreatorService(),
       default: new DefaultPropertyAssignmentCreatorService(),
     });
   }
