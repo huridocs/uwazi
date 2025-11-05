@@ -13,6 +13,12 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const { template } = RequestSchema.parse(this.request.body || {});
     if (!this.request.file) throw new Error('File is not available on request object');
 
+    const userId = this.user?._id;
+    if (!userId) {
+      this.response.status(401).json({ message: 'User not found in request context' });
+      return;
+    }
+
     const useCase = RegisterCsvImportUseCaseFactory();
     const response = await useCase.execute({
       template,
@@ -22,7 +28,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
         mimetype: this.request.file.mimetype,
         size: this.request.file.size,
       },
-      userId: this.user?._id?.toString(),
+      userId: userId.toString(),
     });
     this.jsonResponse(response);
   }
