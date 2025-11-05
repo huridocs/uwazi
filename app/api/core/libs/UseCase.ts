@@ -29,6 +29,11 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     private context?: Context
   ) {}
 
+  get actor() {
+    const id = this.context?.actor._id?.toString();
+    return id ? { id } : undefined;
+  }
+
   get actorId() {
     if (!this.context?.actor._id) {
       throw new Error(`Actor was not found. ${JSON.stringify(context)}`);
@@ -95,4 +100,4 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
 }
 
 export { AbstractUseCase };
-export type { UseCase, Deps as BaseDeps };
+export type { UseCase, Deps as BaseDeps, Context as UseCaseContext };
