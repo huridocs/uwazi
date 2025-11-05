@@ -75,6 +75,8 @@ Example response:
 
 Note: Keep MVP minimal; we can extend as we introduce more stages.
 
+Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses and use-case outputs.
+
 ### Storage layout proposal
 
 - **Base prefix**: `csv-imports/`
@@ -114,6 +116,13 @@ Note: Keep MVP minimal; we can extend as we introduce more stages.
   - Factory: `RegisterCsvImportUseCaseFactory()` in `app/api/csv.v2/services/service_factories.ts`.
   - Types: `app/api/csv.v2/types/RegisterCsvImport.ts`.
   - Contracts/Adapters: `contracts/*`, `database/*` for Mongo and storage adapters.
+  - Default DS factory: `app/api/csv.v2/database/data_source_defaults.ts` exports `DefaultCsvImportsDataSource()`, instantiated in the service factory as `csvImportsDS`.
+  - Storage now uses files.v2 strategy: `FileStorageStrategyFactory.createDefault()`; removed legacy `FileStoragePort` and `FileStorageAdapter` under csv.v2.
+  - Data source `create` returns a mapped object `{ id, ... }`, not just an id; the use case uses `const { id: importId } = ...`.
+  - Endpoint requires `userId`; controller ensures presence from `req.user._id` and fails with 401 if missing; no role re-check (authorization middleware handles that).
+  - Stored file uses the multer-generated filename; DB storage path is `csv-imports/{importId}/{filename}`.
+  - Legacy v1 logic extracted as `v1Import(req, res)` within `routes.ts` for easy future removal; minimal validation ensures `body.template` is a string.
+  - Feature flag `v2CSVImport` added to tenant context and default config; used to switch v1/v2 paths.
 - Upload middleware mirrors v2 document upload:
   - If `v2UploadFile` is enabled: use `multer.diskStorage` with `generateFileName` and `single('file')`.
   - Else: `uploadMiddleware()`.
@@ -137,6 +146,10 @@ Note: Keep MVP minimal; we can extend as we introduce more stages.
 - Validation:
   - V2 path: Zod in controller via `AbstractController`.
   - V1 path: keep minimal equivalent validation to prior AJV requirements (no schema drift).
+- Data sources and mapping:
+  - DS `create` should return a mapped domain object with `id` (not raw `insertedId`).
+  - Map Mongo `_id` → domain `id` consistently in `getById` and any reads.
+  - Name variables `xxxDS` (e.g., `csvImportsDS`) and provide a `DefaultXxxDataSource()` factory.
 - Responses/permissions:
   - Maintain 200 OK with JSON response for compatibility.
   - Admin-only access (for now).
