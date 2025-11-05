@@ -53,7 +53,7 @@ class MongoEntityMapper {
       user: entity.userId ? ObjectId.createFromHexString(entity.userId) : undefined,
 
       title: translation.title.value[0].value,
-      creationDate: translation.editDate.value[0].value,
+      creationDate: translation.creationDate.value[0].value,
       editDate: translation.editDate.value[0].value,
 
       icon: entity.icon
