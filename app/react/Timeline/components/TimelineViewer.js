@@ -16,7 +16,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import { Icon } from 'UI';
 
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 import {
   caseTemplate,
@@ -54,13 +54,13 @@ const fetchReferenceData = references => {
 };
 
 const assignDataToYear = (years, date, data) => {
-  const year = moment.utc(date * 1000).format('YYYY');
+  const year = DateTime.fromSeconds(date, { zone: 'utc' }).toFormat('yyyy');
   years[year] = years[year] || [];
   years[year].push(data);
 };
 
 const normalizeYears = years => {
-  const currentYear = Number(moment().format('YYYY'));
+  const currentYear = Number(DateTime.now().toFormat('yyyy'));
   const { minYear, maxYear } = Object.keys(years).reduce(
     (memo, year) => {
       memo.minYear = Math.min(memo.minYear, Number(year));
@@ -367,16 +367,14 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${
+                      title={`${DateTime.fromSeconds(reference.additionalData.date, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${
                         reference.data.title
                       }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
                           <span>
-                            {`${moment
-                              .utc(reference.additionalData.date * 1000)
-                              .format('MMM YYYY')}`}
+                            {`${DateTime.fromSeconds(reference.additionalData.date, { zone: 'utc' }).toFormat('MMM yyyy')}`}
                           </span>
                         </span>
                       </ShowIf>
@@ -395,14 +393,14 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${moment.utc(reference.timestamp * 1000).format('ll')}\n${
+                      title={`${DateTime.fromSeconds(reference.timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${
                         reference.label
                       }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
                           <span>
-                            {`${moment.utc(reference.timestamp * 1000).format('MMM YYYY')}`}
+                            {`${DateTime.fromSeconds(reference.timestamp, { zone: 'utc' }).toFormat('MMM yyyy')}`}
                           </span>
                         </span>
                       </ShowIf>
