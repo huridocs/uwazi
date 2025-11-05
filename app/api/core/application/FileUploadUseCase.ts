@@ -33,7 +33,7 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
 };
 
-class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
+class DocumentUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync(input: Input): Promise<Output> {
     const tmpFile = new FileContents(path.join(input.file.destination, input.file.filename));
     const pdfInfo = await this.deps.pdfService.extractText(tmpFile);
@@ -101,5 +101,5 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { FileUploadUseCase };
+export { DocumentUploadUseCase as FileUploadUseCase };
 export type { Input as CreateEntityUseCaseInput };
