@@ -21,6 +21,7 @@ type Tenant = {
     paragraphExtraction?: boolean;
     fileCacheHeaders?: boolean;
     v2UploadFile?: boolean;
+    v2CSVImport?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
