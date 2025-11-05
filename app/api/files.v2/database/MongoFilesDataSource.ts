@@ -1,17 +1,20 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
 import { LanguageUtils } from 'shared/language';
 import { SegmentationType } from 'shared/types/segmentationType';
 
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
+import { search } from 'api/search';
 import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
-import { UwaziFile } from '../model/UwaziFile';
-import { Segmentation } from '../model/Segmentation';
 import { Document } from '../model/Document';
-
+import { Segmentation } from '../model/Segmentation';
+import { UwaziFile } from '../model/UwaziFile';
 import { FileMappers } from './FilesMappers';
 import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
@@ -30,8 +33,23 @@ export type SegmentationDBO = SegmentationType & {
 export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements FilesDataSource {
   protected collectionName = 'files';
 
+  protected entitiesToIndex = new Set<string>();
+
+  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
+    super(db, transactionManager, options);
+    transactionManager.onCommitted(async () => {
+      await search.indexEntities(
+        { sharedId: { $in: Array.from(this.entitiesToIndex) } },
+        '+fullText'
+      );
+    });
+  }
+
   async create(file: UwaziFile): Promise<void> {
     await this.getCollection().insertOne(FileMappers.toDBO(file));
+    if (file instanceof Document) {
+      this.entitiesToIndex.add(file.entity);
+    }
   }
 
   async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {

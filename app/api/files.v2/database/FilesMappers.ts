@@ -120,4 +120,11 @@ export const FileMappers = {
 
     throw new Error('Unknown file type');
   },
+
+  toDTO(file: UwaziFile): Omit<fileDBO, '_id'> & { _id: string } {
+    return {
+      ...this.toDBO(file),
+      _id: file.id,
+    };
+  },
 };
