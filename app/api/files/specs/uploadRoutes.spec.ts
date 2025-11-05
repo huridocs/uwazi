@@ -74,6 +74,12 @@ describe('upload routes', () => {
       const response = await uploadDocument('testing_files/english_testing_file.pdf');
       expect(response).toHaveStatus(200);
 
+      expect(response.body).toMatchObject({
+        _id: expect.any(String),
+        filename: expect.any(String),
+        originalname: 'english_testing_file.pdf',
+      });
+
       const { filename } = (await testingEnvironment.db.getAllFrom('files')).find(
         f => f.originalname === 'english_testing_file.pdf'
       ) as FileType;

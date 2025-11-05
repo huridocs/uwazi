@@ -1,24 +1,26 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
+import settings from 'api/settings/settings';
+import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request } from 'express';
+import multer from 'multer';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
-import { storage } from './storage';
-import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import multer from 'multer';
 import { generateFileName } from './filesystem';
+import { storage } from './storage';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -68,6 +70,49 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
 };
 
+const isFilePubliclyAccessible = async (
+  file: FileType,
+  isPrivateInstance: boolean
+): Promise<boolean> => {
+  if (isPrivateInstance) {
+    return false;
+  }
+
+  if (file.type === 'custom') {
+    return true;
+  }
+
+  if (!file.entity) {
+    return false;
+  }
+
+  const relatedEntities: EntitySchema[] = await entities.get(
+    { sharedId: file.entity },
+    'published',
+    { withoutDocuments: true }
+  );
+  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
+};
+
+const getCacheControlHeader = (
+  isPubliclyAccessible: boolean,
+  isPrivateInstance: boolean
+): string => {
+  if (isPrivateInstance) {
+    return 'private, max-age=3600';
+  }
+
+  if (isPubliclyAccessible) {
+    return 'public, no-cache';
+  }
+
+  return 'private, max-age=3600';
+};
+
+const timestampToHTTPDate = (timestamp: number): string => {
+  return new Date(timestamp).toUTCString();
+};
+
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -96,7 +141,7 @@ export default (app: Application) => {
         req.emitToSessionSocket('conversionStart', req.body.entity);
         if (tenants.current().featureFlags?.v2UploadFile) {
           const savedFile = await FileUploadUseCaseFactory.default().execute({
-            file: req.file,
+            uploadedFile: new InputFile(req.file),
             entityId: req.body.entity,
           });
           res.json(savedFile);
@@ -249,13 +294,35 @@ export default (app: Application) => {
         filename: req.params.filename,
       });
 
+      const currentUser = permissionsContext.getUserInContext();
+
       if (
         !file?.filename ||
         !file?.type ||
         !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
+        !(await checkEntityPermission(file, currentUser))
       ) {
         throw createError('file not found', 404);
+      }
+
+      // Set cache control and Last-Modified headers (only if feature flag is enabled)
+      if (tenants.current().featureFlags?.fileCacheHeaders) {
+        if (currentUser) {
+          res.setHeader('Cache-Control', 'private, max-age=3600');
+        } else {
+          const appSettings = await settings.get();
+          const isPrivateInstance = appSettings.private || false;
+
+          const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
+
+          const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+          res.setHeader('Cache-Control', cacheControl);
+        }
+
+        if (file.creationDate) {
+          const lastModified = timestampToHTTPDate(file.creationDate);
+          res.setHeader('Last-Modified', lastModified);
+        }
       }
 
       const headerFilename = file.originalname || file.filename;
