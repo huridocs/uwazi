@@ -138,10 +138,12 @@ describe('upload routes', () => {
         filename = '',
         language,
         mimetype,
+        size,
       } = dbFiles.find(f => f.type === 'thumbnail' && f.entity === 'sharedId1') as FileType;
 
       expect(language).toBe('eng');
       expect(mimetype).toEqual('image/jpeg');
+      expect(size).toBe(2335);
 
       expect(await fileExistsOnPath(pathManager.createPath({ filename, type: 'thumbnail' }))).toBe(
         true
