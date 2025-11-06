@@ -15,6 +15,19 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
+import { tenants } from 'api/tenants';
+import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -376,8 +389,55 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async save(_doc, { user, language }, options = {}) {
+  async save(_doc, { user, language, attachments = [] }, options = {}) {
+    const { v2CreateEntity } = tenants.current().featureFlags;
+
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
+    if (v2CreateEntity) {
+      const transactionManager = TransactionManagerFactory.default();
+      const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+      const filesStorage = FileStorageStrategyFactory.createDefault();
+      const filesDS = DefaultFilesDataSource(transactionManager);
+      const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+
+      const useCase = new CreateEntityUseCase(
+        {
+          templatesDS,
+          settingsDS: SettingsDataSourceFactory.default(transactionManager),
+          idGenerator: IdGeneratorFactory.default(),
+          multiLanguageEntityDS: new MongoMultiLanguageEntityDataSource(
+            getConnection(),
+            transactionManager,
+            templatesDS
+          ),
+          transactionManager,
+          filesDS,
+          filesStorage,
+          thesauriDS,
+          translationsDS,
+        },
+        { actor: user }
+      );
+
+      const output = await useCase.execute({
+        ..._doc,
+        templateId: _doc.template,
+        propertyAssignments: [
+          ...Object.entries(_doc.metadata || {}).map(([name, value]) => ({
+            name,
+            value,
+          })),
+          {
+            name: 'title',
+            value: [{ value: _doc.title }],
+          },
+        ],
+        attachments: attachments?.length ? attachments : [],
+      });
+
+      return MongoEntityMapper.toDBO(output).find(e => e.language === language);
+    }
 
     await validateEntity(_doc);
     await saveSelections(_doc);

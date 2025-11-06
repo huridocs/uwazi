@@ -87,7 +87,7 @@ const cleanupTestUploadedPaths = async (subPath: string = '') => {
         const itemPath = path.join(dir, item);
         // eslint-disable-next-line no-await-in-loop
         const stat = await fs.stat(itemPath);
-        if (stat.isFile()) {
+        if (stat.isFile() && !item.match('index.html')) {
           // eslint-disable-next-line no-await-in-loop
           await fs.unlink(itemPath);
         }

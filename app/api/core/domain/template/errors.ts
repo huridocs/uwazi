@@ -4,7 +4,7 @@ import { Template } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
-import { AbstractSelectProperty } from './AbstractSelectProperty';
+import { AbstractSelectProperty } from './select/AbstractSelectProperty';
 import { NestedPropertyProps } from './NestedProperty';
 
 export class PropertyTypeInvalidTypeError extends DomainError {
@@ -12,6 +12,15 @@ export class PropertyTypeInvalidTypeError extends DomainError {
     super(
       `The following type is not valid for ${propertyName}. Type = ${type}`,
       'template.property.title_property_have_invalid_type_error'
+    );
+  }
+}
+
+export class PropertyNotFoundError extends DomainError {
+  constructor(propertyName: string) {
+    super(
+      `The following Property was not found. PropertyName = ${propertyName}`,
+      'template.property.title_property_not_found_error'
     );
   }
 }

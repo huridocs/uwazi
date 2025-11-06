@@ -43,4 +43,67 @@ describe('MultiDateRangeProperty', () => {
 
     expect(() => multiDateRange.ensurePropertyIsConsistent(dateRange)).not.toThrow();
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should create assignment with multiple date ranges', () => {
+      const multiDateRange = new MultiDateRangeProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+      });
+
+      const assignment = multiDateRange.createPropertyAssignment({
+        value: [{ value: { from: 100, to: 200 } }, { value: { from: 300, to: 400 } }],
+      });
+
+      expect(assignment).toEqual({
+        name: multiDateRange.name,
+        type: multiDateRange.type,
+        value: [{ value: { from: 100, to: 200 } }, { value: { from: 300, to: 400 } }],
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const multiDateRange = new MultiDateRangeProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+      });
+
+      const assignment = multiDateRange.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({
+        name: multiDateRange.name,
+        type: multiDateRange.type,
+        value: [],
+      });
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const multiDateRange = new MultiDateRangeProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() => multiDateRange.createPropertyAssignment({ value: [] })).toThrow(
+        'Multi Date Range Property is required'
+      );
+    });
+
+    it('should throw if any value is not a number', () => {
+      const multiDateRange = new MultiDateRangeProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+      });
+
+      expect(() =>
+        multiDateRange.createPropertyAssignment({
+          value: [{ value: { from: 'a' as any, to: 2 } }],
+        })
+      ).toThrow();
+    });
+  });
 });

@@ -28,7 +28,7 @@ class UpdateTemplateUseCaseFactory {
       transactionManager,
       templatesDS
     );
-    const thesauriDS = new MongoThesauriDataSource();
+    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
