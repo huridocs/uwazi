@@ -1,11 +1,8 @@
+import { InputFile } from 'api/files.v2/model/InputFile';
+
 export type RegisterCsvImportInput = {
   template: string;
-  file: {
-    path: string;
-    originalname: string;
-    mimetype: string;
-    size: number;
-  };
+  file: InputFile;
   userId: string;
 };
 

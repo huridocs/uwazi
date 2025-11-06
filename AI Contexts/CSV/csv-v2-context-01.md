@@ -126,6 +126,9 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Upload middleware mirrors v2 document upload:
   - If `v2UploadFile` is enabled: use `multer.diskStorage` with `generateFileName` and `single('file')`.
   - Else: `uploadMiddleware()`.
+- Uploaded file typing:
+  - Controllers must wrap `req.file` using `new InputFile(req.file)` (from files.v2) and pass that to use cases.
+  - Do not manually type or destructure multer fields in controller; avoid ad-hoc shapes.
 - Legacy v1 path preserved:
   - Extracted to a helper function `v1Import(req, res)` inside `routes.ts` to reduce statements and allow quick removal later.
   - Minimal validation performed (ensures `body.template` is a string), then runs existing `CSVLoader` with socket events.
@@ -143,6 +146,9 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Co-locate routes under `csv.v2` and register from `api.js`.
   - Use feature flag `v2CSVImport` to switch v1/v2; keep v1 fallback until fully migrated.
   - For uploads: mirror `files/upload/document` v2 pattern (conditional `multer` vs `uploadMiddleware`).
+- Files handling:
+  - Always use `InputFile` in controllers to pass uploaded files to use cases.
+  - Use the files.v2 `FileStorage` (via `FileStorageStrategyFactory.createDefault()`) and store under `customPath` with desired `destination`.
 - Validation:
   - V2 path: Zod in controller via `AbstractController`.
   - V1 path: keep minimal equivalent validation to prior AJV requirements (no schema drift).

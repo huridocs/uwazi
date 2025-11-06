@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { RegisterCsvImportUseCaseFactory } from '../services/service_factories';
 
 const RequestSchema = z.object({
@@ -22,12 +23,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const useCase = RegisterCsvImportUseCaseFactory();
     const response = await useCase.execute({
       template,
-      file: {
-        path: this.request.file.path,
-        originalname: this.request.file.originalname,
-        mimetype: this.request.file.mimetype,
-        size: this.request.file.size,
-      },
+      file: new InputFile(this.request.file),
       userId: userId.toString(),
     });
     this.jsonResponse(response);

@@ -1,6 +1,4 @@
-import path from 'path';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { FileContents } from 'api/files.v2/model/FileContents';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { RegisterCsvImportInput, RegisterCsvImportOutput } from '../types/RegisterCsvImport';
@@ -17,7 +15,7 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
 > {
   protected async executeAsync(input: RegisterCsvImportInput): Promise<RegisterCsvImportOutput> {
     const now = Date.now();
-    const { originalname: originalFilename, mimetype: mimeType, size, path: tmpPath } = input.file;
+    const { originalname: originalFilename, mimetype: mimeType, size } = input.file.metadata;
     const templateId = input.template;
 
     const { id: importId } = await this.deps.csvImportsDS.create({
@@ -32,14 +30,15 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
     });
 
     const destination = `csv-imports/${importId}`;
-    const filename = path.basename(tmpPath);
     await this.deps.fileStorage.storeFile({
-      file: new FileContents(tmpPath),
+      file: input.file.contents,
       type: 'customPath',
       destination,
     });
 
-    await this.deps.csvImportsDS.setStorage(importId, { path: `${destination}/${filename}` });
+    await this.deps.csvImportsDS.setStorage(importId, {
+      path: `${destination}/${input.file.contents.filename}`,
+    });
 
     return {
       importId,
