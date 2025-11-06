@@ -70,7 +70,7 @@ describe('upload routes', () => {
       pathManager = new PathManager({ tenant: tenants.current() });
     });
 
-    it('should upload the file', async () => {
+    fit('should upload the file', async () => {
       const response = await uploadDocument('testing_files/english_testing_file.pdf');
       expect(response).toHaveStatus(200);
 

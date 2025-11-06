@@ -151,6 +151,7 @@ export default (app: Application) => {
         }
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
+        throw err;
         handleError(err);
         const [file] = await files.get({ filename: req.file.filename });
         res.json(file);
