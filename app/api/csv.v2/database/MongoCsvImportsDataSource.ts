@@ -1,4 +1,4 @@
-import { ObjectId, OptionalId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { CsvImport } from '../model/CsvImport';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
@@ -6,7 +6,7 @@ import { CsvImportMapper } from './CsvImportMapper';
 import { CsvImportDBO } from './schemas/CsvImportTypes';
 
 export class MongoCsvImportsDataSource
-  extends MongoDataSource<OptionalId<CsvImportDBO>>
+  extends MongoDataSource<CsvImportDBO>
   implements CsvImportsDataSource
 {
   protected collectionName = 'csv_imports';
