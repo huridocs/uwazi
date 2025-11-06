@@ -9,7 +9,6 @@ A generated ID will be the default title.,El ID autogenerado será el título po
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,La dirección de correo electrónico es obligatorio
-Access denied,Acceso denegado
 Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
@@ -413,7 +412,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,CSV no
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
 Invalid form,Formulario no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
-it has been logged with request id #, ha sido registrado con el id de solicitud #
+it has been logged with request id #,ha sido registrado con el id de solicitud #
 Item,Elemento
 Items:,Elementos:
 Javascript,Javascript
@@ -937,10 +936,10 @@ Two-step verification,Verificación de dos pasos.
 Two-step verification token required,El token de verificación es obligatorio
 Type,Tipo
 "Unable to save, failed response","No se pudo guardar, respuesta fallida"
+Unauthorized,No autorizado
 Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
-Unauthorized,No autorizado
 Unlink,Desenlazar
 Unlock account,Unlock account
 Unsupported OCR language,Idioma no soportado para ROC

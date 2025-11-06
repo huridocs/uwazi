@@ -9,7 +9,6 @@ A generated ID will be the default title.,Un identifiant généré sera le titre
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,L'email est obligatoire
-Access denied,Accès refusé
 Accept,Accepter
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Compte
@@ -939,10 +938,10 @@ Two-step verification,Vérification en deux étapes
 Two-step verification token required,Two-step verification token required
 Type,Type
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Non autorisé
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,Non autorisé
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Langage OCR non supporté

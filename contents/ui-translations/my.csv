@@ -9,7 +9,6 @@ A generated ID will be the default title.,ထုတ်ပေးသည့် ID �
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,အီးမေးလ် လိုအပ်သည်
-Access denied,ဝင်ရောက်ခွင့် ငြင်းဆိုသည်
 Accept,လက်ခံမည်
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,အကောင့်
@@ -940,10 +939,10 @@ Two-step verification,နှစ်ဆင့်ခံ မှန်ကန်ကြ
 Two-step verification token required,Two-step verification token required
 Type,အမျိုးအစား
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,ခွင့်ပြုချက် မရှိပါ
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,ခွင့်ပြုချက် မရှိပါ
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language

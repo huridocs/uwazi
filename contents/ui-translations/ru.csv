@@ -9,7 +9,6 @@ A generated ID will be the default title.,Сгенерированный иде�
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,Требутся электронная почта
-Access denied,Доступ запрещён
 Accept,Принять
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Аккаунт
@@ -937,10 +936,10 @@ Two-step verification,Двухфакторная верификация
 Two-step verification token required,Two-step verification token required
 Type,Тип
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Не авторизован
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,Не авторизован
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов

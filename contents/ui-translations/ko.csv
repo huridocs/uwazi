@@ -9,7 +9,6 @@ A generated ID will be the default title.,생성된 아이디가 기본값으로
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,이메일이 필요합니다.
-Access denied,접근 거부됨
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,계정
@@ -940,10 +939,10 @@ Two-step verification,이중 인증
 Two-step verification token required,Two-step verification token required
 Type,유형
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,권한 없음
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,권한 없음
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어

@@ -9,7 +9,6 @@ A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan baş
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,E-posta gerekli
-Access denied,Erişim reddedildi
 Accept,Kabul Et
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Hesap
@@ -940,10 +939,10 @@ Two-step verification,İki faktörlü doğrulama
 Two-step verification token required,Two-step verification token required
 Type,Tür
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Yetkisiz
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,Yetkisiz
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language

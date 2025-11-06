@@ -9,7 +9,6 @@ A generated ID will be the default title.,ID ที่สร้างขึ้�
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,จำเป็นต้องใช้อีเมล
-Access denied,ถูกปฏิเสธการเข้าถึง
 Accept,ตกลง
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,บัญชี
@@ -940,10 +939,10 @@ Two-step verification,การตรวจสอบสองขั้นตอ�
 Two-step verification token required,Two-step verification token required
 Type,ประเภท
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,ไม่ได้รับอนุญาต
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
-Unauthorized,ไม่ได้รับอนุญาต
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
