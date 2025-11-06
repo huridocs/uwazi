@@ -1,6 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
-import { CsvImport, CsvImportStorage, CsvImportToCreate } from '../model/CsvImport';
+import { CsvImport, CsvImportStorage } from '../model/CsvImport';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
+import { CsvImportMapper } from './CsvImportMapper';
+import { CsvImportDBO } from './schemas/CsvImportTypes';
 
 export class MongoCsvImportsDataSource implements CsvImportsDataSource {
   private collection;
@@ -9,9 +11,10 @@ export class MongoCsvImportsDataSource implements CsvImportsDataSource {
     this.collection = this.db.collection('csv_imports');
   }
 
-  async create(doc: CsvImportToCreate): Promise<CsvImport> {
-    const result = await this.collection.insertOne({ ...doc });
-    return { id: result.insertedId.toString(), ...doc };
+  async insert(doc: Omit<CsvImport, 'id'>): Promise<CsvImport> {
+    const dbo: CsvImportDBO = CsvImportMapper.toDBO(doc);
+    const result = await this.collection.insertOne(dbo);
+    return CsvImportMapper.toDomain({ ...dbo, _id: result.insertedId });
   }
 
   async setStorage(importId: string, storage: CsvImportStorage): Promise<void> {

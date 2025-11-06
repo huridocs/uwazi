@@ -1,7 +1,7 @@
-import { CsvImport, CsvImportStorage, CsvImportToCreate } from '../model/CsvImport';
+import { CsvImport, CsvImportStorage } from '../model/CsvImport';
 
 export interface CsvImportsDataSource {
-  create(doc: CsvImportToCreate): Promise<CsvImport>;
+  insert(doc: Omit<CsvImport, 'id'>): Promise<CsvImport>;
   setStorage(importId: string, storage: CsvImportStorage): Promise<void>;
   getById(importId: string): Promise<CsvImport | undefined>;
 }
