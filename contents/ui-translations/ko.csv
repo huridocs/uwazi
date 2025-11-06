@@ -9,6 +9,7 @@ A generated ID will be the default title.,생성된 아이디가 기본값으로
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,이메일이 필요합니다.
+Access denied,접근 거부됨
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,계정
@@ -78,6 +79,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -413,6 +415,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,잘못된 형식
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,아이템
 Javascript,Javascript
@@ -940,6 +943,7 @@ Type,유형
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Unauthorized,권한 없음
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어

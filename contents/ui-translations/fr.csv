@@ -9,6 +9,7 @@ A generated ID will be the default title.,Un identifiant généré sera le titre
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,L'email est obligatoire
+Access denied,Accès refusé
 Accept,Accepter
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Compte
@@ -78,6 +79,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -412,6 +414,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Formulaire invalide
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Cela pourrait aussi très facilement casser l'application. N'écrivez du code ici que si vous savez exactement ce que vous faites.
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Articles :
 Javascript,Javascript
@@ -939,6 +942,7 @@ Type,Type
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Unauthorized,Non autorisé
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Langage OCR non supporté

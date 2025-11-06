@@ -9,6 +9,7 @@ A generated ID will be the default title.,Сгенерированный иде�
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,Требутся электронная почта
+Access denied,Доступ запрещён
 Accept,Принять
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Аккаунт
@@ -78,6 +79,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -410,6 +412,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Элементы
 Javascript,Javascript
@@ -937,6 +940,7 @@ Type,Тип
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Unauthorized,Не авторизован
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов

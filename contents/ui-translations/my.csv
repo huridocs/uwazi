@@ -9,6 +9,7 @@ A generated ID will be the default title.,ထုတ်ပေးသည့် ID �
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,အီးမေးလ် လိုအပ်သည်
+Access denied,ဝင်ရောက်ခွင့် ငြင်းဆိုသည်
 Accept,လက်ခံမည်
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,အကောင့်
@@ -78,6 +79,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -413,6 +415,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,ပုံစံ မှားနေသည်
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,ပါဝင်သည့်အရာများ-
 Javascript,Javascript
@@ -940,6 +943,7 @@ Type,အမျိုးအစား
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
+Unauthorized,ခွင့်ပြုချက် မရှိပါ
 Unlink,Unlink
 Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
