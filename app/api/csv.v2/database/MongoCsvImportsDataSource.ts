@@ -23,8 +23,8 @@ export class MongoCsvImportsDataSource
     await this.getCollection().updateOne({ _id: new ObjectId(id) }, { $set: dbo });
   }
 
-  async getById(importId: string): Promise<CsvImport | undefined> {
-    const result = await this.getCollection().findOne({ _id: new ObjectId(importId) });
+  async getById(id: string): Promise<CsvImport | undefined> {
+    const result = await this.getCollection().findOne({ _id: new ObjectId(id) });
     if (!result) return undefined;
     const { _id, ...rest } = result as any;
     return { id: _id.toString(), ...(rest as Omit<CsvImport, 'id'>) };
