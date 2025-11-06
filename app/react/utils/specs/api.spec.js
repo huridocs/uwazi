@@ -4,12 +4,23 @@
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config';
 import { store } from 'app/store';
-import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
 const mockRedirect = jest.fn();
+
+jest.mock('app/I18N', () => {
+  const mockT = jest.fn((_context, key) => key);
+  return {
+    t: mockT,
+    Translate: ({ children }) => children,
+    __mockT: mockT,
+  };
+});
+
+import api from 'app/utils/api';
+import * as I18N from 'app/I18N';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -39,6 +50,8 @@ describe('api', () => {
     spyOn(loadingBar, 'done');
     spyOn(store, 'dispatch');
     spyOn(notifyActions, 'notify').and.returnValue('notify action');
+    I18N.t.mockClear();
+    I18N.t.mockImplementation((_context, key) => key);
     backend.restore();
     backend
       .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
@@ -66,6 +79,18 @@ describe('api', () => {
       .post(`${APIURL}unprocessable_entity`, {
         status: 422,
         body: { error: 'unprocessable entity' },
+      })
+      .get(`${APIURL}error_without_validations`, {
+        status: 422,
+        body: { error: 'Unauthorized' },
+      })
+      .get(`${APIURL}error_translatable`, {
+        status: 500,
+        body: { error: 'Some error message' },
+      })
+      .get(`${APIURL}error_default_case`, {
+        status: 403,
+        body: { error: 'Access denied' },
       });
   });
 
@@ -227,6 +252,30 @@ describe('api', () => {
       it('should show generic error message', async () => {
         await testErrorHandling('unknown_error', () => {
           testNotificationDisplayed('An error occurred');
+        });
+      });
+    });
+
+    describe('error translation', () => {
+      it('should translate error when no validations', async () => {
+        await testErrorHandling('error_without_validations', () => {
+          expect(I18N.t).toHaveBeenCalledWith('System', 'Unauthorized', null, false);
+          testNotificationDisplayed('Unauthorized', 'danger');
+        });
+      });
+
+      it('should translate error when no pattern matches', async () => {
+        await testErrorHandling('error_translatable', () => {
+          expect(I18N.t).toHaveBeenCalledWith('System', 'Some error message', null, false);
+          // When translation returns same value (no translation found), falls back to generic message
+          expect(I18N.t).toHaveBeenCalledWith('System', 'An error has occurred', null, false);
+        });
+      });
+
+      it('should translate error in default case', async () => {
+        await testErrorHandling('error_default_case', () => {
+          expect(I18N.t).toHaveBeenCalledWith('System', 'Access denied', null, false);
+          testNotificationDisplayed('Access denied', 'danger');
         });
       });
     });

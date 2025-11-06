@@ -78,6 +78,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -267,7 +268,6 @@ Drag row,Drag row
 Drop your files here to upload or,သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ရန် ဒီနေရာတွင် ချပါ သို့မဟုတ်
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,ပွားထားသော အီးမေးလ်
-Duplicated label,ပွားထားသော တံဆိပ်
 Duplicated name,ပွားထားသော အမည်
 Duplicated username,ပွားထားသော အသုံးပြုသူအမည်
 Edit,တည်းဖြတ်ရန်
@@ -413,6 +413,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,ပုံစံ မှားနေသည်
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,ပါဝင်သည့်အရာများ-
 Javascript,Javascript
@@ -937,6 +938,7 @@ Two-step verification,နှစ်ဆင့်ခံ မှန်ကန်ကြ
 Two-step verification token required,Two-step verification token required
 Type,အမျိုးအစား
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,ခွင့်ပြုချက် မရှိပါ
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language

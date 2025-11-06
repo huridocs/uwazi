@@ -78,6 +78,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -264,7 +265,6 @@ Drag row,Drag row
 Drop your files here to upload or,"Опустите свои файлы сюда, чтобы загрузить или"
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Продублированный адрес электронной почты
-Duplicated label,Продублированная метка
 Duplicated name,Дублированное имя
 Duplicated username,Продублированное имя пользователя
 Edit,Редактировать
@@ -410,6 +410,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Элементы
 Javascript,Javascript
@@ -934,6 +935,7 @@ Two-step verification,Двухфакторная верификация
 Two-step verification token required,Two-step verification token required
 Type,Тип
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Не авторизован
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
