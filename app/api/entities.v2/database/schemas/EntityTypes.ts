@@ -9,7 +9,7 @@ export interface EntityDBO {
   template: ObjectId;
   title: string;
   icon?: { _id: string; label: string; type: string };
-  metadata: Record<string, { value: string; label: string }[]>;
+  metadata: Record<string, { value: string | number; label?: string }[]>;
   obsoleteMetadata: string[];
   user?: ObjectId;
   published: boolean;

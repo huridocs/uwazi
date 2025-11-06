@@ -35,7 +35,12 @@ class MongoEntityLanguageMapper {
 
         return {
           ...acc,
-          [name]: { value, name, type: property.getData().type, language: dbo.language },
+          [name]: {
+            value,
+            name,
+            type: property.getData().type,
+            language: dbo.language,
+          } as PropertyAssignment,
         };
       }, commonProperties),
     };
