@@ -149,6 +149,26 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Files handling:
   - Always use `InputFile` in controllers to pass uploaded files to use cases.
   - Use the files.v2 `FileStorage` (via `FileStorageStrategyFactory.createDefault()`) and store under `customPath` with desired `destination`.
+
+### Domain usage paradigm (apply consistently)
+- Domain objects own defaults and validation.
+  - Create domain instances via static factories, e.g., `CsvImportDomain.create({ templateId, file, createdBy })`.
+  - Domain sets defaults (e.g., `status = 'queued'`) and timestamps (`createdAt/updatedAt = Date.now()`), and validates input (template present, file metadata valid).
+- Transport vs domain types.
+  - Controllers receive uploads as `InputFile` and pass it to use cases.
+  - Use cases map `InputFile.metadata` → domain `file` metadata `{ originalName, mimeType, size }` when calling domain `.create`.
+- Data sources and mapping.
+  - DS methods use domain types: `insert(domain: Omit<CsvImport,'id'>): Promise<CsvImport>`; map via `CsvImportMapper`.
+  - Persist `_id` in DB; map `_id ↔ id` on reads/writes; keep domain free of DB specifics.
+  - Name DS instances `xxxDS` (e.g., `csvImportsDS`) and expose a `DefaultXxxDataSource()` factory.
+- Transactions.
+  - Wrap multi-step flows in `transactionManager.run(async () => { ... })`.
+  - Create domain → `csvImportsDS.insert` → `fileStorage.storeFile` → `csvImportsDS.setStorage` inside the transaction.
+  - If storage fails, the transaction throws and DB does not commit; at worst a stored file is orphaned, never a broken DB reference.
+  - Returning values from `run` is expected; on failure it throws, on success it resolves to the callback’s return.
+- Storage and paths.
+  - Store using files.v2 `FileStorage` under `customPath` with `destination: csv-imports/{id}` and filename from `InputFile.contents.filename`.
+  - Save the storage path in DB as `csv-imports/{id}/{filename}`.
 - Validation:
   - V2 path: Zod in controller via `AbstractController`.
   - V1 path: keep minimal equivalent validation to prior AJV requirements (no schema drift).
