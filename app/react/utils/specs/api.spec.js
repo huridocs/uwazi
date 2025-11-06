@@ -11,7 +11,7 @@ import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 const mockRedirect = jest.fn();
 
 jest.mock('app/I18N', () => {
-  const mockT = jest.fn((context, key) => key);
+  const mockT = jest.fn((_context, key) => key);
   return {
     t: mockT,
     Translate: ({ children }) => children,
@@ -51,7 +51,7 @@ describe('api', () => {
     spyOn(store, 'dispatch');
     spyOn(notifyActions, 'notify').and.returnValue('notify action');
     I18N.t.mockClear();
-    I18N.t.mockImplementation((context, key) => key);
+    I18N.t.mockImplementation((_context, key) => key);
     backend.restore();
     backend
       .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))

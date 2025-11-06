@@ -74,9 +74,7 @@ const handleErrorStatus = error => {
     case 400:
     case 422: {
       errorMessage = extractMessageFromValidation(error);
-      store.dispatch(
-        notify(extractMessageFromValidation(error), 'danger')
-      );
+      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
       break;
     }
 

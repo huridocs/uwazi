@@ -5,6 +5,11 @@ import mongodb from 'mongodb';
 import { resolve } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { promises } from 'fs';
+import {
+  comparableString,
+  checkContentBasedMatch,
+  checkStringLiteralMatch,
+} from './translationUtils.mjs';
 
 async function getFiles(dir) {
   try {
@@ -72,9 +77,6 @@ const processTFunction = (path, file) => {
   return { text: text || key, container: 't', file: shortName, key };
 };
 
-const comparableString = text => text.replaceAll(/['\s;]|&(#39|#x27|quot|rsquo|apos);/g, '');
-// Normalize only HTML entities and quotes, but preserve spaces for exact string matching
-const normalizeForStringMatch = text => text.replaceAll(/['"]|&(#39|#x27|quot|rsquo|apos);/g, '');
 
 async function parseFile(file, translations) {
   const result = [];
@@ -83,24 +85,7 @@ async function parseFile(file, translations) {
   const isMigrationFile = file.includes('/migrations/');
 
   if (isReactFile && !isMigrationFile) {
-    const comparableContent = comparableString(fileContents);
-
-    translations
-      .filter(translation => !translation.used)
-      .forEach(translation => {
-        const normalizedKey = translation.plainKey || comparableString(translation.key);
-        const normalizedValue = translation.plainValue || comparableString(translation.value);
-
-        if (
-          comparableContent.includes(normalizedKey) ||
-          comparableContent.includes(normalizedValue) ||
-          comparableContent.includes(translation.key) ||
-          comparableContent.includes(translation.value)
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          translation.used = true;
-        }
-      });
+    checkContentBasedMatch(fileContents, translations);
   }
 
   // Use AST parsing for all files (both React and backend) to find explicit translation usage
@@ -162,31 +147,7 @@ async function parseFile(file, translations) {
             }
           }
           if (path.isStringLiteral()) {
-            const stringValue = path.node.value;
-            const normalizedString = normalizeForStringMatch(stringValue);
-            translations
-              .filter(translation => !translation.used)
-              .forEach(translation => {
-                // Exact matches (highest priority)
-                if (
-                  translation.key === stringValue ||
-                  translation.value === stringValue
-                ) {
-                  // eslint-disable-next-line no-param-reassign
-                  translation.used = true;
-                } else {
-                  // Normalized matches (only for HTML entities/quotes, preserving spaces)
-                  const normalizedKey = normalizeForStringMatch(translation.key);
-                  const normalizedValue = normalizeForStringMatch(translation.value);
-                  if (
-                    normalizedKey === normalizedString ||
-                    normalizedValue === normalizedString
-                  ) {
-                    // eslint-disable-next-line no-param-reassign
-                    translation.used = true;
-                  }
-                }
-              });
+            checkStringLiteralMatch(path.node.value, translations);
           }
         },
       });
