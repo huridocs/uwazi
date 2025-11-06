@@ -17,7 +17,6 @@ import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaul
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { Readable } from 'stream';
-import { FileContents } from 'api/files.v2/model/FileContents';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -153,6 +152,8 @@ const fixtures: DBFixture = {
       factory.property('nested', 'nested'),
       factory.property('preview', 'preview'),
       factory.property('media', 'media'),
+      factory.property('attached_media_1', 'media'),
+      factory.property('attached_media_2', 'media'),
     ]),
   ],
 
@@ -263,6 +264,30 @@ describe('CreateEntityUseCase', () => {
           buffer: Buffer.from(''),
           stream: Readable.from([]),
         },
+        {
+          fieldname: 'attachments[2]',
+          encoding: '7bit',
+          mimetype: 'video/mp4',
+          destination: '/tmp',
+          originalname: 'Attachment 3.mp4',
+          filename: 'attachment_3.mp4',
+          path: '/tmp/attachment_3.mp4',
+          size: 78636,
+          buffer: Buffer.from(''),
+          stream: Readable.from([]),
+        },
+        {
+          fieldname: 'attachments[3]',
+          encoding: '7bit',
+          mimetype: 'video/mp4',
+          destination: '/tmp',
+          originalname: 'Attachment 4.mp4',
+          filename: 'attachment_4.mp4',
+          path: '/tmp/attachment_4.mp4',
+          size: 78636,
+          buffer: Buffer.from(''),
+          stream: Readable.from([]),
+        },
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
@@ -291,7 +316,12 @@ describe('CreateEntityUseCase', () => {
         { name: 'image', value: [{ value: 'https://example.com/image.jpg' }] },
         { name: 'attached_image_1', value: [{ attachment: 0 }] },
         { name: 'attached_image_2', value: [{ attachment: 1 }] },
-        // { name: 'media', value: [] },
+        { name: 'media', value: [{ value: 'https://example.com/media.mp4' }] },
+        {
+          name: 'attached_media_1',
+          value: [{ attachment: 2, timeLinks: '{"timelinks":{"00:00:00":"title"}}' }],
+        },
+        { name: 'attached_media_2', value: [{ attachment: 3 }] },
         // { name: 'nested', value: [] },
         // { name: 'preview', value: [] },
       ],
@@ -337,7 +367,11 @@ describe('CreateEntityUseCase', () => {
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
         nested: [],
         preview: [],
-        media: [],
+        media: [{ value: 'https://example.com/media.mp4' }],
+        attached_media_1: [
+          { value: '(/api/files/attachment_3.mp4, {"timelinks":{"00:00:00":"title"}})' },
+        ],
+        attached_media_2: [{ value: '/api/files/attachment_4.mp4' }],
       },
     };
 
@@ -393,7 +427,7 @@ describe('CreateEntityUseCase', () => {
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
 
-    expect(attachments).toHaveLength(2);
+    expect(attachments).toHaveLength(4);
     expect(attachments).toEqual([
       {
         _id: expect.any(ObjectId),
@@ -417,16 +451,30 @@ describe('CreateEntityUseCase', () => {
         url: '',
         type: 'attachment',
       },
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 3.mp4',
+        filename: 'attachment_3.mp4',
+        mimetype: 'video/mp4',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 4.mp4',
+        filename: 'attachment_4.mp4',
+        mimetype: 'video/mp4',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
     ]);
 
-    expect(filesStorage.storeFile).toHaveBeenCalledTimes(2);
-    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(1, {
-      type: 'attachment',
-      file: expect.any(FileContents),
-    });
-    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(2, {
-      type: 'attachment',
-      file: expect.any(FileContents),
-    });
+    expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
   });
 });

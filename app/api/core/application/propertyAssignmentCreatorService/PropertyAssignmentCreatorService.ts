@@ -3,6 +3,7 @@ import { Template } from 'api/core/domain/template/Template';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type PropertyValueInput =
+  | { attachment: number; timeLinks?: string }
   | { attachment: number }
   | { value: string }
   | { value: number }

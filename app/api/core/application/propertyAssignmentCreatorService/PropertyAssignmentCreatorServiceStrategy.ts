@@ -14,12 +14,14 @@ import {
 } from './PropertyAssignmentCreatorService';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
   select: SelectPropertyAssignmentCreatorService;
   relationship: RelationshipPropertyAssignmentCreatorService;
   image: ImagePropertyAssignmentCreatorService;
+  media: MediaPropertyAssignmentCreatorService;
 };
 
 type CreateProps = {
@@ -41,6 +43,8 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.relationship;
       case 'image':
         return this.props.image;
+      case 'media':
+        return this.props.media;
 
       default:
         return this.props.default;
@@ -77,6 +81,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         multiLanguageEntityDS,
       }),
       image: new ImagePropertyAssignmentCreatorService(),
+      media: new MediaPropertyAssignmentCreatorService(),
       default: new DefaultPropertyAssignmentCreatorService(),
     });
   }
