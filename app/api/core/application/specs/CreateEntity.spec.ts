@@ -323,7 +323,6 @@ describe('CreateEntityUseCase', () => {
         },
         { name: 'attached_media_2', value: [{ attachment: 3 }] },
         // { name: 'nested', value: [] },
-        // { name: 'preview', value: [] },
       ],
       icon: { id: 'iconId', label: 'iconLabel', type: 'iconType' },
     });
