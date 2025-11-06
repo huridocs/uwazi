@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
-import { readFile } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 
 import { Result } from 'api/core/libs/Result';
 import path from 'path';
@@ -29,6 +29,16 @@ export class FileContents {
       this.filename = filePath.filename;
       this.readableCallback = filePath.readableCallback;
     }
+  }
+
+  async size() {
+    if (this.filepath) {
+      return Result.ok((await stat(this.filepath)).size);
+    }
+
+    return Result.fail(
+      new Error('size method only available if FileContents was instantiated with a disk filepath')
+    );
   }
 
   async getReadable() {

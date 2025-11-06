@@ -36,6 +36,13 @@ describe('FileContents', () => {
     });
   });
 
+  describe('size', () => {
+    it('should return the size in bytes', async () => {
+      const file = new FileContents(testFilePath);
+      expect((await file.size()).getData()).toBe(42);
+    });
+  });
+
   describe('getReadable', () => {
     it('should return a readable stream', async () => {
       const file = new FileContents(testFilePath);
