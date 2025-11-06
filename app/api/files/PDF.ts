@@ -1,5 +1,7 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import { stat } from 'fs/promises';
 import * as os from 'os';
 import { legacyLogger } from 'api/log';
 import { spawn } from 'child-process-promise';
@@ -53,7 +55,7 @@ class PDF extends EventEmitter {
 
   async createThumbnail(documentId: string) {
     const thumbnailPath = path.join(os.tmpdir(), `${documentId}.jpg`);
-    let response;
+    let filename;
     try {
       await spawn(
         'pdftoppm',
@@ -69,14 +71,17 @@ class PDF extends EventEmitter {
         ],
         { capture: ['stdout', 'stderr'] }
       );
-      response = `${documentId}.jpg`;
-      await storage.storeFile(response, createReadStream(thumbnailPath), 'thumbnail');
+      filename = `${documentId}.jpg`;
+      await storage.storeFile(filename, createReadStream(thumbnailPath), 'thumbnail');
     } catch (err) {
-      response = err;
       legacyLogger.error(err.stderr);
+      return err;
     }
 
-    return Promise.resolve(response);
+    return Promise.resolve({
+      filename,
+      size: (await stat(path.join(os.tmpdir(), filename))).size,
+    });
   }
 
   async convert() {
