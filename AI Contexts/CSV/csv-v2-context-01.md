@@ -151,6 +151,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Use the files.v2 `FileStorage` (via `FileStorageStrategyFactory.createDefault()`) and store under `customPath` with desired `destination`.
 
 ### Domain usage paradigm (apply consistently)
+
 - Domain objects own defaults and validation.
   - Create domain instances via static factories, e.g., `CsvImportDomain.create({ templateId, file, createdBy })`.
   - Domain sets defaults (e.g., `status = 'queued'`) and timestamps (`createdAt/updatedAt = Date.now()`), and validates input (template present, file metadata valid).
@@ -166,6 +167,11 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Create domain → `csvImportsDS.insert` → `fileStorage.storeFile` → `csvImportsDS.setStorage` inside the transaction.
   - If storage fails, the transaction throws and DB does not commit; at worst a stored file is orphaned, never a broken DB reference.
   - Returning values from `run` is expected; on failure it throws, on success it resolves to the callback’s return.
+- Transactions and Data Sources (critical):
+  - All DSs MUST be transaction-aware. Extend `MongoDataSource` and use `this.getCollection()` for all Mongo calls so the active session from `transactionManager.run` is used.
+  - DS factories MUST receive a `MongoTransactionManager` and construct DSs with it. E.g., `DefaultCsvImportsDataSource(transactionManager)`.
+  - Do NOT call `db.collection(...).insertOne/updateOne/findOne` directly in DSs (bypasses the session) — this will cause writes to occur outside the transaction.
+  - Mapper pattern: keep mapping `_id ↔ id` within DS (or a dedicated mapper) to keep the domain free from DB types.
 - Storage and paths.
   - Store using files.v2 `FileStorage` under `customPath` with `destination: csv-imports/{id}` and filename from `InputFile.contents.filename`.
   - Save the storage path in DB as `csv-imports/{id}/{filename}`.
