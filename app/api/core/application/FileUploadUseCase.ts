@@ -43,24 +43,23 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
       fullText: pdfInfo.isOk() ? pdfInfo.getData().pages : {},
     });
 
-    let thumbnail: Thumbnail;
     let thumbnailFile: FileContents;
+    let thumbnail: Thumbnail;
     if (pdfInfo.isOk()) {
+      thumbnailFile = (
+        await this.deps.pdfService.createThumbnail(uploadedFile.contents)
+      ).getDataOrThrow();
       thumbnail = new Thumbnail({
         originalname: 'originalThumbnailName.jpg',
         filename: `${document.id}.jpg`,
         mimetype: 'image/jpeg',
-        size: 1,
+        size: (await thumbnailFile.size()).getDataOrThrow(),
         id: this.idGenerator.generate(),
         entity: entityId,
         language: pdfInfo.getData().language.key,
         creationDate: date.currentUTC(),
         uploaded: true,
       });
-
-      thumbnailFile = (
-        await this.deps.pdfService.createThumbnail(uploadedFile.contents)
-      ).getDataOrThrow();
       thumbnailFile.filename = thumbnail.filename;
     }
 

@@ -85,47 +85,45 @@ describe('csvLoader zip file', () => {
   it('should import the file asociated with each entity', async () => {
     expect(imported.length).toBe(3);
 
-    expect(imported[0]).toEqual(
-      expect.objectContaining({
-        status: 'ready',
-        fullText: { 1: '1[[1]]\n\n' },
-        filename: 'generated1.pdf',
-        originalname: '1.pdf',
-      })
-    );
-    expect(imported[1]).toEqual(
-      expect.objectContaining({
-        status: 'ready',
-        fullText: { 1: '2[[1]]\n\n' },
-        filename: 'generated2.pdf',
-        originalname: '2.pdf',
-      })
-    );
+    expect(imported[0]).toMatchObject({
+      status: 'ready',
+      fullText: { 1: '1[[1]]\n\n' },
+      filename: 'generated1.pdf',
+      originalname: '1.pdf',
+      size: 11423,
+    });
+
+    expect(imported[1]).toMatchObject({
+      status: 'ready',
+      fullText: { 1: '2[[1]]\n\n' },
+      filename: 'generated2.pdf',
+      originalname: '2.pdf',
+      size: 11623,
+    });
   });
 
   it('should import the attachments asociated with each entity', async () => {
     const importedEntities = (await entities.get()) as EntityWithFilesSchema[];
 
-    expect(importedEntities[0].attachments?.length).toBe(1);
-    expect(importedEntities[0].attachments?.[0]).toEqual(
-      expect.objectContaining({
+    expect(importedEntities[0].attachments).toMatchObject([
+      {
         filename: 'generatedatt1.doc',
         originalname: 'att1.doc',
-      })
-    );
+        size: 0,
+      },
+    ]);
 
-    expect(importedEntities[1].attachments?.length).toBe(2);
-    expect(importedEntities[1].attachments?.[0]).toEqual(
-      expect.objectContaining({
+    expect(importedEntities[1].attachments).toMatchObject([
+      {
         filename: 'generatedatt1.doc',
         originalname: 'att1.doc',
-      })
-    );
-    expect(importedEntities[1].attachments?.[1]).toEqual(
-      expect.objectContaining({
+        size: 0,
+      },
+      {
         filename: 'generatedatt2.jpg',
         originalname: 'att2.jpg',
-      })
-    );
+        size: 0,
+      },
+    ]);
   });
 });
