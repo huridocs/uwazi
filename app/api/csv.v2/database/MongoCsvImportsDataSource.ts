@@ -26,7 +26,7 @@ export class MongoCsvImportsDataSource
   async getById(id: string): Promise<CsvImport | undefined> {
     const result = await this.getCollection().findOne({ _id: new ObjectId(id) });
     if (!result) return undefined;
-    const { _id, ...rest } = result as any;
+    const { _id, ...rest } = result;
     return { id: _id.toString(), ...(rest as Omit<CsvImport, 'id'>) };
   }
 }
