@@ -19,12 +19,14 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
     const templateId = input.template;
 
     const importId = await this.transactionManager.run(async () => {
+      const id = this.idGenerator.generate();
       const domain = CsvImportDomain.create({
+        id,
         templateId,
         file: { originalName: originalFilename, mimeType, size },
         createdBy: input.userId,
       });
-      const { id } = await this.deps.csvImportsDS.insert(domain);
+      await this.deps.csvImportsDS.insert(domain);
 
       const destination = `csv-imports/${id}`;
       await this.deps.fileStorage.storeFile({
@@ -33,9 +35,9 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
         destination,
       });
 
-      await this.deps.csvImportsDS.setStorage(id, {
-        path: `${destination}/${input.file.contents.filename}`,
-      });
+      const { filename } = input.file.contents;
+      const updated = CsvImportDomain.withStorage(domain, `${destination}/${filename}`);
+      await this.deps.csvImportsDS.update(updated);
 
       return id;
     });

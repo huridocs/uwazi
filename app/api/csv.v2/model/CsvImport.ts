@@ -37,12 +37,13 @@ export type CsvImport = CsvImportToCreate & {
 
 export class CsvImportDomain {
   static create(input: {
+    id: string;
     templateId: string;
     file: CsvImportFile;
     createdBy: string;
-  }): Omit<CsvImport, 'id'> {
+  }): CsvImport {
     const now = Date.now();
-    const { templateId, file, createdBy } = input;
+    const { id, templateId, file, createdBy } = input;
 
     if (!templateId) throw new Error('templateId is required');
     if (!file?.originalName || !file?.mimeType || !Number.isFinite(file?.size)) {
@@ -50,12 +51,21 @@ export class CsvImportDomain {
     }
 
     return {
+      id,
       templateId,
       file,
       status: 'queued',
       createdBy,
       createdAt: now,
       updatedAt: now,
+    };
+  }
+
+  static withStorage(csvImport: CsvImport, path: string): CsvImport {
+    return {
+      ...csvImport,
+      storage: { path },
+      updatedAt: Date.now(),
     };
   }
 }
