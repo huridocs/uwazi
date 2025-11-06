@@ -172,6 +172,22 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - DS factories MUST receive a `MongoTransactionManager` and construct DSs with it. E.g., `DefaultCsvImportsDataSource(transactionManager)`.
   - Do NOT call `db.collection(...).insertOne/updateOne/findOne` directly in DSs (bypasses the session) — this will cause writes to occur outside the transaction.
   - Mapper pattern: keep mapping `_id ↔ id` within DS (or a dedicated mapper) to keep the domain free from DB types.
+
+### IDs and Domain ownership
+
+- ID generation happens in the use case via `idGenerator.generate()` (injected by the factory). The domain receives the id and owns it thereafter.
+- The domain factory includes the id: `CsvImportDomain.create({ id, templateId, file, createdBy })` and sets defaults/timestamps.
+- The DS writes the provided id as Mongo `_id` and maps `_id ↔ id` on reads/writes. No reliance on `insertedId`.
+- Update pattern: mutate/clone at the domain (e.g., `CsvImportDomain.withStorage(csvImport, path)`) and persist with `csvImportsDS.update(csvImport)` (coarse-grained), not DS-specific setters.
+
+### Storage and factory usage
+
+- Controllers pass `InputFile` to use cases; use cases call `fileStorage.storeFile({ file: InputFile.contents, type: 'customPath', destination })`.
+- For now we instantiate `FileSystemStorage` directly with `new PathManager({ tenant: tenants.current() })` inside the per-request factory; when a shared storage factory exists, we can swap it without touching use cases.
+
+### Project structure
+
+- Keep domain logic co-located in `model/CsvImport.ts` (factory/mutations). Removed unused scaffolding folders (`adapters`, `application`, `domain`, `dtos`, `factories`, `infrastructure`, `ports`) to align with entities.v2 simplicity.
 - Storage and paths.
   - Store using files.v2 `FileStorage` under `customPath` with `destination: csv-imports/{id}` and filename from `InputFile.contents.filename`.
   - Save the storage path in DB as `csv-imports/{id}/{filename}`.
