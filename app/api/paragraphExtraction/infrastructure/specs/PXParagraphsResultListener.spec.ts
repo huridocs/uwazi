@@ -28,7 +28,7 @@ const createSut = () => {
     dispatchMany: jest.fn(),
   };
 
-  const listener = new PXParagraphsResultListener(async () => dispatcher);
+  const listener = new PXParagraphsResultListener(() => dispatcher);
 
   return {
     listener,

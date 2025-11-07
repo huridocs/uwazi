@@ -10,12 +10,19 @@ type BaseFileDBO = {
   creationDate: number;
 };
 
-export type DocumentDBO = BaseFileDBO & {
+export type BaseDocument = BaseFileDBO & {
   type: 'document';
   entity: string;
+};
+
+export type DocumentDBO = BaseDocument & {
+  status: 'processing' | 'failed';
+};
+
+export type ProcessedDocumentDBO = BaseDocument & {
   totalPages: number;
   language: LanguageISO6393;
-  status: 'processing' | 'failed' | 'ready';
+  status: 'ready';
   fullText?: { [k: string]: string };
 };
 
@@ -35,4 +42,4 @@ export type ThumbnailDBO = BaseFileDBO & {
   type: 'thumbnail';
 };
 
-export type fileDBO = DocumentDBO | AttachmentDBO | CustomDBO | ThumbnailDBO;
+export type fileDBO = DocumentDBO | ProcessedDocumentDBO | AttachmentDBO | CustomDBO | ThumbnailDBO;

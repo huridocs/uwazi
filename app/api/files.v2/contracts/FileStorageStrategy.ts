@@ -17,8 +17,8 @@ type FileStorageStrategyProps = {
 export class FileStorageStrategy implements FileStorage {
   constructor(private props: FileStorageStrategyProps) {}
 
-  async storeFile(_input: UploadFileInput) {
-    throw new Error('Method not implemented.');
+  async storeFile(input: UploadFileInput) {
+    return this.currentStrategy.storeFile(input);
   }
 
   private get currentStrategy() {
