@@ -73,7 +73,7 @@ export class PXEntityUpdatedListener {
     );
 
     const documentsInInstalledLanguage = await this.dependencies.filesDS
-      .getDocumentsForEntity(newEntity.sharedId!, { languages })
+      .getProcessedDocsForEntity(newEntity.sharedId!, { languages })
       .all();
 
     if (!extractor || !documentsInInstalledLanguage.length) {

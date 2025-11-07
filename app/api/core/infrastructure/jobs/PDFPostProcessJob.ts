@@ -1,4 +1,3 @@
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import {
   UserAwareDispatchable,
@@ -11,7 +10,6 @@ type Params = UserAwareDispatchableParams & {
 
 type JobDependencies = {
   useCase: PDFPostProcess;
-  templatesDS: TemplatesDataSource;
 };
 
 class PDFPostProcessJob extends UserAwareDispatchable<Params> {

@@ -1,11 +1,11 @@
-import { Document } from 'api/files.v2/model/Document';
+import { Property } from 'api/core/domain/template/Property';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
-import { Property } from 'api/core/domain/template/Property';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
+import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
@@ -60,30 +60,30 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
   ],
 };
 
-const document = new Document({
+const document = new ProcessedDocument({
   id: 'any_id',
   entity: 'any_entity',
   language: 'pt',
   mimetype: 'application/pdf',
   totalPages: 1,
-  status: 'processing',
   creationDate: 1,
   size: 1,
   filename: 'any_file_name',
   originalname: 'original.pdf',
+  fullText: {},
 });
 
-const document2 = new Document({
+const document2 = new ProcessedDocument({
   id: 'any_id2',
   entity: 'any_entity2',
   language: 'es',
   mimetype: 'application/pdf',
   totalPages: 1,
-  status: 'processing',
   creationDate: 1,
   size: 1,
   filename: 'any_file_name2',
   originalname: 'original.pdf',
+  fullText: {},
 });
 
 const sourceTemplate = TemplateBuilder.aTemplate({

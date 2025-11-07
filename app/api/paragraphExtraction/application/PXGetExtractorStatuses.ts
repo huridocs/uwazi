@@ -42,7 +42,7 @@ class PXGetExtractorStatuses
       await prev;
 
       const entityValidFiles = await filesDS
-        .getDocumentsForEntity(row.entity.sharedId, { languages: installedLanguages })
+        .getProcessedDocsForEntity(row.entity.sharedId, { languages: installedLanguages })
         .all();
 
       row.availableFileLanguages = [...new Set(entityValidFiles.map(f => f.language))];

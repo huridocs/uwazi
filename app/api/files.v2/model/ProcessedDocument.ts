@@ -1,8 +1,8 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Document } from './Document';
-import { BaseFileProps } from './BaseFile';
+import { BaseDocument, BaseDocumentProps } from './BaseDocument';
 
-type Props = BaseFileProps & {
+type Props = BaseDocumentProps & {
   entity: string;
   language: LanguageISO6391;
   totalPages: number;
@@ -11,7 +11,7 @@ type Props = BaseFileProps & {
   };
 };
 
-export class ProcessedDocument extends Document {
+export class ProcessedDocument extends BaseDocument {
   readonly language: LanguageISO6391;
 
   readonly totalPages: number;
@@ -20,7 +20,7 @@ export class ProcessedDocument extends Document {
 
   constructor(props: Props) {
     const { language, totalPages, fullText, ...baseProps } = props;
-    super({ ...baseProps, status: 'ready' });
+    super({ ...baseProps });
     this.language = language;
     this.totalPages = totalPages;
     this.fullText = fullText;
