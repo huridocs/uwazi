@@ -45,7 +45,7 @@ const Tabs = ({
     }
   };
 
-  const activeClass = 'text-gray-900 bg-gray-50';
+  const activeClass = 'text-primary-900 bg-primary-50';
   const inactiveClass = 'text-gray-500';
 
   return (

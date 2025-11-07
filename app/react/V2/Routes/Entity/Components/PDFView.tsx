@@ -54,7 +54,7 @@ const PDFView = ({ entity }: { entity: Entity }) => {
               onChange={onSelect}
             >
               <option value="raw">{t('System', 'Plain text', null, false)}</option>
-              <option value="normal">{t('System', 'Normal view', null, false)}</option>
+              <option value="normal">{t('System', 'PDF', null, false)}</option>
             </select>
           </div>
         </div>

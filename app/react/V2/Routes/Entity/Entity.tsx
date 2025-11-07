@@ -193,7 +193,7 @@ const Entity = () => {
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="p-2 h-full">
           <Tabs
-            className="min-w-fit overflow-x-auto"
+            className=""
             unmountTabs={false}
             initialTabId={activeMainTab}
             onTabSelected={onMainTabChange}
