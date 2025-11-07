@@ -41,13 +41,16 @@ const PDF = ({
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout>();
 
+  const padding = 10;
   const containerStyles = {
     height: size?.height || '100%',
     width: size?.width || '100%',
     overflow: size?.overflow || 'auto',
-    paddingLeft: '10px',
-    paddingRight: '10px',
+    paddingLeft: `${padding}px`,
+    paddingRight: `${padding}px`,
   };
 
   useEffect(() => {
@@ -72,6 +75,40 @@ const PDF = ({
     };
   }, [scrollToPage, pdf]);
 
+  // ResizeObserver to track container width changes with debouncing
+  useEffect(() => {
+    const container = pdfContainerRef.current;
+    if (!container) return;
+
+    // Set initial width
+    const initialWidth = container.offsetWidth - padding * 2; // Account for padding
+    setContainerWidth(initialWidth);
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const [entry] = entries;
+      if (entry && entry.contentRect) {
+        // Debounce the resize updates
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+
+        resizeTimeoutRef.current = setTimeout(() => {
+          const newWidth = entry.contentRect.width - padding * 2; // Account for padding
+          setContainerWidth(newWidth);
+        }, 150); // 150ms debounce
+      }
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   if (error) {
     return <div>{error}</div>;
   }
@@ -84,8 +121,6 @@ const PDF = ({
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
             const shouldScrollToPage = scrollToPage === regionId;
-            const containerWidth =
-              pdfContainerRef.current?.offsetWidth && pdfContainerRef.current.offsetWidth - 20;
 
             return (
               <div

@@ -21,7 +21,10 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useAtom(pdfScaleAtom);
   const pageContainerRef = useRef<HTMLDivElement>(null);
+  const pageViewerRef = useRef<any>(null);
+  const pdfPageRef = useRef<any>(null);
 
+  // Initial setup - only runs once
   useEffect(() => {
     const currentContainer = pageContainerRef.current;
     let observer: IntersectionObserver;
@@ -30,6 +33,8 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
       .getPage(page)
       .then(pdfPage => {
         if (currentContainer && pdfPage) {
+          pdfPageRef.current = pdfPage;
+
           const originalViewport = pdfPage.getViewport({ scale: 1 });
           const scale = calculateScaling(
             originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
@@ -49,6 +54,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
           });
 
           pageViewer.setPdfPage(pdfPage);
+          pageViewerRef.current = pageViewer;
 
           const handleIntersection: IntersectionObserverCallback = entries => {
             const [entry] = entries;
@@ -81,11 +87,43 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
       });
 
     return () => {
-      if (currentContainer) observer.unobserve(currentContainer);
+      if (currentContainer && observer) observer.unobserve(currentContainer);
+      if (pageViewerRef.current) {
+        pageViewerRef.current.destroy();
+      }
     };
     //pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Update scale dynamically when containerWidth changes
+  useEffect(() => {
+    const pageViewer = pageViewerRef.current;
+    const pdfPage = pdfPageRef.current;
+
+    if (!pageViewer || !pdfPage || !containerWidth) return;
+
+    const originalViewport = pdfPage.getViewport({ scale: 1 });
+    const newScale = calculateScaling(
+      originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
+      containerWidth
+    );
+
+    // Only update if scale actually changed
+    if (Math.abs(pageViewer.scale - newScale) > 0.01) {
+      setPdfScale(newScale);
+
+      // Update the viewer's scale
+      pageViewer.update({ scale: newScale });
+
+      // If the page is already rendered, re-draw it at the new scale
+      if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+        pageViewer.draw().catch((e: Error) => {
+          setError(e.message);
+        });
+      }
+    }
+  }, [containerWidth, setPdfScale]);
 
   if (error) {
     return <div>{error}</div>;

@@ -13,6 +13,23 @@ import * as helpers from '../functions/helpers';
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
 
+// Mock ResizeObserver
+class ResizeObserverMock {
+  callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+}
+
+global.ResizeObserver = ResizeObserverMock as any;
+
 const highlights: PDFProps['highlights'] = {
   2: [
     {
@@ -64,6 +81,8 @@ jest.mock('../pdfjs.ts', () => ({
         }),
         destroy: mockPageDestroy,
         renderingState: 0,
+        scale: args.scale,
+        update: jest.fn(),
         cancelRendering: jest.fn(),
       };
     }),
@@ -166,6 +185,42 @@ describe('PDF', () => {
       cleanup();
 
       expect(unobserveMock).toHaveBeenCalledTimes(5);
+    });
+  });
+
+  describe('resize observer', () => {
+    let resizeObserverInstance: ResizeObserverMock | null = null;
+
+    beforeEach(() => {
+      const OriginalResizeObserver = global.ResizeObserver;
+      global.ResizeObserver = jest.fn().mockImplementation(function(callback: ResizeObserverCallback) {
+        resizeObserverInstance = new (OriginalResizeObserver as any)(callback);
+        return resizeObserverInstance;
+      }) as any;
+    });
+
+    afterEach(() => {
+      resizeObserverInstance = null;
+    });
+
+    it('should set up ResizeObserver for the PDF container', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      // Should observe the PDF container
+      expect(resizeObserverInstance?.observe).toHaveBeenCalledTimes(1);
+    });
+
+    it('should disconnect ResizeObserver on unmount', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      cleanup();
+
+      // Should disconnect on unmount
+      expect(resizeObserverInstance?.disconnect).toHaveBeenCalledTimes(1);
     });
   });
 });
