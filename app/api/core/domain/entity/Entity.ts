@@ -139,15 +139,17 @@ class Entity {
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
     const sync: PropertyType[] = [
-      'numeric',
-      'select',
-      'multiselect',
       'date',
+      'daterange',
+      'geolocation',
       'multidate',
       'multidaterange',
+      'multiselect',
+      'select',
+      'numeric',
       'nested',
       'relationship',
-      'geolocation',
+      'generatedid',
     ];
 
     if (sync.includes(value.type)) {

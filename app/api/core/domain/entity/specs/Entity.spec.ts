@@ -237,9 +237,9 @@ describe('Entity', () => {
         value: [{ value: 'ADSAD-231' }],
       }),
 
-      // entity.template.createPropertyAssignment('media', {
-      //   value: [{ value: '<p>A description in multiple languages</p>' }],
-      // }),
+      entity.template.createPropertyAssignment('media', {
+        value: [{ value: '/api/files/media.jpg' }],
+      }),
 
       // entity.template.createPropertyAssignment('nested', {
       //   value: [
@@ -338,6 +338,12 @@ describe('Entity', () => {
         { value: 'tag2', label: 'Tag Dos' },
       ],
     ]);
+
+    expect(entity.getPropertyAssignments('media').map(item => item.value)).toEqual([
+      [{ value: '/api/files/media.jpg' }],
+      [{ value: '/api/files/media.jpg' }],
+      [{ value: '/api/files/media.jpg' }],
+    ]);
   });
 
   it('should allow partial updates when setting values', () => {
@@ -382,123 +388,6 @@ describe('Entity', () => {
     });
   });
 
-  it('should set values in a specific language', () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
-
-    entity.setPropertyAssignments(
-      [
-        entity.template.createPropertyAssignment('title', {
-          value: [{ value: 'A title in English' }],
-        }),
-        entity.template.createPropertyAssignment('text', {
-          value: [{ value: 'A description in English' }],
-        }),
-        entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
-      ],
-      'en'
-    );
-
-    entity.setPropertyAssignments(
-      [
-        entity.template.createPropertyAssignment('title', {
-          value: [{ value: 'A title in Spanish' }],
-        }),
-        entity.template.createPropertyAssignment('text', {
-          value: [{ value: 'A description in Spanish' }],
-        }),
-      ],
-      'es'
-    );
-
-    entity.setPropertyAssignments(
-      [
-        entity.template.createPropertyAssignment('title', {
-          value: [{ value: 'A title in French' }],
-        }),
-        entity.template.createPropertyAssignment('text', {
-          value: [{ value: 'A description in French' }],
-        }),
-      ],
-      'fr'
-    );
-
-    expect(entity.getTranslation('en')).toEqual(
-      expect.objectContaining({
-        id: 'id-789',
-        language: 'en',
-        metadata: expect.objectContaining({
-          title: { name: 'title', value: [{ value: 'A title in English' }], type: 'text' },
-          text: {
-            name: 'text',
-            value: [{ value: 'A description in English' }],
-            type: 'text',
-          },
-          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
-
-          creationDate: {
-            name: 'creationDate',
-            value: [{ value: expect.any(Number) }],
-            type: 'date',
-          },
-          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-        }),
-      })
-    );
-
-    expect(entity.getTranslation('fr')).toEqual(
-      expect.objectContaining({
-        id: 'id-789',
-        language: 'fr',
-        metadata: expect.objectContaining({
-          title: { name: 'title', value: [{ value: 'A title in French' }], type: 'text' },
-          text: {
-            name: 'text',
-            value: [{ value: 'A description in French' }],
-            type: 'text',
-          },
-          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
-
-          creationDate: {
-            name: 'creationDate',
-            value: [{ value: expect.any(Number) }],
-            type: 'date',
-          },
-          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-        }),
-      })
-    );
-
-    expect(entity.getTranslation('es')).toEqual(
-      expect.objectContaining({
-        id: 'id-789',
-        language: 'es',
-        metadata: expect.objectContaining({
-          title: { name: 'title', value: [{ value: 'A title in Spanish' }], type: 'text' },
-          text: {
-            name: 'text',
-            value: [{ value: 'A description in Spanish' }],
-            type: 'text',
-          },
-          numeric: { name: 'numeric', value: [{ value: 42 }], type: 'numeric' },
-
-          creationDate: {
-            name: 'creationDate',
-            value: [{ value: expect.any(Number) }],
-            type: 'date',
-          },
-          editDate: { name: 'editDate', value: [{ value: expect.any(Number) }], type: 'date' },
-        }),
-      })
-    );
-  });
-
   it('should update the editDate when setting values', async () => {
     const entity = Entity.create(
       {
@@ -537,284 +426,704 @@ describe('Entity', () => {
     expect(entity.getTranslation('pt').editDate.value).toEqual(firstEditDatePt);
   });
 
-  it('should only sync non-language specific properties when setting values for Select/Multiselect Properties', () => {
-    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
-      .withProperties([
-        new SelectProperty({
-          id: 'fruits',
-          template: 'template-123',
-          label: 'select',
-          content: 'thes-123',
-        }),
-        new MultiSelectProperty({
-          id: 'fruits',
-          template: 'template-123',
-          label: 'multiselect',
-          content: 'thes-123',
-        }),
-      ])
-      .build();
-
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr'],
-        template,
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
-
-    const selectAssignments = [
-      template.createPropertyAssignment('select', {
-        value: [{ value: 'apple', label: 'Apple in English' }],
-        language: 'en',
-      }),
-
-      template.createPropertyAssignment('select', {
-        value: [{ value: 'apple', label: 'Apple in French' }],
-        language: 'fr',
-      }),
-    ];
-
-    const multiSelectAssignments = [
-      template.createPropertyAssignment('multiselect', {
-        value: [
-          { value: 'banana', label: 'Banana in English' },
-          { value: 'orange', label: 'Orange in English' },
-        ],
-        language: 'en',
-      }),
-      template.createPropertyAssignment('multiselect', {
-        value: [
-          { value: 'banana', label: 'Banana in French' },
-          { value: 'orange', label: 'Orange in French' },
-        ],
-        language: 'fr',
-      }),
-    ];
-
-    entity.setPropertyAssignments(selectAssignments, 'en');
-    expect(entity.getTranslation('en').metadata.select).toEqual(selectAssignments[0]);
-    expect(entity.getTranslation('fr').metadata.select).toEqual(selectAssignments[1]);
-
-    entity.setPropertyAssignments(multiSelectAssignments);
-    expect(entity.getTranslation('en').metadata.multiselect).toEqual(multiSelectAssignments[0]);
-    expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
-  });
-
-  it('should only sync non-language specific properties when setting values for Relationship Property', async () => {
-    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
-      .withProperties([
-        V1RelationshipProperty.create({
-          id: 'text_rel',
-          template: 'template-123',
-          label: 'text_rel',
-          required: true,
-          relationType: 'relationType',
-          inherit: {
-            type: 'text',
-            property: 'text',
-          },
-        }),
-      ])
-      .build();
-
-    const entity = Entity.create(
-      { languages: ['en', 'fr'], template, userId: 'user-456' },
-      { generate: () => 'id-789' }
-    );
-
-    entity.setPropertyAssignments([
-      template.createPropertyAssignment('text_rel', {
-        value: [
+  describe('Property synchronization across languages', () => {
+    describe('Properties that SHOULD sync across all languages', () => {
+      it('should sync numeric properties even when target language is specified', () => {
+        const entity = Entity.create(
           {
-            value: 'B1',
-            label: 'B1 EN',
-            inheritedType: 'text',
-            inheritedValue: [{ value: 'Text EN' }],
-            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
-            type: 'entity',
+            languages: ['en', 'fr', 'es'],
+            template: createSampleTemplate(),
+            userId: 'user-456',
           },
-        ],
-        language: 'en',
-      }),
+          { generate: () => 'id-789' }
+        );
 
-      template.createPropertyAssignment('text_rel', {
-        value: [
+        entity.setPropertyAssignments(
+          [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
+          'en'
+        );
+
+        expect(entity.getTranslation('en').metadata.numeric.value).toEqual([{ value: 42 }]);
+        expect(entity.getTranslation('fr').metadata.numeric.value).toEqual([{ value: 42 }]);
+        expect(entity.getTranslation('es').metadata.numeric.value).toEqual([{ value: 42 }]);
+      });
+
+      it('should sync date properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new DateProperty({
+              id: 'eventDate',
+              name: 'eventDate',
+              template: 'template-123',
+              label: 'Event Date',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
           {
-            value: 'B1',
-            label: 'B1 FR',
-            inheritedType: 'text',
-            inheritedValue: [{ value: 'Text FR' }],
-            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
-            type: 'entity',
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
           },
-        ],
-        language: 'fr',
-      }),
-    ]);
+          { generate: () => 'id-789' }
+        );
 
-    expect(entity.getPropertyAssignments('text_rel')).toEqual([
-      {
-        name: 'text_rel',
-        type: 'relationship',
-        language: 'en',
-        value: [
+        entity.setPropertyAssignments(
+          [template.createPropertyAssignment('eventDate', { value: [{ value: 1609459200000 }] })],
+          'en'
+        );
+
+        expect(entity.getTranslation('en').metadata.eventDate.value).toEqual([
+          { value: 1609459200000 },
+        ]);
+        expect(entity.getTranslation('fr').metadata.eventDate.value).toEqual([
+          { value: 1609459200000 },
+        ]);
+      });
+
+      it('should sync date range properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new DateRangeProperty({
+              id: 'period',
+              name: 'period',
+              template: 'template-123',
+              label: 'Period',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
           {
-            value: 'B1',
-            label: 'B1 EN',
-            inheritedType: 'text',
-            inheritedValue: [{ value: 'Text EN' }],
-            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
-            type: 'entity',
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
           },
-        ],
-      },
-      {
-        name: 'text_rel',
-        type: 'relationship',
-        language: 'fr',
-        value: [
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('period', {
+              value: [{ value: { from: 1609459200000, to: 1612137600000 } }],
+            }),
+          ],
+          'en'
+        );
+
+        expect(entity.getTranslation('en').metadata.period.value).toEqual([
+          { value: { from: 1609459200000, to: 1612137600000 } },
+        ]);
+        expect(entity.getTranslation('fr').metadata.period.value).toEqual([
+          { value: { from: 1609459200000, to: 1612137600000 } },
+        ]);
+      });
+
+      it('should sync multi date properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new MultiDateProperty({
+              id: 'events',
+              name: 'events',
+              template: 'template-123',
+              label: 'Events',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
           {
-            value: 'B1',
-            label: 'B1 FR',
-            inheritedType: 'text',
-            inheritedValue: [{ value: 'Text FR' }],
-            icon: { id: 'any_id', label: 'iconB1', type: 'img' },
-            type: 'entity',
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
           },
-        ],
-      },
-    ]);
-  });
+          { generate: () => 'id-789' }
+        );
 
-  it('should sync numeric properties to all languages even when target language is specified', () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('events', {
+              value: [{ value: 1609459200000 }, { value: 1612137600000 }],
+            }),
+          ],
+          'en'
+        );
 
-    entity.setPropertyAssignments(
-      [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
-      'en'
-    );
+        expect(entity.getTranslation('en').metadata.events.value).toEqual([
+          { value: 1609459200000 },
+          { value: 1612137600000 },
+        ]);
+        expect(entity.getTranslation('fr').metadata.events.value).toEqual([
+          { value: 1609459200000 },
+          { value: 1612137600000 },
+        ]);
+      });
 
-    expect(entity.getTranslation('en').metadata.numeric.value).toEqual([{ value: 42 }]);
-    expect(entity.getTranslation('fr').metadata.numeric.value).toEqual([{ value: 42 }]);
-    expect(entity.getTranslation('es').metadata.numeric.value).toEqual([{ value: 42 }]);
-  });
+      it('should sync multi date range properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new MultiDateRangeProperty({
+              id: 'periods',
+              name: 'periods',
+              template: 'template-123',
+              label: 'Periods',
+            }),
+          ])
+          .build();
 
-  it('should sync date properties to all languages even when target language is specified', () => {
-    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
-      .withProperties([
-        new DateProperty({
-          id: 'eventDate',
-          name: 'eventDate',
-          template: 'template-123',
-          label: 'Event Date',
-        }),
-      ])
-      .build();
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
 
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr'],
-        template,
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('periods', {
+              value: [
+                { value: { from: 1609459200000, to: 1612137600000 } },
+                { value: { from: 1614556800000, to: 1617235200000 } },
+              ],
+            }),
+          ],
+          'en'
+        );
 
-    entity.setPropertyAssignments(
-      [template.createPropertyAssignment('eventDate', { value: [{ value: 1609459200000 }] })],
-      'en'
-    );
+        expect(entity.getTranslation('en').metadata.periods.value).toEqual([
+          { value: { from: 1609459200000, to: 1612137600000 } },
+          { value: { from: 1614556800000, to: 1617235200000 } },
+        ]);
+        expect(entity.getTranslation('fr').metadata.periods.value).toEqual([
+          { value: { from: 1609459200000, to: 1612137600000 } },
+          { value: { from: 1614556800000, to: 1617235200000 } },
+        ]);
+      });
 
-    expect(entity.getTranslation('en').metadata.eventDate.value).toEqual([
-      { value: 1609459200000 },
-    ]);
-    expect(entity.getTranslation('fr').metadata.eventDate.value).toEqual([
-      { value: 1609459200000 },
-    ]);
-  });
+      it('should sync geolocation properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new GeolocationProperty({
+              id: 'place',
+              name: 'place',
+              template: 'template-123',
+              label: 'Place',
+            }),
+          ])
+          .build();
 
-  it('should sync geolocation properties to all languages even when target language is specified', () => {
-    const template = TemplateBuilder.aTemplate({ id: 'template-123' })
-      .withProperties([
-        new GeolocationProperty({
-          id: 'place',
-          name: 'place',
-          template: 'template-123',
-          label: 'Place',
-        }),
-      ])
-      .build();
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
 
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr'],
-        template,
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('place', {
+              value: [{ value: { lat: 40.7128, lon: -74.006, label: 'New York' } }],
+            }),
+          ],
+          'en'
+        );
 
-    entity.setPropertyAssignments(
-      [
-        template.createPropertyAssignment('place', {
-          value: [{ value: { lat: 40.7128, lon: -74.006, label: 'New York' } }],
-        }),
-      ],
-      'en'
-    );
+        expect(entity.getTranslation('en').metadata.place.value).toEqual([
+          { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
+        ]);
+        expect(entity.getTranslation('fr').metadata.place.value).toEqual([
+          { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
+        ]);
+      });
 
-    expect(entity.getTranslation('en').metadata.place.value).toEqual([
-      { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
-    ]);
-    expect(entity.getTranslation('fr').metadata.place.value).toEqual([
-      { value: { lat: 40.7128, lon: -74.006, label: 'New York' } },
-    ]);
-  });
+      it('should sync nested properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new NestedProperty({
+              id: 'nested',
+              name: 'nested',
+              template: 'template-123',
+              label: 'Nested',
+            }),
+          ])
+          .build();
 
-  it('should NOT sync text properties to other languages when target language is specified', () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
 
-    entity.setPropertyAssignments(
-      [
-        entity.template.createPropertyAssignment('text', {
-          value: [{ value: 'Description in English' }],
-        }),
-      ],
-      'en'
-    );
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('nested', {
+              value: [
+                {
+                  value: {
+                    key1: [{ value: 'value1' }],
+                    key2: [{ value: 'value2' }],
+                  },
+                },
+              ],
+            }),
+          ],
+          'en'
+        );
 
-    entity.setPropertyAssignments(
-      [
-        entity.template.createPropertyAssignment('text', {
-          value: [{ value: 'Description en français' }],
-        }),
-      ],
-      'fr'
-    );
+        expect(entity.getTranslation('en').metadata.nested.value).toEqual([
+          {
+            value: {
+              key1: [{ value: 'value1' }],
+              key2: [{ value: 'value2' }],
+            },
+          },
+        ]);
+        expect(entity.getTranslation('fr').metadata.nested.value).toEqual([
+          {
+            value: {
+              key1: [{ value: 'value1' }],
+              key2: [{ value: 'value2' }],
+            },
+          },
+        ]);
+      });
 
-    expect(entity.getTranslation('en').metadata.text.value).toEqual([
-      { value: 'Description in English' },
-    ]);
-    expect(entity.getTranslation('fr').metadata.text.value).toEqual([
-      { value: 'Description en français' },
-    ]);
-    expect(entity.getTranslation('es').metadata.text.value).toEqual([]);
+      it('should sync generated ID properties even when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new GenerateIdProperty({
+              id: 'genId',
+              name: 'genId',
+              template: 'template-123',
+              label: 'Generated ID',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('genId', {
+              value: [{ value: 'AUTO-123' }],
+            }),
+          ],
+          'en'
+        );
+
+        expect(entity.getTranslation('en').metadata.genId.value).toEqual([{ value: 'AUTO-123' }]);
+        expect(entity.getTranslation('fr').metadata.genId.value).toEqual([{ value: 'AUTO-123' }]);
+      });
+    });
+
+    describe('Properties that should NOT sync across languages', () => {
+      it('should NOT sync text properties when target language is specified', () => {
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr', 'es'],
+            template: createSampleTemplate(),
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            entity.template.createPropertyAssignment('text', {
+              value: [{ value: 'Description in English' }],
+            }),
+          ],
+          'en'
+        );
+
+        entity.setPropertyAssignments(
+          [
+            entity.template.createPropertyAssignment('text', {
+              value: [{ value: 'Description en français' }],
+            }),
+          ],
+          'fr'
+        );
+
+        expect(entity.getTranslation('en').metadata.text.value).toEqual([
+          { value: 'Description in English' },
+        ]);
+        expect(entity.getTranslation('fr').metadata.text.value).toEqual([
+          { value: 'Description en français' },
+        ]);
+        expect(entity.getTranslation('es').metadata.text.value).toEqual([]);
+      });
+
+      it('should NOT sync markdown properties when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new MarkdownProperty({
+              id: 'content',
+              name: 'content',
+              template: 'template-123',
+              label: 'Content',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('content', {
+              value: [{ value: '<p>English content</p>' }],
+            }),
+          ],
+          'en'
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('content', {
+              value: [{ value: '<p>Contenu en français</p>' }],
+            }),
+          ],
+          'fr'
+        );
+
+        expect(entity.getTranslation('en').metadata.content.value).toEqual([
+          { value: '<p>English content</p>' },
+        ]);
+        expect(entity.getTranslation('fr').metadata.content.value).toEqual([
+          { value: '<p>Contenu en français</p>' },
+        ]);
+      });
+
+      it('should NOT sync link properties when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new LinkProperty({
+              id: 'website',
+              name: 'website',
+              template: 'template-123',
+              label: 'Website',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('website', {
+              value: [{ value: { url: 'https://example.com/en', label: 'English Site' } }],
+            }),
+          ],
+          'en'
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('website', {
+              value: [{ value: { url: 'https://example.com/fr', label: 'Site en Français' } }],
+            }),
+          ],
+          'fr'
+        );
+
+        expect(entity.getTranslation('en').metadata.website.value).toEqual([
+          { value: { url: 'https://example.com/en', label: 'English Site' } },
+        ]);
+        expect(entity.getTranslation('fr').metadata.website.value).toEqual([
+          { value: { url: 'https://example.com/fr', label: 'Site en Français' } },
+        ]);
+      });
+
+      it('should NOT sync image properties when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new ImageProperty({
+              id: 'photo',
+              name: 'photo',
+              template: 'template-123',
+              label: 'Photo',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('photo', {
+              value: [{ value: '/api/files/image-en.jpg' }],
+            }),
+          ],
+          'en'
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('photo', {
+              value: [{ value: '/api/files/image-fr.jpg' }],
+            }),
+          ],
+          'fr'
+        );
+
+        expect(entity.getTranslation('en').metadata.photo.value).toEqual([
+          { value: '/api/files/image-en.jpg' },
+        ]);
+        expect(entity.getTranslation('fr').metadata.photo.value).toEqual([
+          { value: '/api/files/image-fr.jpg' },
+        ]);
+      });
+
+      it('should NOT sync media properties when target language is specified', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new MediaProperty({
+              id: 'video',
+              name: 'video',
+              template: 'template-123',
+              label: 'Video',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('video', {
+              value: [{ value: '/api/files/video-en.mp4' }],
+            }),
+          ],
+          'en'
+        );
+
+        entity.setPropertyAssignments(
+          [
+            template.createPropertyAssignment('video', {
+              value: [{ value: '/api/files/video-fr.mp4' }],
+            }),
+          ],
+          'fr'
+        );
+
+        expect(entity.getTranslation('en').metadata.video.value).toEqual([
+          { value: '/api/files/video-en.mp4' },
+        ]);
+        expect(entity.getTranslation('fr').metadata.video.value).toEqual([
+          { value: '/api/files/video-fr.mp4' },
+        ]);
+      });
+
+      it('should maintain language-specific labels for Select properties', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new SelectProperty({
+              id: 'fruits',
+              template: 'template-123',
+              label: 'select',
+              content: 'thes-123',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        const selectAssignments = [
+          template.createPropertyAssignment('select', {
+            value: [{ value: 'apple', label: 'Apple in English' }],
+            language: 'en',
+          }),
+          template.createPropertyAssignment('select', {
+            value: [{ value: 'apple', label: 'Apple in French' }],
+            language: 'fr',
+          }),
+        ];
+
+        entity.setPropertyAssignments(selectAssignments, 'en');
+
+        expect(entity.getTranslation('en').metadata.select).toEqual(selectAssignments[0]);
+        expect(entity.getTranslation('fr').metadata.select).toEqual(selectAssignments[1]);
+      });
+
+      it('should maintain language-specific labels for MultiSelect properties', () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            new MultiSelectProperty({
+              id: 'fruits',
+              template: 'template-123',
+              label: 'multiselect',
+              content: 'thes-123',
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          {
+            languages: ['en', 'fr'],
+            template,
+            userId: 'user-456',
+          },
+          { generate: () => 'id-789' }
+        );
+
+        const multiSelectAssignments = [
+          template.createPropertyAssignment('multiselect', {
+            value: [
+              { value: 'banana', label: 'Banana in English' },
+              { value: 'orange', label: 'Orange in English' },
+            ],
+            language: 'en',
+          }),
+          template.createPropertyAssignment('multiselect', {
+            value: [
+              { value: 'banana', label: 'Banana in French' },
+              { value: 'orange', label: 'Orange in French' },
+            ],
+            language: 'fr',
+          }),
+        ];
+
+        entity.setPropertyAssignments(multiSelectAssignments);
+
+        expect(entity.getTranslation('en').metadata.multiselect).toEqual(multiSelectAssignments[0]);
+        expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
+      });
+
+      it('should maintain language-specific labels for Relationship properties', async () => {
+        const template = TemplateBuilder.aTemplate({ id: 'template-123' })
+          .withProperties([
+            V1RelationshipProperty.create({
+              id: 'text_rel',
+              template: 'template-123',
+              label: 'text_rel',
+              required: true,
+              relationType: 'relationType',
+              inherit: {
+                type: 'text',
+                property: 'text',
+              },
+            }),
+          ])
+          .build();
+
+        const entity = Entity.create(
+          { languages: ['en', 'fr'], template, userId: 'user-456' },
+          { generate: () => 'id-789' }
+        );
+
+        entity.setPropertyAssignments([
+          template.createPropertyAssignment('text_rel', {
+            value: [
+              {
+                value: 'B1',
+                label: 'B1 EN',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Text EN' }],
+                icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+                type: 'entity',
+              },
+            ],
+            language: 'en',
+          }),
+          template.createPropertyAssignment('text_rel', {
+            value: [
+              {
+                value: 'B1',
+                label: 'B1 FR',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Text FR' }],
+                icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+                type: 'entity',
+              },
+            ],
+            language: 'fr',
+          }),
+        ]);
+
+        expect(entity.getPropertyAssignments('text_rel')).toEqual([
+          {
+            name: 'text_rel',
+            type: 'relationship',
+            language: 'en',
+            value: [
+              {
+                value: 'B1',
+                label: 'B1 EN',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Text EN' }],
+                icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+                type: 'entity',
+              },
+            ],
+          },
+          {
+            name: 'text_rel',
+            type: 'relationship',
+            language: 'fr',
+            value: [
+              {
+                value: 'B1',
+                label: 'B1 FR',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'Text FR' }],
+                icon: { id: 'any_id', label: 'iconB1', type: 'img' },
+                type: 'entity',
+              },
+            ],
+          },
+        ]);
+      });
+    });
   });
 
   describe('validate for required Properties when settings values', () => {
@@ -1083,27 +1392,6 @@ describe('Entity', () => {
 
       expect(() => entity.setPropertyAssignments([])).toThrow('Media Property is required');
     });
-
-    it('should require Preview', () => {
-      const template = TemplateBuilder.aTemplate({ id: 'template-req-prev' })
-        .withProperties([
-          new PreviewProperty({
-            id: 'prev',
-            template: 'template-req-prev',
-            label: 'PREV',
-            required: true,
-          }),
-        ])
-        .build();
-
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-12' }
-      );
-
-      expect(() => entity.setPropertyAssignments([])).toThrow('Preview Property is required');
-    });
-
     it('should require Nested', () => {
       const template = TemplateBuilder.aTemplate({ id: 'template-req-nested' })
         .withProperties([
