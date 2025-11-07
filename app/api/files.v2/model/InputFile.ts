@@ -13,17 +13,18 @@ type FileMetadata = {
 };
 
 export class InputFile {
-  private _file: FileContents;
-
   private _metadata: FileMetadata;
 
   constructor(metadata: FileMetadata) {
     this._metadata = metadata;
-    this._file = new FileContents(path.join(metadata.destination, metadata.filename));
+  }
+
+  get filename() {
+    return this._metadata.filename;
   }
 
   get contents() {
-    return this._file;
+    return new FileContents(path.join(this._metadata.destination, this._metadata.filename));
   }
 
   get metadata() {

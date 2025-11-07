@@ -39,7 +39,7 @@ export function TestingRoundRobinQueueAdapter() {
   );
 }
 
-export async function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
+export function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
   return new JobsRouter(
     queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter(), queueOptions)
   );
