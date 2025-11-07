@@ -16,7 +16,7 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { Readable } from 'stream';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -240,7 +240,7 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       attachments: [
-        {
+        new InputFile({
           fieldname: 'attachments[0]',
           encoding: '7bit',
           mimetype: 'image/png',
@@ -249,10 +249,8 @@ describe('CreateEntityUseCase', () => {
           filename: '1762280821775nhs3epb55g7.png',
           path: '/tmp/1762280821775nhs3epb55g7.png',
           size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
-        {
+        }),
+        new InputFile({
           fieldname: 'attachments[1]',
           encoding: '7bit',
           mimetype: 'image/png',
@@ -261,10 +259,8 @@ describe('CreateEntityUseCase', () => {
           filename: '1162280821775nhs3epb55g7.png',
           path: '/tmp/1162280821775nhs3epb55g7.png',
           size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
-        {
+        }),
+        new InputFile({
           fieldname: 'attachments[2]',
           encoding: '7bit',
           mimetype: 'video/mp4',
@@ -273,10 +269,8 @@ describe('CreateEntityUseCase', () => {
           filename: 'attachment_3.mp4',
           path: '/tmp/attachment_3.mp4',
           size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
-        {
+        }),
+        new InputFile({
           fieldname: 'attachments[3]',
           encoding: '7bit',
           mimetype: 'video/mp4',
@@ -285,9 +279,7 @@ describe('CreateEntityUseCase', () => {
           filename: 'attachment_4.mp4',
           path: '/tmp/attachment_4.mp4',
           size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
+        }),
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },

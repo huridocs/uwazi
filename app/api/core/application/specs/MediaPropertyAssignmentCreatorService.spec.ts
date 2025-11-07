@@ -4,6 +4,7 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { PropertyNotFoundError } from 'api/core/domain/template/errors';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { MediaPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/MediaPropertyAssignmentCreatorService';
 
 const factory = getFixturesFactory();
@@ -117,9 +118,9 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
       const attachments = [
-        { filename: 'video.mp4' },
-        { filename: 'audio.mp3' },
-      ] as unknown as Express.Multer.File[];
+        new InputFile({ filename: 'video.mp4' } as any),
+        new InputFile({ filename: 'audio.mp3' } as any),
+      ];
 
       const result = await sut.create({
         template,
@@ -148,9 +149,9 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
       const attachments = [
-        { filename: 'video.mp4' },
-        { filename: 'audio.mp3' },
-      ] as unknown as Express.Multer.File[];
+        new InputFile({ filename: 'video.mp4' } as any),
+        new InputFile({ filename: 'audio.mp3' } as any),
+      ];
 
       const result = await sut.create({
         template,
@@ -178,7 +179,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
-      const attachments = [{ filename: 'video.mp4' }] as unknown as Express.Multer.File[];
+      const attachments = [new InputFile({ filename: 'video.mp4' } as any)];
 
       const result = await sut.create({
         template,
@@ -206,7 +207,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
-      const attachments = [{ filename: 'video.mp4' }] as unknown as Express.Multer.File[];
+      const attachments = [new InputFile({ filename: 'video.mp4' } as any)];
 
       const result = await sut.create({
         template,
@@ -237,7 +238,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       await expect(
         sut.create({
           template,
-          attachments: [{ filename: 'onlyOne.mp4' }] as unknown as Express.Multer.File[],
+          attachments: [new InputFile({ filename: 'onlyOne.mp4' } as any)],
           propertyAssignment: {
             name: 'attached_media_1',
             value: [{ attachment: 5 }],

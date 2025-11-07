@@ -3,10 +3,10 @@ import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLa
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { FileContents } from 'api/files.v2/model/FileContents';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import date from 'api/utils/date';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { SettingsDataSource } from './contracts/SettingsDataSource';
@@ -16,7 +16,7 @@ import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/Prop
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
-  attachments: Express.Multer.File[];
+  attachments: InputFile[];
   templateId?: string;
   icon?: EntityIcon;
 };
@@ -61,7 +61,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await ArrayUtils.sequentialFor(input.attachments, async attachment =>
       this.deps.filesStorage.storeFile({
         type: 'attachment',
-        file: FileContents.fromPath([attachment.destination, attachment.filename]),
+        file: attachment.contents,
       })
     );
 
@@ -75,9 +75,9 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
             entity: entity.sharedId,
             creationDate: date.currentUTC(),
             filename: attachment.filename,
-            mimetype: attachment.mimetype,
-            originalname: attachment.originalname,
-            size: attachment.size,
+            mimetype: attachment.metadata.mimetype,
+            originalname: attachment.metadata.originalname,
+            size: attachment.metadata.size,
           })
         )
       );

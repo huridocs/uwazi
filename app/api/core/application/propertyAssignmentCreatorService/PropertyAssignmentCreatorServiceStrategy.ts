@@ -4,6 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
@@ -54,7 +55,7 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: Express.Multer.File[]
+    attachments: InputFile[]
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,

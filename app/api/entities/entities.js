@@ -28,6 +28,7 @@ import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStor
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -433,7 +434,7 @@ export default {
             value: [{ value: _doc.title }],
           },
         ],
-        attachments: attachments?.length ? attachments : [],
+        attachments: attachments?.map(a => new InputFile(a)),
       });
 
       return MongoEntityMapper.toDBO(output).find(e => e.language === language);
