@@ -78,6 +78,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,Ocurrió un error
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
 An error occurred,Se ha producido un error
 Analytics,Analytics
@@ -265,7 +266,6 @@ Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
 Duplicate values not allowed.,No se permiten valores duplicados.
 Duplicated email,Correo electrónico duplicado
-Duplicated label,Etiqueta duplicada
 Duplicated name,Nombre duplicado
 Duplicated username,Nombre de usuario duplicado
 Edit,Editar
@@ -411,6 +411,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,CSV no
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
 Invalid form,Formulario no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
+it has been logged with request id #,ha sido registrado con el id de solicitud #
 Item,Elemento
 Items:,Elementos:
 Javascript,Javascript
@@ -934,6 +935,7 @@ Two-step verification,Verificación de dos pasos.
 Two-step verification token required,El token de verificación es obligatorio
 Type,Tipo
 "Unable to save, failed response","No se pudo guardar, respuesta fallida"
+Unauthorized,No autorizado
 Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
