@@ -12,6 +12,11 @@ import csvtojson from 'csvtojson';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import _ from 'lodash';
+import {
+  precomputeNormalizedValues,
+  checkContentBasedMatch,
+  checkStringLiteralMatch,
+} from './translationUtils.mjs';
 
 const dryRun = process.argv.includes('--dry');
 
@@ -49,25 +54,40 @@ const getKeysFromRepository = async (locale = 'en') =>
   });
 
 const findUnusedTranslations = async (files, _translations) => {
-  const comparableString = text => text.replaceAll(/['\s;]|&(#39|#x27|quot|rsquo|apos);/g, '');
   const translations = [..._translations];
+
+  precomputeNormalizedValues(translations);
+
+  const parserOptions = {
+    sourceType: 'module',
+    plugins: ['jsx', 'typescript'],
+  };
 
   for (const file of files) {
     if (!file.includes('/migrations/')) {
       const fileContents = await fs.promises.readFile(file, 'utf8');
-      const comparableContent = comparableString(fileContents);
+      const isReactFile = file.includes('app/react');
+      const isMigrationFile = file.includes('/migrations/');
 
-      translations
-        .filter(translation => !translation.used)
-        .forEach(translation => {
-          if (
-            comparableContent.includes(comparableString(translation.value)) ||
-            comparableContent.includes(comparableString(translation.key))
-          ) {
-            // eslint-disable-next-line no-param-reassign
-            translation.used = true;
-          }
-        });
+      if (isReactFile && !isMigrationFile) {
+        checkContentBasedMatch(fileContents, translations);
+      }
+
+      if (!isMigrationFile) {
+        try {
+          const ast = parser.parse(fileContents, parserOptions);
+
+          traverse.default(ast, {
+            enter(_path) {
+              if (_path.isStringLiteral()) {
+                checkStringLiteralMatch(_path.node.value, translations);
+              }
+            },
+          });
+        } catch (error) {
+          // Skip files that can't be parsed (e.g., non-JS/TS files that passed the filter)
+        }
+      }
     }
   }
 

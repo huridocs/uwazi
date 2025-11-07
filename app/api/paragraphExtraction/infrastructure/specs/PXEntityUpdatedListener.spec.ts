@@ -57,7 +57,7 @@ const entityStatus3: MongoPXEntityStatusDBO = {
   extractorId: extractor2._id,
 };
 
-const document1En = factory.document('document_1_En', {
+const document1En = factory.processedDocument('document_1_En', {
   entity: entity1[0].sharedId,
   language: 'en',
 });

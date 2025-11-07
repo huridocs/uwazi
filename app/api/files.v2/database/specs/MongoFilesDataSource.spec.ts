@@ -1,10 +1,11 @@
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { Document } from 'api/files.v2/model/Document';
+import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
-import { Document } from 'api/files.v2/model/Document';
-import { elasticTesting } from 'api/utils/elastic_testing';
 
 const factory = getFixturesFactory();
 
@@ -13,6 +14,7 @@ const fixtures = {
     factory.document('file1', {
       entity: 'entity1',
       extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'property1' }],
+      status: 'ready',
     }),
     factory.document('file2', {
       entity: 'entity2',
@@ -23,14 +25,27 @@ const fixtures = {
       ],
     }),
     factory.document('file3', { entity: 'entity3' }),
-    factory.document('file4', { entity: 'entity1', language: 'en' }),
-    factory.document('file5', { entity: 'entity1', language: 'es' }),
-    factory.document('file6', { entity: 'entity1', language: 'it' }),
+    factory.document('file4', { entity: 'entity1', language: 'en', status: 'ready' }),
+    factory.document('file5', { entity: 'entity1', language: 'es', status: 'ready' }),
+    factory.document('file6', { entity: 'entity1', language: 'it', status: 'ready' }),
+    factory.document('processingDocument', {
+      entity: 'entity3',
+      language: 'en',
+      status: 'processing',
+    }),
+    factory.document('anotherProcessingDoc', {
+      entity: 'another_entity_to_reindex',
+      language: 'en',
+      status: 'processing',
+    }),
   ],
 
   templates: [factory.template('template')],
 
-  entities: [factory.entity('entity_to_reindex', 'template', {})],
+  entities: [
+    factory.entity('entity_to_reindex', 'template', {}),
+    factory.entity('another_entity_to_reindex', 'template', {}),
+  ],
 };
 
 beforeEach(async () => {
@@ -42,13 +57,50 @@ afterAll(async () => {
 });
 
 describe('MongoFilesDataSource', () => {
+  describe('getProcessingById', () => {
+    it('should get processing documents by id', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const notProcessed = await ds.getProcessingById(factory.idString('file3'));
+      expect(notProcessed.isError()).toBe(true);
+
+      const processed = (
+        await ds.getProcessingById(factory.idString('processingDocument'))
+      ).getDataOrThrow();
+      expect(processed).toBeInstanceOf(Document);
+    });
+  });
+
+  describe('update', () => {
+    it('should update and reindex related entity if file type is "processedDocument"', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const processed = (
+        await ds.getProcessingById(factory.idString('anotherProcessingDoc'))
+      ).getDataOrThrow();
+      await transactionManager.run(async () => {
+        await ds.update(
+          ProcessedDocument.fromDocument(processed, {
+            language: 'en',
+            totalPages: 10,
+            fullText: { 1: 'processed document' },
+          })
+        );
+      });
+
+      await elasticTesting.refresh();
+      expect((await elasticTesting.getIndexedFullTextFromFiles())[0].fullText_english).toBe(
+        'processed document'
+      );
+    });
+  });
   describe('create', () => {
-    it('should reindex related entity if file type is "document"', async () => {
+    it('should reindex related entity if file type is "processedDocument"', async () => {
       const transactionManager = TransactionManagerFactory.default();
       const ds = new MongoFilesDataSource(getConnection(), transactionManager);
       await transactionManager.run(async () => {
         await ds.create(
-          new Document({
+          new ProcessedDocument({
             id: factory.idString('new document'),
             entity: 'entity_to_reindex',
             originalname: 'file.pdf',
@@ -57,7 +109,6 @@ describe('MongoFilesDataSource', () => {
             filename: 'file.pdf',
             language: 'en',
             totalPages: 1,
-            status: 'ready',
             creationDate: 0,
             uploaded: true,
             fullText: { 1: 'fullText' },
@@ -175,10 +226,10 @@ describe('MongoFilesDataSource', () => {
   });
 
   describe('getDocumentsForEntity', () => {
-    it('should return the documents for an entity', async () => {
+    it('should return the processed documents (type: "ready") for an entity', async () => {
       const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
 
-      const documentsForEntity = await ds.getDocumentsForEntity('entity1').all();
+      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
       expect(documentsForEntity.length).toBe(4);
     });
 
@@ -186,7 +237,7 @@ describe('MongoFilesDataSource', () => {
       const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
 
       const documentsForEntity = await ds
-        .getDocumentsForEntity('entity1', { languages: ['en', 'it'] })
+        .getProcessedDocsForEntity('entity1', { languages: ['en', 'it'] })
         .all();
 
       expect(documentsForEntity.length).toBe(2);

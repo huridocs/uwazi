@@ -30,28 +30,41 @@ const errorMessages = [
 ];
 
 function extractMessageFromError(error) {
-  let finalMessage = `An error has occurred${error.json.requestId ? `, it has been logged with request id #${error.json.requestId}.` : '.'}`;
-  if (!error.json.error) return finalMessage;
+  if (!error.json.error) {
+    return `${t('System', 'An error has occurred', null, false)}${error.json.requestId ? `, ${t('System', 'it has been logged with request id #', null, false)}${error.json.requestId}.` : '.'}`;
+  }
 
   const errorMessage = errorMessages.find(errorExpression =>
     error.json.error.match(errorExpression.key)
   );
   if (errorMessage) {
     const matches = errorMessage.key.exec(error.json.error);
-    finalMessage = errorMessage.message;
+    let finalMessage = t('System', errorMessage.message, null, false);
     for (let i = 0; i < matches.length - 1; i += 1) {
       finalMessage = finalMessage.replace(`{${i}}`, matches[1]);
     }
+    return finalMessage;
   }
-  return finalMessage;
+
+  const translatedError = t('System', error.json.error, null, false);
+
+  if (translatedError !== error.json.error) {
+    return translatedError;
+  }
+
+  return `${t('System', 'An error has occurred', null, false)}${error.json.requestId ? `, ${t('System', 'it has been logged with request id #', null, false)}${error.json.requestId}.` : '.'}`;
 }
 
 function extractMessageFromValidation(error) {
-  if (!error.json.validations) return error.json.error;
+  if (!error.json.validations) {
+    return t('System', error.json.error, null, false);
+  }
+
+  const translatedError = t('System', error.json.error, null, false);
   return error.json.validations.reduce((message, validationError, index) => {
     const separator = index < error.json.validations.length - 1 ? ',' : '';
-    return `${message} ${validationError.instancePath} ${validationError.message}${separator}`;
-  }, `${error.json.error}: `);
+    return `${message} ${t('System', validationError.instancePath, null, false)} ${t('System', validationError.message, null, false)}${separator}`;
+  }, `${translatedError}: `);
 }
 
 // eslint-disable-next-line max-statements
@@ -61,9 +74,7 @@ const handleErrorStatus = error => {
     case 400:
     case 422: {
       errorMessage = extractMessageFromValidation(error);
-      store.dispatch(
-        notify(t('System', extractMessageFromValidation(error), null, false), 'danger')
-      );
+      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
       break;
     }
 
@@ -83,7 +94,7 @@ const handleErrorStatus = error => {
 
     case 500: {
       errorMessage = extractMessageFromError(error);
-      store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
+      store.dispatch(notify(extractMessageFromError(error), 'danger'));
       break;
     }
 
@@ -107,8 +118,13 @@ const handleErrorStatus = error => {
     }
 
     default: {
-      errorMessage = 'An error occurred';
-      store.dispatch(notify(t('System', 'An error occurred', null, false), 'danger'));
+      if (error.json?.error) {
+        errorMessage = t('System', error.json.error, null, false);
+        store.dispatch(notify(errorMessage, 'danger'));
+      } else {
+        errorMessage = 'An error occurred';
+        store.dispatch(notify(t('System', 'An error occurred', null, false), 'danger'));
+      }
     }
   }
 

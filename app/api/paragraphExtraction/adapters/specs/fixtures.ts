@@ -50,9 +50,21 @@ const [paragraph2En, paragraph2Pt] = f.entityInMultipleLanguages(
   }
 );
 
-const fileEntity1En = f.document('fileEntity1En', { language: 'en', entity: entity1En.sharedId });
-const fileEntity1Pt = f.document('fileEntity1Pt', { language: 'pt', entity: entity1En.sharedId });
-const fileEntity2En = f.document('fileEntity2En', { language: 'en', entity: entity2En.sharedId });
+const fileEntity1En = f.document('fileEntity1En', {
+  language: 'en',
+  entity: entity1En.sharedId,
+  status: 'ready',
+});
+const fileEntity1Pt = f.document('fileEntity1Pt', {
+  language: 'pt',
+  entity: entity1En.sharedId,
+  status: 'ready',
+});
+const fileEntity2En = f.document('fileEntity2En', {
+  language: 'en',
+  entity: entity2En.sharedId,
+  status: 'ready',
+});
 
 const relationshipE1Hub1 = {
   _id: f.id('relationshipE1Hub1'),
