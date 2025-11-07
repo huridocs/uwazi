@@ -11,7 +11,15 @@ type Props = {
   nestedProperties?: string[];
 } & Omit<FilterablePropertyProps, 'type'>;
 
-const EntrySchema = z.object({ value: z.any() });
+const BaseMetadataValueSchema = z.object({
+  value: z.any(),
+  label: z.string().optional(),
+});
+
+const EntrySchema = z.object({
+  value: z.union([z.record(z.string(), z.array(BaseMetadataValueSchema)), z.null()]),
+});
+
 const createSchema = (isRequired: boolean) =>
   z.array(EntrySchema).min(isRequired ? 1 : 0, 'Nested Property is required');
 

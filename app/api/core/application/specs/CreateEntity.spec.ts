@@ -314,7 +314,23 @@ describe('CreateEntityUseCase', () => {
           value: [{ attachment: 2, timeLinks: '{"timelinks":{"00:00:00":"title"}}' }],
         },
         { name: 'attached_media_2', value: [{ attachment: 3 }] },
-        // { name: 'nested', value: [] },
+        {
+          name: 'nested',
+          value: [
+            {
+              value: {
+                child_text: [{ value: 'Child text value' }],
+                child_number: [{ value: 42 }],
+              },
+            },
+            {
+              value: {
+                child_text: [{ value: 'Second child text' }],
+                child_number: [{ value: 100 }],
+              },
+            },
+          ],
+        },
       ],
       icon: { id: 'iconId', label: 'iconLabel', type: 'iconType' },
     });
@@ -356,7 +372,20 @@ describe('CreateEntityUseCase', () => {
         attached_image_1: [{ value: '/api/files/1762280821775nhs3epb55g7.png' }],
         attached_image_2: [{ value: '/api/files/1162280821775nhs3epb55g7.png' }],
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
-        nested: [],
+        nested: [
+          {
+            value: {
+              child_text: [{ value: 'Child text value' }],
+              child_number: [{ value: 42 }],
+            },
+          },
+          {
+            value: {
+              child_text: [{ value: 'Second child text' }],
+              child_number: [{ value: 100 }],
+            },
+          },
+        ],
         preview: [],
         media: [{ value: 'https://example.com/media.mp4' }],
         attached_media_1: [
