@@ -154,11 +154,11 @@ export default (app: Application) => {
           req.body.entity,
           req.file,
           true,
-          () => {
-            req.emitToSessionSocket('documentProcessed', req.body.entity);
+          processedFile => {
+            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
           },
-          () => {
-            req.emitToSessionSocket('conversionFailed', req.body.entity);
+          (_e, failedFile) => {
+            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
           }
         );
       }

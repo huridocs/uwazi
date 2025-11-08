@@ -197,7 +197,8 @@ describe('upload routes', () => {
         expect(iosocket.emit).toHaveBeenCalledWith(
           'conversionFailed',
           TestEmitSources.session,
-          'sharedId1'
+          'sharedId1',
+          expect.objectContaining({ status: 'failed' })
         );
       });
     });

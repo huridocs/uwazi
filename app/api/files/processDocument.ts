@@ -25,7 +25,7 @@ export const convertPDF = async (
   // eslint-disable-next-line no-empty-function
   onProcessingSuccess: (file: FileType & { _id: ObjectId; __v: number }) => void = () => {},
   // eslint-disable-next-line no-empty-function
-  onProcessingFail: (e: Error) => void = () => {}
+  onProcessingFail: (e: Error, file: FileType & { _id: ObjectId; __v: number }) => void = () => {}
 ) => {
   try {
     const pdf = new PDF(file);
@@ -34,7 +34,7 @@ export const convertPDF = async (
       conversion.language = file.language;
     }
 
-    const saved = await files.save({
+    const processedFile = await files.save({
       ...upload,
       ...conversion,
       status: 'ready',
@@ -51,15 +51,15 @@ export const convertPDF = async (
       size,
     });
 
-    onProcessingSuccess(saved);
-    return saved;
+    onProcessingSuccess(processedFile);
+    return processedFile;
   } catch (e) {
-    await files.save({
+    const failedFile = await files.save({
       ...upload,
       status: 'failed',
     });
 
-    onProcessingFail(e);
+    onProcessingFail(e, failedFile);
   }
 };
 
