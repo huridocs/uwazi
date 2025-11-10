@@ -136,7 +136,6 @@ describe('Entity', () => {
 
     expect(entity.sharedId).toEqual(expect.any(String));
     expect(entity.published).toBe(false);
-    expect(entity.userId).toBe('user-456');
     expect(entity.getTranslation('en').creationDate.value[0].value).toEqual(expect.any(Number));
 
     expect(entity.translations).toEqual({

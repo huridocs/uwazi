@@ -91,6 +91,7 @@ describe('TemplateMapper', () => {
       icon: { _id: 'icon_id', label: 'Icon Label', type: 'icon' },
       user: factory.id('user_id'),
       obsoleteMetadata: [],
+      permissions: [],
     }
   );
 
