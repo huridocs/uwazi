@@ -161,6 +161,10 @@ socket.on('documentProcessed', sharedId => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });
 
+socket.on('conversionFailed', sharedId => {
+  store.dispatch(documentProcessed(sharedId, 'library'));
+});
+
 socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));
 socket.on('IMPORT_CSV_PROGRESS', progress =>
   store.dispatch(actions.set('importProgress', progress))
