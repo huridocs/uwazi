@@ -58,7 +58,7 @@ describe('upload routes', () => {
 
   describe.each([
     { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
-    // { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
+    { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
   ])('$title', ({ featureFlags }) => {
     let pathManager: PathManager;
     beforeAll(async () => {
@@ -173,12 +173,18 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document status to failed and emit a socket conversionFailed event with the id of the document', async () => {
-        await socketEmit('conversionFailed', async () =>
-          request(app)
-            .post('/api/files/upload/document')
-            .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
-        );
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'invalid_document.txt'
@@ -187,12 +193,18 @@ describe('upload routes', () => {
       });
 
       it('should emit conversionFailed with the sharedId of the entity', async () => {
-        await socketEmit('conversionFailed', async () =>
-          request(app)
-            .post('/api/files/upload/document')
-            .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
-        );
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'conversionFailed',

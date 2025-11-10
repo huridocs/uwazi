@@ -6,6 +6,7 @@ import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
 import { appContext } from './AppContext';
+import * as setupSockets from 'api/socketio/setupSockets';
 
 extendSupertest();
 
@@ -20,6 +21,11 @@ const setUpApp = (
   route: Function,
   ...customMiddleware: ((req: Request, _es: Response, next: NextFunction) => void)[]
 ): Application => {
+  jest
+    .spyOn(setupSockets, 'emitToTenant')
+    .mockImplementation((_tenant: string, event: string, ...args: any[]) => {
+      iosocket.emit(event, TestEmitSources.currentTenant, ...args);
+    });
   const app: Application = express();
   routesErrorHandler(app);
   app.use((req: Request, _res: Response, next: NextFunction) => {
