@@ -28,7 +28,7 @@ export class PathManager {
 
   createPath(input: CreatePathInput) {
     if (input.type === 'customPath' && input.destination) {
-      const basePath = path.dirname(this.directory.document);
+      const basePath = this.directory.document;
       return path.join(basePath, input.destination, input.filename);
     }
 

@@ -5,6 +5,7 @@ import { Document } from '../model/Document';
 import { Segmentation } from '../model/Segmentation';
 import { UwaziFile } from '../model/UwaziFile';
 import { ProcessedDocument } from '../model/ProcessedDocument';
+import { ProcessingFileNotFound } from '../model/errors';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];
@@ -13,7 +14,7 @@ type GetDocumentsForEntityOptions = {
 interface FilesDataSource {
   create(file: UwaziFile): Promise<void>;
   update(file: UwaziFile): Promise<void>;
-  getProcessingById(documentId: string): Promise<ResultType<Document, Error>>;
+  getProcessingById(documentId: string): Promise<ResultType<Document, ProcessingFileNotFound>>;
   deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
   renameExtractedMetadata(
     renamedPropertyNames: { [previousName: string]: string },

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { isEmpty } from 'lodash';
 import { Icon } from 'UI';
-import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
+import { updateMainDocument, uploadDocument } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { socket } from 'app/socket';
 import { Translate } from 'app/I18N';
@@ -72,8 +72,9 @@ class UploadButton extends Component {
     this.props.uploadDocument(this.props.entitySharedId, file);
   }
 
-  documentProcessed(docId) {
+  documentProcessed(docId, processedDoc) {
     if (docId === this.props.entitySharedId) {
+      this.props.updateMainDocument(docId, processedDoc);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
           this.setState({ processing: false, failed: false, completed: false });
@@ -88,9 +89,10 @@ class UploadButton extends Component {
     }
   }
 
-  conversionFailed(docId) {
+  conversionFailed(docId, failedFile) {
     if (docId === this.props.entitySharedId) {
       this.setState({ processing: false, failed: true, completed: false });
+      this.props.updateMainDocument(docId, failedFile);
     }
   }
 
@@ -135,10 +137,12 @@ UploadButton.defaultProps = {
   storeKey: '',
   entitySharedId: '',
   uploadDocument: () => {},
+  updateMainDocument: () => {},
 };
 
 UploadButton.propTypes = {
   uploadDocument: PropTypes.func,
+  updateMainDocument: PropTypes.func,
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string, // eslint-disable-line
@@ -149,7 +153,10 @@ const mapStateToProps = ({ metadata, progress }) => ({
 });
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ uploadDocument }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    { uploadDocument, updateMainDocument },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export { UploadButton };

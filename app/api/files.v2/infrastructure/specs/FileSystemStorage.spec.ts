@@ -172,10 +172,7 @@ describe('FileSystemStorage', () => {
 
         const contents = await toString(
           createReadStream(
-            path.join(
-              path.dirname(tenants.current().uploadedDocuments),
-              'custom_path/deep/documento.txt'
-            )
+            path.join(tenants.current().uploadedDocuments, 'custom_path/deep/documento.txt')
           )
         );
         expect(contents).toBe('content created\n');
