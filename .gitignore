@@ -24,10 +24,13 @@ app/api/migrations/**/uploads/*
 !app/api/files/specs/customUploads/downloadRoutes
 !app/api/files/specs/uploads/downloadRoutes
 !app/api/files/specs/uploads/ocrRoutes
+!app/api/files/specs/uploads/pdfPostProcessJob
 app/api/files/specs/uploads/downloadRoutes/*
+app/api/files/specs/uploads/pdfPostProcessJob/*
 app/api/files/specs/uploads/ocrRoutes/*
 !app/api/files/specs/uploads/downloadRoutes/index.html
 !app/api/files/specs/uploads/ocrRoutes/index.html
+!app/api/files/specs/uploads/pdfPostProcessJob/index.html
 app/api/files/specs/customUploads/*
 !app/api/files/specs/customUploads/index.html
 !app/api/files/specs/customUploads/listFilesUsingDisk
