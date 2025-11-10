@@ -1,10 +1,10 @@
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { TemplateProperty } from 'api/core/domain/template/Template';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
+import { Property } from 'api/core/domain/template/Property';
+import { Entity } from '../../core/domain/entity/Entity';
 
 export interface MultiLanguageEntityDataSource {
-  bulkUpdate(entitiesToSave: MultiLanguageEntity[], properties: TemplateProperty[]): Promise<void>;
+  bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
 
@@ -14,12 +14,14 @@ export interface MultiLanguageEntityDataSource {
   ): Promise<void>;
 
   countByTemplateId(templateId: string): Promise<number>;
-  getEntitiesByTemplateId(templateId: string): Promise<ResultSet<MultiLanguageEntity>>;
-  getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<MultiLanguageEntity>>;
+  getEntitiesByTemplateId(templateId: string): Promise<ResultSet<Entity>>;
+  getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<Entity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;
 
   getEntitiesByRelatedProperties(
-    entities: MultiLanguageEntity[],
+    entities: Entity[],
     properties: V1RelationshipProperty[]
-  ): Promise<ResultSet<MultiLanguageEntity>>;
+  ): Promise<ResultSet<Entity>>;
+
+  create(entity: Entity): Promise<void>;
 }

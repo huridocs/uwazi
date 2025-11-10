@@ -11,7 +11,6 @@ export const processPDF = async (
   file: FileType & { destination?: string },
   detectLanguage = true
 ) => {
-  let thumbnail;
   const pdf = new PDF(file);
   const upload = await files.save({
     ...file,
@@ -32,14 +31,15 @@ export const processPDF = async (
       status: 'ready',
     });
 
-    thumbnail = await pdf.createThumbnail(upload._id.toString());
+    const { filename, size } = await pdf.createThumbnail(upload._id.toString());
 
     await files.save({
       entity: entitySharedId,
       type: 'thumbnail',
       language: conversion.language,
-      filename: thumbnail,
+      filename,
       mimetype: 'image/jpeg',
+      size,
     });
 
     return saved;

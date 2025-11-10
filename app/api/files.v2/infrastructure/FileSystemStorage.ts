@@ -1,11 +1,14 @@
 /* eslint-disable node/no-restricted-import */
-import { createReadStream } from 'fs';
+import { createWriteStream } from 'fs';
+import { mkdir } from 'fs/promises';
 
-import { PathManager } from './PathManager';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
+import path from 'path';
+import { pipeline } from 'stream/promises';
+import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
+import { FileContents } from '../model/FileContents';
 import { StoredFile } from '../model/StoredFile';
 import { UwaziFile } from '../model/UwaziFile';
-import { File } from '../model/File';
+import { PathManager } from './PathManager';
 
 export class FileSystemStorage implements FileStorage {
   private pathManager: PathManager;
@@ -14,15 +17,30 @@ export class FileSystemStorage implements FileStorage {
     this.pathManager = pathManager;
   }
 
-  async getFile(input: GetFileInput): Promise<File> {
-    const stream = createReadStream(this.pathManager.createPath(input));
+  async storeFile(input: UploadFileInput) {
+    const filepath = this.pathManager.createPath({
+      filename: input.file.filename,
+      type: input.type,
+      destination: input.destination,
+    });
 
-    return new File({ filename: input.filename, source: stream });
+    try {
+      await mkdir(path.dirname(filepath), { recursive: true });
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+    }
+
+    await pipeline((await input.file.getReadable()).getDataOrThrow(), createWriteStream(filepath));
   }
 
-  async getFiles(inputs: GetFileInput[]): Promise<File[]> {
-    const promises = inputs.map(async input => this.getFile(input));
+  async getFile(input: GetFileInput): Promise<FileContents> {
+    return new FileContents(this.pathManager.createPath(input));
+  }
 
+  async getFiles(inputs: GetFileInput[]): Promise<FileContents[]> {
+    const promises = inputs.map(async input => this.getFile(input));
     return Promise.all(promises);
   }
 

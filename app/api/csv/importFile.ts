@@ -9,7 +9,7 @@ import zipFile from 'api/utils/zipFile';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
-import { readFile } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
@@ -45,13 +45,15 @@ class ImportFile {
     const mimetype = getMimetypeFromOriginalName(fileName) || 'application/octet-stream';
 
     await fileFromReadStream(generatedName, await this.readStream(fileName), '/tmp');
+    const tmpPath = `/tmp/${generatedName}`;
 
     return {
       destination: '/tmp',
-      path: `/tmp/${generatedName}`,
+      path: tmpPath,
       originalname: fileName,
       filename: generatedName,
       mimetype,
+      size: (await stat(tmpPath)).size,
     };
   }
 }

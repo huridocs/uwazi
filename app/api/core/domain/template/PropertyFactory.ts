@@ -16,8 +16,8 @@ import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProp
 import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty';
 import { DateProperty, DatePropertyProps } from './DateProperty';
 import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty';
-import { SelectProperty, SelectPropertyProps } from './SelectProperty';
-import { MultiSelectProperty, MultiSelectPropertyProps } from './MultiSelectProperty';
+import { SelectProperty, SelectPropertyProps } from './select/SelectProperty';
+import { MultiSelectProperty, MultiSelectPropertyProps } from './select/MultiSelectProperty';
 import { NestedProperty, NestedPropertyProps } from './NestedProperty';
 import { RelationshipPropertyProps } from './RelationshipProperty';
 

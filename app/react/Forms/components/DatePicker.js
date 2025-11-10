@@ -2,41 +2,43 @@ import { connect } from 'react-redux';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import DatePickerComponent, { registerLocale } from 'react-datepicker';
+// Note: react-datepicker requires date-fns for locale registration
 import * as localization from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 const removeOffset = (useTimezone, value) => {
   let datePickerValue = null;
   const miliseconds = value * 1000;
   if (value) {
-    const newValue = moment.utc(miliseconds);
+    let newValue = DateTime.fromMillis(miliseconds, { zone: 'utc' });
 
     if (!useTimezone) {
       // in order to get the system offset for the specific date we
-      // need to create a new not UTC moment object with the original timestamp
-      newValue.subtract(moment(moment(miliseconds)).utcOffset(), 'minutes');
+      // need to create a new not UTC DateTime object with the original timestamp
+      const localOffset = DateTime.fromMillis(miliseconds).offset;
+      newValue = newValue.minus({ minutes: localOffset });
     }
 
-    datePickerValue = parseInt(newValue.locale('en').format('x'), 10);
+    datePickerValue = parseInt(newValue.toMillis().toString(), 10);
   }
 
   return datePickerValue;
 };
 
 const addOffset = (useTimezone, endOfDay, value) => {
-  const newValue = moment.utc(value);
+  let newValue = DateTime.fromJSDate(value, { zone: 'utc' });
 
   if (!useTimezone) {
-    // in order to get the proper offset moment has to be initialized with the actual date
-    // without this you always get the "now" moment offset
-    newValue.add(moment(value).utcOffset(), 'minutes');
+    // in order to get the proper offset DateTime has to be initialized with the actual date
+    // without this you always get the "now" DateTime offset
+    const localOffset = DateTime.fromJSDate(value).offset;
+    newValue = newValue.plus({ minutes: localOffset });
   }
 
   if (endOfDay) {
-    const method = useTimezone ? newValue.local() : newValue.utc();
-    method.endOf('day');
+    newValue = useTimezone ? newValue.setZone('local').endOf('day') : newValue.endOf('day');
   }
 
   return newValue;
@@ -56,7 +58,7 @@ class DatePicker extends Component {
       onChange(null);
     } else {
       const newValue = addOffset(useTimezone, endOfDay, datePickerValue);
-      onChange(parseInt(newValue.locale('en').format('X'), 10));
+      onChange(Math.floor(newValue.toSeconds()));
     }
   }
 
@@ -99,4 +101,9 @@ DatePicker.propTypes = {
   useTimezone: PropTypes.bool,
 };
 
-export default connect()(DatePicker);
+const mapStateToProps = (state, ownProps) => ({
+  // If locale is passed as prop, use it; otherwise get from Redux state
+  locale: ownProps.locale || state.locale,
+});
+
+export default connect(mapStateToProps)(DatePicker);

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageISO6393 } from './languageISO639_3';
 
 type LanguageCode = 'elastic' | 'ISO639_3' | 'ISO639_1';
 
@@ -13,7 +14,16 @@ const otherLanguageSchema: LanguageSchema = {
   translationAvailable: false,
 };
 
-const availableLanguages: LanguageSchema[] = [
+type Language = LanguageSchema & {
+  label: string;
+  key: LanguageISO6391;
+  ISO639_3: LanguageISO6393;
+  ISO639_1: LanguageISO6391;
+  localized_label: string;
+  translationAvailable: boolean;
+};
+
+const availableLanguages: Language[] = [
   {
     label: 'Abkhazian',
     key: 'ab',
@@ -1551,6 +1561,6 @@ const availableLanguages: LanguageSchema[] = [
   },
 ];
 
-export type { LanguageCode };
+export type { LanguageCode, Language };
 
 export { otherLanguageSchema, availableLanguages };

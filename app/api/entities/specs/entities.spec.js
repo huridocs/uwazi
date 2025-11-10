@@ -17,6 +17,8 @@ import { UserRole } from 'shared/types/userSchema';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
+import { testingTenants } from 'api/utils/testingTenants';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import entities from '../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
@@ -38,6 +40,14 @@ import fixtures, {
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
+  const saveDoc = async (doc, user) => {
+    await entities.save(doc, { user, language: 'es' });
+    const docs = await entities.get({ title: doc.title });
+    return {
+      createdDocumentEs: docs.find(d => d.language === 'es'),
+      createdDocumentEn: docs.find(d => d.language === 'en'),
+    };
+  };
 
   beforeEach(async () => {
     jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
@@ -51,16 +61,112 @@ describe('entities', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('save', () => {
-    const saveDoc = async (doc, user) => {
-      await entities.save(doc, { user, language: 'es' });
-      const docs = await entities.get({ title: doc.title });
-      return {
-        createdDocumentEs: docs.find(d => d.language === 'es'),
-        createdDocumentEn: docs.find(d => d.language === 'en'),
-      };
-    };
+  describe.each([
+    { title: 'Create V1', featureFlags: { v2CreateEntity: false } },
+    { title: 'Create V2', featureFlags: { v2CreateEntity: true } },
+  ])('$title', ({ featureFlags }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags,
+      });
+    });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should create a new entity for each language in settings with a language property, a shared id, and default template', async () => {
+      const universalTime = 1;
+      jest.spyOn(date, 'currentUTC').mockImplementation(() => universalTime);
+      const doc = { title: 'Batman begins' };
+      const user = { _id: db.id() };
+
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
+
+      expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
+
+      expect(createdDocumentEs.template.toString()).toBe(templateChangingNames.toString());
+      expect(createdDocumentEn.template.toString()).toBe(templateChangingNames.toString());
+
+      expect(createdDocumentEs.title).toBe(doc.title);
+      expect(createdDocumentEs.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEs.published).toBe(false);
+      expect(createdDocumentEs.creationDate).toEqual(universalTime);
+      expect(createdDocumentEs.editDate).toEqual(universalTime);
+
+      expect(createdDocumentEn.title).toBe(doc.title);
+      expect(createdDocumentEn.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEn.published).toBe(false);
+      expect(createdDocumentEn.creationDate).toEqual(universalTime);
+    });
+
+    it('should create a new entity, preserving template if passed', async () => {
+      const doc = { title: 'The Dark Knight', template: templateId };
+      const user = { _id: db.id() };
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
+
+      expect(createdDocumentEs.template.toString()).toBe(templateId.toString());
+      expect(createdDocumentEn.template.toString()).toBe(templateId.toString());
+    });
+
+    it('should set default template and default metadata', async () => {
+      const doc = {
+        title: 'the dark knight',
+        fullText: { 0: 'the full text!' },
+      };
+      const user = { _id: db.id() };
+
+      const createdDocument = await entities.save(doc, { user, language: 'en' });
+
+      expect(createdDocument._id).toBeDefined();
+      expect(createdDocument.title).toBe(doc.title);
+      expect(createdDocument.user.equals(user._id)).toBe(true);
+      expect(createdDocument.language).toEqual('en');
+      expect(createdDocument.fullText).not.toBeDefined();
+      expect(createdDocument.metadata).toEqual({
+        property1: [],
+        property2: [],
+        property3: [],
+      });
+      expect(createdDocument.template).toBeDefined();
+    });
+
+    it('should index the newly created documents', async () => {
+      jest.mocked(search.indexEntities).mockRestore();
+      jest.mocked(search.bulkIndex).mockRestore();
+      await testingEnvironment.setUp(fixtures, true);
+
+      testingTenants.changeCurrentTenant({
+        featureFlags,
+      });
+
+      const doc = { title: 'the dark knight', template: templateId };
+      const user = { _id: db.id() };
+
+      await entities.save(doc, { user, language: 'en' });
+      await elasticTesting.refresh();
+      const allEntities = await elasticTesting.getIndexedEntities();
+
+      expect(
+        allEntities.find(e => e.title === 'the dark knight' && e.template === templateId.toString())
+      ).toBeDefined();
+    });
+
+    describe('save entity without a logged user', () => {
+      it('should save the entity with unrestricted access', async () => {
+        const user = {};
+        userFactory.mock(undefined);
+        const entity = { title: 'Batman begins', template: templateId, language: 'es' };
+        const createdEntity = await entities.save(entity, { user, language: 'es' });
+
+        expect(createdEntity._id).not.toBeUndefined();
+        expect(createdEntity.title).toEqual(entity.title);
+        userFactory.mockEditorUser();
+      });
+    });
+  });
+
+  describe('save', () => {
     it('should uniq the values on multiselect and relationship fields', async () => {
       const entity = {
         title: 'Batman begins',
@@ -99,31 +205,6 @@ describe('entities', () => {
       ]);
     });
 
-    it('should create a new entity for each language in settings with a language property, a shared id, and default template', async () => {
-      const universalTime = 1;
-      jest.spyOn(date, 'currentUTC').mockImplementation(() => universalTime);
-      const doc = { title: 'Batman begins' };
-      const user = { _id: db.id() };
-
-      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
-
-      expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
-
-      expect(createdDocumentEs.template.toString()).toBe(templateChangingNames.toString());
-      expect(createdDocumentEn.template.toString()).toBe(templateChangingNames.toString());
-
-      expect(createdDocumentEs.title).toBe(doc.title);
-      expect(createdDocumentEs.user.equals(user._id)).toBe(true);
-      expect(createdDocumentEs.published).toBe(false);
-      expect(createdDocumentEs.creationDate).toEqual(universalTime);
-      expect(createdDocumentEs.editDate).toEqual(universalTime);
-
-      expect(createdDocumentEn.title).toBe(doc.title);
-      expect(createdDocumentEn.user.equals(user._id)).toBe(true);
-      expect(createdDocumentEn.published).toBe(false);
-      expect(createdDocumentEn.creationDate).toEqual(universalTime);
-    });
-
     it('should create a new entity for each language when passing an _id', async () => {
       const universalTime = 1;
       jest.spyOn(date, 'currentUTC').mockImplementation(() => universalTime);
@@ -134,37 +215,6 @@ describe('entities', () => {
 
       expect(createdDocumentEs._id.toString()).toBe(unpublishedDocId.toString());
       expect(createdDocumentEn._id.toString()).not.toBe(unpublishedDocId.toString());
-    });
-
-    it('should create a new entity, preserving template if passed', async () => {
-      const doc = { title: 'The Dark Knight', template: templateId };
-      const user = { _id: db.id() };
-      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
-
-      expect(createdDocumentEs.template.toString()).toBe(templateId.toString());
-      expect(createdDocumentEn.template.toString()).toBe(templateId.toString());
-    });
-
-    it('should set default template and default metadata', async () => {
-      const doc = {
-        title: 'the dark knight',
-        fullText: { 0: 'the full text!' },
-      };
-      const user = { _id: db.id() };
-
-      const createdDocument = await entities.save(doc, { user, language: 'en' });
-
-      expect(createdDocument._id).toBeDefined();
-      expect(createdDocument.title).toBe(doc.title);
-      expect(createdDocument.user.equals(user._id)).toBe(true);
-      expect(createdDocument.language).toEqual('en');
-      expect(createdDocument.fullText).not.toBeDefined();
-      expect(createdDocument.metadata).toEqual({
-        property1: [],
-        property2: [],
-        property3: [],
-      });
-      expect(createdDocument.template).toBeDefined();
     });
 
     it('should return updated entity with updated editDate', async () => {
@@ -184,14 +234,6 @@ describe('entities', () => {
       );
       expect(updatedDocument.title).toBe('updated title');
       expect(updatedDocument.editDate).toEqual(updateTime);
-    });
-
-    it('should index the newly created documents', async () => {
-      const doc = { title: 'the dark knight', template: templateId };
-      const user = { _id: db.id() };
-
-      await entities.save(doc, { user, language: 'en' });
-      expect(search.indexEntities).toHaveBeenCalled();
     });
 
     it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', async () => {
@@ -496,18 +538,6 @@ describe('entities', () => {
           language: 'en',
         });
         expect(doc.documents[0].entity).toBe('shared');
-      });
-    });
-
-    describe('save entity without a logged user', () => {
-      it('should save the entity with unrestricted access', async () => {
-        const user = {};
-        userFactory.mock(undefined);
-        const entity = { title: 'Batman begins', template: templateId, language: 'es' };
-        const createdEntity = await entities.save(entity, { user, language: 'es' });
-        expect(createdEntity._id).not.toBeUndefined();
-        expect(createdEntity.title).toEqual(entity.title);
-        userFactory.mockEditorUser();
       });
     });
 

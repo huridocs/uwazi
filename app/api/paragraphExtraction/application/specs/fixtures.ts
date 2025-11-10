@@ -1,4 +1,3 @@
-import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
@@ -64,17 +63,20 @@ export const entityStatus2: MongoPXEntityStatusDBO = {
 export const file = factory.document('file', {
   language: 'en',
   entity: entity1.sharedId,
+  status: 'ready',
 });
 
 export const file2 = factory.document('file2', {
   language: 'es',
   entity: entity1.sharedId,
+  status: 'ready',
 });
 
 export const file3 = factory.document('file3', { language: 'es', entity: entity2.sharedId });
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
   language: 'pt',
   entity: entity1.sharedId,
+  status: 'ready',
 });
 
 export const segmentation = factory.MongoSegmentationBuilder.create().withFileId(file._id).build();
@@ -101,10 +103,7 @@ export const processingSegmentation = factory.MongoSegmentationBuilder.create()
   .withStatus('processing')
   .build();
 
-export const files = [
-  FileBuilder.create().withFilename('file1.txt').build(),
-  FileBuilder.create().withFilename('file2.txt').build(),
-];
+export const files = [factory.file('file1.txt'), factory.file('file2.txt')];
 
 export const paragraph1 = factory.entity('paragraph1', targetTemplate.name);
 export const paragraph2 = factory.entity('paragraph2', targetTemplate.name);

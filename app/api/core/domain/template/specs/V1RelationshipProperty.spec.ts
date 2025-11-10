@@ -133,4 +133,88 @@ describe('V1RelationshipProperty', () => {
 
     expect(() => relationship.ensurePropertyIsConsistent(relationship)).not.toThrow();
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should normalize, trim, and deduplicate values', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+      });
+
+      const assignment = relationship.createPropertyAssignment({
+        value: [
+          { value: 'A', label: '', type: 'entity' },
+          { value: 'A', label: '', type: 'entity' },
+          { value: '', label: 'Label C', type: 'entity' },
+          {
+            value: 'B',
+            label: 'Label B',
+            inheritedType: 'text',
+            inheritedValue: [{ value: 'valueB' }],
+            icon: { id: 'any', label: 'iconB', type: 'img' },
+            type: 'entity',
+          },
+        ],
+        language: 'en',
+      });
+
+      expect(assignment).toEqual({
+        language: 'en',
+        name: relationship.name,
+        type: relationship.type,
+        value: [
+          {
+            value: 'A',
+            type: 'entity',
+            label: '',
+            inheritedValue: undefined,
+            inheritedType: undefined,
+            icon: undefined,
+          },
+          {
+            value: 'B',
+            label: 'Label B',
+            inheritedValue: [{ value: 'valueB' }],
+            inheritedType: 'text',
+            icon: { id: 'any', label: 'iconB', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+      });
+
+      const assignment = relationship.createPropertyAssignment({ value: [], language: 'en' });
+
+      expect(assignment).toEqual({
+        language: 'en',
+        name: relationship.name,
+        type: relationship.type,
+        value: [],
+      });
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const relationship = V1RelationshipProperty.create({
+        id: 'id',
+        label: 'label',
+        relationType: 'relationType',
+        template: 'template',
+        required: true,
+      });
+
+      expect(() => relationship.createPropertyAssignment({ value: [], language: 'en' })).toThrow(
+        'Relationship Property is required'
+      );
+    });
+  });
 });

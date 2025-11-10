@@ -3,8 +3,7 @@ import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import baseMoment from 'moment';
-import moment from 'moment-timezone';
+import { DateTime, Settings } from 'luxon';
 import DatePickerComponent from 'react-datepicker';
 import DatePicker from '../DatePicker';
 
@@ -16,11 +15,11 @@ describe('DatePicker', () => {
   let props;
   let input;
 
-  const date = moment.utc('2016-07-28T00:00:00+00:00');
+  const date = DateTime.fromISO('2016-07-28T00:00:00+00:00', { zone: 'utc' });
 
   beforeEach(() => {
     props = {
-      value: Number(date.format('X')),
+      value: Math.floor(date.toSeconds()),
       onChange: jasmine.createSpy('onChange'),
     };
   });
@@ -33,44 +32,50 @@ describe('DatePicker', () => {
 
   it('should render a DatePickerComponent with the correct date transformed to local value', () => {
     render();
-    expect(input.props().selected).toBe(parseInt(moment('2016-07-28').format('x'), 10));
+    expect(input.props().selected).toBe(
+      parseInt(DateTime.fromISO('2016-07-28').toMillis().toString(), 10)
+    );
   });
 
   describe('when useTimezone is true', () => {
     it('should render a DatePickerComponent without transforming the value to local', () => {
       props.useTimezone = true;
       render();
-      expect(input.props().selected).toBe(parseInt(date.format('x'), 10));
+      expect(input.props().selected).toBe(parseInt(date.toMillis().toString(), 10));
     });
   });
 
   afterEach(() => {
-    moment.tz.setDefault();
+    Settings.defaultZone = 'local';
   });
 
   describe('when date is in a diferent timezone than today', () => {
     it.each([
-      { timezone: 'Japan', dateToTest: '1950-08-05' },
+      { timezone: 'Asia/Tokyo', dateToTest: '1950-08-05' },
       { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
     ])('should use the timestamp offsetting to UTC %s', ({ timezone, dateToTest }) => {
-      moment.tz.setDefault(timezone);
-      const newDate = moment.utc(dateToTest);
-      props.value = Number(newDate.format('X'));
+      Settings.defaultZone = timezone;
+      const newDate = DateTime.fromISO(dateToTest, { zone: 'utc' });
+      props.value = Math.floor(newDate.toSeconds());
 
       render();
-      expect(input.props().selected).toBe(parseInt(moment(dateToTest).format('x'), 10));
+      expect(input.props().selected).toBe(
+        parseInt(DateTime.fromISO(dateToTest).toMillis().toString(), 10)
+      );
     });
 
     it.each([
-      { timezone: 'Japan', dateToTest: '1950-08-05' },
+      { timezone: 'Asia/Tokyo', dateToTest: '1950-08-05' },
       { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
       { timezone: 'Europe/Madrid', dateToTest: '2020-08-18' },
     ])('should set the value to timestamp offsetting to UTC %s', ({ timezone, dateToTest }) => {
-      moment.tz.setDefault(timezone);
-      const newDate = moment(dateToTest).toDate();
+      Settings.defaultZone = timezone;
+      const newDate = DateTime.fromISO(dateToTest).toJSDate();
       render();
       input.simulate('change', newDate);
-      expect(props.onChange).toHaveBeenCalledWith(parseInt(moment.utc(dateToTest).format('X'), 10));
+      expect(props.onChange).toHaveBeenCalledWith(
+        Math.floor(DateTime.fromISO(dateToTest, { zone: 'utc' }).toSeconds())
+      );
     });
   });
 
@@ -78,28 +83,28 @@ describe('DatePicker', () => {
     let originalLocale;
 
     beforeEach(() => {
-      originalLocale = baseMoment.locale();
-      baseMoment.locale('ar');
+      originalLocale = Settings.defaultLocale;
+      Settings.defaultLocale = 'ar';
     });
 
     afterEach(() => {
-      baseMoment.locale(originalLocale);
+      Settings.defaultLocale = originalLocale;
     });
 
     it('should render a latin-based value (until correct locales are implemented)', () => {
       render();
       expect(input.props().selected).toBe(
-        parseInt(moment('2016-07-28').locale('en').format('x'), 10)
+        parseInt(DateTime.fromISO('2016-07-28').toMillis().toString(), 10)
       );
     });
 
     it('should not fail on change', () => {
-      moment.tz.setDefault('Europe/Madrid');
-      const newDate = moment('2020-08-18').toDate();
+      Settings.defaultZone = 'Europe/Madrid';
+      const newDate = DateTime.fromISO('2020-08-18').toJSDate();
       render();
       input.simulate('change', newDate);
       expect(props.onChange).toHaveBeenCalledWith(
-        parseInt(moment.utc('2020-08-18').locale('en').format('X'), 10)
+        Math.floor(DateTime.fromISO('2020-08-18', { zone: 'utc' }).toSeconds())
       );
     });
   });
@@ -118,11 +123,10 @@ describe('DatePicker', () => {
       props.endOfDay = true;
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment
-        .utc(newDate)
-        .add(moment().utcOffset(), 'minute')
+      const expectedOnChangeValue = DateTime.fromJSDate(newDate, { zone: 'utc' })
+        .plus({ minutes: DateTime.local().offset })
         .endOf('day');
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      expect(props.onChange).toHaveBeenCalledWith(Math.floor(expectedOnChangeValue.toSeconds()));
     });
   });
 
@@ -136,16 +140,56 @@ describe('DatePicker', () => {
     it('should set the value to timestamp NOT offsetting to UTC', () => {
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment.utc(newDate);
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      const expectedOnChangeValue = DateTime.fromJSDate(newDate, { zone: 'utc' });
+      expect(props.onChange).toHaveBeenCalledWith(Math.floor(expectedOnChangeValue.toSeconds()));
     });
 
     it('should set the value to the end of the day NOT offsetting to UTC', () => {
       props.endOfDay = true;
       render();
       input.simulate('change', newDate);
-      const expectedOnChangeValue = moment.utc(newDate).local().endOf('day');
-      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+      const expectedOnChangeValue = DateTime.fromJSDate(newDate, { zone: 'utc' })
+        .setZone('local')
+        .endOf('day');
+      expect(props.onChange).toHaveBeenCalledWith(Math.floor(expectedOnChangeValue.toSeconds()));
+    });
+  });
+
+  describe('Locale handling', () => {
+    it('should pass locale prop to DatePickerComponent', () => {
+      props.locale = 'ar';
+      render();
+      expect(input.props().locale).toBe('ar');
+    });
+
+    it('should use default locale "en" when no locale is provided', () => {
+      render();
+      expect(input.props().locale).toBe('en');
+    });
+
+    it('should get locale from Redux state when not provided as prop', () => {
+      const storeWithLocale = mockStore({ locale: 'ar' });
+      component = shallow(<DatePicker {...props} store={storeWithLocale} />).dive();
+      input = component.find(DatePickerComponent);
+
+      expect(input.props().locale).toBe('ar');
+    });
+
+    it('should prioritize prop locale over Redux state locale', () => {
+      props.locale = 'es';
+      const storeWithLocale = mockStore({ locale: 'ar' });
+      component = shallow(<DatePicker {...props} store={storeWithLocale} />).dive();
+      input = component.find(DatePickerComponent);
+
+      expect(input.props().locale).toBe('es');
+    });
+
+    it('should pass locale to DatePickerComponent for localization', () => {
+      props.locale = 'fr';
+      render();
+      const datePickerProps = input.props();
+
+      expect(datePickerProps.locale).toBe('fr');
     });
   });
 });

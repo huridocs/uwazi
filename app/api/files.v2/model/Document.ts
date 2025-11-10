@@ -1,20 +1,19 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseFile } from './BaseFile';
+import { BaseDocument, BaseDocumentProps } from './BaseDocument';
 
-export class Document extends BaseFile {
-  readonly filename: string;
+type Props = BaseDocumentProps & {
+  status: 'processing' | 'failed';
+};
 
-  readonly language: LanguageISO6391;
+export class Document extends BaseDocument {
+  status: 'processing' | 'failed';
 
-  constructor(
-    id: string,
-    entity: string,
-    totalPages: number,
-    filename: string,
-    language: LanguageISO6391
-  ) {
-    super(id, entity, totalPages);
-    this.filename = filename;
-    this.language = language;
+  constructor(props: Props) {
+    const { status, ...baseProps } = props;
+    super(baseProps);
+    this.status = status;
+  }
+
+  failed() {
+    this.status = 'failed';
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
+import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -11,13 +11,14 @@ import { InputError } from '../InputError';
 import { InputField } from '../InputField';
 import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 
-interface DateRangePickerProps extends DatePickerProps {
+interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
+  dateFormat?: string;
   placeholderStart?: string;
   placeholderEnd?: string;
-  onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  from?: string;
-  to?: string;
+  onFromDateSelected?: (timestamp: number | null) => void;
+  onToDateSelected?: (timestamp: number | null) => void;
+  from?: number;
+  to?: number;
   onClear?: (field: 'from' | 'to') => void;
 }
 const DateRangePickerComponent = React.forwardRef(
@@ -33,12 +34,12 @@ const DateRangePickerComponent = React.forwardRef(
       errorMessage,
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'YYYY-MM-DD',
+      dateFormat,
       hideLabel = false,
       inputClassName = '',
       className = '',
-      onFromDateSelected = () => {},
-      onToDateSelected = () => {},
+      onFromDateSelected,
+      onToDateSelected,
       from,
       to,
       onClear = () => {},
@@ -58,16 +59,23 @@ const DateRangePickerComponent = React.forwardRef(
     const locale = validateLocale(language);
 
     useEffect(() => {
+      // Convert moment format to flowbite format if provided (YYYY -> yyyy, DD -> dd, then lowercase)
+      const flowbiteFormat = dateFormat
+        ? dateFormat.replace(/YYYY/g, 'yyyy').replace(/DD/g, 'dd').toLowerCase()
+        : undefined;
+
+      const localeConfig = {
+        ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+        ...(flowbiteFormat && { format: flowbiteFormat }),
+      };
       Object.assign(Datepicker.locales, {
-        [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
-          format: dateFormat.toLowerCase(),
-        },
+        [locale]: localeConfig,
       });
+
       const startEl = fromRef.current;
       const endEl = toRef.current;
 
-      instance.current = new DateRangePicker(divRef.current, {
+      const dateRangeConfig = {
         inputs: [startEl, endEl],
         container: '#tw-container',
         language: locale,
@@ -77,19 +85,61 @@ const DateRangePickerComponent = React.forwardRef(
         todayBtn: true,
         clearBtn: true,
         autohide: true,
-        format: dateFormat.toLowerCase(),
-      });
+        ...(flowbiteFormat && { format: flowbiteFormat }),
+      };
 
-      instance.current.setDates(from, to);
-      return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-    }, [locale, labelToday, labelClear, dateFormat, from, to]);
+      instance.current = new DateRangePicker(divRef.current, dateRangeConfig);
+
+      // Set initial dates from timestamps after a tick to let Flowbite initialize
+      if (from || to) {
+        const fromDate = from ? new Date(from) : undefined;
+        const toDate = to ? new Date(to) : undefined;
+        instance.current?.setDates(fromDate, toDate);
+      }
+
+      // Listen to Flowbite's changeDate events which provide Date objects
+      const fromEl = fromRef.current;
+      const toEl = toRef.current;
+
+      const fromHandler = (e: any) => {
+        const date = e.detail?.date;
+        const timestamp = date ? date.getTime() : null;
+        onFromDateSelected?.(timestamp);
+      };
+
+      const toHandler = (e: any) => {
+        const date = e.detail?.date;
+        const timestamp = date ? date.getTime() : null;
+        onToDateSelected?.(timestamp);
+      };
+
+      fromEl?.addEventListener('changeDate', fromHandler);
+      toEl?.addEventListener('changeDate', toHandler);
+
+      return () => {
+        fromEl?.removeEventListener('changeDate', fromHandler);
+        toEl?.removeEventListener('changeDate', toHandler);
+        if (instance?.current?.hide instanceof Function) instance?.current?.hide();
+      };
+    }, [
+      locale,
+      labelToday,
+      labelClear,
+      dateFormat,
+      from,
+      to,
+      onFromDateSelected,
+      onToDateSelected,
+    ]);
 
     useEffect(() => {
       if (!instance.current) {
         return;
       }
       if (from || to) {
-        instance.current.setDates(from, to);
+        const fromDate = from ? new Date(from) : undefined;
+        const toDate = to ? new Date(to) : undefined;
+        instance.current.setDates(fromDate, toDate);
       } else {
         instance.current.setDates({ clear: true }, { clear: true });
       }
@@ -137,16 +187,14 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
-                onSelect={onFromDateSelected}
-                onChange={onFromDateSelected}
-                onBlur={onFromDateSelected}
                 disabled={disabled}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderStart}
                 ref={fromRef}
                 clearFieldAction={() => {
-                  instance.current.setDates({ clear: true }, to);
+                  const toDate = to ? new Date(to) : undefined;
+                  instance.current.setDates({ clear: true }, toDate);
                   onClear('from');
                 }}
               />
@@ -171,15 +219,13 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
-                onSelect={onToDateSelected}
-                onChange={onToDateSelected}
-                onBlur={onToDateSelected}
                 disabled={disabled}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderEnd}
                 clearFieldAction={() => {
-                  instance.current.setDates(from, { clear: true });
+                  const fromDate = from ? new Date(from) : undefined;
+                  instance.current.setDates(fromDate, { clear: true });
                   onClear('to');
                 }}
                 ref={toRef}
@@ -196,10 +242,11 @@ const DateRangePickerComponent = React.forwardRef(
 DateRangePickerComponent.defaultProps = {
   placeholderStart: 'Select start',
   placeholderEnd: 'Select end',
-  onFromDateSelected: () => {},
-  onToDateSelected: () => {},
-  from: '',
-  to: '',
+  dateFormat: undefined,
+  onFromDateSelected: undefined,
+  onToDateSelected: undefined,
+  from: undefined,
+  to: undefined,
   onClear: () => {},
 };
 
