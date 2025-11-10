@@ -71,7 +71,9 @@ describe('upload routes', () => {
     });
 
     it('should upload the file', async () => {
-      const response = await uploadDocument('testing_files/english_testing_file.pdf');
+      const response = await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
       expect(response).toHaveStatus(200);
 
       expect(response.body).toMatchObject({
@@ -90,23 +92,20 @@ describe('upload routes', () => {
     });
 
     it('should process and reindex the document after upload', async () => {
-      const res = await uploadDocument('testing_files/english_testing_file.pdf');
-      expect(res).toHaveStatus(200);
+      const res = await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
 
+      expect(res).toHaveStatus(200);
       expect(res.body).toEqual(
         expect.objectContaining({
           originalname: 'english_testing_file.pdf',
-          // status: 'processing',
+          status: 'processing',
         })
       );
 
       expect(iosocket.emit).toHaveBeenCalledWith(
         'conversionStart',
-        TestEmitSources.session,
-        'sharedId1'
-      );
-      expect(iosocket.emit).toHaveBeenCalledWith(
-        'documentProcessed',
         TestEmitSources.session,
         'sharedId1'
       );
@@ -131,7 +130,9 @@ describe('upload routes', () => {
     });
 
     it('should generate a thumbnail for the document', async () => {
-      await uploadDocument('testing_files/english_testing_file.pdf');
+      await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
       const {
@@ -152,7 +153,7 @@ describe('upload routes', () => {
 
     describe('Language detection', () => {
       it('should detect English documents and store the result', async () => {
-        await uploadDocument('testing_files/eng.pdf');
+        await socketEmit('documentProcessed', async () => uploadDocument('testing_files/eng.pdf'));
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'eng.pdf'
@@ -161,7 +162,7 @@ describe('upload routes', () => {
       });
 
       it('should detect Spanish documents and store the result', async () => {
-        await uploadDocument('testing_files/spn.pdf');
+        await socketEmit('documentProcessed', async () => uploadDocument('testing_files/spn.pdf'));
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'spn.pdf'
@@ -172,12 +173,18 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document status to failed and emit a socket conversionFailed event with the id of the document', async () => {
-        await socketEmit('conversionFailed', async () =>
-          request(app)
-            .post('/api/files/upload/document')
-            .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
-        );
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'invalid_document.txt'
@@ -185,15 +192,26 @@ describe('upload routes', () => {
         expect(upload.status).toBe('failed');
       });
 
-      it('should return the file object', async () => {
-        const response: SuperTestResponse = await request(app)
-          .post('/api/files/upload/document')
-          .field('entity', 'sharedId1')
-          .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'));
+      it('should emit conversionFailed with the sharedId of the entity', async () => {
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
-        expect(response.body.status).toBe('failed');
-        expect(response.body._id).toBeDefined();
-        expect(response.body.originalname).toBe('invalid_document.txt');
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'conversionFailed',
+          TestEmitSources.session,
+          'sharedId1',
+          expect.objectContaining({ status: 'failed' })
+        );
       });
     });
   });

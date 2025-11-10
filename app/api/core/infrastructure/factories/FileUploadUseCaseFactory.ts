@@ -16,6 +16,7 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { PDFService } from '../services/PDFService';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
+import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper';
 
 class FileUploadUseCaseFactory {
   static default() {
@@ -40,6 +41,7 @@ class FileUploadUseCaseFactory {
             pdfService: new PDFService(),
             idGenerator,
           }),
+          wSockets: new V1WebSocketsWrapper(),
         }),
     });
 

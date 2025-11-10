@@ -20,6 +20,7 @@ import { UwaziFile } from '../model/UwaziFile';
 import { FileMappers } from './FilesMappers';
 import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
+import { ProcessingFileNotFound } from '../model/errors';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -48,15 +49,15 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
-  async getProcessingById(documentId: string) {
-    const processed = await this.getCollection().findOne({
-      _id: new ObjectId(documentId),
+  async getProcessingById(fileId: string) {
+    const processing = await this.getCollection().findOne({
+      _id: new ObjectId(fileId),
       status: 'processing',
     });
-    if (processed) {
-      return Result.ok(FileMappers.toModel(processed) as Document);
+    if (processing) {
+      return Result.ok(FileMappers.toModel(processing) as Document);
     }
-    return Result.fail(new Error(`document with id ${documentId} does not exist`));
+    return Result.fail(new ProcessingFileNotFound(fileId));
   }
 
   async update(file: UwaziFile): Promise<void> {
