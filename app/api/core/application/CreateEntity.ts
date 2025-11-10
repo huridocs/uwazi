@@ -68,19 +68,22 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       await this.deps.multiLanguageEntityDS.create(entity);
 
-      await ArrayUtils.sequentialFor(input.attachments, async attachment =>
-        this.deps.filesDS.create(
-          new Attachment({
-            id: this.idGenerator.generate(),
-            entity: entity.sharedId,
-            creationDate: date.currentUTC(),
-            filename: attachment.filename,
-            mimetype: attachment.metadata.mimetype,
-            originalname: attachment.metadata.originalname,
-            size: attachment.metadata.size,
-          })
-        )
-      );
+      if (input.attachments.length > 0) {
+        await this.deps.filesDS.bulkCreate(
+          input.attachments.map(
+            attachment =>
+              new Attachment({
+                id: this.idGenerator.generate(),
+                entity: entity.sharedId,
+                creationDate: date.currentUTC(),
+                filename: attachment.filename,
+                mimetype: attachment.metadata.mimetype,
+                originalname: attachment.metadata.originalname,
+                size: attachment.metadata.size,
+              })
+          )
+        );
+      }
     });
 
     return entity;

@@ -12,6 +12,7 @@ type GetDocumentsForEntityOptions = {
 
 interface FilesDataSource {
   create(file: UwaziFile): Promise<void>;
+  bulkCreate(files: UwaziFile[]): Promise<void>;
   update(file: UwaziFile): Promise<void>;
   getProcessingById(documentId: string): Promise<ResultType<Document, Error>>;
   deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
