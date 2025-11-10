@@ -75,27 +75,27 @@ const PDF = ({
     };
   }, [scrollToPage, pdf]);
 
-  // ResizeObserver to track container width changes with debouncing
   useEffect(() => {
     const container = pdfContainerRef.current;
-    if (!container) return;
 
-    // Set initial width
-    const initialWidth = container.offsetWidth - padding * 2; // Account for padding
+    if (!container) {
+      return undefined;
+    }
+
+    const initialWidth = container.offsetWidth - padding * 2;
     setContainerWidth(initialWidth);
 
     const resizeObserver = new ResizeObserver(entries => {
       const [entry] = entries;
       if (entry && entry.contentRect) {
-        // Debounce the resize updates
         if (resizeTimeoutRef.current) {
           clearTimeout(resizeTimeoutRef.current);
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = entry.contentRect.width - padding * 2; // Account for padding
+          const newWidth = entry.contentRect.width - padding * 2;
           setContainerWidth(newWidth);
-        }, 150); // 150ms debounce
+        }, 150);
       }
     });
 

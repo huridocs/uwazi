@@ -13,7 +13,6 @@ import * as helpers from '../functions/helpers';
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
 
-// Mock ResizeObserver
 class ResizeObserverMock {
   callback: ResizeObserverCallback;
 
@@ -193,7 +192,7 @@ describe('PDF', () => {
 
     beforeEach(() => {
       const OriginalResizeObserver = global.ResizeObserver;
-      global.ResizeObserver = jest.fn().mockImplementation(function(callback: ResizeObserverCallback) {
+      global.ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
         resizeObserverInstance = new (OriginalResizeObserver as any)(callback);
         return resizeObserverInstance;
       }) as any;
@@ -208,7 +207,6 @@ describe('PDF', () => {
         renderComponet();
       });
 
-      // Should observe the PDF container
       expect(resizeObserverInstance?.observe).toHaveBeenCalledTimes(1);
     });
 
@@ -219,7 +217,6 @@ describe('PDF', () => {
 
       cleanup();
 
-      // Should disconnect on unmount
       expect(resizeObserverInstance?.disconnect).toHaveBeenCalledTimes(1);
     });
   });

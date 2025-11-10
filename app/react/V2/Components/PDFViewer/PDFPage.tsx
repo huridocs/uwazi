@@ -24,7 +24,6 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   const pageViewerRef = useRef<any>(null);
   const pdfPageRef = useRef<any>(null);
 
-  // Initial setup - only runs once
   useEffect(() => {
     const currentContainer = pageContainerRef.current;
     let observer: IntersectionObserver;
@@ -96,7 +95,6 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update scale dynamically when containerWidth changes
   useEffect(() => {
     const pageViewer = pageViewerRef.current;
     const pdfPage = pdfPageRef.current;
@@ -109,14 +107,11 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
       containerWidth
     );
 
-    // Only update if scale actually changed
     if (Math.abs(pageViewer.scale - newScale) > 0.01) {
       setPdfScale(newScale);
 
-      // Update the viewer's scale
       pageViewer.update({ scale: newScale });
 
-      // If the page is already rendered, re-draw it at the new scale
       if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
         pageViewer.draw().catch((e: Error) => {
           setError(e.message);
