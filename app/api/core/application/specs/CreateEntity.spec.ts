@@ -17,6 +17,9 @@ import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaul
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { InputFile } from 'api/files.v2/model/InputFile';
+import { tenants } from 'api/tenants';
+import { PermissionType } from 'api/core/domain/entity/PermissionType';
+import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -355,6 +358,7 @@ describe('CreateEntityUseCase', () => {
       user: null,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
+      permissions: [],
       metadata: {
         text: [{ value: 'Some text' }],
         numeric: [{ value: 42 }],
@@ -496,5 +500,48 @@ describe('CreateEntityUseCase', () => {
     ]);
 
     expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
+  });
+
+  it('should add grant access when actor is present', async () => {
+    const { sut } = createSut({
+      context: {
+        actor: {
+          _id: factory.id('user1'),
+          username: 'username',
+          email: 'email@email.com',
+          role: 'collaborator',
+        },
+        tenant: tenants.current(),
+      },
+    });
+
+    const entity = await sut.execute({
+      templateId: factory.id('Document').toHexString(),
+      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
+      attachments: [],
+    });
+
+    const entities = await testingEnvironment.db
+      .getCollection('entities')
+      ?.find({ sharedId: entity.sharedId })
+      .toArray();
+
+    expect(entities?.map(e => e.user)).toEqual([factory.id('user1'), factory.id('user1')]);
+    expect(entities?.map(e => e.permissions)).toEqual([
+      [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+      [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+    ]);
   });
 });

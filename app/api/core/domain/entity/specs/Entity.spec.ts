@@ -19,6 +19,8 @@ import { NestedProperty } from '../../template/NestedProperty';
 import { V1RelationshipProperty } from '../../template/V1RelationshipProperty';
 import { EntityTranslation } from '../EntityTranslation';
 import { GenerateIdProperty } from '../../template/GenerateIdProperty';
+import { PermissionType } from '../PermissionType';
+import { AccessLevel } from '../AccessLevel';
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: 'template-123' })
@@ -122,7 +124,6 @@ describe('Entity', () => {
       {
         languages: ['en', 'fr', 'es'],
         template,
-        userId: 'user-456',
       },
       { generate: () => 'id-789' }
     );
@@ -143,6 +144,23 @@ describe('Entity', () => {
       es: { ...entityLanguage, language: 'es' },
       fr: { ...entityLanguage, language: 'fr' },
     });
+  });
+
+  it('should grant access for Entity creator when present', () => {
+    const template = createSampleTemplate();
+
+    const entity = Entity.create(
+      {
+        languages: ['en', 'fr', 'es'],
+        template,
+        userId: 'user-456',
+      },
+      { generate: () => 'id-789' }
+    );
+
+    expect(entity.permissions.accessGrants).toEqual([
+      { refId: 'user-456', type: PermissionType.User, level: AccessLevel.Write },
+    ]);
   });
 
   it('should sync values in all languages when no language is specified', () => {

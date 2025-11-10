@@ -16,6 +16,9 @@ import {
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
 import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
+import { AccessGrant, EntityPermission } from './EntityPermission';
+import { PermissionType } from './PermissionType';
+import { AccessLevel } from './AccessLevel';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -38,6 +41,7 @@ type Props = {
   published?: boolean;
   sharedId?: string;
   icon?: Icon;
+  permissions?: AccessGrant[];
 };
 
 class Entity {
@@ -53,6 +57,8 @@ class Entity {
 
   icon?: Icon;
 
+  permissions: EntityPermission;
+
   constructor(props: Props) {
     this.userId = props.userId;
     this.template = props.template;
@@ -60,6 +66,7 @@ class Entity {
 
     this.sharedId = props.sharedId || SharedId.create().value;
     this.published = props.published || false;
+    this.permissions = new EntityPermission(props.permissions);
 
     this.translations = this.createTranslations(props.translations);
   }
@@ -89,6 +96,10 @@ class Entity {
     }));
 
     const instance = new Entity({ userId, translations, template, icon });
+
+    if (userId) {
+      instance.addGrantForCreator(userId);
+    }
 
     return instance;
   }
@@ -135,6 +146,12 @@ class Entity {
         property.validatePropertyAssignment(pa);
       })
     );
+  }
+
+  addGrantForCreator(creatorId: string) {
+    this.permissions = new EntityPermission([
+      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
+    ]);
   }
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
