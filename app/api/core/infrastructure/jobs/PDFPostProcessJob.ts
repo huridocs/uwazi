@@ -8,6 +8,7 @@ import {
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
 import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/files.v2/model/errors';
+import { FileIsNotAPDF } from '../services/PDFService';
 
 type Params = UserAwareDispatchableParams & {
   documentId: string;
@@ -40,13 +41,18 @@ class PDFPostProcessJob extends UserAwareDispatchable<Params> {
         throw new NonRetryableJobError(e);
       }
 
-      if (e instanceof ProcessingFileFailed && jobInfo.maxRetries === jobInfo.retryCount) {
-        this.deps.wSockets.emitToTenant(
-          this.params.tenantName,
-          'conversionFailed',
-          e.file.entity,
-          FileMappers.toDTO(e.file)
-        );
+      if (e instanceof ProcessingFileFailed) {
+        if (jobInfo.maxRetries === jobInfo.retryCount || e.cause instanceof FileIsNotAPDF) {
+          this.deps.wSockets.emitToTenant(
+            this.params.tenantName,
+            'conversionFailed',
+            e.file.entity,
+            FileMappers.toDTO(e.file)
+          );
+        }
+        if (e.cause instanceof FileIsNotAPDF) {
+          throw new NonRetryableJobError(e);
+        }
       }
 
       throw e;
