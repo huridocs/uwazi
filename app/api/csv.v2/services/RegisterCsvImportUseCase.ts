@@ -18,32 +18,33 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
     const { originalname: originalFilename, mimetype: mimeType, size } = input.file.metadata;
     const templateId = input.template;
 
-    const importId = await this.transactionManager.run(async () => {
-      const id = this.idGenerator.generate();
-      const domain = CsvImportDomain.create({
-        id,
-        templateId,
-        file: { originalName: originalFilename, mimeType, size },
-        createdBy: input.userId,
-      });
-      await this.deps.csvImportsDS.insert(domain);
+    const id = this.idGenerator.generate();
+    const csvImport = CsvImportDomain.create({
+      id,
+      templateId,
+      file: { originalName: originalFilename, mimeType, size },
+      createdBy: input.userId,
+    });
 
-      const destination = `csv-imports/${id}`;
-      await this.deps.fileStorage.storeFile({
-        file: input.file.contents,
-        type: 'customPath',
-        destination,
-      });
+    const destination = `csv-imports/${id}`;
+    await this.deps.fileStorage.storeFile({
+      file: input.file.contents,
+      type: 'customPath',
+      destination,
+    });
 
-      const { filename } = input.file.contents;
-      const updated = CsvImportDomain.withStorage(domain, `${destination}/${filename}`);
-      await this.deps.csvImportsDS.update(updated);
+    const { filename } = input.file.contents;
+    const csvImportWithStorage = CsvImportDomain.withStorage(
+      csvImport,
+      `${destination}/${filename}`
+    );
 
-      return id;
+    await this.transactionManager.run(async () => {
+      await this.deps.csvImportsDS.insert(csvImportWithStorage);
     });
 
     return {
-      importId,
+      id,
       status: 'queued',
       message: 'Import registered and queued for processing.',
     };

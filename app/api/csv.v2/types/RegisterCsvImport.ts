@@ -7,7 +7,7 @@ export type RegisterCsvImportInput = {
 };
 
 export type RegisterCsvImportOutput = {
-  importId: string;
+  id: string;
   status: 'queued';
   message: string;
 };
