@@ -178,7 +178,13 @@ describe('Entity view', () => {
       const nextParams: any = { sharedId: 's1' };
       const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
       const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
-      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+      const result = shouldRevalidate({
+        currentParams,
+        nextParams,
+        currentUrl,
+        nextUrl,
+        defaultShouldRevalidate: true,
+      } as any);
       expect(result).toBe(false);
     });
 

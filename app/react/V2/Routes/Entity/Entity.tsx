@@ -57,11 +57,11 @@ const shouldRevalidate = ({
     return true;
   }
 
-  if (nextUrl.search === currentUrl.search && defaultShouldRevalidate) {
-    return true;
+  if (nextUrl.search !== currentUrl.search) {
+    return false;
   }
 
-  return false;
+  return defaultShouldRevalidate;
 };
 
 const entityLoader =
@@ -124,19 +124,23 @@ const Entity = () => {
   }, [searchParams]);
 
   const onMainTabChange = (selectedMainTab: string) => {
-    const next = new URLSearchParams(searchParams.toString());
-    next.set(MAIN_TAB_PARAM, selectedMainTab);
-    next.delete(SIDE_TAB_PARAM);
-    setSearchParams(next, { replace: true, preventScrollReset: true });
+    if (selectedMainTab !== activeMainTab) {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(MAIN_TAB_PARAM, selectedMainTab);
+      next.delete(SIDE_TAB_PARAM);
+      setSearchParams(next, { replace: true, preventScrollReset: true });
+    }
   };
 
   const onSideTabChange = (selectedSideTab: string) => {
-    const next = new URLSearchParams(searchParams.toString());
-    next.set(SIDE_TAB_PARAM, selectedSideTab);
-    if (!next.get(MAIN_TAB_PARAM)) {
-      next.set(MAIN_TAB_PARAM, activeMainTab);
+    if (selectedSideTab !== activeSideTab) {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, selectedSideTab);
+      if (!next.get(MAIN_TAB_PARAM)) {
+        next.set(MAIN_TAB_PARAM, activeMainTab);
+      }
+      setSearchParams(next, { replace: true, preventScrollReset: true });
     }
-    setSearchParams(next, { replace: true, preventScrollReset: true });
   };
 
   const sideTabsByMain: Record<
