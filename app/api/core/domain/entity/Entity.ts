@@ -133,6 +133,16 @@ class Entity {
     return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
+  addGrantForCreator(creatorId: string) {
+    this.permissions = new EntityPermission([
+      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
+    ]);
+  }
+
+  /**
+   * Partially updates the entity's property assignments and validates all of them.
+   * If targetLanguage is provided, only that language is updated; otherwise ALL translations are SYNCED.
+   */
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
     targetLanguage?: LanguageISO6391
@@ -141,17 +151,15 @@ class Entity {
       targetLanguage ? this.setValue(pa, targetLanguage) : this.setValueInAllLanguages(pa)
     );
 
+    this.validatePropertyAssignments();
+  }
+
+  private validatePropertyAssignments() {
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
         property.validatePropertyAssignment(pa);
       })
     );
-  }
-
-  addGrantForCreator(creatorId: string) {
-    this.permissions = new EntityPermission([
-      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
-    ]);
   }
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {

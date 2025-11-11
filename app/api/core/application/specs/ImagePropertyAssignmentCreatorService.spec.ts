@@ -102,7 +102,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     ]);
   });
 
-  it('should throw when an attachment index is missing (empty filename becomes invalid)', async () => {
+  it('should throw when an attachment index is missing', async () => {
     const { sut } = createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
@@ -119,7 +119,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
           value: [{ attachment: 5 }],
         },
       })
-    ).rejects.toThrow('Image Property must be a non-empty string.');
+    ).rejects.toThrow('Attachment with index 5 not found.');
   });
 
   it('throws if the property name does not exist in the template', async () => {

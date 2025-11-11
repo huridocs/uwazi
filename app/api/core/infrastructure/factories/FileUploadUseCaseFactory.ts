@@ -15,7 +15,6 @@ import { PDFPostProcessJob } from '../jobs/PDFPostProcessJob';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { PDFService } from '../services/PDFService';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
-import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
 
 class FileUploadUseCaseFactory {
   static default() {
@@ -24,11 +23,7 @@ class FileUploadUseCaseFactory {
     const filesDS = DefaultFilesDataSource(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant: tenants.current() }));
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(
-      db,
-      transactionManager,
-      TemplatesDataSourceFactory.default(transactionManager)
-    );
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(db, transactionManager);
 
     let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
       PDFPostProcessJob: async () =>

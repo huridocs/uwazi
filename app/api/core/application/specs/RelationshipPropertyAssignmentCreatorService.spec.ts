@@ -4,7 +4,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
@@ -375,12 +374,9 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-
   const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
     getConnection(),
-    transactionManager,
-    templatesDS
+    transactionManager
   );
 
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);

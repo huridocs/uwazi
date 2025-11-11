@@ -20,12 +20,22 @@ export class ImagePropertyAssignmentCreatorService implements PropertyAssignment
 
     const createdAssignments: PropertyAssignment[] = [];
 
-    const mapped = propertyAssignment.value.map(inputValue => ({
-      value:
-        'attachment' in inputValue
-          ? attachments?.[inputValue.attachment]?.filename || ''
-          : inputValue.value,
-    }));
+    const mapped = propertyAssignment.value.map(inputValue => {
+      if ('attachment' in inputValue) {
+        const attachment = attachments?.[inputValue.attachment];
+        if (!attachment) {
+          throw new Error(`Attachment with index ${inputValue.attachment} not found.`);
+        }
+
+        return {
+          value: attachment.filename,
+        };
+      }
+
+      return {
+        value: inputValue.value,
+      };
+    });
 
     createdAssignments.push(property.createPropertyAssignment({ value: mapped }));
 

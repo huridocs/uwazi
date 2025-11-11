@@ -200,8 +200,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
     getConnection(),
-    transactionManager,
-    templatesDS
+    transactionManager
   );
 
   const filesDS = DefaultFilesDataSource(transactionManager);
