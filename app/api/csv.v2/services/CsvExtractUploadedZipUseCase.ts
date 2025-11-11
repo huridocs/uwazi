@@ -77,7 +77,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     await this.deps.fileStorage.storeFile({
       file,
       type: 'customPath',
-      destination: `${path.dirname(originalDestination)}/extracted`,
+      destination: `${originalDestination}/extracted`,
     });
   }
 
@@ -96,7 +96,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     const disk = await (await zipFileContents.toDisk()).getFullPath();
     const zipPath = disk.getDataOrThrow();
 
-    const extractedDestination = `${path.dirname(zipDestination)}/extracted`;
+    const extractedDestination = `${zipDestination}/extracted`;
     let hasImportCsv = false;
     let processedFiles = 0;
 
