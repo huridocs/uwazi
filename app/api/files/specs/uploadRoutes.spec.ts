@@ -56,6 +56,20 @@ describe('upload routes', () => {
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
+  describe('POST /files/upload/documents V2 only', () => {
+    it('should throw error if entity does not exist', async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { v2UploadFile: true },
+      });
+      const response = await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'non_existent_shared_id')
+        .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
+
+      expect(response).toHaveStatus(422);
+    });
+  });
+
   describe.each([
     { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
     { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
