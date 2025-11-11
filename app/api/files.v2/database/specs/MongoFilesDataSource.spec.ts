@@ -6,7 +6,6 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
-import { inspect } from 'util';
 
 const factory = getFixturesFactory();
 

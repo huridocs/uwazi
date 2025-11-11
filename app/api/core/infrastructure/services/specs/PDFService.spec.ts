@@ -7,7 +7,6 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { Result } from 'api/core/libs/Result';
 import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
 import { FileContents } from 'api/files.v2/model/FileContents';
-import { legacyLogger } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createHash } from 'crypto';
 import { tmpdir } from 'os';
