@@ -6,6 +6,7 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
+import { inspect } from 'util';
 
 const factory = getFixturesFactory();
 
@@ -75,12 +76,12 @@ describe('MongoFilesDataSource', () => {
     it('should update and reindex related entity if file type is "processedDocument"', async () => {
       const transactionManager = TransactionManagerFactory.default();
       const ds = new MongoFilesDataSource(getConnection(), transactionManager);
-      const processed = (
+      const processingDoc = (
         await ds.getProcessingById(factory.idString('anotherProcessingDoc'))
       ).getDataOrThrow();
       await transactionManager.run(async () => {
         await ds.update(
-          ProcessedDocument.fromDocument(processed, {
+          ProcessedDocument.fromDocument(processingDoc, {
             language: 'en',
             totalPages: 10,
             fullText: { 1: 'processed document' },
@@ -92,6 +93,22 @@ describe('MongoFilesDataSource', () => {
       expect((await elasticTesting.getIndexedFullTextFromFiles())[0].fullText_english).toBe(
         'processed document'
       );
+    });
+
+    it('should update and reindex related entity if file type is "Document"', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const processingDoc = (
+        await ds.getProcessingById(factory.idString('anotherProcessingDoc'))
+      ).getDataOrThrow();
+      await transactionManager.run(async () => {
+        processingDoc.failed();
+        await ds.update(processingDoc);
+      });
+
+      await elasticTesting.refresh();
+      //@ts-ignore
+      expect((await elasticTesting.getIndexedEntities())[0].documents[0].status).toBe('failed');
     });
   });
   describe('create', () => {
@@ -120,6 +137,29 @@ describe('MongoFilesDataSource', () => {
       expect((await elasticTesting.getIndexedFullTextFromFiles())[0].fullText_english).toBe(
         'fullText'
       );
+    });
+    it('should reindex related entity if file type is "Document"', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      await transactionManager.run(async () => {
+        await ds.create(
+          new Document({
+            status: 'failed',
+            id: factory.idString('new document'),
+            entity: 'entity_to_reindex',
+            originalname: 'file.pdf',
+            mimetype: 'application/pdf',
+            size: 1,
+            filename: 'file.pdf',
+            creationDate: 0,
+            uploaded: true,
+          })
+        );
+      });
+
+      await elasticTesting.refresh();
+      //@ts-ignore
+      expect((await elasticTesting.getIndexedEntities())[1].documents[0].status).toBe('failed');
     });
   });
 
