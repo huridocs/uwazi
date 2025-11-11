@@ -103,6 +103,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Add request validation (file present, `templateId` valid, size/type constraints).
 - Basic error handling and consistent API responses.
 - Unit/integration tests for route + persistence + storage handoff.
+- Enqueue next-step jobs after commit: use `transactionManager.onCommitted` to dispatch processing/extraction jobs only if the insert/update transaction succeeds. Define job payload to include tenant and `importId`.
 
 ### Implementation progress (current status)
 
@@ -163,9 +164,14 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Persist `_id` in DB; map `_id ↔ id` on reads/writes; keep domain free of DB specifics.
   - Name DS instances `xxxDS` (e.g., `csvImportsDS`) and expose a `DefaultXxxDataSource()` factory.
 - Transactions.
-  - Wrap multi-step flows in `transactionManager.run(async () => { ... })`.
-  - Create domain → `csvImportsDS.insert` → `fileStorage.storeFile` → `csvImportsDS.setStorage` inside the transaction.
-  - If storage fails, the transaction throws and DB does not commit; at worst a stored file is orphaned, never a broken DB reference.
+  - Wrap DB writes in `transactionManager.run(async () => { ... })`.
+  - Preferred flow now that IDs are generated up front:
+    - Use case generates `id` and builds domain (`CsvImportDomain.create`) outside the transaction.
+    - Perform `fileStorage.storeFile` outside the transaction.
+    - Then run a transaction: `csvImportsDS.insert(domain)` → domain mutation (e.g., `withStorage`) → `csvImportsDS.update(...)`.
+  - Rationale:
+    - If storage fails, we never start the transaction; no DB writes occur.
+    - If DB transaction fails, we may orphan a stored file, but we never have DB pointing to a missing asset (priority: DB integrity).
   - Returning values from `run` is expected; on failure it throws, on success it resolves to the callback’s return.
 - Transactions and Data Sources (critical):
   - All DSs MUST be transaction-aware. Extend `MongoDataSource` and use `this.getCollection()` for all Mongo calls so the active session from `transactionManager.run` is used.
