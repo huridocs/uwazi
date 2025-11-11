@@ -7,6 +7,7 @@ import { Thumbnail } from 'api/files.v2/model/Thumbnail';
 import date from 'api/utils/date';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
+import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
 
 type Input = {
   documentId: string;
@@ -65,9 +66,11 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
 
       return processedDoc;
     } catch (e) {
-      if (!retriesLeft) {
-        document.failed();
-        await this.deps.filesDS.update(document);
+      if (!retriesLeft || e instanceof FileIsNotAPDF) {
+        await this.transactionManager.run(async () => {
+          document.failed();
+          await this.deps.filesDS.update(document);
+        });
       }
       throw new ProcessingFileFailed(document, e);
     }
