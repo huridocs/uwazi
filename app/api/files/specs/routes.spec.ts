@@ -272,15 +272,17 @@ describe('files routes', () => {
     });
 
     it('should delete upload and return the response', async () => {
-      await request(app)
-        .post('/api/files/upload/document')
-        .attach('file', path.join(__dirname, 'test.txt'));
+      await socketEmit('conversionFailed', async () =>
+        request(app)
+          .post('/api/files/upload/document')
+          .attach('file', path.join(__dirname, 'test.txt'))
+      );
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
-      expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
+      expect(await storage.fileExists(file.filename!, 'document')).toBe(false);
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {

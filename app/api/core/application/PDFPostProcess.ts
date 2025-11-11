@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { ProcessingFileFailed } from 'api/files.v2/model/errors';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { Thumbnail } from 'api/files.v2/model/Thumbnail';
 import date from 'api/utils/date';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
-import { ProcessingFileFailed } from 'api/files.v2/model/errors';
 
 type Input = {
   documentId: string;
@@ -69,7 +69,7 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
         document.failed();
         await this.deps.filesDS.update(document);
       }
-      throw new ProcessingFileFailed(document);
+      throw new ProcessingFileFailed(document, e);
     }
   }
 }

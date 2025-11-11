@@ -89,7 +89,7 @@ describe('PDFPostProcessJob', () => {
     );
   });
 
-  describe('on Error (when not all retries exausted)', () => {
+  describe('on Error (when not all retries exhausted)', () => {
     it('should maintain the status on "processing"', async () => {
       const { job } = setUpJob(
         TestUtils.mockClass<PDFService>({
