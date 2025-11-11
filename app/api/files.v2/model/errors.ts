@@ -10,8 +10,14 @@ export class ProcessingFileNotFound extends DomainError {
 export class ProcessingFileFailed extends DomainError {
   readonly file: Document;
 
-  constructor(file: Document) {
-    super(`Failed PostProcess for file with Id "${file.id}"`, 'file.post_proces_failed');
+  constructor(file: Document, cause: Error) {
+    super(`Failed PostProcess for file with Id "${file.id}"`, 'file.post_proces_failed', cause);
     this.file = file;
+  }
+}
+
+export class FileContentError extends DomainError {
+  constructor(message: string, cause?: Error) {
+    super(message, 'file.contents.error', cause);
   }
 }
