@@ -21,6 +21,7 @@ import { FileMappers } from './FilesMappers';
 import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
 import { ProcessingFileNotFound } from '../model/errors';
+import { BaseDocument } from '../model/BaseDocument';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -65,14 +66,14 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       { _id: new ObjectId(file.id) },
       { $set: FileMappers.toDBO(file) }
     );
-    if (file instanceof ProcessedDocument) {
+    if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
   }
 
   async create(file: UwaziFile): Promise<void> {
     await this.getCollection().insertOne(FileMappers.toDBO(file));
-    if (file instanceof ProcessedDocument) {
+    if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
   }
