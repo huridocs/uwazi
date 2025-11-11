@@ -1,13 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { t, Translate } from 'app/I18N';
-import { PDF, PlainText } from 'V2/Components/PDFViewer';
 import { Entity } from 'V2/domain';
+import { getPagePlaintext } from 'V2/api/files';
+import { PDF } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { Truncate } from 'V2/Components/UI';
+import { PlainText } from './PlainText';
 
 const PDFView = ({ entity }: { entity: Entity }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [pageText, setPageText] = useState('');
+
+  const isRaw = searchParams.get('raw') === 'true';
+  const pageParam = searchParams.get('page') || undefined;
 
   const onSelect = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -23,14 +29,21 @@ const PDFView = ({ entity }: { entity: Entity }) => {
     [searchParams, setSearchParams]
   );
 
+  useEffect(() => {
+    if (isRaw && entity.mainDocument) {
+      getPagePlaintext(entity.mainDocument._id as string, Number.parseInt(pageParam || '1', 10))
+        .then(text => setPageText(text))
+        .catch(_e => {
+          setPageText('');
+        });
+    }
+  }, [entity.mainDocument, isRaw, pageParam]);
+
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
   }
 
   const { filename, originalname } = entity.mainDocument;
-
-  const isRaw = searchParams.get('raw') === 'true';
-  const pageParam = searchParams.get('page') || undefined;
 
   return (
     <div className="flex flex-col h-full gap-2 min-h-0">
@@ -66,7 +79,7 @@ const PDFView = ({ entity }: { entity: Entity }) => {
         <PDF fileUrl={`/api/files/${filename}`} scrollToPage={pageParam} />
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
-        <PlainText file={entity.mainDocument} page={pageParam} />
+        <PlainText text={pageText} />
       </div>
       <div>footer</div>
     </div>

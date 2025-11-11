@@ -47,5 +47,15 @@ const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseErr
   }
 };
 
+const getPagePlaintext = async (_id: string, page: number, header?: IncomingHttpHeaders) => {
+  try {
+    const requestParams = new RequestParams({ _id, page }, header);
+    const response = await api.get('documents/page', requestParams);
+    return response.json.data;
+  } catch (e) {
+    return e;
+  }
+};
+
 export { UploadService } from './UploadService';
-export { getById, getByType, update, remove };
+export { getById, getByType, update, remove, getPagePlaintext };

@@ -5,4 +5,3 @@ const PDF = loadable(async () => import(/* webpackChunkName: "LazyLoadPDF" */ '.
 
 export { PDF, selectionHandlers };
 export { calculateScaling } from './functions/calculateScaling';
-export { PlainText } from './PlainText';
