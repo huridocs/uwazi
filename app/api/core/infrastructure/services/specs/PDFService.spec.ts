@@ -3,7 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createHash } from 'crypto';
 import { FileContents } from 'api/files.v2/model/FileContents';
 // eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile } from 'fs/promises';
 import { tmpdir } from 'os';
@@ -27,17 +27,32 @@ describe('PDFService', () => {
   });
 
   describe('extractText', () => {
-    it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
-      const testFile = new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf'));
-      const conversion = (await pdf.extractText(testFile)).getDataOrThrow();
+    it.each([
+      {
+        case: 'Path',
+        testFile: new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+      },
+      {
+        case: 'Readable',
+        testFile: new FileContents({
+          filename: '12345.test.pdf',
+          readableCallback: async () =>
+            createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+        }),
+      },
+    ])(
+      'should extract text indexed per page, with apended page in every word for elastic search purposes ($case)',
+      async ({ testFile }) => {
+        const conversion = (await pdf.extractText(testFile)).getDataOrThrow();
 
-      expect(conversion.pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
-      expect(conversion.pages['2'].includes('Page[[2]] 2[[2]]')).toBeTruthy();
-      expect(conversion.pages['3'].includes('Page[[3]] 3[[3]]')).toBeTruthy();
+        expect(conversion.pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
+        expect(conversion.pages['2'].includes('Page[[2]] 2[[2]]')).toBeTruthy();
+        expect(conversion.pages['3'].includes('Page[[3]] 3[[3]]')).toBeTruthy();
 
-      expect(conversion.totalPages).toBe(11);
-      expect(conversion.language).toMatchObject({ key: 'en' });
-    });
+        expect(conversion.totalPages).toBe(11);
+        expect(conversion.language).toMatchObject({ key: 'en' });
+      }
+    );
 
     it('should throw error with proper error message pdf is invalid or malformed', async () => {
       const invalidFile = new FileContents(
@@ -53,9 +68,20 @@ describe('PDFService', () => {
   });
 
   describe('createThumbnail', () => {
-    it('should create thumbnail', async () => {
-      const testFile = new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf'));
-
+    it.each([
+      {
+        case: 'Path',
+        testFile: new FileContents(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+      },
+      {
+        case: 'Readable',
+        testFile: new FileContents({
+          filename: '12345.test.pdf',
+          readableCallback: async () =>
+            createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+        }),
+      },
+    ])('should create thumbnail ($case)', async ({ testFile }) => {
       const thumbnail = (await pdf.createThumbnail(testFile)).getDataOrThrow();
       expect(thumbnail).toBeInstanceOf(FileContents);
 
