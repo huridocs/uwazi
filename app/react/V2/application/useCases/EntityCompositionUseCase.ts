@@ -68,7 +68,6 @@ export class EntityCompositionUseCase {
         {
           sharedId: entityId,
           language: this.atomStore.get(localeAtom) || 'en',
-          documentsFullText: options.includeSupportingFiles,
         },
         context.headers || {}
       );

@@ -68,15 +68,6 @@ describe('entities routes', () => {
         ]);
       });
     });
-
-    it('should return documents with fullText when requested', async () => {
-      const response: SuperTestResponse = await request(app)
-        .get('/api/entities')
-        .query({ sharedId: 'shared', documentsFullText: true });
-
-      expect(response.status).toBe(200);
-      expect(response.body.rows[0].documents[0].fullText).toBeDefined();
-    });
   });
 
   describe('POST', () => {
