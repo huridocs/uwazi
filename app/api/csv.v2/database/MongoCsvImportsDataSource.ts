@@ -11,19 +11,19 @@ export class MongoCsvImportsDataSource
 {
   protected collectionName = 'csv_imports';
 
-  async insert(doc: CsvImport): Promise<void> {
+  async insert(doc: CsvImport) {
     const { id, ...rest } = doc;
     const dbo: CsvImportDBO = CsvImportMapper.toDBO(rest as Omit<CsvImport, 'id'>);
     await this.getCollection().insertOne({ ...dbo, _id: new ObjectId(id) });
   }
 
-  async update(doc: CsvImport): Promise<void> {
+  async update(doc: CsvImport) {
     const { id, ...rest } = doc;
     const dbo: CsvImportDBO = CsvImportMapper.toDBO(rest as Omit<CsvImport, 'id'>);
     await this.getCollection().updateOne({ _id: new ObjectId(id) }, { $set: dbo });
   }
 
-  async getById(id: string): Promise<CsvImport | undefined> {
+  async getById(id: string) {
     const result = await this.getCollection().findOne({ _id: new ObjectId(id) });
     if (!result) return undefined;
     const { _id, ...rest } = result;
