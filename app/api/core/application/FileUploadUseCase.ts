@@ -9,6 +9,7 @@ import { fileDBO } from 'api/files.v2/database/schemas/filesTypes';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { AbstractUseCase } from '../libs/UseCase';
+import { AJVObject, ValidationError } from '../domain/error/ValidationError';
 
 type Input = {
   uploadedFile: InputFile;
@@ -23,8 +24,25 @@ type Deps = {
   entitiesDS: MultiLanguageEntityDataSource;
 };
 
+class EntityNotFoundError extends ValidationError {
+  constructor(sharedId: string) {
+    super(`Entity not found: [sharedId=${sharedId}]`, 'entity.entity_not_found');
+  }
+
+  asAJV(): AJVObject {
+    return {
+      message: this.message,
+      keyword: 'notFound',
+    };
+  }
+}
+
 class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync({ entityId, uploadedFile }: Input): Promise<Output> {
+    const entity = await (await this.deps.entitiesDS.getEntitiesBySharedIds([entityId])).first();
+    if (!entity) {
+      throw new EntityNotFoundError(`Entity ${entityId}, not found`);
+    }
     const document = new Document({
       id: this.idGenerator.generate(),
       entity: entityId,
@@ -53,4 +71,4 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { FileUploadUseCase };
+export { FileUploadUseCase, EntityNotFoundError };
