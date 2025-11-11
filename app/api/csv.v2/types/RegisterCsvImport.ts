@@ -4,6 +4,7 @@ export type RegisterCsvImportInput = {
   template: string;
   file: InputFile;
   userId: string;
+  sessionId?: string;
 };
 
 export type RegisterCsvImportOutput = {

@@ -2,6 +2,7 @@ export type CsvImportStatus =
   | 'queued'
   | 'validating'
   | 'extracting files'
+  | 'files extracted'
   | 'processing'
   | 'completed'
   | 'failed'
@@ -65,6 +66,14 @@ export class CsvImportDomain {
     return {
       ...csvImport,
       storage: { path },
+      updatedAt: Date.now(),
+    };
+  }
+
+  static withStatus(csvImport: CsvImport, status: CsvImportStatus): CsvImport {
+    return {
+      ...csvImport,
+      status,
       updatedAt: Date.now(),
     };
   }

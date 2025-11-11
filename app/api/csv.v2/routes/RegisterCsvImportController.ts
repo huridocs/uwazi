@@ -1,3 +1,4 @@
+import * as cookie from 'cookie';
 import { z } from 'zod';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { InputFile } from 'api/files.v2/model/InputFile';
@@ -20,11 +21,21 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
       return;
     }
 
+    let sessionId: string | undefined;
+    try {
+      const cookieHeader = this.request.get('cookie') || '';
+      const parsed = cookie.parse(cookieHeader);
+      sessionId = parsed['connect.sid'];
+    } catch {
+      // ignore cookie parsing errors
+    }
+
     const useCase = RegisterCsvImportUseCaseFactory();
     const response = await useCase.execute({
       template,
       file: new InputFile(this.request.file),
       userId: userId.toString(),
+      sessionId,
     });
     this.jsonResponse(response);
   }

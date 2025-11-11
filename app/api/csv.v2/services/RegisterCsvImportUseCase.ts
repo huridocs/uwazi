@@ -1,12 +1,16 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { tenants } from 'api/tenants/tenantContext';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportDomain } from '../model/CsvImport';
 import { RegisterCsvImportInput, RegisterCsvImportOutput } from '../types/RegisterCsvImport';
+import { CsvExtractUploadedZipJob } from '../jobs/CsvExtractUploadedZipJob';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
   fileStorage: FileStorage;
+  jobsDispatcher: JobsDispatcher;
 };
 
 export class RegisterCsvImportUseCase extends AbstractUseCase<
@@ -38,6 +42,15 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
       csvImport,
       `${destination}/${filename}`
     );
+
+    this.transactionManager.onCommitted(async () => {
+      await this.deps.jobsDispatcher.dispatch(CsvExtractUploadedZipJob, {
+        tenantName: tenants.current().name,
+        userId: input.userId,
+        importId: id,
+        sessionId: input.sessionId,
+      });
+    });
 
     await this.transactionManager.run(async () => {
       await this.deps.csvImportsDS.insert(csvImportWithStorage);
