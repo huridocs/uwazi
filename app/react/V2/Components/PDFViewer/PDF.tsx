@@ -32,7 +32,7 @@ const getPDFFile = async (fileUrl: string) =>
 const PDF = ({
   fileUrl,
   highlights,
-  onSelect = () => {},
+  onSelect = () => undefined,
   onDeselect,
   scrollToPage,
   size,
@@ -42,7 +42,7 @@ const PDF = ({
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
-  const resizeTimeoutRef = useRef<NodeJS.Timeout>();
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const padding = 10;
   const containerStyles = {
@@ -82,7 +82,11 @@ const PDF = ({
       return undefined;
     }
 
-    const initialWidth = container.offsetWidth - padding * 2;
+    const initialWidth = Math.max(
+      0,
+      (container.clientWidth || container.offsetWidth) - padding * 2
+    );
+
     setContainerWidth(initialWidth);
 
     const resizeObserver = new ResizeObserver(entries => {
@@ -93,7 +97,7 @@ const PDF = ({
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = entry.contentRect.width - padding * 2;
+          const newWidth = Math.max(0, entry.contentRect.width - padding * 2);
           setContainerWidth(newWidth);
         }, 150);
       }
@@ -104,6 +108,7 @@ const PDF = ({
     return () => {
       if (resizeTimeoutRef.current) {
         clearTimeout(resizeTimeoutRef.current);
+        resizeTimeoutRef.current = null;
       }
       resizeObserver.disconnect();
     };
