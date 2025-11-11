@@ -16,7 +16,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
-import { createError, handleError, validation } from '../utils';
+import { createError, validation } from '../utils';
 import { files } from './files';
 import { generateFileName } from './filesystem';
 import { storage } from './storage';
