@@ -17,8 +17,9 @@ class PDFServiceAdapter implements PDFService {
   }
 
   async extractText(file: FileContents) {
+    const diskFile = await file.toDisk();
     const commandResult = await this.shell.execute('pdftotext', [
-      file.getFullPath().getDataOrThrow(),
+      diskFile.getFullPath().getDataOrThrow(),
       '-',
     ]);
     if (commandResult.isError()) {
@@ -44,6 +45,7 @@ class PDFServiceAdapter implements PDFService {
     const thumbFileName = `thumbnail_${Date.now()}_${Math.random()}`;
     const thumbnailPath = path.join(os.tmpdir(), thumbFileName);
 
+    const diskFile = await file.toDisk();
     const commandResult = await this.shell.execute('pdftoppm', [
       '-f',
       '1',
@@ -51,7 +53,7 @@ class PDFServiceAdapter implements PDFService {
       '-scale-to',
       '320',
       '-jpeg',
-      file.getFullPath().getDataOrThrow(),
+      diskFile.getFullPath().getDataOrThrow(),
       thumbnailPath,
     ]);
 

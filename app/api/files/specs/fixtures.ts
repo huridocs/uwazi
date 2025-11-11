@@ -14,7 +14,7 @@ const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
 const readOnlyUploadId = db.id();
 const customFileId = db.id();
-const allowedPublicTemplate = fixturesFactory.id('template');
+const allowedPublicTemplate = fixturesFactory.id('allowedPublicTemplate');
 const importTemplate = db.id('507f1f77bcf86cd799439011');
 const thesaurusId = db.id('507f1f77bcf86cd799439012');
 const writerUserId = db.id();
@@ -157,6 +157,7 @@ const fixtures: DBFixture = {
       title: 'Gadgets 01 ES',
       generatedToc: true,
       template: allowedPublicTemplate,
+      metadata: {},
     },
     {
       _id: entityEnId,
@@ -164,6 +165,7 @@ const fixtures: DBFixture = {
       sharedId: 'sharedId1',
       language: 'en',
       title: 'Gadgets 01 EN',
+      metadata: {},
     },
     {
       _id: restrictedEntityId,
@@ -197,7 +199,10 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    { _id: allowedPublicTemplate, default: true, name: 'mydoc', properties: [] },
+    fixturesFactory.template('allowedPublicTemplate', [], {
+      default: true,
+      name: 'mydoc',
+    }),
     {
       _id: importTemplate,
       default: true,
@@ -283,24 +288,24 @@ const fixtures: DBFixture = {
 };
 
 export {
+  adminUser,
   allowedPublicTemplate,
-  fixtures,
-  entityId,
-  entityEnId,
-  fileName1,
-  restrictedFileName,
-  customPdfFileName,
-  uploadId,
-  uploadId2,
+  collabUser,
   customFileId,
+  customPdfFileName,
+  entityEnId,
+  entityId,
+  externalUrlFileId,
+  fileName1,
+  fileOnPublicEntity,
+  fixtures,
+  importTemplate,
+  readOnlyUploadId,
+  restrictedFileName,
   restrictedUploadId,
   restrictedUploadId2,
-  readOnlyUploadId,
   allowedPublicTemplate as templateId,
-  importTemplate,
-  collabUser,
-  adminUser,
+  uploadId,
+  uploadId2,
   writerUser,
-  externalUrlFileId,
-  fileOnPublicEntity,
 };

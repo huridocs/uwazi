@@ -22,6 +22,7 @@ import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
 import { initSentry } from './initSentry';
 import { registerJobs } from './queueRegistry';
+import { inspect } from 'util';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -62,7 +63,7 @@ function register<T extends Dispatchable>(
 
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
-  logger[prettyError.logLevel](prettyError.message, { job: context?.job });
+  logger[prettyError.logLevel](inspect(error), { job: context?.job });
   if (prettyError.logLevel === 'error') {
     Sentry.withScope(scope => {
       if (context?.job) {

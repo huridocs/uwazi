@@ -314,6 +314,20 @@ describe('sockets', () => {
     });
   });
 
+  describe('conversionFailed', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
+
+    it('should dispatch the documentProcessed action', () => {
+      jest.spyOn(uploadActions, 'documentProcessed').mockImplementationOnce(() => {});
+      socket._callbacks.$conversionFailed[0]('entitySharedId');
+      expect(uploadActions.documentProcessed).toHaveBeenCalledWith('entitySharedId', 'library');
+    });
+  });
+
   describe('documentProcessed', () => {
     beforeEach(() => {
       spyOn(store, 'dispatch').and.callFake(argument =>

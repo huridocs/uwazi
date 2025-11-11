@@ -205,7 +205,7 @@ describe('S3FileStorage', () => {
         },
         {
           Body: 'customPathFile',
-          Key: 'test-tenant/my/custom/path/customPathFile.txt',
+          Key: 'test-tenant/documents/my/custom/path/customPathFile.txt',
           destination: 'my/custom/path',
           type: 'customPath',
           filename: 'customPathFile.txt',
@@ -301,7 +301,7 @@ describe('S3FileStorage', () => {
         const s3File = await s3Client.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'test-tenant/custom_path/deep/documento.txt',
+            Key: 'test-tenant/documents/custom_path/deep/documento.txt',
           })
         );
         expect(await toString(s3File)).toBe('content created\n');
