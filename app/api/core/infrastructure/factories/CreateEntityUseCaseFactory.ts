@@ -7,6 +7,8 @@ import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStor
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
@@ -25,17 +27,20 @@ class CreateEntityUseCaseFactory {
       transactionManager
     );
 
-    const useCase = new CreateEntityUseCase({
-      idGenerator,
-      templatesDS,
-      thesauriDS,
-      settingsDS,
-      transactionManager,
-      filesDS,
-      filesStorage,
-      multiLanguageEntityDS,
-      translationsDS,
-    });
+    const useCase = new CreateEntityUseCase(
+      {
+        idGenerator,
+        templatesDS,
+        thesauriDS,
+        settingsDS,
+        transactionManager,
+        filesDS,
+        filesStorage,
+        multiLanguageEntityDS,
+        translationsDS,
+      },
+      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+    );
 
     return useCase;
   }
