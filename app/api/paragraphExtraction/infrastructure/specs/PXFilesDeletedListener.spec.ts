@@ -30,23 +30,27 @@ const documentPt = factory.document('document_1', {
   language: 'pt',
   entity: entity.sharedId,
   creationDate: 1,
+  status: 'ready',
 });
 
 const documentEn = factory.document('document_2', {
   language: 'en',
   entity: entity.sharedId,
   creationDate: 2,
+  status: 'ready',
 });
 
 const documentEs = factory.document('invalid_document', {
   language: 'es',
   entity: entity.sharedId,
   creationDate: 3,
+  status: 'ready',
 });
 
 const customFile = factory.custom_upload('invalid_custom_file', {
   entity: entity.sharedId,
   creationDate: 4,
+  status: 'ready',
 });
 
 const createFixtures = (): DBFixture => ({

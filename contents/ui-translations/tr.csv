@@ -78,6 +78,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -267,7 +268,6 @@ Drag row,Drag row
 Drop your files here to upload or,Dosyalarınızı yüklemek için buraya bırakın veya
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Mükerrer e-posta
-Duplicated label,Mükerrer etiket
 Duplicated name,Mükerrer ad
 Duplicated username,Mükerrer kullanıcı adı
 Edit,Düzenle
@@ -413,6 +413,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,geçersiz form
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Ayrıca uygulamayı çok kolay bozabilir. Buraya sadece tam olarak ne yaptığınızı biliyorsanız kod yazın.
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Öğeler:
 Javascript,Javascript
@@ -937,6 +938,7 @@ Two-step verification,İki faktörlü doğrulama
 Two-step verification token required,Two-step verification token required
 Type,Tür
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Yetkisiz
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language

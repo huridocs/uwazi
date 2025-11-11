@@ -7,12 +7,13 @@ import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { LegacyPageService } from '../mongodb/page/LegacyPageService';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
 class CreateTemplateUseCaseFactory {
   static create() {
     const transactionManager = TransactionManagerFactory.default();
+    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const thesauriDS = new MongoThesauriDataSource();
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();

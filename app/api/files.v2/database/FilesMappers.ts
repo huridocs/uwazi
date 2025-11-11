@@ -7,6 +7,7 @@ import { Thumbnail } from '../model/Thumbnail';
 import { URLAttachment } from '../model/URLAttachment';
 import { UwaziFile } from '../model/UwaziFile';
 import { fileDBO } from './schemas/filesTypes';
+import { ProcessedDocument } from '../model/ProcessedDocument';
 
 export const FileMappers = {
   toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO): R {
@@ -58,8 +59,8 @@ export const FileMappers = {
       }) as R;
     }
 
-    if (dbo.type === 'document') {
-      return new Document({
+    if (dbo.type === 'document' && dbo.status === 'ready') {
+      return new ProcessedDocument({
         id: dbo._id.toString(),
         entity: dbo.entity,
         originalname: dbo.originalname,
@@ -69,6 +70,18 @@ export const FileMappers = {
         creationDate: dbo.creationDate,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
         totalPages: dbo.totalPages,
+        fullText: dbo.fullText || {},
+      }) as R;
+    }
+    if (dbo.type === 'document') {
+      return new Document({
+        id: dbo._id.toString(),
+        entity: dbo.entity,
+        originalname: dbo.originalname,
+        filename: dbo.filename,
+        mimetype: dbo.mimetype,
+        size: dbo.size,
+        creationDate: dbo.creationDate,
         status: dbo.status,
       }) as R;
     }
@@ -85,15 +98,24 @@ export const FileMappers = {
       creationDate: file.creationDate,
     };
 
-    if (file instanceof Document) {
+    if (file instanceof ProcessedDocument) {
       return {
         ...baseDBO,
         entity: file.entity,
         type: 'document',
         totalPages: file.totalPages,
         language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
-        status: file.status,
+        status: 'ready',
         fullText: file.fullText,
+      };
+    }
+
+    if (file instanceof Document) {
+      return {
+        ...baseDBO,
+        entity: file.entity,
+        type: 'document',
+        status: file.status,
       };
     }
 

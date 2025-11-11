@@ -4,6 +4,7 @@ import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/Te
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
 
@@ -18,8 +19,8 @@ describe('SelectPropertyCreatorService', () => {
 
   it('should throw if Thesaurus does not exist', async () => {
     const sut = new SelectPropertyCreatorService({
+      thesauriDS: new MongoThesauriDataSource(getConnection(), TransactionManagerFactory.default()),
       templatesDS: TemplatesDataSourceFactory.default(TransactionManagerFactory.default()),
-      thesauriDS: new MongoThesauriDataSource(),
     });
 
     await expect(

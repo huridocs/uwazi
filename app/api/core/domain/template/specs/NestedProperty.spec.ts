@@ -24,4 +24,39 @@ describe('NestedProperty', () => {
 
     expect(nestedProperty.name).toBe('a_label_2_nested');
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should allow empty value when not required', () => {
+      const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
+
+      const assignment = nested.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({ name: nested.name, type: nested.type, value: [] });
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const nested = new NestedProperty({
+        id: 'any_id',
+        label: 'A label',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() => nested.createPropertyAssignment({ value: [] })).toThrow(
+        'Nested Property is required'
+      );
+    });
+
+    it('should clean empty entries before validation', () => {
+      const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
+
+      const assignment = nested.createPropertyAssignment({ value: [{ value: null as any }] });
+
+      expect(assignment).toEqual({
+        name: nested.name,
+        type: nested.type,
+        value: [{ value: null }],
+      });
+    });
+  });
 });

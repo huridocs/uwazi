@@ -12,6 +12,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
 import { PropertyTypeEnum } from 'api/core/domain/template/PropertyType';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
@@ -26,7 +27,7 @@ const createSut = () => {
   const sut = new CreateTemplateUseCase({
     templatesDS,
     idGenerator,
-    thesauriDS: new MongoThesauriDataSource(),
+    thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
     settingsDS,
     translationService,
     relationshipTypesDS,

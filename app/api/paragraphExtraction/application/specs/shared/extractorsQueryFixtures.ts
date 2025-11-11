@@ -86,15 +86,30 @@ const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
   templateWithoutExtractor.name
 );
 
-const fileEntity1En = f.document('fileEntity1En', { language: 'en', entity: entity1En.sharedId });
-const secondFileEntity1En = f.document('secondFileEntity1En', {
+const fileEntity1En = f.processedDocument('fileEntity1En', {
   language: 'en',
   entity: entity1En.sharedId,
 });
-const fileEntity1Pt = f.document('fileEntity1Pt', { language: 'pt', entity: entity1En.sharedId });
-const fileEntity1It = f.document('fileEntity1It', { language: 'it', entity: entity1En.sharedId });
-const fileEntity2It = f.document('fileEntity2En', { language: 'it', entity: entity2En.sharedId });
-const fileEntity4En = f.document('fileEntity4En', { language: 'en', entity: entity5En.sharedId });
+const secondFileEntity1En = f.processedDocument('secondFileEntity1En', {
+  language: 'en',
+  entity: entity1En.sharedId,
+});
+const fileEntity1Pt = f.processedDocument('fileEntity1Pt', {
+  language: 'pt',
+  entity: entity1En.sharedId,
+});
+const fileEntity1It = f.processedDocument('fileEntity1It', {
+  language: 'it',
+  entity: entity1En.sharedId,
+});
+const fileEntity2It = f.processedDocument('fileEntity2En', {
+  language: 'it',
+  entity: entity2En.sharedId,
+});
+const fileEntity4En = f.processedDocument('fileEntity4En', {
+  language: 'en',
+  entity: entity5En.sharedId,
+});
 
 const [paragraph1Entity1En, paragraph1Entity1Pt] = f.entityInMultipleLanguages(
   lang,

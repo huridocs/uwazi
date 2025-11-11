@@ -200,6 +200,10 @@ function getFixturesFactory() {
       return this.file(id, { ...extra, type: 'document' });
     },
 
+    processedDocument(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'document', status: 'ready' });
+    },
+
     custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
       return this.file(id, { ...extra, type: 'custom' });
     },

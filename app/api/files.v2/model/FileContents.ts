@@ -1,11 +1,15 @@
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
-import { readFile } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 
 import { Result } from 'api/core/libs/Result';
+import { generateFileName } from 'api/files/filesystem';
+import { tmpdir } from 'os';
 import path from 'path';
 import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+import { FileContentError } from './errors';
 
 export type ReadableCallback = () => Promise<Readable>;
 
@@ -31,13 +35,34 @@ export class FileContents {
     }
   }
 
+  async size() {
+    if (this.filepath) {
+      return Result.ok((await stat(this.filepath)).size);
+    }
+
+    return Result.fail(
+      new FileContentError(
+        'size method only available if FileContents was instantiated with a disk filepath'
+      )
+    );
+  }
+
+  async toDisk() {
+    if (this.filepath) {
+      return this;
+    }
+    const tmpFilePath = path.join(tmpdir(), generateFileName({ originalname: this.filename }));
+    await pipeline((await this.getReadable()).getDataOrThrow(), createWriteStream(tmpFilePath));
+    return new FileContents(tmpFilePath);
+  }
+
   async getReadable() {
     if (this.readableCallback) {
       return Result.ok(await this.readableCallback());
     }
 
     if (!this.filepath) {
-      return Result.fail(new Error('No file path or readable callback provided'));
+      return Result.fail(new FileContentError('No file path or readable callback provided'));
     }
 
     return Result.ok(createReadStream(this.filepath));
@@ -50,7 +75,7 @@ export class FileContents {
     }
 
     if (!this.filepath) {
-      return Result.fail(new Error('No file path or readable callback provided'));
+      return Result.fail(new FileContentError('No file path or readable callback provided'));
     }
     return Result.ok(await readFile(this.filepath));
   }
@@ -65,7 +90,11 @@ export class FileContents {
 
   getFullPath() {
     if (!this.filepath) {
-      return Result.fail(new Error('this file has no full path'));
+      return Result.fail(
+        new FileContentError(
+          'File was probably initialized with a readable callback instead of fullpath'
+        )
+      );
     }
     return Result.ok(this.filepath);
   }
@@ -85,5 +114,9 @@ export class FileContents {
 
       stream.on('error', reject);
     });
+  }
+
+  static fromPath(paths: string[]) {
+    return new FileContents(path.join(...paths));
   }
 }

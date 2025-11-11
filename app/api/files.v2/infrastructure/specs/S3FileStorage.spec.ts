@@ -10,8 +10,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { Attachment } from 'api/files.v2/model/Attachment';
-import { Document } from 'api/files.v2/model/Document';
 import { FileContents } from 'api/files.v2/model/FileContents';
+import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { Tenant } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 import path from 'node:path';
@@ -129,17 +129,17 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new Document({
+        file: new ProcessedDocument({
           id: 'id',
           entity: 'entity',
           language: 'ab',
           mimetype: 'application/pdf',
           totalPages: 1,
-          status: 'processing',
           creationDate: 1,
           size: 1,
           filename: 'document',
           originalname: 'original.pdf',
+          fullText: {},
         }),
         expected: 'test-tenant/documents/document',
       },
@@ -205,7 +205,7 @@ describe('S3FileStorage', () => {
         },
         {
           Body: 'customPathFile',
-          Key: 'test-tenant/my/custom/path/customPathFile.txt',
+          Key: 'test-tenant/documents/my/custom/path/customPathFile.txt',
           destination: 'my/custom/path',
           type: 'customPath',
           filename: 'customPathFile.txt',
@@ -301,7 +301,7 @@ describe('S3FileStorage', () => {
         const s3File = await s3Client.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'test-tenant/custom_path/deep/documento.txt',
+            Key: 'test-tenant/documents/custom_path/deep/documento.txt',
           })
         );
         expect(await toString(s3File)).toBe('content created\n');

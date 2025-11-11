@@ -43,4 +43,59 @@ describe('DateProperty', () => {
 
     expect(() => date.ensurePropertyIsConsistent(multiDate)).not.toThrow();
   });
+
+  describe('createPropertyAssignment()', () => {
+    it('should create assignment with a single date value', () => {
+      const date = new DateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = date.createPropertyAssignment({ value: [{ value: 1761576489 }] });
+
+      expect(assignment).toEqual({
+        name: date.name,
+        value: [{ value: 1761576489 }],
+        type: date.type,
+      });
+    });
+
+    it('should allow empty value when not required', () => {
+      const date = new DateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = date.createPropertyAssignment({ value: [] });
+
+      expect(assignment).toEqual({
+        name: date.name,
+        value: [],
+        type: date.type,
+      });
+    });
+
+    it('should throw if more than one value is provided', () => {
+      const date = new DateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() => date.createPropertyAssignment({ value: [{ value: 1 }, { value: 2 }] })).toThrow(
+        'Date Property only accepts a single value.'
+      );
+    });
+
+    it('should throw if required and no value is provided', () => {
+      const date = new DateProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() => date.createPropertyAssignment({ value: [] })).toThrow(
+        'Date Property is required'
+      );
+    });
+
+    it('should throw if value is not a number', () => {
+      const date = new DateProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(() =>
+        date.createPropertyAssignment({ value: [{ value: 'not-a-number' } as any] })
+      ).toThrow();
+    });
+  });
 });

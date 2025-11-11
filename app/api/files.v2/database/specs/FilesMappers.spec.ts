@@ -1,3 +1,4 @@
+import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { Thumbnail } from 'api/files.v2/model/Thumbnail';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
@@ -6,7 +7,13 @@ import { CustomUpload } from '../../model/CustomUpload';
 import { Document } from '../../model/Document';
 import { URLAttachment } from '../../model/URLAttachment';
 import { FileMappers } from '../FilesMappers';
-import { AttachmentDBO, DocumentDBO, fileDBO, ThumbnailDBO } from '../schemas/filesTypes';
+import {
+  AttachmentDBO,
+  DocumentDBO,
+  fileDBO,
+  ProcessedDocumentDBO,
+  ThumbnailDBO,
+} from '../schemas/filesTypes';
 
 const f = getFixturesFactory();
 
@@ -21,12 +28,37 @@ describe('FileMappers', () => {
         mimetype: 'application/pdf',
         size: 1024,
         creationDate: 1234567890,
-        language: 'en',
-        totalPages: 10,
-        status: 'ready',
+        status: 'processing',
       });
 
       const result = FileMappers.toDBO(document) as DocumentDBO;
+
+      expect(result._id.toString()).toBe(f.idString('docId'));
+      expect(result.entity).toBe('entity1');
+      expect(result.originalname).toBe('doc.pdf');
+      expect(result.filename).toBe('doc.pdf');
+      expect(result.mimetype).toBe('application/pdf');
+      expect(result.size).toBe(1024);
+      expect(result.creationDate).toBe(1234567890);
+      expect(result.type).toBe('document');
+      expect(result.status).toBe('processing');
+    });
+
+    it('should map ProcessedDocument to FileDBOType', () => {
+      const document = new ProcessedDocument({
+        id: f.idString('docId'),
+        entity: 'entity1',
+        originalname: 'doc.pdf',
+        filename: 'doc.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: 1234567890,
+        language: 'en',
+        totalPages: 10,
+        fullText: {},
+      });
+
+      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
 
       expect(result._id.toString()).toBe(f.idString('docId'));
       expect(result.entity).toBe('entity1');
@@ -115,7 +147,7 @@ describe('FileMappers', () => {
     });
 
     it('should handle language conversion fallback', () => {
-      const document = new Document({
+      const document = new ProcessedDocument({
         id: f.idString('docId2'),
         entity: 'entity4',
         originalname: 'doc2.pdf',
@@ -125,10 +157,10 @@ describe('FileMappers', () => {
         creationDate: 1234567890,
         language: 'en',
         totalPages: 5,
-        status: 'processing',
+        fullText: {},
       });
 
-      const result = FileMappers.toDBO(document) as DocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
 
       expect(result.language).toBe('eng');
     });
@@ -251,9 +283,7 @@ describe('FileMappers', () => {
         creationDate: 1234567890,
         type: 'document',
         entity: 'entity1',
-        totalPages: 10,
-        language: 'eng',
-        status: 'ready',
+        status: 'processing',
       };
 
       const result = FileMappers.toModel(dbo);
@@ -267,9 +297,42 @@ describe('FileMappers', () => {
       expect(document.mimetype).toBe(dbo.mimetype);
       expect(document.size).toBe(dbo.size);
       expect(document.creationDate).toBe(dbo.creationDate);
-      expect(document.language).toBe('en');
-      expect(document.totalPages).toBe(dbo.totalPages);
       expect(document.status).toBe(dbo.status);
+    });
+
+    it('should map to ProcessingDocument when type is document and status ready', () => {
+      const dbo: fileDBO = {
+        _id: new ObjectId(),
+        originalname: 'original.pdf',
+        filename: 'file.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: 1234567890,
+        type: 'document',
+        entity: 'entity1',
+        status: 'ready',
+        language: 'eng',
+        totalPages: 1,
+        fullText: { 1: 'text' },
+      };
+
+      const result = FileMappers.toModel(dbo);
+
+      expect(result).toBeInstanceOf(ProcessedDocument);
+      const document = result as Document;
+
+      expect(document).toEqual({
+        id: dbo._id.toString(),
+        entity: dbo.entity,
+        originalname: dbo.originalname,
+        filename: dbo.filename,
+        mimetype: dbo.mimetype,
+        size: dbo.size,
+        creationDate: dbo.creationDate,
+        fullText: dbo.fullText,
+        totalPages: dbo.totalPages,
+        language: 'en',
+      });
     });
 
     it('should handle different types correctly', () => {
@@ -295,15 +358,13 @@ describe('FileMappers', () => {
         creationDate: 1234567890,
         type: 'document',
         entity: 'entity1',
-        totalPages: 10,
-        language: 'eng',
-        status: 'ready',
+        status: 'failed',
       };
 
       const documentResult = FileMappers.toModel(documentDBO);
       const anotherResult = FileMappers.toModel(anotherDocumentDBO);
 
-      expect(documentResult).toBeInstanceOf(Document);
+      expect(documentResult).toBeInstanceOf(ProcessedDocument);
       expect(anotherResult).toBeInstanceOf(Document);
     });
   });

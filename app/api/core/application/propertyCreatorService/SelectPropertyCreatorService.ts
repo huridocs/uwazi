@@ -1,15 +1,12 @@
+import { ThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { Context, Property } from '../../domain/template/Property';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
-} from '../../domain/template/MultiSelectProperty';
-import { SelectPropertyProps, SelectProperty } from '../../domain/template/SelectProperty';
+} from '../../domain/template/select/MultiSelectProperty';
+import { SelectPropertyProps, SelectProperty } from '../../domain/template/select/SelectProperty';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
-
-interface ThesauriDataSource {
-  exists(id: string): Promise<boolean>;
-}
 
 type Deps = {
   thesauriDS: ThesauriDataSource;
