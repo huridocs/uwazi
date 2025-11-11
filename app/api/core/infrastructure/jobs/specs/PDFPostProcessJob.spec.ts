@@ -9,13 +9,14 @@ import { Result } from 'api/core/libs/Result';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
 import { ProcessingFileNotFound } from 'api/files.v2/model/errors';
+import { FileContents } from 'api/files.v2/model/FileContents';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import path from 'path';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { PDFService } from '../../services/PDFService';
+import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
 
 const setUpJob = (pdfService = new PDFService()) => {
@@ -136,6 +137,45 @@ describe('PDFPostProcessJob', () => {
       await expect(async () =>
         executeJob(job, f.idString('processing_doc'), { maxRetries: 5, retryCount: 5 })
       ).rejects.toThrow();
+
+      expect(wSockets.emitToTenant).toHaveBeenCalledWith(
+        tenants.current().name,
+        'conversionFailed',
+        'fileEntity',
+        expect.objectContaining({ _id: f.idString('processing_doc'), status: 'failed' })
+      );
+    });
+  });
+
+  describe('on FileIsNotAPDF error', () => {
+    it('should throw a NonRetrieable Error', async () => {
+      const { job } = setUpJob(
+        TestUtils.mockClass<PDFService>({
+          extractText: jest
+            .fn()
+            .mockImplementation(() =>
+              Result.fail(new FileIsNotAPDF(new FileContents('full/path')))
+            ),
+        })
+      );
+
+      await expect(async () => executeJob(job, f.idString('processing_doc'))).rejects.toThrow(
+        NonRetryableJobError
+      );
+    });
+
+    it('should emit a "conversionFailed" event to tenant', async () => {
+      const { job, wSockets } = setUpJob(
+        TestUtils.mockClass<PDFService>({
+          extractText: jest
+            .fn()
+            .mockImplementation(() =>
+              Result.fail(new FileIsNotAPDF(new FileContents('full/path')))
+            ),
+        })
+      );
+
+      await expect(async () => executeJob(job, f.idString('processing_doc'))).rejects.toThrow();
 
       expect(wSockets.emitToTenant).toHaveBeenCalledWith(
         tenants.current().name,
