@@ -9,7 +9,7 @@ export interface EntityDBO {
   template: ObjectId;
   title: string;
   icon?: { _id: string; label: string; type: string };
-  metadata: Record<string, { value: string; label: string }[]>;
+  metadata: Record<string, { value: string | number; label?: string }[]>;
   obsoleteMetadata: string[];
   user?: ObjectId;
   published: boolean;
@@ -18,7 +18,7 @@ export interface EntityDBO {
 
   mongoLanguage?: string; // Todo: needs to be mapped and implemented
   generatedToc?: boolean; // Todo: needs to be mapped and implemented
-  permissions?: PermissionSchema[]; // Todo: needs to be mapped and implemented
+  permissions?: PermissionSchema[];
   // [k: string]: unknown | undefined;
 }
 

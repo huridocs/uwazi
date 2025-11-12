@@ -4,7 +4,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
@@ -216,6 +215,30 @@ const fixtures: DBFixture = {
           type: 'generatedid',
         },
       }),
+      factory.property('preview_rel', 'relationship', {
+        relationType: factory.id('Document A to Document B').toHexString(),
+        content: factory.id('Document B').toHexString(),
+        inherit: {
+          property: factory.id('preview').toHexString(),
+          type: 'preview',
+        },
+      }),
+      factory.property('media_rel', 'relationship', {
+        relationType: factory.id('Document A to Document B').toHexString(),
+        content: factory.id('Document B').toHexString(),
+        inherit: {
+          property: factory.id('media').toHexString(),
+          type: 'media',
+        },
+      }),
+      factory.property('nested_rel', 'relationship', {
+        relationType: factory.id('Document A to Document B').toHexString(),
+        content: factory.id('Document B').toHexString(),
+        inherit: {
+          property: factory.id('nested').toHexString(),
+          type: 'nested',
+        },
+      }),
       factory.relationshipProp('rel_prop_no_inherit', 'Document B'),
     ]),
 
@@ -235,10 +258,9 @@ const fixtures: DBFixture = {
       factory.property('link', 'link'),
       factory.property('image', 'image'),
       factory.property('generatedid', 'generatedid'),
-
-      // factory.property('preview', 'preview'), // Todo: not tested yet
-      // factory.property('media', 'media'), // Todo: not tested yet
-      // factory.property('nested', 'nested'),// Todo: not tested yet
+      factory.property('preview', 'preview'),
+      factory.property('media', 'media'),
+      factory.property('nested', 'nested'),
     ]),
 
     factory.template('Document C', []),
@@ -274,6 +296,16 @@ const fixtures: DBFixture = {
             link: [{ value: 'http://example.com', label: 'Example EN' }],
             image: [{ value: 'api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
+            preview: [{ value: '/api/files/preview_EN.jpg' }],
+            media: [{ value: '/api/files/video_EN.mp4' }],
+            nested: [
+              {
+                value: {
+                  child_text: [{ value: 'Nested text EN' }],
+                  child_number: [{ value: 5 }],
+                } as any,
+              },
+            ],
           },
         },
         pt: {
@@ -298,6 +330,16 @@ const fixtures: DBFixture = {
             link: [{ value: 'http://example.com', label: 'Example PT' }],
             image: [{ value: 'api/files/image.png' }],
             generatedid: [{ value: 'TIJ5481-7165' }],
+            preview: [{ value: '/api/files/preview_PT.jpg' }],
+            media: [{ value: '/api/files/video_PT.mp4' }],
+            nested: [
+              {
+                value: {
+                  child_text: [{ value: 'Nested text PT' }],
+                  child_number: [{ value: 5 }],
+                } as any,
+              },
+            ],
           },
         },
       }
@@ -332,12 +374,9 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-
   const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
     getConnection(),
-    transactionManager,
-    templatesDS
+    transactionManager
   );
 
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
@@ -1231,6 +1270,104 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         name: 'rel_prop_no_inherit',
         type: 'relationship',
         value: [],
+      },
+    ]);
+  });
+
+  it('should create property assignments for media inherited property', async () => {
+    const { sut } = createSut();
+
+    const assignments = await sut.create({
+      template: sampleTemplate,
+      propertyAssignment: { name: 'media_rel', value: [{ value: 'B1' }] },
+    });
+
+    expect(assignments).toEqual([
+      {
+        language: 'en',
+        name: 'media_rel',
+        type: 'relationship',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 EN',
+            inheritedValue: [{ value: '/api/files/video_EN.mp4' }],
+            inheritedType: 'media',
+            icon: { id: 'iconB1', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      },
+      {
+        language: 'pt',
+        name: 'media_rel',
+        type: 'relationship',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 PT',
+            inheritedValue: [{ value: '/api/files/video_PT.mp4' }],
+            inheritedType: 'media',
+            icon: { id: 'iconB1', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('should create property assignments for nested inherited property', async () => {
+    const { sut } = createSut();
+
+    const assignments = await sut.create({
+      template: sampleTemplate,
+      propertyAssignment: { name: 'nested_rel', value: [{ value: 'B1' }] },
+    });
+
+    expect(assignments).toEqual([
+      {
+        language: 'en',
+        name: 'nested_rel',
+        type: 'relationship',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 EN',
+            inheritedValue: [
+              {
+                value: {
+                  child_text: [{ value: 'Nested text EN' }],
+                  child_number: [{ value: 5 }],
+                },
+              },
+            ],
+            inheritedType: 'nested',
+            icon: { id: 'iconB1', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
+      },
+      {
+        language: 'pt',
+        name: 'nested_rel',
+        type: 'relationship',
+        value: [
+          {
+            value: 'B1',
+            label: 'B1 PT',
+            inheritedValue: [
+              {
+                value: {
+                  child_text: [{ value: 'Nested text PT' }],
+                  child_number: [{ value: 5 }],
+                },
+              },
+            ],
+            inheritedType: 'nested',
+            icon: { id: 'iconB1', label: 'iconB1', type: 'img' },
+            type: 'entity',
+          },
+        ],
       },
     ]);
   });

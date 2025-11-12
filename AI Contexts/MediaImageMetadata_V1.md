@@ -570,3 +570,4 @@ Tip: You can mix metadata-bound attachments with entity-level attachments/docume
 - **Media-specific**: `Array<{ value: "(/api/files/file.ext, {timeLinks})" }>`
 - **Validation**: Must be string, single value enforced
 - **Required**: If `required=true`, must have 1 non-empty string value
+

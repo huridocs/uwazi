@@ -32,13 +32,53 @@ describe('MediaProperty', () => {
     it('should create assignment with a single media value', () => {
       const media = new MediaProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
-      const assignment = media.createPropertyAssignment({ value: [{ value: 'file.mp4' }] });
-
-      expect(assignment).toEqual({
+      expect(
+        media.createPropertyAssignment({
+          value: [
+            {
+              value:
+                '(https://www.youtube.com/watch?v=kvX9Hbg7q88, {"timelinks":{"00:00:00":"title"}})',
+            },
+          ],
+        })
+      ).toEqual({
         name: media.name,
         type: media.type,
-        value: [{ value: 'file.mp4' }],
+        value: [
+          {
+            value:
+              '(https://www.youtube.com/watch?v=kvX9Hbg7q88, {"timelinks":{"00:00:00":"title"}})',
+          },
+        ],
       });
+
+      expect(
+        media.createPropertyAssignment({
+          value: [
+            {
+              value: '(/api/files/media.mp4, {"timelinks":{"00:00:00":"title"}})',
+            },
+          ],
+        })
+      ).toEqual({
+        name: media.name,
+        type: media.type,
+        value: [
+          {
+            value: '(/api/files/media.mp4, {"timelinks":{"00:00:00":"title"}})',
+          },
+        ],
+      });
+    });
+
+    it('should assign File path', () => {
+      const media = new MediaProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      expect(media.assignFilePath('file.mp4', '{"timelinks":{"00:00:00":"title"}}')).toEqual(
+        '(/api/files/file.mp4, {"timelinks":{"00:00:00":"title"}})'
+      );
+
+      expect(media.assignFilePath('file.mp4')).toEqual('/api/files/file.mp4');
     });
 
     it('should allow empty value when not required', () => {
