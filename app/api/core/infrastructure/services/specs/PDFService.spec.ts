@@ -43,8 +43,12 @@ describe('PDFService', () => {
         case: 'Readable',
         testFile: new FileContents({
           filename: '12345.test.pdf',
-          readableCallback: async () =>
-            createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+          streamCallback: async function* () {
+            const stream = createReadStream(
+              path.join(__dirname, 'testing_files', '12345.test.pdf')
+            );
+            for await (const chunk of stream) yield chunk;
+          },
         }),
       },
     ])(
@@ -98,8 +102,12 @@ describe('PDFService', () => {
         case: 'Readable',
         testFile: new FileContents({
           filename: '12345.test.pdf',
-          readableCallback: async () =>
-            createReadStream(path.join(__dirname, 'testing_files', '12345.test.pdf')),
+          streamCallback: async function* () {
+            const stream = createReadStream(
+              path.join(__dirname, 'testing_files', '12345.test.pdf')
+            );
+            for await (const chunk of stream) yield chunk;
+          },
         }),
       },
     ])('should create thumbnail ($case)', async ({ testFile }) => {
@@ -107,10 +115,7 @@ describe('PDFService', () => {
       expect(thumbnail).toBeInstanceOf(FileContents);
 
       const thumbnailPath = path.join(tmpdir(), `thumbnail_${Date.now()}_${Math.random()}.jpg`);
-      await pipeline(
-        (await thumbnail.getReadable()).getDataOrThrow(),
-        createWriteStream(thumbnailPath)
-      );
+      await pipeline(thumbnail.read(), createWriteStream(thumbnailPath));
 
       expect(
         await filesAreIdentical(
