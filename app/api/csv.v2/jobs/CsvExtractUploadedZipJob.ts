@@ -3,7 +3,7 @@ import {
   UserAwareDispatchableParams,
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { WorkerSockets } from 'api/core/infrastructure/services/WorkerSockets';
+import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { CsvExtractUploadedZipUseCase } from '../services/CsvExtractUploadedZipUseCase';
 
 type Params = UserAwareDispatchableParams & {
@@ -13,7 +13,7 @@ type Params = UserAwareDispatchableParams & {
 
 type Deps = {
   useCase: CsvExtractUploadedZipUseCase;
-  sockets: WorkerSockets;
+  sockets: V1WebSocketsWrapper;
 };
 
 export class CsvExtractUploadedZipJob extends UserAwareDispatchable<Params> {

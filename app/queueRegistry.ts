@@ -42,7 +42,6 @@ import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_def
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
-import { WorkerSockets } from 'api/core/infrastructure/services/WorkerSockets';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 
@@ -191,7 +190,7 @@ export function registerJobs(
       fileStorage,
       transactionManager,
     });
-    const sockets = new WorkerSockets();
+    const sockets = new V1WebSocketsWrapper();
     return new CsvExtractUploadedZipJob({ useCase, sockets });
   });
 }
