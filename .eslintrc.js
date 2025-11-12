@@ -30,6 +30,7 @@ module.exports = {
       ],
     ],
     indent: 'off',
+    'generator-star-spacing': 'off',
     'brace-style': 'off',
     'operator-linebreak': 'off',
     'space-before-function-paren': 'off',
@@ -227,6 +228,24 @@ module.exports = {
     'react-hooks/exhaustive-deps': ['warn'],
   },
   overrides: [
+    {
+      files: ['app/api/**/*.ts'],
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          {
+            selector: 'LabeledStatement',
+            message:
+              'Labels are a form of GOTO; using them makes code confusing and hard to maintain.',
+          },
+          {
+            selector: 'WithStatement',
+            message:
+              '`with` is disallowed in strict mode because it makes code unpredictable and unoptimizable.',
+          },
+        ],
+      },
+    },
     { files: ['app/**/*spec.js'], rules: { 'max-lines-per-function': 'off' } },
     { files: ['app/**/specs/*'], rules: { 'max-lines-per-function': 'off', 'max-lines': 'off' } },
     { files: ['app/react/stories/*.stories.tsx'], rules: { 'react/no-multi-comp': 'off' } },
