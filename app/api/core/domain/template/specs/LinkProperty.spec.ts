@@ -71,7 +71,7 @@ describe('LinkProperty', () => {
         required: true,
       });
 
-      expect(() => link.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => link.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Link Property is required'
       );
     });

@@ -32,10 +32,11 @@ class PreviewProperty extends AbstractImageProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<PreviewEntry>): PropertyAssignment<PreviewEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<PreviewEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<PreviewEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -44,8 +45,11 @@ class PreviewProperty extends AbstractImageProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<PreviewEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<PreviewEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

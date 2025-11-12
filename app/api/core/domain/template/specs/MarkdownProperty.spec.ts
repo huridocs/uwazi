@@ -81,7 +81,7 @@ describe('MarkdownProperty', () => {
         required: true,
       });
 
-      expect(() => markdown.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => markdown.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Markdown Property is required'
       );
     });
