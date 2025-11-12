@@ -1,12 +1,13 @@
-export type CsvImportStatus =
-  | 'queued'
-  | 'validating'
-  | 'extracting files'
-  | 'files extracted'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'cancelled';
+export enum CsvImportStatus {
+  Queued = 'queued',
+  Validating = 'validating',
+  ExtractingFiles = 'extracting files',
+  FilesExtracted = 'files extracted',
+  Processing = 'processing',
+  Completed = 'completed',
+  Failed = 'failed',
+  Cancelled = 'cancelled',
+}
 
 export type CsvImportStorage = {
   path: string;
@@ -55,7 +56,7 @@ export class CsvImportDomain {
       id,
       templateId,
       file,
-      status: 'queued',
+      status: CsvImportStatus.Queued,
       createdBy,
       createdAt: now,
       updatedAt: now,

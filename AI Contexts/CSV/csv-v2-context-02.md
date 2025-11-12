@@ -133,6 +133,57 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - `WorkerSockets` wrapper instance
   - Do not implement transactions in the job; keep them in the use case.
 
+### Retries and non-retriable errors
+
+- Background
+  - Jobs are retried automatically after the lock window expires, up to configured max retries.
+  - Some failures will never improve on retry and should be treated as non-retriable (fail fast).
+
+- Current throw conditions and suggested classification
+  - Import not found:
+    - Trigger: `csvImportsDS.getById(importId)` resolves to undefined.
+    - Classification:
+      - Non-retriable if DS successfully queried and the document is truly missing.
+      - Retriable if the DS call throws/returns a connection/operational error (not “undefined”).
+    - Implementation: DS should throw on connection errors; only return undefined for “not found”.
+  - Storage path missing (in domain):
+    - Trigger: `!csvImport.storage?.path`.
+    - Classification: Non-retriable (broken record).
+    - Note: Distinguish from IO “path not found” while reading from storage (see next).
+  - Unable to open ZIP file (yauzl open error):
+    - Classification:
+      - Retriable if error indicates transient FS/S3/IO condition.
+      - Non-retriable if error indicates “not a zip”/corrupt format (e.g., end of central directory not found).
+    - Implementation: Inspect error codes/messages from yauzl/open to differentiate.
+  - Failed to read ZIP entry (yauzl openReadStream error):
+    - Classification:
+      - Retriable for transient read/IO errors.
+      - Non-retriable for data corruption (e.g., decompression/data errors).
+  - `import.csv` not found at ZIP root:
+    - Trigger: After successful iteration through entries, `hasImportCsv === false`.
+    - Classification: Non-retriable (deterministic policy violation).
+    - Rationale: If iteration aborts early due to IO errors, we fail before reaching “end”; only the completed pass yields this check.
+  - Copy CSV to `extracted/import.csv` fails (getFile/read/storeFile):
+    - Classification: Retriable by default (FS/S3 transient). Reserve non-retriable only for definitive “source file not found” semantics (unexpected for our pipeline).
+  - Status persistence failures (inside `transactionManager.run`):
+    - Classification: Retriable (TM already retries transient errors). Use non-retriable only for schema/validation bugs (should not occur).
+
+- Implementation guideline
+  - Introduce a `NonRetriableError` (or reuse existing) and throw it for deterministic policy errors:
+    - Import not found
+    - Storage path missing
+    - ZIP missing `import.csv`
+    - Detectably corrupt file formats (when verifiable)
+  - For storage/IO and DB operational errors, propagate the original error and let the job retry policy handle it.
+  - Optionally augment job logs with a flag (`nonRetriable: true`) for observability.
+
+- Status semantics during retries
+  - Keep `status = 'extracting files'` on retriable failures; rely on the queue to retry without flipping to `failed`.
+  - Set `status = 'failed'` only if:
+    - The error is classified as non-retriable, or
+    - This was the last retry attempt (based on jobInfo.retryCount + 1 >= jobInfo.maxRetries) and the job will not be retried.
+  - Optionally persist a lightweight failure descriptor (code/message/retryable) for support.
+
 ### Open questions / next steps
 
 - Admin notifications: do we add a `tenant:admins` room now or later?

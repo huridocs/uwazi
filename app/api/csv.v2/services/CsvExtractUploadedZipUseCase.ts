@@ -4,6 +4,7 @@ import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
 
@@ -43,16 +44,13 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     callbacks?.onError?.({ importId, error });
   }
 
-  private async setStatus(
-    importId: string,
-    status: 'extracting files' | 'files extracted' | 'failed'
-  ) {
+  private async setStatus(importId: string, status: CsvImportStatus) {
     const existing = await this.deps.csvImportsDS.getById(importId);
     if (!existing) {
-      throw new Error(`CSV import not found: ${importId}`);
+      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
     }
     await this.transactionManager.run(async () => {
-      const updated = CsvImportDomain.withStatus(existing, status as CsvImportStatus);
+      const updated = CsvImportDomain.withStatus(existing, status);
       await this.deps.csvImportsDS.update(updated);
     });
   }
@@ -60,7 +58,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
   private async getImportStoragePath(importId: string) {
     const csvImport = await this.deps.csvImportsDS.getById(importId);
     if (!csvImport?.storage?.path) {
-      throw new Error('CSV import storage path not found');
+      throw new NonRetryableJobError(new Error('CSV import storage path not found'));
     }
     return csvImport.storage.path;
   }
@@ -159,7 +157,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     });
 
     if (!hasImportCsv) {
-      throw new Error('import.csv not found at zip root');
+      throw new NonRetryableJobError(new Error('import.csv not found at zip root'));
     }
   }
 
@@ -182,11 +180,13 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
         await this.copyCsvToExtracted(params.destination, params.filename);
       }
 
-      await this.setStatus(params.importId, 'files extracted');
+      await this.setStatus(params.importId, CsvImportStatus.FilesExtracted);
       CsvExtractUploadedZipUseCase.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
-      await this.setStatus(params.importId, 'failed');
       CsvExtractUploadedZipUseCase.emitError(params.callbacks, params.importId, e as Error);
+      if (e instanceof NonRetryableJobError) {
+        await this.markAsFailed(params.importId);
+      }
       throw e;
     }
   }
@@ -195,7 +195,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     CsvExtractUploadedZipUseCase.emitStart(callbacks, input.importId);
 
     const storagePath = await this.getImportStoragePath(input.importId);
-    await this.setStatus(input.importId, 'extracting files');
+    await this.setStatus(input.importId, CsvImportStatus.ExtractingFiles);
 
     const { filename, destination } = CsvExtractUploadedZipUseCase.parseStoragePath(storagePath);
     const isZip = filename.toLowerCase().endsWith('.zip');
@@ -207,5 +207,9 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename,
       callbacks,
     });
+  }
+
+  async markAsFailed(importId: string) {
+    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 }
