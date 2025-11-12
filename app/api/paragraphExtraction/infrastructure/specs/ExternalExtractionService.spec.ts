@@ -8,7 +8,6 @@ import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey'
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { FileContents } from 'api/files.v2/model/FileContents';
-import { Readable } from 'stream';
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
@@ -64,6 +63,10 @@ describe('ExternalExtractionService', () => {
         entityStatusId: 'any_extraction_id',
       });
 
+      const streamCallback = jest.fn(async function* () {
+        yield Buffer.from('default content');
+      });
+
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
@@ -72,15 +75,15 @@ describe('ExternalExtractionService', () => {
         files: [
           new FileContents({
             filename: 'file1.txt',
-            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+            streamCallback,
           }),
           new FileContents({
             filename: 'file2.txt',
-            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+            streamCallback,
           }),
           new FileContents({
             filename: 'file3.txt',
-            readableCallback: async () => Readable.from([Buffer.from('default content')]),
+            streamCallback,
           }),
         ],
       });

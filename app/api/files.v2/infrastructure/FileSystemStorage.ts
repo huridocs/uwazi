@@ -32,7 +32,7 @@ export class FileSystemStorage implements FileStorage {
       }
     }
 
-    await pipeline((await input.file.getReadable()).getDataOrThrow(), createWriteStream(filepath));
+    await pipeline(input.file.read(), createWriteStream(filepath));
   }
 
   async getFile(input: GetFileInput): Promise<FileContents> {

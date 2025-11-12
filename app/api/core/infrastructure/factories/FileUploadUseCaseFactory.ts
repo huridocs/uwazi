@@ -15,6 +15,7 @@ import { PDFService } from '../services/PDFService';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory';
+import { FileContentsIO } from '../files/FileContentIO';
 
 class FileUploadUseCaseFactory {
   static default() {
@@ -38,6 +39,7 @@ class FileUploadUseCaseFactory {
             fileStorage,
             pdfService: new PDFService(),
             idGenerator,
+            filesIO: new FileContentsIO(),
           }),
           wSockets: new V1WebSocketsWrapper(),
         }),
