@@ -85,7 +85,7 @@ describe('DateProperty', () => {
         required: true,
       });
 
-      expect(() => date.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => date.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Date Property is required'
       );
     });

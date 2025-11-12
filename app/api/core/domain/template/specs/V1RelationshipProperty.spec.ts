@@ -212,9 +212,9 @@ describe('V1RelationshipProperty', () => {
         required: true,
       });
 
-      expect(() => relationship.createPropertyAssignment({ value: [], language: 'en' })).toThrow(
-        'Relationship Property is required'
-      );
+      expect(() =>
+        relationship.createPropertyAssignment({ value: [], language: 'en' }, true)
+      ).toThrow('Relationship Property is required');
     });
   });
 });

@@ -64,7 +64,7 @@ describe('PreviewProperty', () => {
         required: true,
       });
 
-      expect(() => preview.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => preview.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Preview Property is required'
       );
     });

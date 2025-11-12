@@ -115,11 +115,17 @@ class Property {
     return { name: this.name, value: [], type: this.type };
   }
 
-  createPropertyAssignment({ value }: CreatePropertyAssignmentInput): PropertyAssignment {
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput,
+    _shouldValidateForRequired: boolean
+  ): PropertyAssignment {
     return { name: this.name, value, type: this.type };
   }
 
-  validatePropertyAssignment(_propertyAssignment: PropertyAssignment) {}
+  validatePropertyAssignment(
+    _propertyAssignment: PropertyAssignment,
+    _shouldValidateForRequired: boolean
+  ) {}
 }
 
 export { Property };

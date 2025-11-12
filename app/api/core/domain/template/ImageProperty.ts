@@ -47,13 +47,15 @@ class ImageProperty extends AbstractImageProperty {
     return !!value?.[0]?.value && value[0].value.startsWith(this.FILE_PATH);
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<ImageEntry>): PropertyAssignment<ImageEntry> {
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<ImageEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<ImageEntry> {
     const isFromURL = this.isFromURL(value);
     const isFromFilePath = this.isFromFilePath(value);
-    const parsed = createSchema(this.required, isFromURL).parse(value);
-
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false, isFromURL).parse(
+      value
+    );
     let postProcessed = parsed;
 
     if (!isFromURL && !isFromFilePath) {
@@ -67,8 +69,13 @@ class ImageProperty extends AbstractImageProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<ImageEntry>): void {
-    createSchema(this.required, this.isFromURL(value)).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<ImageEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false, this.isFromURL(value)).parse(
+      value
+    );
   }
 }
 

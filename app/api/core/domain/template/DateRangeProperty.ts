@@ -48,10 +48,13 @@ class DateRangeProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<DateRangeEntry>): PropertyAssignment<DateRangeEntry> {
-    const parsedValue = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<DateRangeEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<DateRangeEntry> {
+    const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value
+    );
 
     return {
       name: this.name,
@@ -60,8 +63,11 @@ class DateRangeProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<DateRangeEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<DateRangeEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

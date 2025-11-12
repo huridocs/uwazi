@@ -65,7 +65,7 @@ describe('MediaProperty', () => {
         required: true,
       });
 
-      expect(() => media.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => media.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Media Property is required'
       );
     });
