@@ -1,8 +1,10 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { Template } from 'api/core/domain/template/Template';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type PropertyValueInput =
+  | { attachment: number; timeLinks?: string }
   | { attachment: number }
   | { value: string }
   | { value: number }
@@ -20,7 +22,7 @@ type PropertyAssignmentInput<Value = PropertyValueInput> = {
 type CreateInput<V = PropertyValueInput> = {
   template: Template;
   propertyAssignment: PropertyAssignmentInput<V>;
-  attachments?: Express.Multer.File[];
+  attachments?: InputFile[];
 };
 
 interface PropertyAssignmentCreatorService {

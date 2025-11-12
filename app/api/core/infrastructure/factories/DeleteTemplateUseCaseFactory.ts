@@ -27,8 +27,7 @@ class DeleteTemplateUseCaseFactory {
     const entitiesDS = DefaultEntitiesDataSource(transactionManager);
     const multiLanguageEntitiesDS = new MongoMultiLanguageEntityDataSource(
       getConnection(),
-      transactionManager,
-      templatesDS
+      transactionManager
     );
     const filesDS = DefaultFilesDataSource(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(

@@ -1,21 +1,21 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { ImageProperty } from 'api/core/domain/template/ImageProperty';
+import { MediaProperty } from 'api/core/domain/template/MediaProperty';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService';
 
-type ImageValueInput = { value: string } | { attachment: number };
+type MediaValueInput = { value: string } | { attachment: number; timeLinks?: string };
 
-export class ImagePropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
+export class MediaPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
   // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
     template,
     attachments,
-  }: CreatePropertyAssignmentInput<ImageValueInput>): Promise<PropertyAssignment[]> {
+  }: CreatePropertyAssignmentInput<MediaValueInput>): Promise<PropertyAssignment[]> {
     const property = template
-      .getPropertyByName<ImageProperty>(propertyAssignment.name)
+      .getPropertyByName<MediaProperty>(propertyAssignment.name)
       .getDataOrThrow();
 
     const createdAssignments: PropertyAssignment[] = [];
@@ -28,7 +28,7 @@ export class ImagePropertyAssignmentCreatorService implements PropertyAssignment
         }
 
         return {
-          value: attachment.filename,
+          value: property.assignFilePath(attachment.filename, inputValue.timeLinks),
         };
       }
 

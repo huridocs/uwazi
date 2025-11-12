@@ -30,13 +30,13 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
   ) {}
 
   get actor() {
-    const id = this.context?.actor._id?.toString();
+    const id = this.context?.actor?._id?.toString();
     return id ? { id } : undefined;
   }
 
   get actorId() {
-    if (!this.context?.actor._id) {
-      throw new Error(`Actor was not found. ${JSON.stringify(context)}`);
+    if (!this.context?.actor?._id) {
+      throw new Error(`Actor was not found. ${JSON.stringify(this.context)}`);
     }
 
     return this.context.actor._id.toString();
@@ -44,7 +44,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
 
   get tenant() {
     if (!this.context?.tenant) {
-      throw new Error(`Tenant was not found. ${JSON.stringify(context)}`);
+      throw new Error(`Tenant was not found. ${JSON.stringify(this.context)}`);
     }
 
     return this.context.tenant;

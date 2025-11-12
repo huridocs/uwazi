@@ -4,6 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
@@ -14,12 +15,14 @@ import {
 } from './PropertyAssignmentCreatorService';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
+import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
   select: SelectPropertyAssignmentCreatorService;
   relationship: RelationshipPropertyAssignmentCreatorService;
   image: ImagePropertyAssignmentCreatorService;
+  media: MediaPropertyAssignmentCreatorService;
 };
 
 type CreateProps = {
@@ -41,6 +44,8 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.relationship;
       case 'image':
         return this.props.image;
+      case 'media':
+        return this.props.media;
 
       default:
         return this.props.default;
@@ -50,7 +55,7 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: Express.Multer.File[]
+    attachments: InputFile[]
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,
@@ -77,6 +82,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         multiLanguageEntityDS,
       }),
       image: new ImagePropertyAssignmentCreatorService(),
+      media: new MediaPropertyAssignmentCreatorService(),
       default: new DefaultPropertyAssignmentCreatorService(),
     });
   }
