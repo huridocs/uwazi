@@ -18,6 +18,7 @@ import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
+import { FileContentsIO } from '../../files/FileContentIO';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -34,6 +35,7 @@ const setUpJob = (pdfService = new PDFService()) => {
         fileStorage: FileStorageStrategyFactory.createDefault(),
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
+        filesIO: new FileContentsIO(),
       }),
       wSockets,
     }),

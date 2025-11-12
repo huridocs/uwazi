@@ -140,26 +140,26 @@ class Entity {
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
     targetLanguage: LanguageISO6391,
-    validateForRequired = true
+    shouldValidateForRequired = false
   ) {
     propertyAssignments.forEach(pa => this.setValue(pa, targetLanguage));
 
-    if (validateForRequired) this.validatePropertyAssignments();
+    this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
   setPropertyAssignmentsInAllLanguages(
     propertyAssignments: PropertyAssignment[],
-    validateForRequired = true
+    shouldValidateForRequired = false
   ) {
     propertyAssignments.forEach(pa => this.setValueInAllLanguages(pa));
 
-    if (validateForRequired) this.validatePropertyAssignments();
+    this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
-  private validatePropertyAssignments() {
+  private validatePropertyAssignments(shouldValidateForRequired = false) {
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa);
+        property.validatePropertyAssignment(pa, shouldValidateForRequired);
       })
     );
   }

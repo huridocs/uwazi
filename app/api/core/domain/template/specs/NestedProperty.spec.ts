@@ -42,7 +42,7 @@ describe('NestedProperty', () => {
         required: true,
       });
 
-      expect(() => nested.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => nested.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Nested Property is required'
       );
     });

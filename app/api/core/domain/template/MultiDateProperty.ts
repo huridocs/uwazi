@@ -30,10 +30,11 @@ class MultiDateProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<DateEntry>): PropertyAssignment<DateEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<DateEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<DateEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -42,8 +43,11 @@ class MultiDateProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<DateEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<DateEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

@@ -38,6 +38,7 @@ import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob'
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -144,6 +145,7 @@ export function registerJobs(
         fileStorage: FileStorageStrategyFactory.createDefault(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
+        filesIO: new FileContentsIO(),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });

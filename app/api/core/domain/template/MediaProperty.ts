@@ -34,10 +34,11 @@ class MediaProperty extends AbstractImageProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<MediaEntry>): PropertyAssignment<MediaEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<MediaEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<MediaEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -52,8 +53,11 @@ class MediaProperty extends AbstractImageProperty {
     return timeLinks?.length ? `(${path}, ${timeLinks})` : path;
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<MediaEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<MediaEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

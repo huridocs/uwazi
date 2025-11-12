@@ -223,13 +223,17 @@ class Template {
     return this.clone({ properties });
   }
 
-  createPropertyAssignment(name: string, input: CreatePropertyAssignmentInput) {
+  createPropertyAssignment(
+    name: string,
+    input: CreatePropertyAssignmentInput,
+    shouldValidateForRequired = false
+  ) {
     const property = this.allProperties.find(p => p.name === name);
     if (!property) {
       throw new Error(`Property with name ${name} not found in template ${JSON.stringify(this)}`);
     }
 
-    return property.createPropertyAssignment(input);
+    return property.createPropertyAssignment(input, shouldValidateForRequired);
   }
 
   createDefaultPropertyAssignments(): Record<string, PropertyAssignment> {

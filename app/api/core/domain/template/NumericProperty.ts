@@ -32,10 +32,11 @@ class NumericProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<NumericPropertyValue>): PropertyAssignment {
-    const parsedValue = createSchema(this.required).parse(
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<NumericPropertyValue>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment {
+    const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
       value.filter(v => (v.value as any) !== '')
     );
 
@@ -46,8 +47,11 @@ class NumericProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<NumericPropertyValue>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<NumericPropertyValue>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

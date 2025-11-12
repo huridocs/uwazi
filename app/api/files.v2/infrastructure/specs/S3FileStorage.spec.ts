@@ -17,11 +17,13 @@ import { testingTenants } from 'api/utils/testingTenants';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;
   let s3fileStorage: S3FileStorage;
   let tenant: Tenant;
+  const fileIO = new FileContentsIO();
 
   const toString = async (s3File: GetObjectCommandOutput) => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
@@ -64,7 +66,7 @@ describe('S3FileStorage', () => {
 
     testingTenants.mockCurrentTenant(tenant);
 
-    s3fileStorage = new S3FileStorage(s3Client, tenant);
+    s3fileStorage = new S3FileStorage(s3Client, new FileContentsIO(), tenant);
   });
 
   afterEach(async () => {
@@ -227,7 +229,7 @@ describe('S3FileStorage', () => {
           destination,
         });
 
-        const content = await file.asContentString();
+        const content = await fileIO.asContentString(file);
 
         expect(content.getDataOrThrow()).toBe(Body);
       });
@@ -236,10 +238,12 @@ describe('S3FileStorage', () => {
     });
 
     it('should throw an error if the file does not exist', async () => {
-      await expect(
-        (
-          await s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
-        ).getReadable()
+      const file = await s3fileStorage.getFile({
+        filename: 'file_that_do_not_exist',
+        type: 'document',
+      });
+      await expect(async () =>
+        (await fileIO.asContentString(file)).getDataOrThrow()
       ).rejects.toThrow();
     });
   });

@@ -1095,7 +1095,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Text Property is required'
       );
     });
@@ -1114,7 +1114,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Numeric Property is required'
       );
     });
@@ -1133,7 +1133,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Date Property is required'
       );
     });
@@ -1152,7 +1152,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Date Range Property is required'
       );
     });
@@ -1171,7 +1171,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Multi Date Property is required'
       );
     });
@@ -1190,7 +1190,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Multi Date Range Property is required'
       );
     });
@@ -1210,7 +1210,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Select Property is required'
       );
     });
@@ -1230,7 +1230,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Select/MultiSelect Property is required'
       );
     });
@@ -1249,7 +1249,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Geolocation Property is required'
       );
     });
@@ -1268,7 +1268,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Link Property is required'
       );
     });
@@ -1287,7 +1287,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Markdown Property is required'
       );
     });
@@ -1306,7 +1306,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Image Property is required'
       );
     });
@@ -1325,10 +1325,11 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Media Property is required'
       );
     });
+
     it('should require Nested', () => {
       const template = TemplateBuilder.aTemplate({ id: 'template-req-nested' })
         .withProperties([
@@ -1343,7 +1344,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Nested Property is required'
       );
     });
@@ -1365,7 +1366,7 @@ describe('Entity', () => {
 
       const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([], true)).toThrow(
         'Relationship Property is required'
       );
     });
