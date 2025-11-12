@@ -8,6 +8,7 @@ import date from 'api/utils/date';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
+import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 
 type Input = {
   documentId: string;
@@ -19,6 +20,7 @@ type Deps = {
   filesDS: FilesDataSource;
   fileStorage: FileStorage;
   pdfService: PDFService;
+  filesIO: FileContentsIO;
 };
 
 export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
@@ -40,7 +42,7 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
         originalname: 'originalThumbnailName.jpg',
         filename: `${document.id}.jpg`,
         mimetype: 'image/jpeg',
-        size: (await thumbnailFile.size()).getDataOrThrow(),
+        size: (await this.deps.filesIO.size(thumbnailFile)).getDataOrThrow(),
         id: this.idGenerator.generate(),
         entity: document.entity,
         language: pdfInfo.language.key,
