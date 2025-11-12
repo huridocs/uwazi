@@ -89,7 +89,7 @@ export class RelationshipPropertyAssignmentCreatorService
         return base;
       });
 
-      assignments.push(template.createPropertyAssignment(property.name, { value, language }));
+      assignments.push(template.createPropertyAssignment(property.name, { value, language }, true));
     });
 
     return assignments;

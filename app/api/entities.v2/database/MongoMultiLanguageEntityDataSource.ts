@@ -5,7 +5,6 @@ import {
 import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResultSet';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { search } from 'api/search';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
@@ -20,18 +19,10 @@ export class MongoMultiLanguageEntityDataSource
 {
   protected collectionName = 'entities';
 
-  private templateDS: TemplatesDataSource;
-
   private modifiedSharedIds = new Set<string>();
 
-  constructor(
-    db: Db,
-    transactionManager: MongoTransactionManager,
-    templatesDS: TemplatesDataSource,
-    options: MongoDSOptions = {}
-  ) {
+  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
     super(db, transactionManager, options);
-    this.templateDS = templatesDS;
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
@@ -173,10 +164,7 @@ export class MongoMultiLanguageEntityDataSource
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
 
-    await this.getCollection().bulkWrite(
-      dbos.map(dbo => ({ insertOne: { document: dbo } })),
-      { ordered: false }
-    );
+    await this.getCollection().insertMany(dbos);
 
     this.modifiedSharedIds.add(entity.sharedId);
   }

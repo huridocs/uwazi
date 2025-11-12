@@ -19,6 +19,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { spyOnEmit } from 'api/core/libs/eventsbus/eventTesting';
 import { testingTenants } from 'api/utils/testingTenants';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import entities from '../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
@@ -79,7 +80,7 @@ describe('entities', () => {
       const universalTime = 1;
       jest.spyOn(date, 'currentUTC').mockImplementation(() => universalTime);
       const doc = { title: 'Batman begins' };
-      const user = { _id: db.id() };
+      const user = { _id: permissionsContext.getUserInContext()._id };
 
       const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
 
@@ -114,7 +115,7 @@ describe('entities', () => {
         title: 'the dark knight',
         fullText: { 0: 'the full text!' },
       };
-      const user = { _id: db.id() };
+      const user = { _id: permissionsContext.getUserInContext()._id };
 
       const createdDocument = await entities.save(doc, { user, language: 'en' });
 

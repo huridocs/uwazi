@@ -100,7 +100,7 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       });
 
       propertyAssignments.push(
-        template.createPropertyAssignment(property.name, { value, language })
+        template.createPropertyAssignment(property.name, { value, language }, true)
       );
     });
 

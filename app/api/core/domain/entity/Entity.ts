@@ -15,7 +15,9 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
+import { AccessGrant, EntityPermission } from './EntityPermission';
+import { PermissionType } from './PermissionType';
+import { AccessLevel } from './AccessLevel';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -38,6 +40,7 @@ type Props = {
   published?: boolean;
   sharedId?: string;
   icon?: Icon;
+  permissions?: AccessGrant[];
 };
 
 class Entity {
@@ -53,6 +56,8 @@ class Entity {
 
   icon?: Icon;
 
+  permissions: EntityPermission;
+
   constructor(props: Props) {
     this.userId = props.userId;
     this.template = props.template;
@@ -60,6 +65,7 @@ class Entity {
 
     this.sharedId = props.sharedId || SharedId.create().value;
     this.published = props.published || false;
+    this.permissions = new EntityPermission(props.permissions);
 
     this.translations = this.createTranslations(props.translations);
   }
@@ -80,15 +86,18 @@ class Entity {
     );
   }
 
-  static create(input: CreateInput, idGenerator: IdGenerator) {
+  static create(input: CreateInput) {
     const { languages, userId, template, icon } = input;
 
     const translations = languages.map(language => ({
-      id: idGenerator.generate(),
       language,
     }));
 
     const instance = new Entity({ userId, translations, template, icon });
+
+    if (userId) {
+      instance.addGrantForCreator(userId);
+    }
 
     return instance;
   }
@@ -122,15 +131,32 @@ class Entity {
     return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
+  addGrantForCreator(creatorId: string) {
+    this.permissions = new EntityPermission([
+      { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
+    ]);
+  }
+
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
-    targetLanguage?: LanguageISO6391,
+    targetLanguage: LanguageISO6391,
     shouldValidateForRequired = false
   ) {
-    propertyAssignments.forEach(pa =>
-      targetLanguage ? this.setValue(pa, targetLanguage) : this.setValueInAllLanguages(pa)
-    );
+    propertyAssignments.forEach(pa => this.setValue(pa, targetLanguage));
 
+    this.validatePropertyAssignments(shouldValidateForRequired);
+  }
+
+  setPropertyAssignmentsInAllLanguages(
+    propertyAssignments: PropertyAssignment[],
+    shouldValidateForRequired = false
+  ) {
+    propertyAssignments.forEach(pa => this.setValueInAllLanguages(pa));
+
+    this.validatePropertyAssignments(shouldValidateForRequired);
+  }
+
+  private validatePropertyAssignments(shouldValidateForRequired = false) {
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
         property.validatePropertyAssignment(pa, shouldValidateForRequired);
@@ -140,15 +166,17 @@ class Entity {
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
     const sync: PropertyType[] = [
-      'numeric',
-      'select',
-      'multiselect',
       'date',
+      'daterange',
+      'geolocation',
       'multidate',
       'multidaterange',
+      'multiselect',
+      'select',
+      'numeric',
       'nested',
       'relationship',
-      'geolocation',
+      'generatedid',
     ];
 
     if (sync.includes(value.type)) {

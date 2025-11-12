@@ -4,6 +4,7 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { PropertyNotFoundError } from 'api/core/domain/template/errors';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { ImagePropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/ImagePropertyAssignmentCreatorService';
 
 const factory = getFixturesFactory();
@@ -79,9 +80,9 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
     const attachments = [
-      { filename: 'abc123.jpg' },
-      { filename: 'def456.png' },
-    ] as unknown as Express.Multer.File[];
+      new InputFile({ filename: 'abc123.jpg' } as any),
+      new InputFile({ filename: 'def456.png' } as any),
+    ];
 
     const result = await sut.create({
       template,
@@ -101,7 +102,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     ]);
   });
 
-  it('should throw when an attachment index is missing (empty filename becomes invalid)', async () => {
+  it('should throw when an attachment index is missing', async () => {
     const { sut } = createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
@@ -112,13 +113,13 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     await expect(
       sut.create({
         template,
-        attachments: [{ filename: 'onlyOne.jpg' }] as unknown as Express.Multer.File[],
+        attachments: [new InputFile({ filename: 'onlyOne.jpg' } as any)],
         propertyAssignment: {
           name: 'attached_image_1',
           value: [{ attachment: 5 }],
         },
       })
-    ).rejects.toThrow('Image Property must be a non-empty string.');
+    ).rejects.toThrow('Attachment with index 5 not found.');
   });
 
   it('throws if the property name does not exist in the template', async () => {
