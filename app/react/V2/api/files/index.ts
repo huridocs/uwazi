@@ -4,6 +4,14 @@ import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 
+enum OcrStatus {
+  NONE = 'noOCR',
+  PROCESSING = 'inQueue',
+  ERROR = 'cannotProcess',
+  READY = 'withOCR',
+  UNSUPPORTED_LANGUAGE = 'unsupported_language',
+}
+
 const getById = async (_id: string): Promise<FileType[]> => {
   try {
     const requestParams = new RequestParams({ _id });
@@ -57,5 +65,28 @@ const getPagePlaintext = async (_id: string, page: number, header?: IncomingHttp
   }
 };
 
+const postToOcr = async (filename: string): Promise<{ status: number } | FetchResponseError> => {
+  try {
+    const status = await api.post(`files/${filename}/ocr`);
+    return { status };
+  } catch (e) {
+    return e;
+  }
+};
+
+const getOcrStatus = async (
+  filename: string
+): Promise<{ status: OcrStatus; lastUpdated?: number } | FetchResponseError> => {
+  try {
+    const {
+      json: { status, lastUpdated },
+    } = await api.get(`files/${filename}/ocr`);
+
+    return { status, lastUpdated };
+  } catch (e) {
+    return e;
+  }
+};
+
 export { UploadService } from './UploadService';
-export { getById, getByType, update, remove, getPagePlaintext };
+export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };
