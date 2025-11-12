@@ -835,7 +835,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Text Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Text Property is required'
+      );
     });
 
     it('should require Numeric', () => {
@@ -855,7 +857,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Numeric Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Numeric Property is required'
+      );
     });
 
     it('should require Date', () => {
@@ -875,7 +879,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-1' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Date Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Date Property is required'
+      );
     });
 
     it('should require Date Range', () => {
@@ -895,7 +901,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-2' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Date Range Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Date Range Property is required'
+      );
     });
 
     it('should require Multi Date', () => {
@@ -915,7 +923,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-3' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Multi Date Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Multi Date Property is required'
+      );
     });
 
     it('should require Multi Date Range', () => {
@@ -935,7 +945,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-4' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow(
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
         'Multi Date Range Property is required'
       );
     });
@@ -958,7 +968,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-5' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Select Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Select Property is required'
+      );
     });
 
     it('should require MultiSelect', () => {
@@ -979,7 +991,7 @@ describe('Entity', () => {
         { generate: () => 'id-req-6' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow(
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
         'Select/MultiSelect Property is required'
       );
     });
@@ -1001,7 +1013,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-7' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Geolocation Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Geolocation Property is required'
+      );
     });
 
     it('should require Link', () => {
@@ -1021,7 +1035,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-8' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Link Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Link Property is required'
+      );
     });
 
     it('should require Markdown', () => {
@@ -1041,7 +1057,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-9' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Markdown Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Markdown Property is required'
+      );
     });
 
     it('should require Image', () => {
@@ -1061,7 +1079,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-10' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Image Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Image Property is required'
+      );
     });
 
     it('should require Media', () => {
@@ -1081,7 +1101,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-11' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Media Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Media Property is required'
+      );
     });
 
     it('should require Preview', () => {
@@ -1101,7 +1123,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-12' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Preview Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Preview Property is required'
+      );
     });
 
     it('should require Nested', () => {
@@ -1121,7 +1145,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-13' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Nested Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Nested Property is required'
+      );
     });
 
     it('should require Relationship', () => {
@@ -1144,7 +1170,9 @@ describe('Entity', () => {
         { generate: () => 'id-req-14' }
       );
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Relationship Property is required');
+      expect(() => entity.setPropertyAssignments([], undefined, true)).toThrow(
+        'Relationship Property is required'
+      );
     });
   });
 });

@@ -103,7 +103,7 @@ describe('DateRangeProperty', () => {
         required: true,
       });
 
-      expect(() => dateRange.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => dateRange.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Date Range Property is required'
       );
     });

@@ -37,8 +37,13 @@ class TextProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({ value }: CreatePropertyAssignmentInput<TextPropertyValue>) {
-    const parsedValue = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<TextPropertyValue>,
+    shouldValidateForRequired = false
+  ) {
+    const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value
+    );
 
     return {
       name: this.name,
@@ -47,8 +52,11 @@ class TextProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<TextPropertyValue>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<TextPropertyValue>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

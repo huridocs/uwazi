@@ -124,7 +124,8 @@ class Entity {
 
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
-    targetLanguage?: LanguageISO6391
+    targetLanguage?: LanguageISO6391,
+    shouldValidateForRequired = false
   ) {
     propertyAssignments.forEach(pa =>
       targetLanguage ? this.setValue(pa, targetLanguage) : this.setValueInAllLanguages(pa)
@@ -132,7 +133,7 @@ class Entity {
 
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa);
+        property.validatePropertyAssignment(pa, shouldValidateForRequired);
       })
     );
   }

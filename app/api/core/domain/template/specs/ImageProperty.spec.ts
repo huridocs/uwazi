@@ -138,7 +138,7 @@ describe('ImageProperty', () => {
         required: true,
       });
 
-      expect(() => image.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => image.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Image Property is required'
       );
     });

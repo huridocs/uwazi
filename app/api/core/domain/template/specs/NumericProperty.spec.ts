@@ -80,7 +80,7 @@ describe('NumericProperty', () => {
         required: true,
       });
 
-      expect(() => numeric.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => numeric.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Numeric Property is required'
       );
     });
