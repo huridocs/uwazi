@@ -37,7 +37,7 @@ export class ImagePropertyAssignmentCreatorService implements PropertyAssignment
       };
     });
 
-    createdAssignments.push(property.createPropertyAssignment({ value: mapped }));
+    createdAssignments.push(property.createPropertyAssignment({ value: mapped }, true));
 
     return createdAssignments;
   }
