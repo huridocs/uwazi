@@ -13,7 +13,7 @@ export const RegisterCsvImportUseCaseFactory = () => {
   const tenant = tenants.current();
   const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
   const idGenerator = IdGeneratorFactory.default();
-  const jobsDispatcher = DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 15 });
+  const jobsDispatcher = DefaultDispatcher(tenant.name);
   return new RegisterCsvImportUseCase({
     csvImportsDS,
     fileStorage,

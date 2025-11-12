@@ -3,6 +3,7 @@ export enum CsvImportStatus {
   Validating = 'validating',
   ExtractingFiles = 'extracting files',
   FilesExtracted = 'files extracted',
+  Retrying = 'retrying',
   Processing = 'processing',
   Completed = 'completed',
   Failed = 'failed',

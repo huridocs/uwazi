@@ -161,6 +161,19 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     }
   }
 
+  async markAsFailed(importId: string) {
+    await this.setStatus(importId, CsvImportStatus.Failed);
+  }
+
+  async handleError(importId: string, callbacks: Callbacks | undefined, error: Error) {
+    CsvExtractUploadedZipUseCase.emitError(callbacks, importId, error);
+    if (error instanceof NonRetryableJobError) {
+      await this.markAsFailed(importId);
+    } else {
+      await this.setStatus(importId, CsvImportStatus.Retrying);
+    }
+  }
+
   private async processExtraction(params: {
     importId: string;
     isZip: boolean;
@@ -183,10 +196,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       await this.setStatus(params.importId, CsvImportStatus.FilesExtracted);
       CsvExtractUploadedZipUseCase.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
-      CsvExtractUploadedZipUseCase.emitError(params.callbacks, params.importId, e as Error);
-      if (e instanceof NonRetryableJobError) {
-        await this.markAsFailed(params.importId);
-      }
+      await this.handleError(params.importId, params.callbacks, e as Error);
       throw e;
     }
   }
@@ -207,9 +217,5 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename,
       callbacks,
     });
-  }
-
-  async markAsFailed(importId: string) {
-    await this.setStatus(importId, CsvImportStatus.Failed);
   }
 }
