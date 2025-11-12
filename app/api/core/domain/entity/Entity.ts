@@ -15,7 +15,6 @@ import {
   EntityTranslation,
   EntityTranslationProps,
 } from 'api/core/domain/entity/EntityTranslation';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
@@ -87,11 +86,10 @@ class Entity {
     );
   }
 
-  static create(input: CreateInput, idGenerator: IdGenerator) {
+  static create(input: CreateInput) {
     const { languages, userId, template, icon } = input;
 
     const translations = languages.map(language => ({
-      id: idGenerator.generate(),
       language,
     }));
 
@@ -139,19 +137,23 @@ class Entity {
     ]);
   }
 
-  /**
-   * Partially updates the entity's property assignments and validates all of them.
-   * If targetLanguage is provided, only that language is updated; otherwise ALL translations are SYNCED.
-   */
   setPropertyAssignments(
     propertyAssignments: PropertyAssignment[],
-    targetLanguage?: LanguageISO6391
+    targetLanguage: LanguageISO6391,
+    validateForRequired = true
   ) {
-    propertyAssignments.forEach(pa =>
-      targetLanguage ? this.setValue(pa, targetLanguage) : this.setValueInAllLanguages(pa)
-    );
+    propertyAssignments.forEach(pa => this.setValue(pa, targetLanguage));
 
-    this.validatePropertyAssignments();
+    if (validateForRequired) this.validatePropertyAssignments();
+  }
+
+  setPropertyAssignmentsInAllLanguages(
+    propertyAssignments: PropertyAssignment[],
+    validateForRequired = true
+  ) {
+    propertyAssignments.forEach(pa => this.setValueInAllLanguages(pa));
+
+    if (validateForRequired) this.validatePropertyAssignments();
   }
 
   private validatePropertyAssignments() {

@@ -13,6 +13,7 @@ import { SettingsDataSource } from './contracts/SettingsDataSource';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { EntityCreatorService } from './EntityCreatorService';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
@@ -34,31 +35,32 @@ type Deps = {
 };
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input): Promise<Output> {
-    const service = PropertyAssignmentCreatorServiceStrategy.create(this.deps);
+  protected async executeAsync({
+    templateId,
+    icon,
+    propertyAssignments: propertyAssignmentsInput,
+    attachments,
+  }: Input): Promise<Output> {
+    const propertyAssignmentCreatorService = PropertyAssignmentCreatorServiceStrategy.create(
+      this.deps
+    );
+    const entityCreatorService = new EntityCreatorService(this.deps);
 
-    const template = await this.getTemplateByIdOrDefault(input.templateId);
-    const languages = await this.deps.settingsDS.getLanguageKeys();
+    const entity = await entityCreatorService.create({
+      templateId,
+      icon,
+      userId: this.actor?.id,
+    });
 
-    const entity = Entity.create(
-      {
-        languages,
-        userId: this.actor?.id,
-        template,
-        icon: input.icon,
-      },
-      this.idGenerator
+    const propertyAssignments = await propertyAssignmentCreatorService.bulkCreate(
+      propertyAssignmentsInput,
+      entity.template,
+      attachments
     );
 
-    const propertyAssignments = await service.bulkCreate(
-      input.propertyAssignments,
-      template,
-      input.attachments
-    );
+    entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, false);
 
-    entity.setPropertyAssignments(propertyAssignments);
-
-    await ArrayUtils.sequentialFor(input.attachments, async attachment =>
+    await ArrayUtils.sequentialFor(attachments, async attachment =>
       this.deps.filesStorage.storeFile({
         type: 'attachment',
         file: attachment.contents,
@@ -68,9 +70,9 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       await this.deps.multiLanguageEntityDS.create(entity);
 
-      if (input.attachments.length > 0) {
+      if (attachments.length > 0) {
         await this.deps.filesDS.bulkCreate(
-          input.attachments.map(
+          attachments.map(
             attachment =>
               new Attachment({
                 id: this.idGenerator.generate(),
@@ -87,14 +89,6 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     });
 
     return entity;
-  }
-
-  private async getTemplateByIdOrDefault(templateId?: string) {
-    if (templateId) {
-      return (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
-    }
-
-    return (await this.deps.templatesDS.getDefaultTemplate()).getDataOrThrow();
   }
 }
 

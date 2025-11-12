@@ -120,16 +120,13 @@ describe('Entity', () => {
   it('should create an Entity in multiple languages', () => {
     const template = createSampleTemplate();
 
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template,
-      },
-      { generate: () => 'id-789' }
-    );
+    const entity = Entity.create({
+      languages: ['en', 'fr', 'es'],
+      template,
+    });
 
     const entityLanguage = new EntityTranslation({
-      id: 'id-789',
+      id: undefined,
       metadata: template.createDefaultPropertyAssignments(),
       language: 'en',
     });
@@ -148,14 +145,11 @@ describe('Entity', () => {
   it('should grant access for Entity creator when present', () => {
     const template = createSampleTemplate();
 
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template,
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+    const entity = Entity.create({
+      languages: ['en', 'fr', 'es'],
+      template,
+      userId: 'user-456',
+    });
 
     expect(entity.permissions.accessGrants).toEqual([
       { refId: 'user-456', type: PermissionType.User, level: AccessLevel.Write },
@@ -163,16 +157,13 @@ describe('Entity', () => {
   });
 
   it('should sync values in all languages when no language is specified', () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+    const entity = Entity.create({
+      languages: ['en', 'fr', 'es'],
+      template: createSampleTemplate(),
+      userId: 'user-456',
+    });
 
-    entity.setPropertyAssignments([
+    entity.setPropertyAssignmentsInAllLanguages([
       entity.template.createPropertyAssignment('text', {
         value: [{ value: 'A description in multiple languages' }],
       }),
@@ -364,27 +355,24 @@ describe('Entity', () => {
   });
 
   it('should allow partial updates when setting values', () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'fr', 'es'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+    const entity = Entity.create({
+      languages: ['en', 'fr', 'es'],
+      template: createSampleTemplate(),
+      userId: 'user-456',
+    });
 
-    entity.setPropertyAssignments([
+    entity.setPropertyAssignmentsInAllLanguages([
       entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
     ]);
 
-    entity.setPropertyAssignments([
+    entity.setPropertyAssignmentsInAllLanguages([
       entity.template.createPropertyAssignment('text', {
         value: [{ value: 'A description in multiple languages' }],
       }),
     ]);
 
     const entityLanguage = new EntityTranslation({
-      id: 'id-789',
+      id: undefined,
       language: 'en',
       metadata: {
         ...entity.template.createDefaultPropertyAssignments(),
@@ -406,14 +394,11 @@ describe('Entity', () => {
   });
 
   it('should update the editDate when setting values', async () => {
-    const entity = Entity.create(
-      {
-        languages: ['en', 'pt'],
-        template: createSampleTemplate(),
-        userId: 'user-456',
-      },
-      { generate: () => 'id-789' }
-    );
+    const entity = Entity.create({
+      languages: ['en', 'pt'],
+      template: createSampleTemplate(),
+      userId: 'user-456',
+    });
 
     entity.setPropertyAssignments(
       [
@@ -446,14 +431,11 @@ describe('Entity', () => {
   describe('Property synchronization across languages', () => {
     describe('Properties that SHOULD sync across all languages', () => {
       it('should sync numeric properties even when target language is specified', () => {
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr', 'es'],
-            template: createSampleTemplate(),
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr', 'es'],
+          template: createSampleTemplate(),
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
@@ -477,14 +459,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [template.createPropertyAssignment('eventDate', { value: [{ value: 1609459200000 }] })],
@@ -511,14 +490,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -549,14 +525,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -589,14 +562,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -632,14 +602,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -670,14 +637,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -725,14 +689,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -750,14 +711,11 @@ describe('Entity', () => {
 
     describe('Properties that should NOT sync across languages', () => {
       it('should NOT sync text properties when target language is specified', () => {
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr', 'es'],
-            template: createSampleTemplate(),
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr', 'es'],
+          template: createSampleTemplate(),
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -798,14 +756,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -845,14 +800,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -892,14 +844,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -939,14 +888,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         entity.setPropertyAssignments(
           [
@@ -986,14 +932,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         const selectAssignments = [
           template.createPropertyAssignment('select', {
@@ -1024,14 +967,11 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          {
-            languages: ['en', 'fr'],
-            template,
-            userId: 'user-456',
-          },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({
+          languages: ['en', 'fr'],
+          template,
+          userId: 'user-456',
+        });
 
         const multiSelectAssignments = [
           template.createPropertyAssignment('multiselect', {
@@ -1050,7 +990,7 @@ describe('Entity', () => {
           }),
         ];
 
-        entity.setPropertyAssignments(multiSelectAssignments);
+        entity.setPropertyAssignmentsInAllLanguages(multiSelectAssignments);
 
         expect(entity.getTranslation('en').metadata.multiselect).toEqual(multiSelectAssignments[0]);
         expect(entity.getTranslation('fr').metadata.multiselect).toEqual(multiSelectAssignments[1]);
@@ -1073,12 +1013,9 @@ describe('Entity', () => {
           ])
           .build();
 
-        const entity = Entity.create(
-          { languages: ['en', 'fr'], template, userId: 'user-456' },
-          { generate: () => 'id-789' }
-        );
+        const entity = Entity.create({ languages: ['en', 'fr'], template, userId: 'user-456' });
 
-        entity.setPropertyAssignments([
+        entity.setPropertyAssignmentsInAllLanguages([
           template.createPropertyAssignment('text_rel', {
             value: [
               {
@@ -1156,12 +1093,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-1' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Text Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Text Property is required'
+      );
     });
 
     it('should require Numeric', () => {
@@ -1176,12 +1112,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-1' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Numeric Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Numeric Property is required'
+      );
     });
 
     it('should require Date', () => {
@@ -1196,12 +1131,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-1' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Date Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Date Property is required'
+      );
     });
 
     it('should require Date Range', () => {
@@ -1216,12 +1150,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-2' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Date Range Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Date Range Property is required'
+      );
     });
 
     it('should require Multi Date', () => {
@@ -1236,12 +1169,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-3' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Multi Date Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Multi Date Property is required'
+      );
     });
 
     it('should require Multi Date Range', () => {
@@ -1256,12 +1188,9 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-4' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
         'Multi Date Range Property is required'
       );
     });
@@ -1279,12 +1208,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-5' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Select Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Select Property is required'
+      );
     });
 
     it('should require MultiSelect', () => {
@@ -1300,12 +1228,9 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-6' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow(
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
         'Select/MultiSelect Property is required'
       );
     });
@@ -1322,12 +1247,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-7' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Geolocation Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Geolocation Property is required'
+      );
     });
 
     it('should require Link', () => {
@@ -1342,12 +1266,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-8' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Link Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Link Property is required'
+      );
     });
 
     it('should require Markdown', () => {
@@ -1362,12 +1285,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-9' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Markdown Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Markdown Property is required'
+      );
     });
 
     it('should require Image', () => {
@@ -1382,12 +1304,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-10' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Image Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Image Property is required'
+      );
     });
 
     it('should require Media', () => {
@@ -1402,12 +1323,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-11' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Media Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Media Property is required'
+      );
     });
     it('should require Nested', () => {
       const template = TemplateBuilder.aTemplate({ id: 'template-req-nested' })
@@ -1421,12 +1341,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-13' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Nested Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Nested Property is required'
+      );
     });
 
     it('should require Relationship', () => {
@@ -1444,12 +1363,11 @@ describe('Entity', () => {
         ])
         .build();
 
-      const entity = Entity.create(
-        { languages: ['en'], template, userId: 'user-req' },
-        { generate: () => 'id-req-14' }
-      );
+      const entity = Entity.create({ languages: ['en'], template, userId: 'user-req' });
 
-      expect(() => entity.setPropertyAssignments([])).toThrow('Relationship Property is required');
+      expect(() => entity.setPropertyAssignmentsInAllLanguages([])).toThrow(
+        'Relationship Property is required'
+      );
     });
   });
 });
