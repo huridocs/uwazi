@@ -42,6 +42,7 @@ import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_def
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 
@@ -151,6 +152,7 @@ export function registerJobs(
         fileStorage: FileStorageStrategyFactory.createDefault(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
+        filesIO: new FileContentsIO(),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });

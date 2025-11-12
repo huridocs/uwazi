@@ -97,7 +97,7 @@ describe('TextProperty', () => {
         required: true,
       });
 
-      expect(() => text.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => text.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Text Property is required'
       );
     });

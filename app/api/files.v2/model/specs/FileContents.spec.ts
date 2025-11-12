@@ -1,12 +1,10 @@
 // eslint-disable-next-line node/no-restricted-import
-import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, unlink } from 'fs/promises';
 
 import { tmpdir } from 'os';
 import path from 'path';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
 import { FileContents } from '../FileContents';
 
 describe('FileContents', () => {
@@ -37,60 +35,15 @@ describe('FileContents', () => {
       });
     });
 
-    describe('size', () => {
-      it('should return the size in bytes', async () => {
-        const file = new FileContents(testFilePath);
-        expect((await file.size()).getData()).toBe(42);
-      });
-    });
-
-    describe('getReadable', () => {
-      it('should return a readable stream', async () => {
+    describe('read', () => {
+      it('should return async iterable with correct content', async () => {
         const file = new FileContents(testFilePath);
 
-        const readable = await file.getReadable();
-        expect(readable.getDataOrThrow()).toBeInstanceOf(Readable);
-      });
-
-      it('should return readable stream with correct content', async () => {
-        const file = new FileContents(testFilePath);
-
-        const readable = await file.getReadable();
-        const outputPath = path.join(testDir, 'output.txt');
-
-        await pipeline(readable.getDataOrThrow(), createWriteStream(outputPath));
-        const outputContent = await readFile(outputPath, 'utf8');
-
+        let outputContent = '';
+        for await (const chunk of file.read()) {
+          outputContent += chunk;
+        }
         expect(outputContent).toBe(testContent);
-
-        await unlink(outputPath);
-      });
-    });
-
-    describe('toDisk', () => {
-      it('should return itself (already on disk)', async () => {
-        const file = new FileContents(testFilePath);
-        expect(await file.toDisk()).toBe(file);
-      });
-    });
-
-    describe('toBuffer', () => {
-      it('should return file content as buffer', async () => {
-        const file = new FileContents(testFilePath);
-
-        const buffer = (await file.toBuffer()).getDataOrThrow();
-        expect(buffer).toBeInstanceOf(Buffer);
-        expect(buffer.toString('utf8')).toBe(testContent);
-      });
-    });
-
-    describe('asContentString', () => {
-      it('should return file content as string', async () => {
-        const file = new FileContents(testFilePath);
-
-        const content = (await file.asContentString()).getDataOrThrow();
-        expect(content).toBe(testContent);
-        expect(typeof content).toBe('string');
       });
     });
 
@@ -107,126 +60,49 @@ describe('FileContents', () => {
   describe('Callback based', () => {
     describe('constructor', () => {
       it('should create FileContents with callback object', () => {
-        const mockCallback = jest.fn(async () => Readable.from(['callback content']));
+        const streamCallback = jest.fn(async function* streamCallback() {
+          yield Buffer.from('callback content');
+        });
+
         const fileContents = new FileContents({
           filename: 'callback-file.txt',
-          readableCallback: mockCallback,
+          streamCallback,
         });
 
         expect(fileContents.filename).toBe('callback-file.txt');
-        expect(mockCallback).not.toHaveBeenCalled();
+        expect(streamCallback).not.toHaveBeenCalled();
       });
     });
 
-    describe('toDisk', () => {
-      it('should return a new FileContents object stored on disk', async () => {
-        const mockCallback = jest.fn(async () => Readable.from(['callback content']));
-        const fileContents = new FileContents({
-          filename: 'callback-file.txt',
-          readableCallback: mockCallback,
-        });
-
-        const diskContents = await fileContents.toDisk();
-        const diskFullPath = diskContents.getFullPath().getDataOrThrow();
-
-        expect(await readFile(diskFullPath, 'utf8')).toBe('callback content');
-      });
-    });
-
-    describe('getReadable()', () => {
-      it('should return readable stream from callback', async () => {
-        const callbackContent = 'callback stream content';
-        const mockCallback = jest.fn(async () => Readable.from([callbackContent]));
-        const fileContents = new FileContents({
-          filename: 'callback-stream.txt',
-          readableCallback: mockCallback,
-        });
-
-        const readable = await fileContents.getReadable();
-
-        expect(readable.getDataOrThrow()).toBeInstanceOf(Readable);
-        expect(mockCallback).toHaveBeenCalledTimes(1);
-      });
-
-      it('should allow multiple reads from callback', async () => {
+    describe('read()', () => {
+      it('should return a file contents asyncIterable', async () => {
         const callbackContent = 'multiple reads content';
-        const fileContents = new FileContents({
-          filename: 'multiple-reads.txt',
-          readableCallback: async () => Readable.from([callbackContent]),
-        });
+        async function* streamCallback() {
+          yield Buffer.from(callbackContent);
+        }
 
-        const content1 = await fileContents.asContentString();
-        const content2 = await fileContents.asContentString();
+        const fileContents = new FileContents({ filename: 'multiple-reads.txt', streamCallback });
 
-        expect(content1.getDataOrThrow()).toBe(callbackContent);
-        expect(content2.getDataOrThrow()).toBe(callbackContent);
-      });
-    });
+        let result = '';
+        for await (const chunk of fileContents.read()) {
+          result += chunk;
+        }
 
-    describe('toBuffer()', () => {
-      it('should return buffer from callback', async () => {
-        const callbackContent = 'async callback buffer content';
-        const fileContents = new FileContents({
-          filename: 'async-callback-buffer.txt',
-          readableCallback: async () => Readable.from([callbackContent]),
-        });
-
-        const buffer = (await fileContents.toBuffer()).getDataOrThrow();
-
-        expect(buffer).toBeInstanceOf(Buffer);
-        expect(buffer.toString('utf8')).toBe(callbackContent);
-      });
-    });
-
-    describe('asContentString()', () => {
-      it('should return string content from callback', async () => {
-        const callbackContent = 'callback string content';
-        const fileContents = new FileContents({
-          filename: 'callback-string.txt',
-          readableCallback: async () => Readable.from([callbackContent]),
-        });
-
-        const content = (await fileContents.asContentString()).getDataOrThrow();
-
-        expect(typeof content).toBe('string');
-        expect(content).toBe(callbackContent);
+        expect(result).toBe(callbackContent);
       });
     });
 
     describe('getFullPath()', () => {
       it('should return undefined for  FileContents', () => {
+        async function* streamCallback() {
+          yield Buffer.from('content');
+        }
         const fileContents = new FileContents({
           filename: 'callback-file.txt',
-          readableCallback: async () => Readable.from(['content']),
+          streamCallback,
         });
 
         expect(() => fileContents.getFullPath().getDataOrThrow()).toThrow();
-      });
-    });
-
-    describe('callback error handling', () => {
-      it('should throw error when callback throws', async () => {
-        const errorMessage = 'Callback error';
-        const fileContents = new FileContents({
-          filename: 'error-callback.txt',
-          readableCallback: () => {
-            throw new Error(errorMessage);
-          },
-        });
-
-        await expect(fileContents.toBuffer()).rejects.toThrow(errorMessage);
-      });
-
-      it('should throw error when async callback rejects', async () => {
-        const errorMessage = 'Async callback error';
-        const fileContents = new FileContents({
-          filename: 'async-error-callback.txt',
-          readableCallback: async () => {
-            throw new Error(errorMessage);
-          },
-        });
-
-        await expect(fileContents.toBuffer()).rejects.toThrow(errorMessage);
       });
     });
   });

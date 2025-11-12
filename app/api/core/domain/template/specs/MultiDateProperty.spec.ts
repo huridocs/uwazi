@@ -75,7 +75,7 @@ describe('MultiDateProperty', () => {
         required: true,
       });
 
-      expect(() => multiDate.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => multiDate.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Multi Date Property is required'
       );
     });

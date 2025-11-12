@@ -44,11 +44,15 @@ class AbstractSelectProperty extends FilterableProperty {
   }
 
   createPropertyAssignment(
-    input: CreatePropertyAssignmentInput<SelectionEntry>
+    input: CreatePropertyAssignmentInput<SelectionEntry>,
+    shouldValidateForRequired = false
   ): SelectPropertyAssignment {
     const deduplicated = ArrayUtils.deduplicate(input.value, v => v.value);
 
-    const { language, value } = createSchema(this.required, this.type).parse({
+    const { language, value } = createSchema(
+      shouldValidateForRequired ? this.required : false,
+      this.type
+    ).parse({
       ...input,
       value: deduplicated,
     });
@@ -61,8 +65,13 @@ class AbstractSelectProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(propertyAssignment: SelectPropertyAssignment): void {
-    createSchema(this.required, this.type).parse(propertyAssignment);
+  validatePropertyAssignment(
+    propertyAssignment: SelectPropertyAssignment,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false, this.type).parse(
+      propertyAssignment
+    );
   }
 }
 

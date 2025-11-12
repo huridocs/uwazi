@@ -1,6 +1,7 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -17,6 +18,7 @@ describe('FileSystemStorage', () => {
   let fileSystemStorage: FileSystemStorage;
   let tenant: Tenant;
   let pathManager: PathManager;
+  const fileIO = new FileContentsIO();
 
   const toString = async (file: Readable) => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
@@ -74,7 +76,7 @@ describe('FileSystemStorage', () => {
           type: directory.name,
         });
 
-        const content = await file.asContentString();
+        const content = await fileIO.asContentString(file);
 
         expect(content.getDataOrThrow()).toBe(createFileContent(directory.name));
       });
@@ -89,7 +91,7 @@ describe('FileSystemStorage', () => {
         destination: 'custom/path',
       });
 
-      const content = await file.asContentString();
+      const content = await fileIO.asContentString(file);
 
       expect(content.getDataOrThrow()).toBe(createFileContent('customPath'));
     });
@@ -105,7 +107,7 @@ describe('FileSystemStorage', () => {
       const files = await fileSystemStorage.getFiles(inputs);
 
       const promises = files.map(async (file, index) => {
-        const content = await file.asContentString();
+        const content = await fileIO.asContentString(file);
         expect(content.getDataOrThrow()).toBe(
           createFileContent(pathManager.directories[index].name)
         );

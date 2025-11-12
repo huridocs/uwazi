@@ -10,6 +10,7 @@ import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from 'shared/language';
 import { inspect } from 'util';
+import { FileContentsIO } from '../files/FileContentIO';
 
 class FileIsNotAPDF extends DomainError {
   constructor(file: FileContents, cause?: Error) {
@@ -20,12 +21,15 @@ class FileIsNotAPDF extends DomainError {
 class PDFServiceAdapter implements PDFService {
   private shell: ShellExecutor;
 
-  constructor(shell?: ShellExecutor) {
+  private filesIO: FileContentsIO;
+
+  constructor(shell?: ShellExecutor, filesIO?: FileContentsIO) {
     this.shell = shell || new ShellExecutor();
+    this.filesIO = filesIO || new FileContentsIO();
   }
 
   async extractText(file: FileContents) {
-    const diskFile = await file.toDisk();
+    const diskFile = await this.filesIO.toDisk(file);
     const result = await this.executeShellCommand(
       'pdftotext',
       [diskFile.getFullPath().getDataOrThrow(), '-'],
@@ -54,7 +58,7 @@ class PDFServiceAdapter implements PDFService {
     const thumbFileName = `thumbnail_${Date.now()}_${Math.random()}`;
     const thumbnailPath = path.join(os.tmpdir(), thumbFileName);
 
-    const diskFile = await file.toDisk();
+    const diskFile = await this.filesIO.toDisk(file);
     const result = await this.executeShellCommand(
       'pdftoppm',
       [

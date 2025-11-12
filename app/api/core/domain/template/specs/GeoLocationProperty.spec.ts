@@ -56,7 +56,7 @@ describe('GeoLocationProperty', () => {
         required: true,
       });
 
-      expect(() => prop.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => prop.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Geolocation Property is required'
       );
     });

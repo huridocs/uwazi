@@ -39,10 +39,11 @@ class LinkProperty extends Property {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<LinkEntry>): PropertyAssignment<LinkEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<LinkEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<LinkEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -51,8 +52,11 @@ class LinkProperty extends Property {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<LinkEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<LinkEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 
