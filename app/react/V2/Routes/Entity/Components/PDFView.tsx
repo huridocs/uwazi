@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
+import { isClient } from 'app/utils';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
 import { getPagePlaintext } from 'V2/api/files';
@@ -8,12 +9,20 @@ import { TemplateLabel } from 'V2/Components/Metadata';
 import { Truncate } from 'V2/Components/UI';
 import { PlainText } from './PlainText';
 
-const PDFView = ({ entity }: { entity: Entity }) => {
+const PDFView = ({
+  entity,
+  pagePlaintext,
+  page,
+}: {
+  entity: Entity;
+  page: string;
+  pagePlaintext?: string;
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [pageText, setPageText] = useState('');
+  const [pageText, setPageText] = useState(pagePlaintext || '');
+  const firstLoad = useRef(true);
 
-  const isRaw = searchParams.get('raw') === 'true';
-  const pageParam = searchParams.get('page') || undefined;
+  const isRaw = !isClient || searchParams.get('raw') === 'true';
 
   const onSelect = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -30,14 +39,20 @@ const PDFView = ({ entity }: { entity: Entity }) => {
   );
 
   useEffect(() => {
-    if (isRaw && entity.mainDocument) {
-      getPagePlaintext(entity.mainDocument._id as string, Number.parseInt(pageParam || '1', 10))
+    if (isRaw && !firstLoad && entity.mainDocument) {
+      getPagePlaintext(entity.mainDocument._id as string, Number.parseInt(page || '1', 10))
         .then(text => setPageText(text))
         .catch(_e => {
           setPageText('');
         });
+    } else {
+      firstLoad.current = false;
     }
-  }, [entity.mainDocument, isRaw, pageParam]);
+
+    return () => {
+      firstLoad.current = true;
+    };
+  }, [entity.mainDocument, isRaw, page]);
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
@@ -76,7 +91,7 @@ const PDFView = ({ entity }: { entity: Entity }) => {
         </Truncate>
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
-        <PDF fileUrl={`/api/files/${filename}`} scrollToPage={pageParam} />
+        <PDF fileUrl={`/api/files/${filename}`} scrollToPage={page} />
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
         <PlainText text={pageText} />
