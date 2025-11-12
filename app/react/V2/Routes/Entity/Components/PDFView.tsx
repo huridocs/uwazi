@@ -91,7 +91,7 @@ const PDFView = ({
         </Truncate>
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
-        <PDF fileUrl={`/api/files/${filename}`} scrollToPage={page} />
+        {isClient && <PDF fileUrl={`/api/files/${filename}`} scrollToPage={page} />}
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
         <PlainText text={pageText} />

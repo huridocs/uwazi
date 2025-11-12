@@ -5,6 +5,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
+import * as utils from 'app/utils';
 import { Entity, shouldRevalidate } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
@@ -47,7 +48,7 @@ describe('Entity view', () => {
 
   it('should render PDF and metadata', async () => {
     render(
-      <TestRouterContext loaderData={sampleEntity}>
+      <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
         <Entity />
       </TestRouterContext>
     );
@@ -61,7 +62,7 @@ describe('Entity view', () => {
   describe('Tabs', () => {
     beforeEach(async () => {
       render(
-        <TestRouterContext loaderData={sampleEntity}>
+        <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
           <Entity />
         </TestRouterContext>
       );
@@ -118,13 +119,15 @@ describe('Entity view', () => {
 
   describe('Plain text view', () => {
     it('should switch to plain text view', async () => {
-      const mainDocumentFile = {
-        fullText: { 1: 'This is the plain text' },
-        filename: 'file.pdf',
-      };
+      const mainDocumentFile = { filename: 'file.pdf' };
 
       render(
-        <TestRouterContext loaderData={{ ...sampleEntity, mainDocument: mainDocumentFile }}>
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: 'This is the plain text',
+          }}
+        >
           <Entity />
         </TestRouterContext>
       );
@@ -148,15 +151,15 @@ describe('Entity view', () => {
     });
 
     it('shoul display the plain text view page based on the url', async () => {
-      const mainDocumentFile = {
-        fullText: { 1: 'Shown from url plain text', 5: 'Page 5 content' },
-        filename: 'file.pdf',
-      };
+      const mainDocumentFile = { filename: 'file.pdf' };
 
       render(
         <TestRouterContext
           path="/entity/:sharedId"
-          loaderData={{ ...sampleEntity, mainDocument: mainDocumentFile }}
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: 'Page 5 content',
+          }}
           initialEntries={['/entity/shared1?raw=true&page=5']}
         >
           <Entity />
@@ -166,9 +169,60 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       await waitFor(() => {
-        expect(screen.queryByText('Shown from url plain text')).not.toBeInTheDocument();
+        expect(screen.getByTestId('mock-pdf').parentElement?.classList).toContain('hidden');
         expect(screen.getByText('Page 5 content').parentElement?.classList).toContain('block');
       });
+    });
+
+    it('should display raw page only if SSRendering', async () => {
+      const mainDocumentFile = { filename: 'file.pdf' };
+
+      const originalIsClient = (utils as any).isClient;
+
+      (utils as any).isClient = false;
+
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: 'Shown from ssr plain text',
+          }}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();
+      expect(screen.getByText('Shown from ssr plain text').parentElement?.classList).toContain(
+        'block'
+      );
+
+      (utils as any).isClient = originalIsClient;
+    });
+  });
+
+  describe('Entity without mainDocument', () => {
+    it('does not render Document tab and defaults to Metadata', async () => {
+      const entityNoDoc = { ...sampleEntity, mainDocument: undefined } as any;
+
+      render(
+        <TestRouterContext loaderData={{ entity: entityNoDoc, pagePlaintext: '' }}>
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+
+      expect(mainTabs.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+      expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      );
     });
   });
 
