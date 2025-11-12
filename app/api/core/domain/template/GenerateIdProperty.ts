@@ -33,10 +33,11 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<GeneratedIdEntry>): PropertyAssignment<GeneratedIdEntry> {
-    const parsedValue = createSchema(this.required).parse(
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<GeneratedIdEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<GeneratedIdEntry> {
+    const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
       value?.length ? value : [{ value: generateID(3, 4, 4) }] // Todo: Internalize ID generation
     );
 
@@ -47,8 +48,11 @@ class GenerateIdProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<GeneratedIdEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<GeneratedIdEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

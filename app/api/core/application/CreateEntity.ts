@@ -56,7 +56,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       input.attachments
     );
 
-    entity.setPropertyAssignments(propertyAssignments);
+    entity.setPropertyAssignments(propertyAssignments, undefined, true);
 
     await ArrayUtils.sequentialFor(input.attachments, async attachment =>
       this.deps.filesStorage.storeFile({

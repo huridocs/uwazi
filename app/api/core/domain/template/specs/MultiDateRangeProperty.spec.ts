@@ -87,7 +87,7 @@ describe('MultiDateRangeProperty', () => {
         required: true,
       });
 
-      expect(() => multiDateRange.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => multiDateRange.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Multi Date Range Property is required'
       );
     });
