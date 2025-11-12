@@ -62,7 +62,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Job dependencies:
 
   - `useCase`: `CsvExtractUploadedZipUseCase`
-  - `sockets`: `WorkerSockets` wrapper exposing `emitToSession` (and `emitToTenant` if ever needed)
+  - `sockets`: `V1WebSocketsWrapper` exposing `emitToSession` (and `emitToTenant` if ever needed)
 
 - Behavior:
 
@@ -77,7 +77,9 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
        - Copy the original uploaded file to `csv-imports/{importId}/extracted/import.csv`.
        - This enforces the same downstream invariant as the ZIP path: a canonical `import.csv` in `extracted/`.
   4. Idempotency: overwrite-on-retry is acceptable for MVP (safe to re-run job).
-  5. On success, set status to `files extracted` only via domain mutation + DS update. Do not advance to `processing`. On failure, set status to `failed` via domain mutation and include error note/log if available.
+  5. On success, set status to `files extracted` only via domain mutation + DS update. Do not advance to `processing`. On failure:
+     - If non-retriable → mark `failed`.
+     - If retriable → set `retrying` and let the queue reschedule.
 
 - Rationale for CSV copy:
   - Policy expects ZIPs to contain a flat root with `import.csv`. To keep downstream logic identical, when the upload is a single CSV we normalize by copying it to `extracted/import.csv` so the next stage always looks in one place.
@@ -105,7 +107,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Proposal (MVP-friendly):
   - Capture `sessionId` in the controller from `connect.sid` and include it in job params.
-  - Introduce a worker-side emit helper to target a room by `sessionId` (mirroring `emitToTenant` but to the session room). This allows jobs to emit without request context.
+  - Use `V1WebSocketsWrapper.emitToSession(sessionId, ...)` from job/use-case callbacks to notify only the uploader session.
   - Events (prefix suggestion): `csvImport:extract:start|progress|success|error` with `{ importId, details }`.
   - Future: consider a `tenant:admins` room to optionally notify admins only; keep MVP scoped to the uploader’s session to avoid noise.
 
@@ -125,21 +127,25 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Domain:
 
   - `CsvImportDomain.create`, `CsvImportDomain.withStorage`, `CsvImportDomain.withStatus`
+  - Enum: `CsvImportStatus` (Queued, Validating, ExtractingFiles, FilesExtracted, Retrying, Processing, Completed, Failed, Cancelled)
 
 - Jobs framework:
   - Extend `UserAwareDispatchable` so tenant and user contexts are set for the job.
   - Register the job in `queueRegistry` injecting:
-    - `CsvExtractUploadedZipUseCaseFactory()` instance
-    - `WorkerSockets` wrapper instance
+    - `CsvExtractUploadedZipUseCaseFactory()` instance (created with `FileContentsIO`)
+    - `V1WebSocketsWrapper` instance
   - Do not implement transactions in the job; keep them in the use case.
 
 ### Retries and non-retriable errors
 
 - Background
+
   - Jobs are retried automatically after the lock window expires, up to configured max retries.
+  - Worker doubles the lock window after each failure; default initial is 10 minutes.
   - Some failures will never improve on retry and should be treated as non-retriable (fail fast).
 
 - Current throw conditions and suggested classification
+
   - Import not found:
     - Trigger: `csvImportsDS.getById(importId)` resolves to undefined.
     - Classification:
@@ -169,7 +175,8 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Classification: Retriable (TM already retries transient errors). Use non-retriable only for schema/validation bugs (should not occur).
 
 - Implementation guideline
-  - Introduce a `NonRetriableError` (or reuse existing) and throw it for deterministic policy errors:
+
+  - Throw `NonRetryableJobError` for deterministic policy errors:
     - Import not found
     - Storage path missing
     - ZIP missing `import.csv`
@@ -178,7 +185,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
   - Optionally augment job logs with a flag (`nonRetriable: true`) for observability.
 
 - Status semantics during retries
-  - Keep `status = 'extracting files'` on retriable failures; rely on the queue to retry without flipping to `failed`.
+  - On transient failure, set `status = 'retrying'` to surface pending retry to users.
   - Set `status = 'failed'` only if:
     - The error is classified as non-retriable, or
     - This was the last retry attempt (based on jobInfo.retryCount + 1 >= jobInfo.maxRetries) and the job will not be retried.
@@ -189,6 +196,24 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Admin notifications: do we add a `tenant:admins` room now or later?
 - Error persistence: minimal MVP vs. structured error field on `csv_imports`.
 - Validation stage: Decide whether to move to `validating` or keep `processing` immediately after extraction; MVP leaves it at `processing`.
+
+### Testing (not implemented yet)
+
+- We have not added tests for these implementations yet.
+- ToDos for tests (follow entities.v2/templates.v2 patterns):
+  - Unit tests for `CsvExtractUploadedZipUseCase`:
+    - Domain-first mutations (`withStatus`, `withStorage`) and DS update calls wrapped in `transactionManager.run`.
+    - ZIP happy path (streaming entries), CSV copy path, idempotency.
+    - Error classification paths (`NonRetryableJobError` vs transient errors) and resulting statuses (`failed` vs `retrying`).
+    - Heartbeat-related progress: expose and assert `onProgress` per entry (job uses it to heartbeat).
+  - Integration tests for job wiring:
+    - Job dispatch on commit from `RegisterCsvImportUseCase`.
+    - Job emits to session using `V1WebSocketsWrapper` (mock wrapper).
+    - Queue retry behavior (simulate transient failure → status `retrying`; non-retriable → `failed`; last retry → final `failed`).
+  - Mock strategy:
+    - Mock `CsvImportsDataSource`, `FileStorage`, and `FileContentsIO` similar to templates.v2 and paragraph extraction tests.
+    - Avoid real FS/S3; use in-memory streams and deterministic buffers.
+    - Use transaction manager factory test doubles as in entities.v2/templates.v2.
 
 ### References
 
