@@ -1,15 +1,16 @@
 import path from 'path';
 import yauzl from 'yauzl';
-import { Readable } from 'stream';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
   fileStorage: FileStorage;
+  filesIO: FileContentsIO;
 };
 
 type Input = {
@@ -71,8 +72,10 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename: originalFilename,
     });
 
-    const readableCb = async () => (await source.getReadable()).getDataOrThrow();
-    const file = new FileContents({ filename: 'import.csv', readableCallback: readableCb });
+    const file = new FileContents({
+      filename: 'import.csv',
+      streamCallback: () => source.read(),
+    });
 
     await this.deps.fileStorage.storeFile({
       file,
@@ -93,7 +96,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename: zipFilename,
     });
 
-    const disk = await (await zipFileContents.toDisk()).getFullPath();
+    const disk = await (await this.deps.filesIO.toDisk(zipFileContents)).getFullPath();
     const zipPath = disk.getDataOrThrow();
 
     const extractedDestination = `${zipDestination}/extracted`;
@@ -132,7 +135,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
 
             const file = new FileContents({
               filename: entry.fileName,
-              readableCallback: async () => readStream as unknown as Readable,
+              streamCallback: () => readStream,
             });
 
             try {

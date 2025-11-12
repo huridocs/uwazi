@@ -43,8 +43,8 @@ import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
+import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -191,6 +191,7 @@ export function registerJobs(
       csvImportsDS,
       fileStorage,
       transactionManager,
+      filesIO: new FileContentsIO(),
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvExtractUploadedZipJob({ useCase, sockets });
