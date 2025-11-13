@@ -215,6 +215,148 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Avoid real FS/S3; use in-memory streams and deterministic buffers.
     - Use transaction manager factory test doubles as in entities.v2/templates.v2.
 
+### Testing implementation and strategies (Nov 2025)
+
+- Integration-first tests completed for:
+  - `RegisterCsvImportUseCase`
+  - `CsvExtractUploadedZipUseCase`
+  - `CsvExtractUploadedZipJob`
+- Strategy mirrors entities.v2/templates.v2/files.v2:
+
+  - Real Mongo via `DefaultCsvImportsDataSource(transactionManager)`.
+  - Real filesystem using `FileSystemStorage(new PathManager({ tenant }))`.
+  - Real `FileContentsIO`.
+  - Minimal boundary doubles only where necessary:
+    - Queue: `SyncDispatcherForTests` to execute jobs synchronously, and a local `RecordingDispatcher` to assert dispatch without executing (to validate the intermediate `queued` state).
+    - Sockets: thin fake using `TestUtils.mockClass<V1WebSocketsWrapper>` to assert `emitToSession` calls.
+  - No data-source or transaction manager mocks.
+
+- Key testing patterns and fixes:
+
+  - Unique temp directories per test to avoid races:
+    - Build per-test subfolders (e.g., `tmp/${timestamp}_${rand}` or `uploads_intermediate/${unique}`).
+    - Use `.gitignore` to ignore these paths.
+  - Deterministic cleanup:
+    - `testingEnvironment.cleanupUploadPaths()` for tenant-scoped base paths (note: only clears top-level files; does not remove nested customPath folders).
+    - Per-test `afterEach` removes:
+      - `uploadedDocuments/csv-imports/{importId}` for imports created in the test.
+      - Each per-test temporary local directory created for inputs.
+  - ZIP fixtures and creation:
+    - Reuse v1 helper `createTestingZip` from `app/api/csv/specs/helpers`.
+    - It writes to `<tempDir>/zipData/<zipName>`. Tests must:
+      - Ensure `<tempDir>/zipData` exists.
+      - Read the resulting zip from `path.join(tempDir, 'zipData', zipFilename)`.
+    - Fixture sources are under `app/api/csv/specs/zipData`.
+  - Input files for uploads:
+    - Introduced `createUploadedInputFile` in `api/files.v2/testing/InputFileTestFactory.ts` to generate `InputFile` instances from a path/string, reducing boilerplate.
+  - ObjectId correctness:
+    - Use `getFixturesFactory().idString('key')` for `importId` and `userId` to produce valid 24-hex strings, avoiding BSON cast errors in DS operations and user lookups in `UserAwareDispatchable`.
+  - Transactions and queue:
+    - When executing the extraction job synchronously inside the registration test, instantiate the job’s use case with a fresh `TransactionManager` and DS in the job factory. This prevents “Transaction already finished” errors caused by reusing the same session across nested operations.
+    - To assert the intermediate `queued` state, inject a non-executing `RecordingDispatcher` that only records `dispatch` calls; do not run the job.
+  - Event emissions and heartbeats:
+    - Job test asserts `csvImport:extract:start|progress|success|error` events emitted via `emitToSession` when `sessionId` is present.
+    - `onProgress` triggers `heartbeat()`; test asserts the heartbeat spy is called.
+  - Use case behavior validated:
+    - `RegisterCsvImportUseCase`:
+      - Stores the original upload to `csv-imports/{id}/{filename}`.
+      - Persists import with `status: queued` and `storage.path`.
+      - Enqueues extraction via `onCommitted` with `{ tenantName, userId, importId, sessionId }`.
+    - `CsvExtractUploadedZipUseCase`:
+      - `queued` → `extracting files` → `files extracted` success path.
+      - Non-retriable errors:
+        - Missing import → throws `NonRetryableJobError`.
+        - Missing storage path → throws `NonRetryableJobError`.
+        - ZIP without `import.csv` → throws `NonRetryableJobError`, final status `failed`.
+      - Retriable errors path available; finalization sets `retrying`.
+      - CSV normalization copies to `csv-imports/{id}/extracted/import.csv`.
+  - Lint/ES rules:
+    - Avoid `global-require` in tests; import `FileContentsIO` at top-level and use `new FileContentsIO()`.
+
+- Route testing note (temporary):
+  - To exercise `/api/import` after route moved to csv.v2, tests can register both route sets on the same Express app:
+    - `import csvV2Routes from 'api/csv.v2/routes/routes';`
+    - After building the app with `uploadRoutes`, call `csvV2Routes(app);` or wrap both in a combined route initializer.
+  - Enable the v2 flag in tests to use the new path:
+    - `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
+
+### Agent handoff: operational guidelines and preferences
+
+- Architecture and boundaries
+
+  - Follow entities.v2 patterns: thin controllers, use cases own business logic and transactions, DS are transaction-aware and do the Mongo mapping, domain owns defaults/mutations, transport-free domain models.
+  - IDs are generated in use cases via `idGenerator.generate()` and persisted as Mongo `_id` (mapped to/from `id`).
+  - Storage for imports:
+    - Base prefix: `csv-imports/{importId}`
+    - Original upload: `csv-imports/{importId}/{uploadedFilename}`
+    - Canonical extracted CSV: `csv-imports/{importId}/extracted/import.csv`
+  - Status transitions (MVP): `queued` → `extracting files` → `files extracted` → next job decides onward.
+
+- Testing philosophy
+
+  - Integration-first: use real Mongo (via DS factories and TM), real filesystem (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
+  - Avoid mocks unless at strict boundaries:
+    - Queue: use `SyncDispatcherForTests` for synchronous execution, or a local `RecordingDispatcher` to assert `dispatch` without executing.
+    - WebSockets: use `TestUtils.mockClass<V1WebSocketsWrapper>` only to assert `emitToSession` calls.
+  - Do not mock data sources, transaction managers, or storage in these tests.
+  - Use `getFixturesFactory().idString('key')` for any ids expected to be `ObjectId`-like (e.g., `importId`, `userId`).
+  - Ensure fresh transaction managers for nested job executions (e.g., register → onCommitted → extraction) to avoid "Transaction already finished".
+
+- Filesystem and zips in tests
+
+  - Use `createTestingZip` from `app/api/csv/specs/helpers` for deterministic zips. It writes to `<tempDir>/zipData/<zipFilename>`.
+    - Always create `zipData` under your per-test temp dir and read the zip from that subfolder.
+    - Fixture sources: `app/api/csv/specs/zipData`.
+  - Use `createUploadedInputFile` from `api/files.v2/testing/InputFileTestFactory.ts` to build `InputFile` instances (avoid ad-hoc shapes).
+  - Per-test isolation: create unique temp dirs (`${timestamp}_${rand}`) and push them to a tracked list for `afterEach` cleanup.
+  - Cleanup rigor:
+    - Call `testingEnvironment.cleanupUploadPaths()` at least once per test to clear top-level tenant files.
+    - Explicitly remove `uploadedDocuments/csv-imports/{importId}` created during the test in `afterEach`.
+    - Remove per-test local temp dirs in `afterEach`.
+    - Avoid recursive deletes of shared dirs to prevent races in parallel runs.
+
+- Events and session notifications
+
+  - Use the new `V1WebSocketsWrapper` with `emitToSession(sessionId, event, payload...)`.
+  - Job events for extraction: `csvImport:extract:start|progress|success|error`.
+  - Only emit to the uploader’s `sessionId` (do not broadcast to tenant).
+  - In jobs, renew queue lock on `onProgress` by calling `heartbeat()`.
+
+- Queue and jobs
+
+  - Jobs extend `UserAwareDispatchable` and receive `{ tenantName, userId, importId, sessionId? }`.
+  - Use `TransactionManager.onCommitted` to dispatch the extraction job from `RegisterCsvImportUseCase`.
+  - Error classification in extraction use case:
+    - Throw `NonRetryableJobError` for policy violations (missing import, missing storage path, ZIP missing `import.csv`, detectably corrupt formats).
+    - Propagate operational errors (IO/DB) to allow queue retry policy to mark as `retrying`.
+    - On last retry, job marks status as `failed`.
+
+- Feature flags and routes
+
+  - Feature flag: `v2CSVImport` toggles v1/v2 behavior on `/api/import`.
+  - For tests that need v2 behavior: `testingTenants.changeCurrentTenant({ featureFlags: { v2CSVImport: true } });`
+  - For route tests that were previously bound to v1: register both `uploadRoutes` and `csv.v2` routes on the same Express app (temporarily) if needed.
+
+- Lint/style guardrails
+
+  - No `global-require` in tests; import at top-level (e.g., `FileContentsIO`).
+  - Prefer descriptive names and avoid `as any` unless absolutely necessary at boundary adapters.
+  - Keep comments only when they convey non-obvious rationale, invariants, or edge cases.
+
+- What not to do
+
+  - Do not broadcast job progress to all tenant users.
+  - Do not use data-source mocks for persistence logic; prefer real DS with test TM.
+  - Do not bypass `MongoTransactionManager` by using raw `db.collection` outside DS.
+
+- Handoff quickstart
+  - To add a new stage/job:
+    1. Create a use case (domain-first, TM-aware DS usage, file ops outside TM).
+    2. Add a job that orchestrates the use case, wiring sockets and heartbeats.
+    3. Register the job in `queueRegistry`, injecting real factories (TM, DS, storage, IO).
+    4. Dispatch the job via `onCommitted` at the correct stage boundary.
+    5. Write integration tests with real DS/FS/IO, unique temp dirs, and deterministic cleanup.
+
 ### References
 
 - Admin guide re: CSV ZIP contents and `import.csv` naming: https://uwazi.readthedocs.io/en/latest/admin-docs/working-with-entities-in-your-collection.html#how-to-add-entities-in-bulk-with-csv-import
