@@ -88,5 +88,6 @@ const getOcrStatus = async (
   }
 };
 
+export { OcrStatus };
 export { UploadService } from './UploadService';
 export { getById, getByType, update, remove, getPagePlaintext, postToOcr, getOcrStatus };

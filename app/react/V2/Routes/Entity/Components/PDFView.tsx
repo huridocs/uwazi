@@ -1,17 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRevalidator, useSearchParams } from 'react-router';
-import { socket } from 'app/socket';
+import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { isClient } from 'app/utils';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
-import { getPagePlaintext, getOcrStatus } from 'V2/api/files';
-import { handleUnexpectedError } from 'V2/shared/errorUtils';
+import { getPagePlaintext } from 'V2/api/files';
 import { PDF } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { Truncate } from 'V2/Components/UI';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
+import { OCRButton } from './OCRButton';
 
 const PDFView = ({
   entity,
@@ -22,11 +21,9 @@ const PDFView = ({
   page: string;
   pagePlaintext?: string;
 }) => {
-  const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageText, setPageText] = useState(pagePlaintext || '');
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const [ocrStatus, setOcrStatus] = useState<string | undefined>();
   const firstLoad = useRef(true);
 
   const isRaw = !isClient || searchParams.get('raw') === 'true';
@@ -60,41 +57,6 @@ const PDFView = ({
       firstLoad.current = true;
     };
   }, [entity.mainDocument, isRaw, page]);
-
-  useEffect(() => {
-    if (ocrServiceEnabled && entity.mainDocument?.filename) {
-      getOcrStatus(entity.mainDocument.filename)
-        .then(response => {
-          const { status } = response || {};
-          setOcrStatus(status);
-        })
-        .catch(e => {
-          handleUnexpectedError(e, 'Error getting OCR status');
-        });
-    }
-  }, [entity?.mainDocument?.filename, ocrServiceEnabled]);
-
-  useEffect(() => {
-    const listenOnSuccess = async (_id: string) => {
-      if (entity.mainDocument?._id === _id) {
-        await revalidate();
-      }
-    };
-
-    const listenOnError = (_id: string) => {
-      if (entity.mainDocument?._id === _id) {
-        setOcrStatus('ocrError');
-      }
-    };
-
-    socket.on('ocr:error', listenOnSuccess);
-    socket.on('ocr:ready', listenOnError);
-
-    return () => {
-      socket.off('ocr:error', listenOnSuccess);
-      socket.off('ocr:ready', listenOnError);
-    };
-  }, [entity.mainDocument?._id, revalidate]);
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
@@ -138,7 +100,12 @@ const PDFView = ({
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
         <PlainText text={pageText} />
       </div>
-      <div>footer</div>
+      <div className="flex flex-row">
+        <div className="justify-self-start">
+          {ocrServiceEnabled && entity.mainDocument && <OCRButton file={entity.mainDocument} />}
+        </div>
+        <div className="justify-self-end"></div>
+      </div>
     </div>
   );
 };
