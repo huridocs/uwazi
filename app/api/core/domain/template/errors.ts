@@ -306,7 +306,7 @@ export class InvalidPropertyComparisonTypeError extends DomainError {
   constructor(expectedType: string) {
     super(
       `Can only compare with another ${expectedType}`,
-      'template.template.invalid_property_comparison_type_error'
+      'template.property.invalid_property_comparison_type_error'
     );
   }
 }
