@@ -274,7 +274,7 @@ export class TemplateInUseError extends DomainError {
 
 export class PropertyComparisonError extends DomainError {
   constructor() {
-    super('Trying to compare different properties.', 'template.template.property_comparison_error');
+    super('Trying to compare different properties.', 'template.property.property_comparison_error');
   }
 }
 
