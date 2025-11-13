@@ -18,6 +18,7 @@ import {
 import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
+import { EntityTranslationDoesNotExistError } from './errors';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -112,9 +113,7 @@ class Entity {
 
   getTranslation(language: LanguageISO6391) {
     if (!this.translations[language]) {
-      throw new Error(
-        `Translation for language '${language}' does not exists. ${JSON.stringify(this)}`
-      );
+      throw new EntityTranslationDoesNotExistError(language, this.languages);
     }
     return this.translations[language];
   }

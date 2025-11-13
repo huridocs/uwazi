@@ -9,6 +9,7 @@ import {
   SelectPropertyAssignment,
   TextPropertyValue,
 } from '../template/PropertyValue';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
 
 type Props = {
   id?: string;
@@ -53,12 +54,14 @@ class EntityTranslation {
   setValue(propertyValue: PropertyAssignment) {
     const currentValue = this.metadata[propertyValue.name];
     if (!currentValue) {
-      throw new Error(`Property ${propertyValue.name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(propertyValue.name);
     }
 
     if (currentValue.type !== propertyValue.type) {
-      throw new Error(
-        `Cannot change the type of property ${propertyValue.name} from ${currentValue.type} to ${propertyValue.type}`
+      throw new PropertyTypeMismatchOnSetError(
+        propertyValue.name,
+        currentValue.type,
+        propertyValue.type
       );
     }
 
@@ -80,7 +83,7 @@ class EntityTranslation {
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {
     if (!this.metadata[name]) {
-      throw new Error(`Property ${name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(name);
     }
 
     return this.metadata[name] as unknown as PropertyAssignment<Value>;

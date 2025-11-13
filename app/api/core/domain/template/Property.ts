@@ -1,4 +1,8 @@
-import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
+import {
+  PropertyTypeMismatchError,
+  PropertyComparisonError,
+  PropertyTypeChangeError,
+} from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PropertyType } from './PropertyType';
@@ -94,8 +98,8 @@ class Property {
   }
 
   updatedAttributes(other: Property): PropertyUpdateInfo {
-    if (!this.isSame(other)) throw new Error('Trying to compare different properties.');
-    if (this.type !== other.type) throw new Error("Can't change property types.");
+    if (!this.isSame(other)) throw new PropertyComparisonError();
+    if (this.type !== other.type) throw new PropertyTypeChangeError();
 
     const updateInfo: PropertyUpdateInfo = {
       id: this.id,

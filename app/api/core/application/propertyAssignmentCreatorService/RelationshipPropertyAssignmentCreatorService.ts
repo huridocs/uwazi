@@ -2,6 +2,10 @@ import { PropertyAssignment, RelationshipEntry } from 'api/core/domain/template/
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import {
+  RelationshipPropertyDoesNotExistError,
+  RelationshipTemplateMismatchError,
+} from 'api/core/domain/entity/errors';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import {
   CreatePropertyAssignmentInput,
@@ -39,11 +43,7 @@ export class RelationshipPropertyAssignmentCreatorService
 
     const missing = sharedIds.filter(id => !bySharedId.has(id));
     if (missing.length) {
-      throw new Error(
-        `Relationship property "${property.name}" references non-existent entities: ${missing.join(
-          ', '
-        )}`
-      );
+      throw new RelationshipPropertyDoesNotExistError(property.name, missing);
     }
 
     if (property.content) {
@@ -53,11 +53,7 @@ export class RelationshipPropertyAssignmentCreatorService
       });
 
       if (wrongTemplate.length) {
-        throw new Error(
-          `Relationship property "${property.name}" expects template ${property.content}, got: ${wrongTemplate.join(
-            ', '
-          )}`
-        );
+        throw new RelationshipTemplateMismatchError(property.name, property.content, wrongTemplate);
       }
     }
 

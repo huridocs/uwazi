@@ -1,5 +1,6 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { ImageProperty } from 'api/core/domain/template/ImageProperty';
+import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
@@ -24,7 +25,7 @@ export class ImagePropertyAssignmentCreatorService implements PropertyAssignment
       if ('attachment' in inputValue) {
         const attachment = attachments?.[inputValue.attachment];
         if (!attachment) {
-          throw new Error(`Attachment with index ${inputValue.attachment} not found.`);
+          throw new AttachmentNotFoundError(inputValue.attachment, attachments || []);
         }
 
         return {
