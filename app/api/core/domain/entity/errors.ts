@@ -6,7 +6,7 @@ import { DomainError } from '../error/DomainError';
 export class EntityTranslationDoesNotExistError extends DomainError {
   constructor(language: LanguageISO6391, availableLanguages: LanguageISO6391[]) {
     super(
-      `Translation for language '${language}' does not exists. ${JSON.stringify(availableLanguages)}`,
+      `Translation for language '${language}' does not exist. ${JSON.stringify(availableLanguages)}`,
       'entity.entity.translation_does_not_exist_error'
     );
   }
