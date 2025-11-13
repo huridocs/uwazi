@@ -63,7 +63,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await ArrayUtils.sequentialFor(attachments, async attachment =>
       this.deps.filesStorage.storeFile({
         type: 'attachment',
-        file: attachment.contents,
+        file: attachment.content,
       })
     );
 
@@ -82,6 +82,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
                 mimetype: attachment.metadata.mimetype,
                 originalname: attachment.metadata.originalname,
                 size: attachment.metadata.size,
+                content: attachment.content,
               })
           )
         );

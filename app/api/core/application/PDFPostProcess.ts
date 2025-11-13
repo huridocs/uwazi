@@ -48,7 +48,9 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
         language: pdfInfo.language.key,
         creationDate: date.currentUTC(),
         uploaded: true,
+        content: thumbnailFile,
       });
+
       thumbnailFile.filename = thumbnail.filename;
 
       const processedDoc = ProcessedDocument.fromDocument(document, {

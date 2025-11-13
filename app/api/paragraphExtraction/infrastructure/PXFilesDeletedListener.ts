@@ -13,6 +13,7 @@ import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { FileContents } from 'api/files.v2/model/FileContents';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -130,7 +131,7 @@ export class PXFilesDeletedListener {
 
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
-      .map(d => FileMappers.toModel<ProcessedDocument>(d as any));
+      .map(d => FileMappers.toModel<ProcessedDocument>(d as any, new FileContents('mock/file')));
 
     if (!deletedDocuments.length) {
       return;

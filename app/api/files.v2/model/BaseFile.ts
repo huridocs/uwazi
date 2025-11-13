@@ -1,3 +1,5 @@
+import { FileContents } from './FileContents';
+
 type Props = {
   id: string;
   originalname: string;
@@ -6,6 +8,7 @@ type Props = {
   size: number;
   creationDate: number;
   uploaded?: boolean;
+  content: FileContents;
 };
 
 export class BaseFile {
@@ -21,6 +24,8 @@ export class BaseFile {
 
   readonly creationDate: number;
 
+  readonly content: FileContents;
+
   readonly uploaded?: boolean;
 
   constructor(props: Props) {
@@ -30,6 +35,7 @@ export class BaseFile {
     this.mimetype = props.mimetype;
     this.size = props.size;
     this.creationDate = props.creationDate;
+    this.content = props.content;
   }
 }
 

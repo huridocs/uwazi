@@ -15,15 +15,26 @@ type FileMetadata = {
 export class InputFile {
   private _metadata: FileMetadata;
 
-  constructor(metadata: FileMetadata) {
+  private type: 'document' | 'attachment';
+
+  constructor(metadata: FileMetadata, type: 'document' | 'attachment') {
     this._metadata = metadata;
+    this.type = type;
+  }
+
+  isDocument() {
+    return this.type === 'document';
+  }
+
+  isAttachment() {
+    return this.type === 'attachment';
   }
 
   get filename() {
     return this._metadata.filename;
   }
 
-  get contents() {
+  get content() {
     return new FileContents(path.join(this._metadata.destination, this._metadata.filename));
   }
 
