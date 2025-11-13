@@ -384,7 +384,7 @@ export default {
     const { v2CreateEntity } = tenants.current().featureFlags;
 
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
-    if (v2CreateEntity) {
+    if (v2CreateEntity && !_doc?.sharedId) {
       const useCase = CreateEntityUseCaseFactory.default();
 
       const output = await useCase.execute({

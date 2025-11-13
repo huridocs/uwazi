@@ -1,8 +1,11 @@
+/* eslint-disable max-statements */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
 import { search } from 'api/search';
 import { withTransaction } from 'api/utils/withTransaction';
+import { tenants } from 'api/tenants';
+import { set } from 'lodash';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -80,9 +83,33 @@ export default app => {
     uploadMiddleware.multiple(),
     activitylogMiddleware,
     async (req, res, next) => {
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+      if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
+        const { attachments } = (req.files || []).reduce(
+          (acum, file) => set(acum, file.fieldname, file),
+          {
+            attachments: [],
+          }
+        );
+
+        const savedEntity = await entities.save(entityToSave, {
+          language: req.language,
+          attachments,
+        });
+
+        await updateThesauriWithEntity(savedEntity, req);
+
+        req.emitToSessionSocket('documentProcessed', savedEntity.sharedId);
+
+        // Return in the same format as V1 for client compatibility
+        const response = req.body.entity ? { entity: savedEntity, errors: [] } : savedEntity;
+        res.json(response);
+
+        return;
+      }
+
       try {
         const result = await withTransaction(async ({ abort }) => {
-          const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
           const saveResult = await saveEntity(entityToSave, {
             user: req.user,
             language: req.language,
