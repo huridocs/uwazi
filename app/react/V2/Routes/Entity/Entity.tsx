@@ -116,7 +116,6 @@ const entityLoader =
 const Entity = () => {
   const { entity, pagePlaintext } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = searchParams.get('page') || '1';
 
   const activeMainTab = useMemo<MainTabId>(() => {
     const mainTab = searchParams.get(MAIN_TAB_PARAM);
@@ -144,7 +143,7 @@ const Entity = () => {
           key={MAIN_TABS.DOCUMENT}
           label={<TabLabel text="Document" icon={<DocumentTextIcon className="w-5 h-5" />} />}
         >
-          <PDFView entity={entity as any} pagePlaintext={pagePlaintext} page={page} />
+          <PDFView entity={entity} pagePlaintext={pagePlaintext} />
         </Tabs.Tab>
       );
     }
@@ -172,7 +171,7 @@ const Entity = () => {
     );
 
     return tabs;
-  }, [entity, pagePlaintext, page]);
+  }, [entity, pagePlaintext]);
 
   const sideTabsByMain: Record<
     MainTabId,
