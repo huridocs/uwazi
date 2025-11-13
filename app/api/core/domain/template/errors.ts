@@ -280,7 +280,7 @@ export class PropertyComparisonError extends DomainError {
 
 export class PropertyTypeChangeError extends DomainError {
   constructor() {
-    super("Can't change property types.", 'template.template.property_type_change_error');
+    super("Can't change property types.", 'template.property.property_type_change_error');
   }
 }
 
