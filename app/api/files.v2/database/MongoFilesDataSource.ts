@@ -78,6 +78,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     }
   }
 
+  async bulkCreate(files: UwaziFile[]): Promise<void> {
+    await this.getCollection().insertMany(files.map(FileMappers.toDBO));
+
+    files.forEach(async file => {
+      if (file instanceof ProcessedDocument) {
+        this.entitiesToIndex.add(file.entity);
+      }
+    });
+  }
+
   async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
     await this.getCollection().updateMany(
       { entity: { $in: entitySharedIds }, extractedMetadata: { $exists: true, $ne: [] } },

@@ -162,11 +162,7 @@ export function registerJobs(
     return new TemplatePostProcessEntitiesJob({
       templatesDS: TemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: new MongoMultiLanguageEntityDataSource(
-          getConnection(),
-          transactionManager,
-          TemplatesDataSourceFactory.default(transactionManager)
-        ),
+        entitiesDS: new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager),
         filesDS: DefaultFilesDataSource(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: TemplatesDataSourceFactory.default(transactionManager),

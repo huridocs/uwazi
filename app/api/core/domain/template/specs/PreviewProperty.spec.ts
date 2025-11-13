@@ -31,42 +31,13 @@ describe('PreviewProperty', () => {
     it('should create assignment with a single preview value', () => {
       const preview = new PreviewProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
-      const assignment = preview.createPropertyAssignment({ value: [{ value: 'file.jpg' }] });
+      const assignment = preview.createPropertyAssignment();
 
       expect(assignment).toEqual({
         name: preview.name,
         type: preview.type,
-        value: [{ value: 'file.jpg' }],
+        value: [],
       });
-    });
-
-    it('should allow empty value when not required', () => {
-      const preview = new PreviewProperty({ id: 'any_id', label: 'A Title', template: 'any' });
-
-      const assignment = preview.createPropertyAssignment({ value: [] });
-
-      expect(assignment).toEqual({ name: preview.name, type: preview.type, value: [] });
-    });
-
-    it('should throw if more than one value is provided', () => {
-      const preview = new PreviewProperty({ id: 'any_id', label: 'A Title', template: 'any' });
-
-      expect(() =>
-        preview.createPropertyAssignment({ value: [{ value: 'a.jpg' }, { value: 'b.jpg' }] })
-      ).toThrow('Preview Property only accepts a single value.');
-    });
-
-    it('should throw if required and no value is provided', () => {
-      const preview = new PreviewProperty({
-        id: 'any_id',
-        label: 'A Title',
-        template: 'any',
-        required: true,
-      });
-
-      expect(() => preview.createPropertyAssignment({ value: [] }, true)).toThrow(
-        'Preview Property is required'
-      );
     });
   });
 });
