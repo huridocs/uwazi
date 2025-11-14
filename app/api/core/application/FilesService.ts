@@ -5,7 +5,6 @@ import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { UwaziFile } from 'api/files.v2/model/UwaziFile';
-import { FileTypes } from 'api/files/storage';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
@@ -51,11 +50,7 @@ class FilesService {
 
   async storeFiles(files: UwaziFile[]) {
     await ArrayUtils.sequentialFor(files, async file => {
-      let type: FileTypes = 'document';
-      if (file instanceof Attachment) {
-        type = 'attachment';
-      }
-      await this.deps.fileStorage.storeFile({ type, file: file.content });
+      await this.deps.fileStorage.storeFile(file);
     });
   }
 

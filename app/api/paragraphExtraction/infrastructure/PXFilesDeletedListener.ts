@@ -7,13 +7,13 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { FileContents } from 'api/files.v2/model/FileContents';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -131,7 +131,9 @@ export class PXFilesDeletedListener {
 
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
-      .map(d => FileMappers.toModel<ProcessedDocument>(d as any, new FileContents('mock/file')));
+      .map(d =>
+        FileMappers.toModel<ProcessedDocument>(d as any, new DiskFile('mock/file').toContent())
+      );
 
     if (!deletedDocuments.length) {
       return;

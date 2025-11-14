@@ -4,12 +4,14 @@ import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGenerato
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { FileStorage, UploadFileInput } from 'api/files.v2/contracts/FileStorage';
+import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { Attachment } from 'api/files.v2/model/Attachment';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { InputFile } from 'api/files.v2/model/InputFile';
+import { UwaziFile } from 'api/files.v2/model/UwaziFile';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -32,16 +34,16 @@ const fixtures: DBFixture = {
   ],
 };
 
-const fileContents = (filename: string) =>
-  new FileContents(path.join(__dirname, '../../testing/testing_files', filename));
+const fileContents = () =>
+  new DiskFile(path.join(__dirname, '../../testing/testing_files')).toContent();
 
 const storedFiles: { [k: string]: FileContents[] } = {
   document: [],
   attachment: [],
 };
 const fileStorage = TestUtils.mockClass<FileStorage>({
-  async storeFile(input: UploadFileInput) {
-    storedFiles[input.type].push(input.file);
+  async storeFile(file: UwaziFile) {
+    storedFiles[file.type].push(file.content);
   },
 });
 
@@ -117,7 +119,6 @@ describe('FilesService', () => {
         filename: '',
         status: 'processing',
         creationDate: expect.any(Number),
-        content: documentInput.content,
       });
 
       expect(attachment).toMatchObject({
@@ -128,7 +129,6 @@ describe('FilesService', () => {
         size: 1,
         filename: '',
         creationDate: expect.any(Number),
-        content: attachmentInput.content,
       });
     });
   });
@@ -146,7 +146,7 @@ describe('FilesService', () => {
         size: 0,
         status: 'processing',
         creationDate: 0,
-        content: fileContents('eng.pdf'),
+        content: fileContents(),
       });
 
       const attachment = new Attachment({
@@ -158,7 +158,7 @@ describe('FilesService', () => {
         uploaded: true,
         size: 0,
         creationDate: 0,
-        content: fileContents('spn.pdf'),
+        content: fileContents(),
       });
 
       await service.storeFiles([document, attachment]);
@@ -179,7 +179,7 @@ describe('FilesService', () => {
       size: 0,
       status: 'processing',
       creationDate: 0,
-      content: fileContents('eng.pdf'),
+      content: fileContents(),
     });
 
     const attachment = new Attachment({
@@ -191,7 +191,7 @@ describe('FilesService', () => {
       uploaded: true,
       size: 0,
       creationDate: 0,
-      content: fileContents('spn.pdf'),
+      content: fileContents(),
     });
     beforeAll(async () => {
       const { service } = createSut();

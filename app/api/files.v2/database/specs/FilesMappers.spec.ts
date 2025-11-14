@@ -1,6 +1,7 @@
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { Thumbnail } from 'api/files.v2/model/Thumbnail';
+import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
 import { Attachment } from '../../model/Attachment';
@@ -18,94 +19,10 @@ import {
 
 const f = getFixturesFactory();
 
-type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]) => any
-  ? A extends object
-    ? Partial<A>
-    : A
-  : never;
-
-class FileBuilder {
-  static document(props: PartialFirstConstructorArg<typeof Document>) {
-    return new Document({
-      id: f.idString('docId'),
-      entity: 'entity1',
-      originalname: 'doc.pdf',
-      filename: 'doc.pdf',
-      mimetype: 'application/pdf',
-      size: 1024,
-      creationDate: 1234567890,
-      status: 'processing',
-      content: new FileContents('fake/path'),
-      ...props,
-    });
-  }
-
-  static processedDocument(props: PartialFirstConstructorArg<typeof ProcessedDocument>) {
-    return new ProcessedDocument({
-      id: f.idString('docId'),
-      entity: 'entity1',
-      originalname: 'doc.pdf',
-      filename: 'doc.pdf',
-      mimetype: 'application/pdf',
-      size: 1024,
-      creationDate: 1234567890,
-      content: new FileContents('fake/path'),
-      language: 'en',
-      totalPages: 10,
-      fullText: {},
-      ...props,
-    });
-  }
-
-  static urlAttachment(props: PartialFirstConstructorArg<typeof URLAttachment>) {
-    return new URLAttachment({
-      id: f.idString('urlId'),
-      entity: 'entity2',
-      url: 'http://example.com/file.pdf',
-      originalname: 'file.pdf',
-      filename: 'file.pdf',
-      mimetype: 'application/pdf',
-      size: 2048,
-      creationDate: 1234567891,
-      content: new FileContents('fake/path'),
-      ...props,
-    });
-  }
-
-  static attachment(props: PartialFirstConstructorArg<typeof Attachment>) {
-    return new Attachment({
-      id: f.idString('urlId'),
-      entity: 'entity2',
-      originalname: 'file.pdf',
-      filename: 'file.pdf',
-      mimetype: 'application/pdf',
-      size: 2048,
-      creationDate: 1234567891,
-      content: new FileContents('fake/path'),
-      ...props,
-    });
-  }
-
-  static thumbnail(props: PartialFirstConstructorArg<typeof Thumbnail>) {
-    return new Thumbnail({
-      id: f.idString('thumbId'),
-      entity: 'entity3',
-      language: 'es',
-      originalname: 'thumb.jpg',
-      filename: 'thumb.jpg',
-      mimetype: 'image/jpeg',
-      size: 3072,
-      creationDate: 1234567892,
-      content: new FileContents('fake/path'),
-      ...props,
-    });
-  }
-}
-
 describe('FileMappers', () => {
   describe('toDBO', () => {
     it('should map Document to FileDBOType', () => {
-      const document = FileBuilder.document({});
+      const document = FileBuilder.document(f.idString('docId'));
       const result = FileMappers.toDBO(document) as DocumentDBO;
 
       expect(result).toMatchObject({
@@ -122,7 +39,7 @@ describe('FileMappers', () => {
     });
 
     it('should map ProcessedDocument to FileDBOType', () => {
-      const document = FileBuilder.processedDocument({});
+      const document = FileBuilder.processedDocument(f.idString('docId'));
       const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
 
       expect(result._id.toString()).toBe(f.idString('docId'));
@@ -143,7 +60,7 @@ describe('FileMappers', () => {
     });
 
     it('should map URLAttachment to FileDBOType', () => {
-      const urlAttachment = FileBuilder.urlAttachment({});
+      const urlAttachment = FileBuilder.urlAttachment(f.idString('urlAttachment'));
       const result = FileMappers.toDBO(urlAttachment) as AttachmentDBO;
 
       expect(result).toMatchObject({
@@ -159,7 +76,7 @@ describe('FileMappers', () => {
     });
 
     it('should map Attachment to FileDBOType', () => {
-      const attachment = FileBuilder.attachment({ id: f.idString('attId'), entity: 'entity3' });
+      const attachment = FileBuilder.attachment(f.idString('attId'), { entity: 'entity3' });
       const result = FileMappers.toDBO(attachment) as AttachmentDBO;
 
       expect(result._id.toString()).toBe(f.idString('attId'));
@@ -176,7 +93,7 @@ describe('FileMappers', () => {
     });
 
     it('should map Thumbnail to FileDBOType', () => {
-      const attachment = FileBuilder.thumbnail({});
+      const attachment = FileBuilder.thumbnail(f.idString('thumbId'));
       const result = FileMappers.toDBO(attachment) as ThumbnailDBO;
 
       expect(result._id.toString()).toBe(f.idString('thumbId'));
@@ -190,7 +107,7 @@ describe('FileMappers', () => {
     });
 
     it('should handle language conversion fallback', () => {
-      const document = FileBuilder.processedDocument({});
+      const document = FileBuilder.processedDocument(f.idString('processed'));
 
       const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
 
@@ -198,7 +115,7 @@ describe('FileMappers', () => {
     });
 
     it('should handle language conversion fallback when language is undefined', () => {
-      const document = FileBuilder.processedDocument({
+      const document = FileBuilder.processedDocument(f.idString('processed'), {
         language: undefined,
       });
 
@@ -228,7 +145,7 @@ describe('FileMappers', () => {
         url: 'http://example.com',
       };
 
-      const result = FileMappers.toModel(dbo, new FileContents('mock/path'));
+      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
 
       expect(result).toBeInstanceOf(URLAttachment);
 
@@ -256,7 +173,7 @@ describe('FileMappers', () => {
         entity: 'entity3',
       };
 
-      const result = FileMappers.toModel<Thumbnail>(dbo, new FileContents('mock/path'));
+      const result = FileMappers.toModel<Attachment>(dbo, new DiskFile('mock/path').toContent());
 
       expect(result).toBeInstanceOf(Attachment);
 
@@ -282,7 +199,7 @@ describe('FileMappers', () => {
         type: 'custom',
       };
 
-      const result = FileMappers.toModel(dbo, new FileContents('mock/path'));
+      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
 
       expect(result).toBeInstanceOf(CustomUpload);
       expect(result.id).toBe(dbo._id.toString());
@@ -306,7 +223,7 @@ describe('FileMappers', () => {
         language: 'spa',
       };
 
-      const thumbnail = FileMappers.toModel<Thumbnail>(dbo, new FileContents('mock/path'));
+      const thumbnail = FileMappers.toModel<Thumbnail>(dbo, new DiskFile('mock/path').toContent());
 
       expect(thumbnail).toBeInstanceOf(Thumbnail);
 
@@ -335,7 +252,7 @@ describe('FileMappers', () => {
         status: 'processing',
       };
 
-      const result = FileMappers.toModel(dbo, new FileContents('mock/path'));
+      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
 
       expect(result).toBeInstanceOf(Document);
 
@@ -367,7 +284,7 @@ describe('FileMappers', () => {
         fullText: { 1: 'text' },
       };
 
-      const result = FileMappers.toModel(dbo, new FileContents('mock/path'));
+      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
 
       expect(result).toBeInstanceOf(ProcessedDocument);
       const document = result as Document;
@@ -412,8 +329,14 @@ describe('FileMappers', () => {
         status: 'failed',
       };
 
-      const documentResult = FileMappers.toModel(documentDBO, new FileContents('mock/path'));
-      const anotherResult = FileMappers.toModel(anotherDocumentDBO, new FileContents('mock/path'));
+      const documentResult = FileMappers.toModel(
+        documentDBO,
+        new DiskFile('mock/path').toContent()
+      );
+      const anotherResult = FileMappers.toModel(
+        anotherDocumentDBO,
+        new DiskFile('mock/path').toContent()
+      );
 
       expect(documentResult).toBeInstanceOf(ProcessedDocument);
       expect(anotherResult).toBeInstanceOf(Document);

@@ -6,6 +6,7 @@ import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import franc from 'franc';
 // eslint-disable-next-line node/no-restricted-import
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from 'shared/language';
@@ -13,8 +14,8 @@ import { inspect } from 'util';
 import { FileContentsIO } from '../files/FileContentIO';
 
 class FileIsNotAPDF extends DomainError {
-  constructor(file: FileContents, cause?: Error) {
-    super(`File is not a pdf ${file.getFullPath()}`, 'file.not_pdf', cause);
+  constructor(file: DiskFile, cause?: Error) {
+    super(`File is not a pdf ${file.path}`, 'file.not_pdf', cause);
   }
 }
 
@@ -30,11 +31,7 @@ class PDFServiceAdapter implements PDFService {
 
   async extractText(file: FileContents) {
     const diskFile = await this.filesIO.toDisk(file);
-    const result = await this.executeShellCommand(
-      'pdftotext',
-      [diskFile.getFullPath().getDataOrThrow(), '-'],
-      diskFile
-    );
+    const result = await this.executeShellCommand('pdftotext', [diskFile.path, '-'], diskFile);
     if (result.isError()) {
       return result;
     }
@@ -61,26 +58,18 @@ class PDFServiceAdapter implements PDFService {
     const diskFile = await this.filesIO.toDisk(file);
     const result = await this.executeShellCommand(
       'pdftoppm',
-      [
-        '-f',
-        '1',
-        '-singlefile',
-        '-scale-to',
-        '320',
-        '-jpeg',
-        diskFile.getFullPath().getDataOrThrow(),
-        thumbnailPath,
-      ],
+      ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', diskFile.path, thumbnailPath],
       diskFile
     );
 
     if (result.isError()) {
       return result;
     }
-    return Result.ok(new FileContents(`${thumbnailPath}.jpg`));
+    const thumbFullPath = `${thumbnailPath}.jpg`;
+    return Result.ok(new DiskFile(thumbFullPath));
   }
 
-  private async executeShellCommand(command: string, args: string[], file: FileContents) {
+  private async executeShellCommand(command: string, args: string[], file: DiskFile) {
     const commandResult = await this.shell.execute(command, args);
 
     if (commandResult.isError()) {

@@ -1,13 +1,13 @@
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
-import { FileContents } from 'api/files.v2/model/FileContents';
 
 const factory = getFixturesFactory();
 
@@ -137,7 +137,7 @@ describe('MongoFilesDataSource', () => {
             creationDate: 0,
             uploaded: true,
             fullText: { 1: 'fullText' },
-            content: new FileContents('fake/path'),
+            content: new DiskFile('fake/path').toContent(),
           })
         );
       });
@@ -161,7 +161,7 @@ describe('MongoFilesDataSource', () => {
             filename: 'file.pdf',
             creationDate: 0,
             uploaded: true,
-            content: new FileContents('fake/path'),
+            content: new DiskFile('fake/path').toContent(),
           })
         );
       });

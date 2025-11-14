@@ -8,17 +8,17 @@ import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors'
 import { Result } from 'api/core/libs/Result';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessingFileNotFound } from 'api/files.v2/model/errors';
-import { FileContents } from 'api/files.v2/model/FileContents';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import path from 'path';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
+import { FileContentsIO } from '../../files/FileContentIO';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
-import { FileContentsIO } from '../../files/FileContentIO';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -155,9 +155,7 @@ describe('PDFPostProcessJob', () => {
         TestUtils.mockClass<PDFService>({
           extractText: jest
             .fn()
-            .mockImplementation(() =>
-              Result.fail(new FileIsNotAPDF(new FileContents('full/path')))
-            ),
+            .mockImplementation(() => Result.fail(new FileIsNotAPDF(new DiskFile('full/path')))),
         })
       );
 
@@ -171,9 +169,7 @@ describe('PDFPostProcessJob', () => {
         TestUtils.mockClass<PDFService>({
           extractText: jest
             .fn()
-            .mockImplementation(() =>
-              Result.fail(new FileIsNotAPDF(new FileContents('full/path')))
-            ),
+            .mockImplementation(() => Result.fail(new FileIsNotAPDF(new DiskFile('full/path')))),
         })
       );
 

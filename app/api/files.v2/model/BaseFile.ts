@@ -1,3 +1,4 @@
+import { FileTypes } from 'api/files/storage';
 import { FileContents } from './FileContents';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
   content: FileContents;
 };
 
-export class BaseFile {
+export abstract class BaseFile {
   readonly id: string;
 
   readonly originalname: string;
@@ -28,6 +29,8 @@ export class BaseFile {
 
   readonly uploaded?: boolean;
 
+  protected abstract _type: FileTypes;
+
   constructor(props: Props) {
     this.id = props.id;
     this.originalname = props.originalname;
@@ -36,6 +39,10 @@ export class BaseFile {
     this.size = props.size;
     this.creationDate = props.creationDate;
     this.content = props.content;
+  }
+
+  get type() {
+    return this._type;
   }
 }
 

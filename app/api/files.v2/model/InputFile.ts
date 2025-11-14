@@ -1,4 +1,8 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
+
 import path from 'path';
+import { DiskFile } from './DiskFile';
 import { FileContents } from './FileContents';
 
 type FileMetadata = {
@@ -34,8 +38,20 @@ export class InputFile {
     return this._metadata.filename;
   }
 
+  get filepath() {
+    return path.join(this._metadata.destination, this._metadata.filename);
+  }
+
+  get file() {
+    return new DiskFile(this.filepath);
+  }
+
   get content() {
-    return new FileContents(path.join(this._metadata.destination, this._metadata.filename));
+    const { filepath } = this;
+    return new FileContents(async function* streamCallback() {
+      const stream = createReadStream(filepath);
+      for await (const chunk of stream) yield chunk;
+    });
   }
 
   get metadata() {

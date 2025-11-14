@@ -4,7 +4,8 @@ import { mkdir } from 'fs/promises';
 
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileStorage, GetFileInput, UploadFileInput } from '../contracts/FileStorage';
+import { FileStorage, GetFileInput } from '../contracts/FileStorage';
+import { DiskFile } from '../model/DiskFile';
 import { FileContents } from '../model/FileContents';
 import { StoredFile } from '../model/StoredFile';
 import { UwaziFile } from '../model/UwaziFile';
@@ -17,11 +18,11 @@ export class FileSystemStorage implements FileStorage {
     this.pathManager = pathManager;
   }
 
-  async storeFile(input: UploadFileInput) {
+  async storeContent(content: FileContents, subpath: string): Promise<void> {
     const filepath = this.pathManager.createPath({
-      filename: input.file.filename,
-      type: input.type,
-      destination: input.destination,
+      filename: path.basename(subpath),
+      destination: path.dirname(subpath),
+      type: 'customPath',
     });
 
     try {
@@ -31,12 +32,25 @@ export class FileSystemStorage implements FileStorage {
         throw error;
       }
     }
+    await pipeline(content.read(), createWriteStream(filepath));
+  }
 
-    await pipeline(input.file.read(), createWriteStream(filepath));
+  async storeFile(file: UwaziFile) {
+    const filepath = this.pathManager.createPath(file);
+
+    try {
+      await mkdir(path.dirname(filepath), { recursive: true });
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+    }
+
+    await pipeline(file.content.read(), createWriteStream(filepath));
   }
 
   async getFile(input: GetFileInput): Promise<FileContents> {
-    return new FileContents(this.pathManager.createPath(input));
+    return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 
   async getFiles(inputs: GetFileInput[]): Promise<FileContents[]> {
