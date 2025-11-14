@@ -1,5 +1,7 @@
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { elasticTesting } from 'api/utils/elastic_testing';
@@ -56,11 +58,21 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const createDs = () => {
+  const transactionManager = TransactionManagerFactory.default();
+  const ds = new MongoFilesDataSource(
+    getConnection(),
+    transactionManager,
+    FileStorageStrategyFactory.createDefault()
+  );
+
+  return { ds, transactionManager };
+};
+
 describe('MongoFilesDataSource', () => {
   describe('getProcessingById', () => {
     it('should get processing documents by id', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const { ds } = createDs();
       const notProcessed = await ds.getProcessingById(factory.idString('file3'));
       expect(notProcessed.isError()).toBe(true);
 
@@ -73,8 +85,7 @@ describe('MongoFilesDataSource', () => {
 
   describe('update', () => {
     it('should update and reindex related entity if file type is "processedDocument"', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const { ds, transactionManager } = createDs();
       const processingDoc = (
         await ds.getProcessingById(factory.idString('anotherProcessingDoc'))
       ).getDataOrThrow();
@@ -95,8 +106,7 @@ describe('MongoFilesDataSource', () => {
     });
 
     it('should update and reindex related entity if file type is "Document"', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const { ds, transactionManager } = createDs();
       const processingDoc = (
         await ds.getProcessingById(factory.idString('anotherProcessingDoc'))
       ).getDataOrThrow();
@@ -112,8 +122,7 @@ describe('MongoFilesDataSource', () => {
   });
   describe('create', () => {
     it('should reindex related entity if file type is "processedDocument"', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
           new ProcessedDocument({
@@ -128,6 +137,7 @@ describe('MongoFilesDataSource', () => {
             creationDate: 0,
             uploaded: true,
             fullText: { 1: 'fullText' },
+            content: new DiskFile('fake/path').toContent(),
           })
         );
       });
@@ -138,8 +148,7 @@ describe('MongoFilesDataSource', () => {
       );
     });
     it('should reindex related entity if file type is "Document"', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const ds = new MongoFilesDataSource(getConnection(), transactionManager);
+      const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
           new Document({
@@ -152,6 +161,7 @@ describe('MongoFilesDataSource', () => {
             filename: 'file.pdf',
             creationDate: 0,
             uploaded: true,
+            content: new DiskFile('fake/path').toContent(),
           })
         );
       });
@@ -165,7 +175,7 @@ describe('MongoFilesDataSource', () => {
   describe('deleteExtractedMetadata', () => {
     it('should delete extractedMetadata by name for files belonging to specified entities', async () => {
       const extractedMetadataToDelete = ['to_be_deleted', 'to_be_deleted_2'];
-      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
+      const { ds } = createDs();
       await ds.deleteExtractedMetadata(extractedMetadataToDelete, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
@@ -200,7 +210,7 @@ describe('MongoFilesDataSource', () => {
   describe('renameExtractedMetadata', () => {
     it('should rename extractedMetadata names based on a oldName:newName map for specified entities', async () => {
       const toRenameProperties = { property1: 'renamed1', property2: 'renamed2' };
-      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
+      const { ds } = createDs();
       await ds.renameExtractedMetadata(toRenameProperties, ['entity1']);
 
       let dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
@@ -246,7 +256,7 @@ describe('MongoFilesDataSource', () => {
   });
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
+      const { ds } = createDs();
 
       expect(
         await ds.filesExistForEntities([
@@ -266,14 +276,14 @@ describe('MongoFilesDataSource', () => {
 
   describe('getDocumentsForEntity', () => {
     it('should return the processed documents (type: "ready") for an entity', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
+      const { ds } = createDs();
 
       const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
       expect(documentsForEntity.length).toBe(4);
     });
 
     it('should allow fetching documents only in specific languages', async () => {
-      const ds = new MongoFilesDataSource(getConnection(), TransactionManagerFactory.default());
+      const { ds } = createDs();
 
       const documentsForEntity = await ds
         .getProcessedDocsForEntity('entity1', { languages: ['en', 'it'] })

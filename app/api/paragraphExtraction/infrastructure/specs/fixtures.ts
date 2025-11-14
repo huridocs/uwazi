@@ -5,6 +5,7 @@ import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
@@ -71,6 +72,7 @@ const document = new ProcessedDocument({
   filename: 'any_file_name',
   originalname: 'original.pdf',
   fullText: {},
+  content: new DiskFile('fake/path').toContent(),
 });
 
 const document2 = new ProcessedDocument({
@@ -84,6 +86,7 @@ const document2 = new ProcessedDocument({
   filename: 'any_file_name2',
   originalname: 'original.pdf',
   fullText: {},
+  content: new DiskFile('fake/path').toContent(),
 });
 
 const sourceTemplate = TemplateBuilder.aTemplate({

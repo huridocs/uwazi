@@ -47,7 +47,7 @@ class LanguageUtils {
   }
 
   static fromISO639_1(ISO639_1: LanguageISO6391 | string) {
-    return this.ISO639_1Index[ISO639_1];
+    return this.ISO639_1Index[ISO639_1] || otherLanguageSchema;
   }
 
   static fromElastic(elastic: string) {

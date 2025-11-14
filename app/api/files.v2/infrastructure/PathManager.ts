@@ -1,6 +1,8 @@
-import path from 'path';
 import { Tenant } from 'api/tenants/tenantContext';
+import path from 'path';
+import { BaseFile } from '../model/BaseFile';
 import { FileType } from '../model/FileType';
+import { UwaziFile } from '../model/UwaziFile';
 
 type PathManagerProps = {
   tenant: Tenant;
@@ -26,7 +28,14 @@ export class PathManager {
     };
   }
 
-  createPath(input: CreatePathInput) {
+  createPath(input: UwaziFile | CreatePathInput) {
+    if (input instanceof BaseFile) {
+      const directory = this.directory[input.type];
+      if (!directory) throw new Error(`The following File Type is not supported ${input.type}`);
+
+      return path.join(directory, input.filename);
+    }
+
     if (input.type === 'customPath' && input.destination) {
       const basePath = this.directory.document;
       return path.join(basePath, input.destination, input.filename);

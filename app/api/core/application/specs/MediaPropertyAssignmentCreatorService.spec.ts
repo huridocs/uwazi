@@ -118,8 +118,8 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
       const attachments = [
-        new InputFile({ filename: 'video.mp4' } as any),
-        new InputFile({ filename: 'audio.mp3' } as any),
+        new InputFile({ filename: 'video.mp4' } as any, 'attachment'),
+        new InputFile({ filename: 'audio.mp3' } as any, 'attachment'),
       ];
 
       const result = await sut.create({
@@ -149,8 +149,8 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
       const attachments = [
-        new InputFile({ filename: 'video.mp4' } as any),
-        new InputFile({ filename: 'audio.mp3' } as any),
+        new InputFile({ filename: 'video.mp4' } as any, 'attachment'),
+        new InputFile({ filename: 'audio.mp3' } as any, 'attachment'),
       ];
 
       const result = await sut.create({
@@ -179,7 +179,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
-      const attachments = [new InputFile({ filename: 'video.mp4' } as any)];
+      const attachments = [new InputFile({ filename: 'video.mp4' } as any, 'attachment')];
 
       const result = await sut.create({
         template,
@@ -207,7 +207,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
-      const attachments = [new InputFile({ filename: 'video.mp4' } as any)];
+      const attachments = [new InputFile({ filename: 'video.mp4' } as any, 'attachment')];
 
       const result = await sut.create({
         template,
@@ -238,7 +238,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       await expect(
         sut.create({
           template,
-          attachments: [new InputFile({ filename: 'onlyOne.mp4' } as any)],
+          attachments: [new InputFile({ filename: 'onlyOne.mp4' } as any, 'attachment')],
           propertyAssignment: {
             name: 'attached_media_1',
             value: [{ attachment: 5 }],
