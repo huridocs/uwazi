@@ -29,17 +29,14 @@ export const createUploadedInputFile = async ({
       ? Buffer.byteLength(contents, 'utf8')
       : (contents as Buffer).length;
 
-  return new InputFile(
-    {
-      fieldname,
-      originalname: originalname || filename,
-      encoding: '7bit',
-      mimetype,
-      destination: dir,
-      filename,
-      path: full,
-      size,
-    },
-    'document'
-  );
+  return new InputFile({
+    fieldname,
+    originalname: originalname || filename,
+    encoding: '7bit',
+    mimetype,
+    destination: dir,
+    filename,
+    path: full,
+    size,
+  });
 };

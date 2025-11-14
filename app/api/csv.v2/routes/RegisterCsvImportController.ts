@@ -33,7 +33,7 @@ export class RegisterCsvImportController extends AbstractController<RequestBody>
     const useCase = RegisterCsvImportUseCaseFactory();
     const response = await useCase.execute({
       template,
-      file: new InputFile(this.request.file, 'document'),
+      file: new InputFile(this.request.file),
       userId: userId.toString(),
       sessionId,
     });
