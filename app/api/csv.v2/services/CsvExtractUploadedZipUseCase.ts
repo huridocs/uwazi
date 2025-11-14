@@ -113,7 +113,6 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
         const next = () => zip.readEntry();
         zip.on('entry', entry => {
           if (/\/$/.test(entry.fileName)) {
-            // directories not expected per policy; skip
             next();
             return;
           }
@@ -166,13 +165,42 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
+  async handleExtractionSuccess(importId: string) {
+    // success: clear any prior failure and mark files extracted
+    const existing = await this.deps.csvImportsDS.getById(importId);
+    if (existing) {
+      await this.transactionManager.run(async () => {
+        const cleared = CsvImportDomain.clearFailure(existing);
+        const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.FilesExtracted);
+        await this.deps.csvImportsDS.update(updated);
+      });
+    } else {
+      await this.setStatus(importId, CsvImportStatus.FilesExtracted);
+    }
+  }
+
   async handleError(importId: string, callbacks: Callbacks | undefined, error: Error) {
     CsvExtractUploadedZipUseCase.emitError(callbacks, importId, error);
-    if (error instanceof NonRetryableJobError) {
-      await this.markAsFailed(importId);
-    } else {
-      await this.setStatus(importId, CsvImportStatus.Retrying);
+    const existing = await this.deps.csvImportsDS.getById(importId);
+    const failure = {
+      message: error.message,
+      retryable: !(error instanceof NonRetryableJobError),
+      at: Date.now(),
+      stage: 'extracting files',
+    };
+    if (!existing) {
+      // Uncommon: if missing, still surface non-retriable; nothing to persist.
+      if (error instanceof NonRetryableJobError) throw error;
+      throw error;
     }
+    await this.transactionManager.run(async () => {
+      const withFailure = CsvImportDomain.withFailure(existing, failure);
+      const withStatus = CsvImportDomain.withStatus(
+        withFailure,
+        error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
+      );
+      await this.deps.csvImportsDS.update(withStatus);
+    });
   }
 
   private async processExtraction(params: {
@@ -194,7 +222,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
         await this.copyCsvToExtracted(params.destination, params.filename);
       }
 
-      await this.setStatus(params.importId, CsvImportStatus.FilesExtracted);
+      await this.handleExtractionSuccess(params.importId);
       CsvExtractUploadedZipUseCase.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
       await this.handleError(params.importId, params.callbacks, e as Error);

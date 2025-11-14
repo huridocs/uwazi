@@ -124,6 +124,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
     const updated = await csvImportsDS.getById(id);
     expect(updated?.status).toBe(CsvImportStatus.FilesExtracted);
+    expect(updated?.failure ?? undefined).toBeUndefined();
     expect(sockets.emitToSession).toHaveBeenCalledWith('sess-1', 'csvImport:extract:start', {
       importId: id,
     });
@@ -207,5 +208,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
     const updated = await csvImportsDS.getById(id);
     expect(updated?.status).toBe(CsvImportStatus.Failed);
+    expect(updated?.failure).toEqual(
+      expect.objectContaining({
+        retryable: false,
+        stage: 'extracting files',
+        message: expect.any(String),
+        at: expect.any(Number),
+      })
+    );
   });
 });

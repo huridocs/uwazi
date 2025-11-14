@@ -17,4 +17,11 @@ export interface CsvImportDBO {
   createdAt: number;
   updatedAt: number;
   rowErrors?: any;
+  failure?: {
+    message: string;
+    retryable: boolean;
+    at: number;
+    stage: string;
+    code?: string;
+  };
 }

@@ -36,6 +36,13 @@ export type CsvImport = CsvImportToCreate & {
   id: string;
   storage?: CsvImportStorage;
   rowErrors?: any; // intentionally flexible for MVP
+  failure?: {
+    message: string;
+    retryable: boolean;
+    at: number;
+    stage: string;
+    code?: string;
+  };
 };
 
 export class CsvImportDomain {
@@ -77,6 +84,23 @@ export class CsvImportDomain {
       ...csvImport,
       status,
       updatedAt: Date.now(),
+    };
+  }
+
+  static withFailure(csvImport: CsvImport, failure: NonNullable<CsvImport['failure']>): CsvImport {
+    return {
+      ...csvImport,
+      failure,
+      updatedAt: Date.now(),
+    };
+  }
+
+  static clearFailure(csvImport: CsvImport): CsvImport {
+    const { failure: _omit, ...rest } = csvImport as any;
+    return {
+      ...(rest as CsvImport),
+      updatedAt: Date.now(),
+      failure: undefined,
     };
   }
 }
