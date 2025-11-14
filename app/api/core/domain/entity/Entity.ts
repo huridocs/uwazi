@@ -90,7 +90,7 @@ class Entity {
   static create(input: CreateInput) {
     const { languages, userId, template, icon } = input;
 
-    const translations = languages.map(language => ({
+    const translations: EntityTranslationProps[] = languages.map(language => ({
       language,
     }));
 

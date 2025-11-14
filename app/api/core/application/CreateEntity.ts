@@ -7,6 +7,7 @@ import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import date from 'api/utils/date';
 import { InputFile } from 'api/files.v2/model/InputFile';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { AbstractUseCase } from '../libs/UseCase';
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { SettingsDataSource } from './contracts/SettingsDataSource';
@@ -14,6 +15,7 @@ import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCr
 import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { EntityCreatorService } from './EntityCreatorService';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
@@ -87,6 +89,17 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         );
       }
     });
+
+    // Leave it outside of the transaction so once consumers
+    // react to the event the transaction is definitely closed/committed, hopefully.
+    // This is important if any consumer wants to read the created entity.
+    // Still not ideal, but better than nothing.
+    await this.eventBus.emit(
+      new EntityCreatedEvent({
+        entities: MongoEntityMapper.toDBO(entity) as any,
+        targetLanguageKey: entity.languages[0],
+      })
+    );
 
     return entity;
   }

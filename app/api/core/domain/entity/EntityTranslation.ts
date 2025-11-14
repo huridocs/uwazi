@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Id, IdProps } from 'api/core/libs/Id';
 import {
   DateEntry,
   PropertyAssignment,
@@ -12,20 +13,19 @@ import {
 import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
 
 type Props = {
-  id?: string;
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
-};
+} & IdProps;
 
 class EntityTranslation {
-  id?: string;
+  id: Id;
 
   language: LanguageISO6391;
 
   metadata: Record<string, PropertyAssignment>;
 
   constructor(props: Props) {
-    this.id = props.id;
+    this.id = new Id(props);
     this.metadata = props.metadata || {};
     this.language = props.language;
   }

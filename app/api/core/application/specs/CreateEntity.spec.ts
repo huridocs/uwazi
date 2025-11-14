@@ -20,6 +20,9 @@ import { InputFile } from 'api/files.v2/model/InputFile';
 import { tenants } from 'api/tenants';
 import { PermissionType } from 'api/core/domain/entity/PermissionType';
 import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -206,6 +209,7 @@ const createSut = (props: CreateSutProps = {}) => {
   const filesDS = DefaultFilesDataSource(transactionManager);
 
   const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+  const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
   const sut = new CreateEntityUseCase(
     {
@@ -218,11 +222,12 @@ const createSut = (props: CreateSutProps = {}) => {
       translationsDS,
       filesDS,
       filesStorage,
+      eventBus,
     },
     context
   );
 
-  return { sut, filesStorage };
+  return { sut, filesStorage, eventBus };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -542,5 +547,22 @@ describe('CreateEntityUseCase', () => {
         },
       ],
     ]);
+  });
+
+  it('should emit an EntityCreatedEvent after creating the entity', async () => {
+    const { sut, eventBus } = createSut();
+
+    const entity = await sut.execute({
+      templateId: factory.id('Document').toHexString(),
+      attachments: [],
+      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
+    });
+
+    expect(eventBus.emit).toHaveBeenCalledWith(
+      new EntityCreatedEvent({
+        entities: MongoEntityMapper.toDBO(entity) as any,
+        targetLanguageKey: entity.languages[0],
+      })
+    );
   });
 });

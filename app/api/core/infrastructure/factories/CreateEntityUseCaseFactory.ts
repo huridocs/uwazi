@@ -9,6 +9,7 @@ import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
@@ -38,6 +39,7 @@ class CreateEntityUseCaseFactory {
         filesStorage,
         multiLanguageEntityDS,
         translationsDS,
+        eventBus: applicationEventsBus,
       },
       { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
     );
