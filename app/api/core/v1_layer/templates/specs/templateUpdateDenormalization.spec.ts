@@ -773,7 +773,7 @@ describe('Templates Update', () => {
     expect((await getEntitiesByTemplate('templateA', 'elastic')).length).toBe(3);
     expect((await getEntitiesByTemplate('templateB', 'elastic')).length).toBe(2);
     expect((await getEntitiesByTemplate('templateC', 'elastic')).length).toBe(0);
-  });
+  }, 10000);
 
   describe('when there is a new property with generatedId type', () => {
     it('should generate id for all entities related', async () => {

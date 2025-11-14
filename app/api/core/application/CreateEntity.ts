@@ -39,7 +39,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     templateId,
     icon,
     propertyAssignments: propertyAssignmentsInput,
-    attachments,
+    attachments: inputAttachments,
   }: Input): Promise<Output> {
     const propertyAssignmentCreatorService = PropertyAssignmentCreatorServiceStrategy.create(
       this.deps
@@ -55,36 +55,33 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     const propertyAssignments = await propertyAssignmentCreatorService.bulkCreate(
       propertyAssignmentsInput,
       entity.template,
-      attachments
+      inputAttachments
     );
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
 
+    const attachments = inputAttachments.map(
+      input =>
+        new Attachment({
+          id: this.idGenerator.generate(),
+          entity: entity.sharedId,
+          creationDate: date.currentUTC(),
+          filename: input.filename,
+          mimetype: input.metadata.mimetype,
+          originalname: input.metadata.originalname,
+          size: input.metadata.size,
+          content: input.content,
+        })
+    );
     await ArrayUtils.sequentialFor(attachments, async attachment =>
-      this.deps.filesStorage.storeFile({
-        type: 'attachment',
-        file: attachment.contents,
-      })
+      this.deps.filesStorage.storeFile(attachment)
     );
 
     await this.transactionManager.run(async () => {
       await this.deps.multiLanguageEntityDS.create(entity);
 
-      if (attachments.length > 0) {
-        await this.deps.filesDS.bulkCreate(
-          attachments.map(
-            attachment =>
-              new Attachment({
-                id: this.idGenerator.generate(),
-                entity: entity.sharedId,
-                creationDate: date.currentUTC(),
-                filename: attachment.filename,
-                mimetype: attachment.metadata.mimetype,
-                originalname: attachment.metadata.originalname,
-                size: attachment.metadata.size,
-              })
-          )
-        );
+      if (inputAttachments.length > 0) {
+        await this.deps.filesDS.bulkCreate(attachments);
       }
     });
 

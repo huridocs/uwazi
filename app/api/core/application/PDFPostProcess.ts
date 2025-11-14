@@ -27,29 +27,26 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync({ documentId }: Input, retriesLeft: boolean): Promise<Output> {
     const document = (await this.deps.filesDS.getProcessingById(documentId)).getDataOrThrow();
     try {
-      const fileContents = await this.deps.fileStorage.getFile({
-        type: 'document',
-        filename: document.filename,
-      });
+      const pdfInfo = (await this.deps.pdfService.extractText(document.content)).getDataOrThrow();
 
-      const pdfInfo = (await this.deps.pdfService.extractText(fileContents)).getDataOrThrow();
-
-      const thumbnailFile = (
-        await this.deps.pdfService.createThumbnail(fileContents)
+      const diskThumbnail = (
+        await this.deps.pdfService.createThumbnail(document.content)
       ).getDataOrThrow();
+
+      const thumbContents = diskThumbnail.toContent();
 
       const thumbnail = new Thumbnail({
         originalname: 'originalThumbnailName.jpg',
         filename: `${document.id}.jpg`,
         mimetype: 'image/jpeg',
-        size: (await this.deps.filesIO.size(thumbnailFile)).getDataOrThrow(),
+        size: (await this.deps.filesIO.size(diskThumbnail)).getDataOrThrow(),
         id: this.idGenerator.generate(),
         entity: document.entity,
         language: pdfInfo.language.key,
         creationDate: date.currentUTC(),
         uploaded: true,
+        content: thumbContents,
       });
-      thumbnailFile.filename = thumbnail.filename;
 
       const processedDoc = ProcessedDocument.fromDocument(document, {
         language: pdfInfo.language.key,
@@ -60,10 +57,7 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
         await this.deps.filesDS.update(processedDoc);
 
         await this.deps.filesDS.create(thumbnail);
-        await this.deps.fileStorage.storeFile({
-          type: 'thumbnail',
-          file: thumbnailFile,
-        });
+        await this.deps.fileStorage.storeFile(thumbnail);
       });
 
       return processedDoc;

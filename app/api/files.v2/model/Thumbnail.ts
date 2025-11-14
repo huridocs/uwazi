@@ -11,6 +11,8 @@ export class Thumbnail extends BaseFile {
 
   readonly language: LanguageISO6391;
 
+  protected _type = 'thumbnail' as const;
+
   constructor(props: Props) {
     const { entity, language, ...baseProps } = props;
     super(baseProps);

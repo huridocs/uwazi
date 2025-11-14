@@ -227,7 +227,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
 describe('CreateEntityUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({}, true);
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));
@@ -242,46 +242,58 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       attachments: [
-        new InputFile({
-          fieldname: 'attachments[0]',
-          encoding: '7bit',
-          mimetype: 'image/png',
-          destination: '/tmp',
-          originalname: 'Attachment 1.png',
-          filename: '1762280821775nhs3epb55g7.png',
-          path: '/tmp/1762280821775nhs3epb55g7.png',
-          size: 78636,
-        }),
-        new InputFile({
-          fieldname: 'attachments[1]',
-          encoding: '7bit',
-          mimetype: 'image/png',
-          destination: '/tmp',
-          originalname: 'Attachment 2.png',
-          filename: '1162280821775nhs3epb55g7.png',
-          path: '/tmp/1162280821775nhs3epb55g7.png',
-          size: 78636,
-        }),
-        new InputFile({
-          fieldname: 'attachments[2]',
-          encoding: '7bit',
-          mimetype: 'video/mp4',
-          destination: '/tmp',
-          originalname: 'Attachment 3.mp4',
-          filename: 'attachment_3.mp4',
-          path: '/tmp/attachment_3.mp4',
-          size: 78636,
-        }),
-        new InputFile({
-          fieldname: 'attachments[3]',
-          encoding: '7bit',
-          mimetype: 'video/mp4',
-          destination: '/tmp',
-          originalname: 'Attachment 4.mp4',
-          filename: 'attachment_4.mp4',
-          path: '/tmp/attachment_4.mp4',
-          size: 78636,
-        }),
+        new InputFile(
+          {
+            fieldname: 'attachments[0]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'Attachment 1.png',
+            filename: '1762280821775nhs3epb55g7.png',
+            path: '/tmp/1762280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[1]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'Attachment 2.png',
+            filename: '1162280821775nhs3epb55g7.png',
+            path: '/tmp/1162280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[2]',
+            encoding: '7bit',
+            mimetype: 'video/mp4',
+            destination: '/tmp',
+            originalname: 'Attachment 3.mp4',
+            filename: 'attachment_3.mp4',
+            path: '/tmp/attachment_3.mp4',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[3]',
+            encoding: '7bit',
+            mimetype: 'video/mp4',
+            destination: '/tmp',
+            originalname: 'Attachment 4.mp4',
+            filename: 'attachment_4.mp4',
+            path: '/tmp/attachment_4.mp4',
+            size: 78636,
+          },
+          'attachment'
+        ),
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },

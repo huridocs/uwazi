@@ -141,7 +141,7 @@ export default (app: Application) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
       if (tenants.current().featureFlags?.v2UploadFile) {
         const savedFile = await FileUploadUseCaseFactory.default().execute({
-          uploadedFile: new InputFile(req.file),
+          uploadedFile: new InputFile(req.file, 'document'),
           entityId: req.body.entity,
         });
         res.json(savedFile);
