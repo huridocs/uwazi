@@ -400,7 +400,7 @@ export default {
             value: [{ value: _doc.title }],
           },
         ],
-        attachments: attachments?.map(a => new InputFile(a)),
+        attachments,
       });
 
       return MongoEntityMapper.toDBO(output).find(e => e.language === language);

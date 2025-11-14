@@ -2,10 +2,10 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { search } from 'api/search';
-import { withTransaction } from 'api/utils/withTransaction';
 import { tenants } from 'api/tenants';
-import { set } from 'lodash';
+import { withTransaction } from 'api/utils/withTransaction';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -85,16 +85,13 @@ export default app => {
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
       if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
-        const { attachments } = (req.files || []).reduce(
-          (acum, file) => set(acum, file.fieldname, file),
-          {
-            attachments: [],
-          }
+        const inputFiles = req.files.map(
+          f => new InputFile(f, f.fieldname.match(/document/) ? 'document' : 'attachment')
         );
 
         const savedEntity = await entities.save(entityToSave, {
           language: req.language,
-          attachments,
+          attachments: inputFiles,
         });
 
         await updateThesauriWithEntity(savedEntity, req);
