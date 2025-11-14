@@ -25,85 +25,34 @@ describe('FileContents', () => {
     }
   });
 
-  describe('Disk', () => {
-    describe('constructor', () => {
-      it('should create a FileContents instance with filename and filepath', () => {
-        const file = new FileContents(testFilePath);
-
-        expect(file.filename).toBe('test-file.txt');
-        expect(file.getFullPath().getDataOrThrow()).toBe(testFilePath);
+  describe('constructor', () => {
+    it('should create FileContents with callback object', () => {
+      const streamCallback = jest.fn(async function* streamCallback() {
+        yield Buffer.from('callback content');
       });
-    });
 
-    describe('read', () => {
-      it('should return async iterable with correct content', async () => {
-        const file = new FileContents(testFilePath);
+      // eslint-disable-next-line no-new
+      new FileContents(streamCallback);
 
-        let outputContent = '';
-        for await (const chunk of file.read()) {
-          outputContent += chunk;
-        }
-        expect(outputContent).toBe(testContent);
-      });
-    });
-
-    describe('getFullPath', () => {
-      it('should return the resolved full path', () => {
-        const file = new FileContents(testFilePath);
-
-        const fullPath = file.getFullPath();
-        expect(fullPath.getDataOrThrow()).toBe(path.resolve(testFilePath));
-      });
+      expect(streamCallback).not.toHaveBeenCalled();
     });
   });
 
-  describe('Callback based', () => {
-    describe('constructor', () => {
-      it('should create FileContents with callback object', () => {
-        const streamCallback = jest.fn(async function* streamCallback() {
-          yield Buffer.from('callback content');
-        });
+  describe('read()', () => {
+    it('should return a file contents asyncIterable', async () => {
+      const callbackContent = 'multiple reads content';
+      async function* streamCallback() {
+        yield Buffer.from(callbackContent);
+      }
 
-        const fileContents = new FileContents({
-          filename: 'callback-file.txt',
-          streamCallback,
-        });
+      const fileContents = new FileContents(streamCallback);
 
-        expect(fileContents.filename).toBe('callback-file.txt');
-        expect(streamCallback).not.toHaveBeenCalled();
-      });
-    });
+      let result = '';
+      for await (const chunk of fileContents.read()) {
+        result += chunk;
+      }
 
-    describe('read()', () => {
-      it('should return a file contents asyncIterable', async () => {
-        const callbackContent = 'multiple reads content';
-        async function* streamCallback() {
-          yield Buffer.from(callbackContent);
-        }
-
-        const fileContents = new FileContents({ filename: 'multiple-reads.txt', streamCallback });
-
-        let result = '';
-        for await (const chunk of fileContents.read()) {
-          result += chunk;
-        }
-
-        expect(result).toBe(callbackContent);
-      });
-    });
-
-    describe('getFullPath()', () => {
-      it('should return undefined for  FileContents', () => {
-        async function* streamCallback() {
-          yield Buffer.from('content');
-        }
-        const fileContents = new FileContents({
-          filename: 'callback-file.txt',
-          streamCallback,
-        });
-
-        expect(() => fileContents.getFullPath().getDataOrThrow()).toThrow();
-      });
+      expect(result).toBe(callbackContent);
     });
   });
 });
