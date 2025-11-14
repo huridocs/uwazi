@@ -9,7 +9,7 @@ type ExtractParagraphInput = {
   documents: ProcessedDocument[];
   mainLanguage: LanguageISO6391;
   extractionKey: PXExtractionKey;
-  files: FileContents[];
+  files: { filename: string; contents: FileContents }[];
 };
 
 type TranslationOutput = {

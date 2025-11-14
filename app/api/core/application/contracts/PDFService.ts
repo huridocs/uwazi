@@ -1,4 +1,5 @@
 import { ResultType } from 'api/core/libs/Result';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
@@ -13,5 +14,5 @@ export interface PDFService {
       Error
     >
   >;
-  createThumbnail(file: FileContents): Promise<ResultType<FileContents, Error>>;
+  createThumbnail(file: FileContents): Promise<ResultType<DiskFile, Error>>;
 }

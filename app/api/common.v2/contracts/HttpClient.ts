@@ -4,7 +4,7 @@ import { HttpField } from './HttpField';
 type PostFormDataInput = {
   url: string;
   fields: Record<string, HttpField>;
-  files: Record<string, FileContents[]>;
+  files: Record<string, { filename: string; contents: FileContents }[]>;
 };
 
 type GetInput = {

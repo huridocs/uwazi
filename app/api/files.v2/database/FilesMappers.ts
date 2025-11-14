@@ -8,9 +8,10 @@ import { URLAttachment } from '../model/URLAttachment';
 import { UwaziFile } from '../model/UwaziFile';
 import { fileDBO } from './schemas/filesTypes';
 import { ProcessedDocument } from '../model/ProcessedDocument';
+import { FileContents } from '../model/FileContents';
 
 export const FileMappers = {
-  toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO): R {
+  toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO, fileContents: FileContents): R {
     if (dbo.type === 'attachment' && dbo.url) {
       return new URLAttachment({
         id: dbo._id.toString(),
@@ -21,6 +22,7 @@ export const FileMappers = {
         mimetype: dbo.mimetype,
         size: dbo.size,
         creationDate: dbo.creationDate,
+        content: fileContents,
       }) as R;
     }
     if (dbo.type === 'attachment') {
@@ -32,6 +34,7 @@ export const FileMappers = {
         mimetype: dbo.mimetype,
         size: dbo.size,
         creationDate: dbo.creationDate,
+        content: fileContents,
       }) as R;
     }
 
@@ -43,6 +46,7 @@ export const FileMappers = {
         mimetype: dbo.mimetype,
         size: dbo.size,
         creationDate: dbo.creationDate,
+        content: fileContents,
       }) as R;
     }
 
@@ -56,6 +60,7 @@ export const FileMappers = {
         creationDate: dbo.creationDate,
         entity: dbo.entity,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
+        content: fileContents,
       }) as R;
     }
 
@@ -71,6 +76,7 @@ export const FileMappers = {
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
         totalPages: dbo.totalPages,
         fullText: dbo.fullText || {},
+        content: fileContents,
       }) as R;
     }
     if (dbo.type === 'document') {
@@ -83,6 +89,7 @@ export const FileMappers = {
         size: dbo.size,
         creationDate: dbo.creationDate,
         status: dbo.status,
+        content: fileContents,
       }) as R;
     }
     throw new Error('Unknown file type');
