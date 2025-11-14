@@ -118,14 +118,14 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
         <PlainText text={pageText} />
       </div>
       <div className="flex flex-row">
-        <div className="justify-self-start">
+        <div className="justify-self-start grow">
           {ocrServiceEnabled && entity.mainDocument && (
             <NeedAuthorization roles={['admin', 'editor']}>
               <OCRButton file={entity.mainDocument} />
             </NeedAuthorization>
           )}
         </div>
-        <div className="justify-self-end flex items-center gap-2">
+        <div className="justify-self-end flex items-center gap-2 font-medium">
           <button
             type="button"
             onClick={onPageBack}
@@ -134,7 +134,9 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
           >
             <Translate>Previous page</Translate>
           </button>
-
+          <div className="text-primary-900">
+            {currentPage} / {totalPages}
+          </div>
           <button
             type="button"
             onClick={onPageForward}
