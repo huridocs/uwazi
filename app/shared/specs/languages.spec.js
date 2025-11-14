@@ -65,10 +65,10 @@ describe('languages', () => {
       expect(LanguageUtils.fromISO639_1(input.ISO639_1)).toEqual(input);
     });
 
-    it('should return undefined if given a ISO639_1 language code that does not exist on available languages', () => {
+    it('should return default language schema if given a ISO639_1 language code that does not exist on available languages', () => {
       const input = 'language_code_that_does_not_exist';
 
-      expect(LanguageUtils.fromISO639_1(input)).toBeUndefined();
+      expect(LanguageUtils.fromISO639_1(input)).toEqual(otherLanguageSchema);
     });
   });
 });

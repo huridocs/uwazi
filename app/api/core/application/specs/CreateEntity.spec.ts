@@ -227,7 +227,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
 describe('CreateEntityUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({}, true);
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));
