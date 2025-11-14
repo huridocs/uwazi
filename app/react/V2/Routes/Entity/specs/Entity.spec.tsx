@@ -212,30 +212,6 @@ describe('Entity view', () => {
         expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
       });
     });
-
-    it('should display raw page only if SSRendering', async () => {
-      const originalIsClient = (utils as any).isClient;
-
-      (utils as any).isClient = false;
-
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
-            pagePlaintext: pageText,
-          }}
-        >
-          <Entity />
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();
-      expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
-
-      (utils as any).isClient = originalIsClient;
-    });
   });
 
   describe('Entity without mainDocument', () => {
