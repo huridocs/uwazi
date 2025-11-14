@@ -55,19 +55,14 @@ class FilesService {
   }
 
   async insert(files: UwaziFile[]) {
-    const { _id: userId } = permissionsContext.getUserInContext()!;
-    if (!userId) {
-      throw new Error('No user in context !');
-    }
-
     await this.deps.filesDS.bulkCreate(files);
 
     await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
       files.forEach(file => {
         if (file instanceof Document) {
+          //@ts-ignore
           dispatch(PDFPostProcessJob, {
             documentId: file.id,
-            userId: userId.toString(),
             tenantName: tenants.current().name,
           });
         }

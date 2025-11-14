@@ -24,6 +24,8 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { CreateEntityUseCase } from '../CreateEntity';
+import { FilesService } from '../FilesService';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
 const factory = getFixturesFactory();
 
@@ -208,11 +210,22 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const filesDS = DefaultFilesDataSource(transactionManager);
 
-  const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+  const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+
+  const fileService = new FilesService({
+    idGenerator,
+    fileStorage,
+    filesDS,
+    jobsDispatcher: DefaultDispatcher(tenants.current().name),
+  });
+
+  jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
+  jest.spyOn(fileService, 'insert').mockResolvedValue();
 
   const sut = new CreateEntityUseCase(
     {
+      fileService,
       transactionManager,
       idGenerator,
       settingsDS,
@@ -220,14 +233,12 @@ const createSut = (props: CreateSutProps = {}) => {
       templatesDS,
       thesauriDS,
       translationsDS,
-      filesDS,
-      filesStorage,
       eventBus,
     },
     context
   );
 
-  return { sut, filesStorage, eventBus };
+  return { sut, fileService, eventBus };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -242,7 +253,7 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, filesStorage } = createSut();
+    const { sut, fileService } = createSut();
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
@@ -259,6 +270,19 @@ describe('CreateEntityUseCase', () => {
             size: 78636,
           },
           'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'documents[0]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'primary.pdf',
+            filename: '1162280821775nhs3epb55g7.png',
+            path: '/tmp/1162280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'document'
         ),
         new InputFile(
           {
@@ -357,11 +381,6 @@ describe('CreateEntityUseCase', () => {
     const entities = await testingEnvironment.db
       .getCollection('entities')
       ?.find({ sharedId: entity.sharedId })
-      .toArray();
-
-    const attachments = await testingEnvironment.db
-      .getCollection('files')
-      ?.find({ type: 'attachment' })
       .toArray();
 
     const commonFields = {
@@ -467,55 +486,21 @@ describe('CreateEntityUseCase', () => {
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
 
-    expect(attachments).toHaveLength(4);
-    expect(attachments).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 1.png',
-        filename: '1762280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 2.png',
-        filename: '1162280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 3.mp4',
-        filename: 'attachment_3.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 4.mp4',
-        filename: 'attachment_4.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        url: '',
-        type: 'attachment',
-      },
+    expect(fileService.storeFiles).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
     ]);
 
-    expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
+    expect(fileService.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+    ]);
   });
 
   it('should add grant access when actor is present', async () => {

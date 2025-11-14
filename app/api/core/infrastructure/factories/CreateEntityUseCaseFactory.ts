@@ -12,6 +12,8 @@ import { tenants } from 'api/tenants/tenantContext';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { FilesService } from 'api/core/application/FilesService';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
 class CreateEntityUseCaseFactory {
   static default() {
@@ -19,7 +21,7 @@ class CreateEntityUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const filesStorage = FileStorageStrategyFactory.createDefault();
+    const fileStorage = FileStorageStrategyFactory.createDefault();
     const filesDS = DefaultFilesDataSource(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
@@ -30,13 +32,17 @@ class CreateEntityUseCaseFactory {
 
     const useCase = new CreateEntityUseCase(
       {
+        fileService: new FilesService({
+          idGenerator,
+          filesDS,
+          fileStorage,
+          jobsDispatcher: DefaultDispatcher(tenants.current().name),
+        }),
         idGenerator,
         templatesDS,
         thesauriDS,
         settingsDS,
         transactionManager,
-        filesDS,
-        filesStorage,
         multiLanguageEntityDS,
         translationsDS,
         eventBus: applicationEventsBus,
