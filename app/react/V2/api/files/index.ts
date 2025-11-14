@@ -55,7 +55,11 @@ const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseErr
   }
 };
 
-const getPagePlaintext = async (_id: string, page: number, header?: IncomingHttpHeaders) => {
+const getPagePlaintext = async (
+  _id: string,
+  page: number,
+  header?: IncomingHttpHeaders
+): Promise<string | FetchResponseError> => {
   try {
     const requestParams = new RequestParams({ _id, page }, header);
     const response = await api.get('documents/page', requestParams);

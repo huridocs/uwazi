@@ -7,7 +7,7 @@ import { Entity } from 'V2/domain';
 import { getPagePlaintext } from 'V2/api/files';
 import { PDF } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
-import { Truncate } from 'V2/Components/UI';
+import { NeedAuthorization, Truncate } from 'V2/Components/UI';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
@@ -60,7 +60,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
 
     if (isRaw && !firstLoad.current && entity.mainDocument) {
       getPagePlaintext(entity.mainDocument._id as string, currentPage)
-        .then(text => setPageText(text))
+        .then(text => setPageText(text as string))
         .catch(_e => {
           setPageText('');
         });
@@ -119,7 +119,11 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       </div>
       <div className="flex flex-row">
         <div className="justify-self-start">
-          {ocrServiceEnabled && entity.mainDocument && <OCRButton file={entity.mainDocument} />}
+          {ocrServiceEnabled && entity.mainDocument && (
+            <NeedAuthorization roles={['admin']}>
+              <OCRButton file={entity.mainDocument} />
+            </NeedAuthorization>
+          )}
         </div>
         <div className="justify-self-end flex items-center gap-2">
           <button

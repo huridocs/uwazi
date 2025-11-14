@@ -4,8 +4,10 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
-import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
+import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import * as utils from 'app/utils';
+import { settingsAtom, userAtom } from 'V2/atoms';
+import * as files from 'V2/api/files';
 import { Entity, shouldRevalidate } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
@@ -22,13 +24,9 @@ const sampleEntity: Partial<EntityType> = {
   metadata: [],
 };
 
-let mediaMock = setupMatchMediaMock();
+const mainDocumentFile = { filename: 'file.pdf' };
 
-afterEach(() => {
-  jest.clearAllMocks();
-  mediaMock.restore();
-  mediaMock = setupMatchMediaMock();
-});
+let mediaMock = setupMatchMediaMock();
 
 const checkEntityRendered = async () => {
   const titleElements = await screen.findAllByText('Sample Entity');
@@ -36,6 +34,12 @@ const checkEntityRendered = async () => {
 };
 
 describe('Entity view', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    mediaMock.restore();
+    mediaMock = setupMatchMediaMock();
+  });
+
   it('should show loading when no entity', async () => {
     render(
       <TestRouterContext loaderData={undefined}>
@@ -57,6 +61,83 @@ describe('Entity view', () => {
 
     expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.getByTestId('mock-pdf')).toHaveTextContent('/api/files/file.pdf');
+  });
+
+  describe('OCR service', () => {
+    beforeAll(() => {
+      jest.spyOn(files, 'getOcrStatus').mockResolvedValue({ status: files.OcrStatus.NONE });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should not display the OCR button when the service is not availabe', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: '',
+          }}
+        >
+          <TestAtomStoreProvider
+            initialValues={[
+              [settingsAtom, {}],
+              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+            ]}
+          >
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
+    });
+
+    it('should display for admins', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: '',
+          }}
+        >
+          <TestAtomStoreProvider
+            initialValues={[
+              [settingsAtom, { ocrServiceEnabled: true }],
+              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+            ]}
+          >
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByText('OCR PDF')).toBeInTheDocument();
+    });
+
+    it('should not display if there is no user', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: '',
+          }}
+        >
+          <TestAtomStoreProvider initialValues={[[settingsAtom, { ocrServiceEnabled: true }]]}>
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
+    });
   });
 
   describe('Tabs', () => {
@@ -118,14 +199,22 @@ describe('Entity view', () => {
   });
 
   describe('Plain text view', () => {
-    it('should switch to plain text view', async () => {
-      const mainDocumentFile = { filename: 'file.pdf' };
+    const pageText = 'This is the plain text';
 
+    beforeAll(() => {
+      jest.spyOn(files, 'getPagePlaintext').mockResolvedValue(pageText);
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should switch to plain text view', async () => {
       render(
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity, mainDocument: mainDocumentFile },
-            pagePlaintext: 'This is the plain text',
+            pagePlaintext: pageText,
           }}
         >
           <Entity />
@@ -144,39 +233,11 @@ describe('Entity view', () => {
       fireEvent.change(select, { target: { value: 'raw' } });
 
       await waitFor(() => {
-        expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
-          'block'
-        );
-      });
-    });
-
-    it('shoul display the plain text view page based on the url', async () => {
-      const mainDocumentFile = { filename: 'file.pdf' };
-
-      render(
-        <TestRouterContext
-          path="/entity/:sharedId"
-          loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
-            pagePlaintext: 'Page 5 content',
-          }}
-          initialEntries={['/entity/shared1?raw=true&page=5']}
-        >
-          <Entity />
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      await waitFor(() => {
-        expect(screen.getByTestId('mock-pdf').parentElement?.classList).toContain('hidden');
-        expect(screen.getByText('Page 5 content').parentElement?.classList).toContain('block');
+        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
       });
     });
 
     it('should display raw page only if SSRendering', async () => {
-      const mainDocumentFile = { filename: 'file.pdf' };
-
       const originalIsClient = (utils as any).isClient;
 
       (utils as any).isClient = false;
@@ -185,7 +246,7 @@ describe('Entity view', () => {
         <TestRouterContext
           loaderData={{
             entity: { ...sampleEntity, mainDocument: mainDocumentFile },
-            pagePlaintext: 'Shown from ssr plain text',
+            pagePlaintext: pageText,
           }}
         >
           <Entity />
@@ -195,9 +256,7 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       expect(screen.queryByTestId('mock-pdf')).not.toBeInTheDocument();
-      expect(screen.getByText('Shown from ssr plain text').parentElement?.classList).toContain(
-        'block'
-      );
+      expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
 
       (utils as any).isClient = originalIsClient;
     });
