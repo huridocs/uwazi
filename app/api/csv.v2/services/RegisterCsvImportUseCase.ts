@@ -31,13 +31,8 @@ export class RegisterCsvImportUseCase extends AbstractUseCase<
     });
 
     const destination = `csv-imports/${id}`;
-    await this.deps.fileStorage.storeFile({
-      file: input.file.contents,
-      type: 'customPath',
-      destination,
-    });
-
-    const { filename } = input.file.contents;
+    const { filename } = input.file;
+    await this.deps.fileStorage.storeContent(input.file.content, `${destination}/${filename}`);
     const csvImportWithStorage = CsvImportDomain.withStorage(
       csvImport,
       `${destination}/${filename}`

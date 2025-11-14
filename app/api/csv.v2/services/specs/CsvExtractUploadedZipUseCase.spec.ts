@@ -9,12 +9,12 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
-import { FileContents } from 'api/files.v2/model/FileContents';
 import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/model/CsvImport';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { CsvExtractUploadedZipUseCase } from '../CsvExtractUploadedZipUseCase';
 
 describe('CsvExtractUploadedZipUseCase (integration)', () => {
@@ -68,25 +68,11 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     // prepare original CSV in storage path
     const destination = `csv-imports/${id}`;
     const originalFilename = 'original.csv';
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(
-        path.join(__dirname, '../../../files/specs/testing_files', 'documento.txt')
-      ),
-    });
-    // rename to originalFilename inside destination
-    const storedPath = pathManager.createPath({
-      type: 'customPath',
-      destination,
-      filename: 'documento.txt',
-    });
-    const originalPath = pathManager.createPath({
-      type: 'customPath',
-      destination,
-      filename: originalFilename,
-    });
-    await fs.rename(storedPath, originalPath);
+    const disk = path.join(__dirname, '../../../files/specs/testing_files', 'documento.txt');
+    await fileStorage.storeContent(
+      new DiskFile(disk).toContent(),
+      `${destination}/${originalFilename}`
+    );
 
     // insert import doc (queued) with storage path
     const importDoc = CsvImportDomain.withStorage(
@@ -135,11 +121,11 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     );
     createdTempDirs.push(tempZipDir);
 
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(path.join(tempZipDir, 'zipData', zipFilename)),
-    });
+    const zipPath = path.join(tempZipDir, 'zipData', zipFilename);
+    await fileStorage.storeContent(
+      new DiskFile(zipPath).toContent(),
+      `${destination}/${zipFilename}`
+    );
     const storedZipPath = pathManager.createPath({
       type: 'customPath',
       destination,
@@ -213,11 +199,11 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     await createTestingZip([path.join(zipDir, 'test.csv')], zipFilename, tempZipDir);
     createdTempDirs.push(tempZipDir);
 
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(path.join(tempZipDir, 'zipData', zipFilename)),
-    });
+    const zipPath2 = path.join(tempZipDir, 'zipData', zipFilename);
+    await fileStorage.storeContent(
+      new DiskFile(zipPath2).toContent(),
+      `${destination}/${zipFilename}`
+    );
 
     const importDoc = CsvImportDomain.withStorage(
       CsvImportDomain.create({

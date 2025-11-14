@@ -32,6 +32,16 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     return { filename, destination };
   }
 
+  private static streamFromReadable(readStream: NodeJS.ReadableStream): AsyncIterable<Uint8Array> {
+    async function* streamReadable() {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      for await (const chunk of readStream as any) {
+        yield chunk as Uint8Array;
+      }
+    }
+    return streamReadable();
+  }
+
   private static emitStart(callbacks: Callbacks | undefined, importId: string) {
     callbacks?.onStart?.({ importId });
   }
@@ -70,16 +80,9 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename: originalFilename,
     });
 
-    const file = new FileContents({
-      filename: 'import.csv',
-      streamCallback: () => source.read(),
-    });
+    const file = new FileContents(() => source.read());
 
-    await this.deps.fileStorage.storeFile({
-      file,
-      type: 'customPath',
-      destination: `${originalDestination}/extracted`,
-    });
+    await this.deps.fileStorage.storeContent(file, `${originalDestination}/extracted/import.csv`);
   }
 
   private async extractZipToExtracted(
@@ -94,8 +97,8 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
       filename: zipFilename,
     });
 
-    const disk = await (await this.deps.filesIO.toDisk(zipFileContents)).getFullPath();
-    const zipPath = disk.getDataOrThrow();
+    const disk = await this.deps.filesIO.toDisk(zipFileContents);
+    const zipPath = disk.path;
 
     const extractedDestination = `${zipDestination}/extracted`;
     let hasImportCsv = false;
@@ -131,17 +134,15 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
               return;
             }
 
-            const file = new FileContents({
-              filename: entry.fileName,
-              streamCallback: () => readStream,
-            });
+            const file = new FileContents(() =>
+              CsvExtractUploadedZipUseCase.streamFromReadable(readStream)
+            );
 
             try {
-              await this.deps.fileStorage.storeFile({
+              await this.deps.fileStorage.storeContent(
                 file,
-                type: 'customPath',
-                destination: extractedDestination,
-              });
+                `${extractedDestination}/${entry.fileName}`
+              );
               processedFiles += 1;
               callbacks?.onProgress?.({ importId, processedFiles });
               next();

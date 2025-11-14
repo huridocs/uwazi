@@ -9,7 +9,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/model/CsvImport';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { TestUtils } from 'api/common.v2/utils/Test';
@@ -104,11 +104,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     );
     createdTempDirs.push(tempZipDir);
 
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(path.join(tempZipDir, 'zipData', zipFilename)),
-    });
+    await fileStorage.storeContent(
+      new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
+      `${destination}/${zipFilename}`
+    );
     const importDoc = CsvImportDomain.withStorage(
       CsvImportDomain.create({
         id,
@@ -151,11 +150,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     await fs.mkdir(tempZipDir, { recursive: true });
     await fs.mkdir(path.join(tempZipDir, 'zipData'), { recursive: true });
     await createTestingZip([path.join(zipDir, 'import.csv')], zipFilename, tempZipDir);
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(path.join(tempZipDir, 'zipData', zipFilename)),
-    });
+    await fileStorage.storeContent(
+      new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
+      `${destination}/${zipFilename}`
+    );
     createdTempDirs.push(tempZipDir);
     const importDoc = CsvImportDomain.withStorage(
       CsvImportDomain.create({
@@ -186,11 +184,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     // zip without import.csv to force NonRetryable
     const emptyDir = path.join(__dirname, '../../../csv/specs/zipData');
     await createTestingZip([path.join(emptyDir, 'test.csv')], zipFilename, tempZipDir);
-    await fileStorage.storeFile({
-      type: 'customPath',
-      destination,
-      file: new FileContents(path.join(tempZipDir, 'zipData', zipFilename)),
-    });
+    await fileStorage.storeContent(
+      new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
+      `${destination}/${zipFilename}`
+    );
     createdTempDirs.push(tempZipDir);
     const importDoc = CsvImportDomain.withStorage(
       CsvImportDomain.create({
