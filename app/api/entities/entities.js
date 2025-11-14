@@ -17,7 +17,6 @@ import ID from 'shared/uniqueID';
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import { tenants } from 'api/tenants';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
-import { InputFile } from 'api/files.v2/model/InputFile';
 import { CreateEntityUseCaseFactory } from 'api/core/infrastructure/factories/CreateEntityUseCaseFactory';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
@@ -380,7 +379,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async save(_doc, { user, language, attachments = [] }, options = {}) {
+  async save(_doc, { user, language, inputFiles = [] }, options = {}) {
     const { v2CreateEntity } = tenants.current().featureFlags;
 
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
@@ -400,7 +399,7 @@ export default {
             value: [{ value: _doc.title }],
           },
         ],
-        attachments,
+        inputFiles,
       });
 
       return MongoEntityMapper.toDBO(output).find(e => e.language === language);

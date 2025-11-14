@@ -91,7 +91,7 @@ export default app => {
 
         const savedEntity = await entities.save(entityToSave, {
           language: req.language,
-          attachments: inputFiles,
+          inputFiles,
         });
 
         await updateThesauriWithEntity(savedEntity, req);

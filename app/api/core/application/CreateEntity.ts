@@ -1,11 +1,8 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { Attachment } from 'api/files.v2/model/Attachment';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import date from 'api/utils/date';
 import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
 import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
 import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
@@ -18,7 +15,7 @@ import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCr
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
-  attachments: InputFile[];
+  inputFiles: InputFile[];
   templateId?: string;
   icon?: EntityIcon;
 };
@@ -39,7 +36,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     templateId,
     icon,
     propertyAssignments: propertyAssignmentsInput,
-    attachments: inputFiles,
+    inputFiles,
   }: Input): Promise<Output> {
     const propertyAssignmentCreatorService = PropertyAssignmentCreatorServiceStrategy.create(
       this.deps
@@ -60,10 +57,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
 
-    const attachments = await this.deps.fileService.fromInputFiles(
-      entity.sharedId,
-      inputFiles
-    );
+    const attachments = await this.deps.fileService.fromInputFiles(entity.sharedId, inputFiles);
 
     await this.deps.fileService.storeFiles(attachments);
 

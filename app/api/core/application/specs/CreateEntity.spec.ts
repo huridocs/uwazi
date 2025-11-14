@@ -257,7 +257,7 @@ describe('CreateEntityUseCase', () => {
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
-      attachments: [
+      inputFiles: [
         new InputFile(
           {
             fieldname: 'attachments[0]',
@@ -519,7 +519,7 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-      attachments: [],
+      inputFiles: [],
     });
 
     const entities = await testingEnvironment.db
@@ -551,7 +551,7 @@ describe('CreateEntityUseCase', () => {
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
-      attachments: [],
+      inputFiles: [],
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
     });
 
