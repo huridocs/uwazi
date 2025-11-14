@@ -197,6 +197,16 @@ describe('FileMappers', () => {
       expect(result.language).toBe('eng');
     });
 
+    it('should handle language conversion fallback when language is undefined', () => {
+      const document = FileBuilder.processedDocument({
+        language: undefined,
+      });
+
+      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+
+      expect(result.language).toBe('other');
+    });
+
     it('should throw error for unknown file type', () => {
       const unknownFile = {} as any;
 
