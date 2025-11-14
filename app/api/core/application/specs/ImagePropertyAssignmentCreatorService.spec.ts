@@ -80,8 +80,8 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     const template = MongoTemplateMapper.toDomain(templateDBO as any);
 
     const attachments = [
-      new InputFile({ filename: 'abc123.jpg' } as any),
-      new InputFile({ filename: 'def456.png' } as any),
+      new InputFile({ filename: 'abc123.jpg' } as any, 'attachment'),
+      new InputFile({ filename: 'def456.png' } as any, 'attachment'),
     ];
 
     const result = await sut.create({
@@ -113,7 +113,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
     await expect(
       sut.create({
         template,
-        attachments: [new InputFile({ filename: 'onlyOne.jpg' } as any)],
+        attachments: [new InputFile({ filename: 'onlyOne.jpg' } as any, 'attachment')],
         propertyAssignment: {
           name: 'attached_image_1',
           value: [{ attachment: 5 }],

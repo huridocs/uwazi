@@ -17,6 +17,7 @@ import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
+import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
 
 const factory = getFixturesFactory();
 
@@ -54,7 +55,11 @@ const createService = () => {
       SettingsDataSource,
       transactionManager
     ),
-    new MongoFilesDataSource(connection, transactionManager),
+    new MongoFilesDataSource(
+      connection,
+      transactionManager,
+      FileStorageStrategyFactory.createDefault()
+    ),
     transactionManager,
     MongoIdHandler,
     authServiceMock,

@@ -22,6 +22,7 @@ import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
 import { ProcessingFileNotFound } from '../model/errors';
 import { BaseDocument } from '../model/BaseDocument';
+import { FileStorage } from '../contracts/FileStorage';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -40,8 +41,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected entitiesToIndex = new Set<string>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
+  protected fileStorage: FileStorage;
+
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    fileStorage: FileStorage,
+    options: MongoDSOptions = {}
+  ) {
     super(db, transactionManager, options);
+    this.fileStorage = fileStorage;
     transactionManager.onCommitted(async () => {
       await search.indexEntities(
         { sharedId: { $in: Array.from(this.entitiesToIndex) } },
@@ -56,7 +65,12 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       status: 'processing',
     });
     if (processing) {
-      return Result.ok(FileMappers.toModel(processing) as Document);
+      return Result.ok(
+        FileMappers.toModel(
+          processing,
+          await this.fileStorage.getFile({ type: 'document', filename: processing.filename })
+        ) as Document
+      );
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
   }
@@ -174,14 +188,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return new MongoResultSet<fileDBO, ProcessedDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      FileMappers.toModel<ProcessedDocument>
+      async dbo =>
+        FileMappers.toModel<ProcessedDocument>(
+          dbo,
+          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+        )
     );
   }
 
   getAll() {
     return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
-      FileMappers.toModel
+      async dbo =>
+        FileMappers.toModel<ProcessedDocument>(
+          dbo,
+          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+        )
     );
   }
 

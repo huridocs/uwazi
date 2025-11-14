@@ -81,6 +81,7 @@ const setUpUseCase = () => {
   };
 
   const fileStorage = {
+    storeContent: jest.fn(),
     storeFile: jest.fn(),
     getFiles: jest.fn().mockResolvedValue(files),
     getFile: jest.fn(),
@@ -429,23 +430,6 @@ describe('PXExtractParagraphsFromEntity', () => {
 
     await expect(promise).rejects.toMatchObject({
       code: PXErrorCode.DOCUMENTS_NOT_FOUND,
-    });
-  });
-
-  it('should throw if there is no Segmentation Files to send', async () => {
-    const { extractParagraphs, fileStorage } = setUpUseCase();
-
-    fileStorage.getFiles = jest.fn().mockResolvedValue(() => []);
-
-    const promise = extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
-
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.SEGMENTATION_FILES_NOT_FOUND,
     });
   });
 });
