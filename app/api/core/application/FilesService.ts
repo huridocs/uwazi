@@ -5,7 +5,6 @@ import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { UwaziFile } from 'api/files.v2/model/UwaziFile';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
