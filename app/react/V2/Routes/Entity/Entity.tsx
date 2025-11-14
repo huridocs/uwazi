@@ -9,6 +9,7 @@ import {
 } from 'react-router';
 import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { getPagePlaintext } from 'V2/api/files';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
@@ -71,6 +72,7 @@ const entityLoader =
     const entitySharedId = params.sharedId;
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get('page') || '1';
+    let pagePlaintext = '';
 
     if (!entitySharedId) {
       return undefined;
@@ -103,13 +105,18 @@ const entityLoader =
       );
     }
 
-    const pagePlaintext: string = composition.entity.mainDocument
-      ? await getPagePlaintext(
-          composition.entity.mainDocument?._id as string,
-          Number.parseInt(currentPage, 10)
-        )
-      : '';
+    if (composition.entity.mainDocument) {
+      const response = await getPagePlaintext(
+        composition.entity.mainDocument?._id as string,
+        Number.parseInt(currentPage, 10)
+      );
 
+      if (response instanceof FetchResponseError) {
+        pagePlaintext = '';
+      } else {
+        pagePlaintext = response;
+      }
+    }
     return { entity: composition.entity, pagePlaintext };
   };
 

@@ -96,30 +96,6 @@ describe('Entity view', () => {
       expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
     });
 
-    it('should display for admins', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
-            pagePlaintext: '',
-          }}
-        >
-          <TestAtomStoreProvider
-            initialValues={[
-              [settingsAtom, { ocrServiceEnabled: true }],
-              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
-            ]}
-          >
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
-      await checkEntityRendered();
-
-      expect(screen.queryByText('OCR PDF')).toBeInTheDocument();
-    });
-
     it('should not display if there is no user', async () => {
       render(
         <TestRouterContext

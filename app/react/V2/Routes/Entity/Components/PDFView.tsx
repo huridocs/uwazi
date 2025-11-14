@@ -120,7 +120,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       <div className="flex flex-row">
         <div className="justify-self-start">
           {ocrServiceEnabled && entity.mainDocument && (
-            <NeedAuthorization roles={['admin']}>
+            <NeedAuthorization roles={['admin', 'editor']}>
               <OCRButton file={entity.mainDocument} />
             </NeedAuthorization>
           )}
