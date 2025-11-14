@@ -63,9 +63,9 @@ describe('ExternalExtractionService', () => {
         entityStatusId: 'any_extraction_id',
       });
 
-      const streamCallback = jest.fn(async function* () {
+      async function* streamCallback() {
         yield Buffer.from('default content');
-      });
+      }
 
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
@@ -73,18 +73,18 @@ describe('ExternalExtractionService', () => {
         mainLanguage: 'pt',
         extractionKey,
         files: [
-          new FileContents({
+          {
             filename: 'file1.txt',
-            streamCallback,
-          }),
-          new FileContents({
+            contents: new FileContents(streamCallback),
+          },
+          {
             filename: 'file2.txt',
-            streamCallback,
-          }),
-          new FileContents({
+            contents: new FileContents(streamCallback),
+          },
+          {
             filename: 'file3.txt',
-            streamCallback,
-          }),
+            contents: new FileContents(streamCallback),
+          },
         ],
       });
 

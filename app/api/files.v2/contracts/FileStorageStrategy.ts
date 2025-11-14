@@ -2,7 +2,7 @@ import { Tenant } from 'api/tenants/tenantContext';
 import { FileContents } from '../model/FileContents';
 import { StoredFile } from '../model/StoredFile';
 import { UwaziFile } from '../model/UwaziFile';
-import { FileStorage, GetFileInput, UploadFileInput } from './FileStorage';
+import { FileStorage, GetFileInput } from './FileStorage';
 
 type Strategy = {
   s3Storage: FileStorage;
@@ -17,8 +17,12 @@ type FileStorageStrategyProps = {
 export class FileStorageStrategy implements FileStorage {
   constructor(private props: FileStorageStrategyProps) {}
 
-  async storeFile(input: UploadFileInput) {
-    return this.currentStrategy.storeFile(input);
+  async storeContent(content: FileContents, subpath: string) {
+    return this.currentStrategy.storeContent(content, subpath);
+  }
+
+  async storeFile(file: UwaziFile) {
+    return this.currentStrategy.storeFile(file);
   }
 
   private get currentStrategy() {
