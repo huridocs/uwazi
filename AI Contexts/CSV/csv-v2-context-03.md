@@ -245,6 +245,32 @@ sequenceDiagram
   - Storage overhead is acceptable during import lifetime; define retention/cleanup policy.
   - Ensure staging captures enough normalized data so later stages don’t recompute expensive parsing.
 
+### Testing plan (v2) — CsvPreflightThesauriValuesUseCase
+
+- Philosophy:
+  - Integration-first: real Mongo via TM-aware DS, real FS (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
+  - Use pre-stored, human-readable CSV fixtures per scenario (no in-test CSV string assembly).
+  - Idempotency: re-running the use case over the same input should be a no-op for writes.
+  - Backward compatibility: keep v1 sanitization behavior; preserve existing unsanitized entries.
+- Fixtures directory:
+  - `app/api/csv.v2/specs/thesauri/fixtures/`
+    - `preflight_basic.csv` (adds simple values; headers with languages)
+    - `parent_child.csv` (nested values; standard and :: parsing)
+    - `duplicates.csv` (existing values tested; no duplicates)
+    - `trimming.csv` (leading/trailing spaces; sanitize; preserve unsanitized existing)
+    - `case_insensitive.csv` (case variants)
+    - `multiselect.csv` (multi-value cell parsing + sanitization)
+    - `translations.csv` (updates translations for new/sanitized values)
+    - `error_group_label.csv` (standalone group should fail deterministically)
+    - `all_thesauri_cases.csv` (broad combined scenario)
+- Coverage (examples):
+  - Adds new select/multiselect values; updates translations; returns property→thesaurus mapping.
+  - Parent/child semantics across languages; :: fallback parsing.
+  - No duplicate creation; case-insensitive detection; trimming respected.
+  - Preserve pre-existing unsanitized entries; do not create sanitized duplicates when unsanitized exists.
+  - Deterministic policy errors throw domain error (job will turn into NonRetryableJobError).
+  - Idempotency verified by running twice and asserting no additional writes.
+
 ### Batching model (proposal)
 
 - Rationale:
@@ -331,6 +357,11 @@ sequenceDiagram
 - Evaluate dispatch strategy:
 - Add configs for `maxConcurrentBatchesPerImport` and `maxQueuedBatchesPerImport` to support Option C (eager dispatch) safely (or a hybrid with Option B).
 - Ensure fairness across tenants/imports and prevent queue flooding; add metrics for queue depth per import/tenant and worker utilization.
+- Thesauri preflight test ToDos:
+  - Create CSV fixtures under `app/api/csv.v2/specs/thesauri/fixtures/` as listed.
+  - Implement integration tests for `CsvPreflightThesauriValuesUseCase` covering the matrix above.
+  - Verify idempotency by re-running the use case; assert no additional thesauri writes.
+  - Assert translations updates match v1 expectations for sanitized labels.
 
 ### References (V1 code pathways)
 
@@ -341,3 +372,7 @@ sequenceDiagram
 - Relationship parser: `app/api/csv/typeParsers/relationship.ts`
 - Select/multiselect parsers: `app/api/csv/typeParsers/select.ts`, `app/api/csv/typeParsers/multiselect.ts`, `app/api/csv/typeParsers/shared.ts`
 - Entity import/translation: `app/api/csv/importEntity.ts`
+
+### Non-goals / Deferred
+
+- Do not implement a global “normalize existing thesauri” tool as part of this initiative. Preserve current behavior (existing unsanitized entries remain). Revisit only if product explicitly requests it later.
