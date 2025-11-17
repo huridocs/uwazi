@@ -34,21 +34,21 @@ The legacy flow is executed via the non-v2-flagged route, which directly constru
 
 ```mermaid
 flowchart TD
-  A[Upload request /api/import (v1 path)] --> B[CSVLoader.load(csvPath, templateId, language and user)]
-  B --> C[readResources: template, languages, defaults, dateFormat]
-  C --> D[validateColumns(file, template, langs, default, newNameGeneration)]
-  D --> E[arrangeThesauri(file, template, headers, languagesPerHeader, defaultLanguage)]
-  E --> F[getTranslations()]
-  F --> G[Stream CSV rows]
-  G --> H[extractEntity(row,..., propNameToThesauriId)]
-  H --> I[importEntity(rawEntity): parse to metadata]
-  I --> J[relationship parser ensures related entities exist]
-  J --> K[entities.save(entity, updateRelationships on, indexing off)]
-  K --> L[translateEntity (per language) + indexEntities]
-  L --> M[Emit: entityLoaded, progress per row]
-  G -->|warns| N[Collect row-level warnings, emit rowExceptions]
-  G -->|errors| O[Emit loadError; stopOnError or continue]
-  M --> P[Emit: IMPORT_CSV_END]
+  A["Upload request /api/import v1 path"] --> B["CSVLoader.load csvPath templateId language and user"]
+  B --> C["readResources template languages defaults dateFormat"]
+  C --> D["validateColumns file template langs default newNameGeneration"]
+  D --> E["arrangeThesauri file template headers languagesPerHeader defaultLanguage"]
+  E --> F["getTranslations"]
+  F --> G["Stream CSV rows"]
+  G --> H["extractEntity with propNameToThesauriId"]
+  H --> I["importEntity rawEntity parse to metadata"]
+  I --> J["Relationship parser ensures related entities exist"]
+  J --> K["entities.save updateRelationships on indexing off"]
+  K --> L["translateEntity per language plus indexEntities"]
+  L --> M["Emit entityLoaded progress per row"]
+  G -->|warns| N["Collect row-level warnings emit rowExceptions"]
+  G -->|errors| O["Emit loadError stopOnError or continue"]
+  M --> P["Emit IMPORT_CSV_END"]
 ```
 
 #### Column validation
