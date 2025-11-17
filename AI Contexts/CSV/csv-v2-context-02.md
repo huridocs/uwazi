@@ -120,9 +120,9 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Files v2:
 
-  - `FileStorage.storeFile({ file, type: 'customPath', destination })`
-  - `FileStorage.getFile({ type: 'customPath', destination, filename })` → stream into `storeFile` for copies
-  - `PathManager({ tenant }).createPath(...)` for consistent tenant paths
+  - Writes (current): use path-based `storeContent(content, subpath)` where `subpath` is tenant-relative (e.g., `csv-imports/{id}/{name}` or `csv-imports/{id}/extracted/import.csv`).
+  - Reads: `FileStorage.getFile({ type: 'customPath', destination, filename })` remains.
+  - `PathManager({ tenant }).createPath(...)` remains the source of tenant-scoped paths.
 
 - Domain:
 
@@ -215,7 +215,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Avoid real FS/S3; use in-memory streams and deterministic buffers.
     - Use transaction manager factory test doubles as in entities.v2/templates.v2.
 
-### Testing implementation and strategies (Nov 2025)
+### Testing implementation and strategies (Nov–Dec 2025)
 
 - Integration-first tests completed for:
   - `RegisterCsvImportUseCase`
@@ -248,7 +248,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
       - Read the resulting zip from `path.join(tempDir, 'zipData', zipFilename)`.
     - Fixture sources are under `app/api/csv/specs/zipData`.
   - Input files for uploads:
-    - Introduced `createUploadedInputFile` in `api/files.v2/testing/InputFileTestFactory.ts` to generate `InputFile` instances from a path/string, reducing boilerplate.
+    - Introduced `createUploadedInputFile` in `api/files.v2/testing/InputFileTestFactory.ts` to generate `InputFile` instances from a path/string, reducing boilerplate. `InputFile` now defaults to a neutral `'raw'` type; explicit `'document'|'attachment'` is only needed where semantically required.
   - ObjectId correctness:
     - Use `getFixturesFactory().idString('key')` for `importId` and `userId` to produce valid 24-hex strings, avoiding BSON cast errors in DS operations and user lookups in `UserAwareDispatchable`.
   - Transactions and queue:
@@ -259,11 +259,12 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - `onProgress` triggers `heartbeat()`; test asserts the heartbeat spy is called.
   - Use case behavior validated:
     - `RegisterCsvImportUseCase`:
-      - Stores the original upload to `csv-imports/{id}/{filename}`.
+      - Stores the original upload via `storeContent` to `csv-imports/{id}/{filename}`.
       - Persists import with `status: queued` and `storage.path`.
       - Enqueues extraction via `onCommitted` with `{ tenantName, userId, importId, sessionId }`.
     - `CsvExtractUploadedZipUseCase`:
       - `queued` → `extracting files` → `files extracted` success path.
+      - Persists a concise `failure` object on errors `{ message, retryable, at, stage }`; clears it on success.
       - Non-retriable errors:
         - Missing import → throws `NonRetryableJobError`.
         - Missing storage path → throws `NonRetryableJobError`.
@@ -291,6 +292,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Original upload: `csv-imports/{importId}/{uploadedFilename}`
     - Canonical extracted CSV: `csv-imports/{importId}/extracted/import.csv`
   - Status transitions (MVP): `queued` → `extracting files` → `files extracted` → next job decides onward.
+  - Failure persistence: on error, set `{ message, retryable, at, stage }`; clear on success.
 
 - Testing philosophy
 
@@ -314,6 +316,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - Explicitly remove `uploadedDocuments/csv-imports/{importId}` created during the test in `afterEach`.
     - Remove per-test local temp dirs in `afterEach`.
     - Avoid recursive deletes of shared dirs to prevent races in parallel runs.
+  - Success checks tolerate null/undefined for optional fields in DB (e.g., `failure ?? undefined`).
 
 - Events and session notifications
 
