@@ -4,8 +4,14 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { tenants } from 'api/tenants/tenantContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { DefaultCsvImportsDataSource } from '../database/data_source_defaults';
 import { RegisterCsvImportUseCase } from './RegisterCsvImportUseCase';
+import { CsvPreflightThesauriValuesUseCase } from './CsvPreflightThesauriValuesUseCase';
+import { DefaultCsvImportRowsDataSource } from '../database/csv_import_rows_defaults';
 
 export const RegisterCsvImportUseCaseFactory = () => {
   const transactionManager = TransactionManagerFactory.default();
@@ -20,5 +26,20 @@ export const RegisterCsvImportUseCaseFactory = () => {
     transactionManager,
     idGenerator,
     jobsDispatcher,
+  });
+};
+
+export const CsvPreflightThesauriValuesUseCaseFactory = () => {
+  const transactionManager = TransactionManagerFactory.default();
+  const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  return new CsvPreflightThesauriValuesUseCase({
+    csvImportsDS,
+    rowsDS: DefaultCsvImportRowsDataSource(transactionManager),
+    templatesDS,
+    settingsDS,
+    thesauriDS,
   });
 };
