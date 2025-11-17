@@ -4,7 +4,7 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Translate } from 'app/I18N';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
+import { PDFJS, CMAP_URL, EventBus, events, OnPageChagenEventHandler } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 
@@ -17,6 +17,7 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
+  onPageChange?: (page: number) => void;
   scrollToPage?: string;
   size?: { height?: string; width?: string; overflow?: string };
 }
@@ -34,6 +35,7 @@ const PDF = ({
   highlights,
   onSelect = () => undefined,
   onDeselect,
+  onPageChange,
   scrollToPage,
   size,
 }: PDFProps) => {
@@ -113,6 +115,20 @@ const PDF = ({
       resizeObserver.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    const handlePageChange: OnPageChagenEventHandler = page => {
+      if (onPageChange) {
+        onPageChange(page);
+      }
+    };
+
+    eventBus.on(events.ON_PAGE_CHANGE, handlePageChange);
+
+    return () => {
+      eventBus.off(events.ON_PAGE_CHANGE, handlePageChange);
+    };
+  }, [onPageChange]);
 
   if (error) {
     return <div>{error}</div>;
