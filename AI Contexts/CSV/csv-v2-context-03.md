@@ -34,19 +34,19 @@ The legacy flow is executed via the non-v2-flagged route, which directly constru
 
 ```mermaid
 flowchart TD
-  A[Upload request /api/import (v1 path)] --> B[CSVLoader.load(csvPath, templateId, {language, user})]
+  A[Upload request /api/import (v1 path)] --> B[CSVLoader.load(csvPath, templateId, language and user)]
   B --> C[readResources: template, languages, defaults, dateFormat]
   C --> D[validateColumns(file, template, langs, default, newNameGeneration)]
   D --> E[arrangeThesauri(file, template, headers, languagesPerHeader, defaultLanguage)]
   E --> F[getTranslations()]
   F --> G[Stream CSV rows]
   G --> H[extractEntity(row,..., propNameToThesauriId)]
-  H --> I[importEntity(rawEntity): typeParsers -> metadata]
+  H --> I[importEntity(rawEntity): parse to metadata]
   I --> J[relationship parser ensures related entities exist]
-  J --> K[entities.save(entity, {updateRelationships,index:false})]
+  J --> K[entities.save(entity, updateRelationships on, indexing off)]
   K --> L[translateEntity (per language) + indexEntities]
   L --> M[Emit: entityLoaded, progress per row]
-  G -->|warns| N[Collect row-level warnings -> emit rowExceptions]
+  G -->|warns| N[Collect row-level warnings, emit rowExceptions]
   G -->|errors| O[Emit loadError; stopOnError or continue]
   M --> P[Emit: IMPORT_CSV_END]
 ```
@@ -133,17 +133,17 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
 - After `files extracted`:
-  1) `CsvPreflightThesauriValuesUseCase` + Job
+  1. `CsvPreflightThesauriValuesUseCase` + Job
      - Reads `extracted/import.csv` and the target template.
      - Replicates V1 `arrangeThesauri` behavior with domain/DS patterns and transactions.
      - On success: set status to `preflight:thesauri:done` (or keep in `preflight` with a substage field if we add `stages` later).
      - Emits: `csvImport:preflight:thesauri:start|progress|success|error` to session.
-  2) `CsvPreflightRelationshipEntitiesUseCase` + Job
+  2. `CsvPreflightRelationshipEntitiesUseCase` + Job
      - Scans `extracted/import.csv`; for each relationship property and unique title, ensures related entities exist (using the property’s `content` template restriction).
      - Matches V1 `relationship.ts` creation semantics but as a global preflight pass for determinism.
      - On success: set status to `preflight:relationships:done`.
      - Emits: `csvImport:preflight:relationships:start|progress|success|error`.
-  3) (Optional, to discuss) `CsvPreflightDomainAssignmentUseCase` + Job
+  3. (Optional, to discuss) `CsvPreflightDomainAssignmentUseCase` + Job
      - Reads rows and attempts to build domain-level entity models without persisting, applying parsers and validations.
      - Produces a report of warnings/errors (akin to `rowExceptions`), allowing early surfacing of data issues.
      - On success: set status to `preflight:validated`; otherwise, persist a failure descriptor and set `failed` or `retrying` per policy.
@@ -231,5 +231,3 @@ sequenceDiagram
 - Relationship parser: `app/api/csv/typeParsers/relationship.ts`
 - Select/multiselect parsers: `app/api/csv/typeParsers/select.ts`, `app/api/csv/typeParsers/multiselect.ts`, `app/api/csv/typeParsers/shared.ts`
 - Entity import/translation: `app/api/csv/importEntity.ts`
-
-
