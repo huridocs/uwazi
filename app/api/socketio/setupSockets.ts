@@ -42,6 +42,14 @@ const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   io.to(tenantName).emit(event, ...data);
 };
 
+const emitToSession = (sessionId: string, event: string, ...data: any[]) => {
+  if (!io) {
+    throw new Error('Socket.io Server not initialized');
+  }
+  // @ts-ignore
+  io.to(sessionId).emit(event, ...data);
+};
+
 // eslint-disable-next-line max-statements
 const setupApiSockets = (server: Server, app: Application) => {
   io = new SocketIoServer(server);
@@ -128,4 +136,11 @@ const endSocketServer = () => {
   subClient.end(true);
 };
 
-export { closeSockets, emitToTenant, endSocketServer, setupApiSockets, setupWorkerSockets };
+export {
+  closeSockets,
+  emitToTenant,
+  emitToSession,
+  endSocketServer,
+  setupApiSockets,
+  setupWorkerSockets,
+};
