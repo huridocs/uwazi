@@ -85,7 +85,7 @@ export default app => {
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
       if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
-        const inputFiles = req.files.map(
+        const inputFiles = req?.files?.map(
           f => new InputFile(f, f.fieldname.match(/document/) ? 'document' : 'attachment')
         );
 
@@ -95,8 +95,6 @@ export default app => {
         });
 
         await updateThesauriWithEntity(savedEntity, req);
-
-        req.emitToSessionSocket('documentProcessed', savedEntity.sharedId);
 
         // Return in the same format as V1 for client compatibility
         const response = req.body.entity ? { entity: savedEntity, errors: [] } : savedEntity;
