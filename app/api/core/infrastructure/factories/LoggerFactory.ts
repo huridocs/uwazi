@@ -1,13 +1,23 @@
 import { StandardLogger } from 'api/core/libs/logger/infrastructure/StandardLogger';
 import { StandardJSONWriter } from 'api/core/libs/logger/infrastructure/writers/StandardJSONWriter';
+import { config } from 'api/config';
+import { DevelopmentWritter } from 'api/core/libs/logger/infrastructure/writers/DevelopmentWriter';
 import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant';
 
 export class LoggerFactory {
-  static default(writer = StandardJSONWriter) {
+  static default(_writer = StandardJSONWriter) {
+    let writer = _writer;
+    if (config.ENVIRONMENT === 'development') {
+      writer = DevelopmentWritter;
+    }
     return new StandardLogger(writer, getTenant());
   }
 
-  static systemLogger(writer = StandardJSONWriter) {
+  static systemLogger(_writer = StandardJSONWriter) {
+    let writer = _writer;
+    if (config.ENVIRONMENT === 'development') {
+      writer = DevelopmentWritter;
+    }
     return new StandardLogger(writer, {
       name: 'System Logger',
       dbName: 'N/a',

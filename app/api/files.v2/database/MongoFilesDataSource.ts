@@ -92,7 +92,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     }
   }
 
-  async bulkCreate(files: UwaziFile[]): Promise<void> {
+  async bulkCreate(files: [UwaziFile, ...UwaziFile[]]): Promise<void> {
     await this.getCollection().insertMany(files.map(FileMappers.toDBO));
 
     files.forEach(async file => {

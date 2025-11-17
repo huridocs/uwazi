@@ -76,7 +76,7 @@ describe('PDFPostProcessJob', () => {
   ) =>
     job.handleDispatch(
       heartBeatCallBack,
-      { documentId, tenantName: tenants.current().name, userId: f.idString('user') },
+      { documentId },
       { namespace: tenants.current().name, ...jobInfo }
     );
 
