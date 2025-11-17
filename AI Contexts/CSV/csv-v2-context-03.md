@@ -149,7 +149,10 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 ### V2-first approach and dependencies
 
 - Entities: Use entities.v2 Domain and services for any entity creation (including related entities created by preflight). Entities.v2 supports system-driven minimal creations (title + template only) where required-property enforcement can be bypassed as intended.
-- Thesauri: There is no full thesauri.v2 yet. Use the available DS that wraps V1 operations; extend it (V2-style) with explicit append/update methods as needed, after discussion.
+- Thesauri (strict V2 boundary):
+  - Do NOT call legacy `arrangeThesauri` or any v1 csv functions from v2 code.
+  - Implement a V2 data source that extends `MongoDataSource` and operates on `dictionaries` via `this.getCollection()` so that writes participate in the active transaction.
+  - The DS MUST expose explicit append/update methods (e.g., `appendValues(thesaurusId, values)`) and MUST be transaction-aware. If a v1 wrapper is ever needed for read convenience, it must not be used for writes.
 - Data sources: All DS must be transaction-aware (extend `MongoDataSource`), using `transactionManager.run(...)` for writes. Do not bypass TM by calling raw collections.
 - Jobs and use cases: Jobs only orchestrate; business logic lives in use cases. File IO occurs outside TM; DB writes occur inside TM. Chain jobs via `transactionManager.onCommitted(...)`.
 
@@ -234,7 +237,7 @@ sequenceDiagram
 - Event naming consistency
   - Decision: Use new V2 events only as listed above; do not reuse V1 events.
 
-### Performance model (proposal)
+### Performance model (final for MVP)
 
 - Single-pass row staging: After extraction, read `extracted/import.csv` once and persist normalized, tenant-scoped row representations (e.g., a `csv_import_rows` collection keyed by `importId`, with row index, original values, and normalized forms needed by downstream parsers).
 - Subsequent jobs (thesauri preflight, relationships preflight, optional validation/import) reuse staged rows to avoid re-reading/parsing the CSV multiple times.
@@ -243,32 +246,210 @@ sequenceDiagram
   - Deterministic sequencing and easier idempotency/retries at row granularity.
 - Considerations:
   - Storage overhead is acceptable during import lifetime; define retention/cleanup policy.
-  - Ensure staging captures enough normalized data so later stages don’t recompute expensive parsing.
+  - Row staging in DB is REQUIRED for MVP. After extraction, persist normalized, tenant-scoped row representations (e.g., in `csv_import_rows`) keyed by `importId`, including:
+    - `index` (row number starting at 0)
+    - `headers` (from the file at the time of staging)
+    - `values` (string array)
+  - All subsequent stages (preflight thesauri, relationships, validation/import) MUST consume the staged rows and MUST NOT read the CSV file again.
 
-### Testing plan (v2) — CsvPreflightThesauriValuesUseCase
+### Implementation constraints (hard guardrails)
+
+- Absolutely no calls to v1 CSV modules from v2 code (e.g., no `validateColumns`, no `arrangeThesauri`).
+- Implement a v2 `CsvHeaderAnalyzer` and `CsvReader` under `csv.v2/application/`, with the minimum CSV semantics required for our fixtures. Expand as needed.
+- Stage rows in DB for MVP (see Performance model). Stages MUST read from `csv_import_rows`, never from the file.
+- All persistence (thesauri updates, translations upserts) MUST go through transaction-aware v2 DS/services and be executed inside `transactionManager.run`.
+- Tenant-awareness: all file and DB paths/collections are tenant-scoped; use `PathManager` and `MongoTransactionManager` correctly.
+
+### Linting and typing (mandatory)
+
+- Every edited/added file MUST pass TypeScript checks and ESLint rules before declaring the task done.
+- When adding tests/fixtures, ensure the test suite runs cleanly in isolation (fresh DB, unique tenant paths) and with no lint warnings.
+
+### Development protocol (read before coding)
+
+1. V2-only boundaries
+
+- Do NOT import from `app/api/csv` (v1) anywhere in `csv.v2`. No reuse of `validateColumns` or `arrangeThesauri`.
+- Use transaction-aware DS from core V2:
+  - Templates: inject `TemplatesDataSource` via `TemplatesDataSourceFactory.default(transactionManager)`.
+  - Settings: inject `SettingsDataSource` via `SettingsDataSourceFactory.default(transactionManager)`.
+  - Thesauri: use `MongoThesauriDataSource` in `api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.ts`. Extend this DS for write methods (e.g., `appendRootLabelsIfMissing`) so writes occur via `this.getCollection()` inside TM.
+
+2. Data flow and sources of truth
+
+- After extraction, stage rows to `csv_import_rows` and never re-open the CSV file in any subsequent stage.
+- Use `CsvHeaderAnalyzer` to compute language/header info from staged `headers`.
+- Use-only injected DS for templates/settings; do not import raw modules (`templates`, `settings`) in use cases.
+
+3. Transactions and idempotency
+
+- All DB writes MUST be inside `transactionManager.run`.
+- Side-effects (job dispatch) MUST run via `transactionManager.onCommitted`.
+- Idempotency: Write methods should upsert/skip duplicates so re-run on retry does not create duplicates.
+
+4. Testing-first, with DB fixtures
+
+- Integration tests should use:
+  - Real Mongo (via TM-aware DS), real FS where needed for extraction step; for preflight/processing, use staged rows (DB only).
+  - DB fixtures for settings/templates/thesauri; CSV content is parsed in tests and staged into `csv_import_rows`.
+- Unit tests for small services (e.g., header analyzer, parsers) and targeted DS methods.
+- Ensure all tests are TS/ESLint clean and create unique tenant paths per test when files are involved.
+
+5. Event naming and job sequencing
+
+- Use only V2 events: `csvImport:extract:*`, `csvImport:preflight:thesauri:*`, `csvImport:preflight:relationships:*`, `csvImport:preflight:validate:*`.
+- Thesauri preflight always runs; on success it dispatches relationships preflight. Jobs are sequential per import, but batching can execute in parallel across workers (see Batching model).
+
+6. Retention and cleanup
+
+- Delete original upload after successful extraction to `extracted/import.csv` (via onCommitted).
+- Cleanup `csv-imports/{id}/extracted/` and staged rows on final completion/terminal failure; honor retention window if configured; implement a sweeper.
+
+7. Acceptance checklist for any PR
+
+- V2-only DS usage (no direct `templates`/`settings`/v1 imports in use cases).
+- Reads from `csv_import_rows` (no CSV file reads beyond the extraction/staging step).
+- All writes inside TM; side-effects via `onCommitted`.
+- TS/ESLint clean; tests added/updated and passing.
+- Event names correct; no tenant-wide broadcasts for job progress; session-only emissions if applicable.
+- Docs updated if behavior/conventions changed.
+
+### Corrections from this session (critical guardrails)
+
+- Do not invent new abstractions when core ones exist:
+  - Reuse `MongoThesauriDataSource` (in core) and extend it for writes; do not add a new csv.v2-local Thesauri DS.
+  - Reuse `TemplatesDataSourceFactory` and `SettingsDataSourceFactory`; do not import `templates` / `settings` modules directly in use cases.
+- Use jobs with callbacks (emitters) instead of injecting websockets into use cases:
+  - Follow `CsvExtractUploadedZipJob` pattern: jobs pass callbacks (onStart/onSuccess/onError) to use cases and emit via `V1WebSocketsWrapper` inside the job.
+  - Do NOT introduce new websockets contracts for these flows.
+- Status transitions must be observable:
+  - Do NOT set “start” and “done” inside the same uncommitted TM block. The “start” status must be committed before heavy work to be visible to observers.
+  - Recommended pattern:
+    - The job sets the “start” status (e.g., `preflight:thesauri`) in a small, dedicated TM run (and emits `...:start`), then invokes the heavy use case.
+    - The heavy use case performs the domain work and sets the “done” status (e.g., `preflight:thesauri:done`) in its own TM run (and the job emits `...:success`).
+  - If not using a job-level “start” setter, the use case may set “start” itself, but only AFTER essential validations/analyzers succeed (template/settings present; headers parsed; analyzer validated). Never set “start” before these validations.
+- Status naming consistency (DB vs emits):
+  - There is an inconsistency: we used colon-based statuses in emits (e.g., `preflight:thesauri`, `preflight:thesauri:done`) but not in DB prior to this work. We MUST decide:
+    - Either: store exactly the colon-based statuses in DB (source of truth matches emitted names), or
+    - Keep DB statuses separate (coarser enums) and maintain a clear mapping layer to emitted event names.
+  - ToDo: Decide and document a single policy; refactor existing statuses (`files extracted`, etc.) to align, and update enums/mappers accordingly.
+- Preflight thesauri MUST implement full parity with V1:
+  - Root and nested (parent/child) creation, multiselect parsing, trimming, case-insensitive behavior, duplication avoidance, and translations update via i18n.v2.
+  - No “root-only MVP” shortcuts.
+- Read only staged rows in preflight:
+  - Do not read or parse CSV files inside preflight (or downstream) stages.
+  - If staging is missing, implement it first (in extraction) so downstream only touches DB.
+- Callbacks are required:
+  - Use cases must require callbacks (not optional) when the stage expects start/success/error notifications.
+- TS/ESLint gates are mandatory:
+  - Do not leave complexity/lint errors behind. If a method grows too large, refactor into helpers.
+  - Audit jobs and services before saving: e.g., `app/api/csv.v2/jobs/CsvPreflightThesauriValuesJob.ts` currently has TypeScript issues that must be fixed before merging. Always run the linter and TypeScript checks on every edited file.
+- CSV reader correctness:
+  - The current `CsvReader` is a minimal placeholder; it SHOULD NOT be used as-is. We must implement a robust CSV reader (or adopt a vetted parser) with correct handling of:
+    - Quoted fields, escaped quotes, embedded commas/newlines, configurable delimiters, and common encodings.
+    - Deterministic header parsing and consistent trimming/sanitization rules.
+  - Do not proceed with downstream logic until the reader is production-grade and thoroughly tested.
+- Data-source mapping consistency:
+  - `csv_import_rows` DS currently lacks a proper Domain mapping and returns raw Mongo fields (e.g., `_id` instead of `id`). This violates the v2 mapping rules used elsewhere.
+  - Required fixes:
+    - Define a Domain type for `CsvImportRow` and a mapper that converts Mongo `_id` ↔ Domain `id`.
+    - Ensure all DS methods (`insertMany`, `getByImport`, etc.) return Domain-shaped objects (no raw `_id`) and accept Domain inputs (mapper translates at the boundary).
+    - Keep all DS transaction-aware via `MongoDataSource` and `this.getCollection()` calls only.
+
+### Outstanding work (must implement next)
+
+- Row staging (extraction step):
+  - Implement a staging routine after extraction that reads `extracted/import.csv`, parses headers/rows (using V2 reader), and persists rows into `csv_import_rows` with `{ importId, index, headers, values }`.
+  - Add integration tests for staging (correct headers; correct value parsing; idempotency).
+  - Ensure staging commits before any preflight job runs.
+- Status update pattern (jobs-first):
+  - Move “start” status update out of the heavy use case. The job should:
+    - Set status to `preflight:thesauri` (single TM run).
+    - Emit `csvImport:preflight:thesauri:start`.
+    - Then execute the heavy use case (which sets `preflight:thesauri:done`).
+  - Adjust preflight use case to set only “done” status and leave “start” to the job. If the use case sets “start”, it must do so only after essential validations/analyzers succeed.
+- Translations update:
+  - Wire i18n.v2 upserts when adding new thesaurus values (sanitized labels) and add tests mirroring v1 expectations.
+- Full test coverage:
+  - Add missing scenarios: parent/child creation across languages (`::` fallback), multiselect parsing, case-insensitive dedupe, trimming, error cases (standalone group), all-cases scenario, and translations update.
+  - Add unit tests for `CsvHeaderAnalyzer` and write DS methods (root + nested).
+- Refactor large methods:
+  - Extract nested thesauri write logic into smaller helpers to satisfy lint constraints and improve readability.
+- Analyzer/validation error handling:
+  - When `CsvHeaderAnalyzer` (or essential validations) fail, STOP the job early (no writes beyond failure registration).
+  - Persist a `failure` object on the import (`{ message, retryable, at, stage }`) and set status to `failed` (or `retrying` per policy).
+  - Emit `csvImport:preflight:thesauri:error` with a concise payload (`{ importId, message }`) to the uploader session.
+  - Add tests that simulate analyzer errors and assert: no writes to thesauri, failure persisted, correct status, and error emission.
+- CSV reader implementation (critical):
+- Replace the minimal `CsvReader` with a robust implementation (or vetted library) supporting quoted fields, escapes, embedded commas/newlines, and correct trimming.
+- Add focused unit tests for parsing edge cases and integration tests confirming headers/rows staging behaves correctly with complex inputs.
+
+### Testing discipline and current test status (must fix)
+
+- The current use case tests for preflight (`app/api/csv.v2/services/specs/CsvPreflightThesauriValuesUseCase.spec.ts`) contain errors and have not been validated end-to-end. Before any merge:
+  - Fix and run these tests locally; they must pass.
+  - Add missing scenarios (parent/child, multiselect, case-insensitive, trimming, translations, error paths).
+  - Ensure rows are staged as DB fixtures in tests; no file reads in preflight tests.
+
+### Assumptions checklist (read and confirm before coding)
+
+- Architecture and boundaries:
+  - [ ] This work uses only v2 DS patterns; no v1 imports/functions.
+  - [ ] All use cases inject abstract DSs; no direct Mongo/service imports.
+- Data model and flow:
+  - [ ] `csv_import_rows` exists and is populated by extraction; preflight reads staged rows only.
+  - [ ] Domain mappers are in place; DS does not leak raw `_id` into domain types.
+  - [ ] CSV reader is robust for the expected inputs (quoted fields, escapes, embedded commas/newlines).
+- Status and events:
+  - [ ] DB statuses and emit event names are aligned per the final policy (colon-based or mapped).
+  - [ ] “Start” status is committed and observable before heavy work; “done” after heavy work.
+  - [ ] Emissions are done via job callbacks; use cases do not depend on websockets.
+- Transactions and idempotency:
+  - [ ] All writes are inside transactionManager.run; side-effects via onCommitted (if applicable).
+  - [ ] DS writes are idempotent (no duplicates on retries).
+- Error handling:
+  - [ ] Analyzer/validation failures stop the job; failure persists in DB; error emit is sent; no partial writes.
+- Batching and performance:
+  - [ ] Agreed dispatch strategy (A/B/C); progress tracking is row-based; batch sizing configured.
+- Linting and tests:
+  - [ ] TS/ESLint pass on all edited files.
+  - [ ] Unit tests and integration tests added/updated; all pass locally.
+
+### CI gates and workflow (enforce)
+
+- Before saving:
+  - Run TypeScript checks and ESLint on every edited file and fix findings.
+  - Run unit/integration tests for affected areas; fix before proceeding.
+  - If design assumptions change, update this MD first and confirm alignment; do not proceed coding against outdated assumptions.
+
+### Testing plan (v2) — CsvPreflightThesauriValuesUseCase (full parity with V1)
 
 - Philosophy:
   - Integration-first: real Mongo via TM-aware DS, real FS (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
   - Use pre-stored, human-readable CSV fixtures per scenario (no in-test CSV string assembly).
   - Idempotency: re-running the use case over the same input should be a no-op for writes.
   - Backward compatibility: keep v1 sanitization behavior; preserve existing unsanitized entries.
-- Fixtures directory:
-  - `app/api/csv.v2/specs/thesauri/fixtures/`
-    - `preflight_basic.csv` (adds simple values; headers with languages)
-    - `parent_child.csv` (nested values; standard and :: parsing)
-    - `duplicates.csv` (existing values tested; no duplicates)
-    - `trimming.csv` (leading/trailing spaces; sanitize; preserve unsanitized existing)
-    - `case_insensitive.csv` (case variants)
-    - `multiselect.csv` (multi-value cell parsing + sanitization)
-    - `translations.csv` (updates translations for new/sanitized values)
-    - `error_group_label.csv` (standalone group should fail deterministically)
-    - `all_thesauri_cases.csv` (broad combined scenario)
-- Coverage (examples):
+- DB fixtures + inline CSV:
+  - Use DB fixtures for settings/templates/thesauri.
+  - Provide CSV content inline within tests (no on-disk CSV files), stored into `extracted/import.csv` via files.v2 storage for the test tenant.
+  - Scenarios to cover (each as a separate test):
+    - preflight_basic (adds simple values; headers with languages)
+    - parent_child (nested values; standard and :: parsing)
+    - duplicates (existing values; no duplicates)
+    - trimming (leading/trailing spaces; sanitize; preserve existing unsanitized)
+    - case_insensitive (case variants)
+    - multiselect (multi-value cell parsing + sanitization)
+    - translations (updates translations for new/sanitized values) — in a follow-up test wired through i18n.v2
+    - error_group_label (standalone group should fail deterministically)
+    - all_thesauri_cases (broad combined scenario)
+- Coverage (must-haves; parity with V1):
   - Adds new select/multiselect values; updates translations; returns property→thesaurus mapping.
-  - Parent/child semantics across languages; :: fallback parsing.
+  - Parent/child semantics across languages (group/child creation), including `::` fallback parsing.
   - No duplicate creation; case-insensitive detection; trimming respected.
   - Preserve pre-existing unsanitized entries; do not create sanitized duplicates when unsanitized exists.
-  - Deterministic policy errors throw domain error (job will turn into NonRetryableJobError).
+  - Deterministic policy errors (e.g., standalone group label) throw domain error (job will turn into NonRetryableJobError).
+  - Multiselect parsing with sanitization and uniqueness.
+  - Translations updated for new/sanitized values (via i18n.v2).
   - Idempotency verified by running twice and asserting no additional writes.
 
 ### Batching model (proposal)
