@@ -472,7 +472,6 @@ describe('CreateEntityUseCase', () => {
         filename: '1762280821775nhs3epb55g7.png',
         mimetype: 'image/png',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -483,7 +482,6 @@ describe('CreateEntityUseCase', () => {
         filename: '1162280821775nhs3epb55g7.png',
         mimetype: 'image/png',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -494,7 +492,6 @@ describe('CreateEntityUseCase', () => {
         filename: 'attachment_3.mp4',
         mimetype: 'video/mp4',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -505,7 +502,6 @@ describe('CreateEntityUseCase', () => {
         filename: 'attachment_4.mp4',
         mimetype: 'video/mp4',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
     ]);
