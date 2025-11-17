@@ -55,7 +55,7 @@ const FiltersSidepanel = ({
     if (searchParams.has('filter')) {
       initialFilters = JSON.parse(searchParams.get('filter')!);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const { register, handleSubmit, reset, setValue } = useForm({
     values: initialFilters,
@@ -97,7 +97,7 @@ const FiltersSidepanel = ({
       }
     >
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
-        <Sidepanel.Body className="flex flex-col flex-grow gap-4">
+        <Sidepanel.Body className="flex flex-col grow gap-4">
           <Card>
             <div className="text-sm font-semibold text-gray-700 mb-2">
               <Translate>All data</Translate>
@@ -233,10 +233,10 @@ const FiltersSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
+            <Button className="grow" type="button" styling="outline" onClick={clearFilters}>
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Apply</Translate>
             </Button>
           </div>

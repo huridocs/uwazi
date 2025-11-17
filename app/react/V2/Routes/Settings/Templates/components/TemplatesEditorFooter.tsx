@@ -48,7 +48,7 @@ export const TemplatesEditorFooter = ({
     </div>
     <div className="flex gap-2">
       <I18NLink to="/settings/templates">
-        <Button styling="outline">
+        <Button styling="outline-solid">
           <Translate>Cancel</Translate>
         </Button>
       </I18NLink>

@@ -29,12 +29,12 @@ import {
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
-  async () => {
-    const { filters } = await settingsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
-    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
-    return { filters: tableFilters, templates };
-  };
+    async () => {
+      const { filters } = await settingsAPI.get(headers);
+      const templates = await templatesAPI.get(headers);
+      const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+      return { filters: tableFilters, templates };
+    };
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;
@@ -138,7 +138,7 @@ const FiltersTable = () => {
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>
-          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
+          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-xs bg-primary-100 text-primary-700">
             <div className="flex gap-2 items-center w-full text-base font-semibold">
               <div className="w-5 h-5">
                 <CheckCircleIcon />

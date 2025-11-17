@@ -175,7 +175,7 @@ const PaneLayoutDesktop = ({
               role="separator"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="cursor-col-resize flex-shrink-0 group"
+              className="cursor-col-resize shrink-0 group"
               style={{ width: SEPARATOR_PX }}
             >
               <div

@@ -36,7 +36,6 @@ module.exports = production => {
         config: [__filename],
         tsconfig: [path.resolve(rootPath, 'tsconfig.json')],
         babel: [path.resolve(rootPath, 'babel.config.json')],
-        tailwind: [path.resolve(rootPath, 'tailwind.config.js')],
         postcss: [path.resolve(rootPath, 'postcss.config.js')],
       },
     },
@@ -87,20 +86,47 @@ module.exports = production => {
           ],
         },
         {
-          test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
+          test: /main\.css$/,
+          use: [
+            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: path.resolve(__dirname, '../postcss.config.js'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /globals\.css$/,
+          use: [
+            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: path.resolve(__dirname, '../postcss.config.js'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /\.s?[ac]ss$/,
           exclude: [
             path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
+            /(main\.css|globals\.css)$/,
           ],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
-        },
-        {
-          test: /(main\.css|globals\.css)$/,
-          use: ['postcss-loader'],
         },
         {
           test: /\.svg$/,
@@ -143,9 +169,9 @@ module.exports = production => {
     },
     plugins: [
       process.env.CYPRESS &&
-        new webpack.ProvidePlugin({
-          process: 'process/browser',
-        }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({

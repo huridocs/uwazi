@@ -104,7 +104,7 @@ describe('UserGroupsLookupField', () => {
 
     expect(component.find('ul').length).toBe(1);
 
-    inputElem.simulate('blur', { relatedTarget: 'Some other target' });
+    inputElem.simulate('blur-sm', { relatedTarget: 'Some other target' });
 
     expect(component.find('ul').length).toBe(0);
   });

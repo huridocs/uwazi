@@ -51,9 +51,7 @@ const Tabs = ({
   return (
     <div className={`flex flex-col h-full ${className ?? ''}`}>
       <div
-        role="tablist"
-        aria-orientation="horizontal"
-        className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow divide-x-2 divide-gray-100 w-max ${tabListClassName || ''}`}
+        className="flex rounded-md border border-gray-50 shadow-xs md:w-1/2"
         data-testid="tabs-comp"
       >
         {tabChildren.map(child => (
@@ -65,9 +63,8 @@ const Tabs = ({
             aria-selected={activeTab === child.props.id}
             tabIndex={activeTab === child.props.id ? 0 : -1}
             type="button"
-            className={`p-2 text-left flex items-center justify-start h-full ${
-              activeTab === child.props.id ? activeClass : inactiveClass
-            }`}
+            className={`p-2 text-left flex items-center justify-start h-full ${activeTab === child.props.id ? activeClass : inactiveClass
+              }`}
             onClick={e => handleClick(e, child.props.id)}
           >
             {child.props.label}

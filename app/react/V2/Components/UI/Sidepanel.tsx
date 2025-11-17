@@ -72,7 +72,7 @@ const Sidepanel = ({
     return (
       <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
         <Transition.Child
-          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
+          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -117,7 +117,7 @@ Sidepanel.Body = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`flex-grow p-4 ${className}`}>{children}</div>;
+}) => <div className={`grow p-4 ${className}`}>{children}</div>;
 
 Sidepanel.Footer = ({
   children,

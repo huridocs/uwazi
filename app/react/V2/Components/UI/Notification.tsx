@@ -171,7 +171,7 @@ const Notification = ({
         <div className="mt-2 mb-4 text-sm">{text}</div>
       ) : (
         <div className="flex mb-4">
-          <span className={`p-1 mr-2 align-top rounded border-0 ${iconContainer} w-fit h-fit`}>
+          <span className={`p-1 mr-2 align-top rounded-sm border-0 ${iconContainer} w-fit h-fit`}>
             {getIcon('large', type)}
           </span>
           <div className="text-sm">{text}</div>
@@ -181,7 +181,7 @@ const Notification = ({
       <div className="flex">
         <button
           type="button"
-          className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-none 
+          className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-hidden 
           font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Dismiss notification"
@@ -193,7 +193,7 @@ const Notification = ({
           <button
             type="button"
             onClick={onClick}
-            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-none focus:ring-gray-300 
+            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-hidden focus:ring-gray-300 
             font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
           >
             {viewMore ? viewMoreIcons.less : viewMoreIcons.more}

@@ -18,8 +18,8 @@ import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getCurrentUser(headers);
+    async () =>
+      getCurrentUser(headers);
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;
@@ -193,7 +193,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-hidden focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>
             </a>

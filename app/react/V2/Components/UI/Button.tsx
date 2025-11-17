@@ -93,7 +93,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${className} ${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 `}
       form={form}
       data-testid={dataTestid}
     >

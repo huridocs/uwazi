@@ -59,7 +59,7 @@ const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSid
               <span className="text-primary-700">{selectedEntry.username}</span>
             </div>
           </div>
-          <div className="flex flex-col flex-grow p-3 rounded-lg max-h-svh h-3/4">
+          <div className="flex flex-col grow p-3 rounded-lg max-h-svh h-3/4">
             <Translate className="m-2 font-semibold">Query</Translate>
             <span className="block p-5 mb-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
               {selectedEntry.query}

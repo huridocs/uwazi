@@ -151,7 +151,7 @@ const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
         </form>
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
-        <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
+        <Button disabled={isSubmitting} onClick={() => close()} styling="outline-solid" className="grow">
           <Translate>Cancel</Translate>
         </Button>
         <Button disabled={isSubmitting} type="submit" form="train-form" className="grow">
