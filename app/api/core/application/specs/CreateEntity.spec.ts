@@ -21,11 +21,11 @@ import { tenants } from 'api/tenants';
 import { PermissionType } from 'api/core/domain/entity/PermissionType';
 import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { CreateEntityUseCase } from '../CreateEntity';
 import { FilesService } from '../FilesService';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { EntitiesService } from '../EntitiesService';
+import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
 const factory = getFixturesFactory();
 
@@ -203,21 +203,35 @@ const createSut = (props: CreateSutProps = {}) => {
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
-  const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-    getConnection(),
-    transactionManager
-  );
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
   const filesDS = DefaultFilesDataSource(transactionManager);
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
+  const jobsDispatcher = DefaultDispatcher(tenants.current().name);
   const fileService = new FilesService({
     idGenerator,
     fileStorage,
     filesDS,
-    jobsDispatcher: DefaultDispatcher(tenants.current().name),
+    jobsDispatcher,
+  });
+
+  const entitiesService = new EntitiesService({
+    entitiesDS,
+    eventBus,
+    settingsDS,
+    templatesDS,
+    transactionManager,
+    dispatcher: jobsDispatcher,
+  });
+
+  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
+    entitiesDS,
+    settingsDS,
+    thesauriDS,
+    translationsDS,
   });
 
   jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
@@ -228,12 +242,9 @@ const createSut = (props: CreateSutProps = {}) => {
       fileService,
       transactionManager,
       idGenerator,
-      settingsDS,
-      multiLanguageEntityDS,
-      templatesDS,
-      thesauriDS,
-      translationsDS,
+      entitiesService,
       eventBus,
+      propertyAssignmentCreatorServiceStrategy,
     },
     context
   );
@@ -544,22 +555,5 @@ describe('CreateEntityUseCase', () => {
         },
       ],
     ]);
-  });
-
-  it('should emit an EntityCreatedEvent after creating the entity', async () => {
-    const { sut, eventBus } = createSut();
-
-    const entity = await sut.execute({
-      templateId: factory.id('Document').toHexString(),
-      inputFiles: [],
-      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-    });
-
-    expect(eventBus.emit).toHaveBeenCalledWith(
-      new EntityCreatedEvent({
-        entities: MongoEntityMapper.toDBO(entity) as any,
-        targetLanguageKey: entity.languages[0],
-      })
-    );
   });
 });

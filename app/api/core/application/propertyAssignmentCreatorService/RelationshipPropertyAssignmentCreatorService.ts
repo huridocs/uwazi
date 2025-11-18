@@ -14,7 +14,7 @@ import {
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  multiLanguageEntityDS: MultiLanguageEntityDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
 };
 
 export class RelationshipPropertyAssignmentCreatorService
@@ -36,7 +36,7 @@ export class RelationshipPropertyAssignmentCreatorService
     );
 
     const relatedEntities = await (
-      await this.deps.multiLanguageEntityDS.getEntitiesBySharedIds(sharedIds)
+      await this.deps.entitiesDS.getEntitiesBySharedIds(sharedIds)
     ).all();
 
     const bySharedId = new Map(relatedEntities.map(e => [e.sharedId, e] as const));

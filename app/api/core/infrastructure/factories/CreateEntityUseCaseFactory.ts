@@ -10,14 +10,18 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { FilesService } from 'api/core/application/FilesService';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { EntitiesService } from 'api/core/application/EntitiesService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
 class CreateEntityUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
@@ -25,29 +29,44 @@ class CreateEntityUseCaseFactory {
     const filesDS = DefaultFilesDataSource(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager
-    );
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+
+    const eventBus = applicationEventsBus;
+
+    const propertyAssignmentCreatorServiceStrategy =
+      PropertyAssignmentCreatorServiceStrategy.create({
+        entitiesDS,
+        settingsDS,
+        thesauriDS,
+        translationsDS,
+      });
+
+    const entitiesService = new EntitiesService({
+      entitiesDS,
+      eventBus,
+      settingsDS,
+      templatesDS,
+      transactionManager,
+      dispatcher: jobsDispatcher,
+    });
+
+    const fileService = new FilesService({
+      idGenerator,
+      filesDS,
+      fileStorage,
+      jobsDispatcher,
+    });
 
     const useCase = new CreateEntityUseCase(
       {
-        fileService: new FilesService({
-          idGenerator,
-          filesDS,
-          fileStorage,
-          jobsDispatcher: DefaultDispatcher(tenants.current().name),
-        }),
+        entitiesService,
+        propertyAssignmentCreatorServiceStrategy,
+        fileService,
         idGenerator,
-        templatesDS,
-        thesauriDS,
-        settingsDS,
         transactionManager,
-        multiLanguageEntityDS,
-        translationsDS,
-        eventBus: applicationEventsBus,
+        eventBus,
       },
-      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+      { actor: permissionsContext.getUserInContext()!, tenant }
     );
 
     return useCase;

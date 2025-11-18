@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
@@ -36,9 +37,11 @@ import settings from 'api/settings';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import relationships from 'api/relationships';
 import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -170,4 +173,12 @@ export function registerJobs(
       }),
     });
   });
+
+  register(
+    RelationshipSyncJob,
+    async () =>
+      new RelationshipSyncJob({
+        relationships,
+      })
+  );
 }

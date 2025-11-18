@@ -1,15 +1,8 @@
 import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { InputFile } from 'api/files.v2/model/InputFile';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { TemplatesDataSource } from '../domain/template/TemplatesDataSource';
-import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper';
-import { ThesauriDataSource } from '../infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { AbstractUseCase } from '../libs/UseCase';
-import { EntityCreatorService } from './EntityCreatorService';
+import { EntitiesService } from './EntitiesService';
 import { FilesService } from './FilesService';
-import { SettingsDataSource } from './contracts/SettingsDataSource';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
@@ -24,11 +17,8 @@ type Output = Entity;
 
 type Deps = {
   fileService: FilesService;
-  thesauriDS: ThesauriDataSource;
-  translationsDS: TranslationsDataSource;
-  settingsDS: SettingsDataSource;
-  templatesDS: TemplatesDataSource;
-  multiLanguageEntityDS: MultiLanguageEntityDataSource;
+  entitiesService: EntitiesService;
+  propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
 };
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -38,18 +28,13 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     propertyAssignments: propertyAssignmentsInput,
     inputFiles,
   }: Input): Promise<Output> {
-    const propertyAssignmentCreatorService = PropertyAssignmentCreatorServiceStrategy.create(
-      this.deps
-    );
-    const entityCreatorService = new EntityCreatorService(this.deps);
-
-    const entity = await entityCreatorService.create({
+    const entity = await this.deps.entitiesService.create({
       templateId,
       icon,
       userId: this.actor?.id,
     });
 
-    const propertyAssignments = await propertyAssignmentCreatorService.bulkCreate(
+    const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
       propertyAssignmentsInput,
       entity.template,
       inputFiles.filter(f => f.isAttachment())
@@ -62,21 +47,9 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.deps.fileService.storeFiles(attachments);
 
     await this.transactionManager.run(async () => {
-      await this.deps.multiLanguageEntityDS.create(entity);
-
+      await this.deps.entitiesService.insert(entity);
       await this.deps.fileService.insert(attachments);
     });
-
-    // Leave it outside of the transaction so once consumers
-    // react to the event the transaction is definitely closed/committed, hopefully.
-    // This is important if any consumer wants to read the created entity.
-    // Still not ideal, but better than nothing.
-    await this.eventBus.emit(
-      new EntityCreatedEvent({
-        entities: MongoEntityMapper.toDBO(entity) as any,
-        targetLanguageKey: entity.languages[0],
-      })
-    );
 
     return entity;
   }
