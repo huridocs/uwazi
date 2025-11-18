@@ -2,12 +2,16 @@ import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { Property } from 'api/core/domain/template/Property';
 import { Template } from 'api/core/domain/template/Template';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImport, CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
-import { CsvHeaderAnalyzer } from '../application/CsvHeaderAnalyzer';
+import {
+  CsvHeaderAnalyzer,
+  AnalyzerOptions,
+  HeaderAnalysis,
+} from '../application/CsvHeaderAnalyzer';
 import { CsvHeaderAnalyzerError } from '../application/CsvHeaderAnalyzerError';
+import { CsvThesauriValuesBuilder } from '../application/CsvThesauriValuesBuilder';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
 import { Callbacks } from '../types/UseCaseCallbacks';
 
@@ -91,18 +95,10 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
     csvImport: CsvImport,
     headers: string[],
     template: Template,
-    defaultLanguage: string
-  ) {
-    const [availableLanguages, settings] = await Promise.all([
-      this.deps.settingsDS.getLanguageKeys(),
-      this.deps.settingsDS.get(),
-    ]);
+    options: AnalyzerOptions
+  ): Promise<HeaderAnalysis> {
     try {
-      CsvHeaderAnalyzer.analyze(headers, template, {
-        availableLanguages,
-        defaultLanguage,
-        newNameGeneration: Boolean(settings?.newNameGeneration),
-      });
+      return CsvHeaderAnalyzer.analyze(headers, template, options);
     } catch (error) {
       if (error instanceof CsvHeaderAnalyzerError) {
         await this.transactionManager.run(async () => {
@@ -119,7 +115,7 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
           );
           await this.deps.csvImportsDS.update(failed);
         });
-        throw new NonRetryableJobError(error);
+        throw new NonRetryableJobError(new Error('Header validation failed'));
       }
       throw error;
     }
@@ -135,76 +131,60 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
     const csvImport = await this.getImport(importId);
     const stagedRows = await this.getStagedRows(importId);
     const template = await this.getTemplate(csvImport.templateId);
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    const [availableLanguages, defaultLanguage, settings] = await Promise.all([
+      this.deps.settingsDS.getLanguageKeys(),
+      this.deps.settingsDS.getDefaultLanguageKey(),
+      this.deps.settingsDS.get(),
+    ]);
+    const newNameGeneration = Boolean(settings?.newNameGeneration);
 
-    // Analyze headers/languages per header (v2 analyzer)
     const { headers } = stagedRows[0];
-    await this.analyzeHeaders(csvImport, headers, template, defaultLanguage);
-
-    // Create missing thesauri values (full parity: root and nested for select properties; default language column)
-    type SelectLikeProperty = Property & { content: string };
-    const selectProps = template.properties.filter(
-      (property): property is SelectLikeProperty =>
-        property.type === 'select' &&
-        typeof (property as Partial<SelectLikeProperty>).content === 'string'
-    );
-    const updatesRoot: Array<{ thesaurusId: string; labels: string[] }> = [];
-    const updatesNested: Array<{ thesaurusId: string; parent: string; child?: string }>[] = [];
-    selectProps.forEach(prop => {
-      const defaultHeader = `${prop.name}__${defaultLanguage}`;
-      const colIndex = headers.indexOf(defaultHeader);
-      if (colIndex === -1) return;
-      const entries = stagedRows
-        .map(r => r.values[colIndex]?.trim())
-        .filter((v): v is string => !!v && v.length > 0)
-        .map(label => {
-          const parts = label.split('::').map(s => s.trim());
-          if (parts.length === 2) return { parent: parts[0], child: parts[1] };
-          return { parent: parts[0] };
-        });
-      const roots = entries.filter(e => !e.child).map(e => e.parent);
-      const nesteds = entries.filter(e => e.child) as Array<{ parent: string; child: string }>;
-      if (roots.length) {
-        updatesRoot.push({ thesaurusId: prop.content.toString(), labels: roots });
-      }
-      if (nesteds.length) {
-        updatesNested.push(
-          nesteds.map(n => ({
-            thesaurusId: prop.content.toString(),
-            parent: n.parent,
-            child: n.child,
-          }))
-        );
-      }
+    const headerAnalysis = await this.analyzeHeaders(csvImport, headers, template, {
+      availableLanguages,
+      defaultLanguage,
+      newNameGeneration,
     });
 
-    try {
-      // Heavy work in a single transaction
+    const { plan, issues: planIssues } = CsvThesauriValuesBuilder.build({
+      importId,
+      rows: stagedRows,
+      template,
+      headerAnalysis,
+      defaultLanguage,
+      newNameGeneration,
+    });
+
+    if (planIssues.length) {
       await this.transactionManager.run(async () => {
-        // Apply thesauri updates (root and nested)
-        for (const u of updatesRoot) {
-          // eslint-disable-next-line no-await-in-loop
-          await this.deps.thesauriDS.appendRootLabelsIfMissing(u.thesaurusId, u.labels);
-        }
-        for (const group of updatesNested) {
-          const groupedByTh = new Map<string, Array<{ parent: string; child?: string }>>();
-          group.forEach(e => {
-            const arr = groupedByTh.get(e.thesaurusId) || [];
-            arr.push({ parent: e.parent, child: e.child });
-            groupedByTh.set(e.thesaurusId, arr);
-          });
-          for (const [thId, entries] of groupedByTh) {
-            // eslint-disable-next-line no-await-in-loop
-            await this.deps.thesauriDS.appendNestedLabelsIfMissing(thId, entries);
+        const failed = CsvImportDomain.withFailure(
+          CsvImportDomain.withStatus(csvImport, CsvImportStatus.Failed),
+          {
+            message: 'Thesauri values contain errors',
+            retryable: false,
+            at: Date.now(),
+            stage: 'preflight:preparation:thesauri',
+            code: 'THESAURI_VALUES_INVALID',
+            issues: planIssues.map(issue => ({
+              reason: issue.reason,
+              message: issue.reason,
+              property: issue.property,
+            })),
           }
-        }
+        );
+        await this.deps.csvImportsDS.update(failed);
       });
-      // Set status to preflight done (committed) after heavy work
-      await this.setStatus(importId, CsvImportStatus.PreflightThesauriDone);
-    } catch (e) {
-      callbacks.onError({ importId, error: e as Error });
-      throw e;
+      throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
     }
+
+    await this.transactionManager.run(async () => {
+      const withPlan = CsvImportDomain.withThesauriPlan(csvImport, plan);
+      const clearedFailure = CsvImportDomain.clearFailure(withPlan);
+      const updated = CsvImportDomain.withStatus(
+        clearedFailure,
+        CsvImportStatus.PreflightThesauriDone
+      );
+      await this.deps.csvImportsDS.update(updated);
+    });
 
     // Notify success
     callbacks.onSuccess({ importId });

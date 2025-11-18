@@ -1,3 +1,5 @@
+import { CsvThesauriPlan } from '../../model/CsvThesauriPlan';
+
 export interface CsvImportDBO {
   _id?: any;
   templateId: string;
@@ -17,6 +19,7 @@ export interface CsvImportDBO {
   createdAt: number;
   updatedAt: number;
   rowErrors?: any;
+  thesauriPlan?: CsvThesauriPlan;
   failure?: {
     message: string;
     retryable: boolean;

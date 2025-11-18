@@ -1,3 +1,5 @@
+import { CsvThesauriPlan } from './CsvThesauriPlan';
+
 export enum CsvImportStatus {
   Queued = 'queued',
   Validating = 'validating',
@@ -45,6 +47,7 @@ export type CsvImport = CsvImportToCreate & {
   id: string;
   storage?: CsvImportStorage;
   rowErrors?: any; // intentionally flexible for MVP
+  thesauriPlan?: CsvThesauriPlan;
   failure?: {
     message: string;
     retryable: boolean;
@@ -111,6 +114,23 @@ export class CsvImportDomain {
       ...(rest as CsvImport),
       updatedAt: Date.now(),
       failure: undefined,
+    };
+  }
+
+  static withThesauriPlan(csvImport: CsvImport, plan?: CsvThesauriPlan): CsvImport {
+    return {
+      ...csvImport,
+      thesauriPlan: plan,
+      updatedAt: Date.now(),
+    };
+  }
+
+  static clearThesauriPlan(csvImport: CsvImport): CsvImport {
+    const { thesauriPlan: _omit, ...rest } = csvImport as any;
+    return {
+      ...(rest as CsvImport),
+      updatedAt: Date.now(),
+      thesauriPlan: undefined,
     };
   }
 }
