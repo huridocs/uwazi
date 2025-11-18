@@ -2,7 +2,7 @@ export enum CsvImportStatus {
   Queued = 'queued',
   Validating = 'validating',
   ExtractingFiles = 'extracting files',
-  FilesExtracted = 'files extracted',
+  ExtractingFilesDone = 'extracting files:done',
   PreflightThesauri = 'preflight:thesauri',
   PreflightThesauriDone = 'preflight:thesauri:done',
   Retrying = 'retrying',

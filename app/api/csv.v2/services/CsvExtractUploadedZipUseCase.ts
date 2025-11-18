@@ -171,11 +171,11 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     if (existing) {
       await this.transactionManager.run(async () => {
         const cleared = CsvImportDomain.clearFailure(existing);
-        const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.FilesExtracted);
+        const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.ExtractingFilesDone);
         await this.deps.csvImportsDS.update(updated);
       });
     } else {
-      await this.setStatus(importId, CsvImportStatus.FilesExtracted);
+      await this.setStatus(importId, CsvImportStatus.ExtractingFilesDone);
     }
   }
 

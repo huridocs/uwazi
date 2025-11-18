@@ -97,7 +97,7 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.FilesExtracted);
+    expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated?.failure ?? undefined).toBeUndefined();
     const extractedPath = pathManager.createPath({
       type: 'customPath',
@@ -156,7 +156,7 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.FilesExtracted);
+    expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated?.failure ?? undefined).toBeUndefined();
     const extractedDir = pathManager.createPath({
       type: 'customPath',
