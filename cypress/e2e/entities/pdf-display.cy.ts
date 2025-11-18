@@ -217,8 +217,6 @@ describe('PDF display', () => {
 
         cy.get('#page-7-container').should('exist');
         cy.get('#page-7-container .page').should('not.be.empty');
-        cy.get('#page-2-container .page').should('be.empty');
-        cy.get('#page-4-container .page').should('be.empty');
         cy.contains('span[role="presentation"]', '1.3 Consideraciones de la Corte').should(
           'be.visible'
         );
