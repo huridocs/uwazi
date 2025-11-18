@@ -19,9 +19,9 @@ type FileMetadata = {
 export class InputFile {
   private _metadata: FileMetadata;
 
-  private type: 'document' | 'attachment';
+  private type: 'document' | 'attachment' | 'raw';
 
-  constructor(metadata: FileMetadata, type: 'document' | 'attachment') {
+  constructor(metadata: FileMetadata, type: 'document' | 'attachment' | 'raw' = 'raw') {
     this._metadata = metadata;
     this.type = type;
   }
