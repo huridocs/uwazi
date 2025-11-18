@@ -7,7 +7,7 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
@@ -93,7 +93,7 @@ const setUpUseCase = () => {
   const mongoTransactionManager = TransactionManagerFactory.default();
   const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
   const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
     connection,

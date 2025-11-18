@@ -3,8 +3,8 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -18,8 +18,8 @@ class CreateEntityUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const filesStorage = FileStorageStrategyFactory.createDefault();
-    const filesDS = DefaultFilesDataSource(transactionManager);
+    const filesStorage = FileStorageFactory.default();
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
