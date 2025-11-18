@@ -232,10 +232,11 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
 
   protected async executeAsync(input: Input): Promise<void> {
     const { importId, callbacks } = input;
+
     CsvExtractUploadedZipUseCase.emitStart(callbacks, importId);
+    await this.setStatus(importId, CsvImportStatus.ExtractingFiles);
 
     const storagePath = await this.getImportStoragePath(importId);
-    await this.setStatus(importId, CsvImportStatus.ExtractingFiles);
 
     const { filename, destination } = CsvExtractUploadedZipUseCase.parseStoragePath(storagePath);
     const isZip = filename.toLowerCase().endsWith('.zip');
