@@ -1,10 +1,12 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportStatus } from '../model/CsvImport';
+import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
 import { CsvHeaderAnalyzer } from '../application/CsvHeaderAnalyzer';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
+import { Callbacks } from '../types/UseCaseCallbacks';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;
@@ -16,7 +18,7 @@ type ThesauriWritePort = {
 
 type Input = {
   importId: string;
-  sessionId?: string;
+  callbacks: Callbacks;
 };
 
 type Output = {
@@ -32,12 +34,6 @@ type Deps = {
   thesauriDS: ThesauriWritePort;
 };
 
-type Callbacks = {
-  onStart: (info: { importId: string; sessionId?: string }) => void;
-  onSuccess: (info: { importId: string; sessionId?: string }) => void;
-  onError: (info: { importId: string; error: Error; sessionId?: string }) => void;
-};
-
 export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Output, Deps> {
   private async setStatus(importId: string, status: CsvImportStatus) {
     const existing = await this.deps.csvImportsDS.getById(importId);
@@ -45,41 +41,48 @@ export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Ou
       throw new Error(`CSV import not found: ${importId}`);
     }
     await this.transactionManager.run(async () => {
-      const updated = { ...existing, status, updatedAt: Date.now() };
+      const updated = CsvImportDomain.withStatus(existing, status);
       await this.deps.csvImportsDS.update(updated);
     });
   }
 
-  // eslint-disable-next-line max-statements
-  protected async executeAsync(input: Input, callbacks: Callbacks): Promise<Output> {
-    const { importId, sessionId } = input;
+  async markAsFailed(importId: string) {
+    await this.setStatus(importId, CsvImportStatus.Failed);
+  }
 
-    const csvImportAtStart = await this.deps.csvImportsDS.getById(importId);
-    if (!csvImportAtStart) {
-      throw new Error(`CSV import not found: ${importId}`);
+  private async getImport(importId: string) {
+    const csvImport = await this.deps.csvImportsDS.getById(importId);
+    if (!csvImport) {
+      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
     }
-    if (!csvImportAtStart.storage || !csvImportAtStart.storage.path) {
-      throw new Error(`CSV import storage path not found for import ${importId}`);
+    if (!csvImport.storage?.path) {
+      throw new NonRetryableJobError(
+        new Error(`CSV import storage path not found for import ${importId}`)
+      );
     }
-    if (!csvImportAtStart.templateId) {
-      throw new Error(`CSV import templateId not found for import ${importId}`);
+    if (!csvImport.templateId) {
+      throw new NonRetryableJobError(
+        new Error(`CSV import templateId not found for import ${importId}`)
+      );
     }
+    return csvImport;
+  }
 
-    const stagedRows = await this.deps.rowsDS.getByImport(importId);
-    if (!stagedRows.length) {
-      throw new Error('No staged rows found for this import');
+  private async getStagedRows(importId: string) {
+    const rows = await this.deps.rowsDS.getByImport(importId);
+    if (!rows.length) {
+      throw new NonRetryableJobError(new Error(`No staged rows found for import ${importId}`));
     }
-    const { headers } = stagedRows[0];
+    return rows;
+  }
 
-    const templateRes = await this.deps.templatesDS.getById(csvImportAtStart.templateId);
+  private async getMinimalTemplate(templateId: string) {
+    const templateRes = await this.deps.templatesDS.getById(templateId);
     if (templateRes.isError()) {
-      throw new Error('template not found!');
+      throw new NonRetryableJobError(new Error(`template not found! ${templateId}`));
     }
     const templateDomain = templateRes.getData();
-    const availableLanguages: string[] = await this.deps.settingsDS.getLanguageKeys();
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
-    // Analyze headers/languages per header (v2 analyzer)
     // Build minimal template shape for analyzer (name/type/content)
     const minimalTemplate = {
       properties: (templateDomain.properties || []).map(p => ({
@@ -88,11 +91,25 @@ export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Ou
         content: (p as any).content,
       })),
     };
-    CsvHeaderAnalyzer.analyze(headers, minimalTemplate as any, availableLanguages, defaultLanguage);
+    return minimalTemplate;
+  }
 
-    // Notify start and set status only after essential validations/analyzers succeed
-    callbacks.onStart({ importId, sessionId });
+  // eslint-disable-next-line max-statements
+  protected async executeAsync(input: Input): Promise<Output> {
+    const { importId, callbacks } = input;
+
+    callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauri);
+
+    const csvImport = await this.getImport(importId);
+    const stagedRows = await this.getStagedRows(importId);
+    const availableLanguages = await this.deps.settingsDS.getLanguageKeys();
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    const minimalTemplate = await this.getMinimalTemplate(csvImport.templateId);
+
+    // Analyze headers/languages per header (v2 analyzer)
+    const { headers } = stagedRows[0];
+    CsvHeaderAnalyzer.analyze(headers, minimalTemplate as any, availableLanguages, defaultLanguage);
 
     // Create missing thesauri values (full parity: root and nested for select properties; default language column)
     const selectProps = (minimalTemplate.properties || []).filter(
@@ -152,12 +169,12 @@ export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Ou
       // Set status to preflight done (committed) after heavy work
       await this.setStatus(importId, CsvImportStatus.PreflightThesauriDone);
     } catch (e) {
-      callbacks.onError({ importId, error: e as Error, sessionId });
+      callbacks.onError({ importId, error: e as Error });
       throw e;
     }
 
     // Notify success
-    callbacks.onSuccess({ importId, sessionId });
+    callbacks.onSuccess({ importId });
 
     return { importId, status: CsvImportStatus.PreflightThesauriDone };
   }
