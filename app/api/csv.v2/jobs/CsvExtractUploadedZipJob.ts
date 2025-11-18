@@ -23,9 +23,9 @@ export class CsvExtractUploadedZipJob extends UserAwareDispatchable<Params> {
 
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
     try {
-      await this.deps.useCase.execute(
-        { importId: this.params.importId },
-        {
+      await this.deps.useCase.execute({
+        importId: this.params.importId,
+        callbacks: {
           onStart: ({ importId }: { importId: string }) => {
             if (this.params.sessionId) {
               this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:start', {
@@ -65,8 +65,8 @@ export class CsvExtractUploadedZipJob extends UserAwareDispatchable<Params> {
               });
             }
           },
-        }
-      );
+        },
+      });
     } catch (e) {
       // If this was the last retry attempt, mark as definitively failed.
       if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {

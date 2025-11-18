@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import path from 'path';
 import yauzl from 'yauzl';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
@@ -7,6 +8,7 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
+import { Callbacks as BaseCallbacks } from '../types/UseCaseCallbacks';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
@@ -14,15 +16,13 @@ type Deps = {
   filesIO: FileContentsIO;
 };
 
-type Input = {
-  importId: string;
+type Callbacks = BaseCallbacks & {
+  onProgress: (info: { importId: string; processedFiles: number }) => void;
 };
 
-type Callbacks = {
-  onStart?: (info: { importId: string }) => void;
-  onSuccess?: (info: { importId: string }) => void;
-  onError?: (info: { importId: string; error: Error }) => void;
-  onProgress?: (info: { importId: string; processedFiles: number }) => void;
+type Input = {
+  importId: string;
+  callbacks: Callbacks;
 };
 
 export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, Deps> {
@@ -42,16 +42,16 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     return streamReadable();
   }
 
-  private static emitStart(callbacks: Callbacks | undefined, importId: string) {
-    callbacks?.onStart?.({ importId });
+  private static emitStart(callbacks: Callbacks, importId: string) {
+    callbacks.onStart({ importId });
   }
 
-  private static emitSuccess(callbacks: Callbacks | undefined, importId: string) {
-    callbacks?.onSuccess?.({ importId });
+  private static emitSuccess(callbacks: Callbacks, importId: string) {
+    callbacks.onSuccess({ importId });
   }
 
-  private static emitError(callbacks: Callbacks | undefined, importId: string, error: Error) {
-    callbacks?.onError?.({ importId, error });
+  private static emitError(callbacks: Callbacks, importId: string, error: Error) {
+    callbacks.onError({ importId, error });
   }
 
   private async setStatus(importId: string, status: CsvImportStatus) {
@@ -89,7 +89,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     importId: string,
     zipDestination: string,
     zipFilename: string,
-    callbacks?: Callbacks
+    callbacks: Callbacks
   ) {
     const zipFileContents = await this.deps.fileStorage.getFile({
       type: 'customPath',
@@ -143,7 +143,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
                 `${extractedDestination}/${entry.fileName}`
               );
               processedFiles += 1;
-              callbacks?.onProgress?.({ importId, processedFiles });
+              callbacks.onProgress({ importId, processedFiles });
               next();
             } catch (e) {
               reject(e);
@@ -179,7 +179,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     }
   }
 
-  async handleError(importId: string, callbacks: Callbacks | undefined, error: Error) {
+  async handleError(importId: string, callbacks: Callbacks, error: Error) {
     CsvExtractUploadedZipUseCase.emitError(callbacks, importId, error);
     const existing = await this.deps.csvImportsDS.getById(importId);
     const failure = {
@@ -208,7 +208,7 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     isZip: boolean;
     destination: string;
     filename: string;
-    callbacks?: Callbacks;
+    callbacks: Callbacks;
   }) {
     try {
       if (params.isZip) {
@@ -230,17 +230,18 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     }
   }
 
-  protected async executeAsync(input: Input, callbacks?: Callbacks): Promise<void> {
-    CsvExtractUploadedZipUseCase.emitStart(callbacks, input.importId);
+  protected async executeAsync(input: Input): Promise<void> {
+    const { importId, callbacks } = input;
+    CsvExtractUploadedZipUseCase.emitStart(callbacks, importId);
 
-    const storagePath = await this.getImportStoragePath(input.importId);
-    await this.setStatus(input.importId, CsvImportStatus.ExtractingFiles);
+    const storagePath = await this.getImportStoragePath(importId);
+    await this.setStatus(importId, CsvImportStatus.ExtractingFiles);
 
     const { filename, destination } = CsvExtractUploadedZipUseCase.parseStoragePath(storagePath);
     const isZip = filename.toLowerCase().endsWith('.zip');
 
     await this.processExtraction({
-      importId: input.importId,
+      importId,
       isZip,
       destination,
       filename,
@@ -248,3 +249,5 @@ export class CsvExtractUploadedZipUseCase extends AbstractUseCase<Input, void, D
     });
   }
 }
+
+export type { Callbacks };

@@ -15,7 +15,14 @@ import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { CsvExtractUploadedZipUseCase } from '../CsvExtractUploadedZipUseCase';
+import { CsvExtractUploadedZipUseCase, Callbacks } from '../CsvExtractUploadedZipUseCase';
+
+const callbacks: Callbacks = {
+  onStart: jest.fn(),
+  onSuccess: jest.fn(),
+  onError: jest.fn(),
+  onProgress: jest.fn(),
+};
 
 describe('CsvExtractUploadedZipUseCase (integration)', () => {
   const createdImportIds: string[] = [];
@@ -86,7 +93,7 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id });
+    await useCase.execute({ importId: id, callbacks });
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
@@ -145,7 +152,7 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id });
+    await useCase.execute({ importId: id, callbacks });
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
@@ -162,9 +169,9 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
   it('should throw NonRetryableJobError when import not found', async () => {
     const { useCase } = setUp();
     const f = getFixturesFactory();
-    await expect(useCase.execute({ importId: f.idString('non-existent') })).rejects.toBeInstanceOf(
-      NonRetryableJobError
-    );
+    await expect(
+      useCase.execute({ importId: f.idString('non-existent'), callbacks })
+    ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
 
   it('should throw NonRetryableJobError when storage path is missing', async () => {
@@ -178,7 +185,9 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
       createdBy: 'u1',
     });
     await csvImportsDS.insert(importDoc);
-    await expect(useCase.execute({ importId: id })).rejects.toBeInstanceOf(NonRetryableJobError);
+    await expect(useCase.execute({ importId: id, callbacks })).rejects.toBeInstanceOf(
+      NonRetryableJobError
+    );
     const after = await csvImportsDS.getById(id);
     expect(after?.status).toBe(CsvImportStatus.Queued);
   });
@@ -218,7 +227,9 @@ describe('CsvExtractUploadedZipUseCase (integration)', () => {
     );
     await csvImportsDS.insert(importDoc);
 
-    await expect(useCase.execute({ importId: id })).rejects.toBeInstanceOf(NonRetryableJobError);
+    await expect(useCase.execute({ importId: id, callbacks })).rejects.toBeInstanceOf(
+      NonRetryableJobError
+    );
     createdImportIds.push(id);
     const updated = await csvImportsDS.getById(id);
     expect(updated?.status).toBe(CsvImportStatus.Failed);
