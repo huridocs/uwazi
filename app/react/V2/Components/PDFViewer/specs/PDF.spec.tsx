@@ -54,7 +54,11 @@ const renderingStates = {
 };
 
 jest.mock('../pdfjs.ts', () => ({
-  EventBus: jest.fn(),
+  EventBus: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    off: jest.fn(),
+    dispatch: jest.fn(),
+  })),
   PDFJS: {
     getDocument: jest.fn(args => {
       mockGetDocument(args);
@@ -92,6 +96,9 @@ jest.mock('../pdfjs.ts', () => ({
     RenderingStates: renderingStates,
   },
   CMAP_URL: 'legacy_character_maps',
+  events: {
+    ON_PAGE_CHANGE: 'ON_PAGE_CHANGE',
+  },
 }));
 
 describe('PDF', () => {
@@ -150,7 +157,7 @@ describe('PDF', () => {
           height: 300,
           width: 100,
         },
-        eventBus: {},
+        eventBus: expect.any(Object),
         id: 1,
         scale: 1.6,
       })
