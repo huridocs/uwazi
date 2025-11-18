@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
@@ -14,6 +15,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import fs from 'fs/promises';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants';
+import { csvImportRoutes } from 'api/csv.v2/routes/routes';
 import { UserSchema } from 'shared/types/userType';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -36,6 +38,8 @@ describe('upload routes', () => {
       next();
     }
   );
+
+  csvImportRoutes(app);
 
   const mockCurrentUser = (user: UserSchema) => {
     requestMockedUser = user;
@@ -315,6 +319,7 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
         const imported = await entities.get({ template: importTemplate });
         expect(imported.length).toBeGreaterThan(0);
       } finally {
+        // eslint-disable-next-line no-empty-function
         await fs.unlink(tempCsvPath).catch(() => {});
       }
     });

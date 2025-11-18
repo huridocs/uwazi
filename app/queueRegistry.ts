@@ -40,8 +40,14 @@ import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlank
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import relationships from 'api/relationships';
-import { DefaultDispatcher } from './api/core/libs/queue/configuration/factories';
-import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
+import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
+import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
+import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
+import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { tenants } from 'api/tenants/tenantContext';
+import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -72,6 +78,7 @@ export class TestJob implements Dispatchable {
   }
 }
 
+// eslint-disable-next-line max-statements
 export function registerJobs(
   register: <T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
@@ -181,4 +188,19 @@ export function registerJobs(
         relationships,
       })
   );
+
+  register(CsvExtractUploadedZipJob, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const tenant = tenants.current();
+    const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
+    const useCase = new CsvExtractUploadedZipUseCase({
+      csvImportsDS,
+      fileStorage,
+      transactionManager,
+      filesIO: new FileContentsIO(),
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvExtractUploadedZipJob({ useCase, sockets });
+  });
 }

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Tab as HeadlessTab } from '@headlessui/react';
 
 type TabProps = {
   id: string;
@@ -20,6 +21,7 @@ interface TabsProps {
   unmountTabs?: boolean;
   className?: string;
   tabListClassName?: string;
+  tabListAriaLabel?: string;
 }
 
 const Tabs = ({
@@ -28,88 +30,93 @@ const Tabs = ({
   initialTabId,
   className,
   tabListClassName,
+  tabListAriaLabel,
   unmountTabs = true,
 }: TabsProps) => {
-  const tabChildren = Array.isArray(children) ? children : [children];
-  const [activeTab, setActiveTab] = useState(initialTabId || tabChildren[0].props.id);
-
-  const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    newActiveTab: string
-  ) => {
-    e.preventDefault();
-    setActiveTab(newActiveTab);
-
-    if (onTabSelected) {
-      onTabSelected(newActiveTab);
+  const tabChildren = useMemo(() => (Array.isArray(children) ? children : [children]), [children]);
+  const totalTabs = tabChildren.length;
+  const initialIndex = tabChildren.findIndex(child => child.props.id === initialTabId);
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
+  useEffect(() => {
+    const newIndex = tabChildren.findIndex(child => child.props.id === initialTabId);
+    if (newIndex !== -1 && newIndex !== selectedIndex) {
+      setSelectedIndex(newIndex);
     }
-  };
+  }, [initialTabId, tabChildren, selectedIndex]);
 
   const activeClass = 'text-gray-900 bg-gray-50';
   const inactiveClass = 'text-gray-500';
 
+  const handleChange = (index: number) => {
+    setSelectedIndex(index);
+
+    if (onTabSelected) {
+      onTabSelected(tabChildren[index].props.id);
+    }
+  };
+
   return (
-    <div className={`flex flex-col h-full ${className ?? ''}`}>
-      <div
-        role="tablist"
-        aria-orientation="horizontal"
-        className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow divide-x-2 divide-gray-100 w-max ${tabListClassName || ''}`}
-        data-testid="tabs-comp"
-      >
-        {tabChildren.map(child => (
-          <button
-            key={child.props.id}
-            id={`tab-${child.props.id}`}
-            role="tab"
-            aria-controls={`panel-${child.props.id}`}
-            aria-selected={activeTab === child.props.id}
-            tabIndex={activeTab === child.props.id ? 0 : -1}
-            type="button"
-            className={`p-2 text-left flex items-center justify-start h-full ${
-              activeTab === child.props.id ? activeClass : inactiveClass
-            }`}
-            onClick={e => handleClick(e, child.props.id)}
-          >
-            {child.props.label}
-          </button>
-        ))}
-      </div>
-      <div className="py-4 grow overflow-y-auto">
-        {tabChildren.map(child => {
-          const isActive = child.props.id === activeTab;
+    <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
+      <div className={`flex flex-col h-full ${className ?? ''}`}>
+        <HeadlessTab.List
+          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow divide-x-2 divide-gray-100 w-max ${
+            tabListClassName || ''
+          }`}
+          aria-label={tabListAriaLabel}
+          data-testid="tabs-comp"
+        >
+          {tabChildren.map((child, index) => {
+            const isFirst = index === 0;
+            const isLast = index === totalTabs - 1;
+            const shapeClass = (() => {
+              if (totalTabs === 1) {
+                return 'rounded-md';
+              }
+              if (isFirst) {
+                return 'rounded-l-md';
+              }
+              if (isLast) {
+                return 'rounded-r-md';
+              }
+              return 'rounded-none';
+            })();
 
-          if (unmountTabs) {
-            if (isActive) {
-              return (
-                <div
-                  className="w-full h-full"
-                  key={child.props.id}
-                  id={`panel-${child.props.id}`}
-                  role="tabpanel"
-                  aria-labelledby={`tab-${child.props.id}`}
-                >
-                  {child.props.children}
-                </div>
-              );
-            }
-
-            return null;
-          }
-
-          return (
-            <div
+            return (
+              <HeadlessTab
+                key={child.props.id}
+                id={`tab-${child.props.id}`}
+                as="button"
+                type="button"
+                className={({ selected }) =>
+                  [
+                    'p-2 text-left flex items-center justify-start h-full',
+                    'focus-visible:outline-none focus-visible:ring-2',
+                    'focus-visible:ring-offset-2 focus-visible:ring-primary-600',
+                    'focus-visible:ring-offset-white',
+                    shapeClass,
+                    selected ? activeClass : inactiveClass,
+                  ].join(' ')
+                }
+              >
+                {child.props.label}
+              </HeadlessTab>
+            );
+          })}
+        </HeadlessTab.List>
+        <HeadlessTab.Panels className="py-4 grow overflow-y-auto">
+          {tabChildren.map(child => (
+            <HeadlessTab.Panel
               key={child.props.id}
               id={`panel-${child.props.id}`}
-              role="tabpanel"
-              aria-labelledby={`tab-${child.props.id}`}
-              className={`w-full h-full ${!isActive ? 'hidden' : ''}`}
+              className="w-full h-full focus:outline-none"
+              unmount={unmountTabs}
             >
               {child.props.children}
-            </div>
-          );
-        })}
+            </HeadlessTab.Panel>
+          ))}
+        </HeadlessTab.Panels>
       </div>
-    </div>
+    </HeadlessTab.Group>
   );
 };
 
