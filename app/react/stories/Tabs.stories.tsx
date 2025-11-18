@@ -1,3 +1,4 @@
+/* eslint-disable import/no-default-export */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Tabs } from 'V2/Components/UI/Tabs';
@@ -16,6 +17,7 @@ const Primary: Story = {
         unmountTabs={args.unmountTabs}
         onTabSelected={args.onTabSelected}
         tabListClassName="md:w-2/3 w-full"
+        tabListAriaLabel={args.tabListAriaLabel}
       >
         <Tabs.Tab id="tab1" label="Tab 1">
           <div className="py-4">
@@ -39,14 +41,13 @@ const Primary: Story = {
     </div>
   ),
 };
-const Basic = {
+export const Basic = {
   ...Primary,
   args: {
-    onTabSelected: () => {},
+    onTabSelected: undefined,
     unmountTabs: undefined,
+    tabListAriaLabel: 'Entity detail sections',
   },
 };
-
-export { Basic };
 
 export default meta;
