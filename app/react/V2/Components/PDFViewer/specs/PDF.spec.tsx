@@ -168,10 +168,14 @@ describe('PDF', () => {
   });
 
   it('should scroll to page', async () => {
+    jest.useFakeTimers();
     await act(() => {
       renderComponet('2');
     });
+    jest.advanceTimersByTime(200);
+
     expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
   });
 
   describe('intersection observer', () => {

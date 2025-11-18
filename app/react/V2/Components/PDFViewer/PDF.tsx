@@ -66,18 +66,6 @@ const PDF = ({
   }, [fileUrl]);
 
   useEffect(() => {
-    let animationFrameId = 0;
-
-    if (pdf && scrollToPage) {
-      animationFrameId = triggerScroll(scrollToRef, animationFrameId);
-    }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [scrollToPage, pdf]);
-
-  useEffect(() => {
     const container = pdfContainerRef.current;
 
     if (!container) {
@@ -115,6 +103,22 @@ const PDF = ({
       resizeObserver.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    let animationFrameId = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    if (pdf && scrollToPage) {
+      timeoutId = setTimeout(() => {
+        animationFrameId = triggerScroll(scrollToRef, animationFrameId);
+      }, 100);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [scrollToPage, pdf]);
 
   useEffect(() => {
     const handlePageChange: OnPageChagenEventHandler = page => {
