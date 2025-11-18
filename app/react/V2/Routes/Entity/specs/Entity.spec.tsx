@@ -5,7 +5,6 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
-import * as utils from 'app/utils';
 import { settingsAtom, userAtom } from 'V2/atoms';
 import * as files from 'V2/api/files';
 import { Entity, shouldRevalidate } from '../Entity';
@@ -238,11 +237,20 @@ describe('Entity view', () => {
   });
 
   describe('shouldRevalidate', () => {
+    it('should revalidate when sharedId changes', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's2' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
+      const nextUrl: any = { pathname: '/entity/s2', search: '?m=metadata' };
+      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+      expect(result).toBe(true);
+    });
+
     it('should not revalidate when switching search params', () => {
       const currentParams: any = { sharedId: 's1' };
       const nextParams: any = { sharedId: 's1' };
-      const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-      const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
+      const nextUrl: any = { pathname: '/entity/s1', search: '?m=document' };
       const result = shouldRevalidate({
         currentParams,
         nextParams,
@@ -251,15 +259,6 @@ describe('Entity view', () => {
         defaultShouldRevalidate: true,
       } as any);
       expect(result).toBe(false);
-    });
-
-    it('should revalidate when sharedId changes', () => {
-      const currentParams: any = { sharedId: 's1' };
-      const nextParams: any = { sharedId: 's2' };
-      const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-      const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
-      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-      expect(result).toBe(true);
     });
 
     it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {

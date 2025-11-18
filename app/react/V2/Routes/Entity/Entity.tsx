@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -59,11 +59,11 @@ const shouldRevalidate = ({
     return true;
   }
 
-  if (nextUrl.search !== currentUrl.search) {
-    return false;
+  if (currentUrl.search === nextUrl.search) {
+    return defaultShouldRevalidate;
   }
 
-  return defaultShouldRevalidate;
+  return false;
 };
 
 const entityLoader =
@@ -112,7 +112,20 @@ const entityLoader =
       );
 
       if (response instanceof FetchResponseError) {
-        pagePlaintext = '';
+        throw new Response(
+          JSON.stringify({
+            error: 'Failed to load entity',
+            message: composition.error || 'Entity not found',
+            entityId: entitySharedId,
+          }),
+          {
+            status: 404,
+            statusText: 'Entity Not Found',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       } else {
         pagePlaintext = response;
       }
@@ -199,7 +212,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <div no-translate>rels content</div>,
+          content: <div no-translate>This content is not yet available</div>,
         },
       ],
       [MAIN_TABS.METADATA]: [
@@ -211,7 +224,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <div no-translate>rels content</div>,
+          content: <div no-translate>This content is not yet available</div>,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -225,25 +238,31 @@ const Entity = () => {
     [entity]
   );
 
-  const onMainTabChange = (selectedMainTab: string) => {
-    if (selectedMainTab !== activeMainTab) {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(MAIN_TAB_PARAM, selectedMainTab);
-      next.delete(SIDE_TAB_PARAM);
-      setSearchParams(next, { replace: true, preventScrollReset: true });
-    }
-  };
-
-  const onSideTabChange = (selectedSideTab: string) => {
-    if (selectedSideTab !== activeSideTab) {
-      const next = new URLSearchParams(searchParams.toString());
-      next.set(SIDE_TAB_PARAM, selectedSideTab);
-      if (!next.get(MAIN_TAB_PARAM)) {
-        next.set(MAIN_TAB_PARAM, activeMainTab);
+  const onMainTabChange = useCallback(
+    (selectedMainTab: string) => {
+      if (selectedMainTab !== activeMainTab) {
+        const next = new URLSearchParams(searchParams.toString());
+        next.set(MAIN_TAB_PARAM, selectedMainTab);
+        next.delete(SIDE_TAB_PARAM);
+        setSearchParams(next, { replace: true, preventScrollReset: true });
       }
-      setSearchParams(next, { replace: true, preventScrollReset: true });
-    }
-  };
+    },
+    [activeMainTab, searchParams, setSearchParams]
+  );
+
+  const onSideTabChange = useCallback(
+    (selectedSideTab: string) => {
+      if (selectedSideTab !== activeSideTab) {
+        const next = new URLSearchParams(searchParams.toString());
+        next.set(SIDE_TAB_PARAM, selectedSideTab);
+        if (!next.get(MAIN_TAB_PARAM)) {
+          next.set(MAIN_TAB_PARAM, activeMainTab);
+        }
+        setSearchParams(next, { replace: true, preventScrollReset: true });
+      }
+    },
+    [activeMainTab, activeSideTab, searchParams, setSearchParams]
+  );
 
   if (!entity) {
     return <Translate>Loading</Translate>;
