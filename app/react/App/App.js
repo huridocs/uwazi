@@ -22,7 +22,7 @@ import 'nprogress/nprogress.css';
 import 'flag-icons/sass/flag-icons.scss';
 import 'flowbite/dist/flowbite.min.css';
 import 'flowbite';
-import './styles/globals.css';
+import './styles/tailwind.css';
 import './scss/styles.scss';
 
 const App = ({ customParams }) => {

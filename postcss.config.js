@@ -4,14 +4,11 @@ const prefixSelector = require('postcss-prefix-selector');
 module.exports = (ctx) => {
   const filePath = ctx?.file?.dirname
     ? `${ctx.file.dirname}/${ctx.file.basename || ''}`
-    : ctx?.file?.path || '';
-  const isGlobalsCss = filePath.includes('globals.css');
+    : ctx?.file?.path || ctx?.file || '';
 
   const plugins = [];
 
-  if (!isGlobalsCss) {
-    plugins.push(tailwindcss());
-  }
+  plugins.push(tailwindcss());
 
   plugins.push(
     prefixSelector({

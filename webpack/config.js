@@ -86,22 +86,12 @@ module.exports = production => {
           ],
         },
         {
-          test: /main\.css$/,
-          use: [
-            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: true } },
-            {
-              loader: 'postcss-loader',
-              options: {
-                postcssOptions: {
-                  config: path.resolve(__dirname, '../postcss.config.js'),
-                },
-              },
-            },
+          test: /\.css$/,
+          exclude: [
+            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
+            path.resolve(__dirname, '../node_modules/flowbite/dist'),
+            /flowbite\.min\.css$/,
           ],
-        },
-        {
-          test: /globals\.css$/,
           use: [
             process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -120,7 +110,7 @@ module.exports = production => {
           exclude: [
             path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
             path.resolve(__dirname, '../node_modules/flowbite/dist'),
-            /(main\.css|globals\.css)$/,
+            /\.css$/,
           ],
           use: [
             MiniCssExtractPlugin.loader,
