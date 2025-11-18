@@ -13,6 +13,22 @@ import * as helpers from '../functions/helpers';
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
 
+class ResizeObserverMock {
+  callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+}
+
+global.ResizeObserver = ResizeObserverMock as any;
+
 const highlights: PDFProps['highlights'] = {
   2: [
     {
@@ -28,6 +44,8 @@ const mockPageDestroy = jest.fn();
 const mockPageViewer = jest.fn();
 const mockGetDocument = jest.fn();
 
+const mockPageViewerInstances: any[] = [];
+
 const renderingStates = {
   INITIAL: 0,
   RUNNING: 1,
@@ -36,7 +54,11 @@ const renderingStates = {
 };
 
 jest.mock('../pdfjs.ts', () => ({
-  EventBus: jest.fn(),
+  EventBus: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    off: jest.fn(),
+    dispatch: jest.fn(),
+  })),
   PDFJS: {
     getDocument: jest.fn(args => {
       mockGetDocument(args);
@@ -56,7 +78,7 @@ jest.mock('../pdfjs.ts', () => ({
   PDFJSViewer: {
     PDFPageView: jest.fn().mockImplementation(args => {
       mockPageViewer(args);
-      return {
+      const instance = {
         setPdfPage: jest.fn(),
         draw: jest.fn().mockImplementation(async () => {
           mockPageRender();
@@ -64,12 +86,19 @@ jest.mock('../pdfjs.ts', () => ({
         }),
         destroy: mockPageDestroy,
         renderingState: 0,
+        scale: args.scale,
+        update: jest.fn(),
         cancelRendering: jest.fn(),
       };
+      mockPageViewerInstances.push(instance);
+      return instance;
     }),
     RenderingStates: renderingStates,
   },
   CMAP_URL: 'legacy_character_maps',
+  events: {
+    ON_PAGE_CHANGE: 'ON_PAGE_CHANGE',
+  },
 }));
 
 describe('PDF', () => {
@@ -128,7 +157,7 @@ describe('PDF', () => {
           height: 300,
           width: 100,
         },
-        eventBus: {},
+        eventBus: expect.any(Object),
         id: 1,
         scale: 1.6,
       })
@@ -139,10 +168,14 @@ describe('PDF', () => {
   });
 
   it('should scroll to page', async () => {
+    jest.useFakeTimers();
     await act(() => {
       renderComponet('2');
     });
+    jest.advanceTimersByTime(200);
+
     expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
   });
 
   describe('intersection observer', () => {
@@ -166,6 +199,82 @@ describe('PDF', () => {
       cleanup();
 
       expect(unobserveMock).toHaveBeenCalledTimes(5);
+    });
+  });
+
+  describe('resize observer', () => {
+    let resizeObserverInstance: ResizeObserverMock | null = null;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      const OriginalResizeObserver = global.ResizeObserver;
+      global.ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
+        resizeObserverInstance = new (OriginalResizeObserver as any)(callback);
+        return resizeObserverInstance;
+      }) as any;
+      mockPageViewerInstances.length = 0;
+    });
+
+    afterEach(() => {
+      resizeObserverInstance = null;
+    });
+
+    it('should set up ResizeObserver for the PDF container', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      expect(resizeObserverInstance?.observe).toHaveBeenCalledTimes(1);
+    });
+
+    it('should disconnect ResizeObserver on unmount', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      cleanup();
+
+      expect(resizeObserverInstance?.disconnect).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-draws when containerWidth changes', async () => {
+      let result: RenderResult;
+      await act(async () => {
+        result = render(
+          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1]]}>
+            <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
+          </TestAtomStoreProvider>
+        );
+      });
+
+      const page1 = result!.container.querySelector('.pdf-page') as HTMLElement;
+
+      await act(() => {
+        oberserverMock.enterNode(page1);
+      });
+
+      const instance = mockPageViewerInstances[mockPageViewerInstances.length - 1];
+      instance.renderingState = renderingStates.FINISHED;
+
+      mockPageRender.mockClear();
+
+      jest.useFakeTimers();
+
+      await act(async () => {
+        const entries: any = [
+          {
+            target: result.container,
+            contentRect: { width: 50 },
+          },
+        ];
+
+        resizeObserverInstance!.callback(entries, resizeObserverInstance as any);
+        jest.advanceTimersByTime(200);
+      });
+
+      jest.useRealTimers();
+
+      expect(mockPageRender).toHaveBeenCalled();
     });
   });
 });
