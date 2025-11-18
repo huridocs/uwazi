@@ -6,6 +6,8 @@ import { InputFile } from 'api/files.v2/model/InputFile';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { withTransaction } from 'api/utils/withTransaction';
+import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -89,15 +91,18 @@ export default app => {
           f => new InputFile(f, f.fieldname.match(/document/) ? 'document' : 'attachment')
         );
 
-        const savedEntity = await entities.save(entityToSave, {
-          language: req.language,
-          inputFiles,
-        });
+        const savedEntity = await EntityFacade.create(entityToSave, inputFiles);
+        const entityInTargetLanguage = MongoEntityMapper.toDBO(savedEntity).find(
+          e => e.language === req.language
+        );
 
-        await updateThesauriWithEntity(savedEntity, req);
+        await updateThesauriWithEntity(entityInTargetLanguage, req);
 
         // Return in the same format as V1 for client compatibility
-        const response = req.body.entity ? { entity: savedEntity, errors: [] } : savedEntity;
+        const response = req.body.entity
+          ? { entity: entityInTargetLanguage, errors: [] }
+          : entityInTargetLanguage;
+
         res.json(response);
 
         return;
