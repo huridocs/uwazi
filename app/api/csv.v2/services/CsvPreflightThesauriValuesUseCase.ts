@@ -2,9 +2,12 @@ import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { Property } from 'api/core/domain/template/Property';
+import { Template } from 'api/core/domain/template/Template';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
 import { CsvHeaderAnalyzer } from '../application/CsvHeaderAnalyzer';
+import { CsvHeaderAnalyzerError } from '../application/CsvHeaderAnalyzerError';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
 import { Callbacks } from '../types/UseCaseCallbacks';
 
@@ -76,22 +79,31 @@ export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Ou
     return rows;
   }
 
-  private async getMinimalTemplate(templateId: string) {
+  private async getTemplate(templateId: string) {
     const templateRes = await this.deps.templatesDS.getById(templateId);
     if (templateRes.isError()) {
       throw new NonRetryableJobError(new Error(`template not found! ${templateId}`));
     }
-    const templateDomain = templateRes.getData();
+    return templateRes.getData();
+  }
 
-    // Build minimal template shape for analyzer (name/type/content)
-    const minimalTemplate = {
-      properties: (templateDomain.properties || []).map(p => ({
-        name: p.name,
-        type: p.type,
-        content: (p as any).content,
-      })),
-    };
-    return minimalTemplate;
+  private async analyzeHeaders(headers: string[], template: Template, defaultLanguage: string) {
+    const [availableLanguages, settings] = await Promise.all([
+      this.deps.settingsDS.getLanguageKeys(),
+      this.deps.settingsDS.get(),
+    ]);
+    try {
+      CsvHeaderAnalyzer.analyze(headers, template, {
+        availableLanguages,
+        defaultLanguage,
+        newNameGeneration: Boolean(settings?.newNameGeneration),
+      });
+    } catch (error) {
+      if (error instanceof CsvHeaderAnalyzerError) {
+        throw new NonRetryableJobError(error);
+      }
+      throw error;
+    }
   }
 
   // eslint-disable-next-line max-statements
@@ -103,18 +115,20 @@ export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Ou
 
     const csvImport = await this.getImport(importId);
     const stagedRows = await this.getStagedRows(importId);
-    const availableLanguages = await this.deps.settingsDS.getLanguageKeys();
+    const template = await this.getTemplate(csvImport.templateId);
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-    const minimalTemplate = await this.getMinimalTemplate(csvImport.templateId);
 
     // Analyze headers/languages per header (v2 analyzer)
     const { headers } = stagedRows[0];
-    CsvHeaderAnalyzer.analyze(headers, minimalTemplate as any, availableLanguages, defaultLanguage);
+    await this.analyzeHeaders(headers, template, defaultLanguage);
 
     // Create missing thesauri values (full parity: root and nested for select properties; default language column)
-    const selectProps = (minimalTemplate.properties || []).filter(
-      (p: any) => p.type === 'select' && p.content
-    ) as Array<{ name: string; content: string }>;
+    type SelectLikeProperty = Property & { content: string };
+    const selectProps = template.properties.filter(
+      (property): property is SelectLikeProperty =>
+        property.type === 'select' &&
+        typeof (property as Partial<SelectLikeProperty>).content === 'string'
+    );
     const updatesRoot: Array<{ thesaurusId: string; labels: string[] }> = [];
     const updatesNested: Array<{ thesaurusId: string; parent: string; child?: string }>[] = [];
     selectProps.forEach(prop => {

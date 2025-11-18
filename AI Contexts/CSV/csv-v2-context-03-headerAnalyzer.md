@@ -50,6 +50,15 @@ Produce a V2-compliant analyzer that matches (and improves upon) V1’s `validat
 | Outputs                                 | Return the sanitized `headersWithoutLanguage`, `languagesPerHeader`, and (if needed downstream) `propertiesByName`. These feed later stages (thesauri preflight, entity extraction, etc.).         |
 | Error clarity                           | Introduce `CsvHeaderAnalyzerError` (with reason + property/header metadata). Callers can convert it to `NonRetryableJobError` and persist user-friendly failure objects.                           |
 
+**Analyzer API (current)**
+`CsvHeaderAnalyzer.analyze(headers, template, { availableLanguages, defaultLanguage, newNameGeneration })`
+The template must be the V2 domain object; the options object comes directly from `SettingsDataSource`.
+
+**Implementation notes (2025-11-18)**
+- `LANGUAGE_SUPPORTED_TYPES` currently lives inside the analyzer and mirrors the same enumeration V1 used (`text`, `markdown`, `select`, `multiselect`, `link`, `nested`, plus `title` special-case). Entities.v2 does not yet expose a “supports language columns” flag, so keep this list in sync with the property translation rules until we can promote it to shared metadata (see `AI Contexts/PropertyTranslationRules_V1.md` for the rationale).
+- Columns such as `id`, `_id`, or `sharedId` are accepted as part of `headersWithoutLanguage`. Because the language-only validations trigger exclusively on suffixed columns, these reserved identifiers can continue to flow through for update workflows exactly as in V1.
+- Current specs cover every failure path present in `app/api/csv/specs/validateColumns.spec.ts` (mixed columns, unsupported types, missing default language) plus an extra happy-path case for `file__{lang}` and a new-name-generation sanitization test that V1 never asserted explicitly. Keep both the analyzer and specs updated whenever that legacy suite grows to ensure parity remains demonstrable.
+
 ### Error classification & messaging
 
 - Analyzer errors are deterministic and therefore **non-retriable**. They should bubble up as `NonRetryableJobError` from the use case, set the import status to `failed`, and persist a failure payload on the import document (`{ message, retryable: false, at: 'preflight:thesauri', stage: 'header-analyzer' }` or similar).
@@ -76,17 +85,17 @@ Testing approach:
 
 ### Next actions (Nov 18, 2025)
 
-1. **Document context** (this file) ✅ (in progress while writing)
-2. **Rewrite analyzer**
-   - Replace existing implementation with the V2-compliant version per the table above.
-   - Introduce dedicated error class.
-3. **Add analyzer specs** (cases listed above).
-4. **Update `CsvPreflightThesauriValuesUseCase` (later step)**
-   - Pass the Template domain + settings data into the analyzer.
-   - Handle new error type → `NonRetryableJobError` and failure persistence.
-   - Update imports/typing to match the new analyzer output shape.
+1. **Document context** (this file) ✅
+2. **Rewrite analyzer** ✅
+   - Analyzer now receives the Template domain + analyzer options (`availableLanguages`, `defaultLanguage`, `newNameGeneration`) and throws `CsvHeaderAnalyzerError` on failures.
+3. **Add analyzer specs** ✅
+   - Covers all v1 scenarios plus `file__` behavior and new-name-generation sanitization.
+4. **Update `CsvPreflightThesauriValuesUseCase`** ✅
+   - Retrieves the Template domain via `templatesDS.getById`, pulls analyzer options from `settingsDS`, and wraps analyzer errors in `NonRetryableJobError`.
 5. **Propagate status/error handling** (future)
    - Ensure job/use-case emits informative session events when analyzer fails.
+6. **Fix CsvPreflightThesauriValuesUseCase.spec.ts** ⛔ (TODO)
+   - Current spec file is broken (TS, lint, runtime). Track fixes under todo `Fix CsvPreflightThesauriValuesUseCase.spec.ts errors and reenable tests`.
 
 ### References
 

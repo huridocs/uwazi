@@ -1,56 +1,163 @@
-import { TemplateSchema } from 'shared/types/templateType';
-import { propertyTypes } from 'shared/propertyTypes';
+import { Template } from 'api/core/domain/template/Template';
+import { Property } from 'api/core/domain/template/Property';
+import { PropertyType } from 'api/core/domain/template/PropertyType';
+import { PropertyName } from 'api/core/domain/template/PropertyName';
+import { CsvHeaderAnalyzerError } from './CsvHeaderAnalyzerError';
 
-export type HeaderAnalysis = {
+const LANGUAGE_HEADER_SEPARATOR = '__';
+const LANGUAGE_SUPPORTED_TYPES = new Set<PropertyType>([
+  'text',
+  'markdown',
+  'select',
+  'multiselect',
+  'link',
+  'nested',
+]);
+
+type LanguagesPerHeader = Record<string, Set<string>>;
+type SanitizedHeader = { original: string; sanitized: string };
+type PartitionResult = {
   headersWithoutLanguage: string[];
-  languagesPerHeader: Record<string, Set<string>>;
+  languagesPerHeader: LanguagesPerHeader;
+};
+type AnalyzerOptions = {
+  availableLanguages: string[];
+  defaultLanguage: string;
+  newNameGeneration: boolean;
+};
+type HeaderAnalysis = {
+  headersWithoutLanguage: string[];
+  languagesPerHeader: LanguagesPerHeader;
+  propertiesByName: Record<string, Property>;
   defaultLanguage: string;
 };
 
-export class CsvHeaderAnalyzer {
-  static analyze(
-    headers: string[],
-    template: TemplateSchema,
-    availableLanguages: string[],
-    defaultLanguage: string
-  ): HeaderAnalysis {
-    const languageSuffix = (lang: string) => `__${lang}`;
-    const isLangHeader = (h: string) => availableLanguages.some(l => h.endsWith(languageSuffix(l)));
-    const headersWithoutLanguage = headers.filter(h => !isLangHeader(h));
-    const languagesPerHeader: Record<string, Set<string>> = {};
+const sanitizeHeaders = (headers: string[], newNameGeneration: boolean): SanitizedHeader[] =>
+  headers.map(header => ({
+    original: header,
+    sanitized: PropertyName.fromLabel(header, { newNameGeneration }).value,
+  }));
 
-    headers.filter(isLangHeader).forEach(h => {
-      const lang = availableLanguages.find(l => h.endsWith(languageSuffix(l)))!;
-      const base = h.slice(0, h.length - languageSuffix(lang).length);
-      if (!languagesPerHeader[base]) languagesPerHeader[base] = new Set();
-      languagesPerHeader[base].add(lang);
-    });
+const detectLanguageSuffix = (header: string, languages: string[]) => {
+  for (const language of languages) {
+    const suffix = `${LANGUAGE_HEADER_SEPARATOR}${language}`;
+    if (header.endsWith(suffix)) {
+      return { language, suffix };
+    }
+  }
+  return undefined;
+};
 
-    // Basic validation similar to v1 (reduced)
-    Object.keys(languagesPerHeader).forEach(name => {
-      const prop = (template.properties || []).find(p => p.name === name);
-      if (!prop) return;
-      const supportsLang = new Set([
-        propertyTypes.text,
-        propertyTypes.markdown,
-        propertyTypes.select,
-        propertyTypes.multiselect,
-        propertyTypes.link,
-        propertyTypes.nested,
-        'title',
-      ]).has(prop.type);
-      if (!supportsLang) {
-        throw new Error(
-          `Property "${name}" does not support languages. Remove the language suffix from the column name.`
-        );
+const partitionHeaders = (
+  sanitizedHeaders: SanitizedHeader[],
+  languages: string[]
+): PartitionResult =>
+  sanitizedHeaders.reduce<PartitionResult>(
+    (acc, { sanitized }) => {
+      const detected = detectLanguageSuffix(sanitized, languages);
+      if (!detected) {
+        acc.headersWithoutLanguage.push(sanitized);
+        return acc;
       }
-      if (!languagesPerHeader[name].has(defaultLanguage)) {
-        throw new Error(
-          `Property "${name}" uses languages, but does not have a default language column.`
-        );
-      }
-    });
+      const base = sanitized.slice(0, sanitized.length - detected.suffix.length);
+      const existing = acc.languagesPerHeader[base] ?? new Set<string>();
+      existing.add(detected.language);
+      acc.languagesPerHeader[base] = existing;
+      return acc;
+    },
+    { headersWithoutLanguage: [], languagesPerHeader: {} }
+  );
 
-    return { headersWithoutLanguage, languagesPerHeader, defaultLanguage };
+const buildPropertiesByName = (template: Template) =>
+  template.allProperties.reduce<Record<string, Property>>((acc, property) => {
+    acc[property.name] = property;
+    return acc;
+  }, {});
+
+const ensureNoMixedColumns = (
+  languagesPerHeader: LanguagesPerHeader,
+  headersWithoutLanguage: string[]
+) => {
+  const mixedColumns = Object.keys(languagesPerHeader).filter(headerName =>
+    headersWithoutLanguage.includes(headerName)
+  );
+  if (mixedColumns.length) {
+    throw new CsvHeaderAnalyzerError(
+      'MixedLanguageColumns',
+      `Properties "${mixedColumns.join(
+        ', '
+      )}" mix language and non-language columns. Make sure to only use either suffixed or non-suffixed columns for each property.`,
+      { columns: mixedColumns }
+    );
+  }
+};
+
+const shouldAllowLanguageColumn = (property: Property) =>
+  property.name === 'title' || LANGUAGE_SUPPORTED_TYPES.has(property.type as PropertyType);
+
+const ensureSupportedLanguageColumns = (
+  template: Template,
+  languagesPerHeader: LanguagesPerHeader,
+  propertiesByName: Record<string, Property>
+) => {
+  Object.keys(languagesPerHeader).forEach(headerName => {
+    if (headerName === 'file') {
+      return;
+    }
+    const property = propertiesByName[headerName];
+    if (!property) {
+      throw new CsvHeaderAnalyzerError(
+        'UnknownProperty',
+        `Column "${headerName}" does not exist in template "${template.name}".`,
+        { property: headerName }
+      );
+    }
+    if (!shouldAllowLanguageColumn(property)) {
+      throw new CsvHeaderAnalyzerError(
+        'UnsupportedLanguageColumn',
+        `Property "${property.name}" does not support languages. Remove the language suffix from the column name.`,
+        { property: property.name }
+      );
+    }
+  });
+};
+
+const ensureDefaultLanguageColumns = (
+  languagesPerHeader: LanguagesPerHeader,
+  defaultLanguage: string
+) => {
+  Object.entries(languagesPerHeader).forEach(([headerName, languages]) => {
+    if (!languages.has(defaultLanguage)) {
+      throw new CsvHeaderAnalyzerError(
+        'MissingDefaultLanguage',
+        `Property "${headerName}" uses languages, but does not have the default language column.`,
+        { property: headerName }
+      );
+    }
+  });
+};
+
+class CsvHeaderAnalyzer {
+  static analyze(headers: string[], template: Template, options: AnalyzerOptions): HeaderAnalysis {
+    const sanitizedHeaders = sanitizeHeaders(headers, options.newNameGeneration);
+    const { headersWithoutLanguage, languagesPerHeader } = partitionHeaders(
+      sanitizedHeaders,
+      options.availableLanguages
+    );
+    const propertiesByName = buildPropertiesByName(template);
+
+    ensureNoMixedColumns(languagesPerHeader, headersWithoutLanguage);
+    ensureSupportedLanguageColumns(template, languagesPerHeader, propertiesByName);
+    ensureDefaultLanguageColumns(languagesPerHeader, options.defaultLanguage);
+
+    return {
+      headersWithoutLanguage,
+      languagesPerHeader,
+      propertiesByName,
+      defaultLanguage: options.defaultLanguage,
+    };
   }
 }
+
+export { CsvHeaderAnalyzer };
+export type { HeaderAnalysis, LanguagesPerHeader, AnalyzerOptions };
