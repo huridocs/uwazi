@@ -144,7 +144,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
             disabled={pageNumber <= 1}
             className="text-primary-700 disabled:text-gray-500"
           >
-            <Translate>Previous page</Translate>
+            <Translate>Previous</Translate>
           </button>
           <div className="text-primary-900">
             {pageNumber} / {totalPages}
@@ -161,15 +161,15 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
             disabled={totalPages ? nextPage > totalPages : false}
             className="text-primary-700 disabled:text-gray-500"
           >
-            <Translate>Next page</Translate>
+            <Translate>Next</Translate>
           </button>
         </div>
         <div className="sr-only">
           <a href={`?${getPageSearchParams(prevPage).toString()}`} rel="prev">
-            {t('System', 'Previous page', null, false)}
+            {t('System', 'Previous', null, false)}
           </a>
           <a href={`?${getPageSearchParams(nextPage).toString()}`} rel="next">
-            {t('System', 'Next page', null, false)}
+            {t('System', 'Next', null, false)}
           </a>
         </div>
       </div>
