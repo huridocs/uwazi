@@ -45,10 +45,11 @@ class MultiDateRangeProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<DateRangeEntry>): PropertyAssignment<DateRangeEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<DateRangeEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<DateRangeEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -57,8 +58,11 @@ class MultiDateRangeProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<DateRangeEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<DateRangeEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

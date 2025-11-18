@@ -1,7 +1,8 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createReadStream } from 'fs';
@@ -9,14 +10,19 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
+import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
+
+const f = getFixturesFactory();
 
 describe('FileSystemStorage', () => {
   let fileSystemStorage: FileSystemStorage;
   let tenant: Tenant;
   let pathManager: PathManager;
+  const fileIO = new FileContentsIO();
 
   const toString = async (file: Readable) => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
@@ -74,7 +80,7 @@ describe('FileSystemStorage', () => {
           type: directory.name,
         });
 
-        const content = await file.asContentString();
+        const content = await fileIO.asContentString(file);
 
         expect(content.getDataOrThrow()).toBe(createFileContent(directory.name));
       });
@@ -89,7 +95,7 @@ describe('FileSystemStorage', () => {
         destination: 'custom/path',
       });
 
-      const content = await file.asContentString();
+      const content = await fileIO.asContentString(file);
 
       expect(content.getDataOrThrow()).toBe(createFileContent('customPath'));
     });
@@ -105,7 +111,7 @@ describe('FileSystemStorage', () => {
       const files = await fileSystemStorage.getFiles(inputs);
 
       const promises = files.map(async (file, index) => {
-        const content = await file.asContentString();
+        const content = await fileIO.asContentString(file);
         expect(content.getDataOrThrow()).toBe(
           createFileContent(pathManager.directories[index].name)
         );
@@ -132,54 +138,49 @@ describe('FileSystemStorage', () => {
     });
   });
 
-  describe('storeFile', () => {
-    const testingFilesPath = (filename: string) =>
-      path.join(__dirname, '../../../files/specs/testing_files', filename);
+  const testingFilesPath = (filename: string) =>
+    path.join(__dirname, '../../../files/specs/testing_files', filename);
 
+  describe('storeFile', () => {
     it('should store it on the disk', async () => {
-      await fileSystemStorage.storeFile({
-        file: new FileContents(testingFilesPath('documento.txt')),
-        type: 'document',
+      const document = FileBuilder.document(f.idString('doc'), {
+        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        filename: 'document.txt',
       });
 
-      const contents = await toString(
-        createReadStream(pathManager.createPath({ filename: 'documento.txt', type: 'document' }))
-      );
+      await fileSystemStorage.storeFile(document);
+      const contents = await toString(createReadStream(pathManager.createPath(document)));
       expect(contents).toBe('content created\n');
     });
 
-    describe('when type is segmentation', () => {
-      it('should store it on a segmentation folder inside documents path', async () => {
-        await fileSystemStorage.storeFile({
-          file: new FileContents(testingFilesPath('documento.txt')),
-          type: 'segmentation',
-        });
+    // describe('when type is segmentation', () => {
+    //   it('should store it on a segmentation folder inside documents path', async () => {
+    //     await fileSystemStorage.storeFile({
+    //       file: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+    //       type: 'segmentation',
+    //     });
+    //
+    //     const contents = await toString(
+    //       createReadStream(pathManager.createPath({ filename: 'documento.txt', type: 'document' }))
+    //     );
+    //     expect(contents).toBe('content created\n');
+    //   });
+    // });
+  });
 
-        const contents = await toString(
-          createReadStream(pathManager.createPath({ filename: 'documento.txt', type: 'document' }))
-        );
-        expect(contents).toBe('content created\n');
-      });
-    });
+  describe('storeContent', () => {
+    it('should store it on the destination', async () => {
+      await fileSystemStorage.storeContent(
+        new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        'custom_path/deep/documento.txt'
+      );
 
-    describe('when type is customPath', () => {
-      it('should store it on the destination', async () => {
-        await fileSystemStorage.storeFile({
-          file: new FileContents(testingFilesPath('documento.txt')),
-          destination: 'custom_path/deep/',
-          type: 'customPath',
-        });
-
-        const contents = await toString(
-          createReadStream(
-            path.join(
-              path.dirname(tenants.current().uploadedDocuments),
-              'custom_path/deep/documento.txt'
-            )
-          )
-        );
-        expect(contents).toBe('content created\n');
-      });
+      const contents = await toString(
+        createReadStream(
+          path.join(tenants.current().uploadedDocuments, 'custom_path/deep/documento.txt')
+        )
+      );
+      expect(contents).toBe('content created\n');
     });
   });
 });

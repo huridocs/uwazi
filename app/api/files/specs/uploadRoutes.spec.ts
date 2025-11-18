@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
@@ -14,6 +15,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import fs from 'fs/promises';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants';
+import { csvImportRoutes } from 'api/csv.v2/routes/routes';
 import { UserSchema } from 'shared/types/userType';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -37,6 +39,8 @@ describe('upload routes', () => {
     }
   );
 
+  csvImportRoutes(app);
+
   const mockCurrentUser = (user: UserSchema) => {
     requestMockedUser = user;
     testingEnvironment.setPermissions(user);
@@ -56,6 +60,20 @@ describe('upload routes', () => {
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
+  describe('POST /files/upload/documents V2 only', () => {
+    it('should throw error if entity does not exist', async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { v2UploadFile: true },
+      });
+      const response = await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'non_existent_shared_id')
+        .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
+
+      expect(response).toHaveStatus(422);
+    });
+  });
+
   describe.each([
     { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
     { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
@@ -71,7 +89,9 @@ describe('upload routes', () => {
     });
 
     it('should upload the file', async () => {
-      const response = await uploadDocument('testing_files/english_testing_file.pdf');
+      const response = await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
       expect(response).toHaveStatus(200);
 
       expect(response.body).toMatchObject({
@@ -90,23 +110,20 @@ describe('upload routes', () => {
     });
 
     it('should process and reindex the document after upload', async () => {
-      const res = await uploadDocument('testing_files/english_testing_file.pdf');
-      expect(res).toHaveStatus(200);
+      const res = await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
 
+      expect(res).toHaveStatus(200);
       expect(res.body).toEqual(
         expect.objectContaining({
           originalname: 'english_testing_file.pdf',
-          // status: 'processing',
+          status: 'processing',
         })
       );
 
       expect(iosocket.emit).toHaveBeenCalledWith(
         'conversionStart',
-        TestEmitSources.session,
-        'sharedId1'
-      );
-      expect(iosocket.emit).toHaveBeenCalledWith(
-        'documentProcessed',
         TestEmitSources.session,
         'sharedId1'
       );
@@ -131,7 +148,9 @@ describe('upload routes', () => {
     });
 
     it('should generate a thumbnail for the document', async () => {
-      await uploadDocument('testing_files/english_testing_file.pdf');
+      await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
       const {
@@ -152,7 +171,7 @@ describe('upload routes', () => {
 
     describe('Language detection', () => {
       it('should detect English documents and store the result', async () => {
-        await uploadDocument('testing_files/eng.pdf');
+        await socketEmit('documentProcessed', async () => uploadDocument('testing_files/eng.pdf'));
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'eng.pdf'
@@ -161,7 +180,7 @@ describe('upload routes', () => {
       });
 
       it('should detect Spanish documents and store the result', async () => {
-        await uploadDocument('testing_files/spn.pdf');
+        await socketEmit('documentProcessed', async () => uploadDocument('testing_files/spn.pdf'));
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'spn.pdf'
@@ -172,12 +191,18 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document status to failed and emit a socket conversionFailed event with the id of the document', async () => {
-        await socketEmit('conversionFailed', async () =>
-          request(app)
-            .post('/api/files/upload/document')
-            .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
-        );
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
         const upload = (await testingEnvironment.db.getAllFrom('files')).find(
           f => f.originalname === 'invalid_document.txt'
@@ -185,15 +210,26 @@ describe('upload routes', () => {
         expect(upload.status).toBe('failed');
       });
 
-      it('should return the file object', async () => {
-        const response: SuperTestResponse = await request(app)
-          .post('/api/files/upload/document')
-          .field('entity', 'sharedId1')
-          .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'));
+      it('should emit conversionFailed with the sharedId of the entity', async () => {
+        try {
+          await socketEmit('conversionFailed', async () =>
+            request(app)
+              .post('/api/files/upload/document')
+              .field('entity', 'sharedId1')
+              .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
+          );
+        } catch (e) {
+          if (!e.message.match('Failed PostProcess')) {
+            throw e;
+          }
+        }
 
-        expect(response.body.status).toBe('failed');
-        expect(response.body._id).toBeDefined();
-        expect(response.body.originalname).toBe('invalid_document.txt');
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'conversionFailed',
+          TestEmitSources.session,
+          'sharedId1',
+          expect.objectContaining({ status: 'failed' })
+        );
       });
     });
   });
@@ -283,6 +319,7 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
         const imported = await entities.get({ template: importTemplate });
         expect(imported.length).toBeGreaterThan(0);
       } finally {
+        // eslint-disable-next-line no-empty-function
         await fs.unlink(tempCsvPath).catch(() => {});
       }
     });

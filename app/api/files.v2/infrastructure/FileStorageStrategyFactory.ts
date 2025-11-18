@@ -7,6 +7,7 @@ import { FileSystemStorage } from './FileSystemStorage';
 import { PathManager } from './PathManager';
 import { S3FileStorage } from './S3FileStorage';
 import { FileStorageStrategy } from '../contracts/FileStorageStrategy';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 
 export class FileStorageStrategyFactory {
   static createDefault() {
@@ -18,6 +19,7 @@ export class FileStorageStrategyFactory {
         region: 'region',
         ...config.s3,
       }),
+      new FileContentsIO(),
       tenant
     );
 

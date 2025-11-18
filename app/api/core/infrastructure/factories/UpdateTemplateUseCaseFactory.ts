@@ -23,11 +23,7 @@ class UpdateTemplateUseCaseFactory {
   static async create() {
     const transactionManager = TransactionManagerFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(
-      getConnection(),
-      transactionManager,
-      templatesDS
-    );
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);

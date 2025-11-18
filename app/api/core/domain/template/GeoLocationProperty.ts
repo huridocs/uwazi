@@ -42,10 +42,11 @@ class GeolocationProperty extends Property {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<GeolocationEntry>): PropertyAssignment<GeolocationEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<GeolocationEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<GeolocationEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -54,8 +55,11 @@ class GeolocationProperty extends Property {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<GeolocationEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<GeolocationEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

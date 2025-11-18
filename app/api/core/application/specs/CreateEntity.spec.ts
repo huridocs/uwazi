@@ -16,8 +16,10 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { Readable } from 'stream';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { InputFile } from 'api/files.v2/model/InputFile';
+import { tenants } from 'api/tenants';
+import { PermissionType } from 'api/core/domain/entity/PermissionType';
+import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
 import { CreateEntityUseCase } from '../CreateEntity';
 
 const factory = getFixturesFactory();
@@ -153,6 +155,8 @@ const fixtures: DBFixture = {
       factory.property('nested', 'nested'),
       factory.property('preview', 'preview'),
       factory.property('media', 'media'),
+      factory.property('attached_media_1', 'media'),
+      factory.property('attached_media_2', 'media'),
     ]),
   ],
 
@@ -196,8 +200,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
     getConnection(),
-    transactionManager,
-    templatesDS
+    transactionManager
   );
 
   const filesDS = DefaultFilesDataSource(transactionManager);
@@ -224,7 +227,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
 describe('CreateEntityUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({}, true);
   });
 
   beforeEach(async () => testingEnvironment.setFixtures(fixtures));
@@ -239,30 +242,58 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       attachments: [
-        {
-          fieldname: 'attachments[0]',
-          encoding: '7bit',
-          mimetype: 'image/png',
-          destination: '/tmp',
-          originalname: 'Attachment 1.png',
-          filename: '1762280821775nhs3epb55g7.png',
-          path: '/tmp/1762280821775nhs3epb55g7.png',
-          size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
-        {
-          fieldname: 'attachments[1]',
-          encoding: '7bit',
-          mimetype: 'image/png',
-          destination: '/tmp',
-          originalname: 'Attachment 2.png',
-          filename: '1162280821775nhs3epb55g7.png',
-          path: '/tmp/1162280821775nhs3epb55g7.png',
-          size: 78636,
-          buffer: Buffer.from(''),
-          stream: Readable.from([]),
-        },
+        new InputFile(
+          {
+            fieldname: 'attachments[0]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'Attachment 1.png',
+            filename: '1762280821775nhs3epb55g7.png',
+            path: '/tmp/1762280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[1]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'Attachment 2.png',
+            filename: '1162280821775nhs3epb55g7.png',
+            path: '/tmp/1162280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[2]',
+            encoding: '7bit',
+            mimetype: 'video/mp4',
+            destination: '/tmp',
+            originalname: 'Attachment 3.mp4',
+            filename: 'attachment_3.mp4',
+            path: '/tmp/attachment_3.mp4',
+            size: 78636,
+          },
+          'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'attachments[3]',
+            encoding: '7bit',
+            mimetype: 'video/mp4',
+            destination: '/tmp',
+            originalname: 'Attachment 4.mp4',
+            filename: 'attachment_4.mp4',
+            path: '/tmp/attachment_4.mp4',
+            size: 78636,
+          },
+          'attachment'
+        ),
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
@@ -291,9 +322,29 @@ describe('CreateEntityUseCase', () => {
         { name: 'image', value: [{ value: 'https://example.com/image.jpg' }] },
         { name: 'attached_image_1', value: [{ attachment: 0 }] },
         { name: 'attached_image_2', value: [{ attachment: 1 }] },
-        // { name: 'media', value: [] },
-        // { name: 'nested', value: [] },
-        // { name: 'preview', value: [] },
+        { name: 'media', value: [{ value: 'https://example.com/media.mp4' }] },
+        {
+          name: 'attached_media_1',
+          value: [{ attachment: 2, timeLinks: '{"timelinks":{"00:00:00":"title"}}' }],
+        },
+        { name: 'attached_media_2', value: [{ attachment: 3 }] },
+        {
+          name: 'nested',
+          value: [
+            {
+              value: {
+                child_text: [{ value: 'Child text value' }],
+                child_number: [{ value: 42 }],
+              },
+            },
+            {
+              value: {
+                child_text: [{ value: 'Second child text' }],
+                child_number: [{ value: 100 }],
+              },
+            },
+          ],
+        },
       ],
       icon: { id: 'iconId', label: 'iconLabel', type: 'iconType' },
     });
@@ -318,6 +369,7 @@ describe('CreateEntityUseCase', () => {
       user: null,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
+      permissions: [],
       metadata: {
         text: [{ value: 'Some text' }],
         numeric: [{ value: 42 }],
@@ -335,9 +387,26 @@ describe('CreateEntityUseCase', () => {
         attached_image_1: [{ value: '/api/files/1762280821775nhs3epb55g7.png' }],
         attached_image_2: [{ value: '/api/files/1162280821775nhs3epb55g7.png' }],
         geolocation_geolocation: [{ value: { lat: 10, lon: 20 } }],
-        nested: [],
+        nested: [
+          {
+            value: {
+              child_text: [{ value: 'Child text value' }],
+              child_number: [{ value: 42 }],
+            },
+          },
+          {
+            value: {
+              child_text: [{ value: 'Second child text' }],
+              child_number: [{ value: 100 }],
+            },
+          },
+        ],
         preview: [],
-        media: [],
+        media: [{ value: 'https://example.com/media.mp4' }],
+        attached_media_1: [
+          { value: '(/api/files/attachment_3.mp4, {"timelinks":{"00:00:00":"title"}})' },
+        ],
+        attached_media_2: [{ value: '/api/files/attachment_4.mp4' }],
       },
     };
 
@@ -393,7 +462,7 @@ describe('CreateEntityUseCase', () => {
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
 
-    expect(attachments).toHaveLength(2);
+    expect(attachments).toHaveLength(4);
     expect(attachments).toEqual([
       {
         _id: expect.any(ObjectId),
@@ -417,16 +486,73 @@ describe('CreateEntityUseCase', () => {
         url: '',
         type: 'attachment',
       },
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 3.mp4',
+        filename: 'attachment_3.mp4',
+        mimetype: 'video/mp4',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
+      {
+        _id: expect.any(ObjectId),
+        creationDate: expect.any(Number),
+        entity: expect.any(String),
+        originalname: 'Attachment 4.mp4',
+        filename: 'attachment_4.mp4',
+        mimetype: 'video/mp4',
+        size: 78636,
+        url: '',
+        type: 'attachment',
+      },
     ]);
 
-    expect(filesStorage.storeFile).toHaveBeenCalledTimes(2);
-    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(1, {
-      type: 'attachment',
-      file: expect.any(FileContents),
+    expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
+  });
+
+  it('should add grant access when actor is present', async () => {
+    const { sut } = createSut({
+      context: {
+        actor: {
+          _id: factory.id('user1'),
+          username: 'username',
+          email: 'email@email.com',
+          role: 'collaborator',
+        },
+        tenant: tenants.current(),
+      },
     });
-    expect(filesStorage.storeFile).toHaveBeenNthCalledWith(2, {
-      type: 'attachment',
-      file: expect.any(FileContents),
+
+    const entity = await sut.execute({
+      templateId: factory.id('Document').toHexString(),
+      propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
+      attachments: [],
     });
+
+    const entities = await testingEnvironment.db
+      .getCollection('entities')
+      ?.find({ sharedId: entity.sharedId })
+      .toArray();
+
+    expect(entities?.map(e => e.user)).toEqual([factory.id('user1'), factory.id('user1')]);
+    expect(entities?.map(e => e.permissions)).toEqual([
+      [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+      [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+    ]);
   });
 });

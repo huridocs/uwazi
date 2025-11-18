@@ -11,13 +11,13 @@ import {
 } from '../template/PropertyValue';
 
 type Props = {
-  id: string;
+  id?: string;
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
 };
 
 class EntityTranslation {
-  id: string;
+  id?: string;
 
   language: LanguageISO6391;
 

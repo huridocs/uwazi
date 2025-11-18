@@ -171,10 +171,13 @@ describe('SelectProperty', () => {
       });
 
       expect(() =>
-        select.createPropertyAssignment({
-          value: [],
-          language: 'en',
-        })
+        select.createPropertyAssignment(
+          {
+            value: [],
+            language: 'en',
+          },
+          true
+        )
       ).toThrow();
     });
   });

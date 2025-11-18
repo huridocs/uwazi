@@ -11,7 +11,15 @@ type Props = {
   nestedProperties?: string[];
 } & Omit<FilterablePropertyProps, 'type'>;
 
-const EntrySchema = z.object({ value: z.any() });
+const BaseMetadataValueSchema = z.object({
+  value: z.any(),
+  label: z.string().optional(),
+});
+
+const EntrySchema = z.object({
+  value: z.union([z.record(z.string(), z.array(BaseMetadataValueSchema)), z.null()]),
+});
+
 const createSchema = (isRequired: boolean) =>
   z.array(EntrySchema).min(isRequired ? 1 : 0, 'Nested Property is required');
 
@@ -34,10 +42,11 @@ class NestedProperty extends FilterableProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<NestedEntry>): PropertyAssignment<NestedEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<NestedEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<NestedEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -46,8 +55,11 @@ class NestedProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<NestedEntry>): void {
-    createSchema(this.required).parse(value);
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<NestedEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

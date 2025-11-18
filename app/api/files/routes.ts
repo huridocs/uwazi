@@ -1,10 +1,9 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { InputFile } from 'api/files.v2/model/InputFile';
-import { processDocument } from 'api/files/processDocument';
+import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings/settings';
@@ -17,7 +16,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
-import { createError, handleError, validation } from '../utils';
+import { createError, validation } from '../utils';
 import { files } from './files';
 import { generateFileName } from './filesystem';
 import { storage } from './storage';
@@ -109,10 +108,9 @@ const getCacheControlHeader = (
   return 'private, max-age=3600';
 };
 
-const timestampToHTTPDate = (timestamp: number): string => {
-  return new Date(timestamp).toUTCString();
-};
+const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
+// eslint-disable-next-line max-statements
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -137,26 +135,29 @@ export default (app: Application) => {
     },
     async (req, res) => {
       if (!req.file) throw new Error('File is not available on request object');
-      try {
-        req.emitToSessionSocket('conversionStart', req.body.entity);
-        if (tenants.current().featureFlags?.v2UploadFile) {
-          const savedFile = await FileUploadUseCaseFactory.default().execute({
-            uploadedFile: new InputFile(req.file),
-            entityId: req.body.entity,
-          });
-          res.json(savedFile);
-        } else {
-          const savedFile = await processDocument(req.body.entity, req.file);
-          res.json(savedFile);
-        }
-        req.emitToSessionSocket('documentProcessed', req.body.entity);
-      } catch (err) {
-        // console.log(inspect(err));
-        // throw err;
-        handleError(err);
-        const [file] = await files.get({ filename: req.file.filename });
-        res.json(file);
-        req.emitToSessionSocket('conversionFailed', req.body.entity);
+      req.emitToSessionSocket('conversionStart', req.body.entity);
+      if (tenants.current().featureFlags?.v2UploadFile) {
+        const savedFile = await FileUploadUseCaseFactory.default().execute({
+          uploadedFile: new InputFile(req.file, 'document'),
+          entityId: req.body.entity,
+        });
+        res.json(savedFile);
+      } else {
+        const savedFile = await createProcessingFile(req.body.entity, req.file);
+        res.json(savedFile);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        convertPDF(
+          savedFile,
+          req.body.entity,
+          req.file,
+          true,
+          processedFile => {
+            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
+          },
+          (_e, failedFile) => {
+            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
+          }
+        );
       }
     },
     activitylogMiddleware
@@ -410,57 +411,5 @@ export default (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/import',
-
-    needsAuthorization(['admin']),
-
-    uploadMiddleware(),
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['template'],
-          properties: {
-            template: { type: 'string' },
-          },
-        },
-      },
-    }),
-
-    (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-
-      const loader = new CSVLoader();
-      let loaded = 0;
-
-      loader.on('entityLoaded', () => {
-        loaded += 1;
-        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
-      });
-
-      loader.on('rowExceptions', exceptions => {
-        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
-      });
-
-      loader.on('loadError', error => {
-        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
-      });
-
-      req.emitToSessionSocket('IMPORT_CSV_START');
-
-      loader
-        .load(req.file.path, req.body.template, { language: req.language, user: req.user })
-        .then(() => {
-          req.emitToSessionSocket('IMPORT_CSV_END');
-        })
-        .catch((e: Error) => {
-          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
-        });
-
-      res.json('ok');
-    }
-  );
+  // CSV Import route now handled in csv.v2/routes/routes.ts
 };

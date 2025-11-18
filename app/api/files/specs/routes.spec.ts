@@ -2,16 +2,16 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
-import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 // import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
+import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -19,8 +19,8 @@ import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { files } from '../files';
-import uploadRoutes from '../routes';
 import jsRoutes from '../jsRoutes';
+import uploadRoutes from '../routes';
 import { storage } from '../storage';
 import {
   adminUser,
@@ -272,15 +272,17 @@ describe('files routes', () => {
     });
 
     it('should delete upload and return the response', async () => {
-      await request(app)
-        .post('/api/files/upload/document')
-        .attach('file', path.join(__dirname, 'test.txt'));
+      await socketEmit('conversionFailed', async () =>
+        request(app)
+          .post('/api/files/upload/document')
+          .attach('file', path.join(__dirname, 'test.txt'))
+      );
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
-      expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
+      expect(await storage.fileExists(file.filename!, 'document')).toBe(false);
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
@@ -421,11 +423,21 @@ describe('files routes', () => {
       it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
         'should accept the filename %s in a field',
         async filename => {
-          const response = await request(app)
-            .post(`/api/files/upload/${type}`)
-            .field('originalname', filename)
-            .attach('file', path.join(__dirname, filename));
-          expect(response.status).toBe(200);
+          let res: request.Response;
+          if (type === 'document') {
+            res = await socketEmit('documentProcessed', async () =>
+              request(app)
+                .post(`/api/files/upload/${type}`)
+                .field('originalname', filename)
+                .attach('file', path.join(__dirname, filename))
+            );
+          } else {
+            res = await request(app)
+              .post(`/api/files/upload/${type}`)
+              .field('originalname', filename)
+              .attach('file', path.join(__dirname, filename));
+          }
+          expect(res.status).toBe(200);
           const [file]: FileType[] = await files.get({ originalname: filename, type });
           expect(file).not.toBe(undefined);
         }

@@ -20,6 +20,8 @@ const createSchema = (isRequired: boolean) =>
     .max(1, 'Media Property only accepts a single value.');
 
 class MediaProperty extends AbstractImageProperty {
+  private FILE_PATH = '/api/files/';
+
   constructor(props: Props, context?: Context) {
     super({ ...props, type: props.type || PropertyTypeEnum.Media }, context);
 
@@ -32,10 +34,11 @@ class MediaProperty extends AbstractImageProperty {
     }
   }
 
-  createPropertyAssignment({
-    value,
-  }: CreatePropertyAssignmentInput<MediaEntry>): PropertyAssignment<MediaEntry> {
-    const parsed = createSchema(this.required).parse(value);
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<MediaEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<MediaEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
 
     return {
       name: this.name,
@@ -44,8 +47,17 @@ class MediaProperty extends AbstractImageProperty {
     };
   }
 
-  validatePropertyAssignment({ value }: PropertyAssignment<MediaEntry>): void {
-    createSchema(this.required).parse(value);
+  assignFilePath(filename: string, timeLinks?: string) {
+    const path = `${this.FILE_PATH}${filename}`;
+
+    return timeLinks?.length ? `(${path}, ${timeLinks})` : path;
+  }
+
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<MediaEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

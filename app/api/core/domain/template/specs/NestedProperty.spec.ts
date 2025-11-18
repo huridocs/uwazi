@@ -42,7 +42,7 @@ describe('NestedProperty', () => {
         required: true,
       });
 
-      expect(() => nested.createPropertyAssignment({ value: [] })).toThrow(
+      expect(() => nested.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Nested Property is required'
       );
     });
@@ -56,6 +56,46 @@ describe('NestedProperty', () => {
         name: nested.name,
         type: nested.type,
         value: [{ value: null }],
+      });
+    });
+
+    it('should create property assignment with nested children', () => {
+      const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
+
+      const assignment = nested.createPropertyAssignment({
+        value: [
+          {
+            value: {
+              child_text: [{ value: 'Some text' }],
+              child_number: [{ value: 42 }],
+            },
+          },
+          {
+            value: {
+              child_text: [{ value: 'More text' }],
+              child_select: [{ value: 'select_id', label: 'Select Label' }],
+            },
+          },
+        ],
+      });
+
+      expect(assignment).toEqual({
+        name: nested.name,
+        type: nested.type,
+        value: [
+          {
+            value: {
+              child_text: [{ value: 'Some text' }],
+              child_number: [{ value: 42 }],
+            },
+          },
+          {
+            value: {
+              child_text: [{ value: 'More text' }],
+              child_select: [{ value: 'select_id', label: 'Select Label' }],
+            },
+          },
+        ],
       });
     });
   });

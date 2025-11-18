@@ -17,6 +17,8 @@ import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
+import { FileContents } from 'api/files.v2/model/FileContents';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -54,7 +56,7 @@ export class PXExtractParagraphsFromEntity
 
       const segmentations = await this.getSegmentations(documents, entity);
 
-      const files = await this.getSegmentationFiles(segmentations, entity);
+      const files = await this.getSegmentationFiles(segmentations);
 
       const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
@@ -139,20 +141,17 @@ export class PXExtractParagraphsFromEntity
     return { extractor, entity, installedLanguages };
   }
 
-  private async getSegmentationFiles(segmentations: Segmentation[], entity: Entity) {
-    const files = await this.dependencies.fileStorage.getFiles(
-      segmentations.map(segmentation => ({
+  private async getSegmentationFiles(segmentations: Segmentation[]) {
+    const files: { filename: string; contents: FileContents }[] = await ArrayUtils.parallelFor(
+      segmentations,
+      async segmentation => ({
         filename: segmentation.xmlname!,
-        type: 'segmentation',
-      }))
+        contents: await this.dependencies.fileStorage.getFile({
+          filename: segmentation.xmlname!,
+          type: 'segmentation',
+        }),
+      })
     );
-
-    if (!files.length) {
-      throw new PXValidationError(
-        PXErrorCode.SEGMENTATION_FILES_NOT_FOUND,
-        `There are no Segmentations Files for the Entity "${entity.title}"`
-      );
-    }
 
     return files;
   }

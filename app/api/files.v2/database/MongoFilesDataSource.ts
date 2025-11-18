@@ -20,6 +20,9 @@ import { UwaziFile } from '../model/UwaziFile';
 import { FileMappers } from './FilesMappers';
 import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
+import { ProcessingFileNotFound } from '../model/errors';
+import { BaseDocument } from '../model/BaseDocument';
+import { FileStorage } from '../contracts/FileStorage';
 
 type GetDocumentsForEntityQuery = {
   entity: string;
@@ -38,8 +41,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   protected entitiesToIndex = new Set<string>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
+  protected fileStorage: FileStorage;
+
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    fileStorage: FileStorage,
+    options: MongoDSOptions = {}
+  ) {
     super(db, transactionManager, options);
+    this.fileStorage = fileStorage;
     transactionManager.onCommitted(async () => {
       await search.indexEntities(
         { sharedId: { $in: Array.from(this.entitiesToIndex) } },
@@ -48,15 +59,20 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
-  async getProcessingById(documentId: string) {
-    const processed = await this.getCollection().findOne({
-      _id: new ObjectId(documentId),
+  async getProcessingById(fileId: string) {
+    const processing = await this.getCollection().findOne({
+      _id: new ObjectId(fileId),
       status: 'processing',
     });
-    if (processed) {
-      return Result.ok(FileMappers.toModel(processed) as Document);
+    if (processing) {
+      return Result.ok(
+        FileMappers.toModel(
+          processing,
+          await this.fileStorage.getFile({ type: 'document', filename: processing.filename })
+        ) as Document
+      );
     }
-    return Result.fail(new Error(`document with id ${documentId} does not exist`));
+    return Result.fail(new ProcessingFileNotFound(fileId));
   }
 
   async update(file: UwaziFile): Promise<void> {
@@ -64,16 +80,26 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       { _id: new ObjectId(file.id) },
       { $set: FileMappers.toDBO(file) }
     );
-    if (file instanceof ProcessedDocument) {
+    if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
   }
 
   async create(file: UwaziFile): Promise<void> {
     await this.getCollection().insertOne(FileMappers.toDBO(file));
-    if (file instanceof ProcessedDocument) {
+    if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
+  }
+
+  async bulkCreate(files: UwaziFile[]): Promise<void> {
+    await this.getCollection().insertMany(files.map(FileMappers.toDBO));
+
+    files.forEach(async file => {
+      if (file instanceof ProcessedDocument) {
+        this.entitiesToIndex.add(file.entity);
+      }
+    });
   }
 
   async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
@@ -162,14 +188,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return new MongoResultSet<fileDBO, ProcessedDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      FileMappers.toModel<ProcessedDocument>
+      async dbo =>
+        FileMappers.toModel<ProcessedDocument>(
+          dbo,
+          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+        )
     );
   }
 
   getAll() {
     return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
-      FileMappers.toModel
+      async dbo =>
+        FileMappers.toModel<ProcessedDocument>(
+          dbo,
+          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+        )
     );
   }
 

@@ -9,6 +9,10 @@ export class DefaultPropertyAssignmentCreatorService implements PropertyAssignme
   async create({ propertyAssignment, template }: CreatePropertyAssignmentInput) {
     const { name, value, language } = propertyAssignment;
 
-    return template.createPropertyAssignment(name, { value: value as PropertyValue[], language });
+    return template.createPropertyAssignment(
+      name,
+      { value: value as PropertyValue[], language },
+      true
+    );
   }
 }

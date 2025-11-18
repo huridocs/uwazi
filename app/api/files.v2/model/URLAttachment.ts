@@ -7,6 +7,8 @@ export class URLAttachment extends BaseFile {
 
   readonly entity: string;
 
+  protected _type = 'attachment' as const;
+
   constructor(props: Props) {
     const { entity, url, ...baseProps } = props;
     super(baseProps);

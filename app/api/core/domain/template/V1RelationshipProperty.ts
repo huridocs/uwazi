@@ -119,13 +119,13 @@ class V1RelationshipProperty extends FilterableProperty {
     };
   }
 
-  createPropertyAssignment({
-    value,
-    language,
-  }: CreatePropertyAssignmentInput<RelationshipEntry>): RelationshipPropertyAssignment {
+  createPropertyAssignment(
+    { value, language }: CreatePropertyAssignmentInput<RelationshipEntry>,
+    shouldValidateForRequired = false
+  ): RelationshipPropertyAssignment {
     const deduplicated = ArrayUtils.deduplicate(value, item => item.value.trim());
 
-    const parsed = createSchema(this.required).parse({
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse({
       value: deduplicated,
       language,
     });
@@ -138,8 +138,11 @@ class V1RelationshipProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(property: RelationshipPropertyAssignment): void {
-    createSchema(this.required).parse(property);
+  validatePropertyAssignment(
+    property: RelationshipPropertyAssignment,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(property);
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {
