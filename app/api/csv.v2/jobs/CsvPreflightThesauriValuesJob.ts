@@ -2,7 +2,7 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback } from 'api/core/libs/queue/application/contracts/Dispatchable';
+import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { CsvPreflightThesauriValuesUseCase } from '../services/CsvPreflightThesauriValuesUseCase';
 
@@ -21,35 +21,46 @@ export class CsvPreflightThesauriValuesJob extends UserAwareDispatchable<Params>
     super();
   }
 
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  async handle(_heartbeat: HeartbeatCallback): Promise<void> {
-    const { importId, sessionId } = this.params;
-    await this.deps.useCase.execute(
-      { importId, sessionId },
-      {
-        onStart: ({ importId: id, sessionId: sid }) => {
-          if (sid) {
-            this.deps.sockets.emitToSession(sid, 'csvImport:preflight:thesauri:start', {
-              importId: id,
-            });
-          }
+  async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
+    try {
+      await this.deps.useCase.execute({
+        importId: this.params.importId,
+        callbacks: {
+          onStart: ({ importId }: { importId: string }) => {
+            if (this.params.sessionId) {
+              this.deps.sockets.emitToSession(
+                this.params.sessionId,
+                'csvImport:preflight:thesauri:start',
+                { importId }
+              );
+            }
+          },
+          onSuccess: ({ importId }: { importId: string }) => {
+            if (this.params.sessionId) {
+              this.deps.sockets.emitToSession(
+                this.params.sessionId,
+                'csvImport:preflight:thesauri:success',
+                { importId }
+              );
+            }
+          },
+          onError: ({ importId, error }: { importId: string; error: Error }) => {
+            if (this.params.sessionId) {
+              this.deps.sockets.emitToSession(
+                this.params.sessionId,
+                'csvImport:preflight:thesauri:error',
+                { importId, message: error.message }
+              );
+            }
+          },
         },
-        onSuccess: ({ importId: id, sessionId: sid }) => {
-          if (sid) {
-            this.deps.sockets.emitToSession(sid, 'csvImport:preflight:thesauri:success', {
-              importId: id,
-            });
-          }
-        },
-        onError: ({ importId: id, error, sessionId: sid }) => {
-          if (sid) {
-            this.deps.sockets.emitToSession(sid, 'csvImport:preflight:thesauri:error', {
-              importId: id,
-              message: error.message,
-            });
-          }
-        },
+      });
+    } catch (e) {
+      // If this was the last retry attempt, mark as definitively failed.
+      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
+        await this.deps.useCase.markAsFailed(this.params.importId);
       }
-    );
+      throw e;
+    }
   }
 }
