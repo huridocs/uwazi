@@ -4,10 +4,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
-import { TestRouterContext, setupMatchMediaMock } from 'V2/testing';
+import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
+import { settingsAtom, userAtom } from 'V2/atoms';
+import * as files from 'V2/api/files';
 import { Entity, shouldRevalidate } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
+  ...jest.requireActual('V2/Components/PDFViewer'),
   PDF: ({ fileUrl }: any) => <div data-testid="mock-pdf">PDF: {fileUrl}</div>,
 }));
 
@@ -20,15 +23,22 @@ const sampleEntity: Partial<EntityType> = {
   metadata: [],
 };
 
+const mainDocumentFile = { filename: 'file.pdf' };
+
 let mediaMock = setupMatchMediaMock();
 
-afterEach(() => {
-  jest.clearAllMocks();
-  mediaMock.restore();
-  mediaMock = setupMatchMediaMock();
-});
+const checkEntityRendered = async () => {
+  const titleElements = await screen.findAllByText('Sample Entity');
+  expect(titleElements.length).toBeGreaterThan(0);
+};
 
 describe('Entity view', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    mediaMock.restore();
+    mediaMock = setupMatchMediaMock();
+  });
+
   it('should show loading when no entity', async () => {
     render(
       <TestRouterContext loaderData={undefined}>
@@ -41,28 +51,79 @@ describe('Entity view', () => {
 
   it('should render PDF and metadata', async () => {
     render(
-      <TestRouterContext loaderData={sampleEntity}>
+      <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
         <Entity />
       </TestRouterContext>
     );
 
-    const titleElements = await screen.findAllByText('Sample Entity');
-    expect(titleElements.length).toBeGreaterThan(0);
+    await checkEntityRendered();
 
     expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
     expect(screen.getByTestId('mock-pdf')).toHaveTextContent('/api/files/file.pdf');
   });
 
+  describe('OCR service', () => {
+    beforeAll(() => {
+      jest.spyOn(files, 'getOcrStatus').mockResolvedValue({ status: files.OcrStatus.NONE });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should not display the OCR button when the service is not availabe', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: '',
+          }}
+        >
+          <TestAtomStoreProvider
+            initialValues={[
+              [settingsAtom, {}],
+              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
+            ]}
+          >
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
+    });
+
+    it('should not display if there is no user', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: '',
+          }}
+        >
+          <TestAtomStoreProvider initialValues={[[settingsAtom, { ocrServiceEnabled: true }]]}>
+            <Entity />
+          </TestAtomStoreProvider>
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
+    });
+  });
+
   describe('Tabs', () => {
     beforeEach(async () => {
       render(
-        <TestRouterContext loaderData={sampleEntity}>
+        <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
           <Entity />
         </TestRouterContext>
       );
 
-      const titleElems = await screen.findAllByText('Sample Entity');
-      expect(titleElems.length).toBeGreaterThan(0);
+      await checkEntityRendered();
     });
 
     it('should render the expected main tabs', () => {
@@ -111,39 +172,108 @@ describe('Entity view', () => {
       });
     });
   });
-});
 
-describe('shouldRevalidate', () => {
-  it('should not revalidate when switching search params', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's1' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-    const nextUrl: any = { pathname: '/entity/s1', search: '?main=document' };
-    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-    expect(result).toBe(false);
+  describe('Plain text view', () => {
+    const pageText = 'This is the plain text';
+
+    beforeAll(() => {
+      jest.spyOn(files, 'getPagePlaintext').mockResolvedValue(pageText);
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should switch to plain text view', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            pagePlaintext: pageText,
+          }}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
+
+      expect(screen.getByText('This is the plain text').parentElement?.classList).toContain(
+        'hidden'
+      );
+
+      const select = screen.getByRole('combobox');
+      fireEvent.change(select, { target: { value: 'raw' } });
+
+      await waitFor(() => {
+        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+      });
+    });
   });
 
-  it('should revalidate when sharedId changes', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's2' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?main=metadata' };
-    const nextUrl: any = { pathname: '/entity/s2', search: '?main=metadata' };
-    const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-    expect(result).toBe(true);
+  describe('Entity without mainDocument', () => {
+    it('does not render Document tab and defaults to Metadata', async () => {
+      const entityNoDoc = { ...sampleEntity, mainDocument: undefined } as any;
+
+      render(
+        <TestRouterContext loaderData={{ entity: entityNoDoc, pagePlaintext: '' }}>
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const tablists = screen.getAllByTestId('tabs-comp');
+      const mainTabs = within(tablists[0]);
+
+      expect(mainTabs.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+      expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      );
+    });
   });
 
-  it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
-    const currentParams: any = { sharedId: 's1' };
-    const nextParams: any = { sharedId: 's1' };
-    const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-    const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-    const result = shouldRevalidate({
-      currentParams,
-      nextParams,
-      currentUrl,
-      nextUrl,
-      defaultShouldRevalidate: true,
-    } as any);
-    expect(result).toBe(true);
+  describe('shouldRevalidate', () => {
+    it('should revalidate when sharedId changes', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's2' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
+      const nextUrl: any = { pathname: '/entity/s2', search: '?m=metadata' };
+      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
+      expect(result).toBe(true);
+    });
+
+    it('should not revalidate when switching search params', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's1' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
+      const nextUrl: any = { pathname: '/entity/s1', search: '?m=document' };
+      const result = shouldRevalidate({
+        currentParams,
+        nextParams,
+        currentUrl,
+        nextUrl,
+        defaultShouldRevalidate: true,
+      } as any);
+      expect(result).toBe(false);
+    });
+
+    it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
+      const currentParams: any = { sharedId: 's1' };
+      const nextParams: any = { sharedId: 's1' };
+      const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+      const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
+      const result = shouldRevalidate({
+        currentParams,
+        nextParams,
+        currentUrl,
+        nextUrl,
+        defaultShouldRevalidate: true,
+      } as any);
+      expect(result).toBe(true);
+    });
   });
 });
