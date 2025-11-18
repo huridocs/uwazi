@@ -4,7 +4,7 @@ import {
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { CsvPreflightThesauriValuesUseCase } from '../services/CsvPreflightThesauriValuesUseCase';
+import { CsvPreflightPreparationUseCase } from '../services/CsvPreflightPreparationUseCase';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -12,11 +12,11 @@ type Params = UserAwareDispatchableParams & {
 };
 
 type Deps = {
-  useCase: CsvPreflightThesauriValuesUseCase;
+  useCase: CsvPreflightPreparationUseCase;
   sockets: V1WebSocketsWrapper;
 };
 
-export class CsvPreflightThesauriValuesJob extends UserAwareDispatchable<Params> {
+export class CsvPreflightPreparationJob extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
   }

@@ -10,7 +10,7 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { DefaultCsvImportsDataSource } from '../database/data_source_defaults';
 import { RegisterCsvImportUseCase } from './RegisterCsvImportUseCase';
-import { CsvPreflightThesauriValuesUseCase } from './CsvPreflightThesauriValuesUseCase';
+import { CsvPreflightPreparationUseCase } from './CsvPreflightPreparationUseCase';
 import { DefaultCsvImportRowsDataSource } from '../database/csv_import_rows_defaults';
 
 export const RegisterCsvImportUseCaseFactory = () => {
@@ -29,13 +29,13 @@ export const RegisterCsvImportUseCaseFactory = () => {
   });
 };
 
-export const CsvPreflightThesauriValuesUseCaseFactory = () => {
+export const CsvPreflightPreparationUseCaseFactory = () => {
   const transactionManager = TransactionManagerFactory.default();
   const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-  return new CsvPreflightThesauriValuesUseCase({
+  return new CsvPreflightPreparationUseCase({
     csvImportsDS,
     rowsDS: DefaultCsvImportRowsDataSource(transactionManager),
     templatesDS,

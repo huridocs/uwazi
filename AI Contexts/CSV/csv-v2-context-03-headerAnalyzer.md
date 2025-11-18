@@ -18,7 +18,7 @@ Read `csv-v2-context-01.md → 02 → 03` first. They describe the program-wide 
   - Depends on `TemplateSchema` + `propertyTypes` from v1.
   - Skips header sanitization, mixed-column checks, and the full validation matrix from V1’s `validateColumns.ts`.
   - Lacks dedicated error types/tests.
-- `CsvPreflightThesauriValuesUseCase` already imports this analyzer, so once we give it the new signature (Template domain, settings data) TypeScript will force the follow-up fixes in that use case.
+- `CsvPreflightPreparationUseCase` already imports this analyzer, so once we give it the new signature (Template domain, settings data) TypeScript will force the follow-up fixes in that use case.
 - No standalone spec exists for the analyzer yet.
 
 ### Goal (non-negotiable)
@@ -90,19 +90,19 @@ Testing approach:
    - Analyzer now receives the Template domain + analyzer options (`availableLanguages`, `defaultLanguage`, `newNameGeneration`) and throws `CsvHeaderAnalyzerError` on failures.
 3. **Add analyzer specs** ✅
    - Covers all v1 scenarios plus `file__` behavior and new-name-generation sanitization.
-4. **Update `CsvPreflightThesauriValuesUseCase`** ✅
+4. **Update `CsvPreflightPreparationUseCase`** ✅
    - Retrieves the Template domain via `templatesDS.getById`, pulls analyzer options from `settingsDS`, and wraps analyzer errors in `NonRetryableJobError`.
 5. **Propagate status/error handling** (future)
    - Ensure job/use-case emits informative session events when analyzer fails.
-6. **Fix CsvPreflightThesauriValuesUseCase.spec.ts** ⛔ (TODO)
-   - Current spec file is broken (TS, lint, runtime). Track fixes under todo `Fix CsvPreflightThesauriValuesUseCase.spec.ts errors and reenable tests`.
+6. **Fix CsvPreflightPreparationUseCase.spec.ts** ⛔ (TODO)
+   - Current spec file is broken (TS, lint, runtime). Track fixes under todo `Fix CsvPreflightPreparationUseCase.spec.ts errors and reenable tests`.
 
 ### References
 
 - V1 behavior: `app/api/csv/validateColumns.ts`
 - Template domain naming: `app/api/core/domain/template/PropertyName.ts`
 - Template validation (title/common properties): `TemplateWithMissingCommonPropertyValidator`
-- Existing use case consumer: `app/api/csv.v2/services/CsvPreflightThesauriValuesUseCase.ts`
+- Existing use case consumer: `app/api/csv.v2/services/CsvPreflightPreparationUseCase.ts`
 - Program-wide contexts: `csv-v2-context-01.md`, `csv-v2-context-02.md`, `csv-v2-context-03.md`
 
 Keep this document updated whenever requirements evolve. The success metric is: a new agent reads this file + the earlier context docs and can continue the analyzer work without any additional oral history.

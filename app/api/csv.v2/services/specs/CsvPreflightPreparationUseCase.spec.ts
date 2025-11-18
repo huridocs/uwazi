@@ -12,7 +12,7 @@ import { CsvReader } from 'app/api/csv.v2/application/CsvReader';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultCsvImportsDataSource } from '../../database/data_source_defaults';
 import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../model/CsvImport';
-import { CsvPreflightThesauriValuesUseCase } from '../CsvPreflightThesauriValuesUseCase';
+import { CsvPreflightPreparationUseCase } from '../CsvPreflightPreparationUseCase';
 
 const streamFromString = (data: string) =>
   (async function* () {
@@ -26,7 +26,7 @@ const stageRows = async (tm: any, importId: string, csvData: string) => {
   await rowsDS.insertMany(staged);
 };
 
-describe('CsvPreflightThesauriValuesUseCase', () => {
+describe('CsvPreflightPreparationUseCase', () => {
   const selectThesaurusId = db.id().toString();
   const templateId = db.id().toString();
   const userId = db.id().toString();
@@ -102,7 +102,7 @@ describe('CsvPreflightThesauriValuesUseCase', () => {
     );
 
     // Act
-    const useCase = new CsvPreflightThesauriValuesUseCase({
+    const useCase = new CsvPreflightPreparationUseCase({
       csvImportsDS,
       transactionManager: tm,
     });
@@ -146,7 +146,7 @@ describe('CsvPreflightThesauriValuesUseCase', () => {
       'title,select_property__en,select_property__es\ne1,Existing Value,Existing Value ES\ne2,  New Value With Spaces  ,  New Value With Spaces ES  '
     );
 
-    const useCase = new CsvPreflightThesauriValuesUseCase({
+    const useCase = new CsvPreflightPreparationUseCase({
       csvImportsDS,
       transactionManager: tm,
     } as any);

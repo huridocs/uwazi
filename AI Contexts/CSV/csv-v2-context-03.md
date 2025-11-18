@@ -159,7 +159,7 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
 - After `files extracted`:
-  1. `CsvPreflightThesauriValuesUseCase` + Job
+  1. `CsvPreflightPreparationUseCase` + Job
      - Reads `extracted/import.csv` and the target template.
      - Replicates V1 `arrangeThesauri` behavior with domain/DS patterns and transactions.
      - On success: set status to `preflight:thesauri:done` (or keep in `preflight` with a substage field if we add `stages` later).
@@ -343,7 +343,7 @@ sequenceDiagram
   - Use cases must require callbacks (not optional) when the stage expects start/success/error notifications.
 - TS/ESLint gates are mandatory:
   - Do not leave complexity/lint errors behind. If a method grows too large, refactor into helpers.
-  - Audit jobs and services before saving: e.g., `app/api/csv.v2/jobs/CsvPreflightThesauriValuesJob.ts` currently has TypeScript issues that must be fixed before merging. Always run the linter and TypeScript checks on every edited file.
+- Audit jobs and services before saving: e.g., `app/api/csv.v2/jobs/CsvPreflightPreparationJob.ts` currently has TypeScript issues that must be fixed before merging. Always run the linter and TypeScript checks on every edited file.
 - CSV reader correctness:
   - The current `CsvReader` is a minimal placeholder; it SHOULD NOT be used as-is. We must implement a robust CSV reader (or adopt a vetted parser) with correct handling of:
     - Quoted fields, escaped quotes, embedded commas/newlines, configurable delimiters, and common encodings.
@@ -386,7 +386,7 @@ sequenceDiagram
 
 ### Testing discipline and current test status (must fix)
 
-- The current use case tests for preflight (`app/api/csv.v2/services/specs/CsvPreflightThesauriValuesUseCase.spec.ts`) contain errors and have not been validated end-to-end. Before any merge:
+- The current use case tests for preflight (`app/api/csv.v2/services/specs/CsvPreflightPreparationUseCase.spec.ts`) contain errors and have not been validated end-to-end. Before any merge:
   - Fix and run these tests locally; they must pass.
   - Add missing scenarios (parent/child, multiselect, case-insensitive, trimming, translations, error paths).
   - Ensure rows are staged as DB fixtures in tests; no file reads in preflight tests.
@@ -422,7 +422,7 @@ sequenceDiagram
   - Run unit/integration tests for affected areas; fix before proceeding.
   - If design assumptions change, update this MD first and confirm alignment; do not proceed coding against outdated assumptions.
 
-### Testing plan (v2) — CsvPreflightThesauriValuesUseCase (full parity with V1)
+### Testing plan (v2) — CsvPreflightPreparationUseCase (full parity with V1)
 
 - Philosophy:
   - Integration-first: real Mongo via TM-aware DS, real FS (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
@@ -507,7 +507,7 @@ sequenceDiagram
 ### ToDos (near-term, preflight)
 
 - Define preflight statuses and (temporary) event names under `csvImport:preflight:*`.
-- Implement `CsvPreflightThesauriValuesUseCase`:
+- Implement `CsvPreflightPreparationUseCase`:
   - Mirror V1 `arrangeThesauri` parsing and save behavior with domain/DS patterns and transactions.
   - Write tests: happy path, invalid formats, translation updates, idempotency.
 - Implement `CsvPreflightRelationshipEntitiesUseCase`:
@@ -540,7 +540,7 @@ sequenceDiagram
 - Ensure fairness across tenants/imports and prevent queue flooding; add metrics for queue depth per import/tenant and worker utilization.
 - Thesauri preflight test ToDos:
   - Create CSV fixtures under `app/api/csv.v2/specs/thesauri/fixtures/` as listed.
-  - Implement integration tests for `CsvPreflightThesauriValuesUseCase` covering the matrix above.
+  - Implement integration tests for `CsvPreflightPreparationUseCase` covering the matrix above.
   - Verify idempotency by re-running the use case; assert no additional thesauri writes.
   - Assert translations updates match v1 expectations for sanitized labels.
 

@@ -37,7 +37,7 @@ type Deps = {
   thesauriDS: ThesauriWritePort;
 };
 
-export class CsvPreflightThesauriValuesUseCase extends AbstractUseCase<Input, Output, Deps> {
+export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Output, Deps> {
   private async setStatus(importId: string, status: CsvImportStatus) {
     const existing = await this.deps.csvImportsDS.getById(importId);
     if (!existing) {

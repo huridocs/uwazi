@@ -39,8 +39,8 @@ import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob'
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
 import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
-import { CsvPreflightThesauriValuesJob } from 'api/csv.v2/jobs/CsvPreflightThesauriValuesJob';
-import { CsvPreflightThesauriValuesUseCase } from 'api/csv.v2/services/CsvPreflightThesauriValuesUseCase';
+import { CsvPreflightPreparationJob } from 'api/csv.v2/jobs/CsvPreflightPreparationJob';
+import { CsvPreflightPreparationUseCase } from 'api/csv.v2/services/CsvPreflightPreparationUseCase';
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
 import { DefaultCsvImportRowsDataSource } from 'api/csv.v2/database/csv_import_rows_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
@@ -197,14 +197,14 @@ export function registerJobs(
     return new CsvExtractUploadedZipJob({ useCase, sockets });
   });
 
-  register(CsvPreflightThesauriValuesJob, async () => {
+  register(CsvPreflightPreparationJob, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
     const rowsDS = DefaultCsvImportRowsDataSource(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-    const useCase = new CsvPreflightThesauriValuesUseCase({
+    const useCase = new CsvPreflightPreparationUseCase({
       csvImportsDS,
       rowsDS,
       templatesDS,
@@ -212,6 +212,6 @@ export function registerJobs(
       thesauriDS,
     });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvPreflightThesauriValuesJob({ useCase, sockets });
+    return new CsvPreflightPreparationJob({ useCase, sockets });
   });
 }
