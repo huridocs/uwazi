@@ -2,8 +2,6 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
@@ -17,9 +15,10 @@ import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
-import { createError, handleError, validation } from '../utils';
+import { createError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -108,9 +107,7 @@ const getCacheControlHeader = (
   return 'private, max-age=3600';
 };
 
-const timestampToHTTPDate = (timestamp: number): string => {
-  return new Date(timestamp).toUTCString();
-};
+const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
 // eslint-disable-next-line max-statements
 export default (app: Application) => {
@@ -403,59 +400,6 @@ export default (app: Application) => {
     }),
     async (req, res) => {
       res.json(await filterByEntityPermissions(await files.get(req.query)));
-    }
-  );
-
-  app.post(
-    '/api/import',
-    needsAuthorization(['admin']),
-    uploadMiddleware(),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['template'],
-          properties: {
-            template: { type: 'string' },
-          },
-        },
-      },
-    }),
-    (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-
-      const loader = new CSVLoader();
-      let loaded = 0;
-
-      loader.on('entityLoaded', () => {
-        loaded += 1;
-        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
-      });
-
-      loader.on('rowExceptions', exceptions => {
-        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
-      });
-
-      loader.on('loadError', error => {
-        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
-      });
-
-      req.emitToSessionSocket('IMPORT_CSV_START');
-
-      loader
-        .load(req.file.path, req.body.template, {
-          language: req.language,
-          user: req.user,
-        })
-        .then(() => {
-          req.emitToSessionSocket('IMPORT_CSV_END');
-        })
-        .catch((e: Error) => {
-          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
-        });
-
-      res.json('ok');
     }
   );
 };
