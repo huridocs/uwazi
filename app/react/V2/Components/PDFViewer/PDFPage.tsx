@@ -61,10 +61,14 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
               pageViewer.update({ scale: pageViewer.scale });
 
               if (pageViewer.renderingState !== PDFJSViewer.RenderingStates.RUNNING) {
-                eventBus.dispatch(events.ON_PAGE_CHANGE, pdfPage.pageNumber);
-                pageViewer.draw().catch(e => {
-                  setError(e.message);
-                });
+                pageViewer
+                  .draw()
+                  .then(() => {
+                    eventBus.dispatch(events.ON_PAGE_CHANGE, pdfPage.pageNumber);
+                  })
+                  .catch(e => {
+                    setError(e.message);
+                  });
               }
             } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.RUNNING) {
               pageViewer.cancelRendering();

@@ -45,8 +45,9 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       if (value === 'raw') {
         next.set('raw', 'true');
       } else {
-        next.delete('raw');
         const currentPage = searchParams.get('page') || '1';
+        next.delete('raw');
+        next.set('page', currentPage);
         setScrollTopage(currentPage);
       }
       setSearchParams(next, { replace: true, preventScrollReset: true });

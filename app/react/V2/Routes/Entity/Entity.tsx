@@ -114,13 +114,13 @@ const entityLoader =
       if (response instanceof FetchResponseError) {
         throw new Response(
           JSON.stringify({
-            error: 'Failed to load entity',
-            message: composition.error || 'Entity not found',
+            error: 'Failed to load plaintext',
+            message: response.message,
             entityId: entitySharedId,
           }),
           {
             status: 404,
-            statusText: 'Entity Not Found',
+            statusText: 'Failed to load plaintext',
             headers: {
               'Content-Type': 'application/json',
             },
