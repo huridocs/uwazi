@@ -2,7 +2,7 @@ import { Template } from 'api/core/domain/template/Template';
 import { Property } from 'api/core/domain/template/Property';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { CsvHeaderAnalyzerError } from './CsvHeaderAnalyzerError';
+import { CsvHeaderAnalyzerError, AnalyzerIssue } from './CsvHeaderAnalyzerError';
 
 const LANGUAGE_HEADER_SEPARATOR = '__';
 const LANGUAGE_SUPPORTED_TYPES = new Set<PropertyType>([
@@ -74,31 +74,33 @@ const buildPropertiesByName = (template: Template) =>
     return acc;
   }, {});
 
-const ensureNoMixedColumns = (
+const shouldAllowLanguageColumn = (property: Property) =>
+  property.name === 'title' || LANGUAGE_SUPPORTED_TYPES.has(property.type as PropertyType);
+
+const collectMixedColumnsIssues = (
   languagesPerHeader: LanguagesPerHeader,
-  headersWithoutLanguage: string[]
+  headersWithoutLanguage: string[],
+  issues: AnalyzerIssue[]
 ) => {
   const mixedColumns = Object.keys(languagesPerHeader).filter(headerName =>
     headersWithoutLanguage.includes(headerName)
   );
   if (mixedColumns.length) {
-    throw new CsvHeaderAnalyzerError(
-      'MixedLanguageColumns',
-      `Properties "${mixedColumns.join(
+    issues.push({
+      reason: 'MixedLanguageColumns',
+      message: `Properties "${mixedColumns.join(
         ', '
       )}" mix language and non-language columns. Make sure to only use either suffixed or non-suffixed columns for each property.`,
-      { columns: mixedColumns }
-    );
+      columns: mixedColumns,
+    });
   }
 };
 
-const shouldAllowLanguageColumn = (property: Property) =>
-  property.name === 'title' || LANGUAGE_SUPPORTED_TYPES.has(property.type as PropertyType);
-
-const ensureSupportedLanguageColumns = (
+const collectUnsupportedLanguageIssues = (
   template: Template,
   languagesPerHeader: LanguagesPerHeader,
-  propertiesByName: Record<string, Property>
+  propertiesByName: Record<string, Property>,
+  issues: AnalyzerIssue[]
 ) => {
   Object.keys(languagesPerHeader).forEach(headerName => {
     if (headerName === 'file') {
@@ -106,33 +108,35 @@ const ensureSupportedLanguageColumns = (
     }
     const property = propertiesByName[headerName];
     if (!property) {
-      throw new CsvHeaderAnalyzerError(
-        'UnknownProperty',
-        `Column "${headerName}" does not exist in template "${template.name}".`,
-        { property: headerName }
-      );
+      issues.push({
+        reason: 'UnknownProperty',
+        message: `Column "${headerName}" does not exist in template "${template.name}".`,
+        property: headerName,
+      });
+      return;
     }
     if (!shouldAllowLanguageColumn(property)) {
-      throw new CsvHeaderAnalyzerError(
-        'UnsupportedLanguageColumn',
-        `Property "${property.name}" does not support languages. Remove the language suffix from the column name.`,
-        { property: property.name }
-      );
+      issues.push({
+        reason: 'UnsupportedLanguageColumn',
+        message: `Property "${property.name}" does not support languages. Remove the language suffix from the column name.`,
+        property: property.name,
+      });
     }
   });
 };
 
-const ensureDefaultLanguageColumns = (
+const collectMissingDefaultLanguageIssues = (
   languagesPerHeader: LanguagesPerHeader,
-  defaultLanguage: string
+  defaultLanguage: string,
+  issues: AnalyzerIssue[]
 ) => {
   Object.entries(languagesPerHeader).forEach(([headerName, languages]) => {
     if (!languages.has(defaultLanguage)) {
-      throw new CsvHeaderAnalyzerError(
-        'MissingDefaultLanguage',
-        `Property "${headerName}" uses languages, but does not have the default language column.`,
-        { property: headerName }
-      );
+      issues.push({
+        reason: 'MissingDefaultLanguage',
+        message: `Property "${headerName}" uses languages, but does not have the default language column.`,
+        property: headerName,
+      });
     }
   });
 };
@@ -146,9 +150,14 @@ class CsvHeaderAnalyzer {
     );
     const propertiesByName = buildPropertiesByName(template);
 
-    ensureNoMixedColumns(languagesPerHeader, headersWithoutLanguage);
-    ensureSupportedLanguageColumns(template, languagesPerHeader, propertiesByName);
-    ensureDefaultLanguageColumns(languagesPerHeader, options.defaultLanguage);
+    const issues: AnalyzerIssue[] = [];
+    collectMixedColumnsIssues(languagesPerHeader, headersWithoutLanguage, issues);
+    collectUnsupportedLanguageIssues(template, languagesPerHeader, propertiesByName, issues);
+    collectMissingDefaultLanguageIssues(languagesPerHeader, options.defaultLanguage, issues);
+
+    if (issues.length) {
+      throw new CsvHeaderAnalyzerError(issues);
+    }
 
     return {
       headersWithoutLanguage,

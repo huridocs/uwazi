@@ -3,6 +3,7 @@ import { TextProperty } from 'api/core/domain/template/TextProperty';
 import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
+import { CsvHeaderAnalyzerError } from '../CsvHeaderAnalyzerError';
 
 const TEMPLATE_ID = 'template-id';
 const AVAILABLE_LANGUAGES = ['en', 'es'];
@@ -38,6 +39,18 @@ const buildTemplate = () =>
       }),
     ])
     .build();
+
+const expectAnalyzerError = (
+  fn: () => void,
+  assertions: (error: CsvHeaderAnalyzerError) => void
+) => {
+  expect(fn).toThrow(CsvHeaderAnalyzerError);
+  try {
+    fn();
+  } catch (error) {
+    assertions(error as CsvHeaderAnalyzerError);
+  }
+};
 
 describe('CsvHeaderAnalyzer', () => {
   describe('successful analysis', () => {
@@ -83,14 +96,23 @@ describe('CsvHeaderAnalyzer', () => {
       const template = buildTemplate();
       const headers = ['Complex+Prop__es', 'Complex+Prop__en'];
 
-      expect(() =>
-        CsvHeaderAnalyzer.analyze(headers, template, {
-          availableLanguages: AVAILABLE_LANGUAGES,
-          defaultLanguage: DEFAULT_LANGUAGE,
-          newNameGeneration: false,
-        })
-      ).toThrowErrorMatchingInlineSnapshot(
-        '"Column \\"complex_prop\\" does not exist in template \\"Template Name\\"."'
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'UnknownProperty',
+                property: 'complex_prop',
+              }),
+            ])
+          );
+        }
       );
 
       const analysis = CsvHeaderAnalyzer.analyze(headers, template, {
@@ -110,14 +132,23 @@ describe('CsvHeaderAnalyzer', () => {
       const template = buildTemplate();
       const headers = ['text_label', 'text_label__es', 'text_label__en'];
 
-      expect(() =>
-        CsvHeaderAnalyzer.analyze(headers, template, {
-          availableLanguages: AVAILABLE_LANGUAGES,
-          defaultLanguage: DEFAULT_LANGUAGE,
-          newNameGeneration: false,
-        })
-      ).toThrowErrorMatchingInlineSnapshot(
-        '"Properties \\"text_label\\" mix language and non-language columns. Make sure to only use either suffixed or non-suffixed columns for each property."'
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'MixedLanguageColumns',
+                columns: ['text_label'],
+              }),
+            ])
+          );
+        }
       );
     });
 
@@ -125,14 +156,23 @@ describe('CsvHeaderAnalyzer', () => {
       const template = buildTemplate();
       const headers = ['numeric_label__es', 'numeric_label__en'];
 
-      expect(() =>
-        CsvHeaderAnalyzer.analyze(headers, template, {
-          availableLanguages: AVAILABLE_LANGUAGES,
-          defaultLanguage: DEFAULT_LANGUAGE,
-          newNameGeneration: false,
-        })
-      ).toThrowErrorMatchingInlineSnapshot(
-        '"Property \\"numeric_label\\" does not support languages. Remove the language suffix from the column name."'
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'UnsupportedLanguageColumn',
+                property: 'numeric_label',
+              }),
+            ])
+          );
+        }
       );
     });
 
@@ -140,14 +180,23 @@ describe('CsvHeaderAnalyzer', () => {
       const template = buildTemplate();
       const headers = ['text_label__es'];
 
-      expect(() =>
-        CsvHeaderAnalyzer.analyze(headers, template, {
-          availableLanguages: AVAILABLE_LANGUAGES,
-          defaultLanguage: DEFAULT_LANGUAGE,
-          newNameGeneration: false,
-        })
-      ).toThrowErrorMatchingInlineSnapshot(
-        '"Property \\"text_label\\" uses languages, but does not have the default language column."'
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'MissingDefaultLanguage',
+                property: 'text_label',
+              }),
+            ])
+          );
+        }
       );
     });
 
@@ -155,14 +204,59 @@ describe('CsvHeaderAnalyzer', () => {
       const template = buildTemplate();
       const headers = ['unknown_field__es', 'unknown_field__en'];
 
-      expect(() =>
-        CsvHeaderAnalyzer.analyze(headers, template, {
-          availableLanguages: AVAILABLE_LANGUAGES,
-          defaultLanguage: DEFAULT_LANGUAGE,
-          newNameGeneration: false,
-        })
-      ).toThrowErrorMatchingInlineSnapshot(
-        '"Column \\"unknown_field\\" does not exist in template \\"Template Name\\"."'
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'UnknownProperty',
+                property: 'unknown_field',
+              }),
+            ])
+          );
+        }
+      );
+    });
+
+    it('should collect multiple issues in a single error', () => {
+      const template = buildTemplate();
+      const headers = [
+        'text_label',
+        'text_label__es',
+        'numeric_label__es',
+        'numeric_label__en',
+        'unknown_field__en',
+        'another_unknown__en',
+      ];
+
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: AVAILABLE_LANGUAGES,
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toHaveLength(5);
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ reason: 'MixedLanguageColumns' }),
+              expect.objectContaining({ reason: 'UnsupportedLanguageColumn' }),
+              expect.objectContaining({ reason: 'MissingDefaultLanguage' }),
+              expect.objectContaining({ reason: 'UnknownProperty', property: 'unknown_field' }),
+              expect.objectContaining({ reason: 'UnknownProperty', property: 'another_unknown' }),
+            ])
+          );
+          expect(
+            error.issues.filter(issue => issue.reason === 'UnknownProperty').length
+          ).toBeGreaterThanOrEqual(2);
+        }
       );
     });
   });

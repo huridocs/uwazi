@@ -23,5 +23,11 @@ export interface CsvImportDBO {
     at: number;
     stage: string;
     code?: string;
+    issues?: Array<{
+      reason: string;
+      message: string;
+      property?: string;
+      columns?: string[];
+    }>;
   };
 }

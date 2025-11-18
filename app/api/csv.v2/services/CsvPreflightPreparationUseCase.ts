@@ -5,7 +5,7 @@ import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors'
 import { Property } from 'api/core/domain/template/Property';
 import { Template } from 'api/core/domain/template/Template';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
+import { CsvImport, CsvImportDomain, CsvImportStatus } from '../model/CsvImport';
 import { CsvHeaderAnalyzer } from '../application/CsvHeaderAnalyzer';
 import { CsvHeaderAnalyzerError } from '../application/CsvHeaderAnalyzerError';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
@@ -87,7 +87,12 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
     return templateRes.getData();
   }
 
-  private async analyzeHeaders(headers: string[], template: Template, defaultLanguage: string) {
+  private async analyzeHeaders(
+    csvImport: CsvImport,
+    headers: string[],
+    template: Template,
+    defaultLanguage: string
+  ) {
     const [availableLanguages, settings] = await Promise.all([
       this.deps.settingsDS.getLanguageKeys(),
       this.deps.settingsDS.get(),
@@ -100,6 +105,20 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
       });
     } catch (error) {
       if (error instanceof CsvHeaderAnalyzerError) {
+        await this.transactionManager.run(async () => {
+          const failed = CsvImportDomain.withFailure(
+            CsvImportDomain.withStatus(csvImport, CsvImportStatus.Failed),
+            {
+              message: 'Header validation failed',
+              retryable: false,
+              at: Date.now(),
+              stage: 'preflight:preparation:headers',
+              code: 'HEADER_VALIDATION_FAILED',
+              issues: error.issues,
+            }
+          );
+          await this.deps.csvImportsDS.update(failed);
+        });
         throw new NonRetryableJobError(error);
       }
       throw error;
@@ -120,7 +139,7 @@ export class CsvPreflightPreparationUseCase extends AbstractUseCase<Input, Outpu
 
     // Analyze headers/languages per header (v2 analyzer)
     const { headers } = stagedRows[0];
-    await this.analyzeHeaders(headers, template, defaultLanguage);
+    await this.analyzeHeaders(csvImport, headers, template, defaultLanguage);
 
     // Create missing thesauri values (full parity: root and nested for select properties; default language column)
     type SelectLikeProperty = Property & { content: string };

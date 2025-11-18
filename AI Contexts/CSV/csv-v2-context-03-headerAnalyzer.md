@@ -62,6 +62,7 @@ The template must be the V2 domain object; the options object comes directly fro
 ### Error classification & messaging
 
 - Analyzer errors are deterministic and therefore **non-retriable**. They should bubble up as `NonRetryableJobError` from the use case, set the import status to `failed`, and persist a failure payload on the import document (`{ message, retryable: false, at: 'preflight:thesauri', stage: 'header-analyzer' }` or similar).
+- Analyzer aggregates *all* header issues per run. `CsvHeaderAnalyzerError` now exposes `issues: AnalyzerIssue[]` so clients can emit/persist multi-error feedback instead of surfacing one failure per upload attempt. `CsvPreflightPreparationUseCase` persists these issues into `csv_imports.failure.issues` (and marks the import `failed`) before rethrowing a `NonRetryableJobError`.
 - Suggested error reasons: `MixedLanguageColumns`, `UnsupportedLanguageColumn`, `MissingDefaultLanguage`, `PropertyNotFound`, `InvalidLanguageSuffix`. Payload should mention the offending columns/properties to aid users.
 - Keep messages user-friendly (plain language, actionable). Avoid internal jargon like “PropertyName.fromLabel” in errors.
 

@@ -4,27 +4,22 @@ type CsvHeaderAnalyzerErrorReason =
   | 'MissingDefaultLanguage'
   | 'UnknownProperty';
 
-type AnalyzerErrorContext = {
+type AnalyzerIssue = {
+  reason: CsvHeaderAnalyzerErrorReason;
+  message: string;
   property?: string;
   columns?: string[];
 };
 
 class CsvHeaderAnalyzerError extends Error {
-  readonly reason: CsvHeaderAnalyzerErrorReason;
+  readonly issues: AnalyzerIssue[];
 
-  readonly context?: AnalyzerErrorContext;
-
-  constructor(
-    reason: CsvHeaderAnalyzerErrorReason,
-    message: string,
-    context?: AnalyzerErrorContext
-  ) {
-    super(message);
-    this.reason = reason;
-    this.context = context;
+  constructor(issues: AnalyzerIssue[]) {
+    super('Csv header analysis failed');
+    this.issues = issues;
     this.name = 'CsvHeaderAnalyzerError';
   }
 }
 
 export { CsvHeaderAnalyzerError };
-export type { CsvHeaderAnalyzerErrorReason, AnalyzerErrorContext };
+export type { CsvHeaderAnalyzerErrorReason, AnalyzerIssue };

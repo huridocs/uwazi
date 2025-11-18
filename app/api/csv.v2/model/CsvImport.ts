@@ -34,6 +34,13 @@ export type CsvImportToCreate = {
   updatedAt: number;
 };
 
+export type CsvImportFailureIssue = {
+  reason: string;
+  message: string;
+  property?: string;
+  columns?: string[];
+};
+
 export type CsvImport = CsvImportToCreate & {
   id: string;
   storage?: CsvImportStorage;
@@ -44,6 +51,7 @@ export type CsvImport = CsvImportToCreate & {
     at: number;
     stage: string;
     code?: string;
+    issues?: CsvImportFailureIssue[];
   };
 };
 
