@@ -301,7 +301,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
           template,
           propertyAssignment: {
             name: 'url_media',
-            value: [{ value: '' }],
+            value: [{ value: ' ' }],
           },
         })
       ).rejects.toThrow('Media Property value must be a non-empty string.');

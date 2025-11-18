@@ -401,7 +401,6 @@ describe('CreateEntityUseCase', () => {
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
       published: false,
-      user: null,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
       permissions: [],
@@ -462,7 +461,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 EN',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text EN' }],
@@ -485,7 +483,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 ES',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text ES' }],

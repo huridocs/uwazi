@@ -38,7 +38,7 @@ class DateProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment<DateEntry> {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value
+      value.filter(v => v?.value?.toString()?.length)
     );
 
     return {
