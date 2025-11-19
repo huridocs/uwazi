@@ -32,7 +32,6 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
   - `tenantName`: string
   - `userId`: string (uploader)
   - `importId`: string
-  - `sessionId` (recommended): string — so we can emit only to the uploading session
 
 - V2 patterns to follow (critical):
 
@@ -88,10 +87,17 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 ### Dispatch and transaction hook
 
 - Extend `RegisterCsvImportUseCase` factory to inject `jobsDispatcher`.
-- After persisting the import (and after file storage succeeds), use `transactionManager.onCommitted` to dispatch the extraction/prep job:
-  - Params must include `{ tenantName, userId, importId, sessionId }`.
-  - `sessionId` should be captured at controller level from the request cookie and forwarded into the use case input → on to the job params.
-- After Job 1 completes and sets status to `files extracted`, the component performing the status update must again use `transactionManager.onCommitted` to trigger the next job (processing/validation), which is responsible for subsequent stages.
+- **Current implementation (Nov 2025)**: `CsvImportEntities` calls
+  `jobsDispatcher.dispatch(CsvExtractUploadedZipJobDispatcher, { tenantName, userId, importId })`
+  **inside** `transactionManager.run(async () => { ... })` after inserting the import. This
+  guarantees that dispatch only happens if the insert succeeds, but dispatch is not yet
+  deferred to `onCommitted`.
+- **ToDo (behavioral refinement)**: if we want “side-effects only after commit”, refactor
+  registration to use `transactionManager.runHandlingOnCommitted(...).onCommitted(...)` for
+  dispatch, mirroring the pattern used in `MongoTransactionManager` specs.
+- After Job 1 completes and sets status to `files extracted`, a future stage will trigger the
+  preflight job (see Context 03); job chaining via `onCommitted` is still pending for that part
+  of the pipeline.
 
 ### Emits and notifications
 
@@ -99,17 +105,24 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
   - `emitToTenant(tenantName, event, payload...)` (broadcast to all in tenant).
   - `req.emitToSessionSocket(event, payload...)` (per-session; available only in request scope).
+  - **New (implemented)**: `emitToTenantAdmins(tenantName, event, payload...)` via the
+    `V1WebSocketsWrapper`, which emits to the `${tenantName}:admins` room in socket.io.
 
 - Requirement:
 
   - Do NOT broadcast job progress to all tenant users.
-  - MUST notify at least the uploading user (ideally only their current session). MAY also notify other admins later.
+  - For CSV Import V2, notify **tenant admins only** via the tenant-admins room; the uploader’s
+    session id is no longer required.
 
-- Proposal (MVP-friendly):
-  - Capture `sessionId` in the controller from `connect.sid` and include it in job params.
-  - Use `V1WebSocketsWrapper.emitToSession(sessionId, ...)` from job/use-case callbacks to notify only the uploader session.
-  - Events (prefix suggestion): `csvImport:extract:start|progress|success|error` with `{ importId, details }`.
-  - Future: consider a `tenant:admins` room to optionally notify admins only; keep MVP scoped to the uploader’s session to avoid noise.
+- Implementation (Nov 2025):
+  - `CsvExtractUploadedZipJobDispatcher` uses `V1WebSocketsWrapper.emitToTenantAdmins` to emit
+    `csvImport:extract:start|progress|success|error` with `{ importId, ... }` to the
+    `${tenantName}:admins` room.
+  - A new socket room `${tenantName}:admins` is created and maintained in `setupSockets.ts`:
+    on connection, sockets whose `connect.sid` resolves to an admin user for that tenant are
+    joined to this room.
+  - `socketClusterMode.spec.ts` now includes a `tenant admins room` suite that verifies
+    `emitToTenantAdmins` only reaches admins for the target tenant.
 
 ### Status transitions (MVP)
 
