@@ -4,7 +4,7 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Translate } from 'app/I18N';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
+import { PDFJS, CMAP_URL, EventBus, events, OnPageChagenEventHandler } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 
@@ -17,6 +17,7 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
+  onPageChange?: (page: number) => void;
   scrollToPage?: string;
   size?: { height?: string; width?: string; overflow?: string };
 }
@@ -32,8 +33,9 @@ const getPDFFile = async (fileUrl: string) =>
 const PDF = ({
   fileUrl,
   highlights,
-  onSelect = () => {},
+  onSelect = () => undefined,
   onDeselect,
+  onPageChange,
   scrollToPage,
   size,
 }: PDFProps) => {
@@ -41,13 +43,16 @@ const PDF = ({
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const padding = 10;
   const containerStyles = {
     height: size?.height || '100%',
     width: size?.width || '100%',
     overflow: size?.overflow || 'auto',
-    paddingLeft: '10px',
-    paddingRight: '10px',
+    paddingLeft: `${padding}px`,
+    paddingRight: `${padding}px`,
   };
 
   useEffect(() => {
@@ -61,16 +66,73 @@ const PDF = ({
   }, [fileUrl]);
 
   useEffect(() => {
+    const container = pdfContainerRef.current;
+
+    if (!container) {
+      return undefined;
+    }
+
+    const initialWidth = Math.max(
+      0,
+      (container.clientWidth || container.offsetWidth) - padding * 2
+    );
+
+    setContainerWidth(initialWidth);
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const [entry] = entries;
+      if (entry && entry.contentRect) {
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+
+        resizeTimeoutRef.current = setTimeout(() => {
+          const newWidth = Math.max(0, entry.contentRect.width - padding * 2);
+          setContainerWidth(newWidth);
+        }, 150);
+      }
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+        resizeTimeoutRef.current = null;
+      }
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     let animationFrameId = 0;
+    let timeoutId: NodeJS.Timeout;
 
     if (pdf && scrollToPage) {
-      animationFrameId = triggerScroll(scrollToRef, animationFrameId);
+      timeoutId = setTimeout(() => {
+        animationFrameId = triggerScroll(scrollToRef, animationFrameId);
+      }, 100);
     }
 
     return () => {
+      clearTimeout(timeoutId);
       cancelAnimationFrame(animationFrameId);
     };
   }, [scrollToPage, pdf]);
+
+  useEffect(() => {
+    const handlePageChange: OnPageChagenEventHandler = page => {
+      if (onPageChange) {
+        onPageChange(page);
+      }
+    };
+
+    eventBus.on(events.ON_PAGE_CHANGE, handlePageChange);
+
+    return () => {
+      eventBus.off(events.ON_PAGE_CHANGE, handlePageChange);
+    };
+  }, [onPageChange]);
 
   if (error) {
     return <div>{error}</div>;
@@ -84,8 +146,6 @@ const PDF = ({
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
             const shouldScrollToPage = scrollToPage === regionId;
-            const containerWidth =
-              pdfContainerRef.current?.offsetWidth && pdfContainerRef.current.offsetWidth - 20;
 
             return (
               <div

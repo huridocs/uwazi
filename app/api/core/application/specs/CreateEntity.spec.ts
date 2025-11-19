@@ -13,7 +13,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { InputFile } from 'api/files.v2/model/InputFile';
@@ -205,7 +205,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
-  const filesDS = DefaultFilesDataSource(transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });

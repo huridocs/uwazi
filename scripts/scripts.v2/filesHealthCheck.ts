@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { config } from 'api/config';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
 import { S3FileStorage } from 'api/files.v2/infrastructure/S3FileStorage';
 import { DB } from 'api/odm';
@@ -38,8 +38,8 @@ async function handleTenant(tenantName: string) {
 
     const transactionManager = TransactionManagerFactory.default();
     const filesHealthCheck = new FilesHealthCheck(
-      new S3FileStorage(s3Client, new FileContentsIO, tenants.current()),
-      DefaultFilesDataSource(transactionManager)
+      new S3FileStorage(s3Client, new FileContentsIO(), tenants.current()),
+      FilesDataSourceFactory.default(transactionManager)
     );
 
     filesHealthCheck.onMissingInDB(file => {

@@ -10,6 +10,11 @@ export class LoggerFactory {
     if (config.ENVIRONMENT === 'development') {
       writer = DevelopmentWritter;
     }
+
+    if (process.env.NODE_ENV === 'test') {
+      return this.fake();
+    }
+
     return new StandardLogger(writer, getTenant());
   }
 
@@ -18,6 +23,7 @@ export class LoggerFactory {
     if (config.ENVIRONMENT === 'development') {
       writer = DevelopmentWritter;
     }
+
     return new StandardLogger(writer, {
       name: 'System Logger',
       dbName: 'N/a',
@@ -27,5 +33,10 @@ export class LoggerFactory {
       indexName: 'N/a',
       uploadedDocuments: 'N/a',
     });
+  }
+
+  static fake() {
+    // eslint-disable-next-line no-empty-function
+    return new StandardLogger(() => {}, getTenant());
   }
 }

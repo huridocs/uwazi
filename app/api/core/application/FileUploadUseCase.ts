@@ -1,11 +1,11 @@
 // eslint-disable-next-line node/no-restricted-import
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { fileDBO } from 'api/files.v2/database/schemas/filesTypes';
 import { InputFile } from 'api/files.v2/model/InputFile';
+import { fileDBO } from 'api/files.v2/database/schemas/filesTypes';
+import { FilesService } from './FilesService';
 import { AJVObject, ValidationError } from '../domain/error/ValidationError';
 import { AbstractUseCase } from '../libs/UseCase';
-import { FilesService } from './FilesService';
 
 type Input = {
   uploadedFile: InputFile;

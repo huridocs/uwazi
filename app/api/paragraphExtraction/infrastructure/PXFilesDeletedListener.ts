@@ -5,7 +5,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
@@ -38,7 +38,7 @@ export class PXFilesDeletedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 
     this.dependencies = { entitiesStatusDS, filesDS, settingsDS };

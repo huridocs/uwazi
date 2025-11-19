@@ -11,7 +11,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
@@ -30,7 +30,7 @@ class UpdateTemplateUseCaseFactory {
     const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
-    const filesDS = DefaultFilesDataSource(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
     const relationshipsV1DS = new MongoRelationshipsV1DataSource(
       getConnection(),
       transactionManager
