@@ -29,7 +29,7 @@ type CreateProps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   thesauriDS: ThesauriDataSource;
-  multiLanguageEntityDS: MultiLanguageEntityDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
 };
 
 class PropertyAssignmentCreatorServiceStrategy {
@@ -70,7 +70,7 @@ class PropertyAssignmentCreatorServiceStrategy {
     return created.flat();
   }
 
-  static create({ settingsDS, thesauriDS, translationsDS, multiLanguageEntityDS }: CreateProps) {
+  static create({ settingsDS, thesauriDS, translationsDS, entitiesDS }: CreateProps) {
     return new PropertyAssignmentCreatorServiceStrategy({
       select: new SelectPropertyAssignmentCreatorService({
         settingsDS,
@@ -79,7 +79,7 @@ class PropertyAssignmentCreatorServiceStrategy {
       }),
       relationship: new RelationshipPropertyAssignmentCreatorService({
         settingsDS,
-        multiLanguageEntityDS,
+        entitiesDS,
       }),
       image: new ImagePropertyAssignmentCreatorService(),
       media: new MediaPropertyAssignmentCreatorService(),

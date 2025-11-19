@@ -4,6 +4,7 @@ import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSo
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { ThesaurusValueNotFoundError } from '../errors';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
@@ -54,9 +55,7 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
 
       const key = valueIdToLabel.get(value);
       if (!key) {
-        throw new Error(
-          `The value "${value}" does not exist in the referenced Thesaurus "${thesaurus.name}"`
-        );
+        throw new ThesaurusValueNotFoundError(value, thesaurus.name);
       }
       return { key, value };
     });

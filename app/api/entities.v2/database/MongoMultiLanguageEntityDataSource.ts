@@ -164,7 +164,7 @@ export class MongoMultiLanguageEntityDataSource
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
 
-    await this.getCollection().insertMany(dbos);
+    await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
 
     this.modifiedSharedIds.add(entity.sharedId);
   }

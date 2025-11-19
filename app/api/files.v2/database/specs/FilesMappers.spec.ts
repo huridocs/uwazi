@@ -82,7 +82,6 @@ describe('FileMappers', () => {
       expect(result._id.toString()).toBe(f.idString('attId'));
       expect(result).toMatchObject({
         entity: 'entity3',
-        url: '',
         originalname: 'file.pdf',
         filename: 'file.pdf',
         mimetype: 'application/pdf',

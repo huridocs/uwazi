@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import {
   DefaultTemplateConflictError,
   PropertyNotFoundError,
+  PropertyNotFoundInTemplateError,
 } from 'api/core/domain/template/errors';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { Result } from 'api/core/libs/Result';
@@ -230,7 +232,7 @@ class Template {
   ) {
     const property = this.allProperties.find(p => p.name === name);
     if (!property) {
-      throw new Error(`Property with name ${name} not found in template ${JSON.stringify(this)}`);
+      throw new PropertyNotFoundInTemplateError(name, JSON.stringify(this));
     }
 
     return property.createPropertyAssignment(input, shouldValidateForRequired);

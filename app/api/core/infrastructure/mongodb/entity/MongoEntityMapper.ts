@@ -77,7 +77,7 @@ class MongoEntityMapper {
     }
 
     return entity.translationsList.map(([language, translation]) => ({
-      _id: translation.id ? ObjectId.createFromHexString(translation.id) : new ObjectId(),
+      _id: ObjectId.createFromHexString(translation.id.value),
       language,
       sharedId,
       template,
