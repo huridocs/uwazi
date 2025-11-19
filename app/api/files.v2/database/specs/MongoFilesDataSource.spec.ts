@@ -1,6 +1,6 @@
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
@@ -63,7 +63,7 @@ const createDs = () => {
   const ds = new MongoFilesDataSource(
     getConnection(),
     transactionManager,
-    FileStorageStrategyFactory.createDefault()
+    FileStorageFactory.default()
   );
 
   return { ds, transactionManager };

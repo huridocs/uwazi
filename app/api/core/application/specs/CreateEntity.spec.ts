@@ -13,7 +13,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { InputFile } from 'api/files.v2/model/InputFile';
@@ -203,7 +203,7 @@ const createSut = (props: CreateSutProps = {}) => {
     transactionManager
   );
 
-  const filesDS = DefaultFilesDataSource(transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
 
@@ -472,7 +472,6 @@ describe('CreateEntityUseCase', () => {
         filename: '1762280821775nhs3epb55g7.png',
         mimetype: 'image/png',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -483,7 +482,6 @@ describe('CreateEntityUseCase', () => {
         filename: '1162280821775nhs3epb55g7.png',
         mimetype: 'image/png',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -494,7 +492,6 @@ describe('CreateEntityUseCase', () => {
         filename: 'attachment_3.mp4',
         mimetype: 'video/mp4',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
       {
@@ -505,7 +502,6 @@ describe('CreateEntityUseCase', () => {
         filename: 'attachment_4.mp4',
         mimetype: 'video/mp4',
         size: 78636,
-        url: '',
         type: 'attachment',
       },
     ]);

@@ -1,8 +1,8 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import entities from 'api/entities';
-import { InputFile } from 'api/files.v2/model/InputFile';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -11,15 +11,14 @@ import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request } from 'express';
-import multer from 'multer';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { createError, validation } from '../utils';
 import { files } from './files';
-import { generateFileName } from './filesystem';
 import { storage } from './storage';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -117,32 +116,30 @@ export default (app: Application) => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
       if (tenants.current().featureFlags?.v2UploadFile) {
-        const defaultStorage = multer.diskStorage({
-          filename(_req, file: Express.Multer.File, cb) {
-            cb(null, generateFileName(file));
-          },
-        });
-        await new Promise<void>((resolve, reject) => {
-          multer({ storage: defaultStorage }).single('file')(req, res, err => {
-            if (!err) resolve();
-            reject(err);
-          });
-        });
-        next();
+        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
+          req,
+          res,
+          next
+        );
       } else {
         await uploadMiddleware('document')(req, res, next);
       }
     },
     async (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
       req.emitToSessionSocket('conversionStart', req.body.entity);
       if (tenants.current().featureFlags?.v2UploadFile) {
+        if (!req.inputFile) {
+          throw new Error('inputFile is not available on request object');
+        }
         const savedFile = await FileUploadUseCaseFactory.default().execute({
-          uploadedFile: new InputFile(req.file, 'document'),
+          uploadedFile: req.inputFile,
           entityId: req.body.entity,
         });
         res.json(savedFile);
       } else {
+        if (!req.file) {
+          throw new Error('File is not available on request object');
+        }
         const savedFile = await createProcessingFile(req.body.entity, req.file);
         res.json(savedFile);
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -251,7 +248,6 @@ export default (app: Application) => {
 
   app.get(
     '/api/attachments/download',
-
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -265,7 +261,6 @@ export default (app: Application) => {
       },
       required: ['query'],
     }),
-
     async (req, res) => {
       res.redirect(301, `/api/files/${req.query.file}?download=true`);
     }
@@ -291,7 +286,6 @@ export default (app: Application) => {
         },
       },
     }),
-
     async (req: Request<{ filename: string }, {}, {}, { download?: boolean }>, res) => {
       const [file] = await files.get({
         filename: req.params.filename,
@@ -353,7 +347,6 @@ export default (app: Application) => {
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -367,7 +360,6 @@ export default (app: Application) => {
         },
       },
     }),
-
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       await withTransaction(async () => {
         const [fileToDelete] = await files.get({ _id: req.query._id });
@@ -410,6 +402,4 @@ export default (app: Application) => {
       res.json(await filterByEntityPermissions(await files.get(req.query)));
     }
   );
-
-  // CSV Import route now handled in csv.v2/routes/routes.ts
 };

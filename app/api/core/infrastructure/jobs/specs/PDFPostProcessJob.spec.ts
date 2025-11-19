@@ -6,8 +6,8 @@ import { WebSockets } from 'api/core/application/contracts/WebSockets';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessingFileNotFound } from 'api/files.v2/model/errors';
 import { tenants } from 'api/tenants';
@@ -31,8 +31,8 @@ const setUpJob = (pdfService = new PDFService()) => {
     job: new PDFPostProcessJob({
       useCase: new PDFPostProcess({
         transactionManager,
-        filesDS: DefaultFilesDataSource(transactionManager),
-        fileStorage: FileStorageStrategyFactory.createDefault(),
+        filesDS: FilesDataSourceFactory.default(transactionManager),
+        fileStorage: FileStorageFactory.default(),
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
