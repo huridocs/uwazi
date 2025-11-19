@@ -54,7 +54,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);

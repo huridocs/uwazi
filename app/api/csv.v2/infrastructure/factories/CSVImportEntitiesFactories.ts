@@ -16,24 +16,24 @@ import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataS
 import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
 
 export class CSVImportEntitiesFactories {
-  static CSVImportDataSourceDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportsDataSource(db, transactionManager);
   }
 
-  static CSVImportRowsDataSourceDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportRowsDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRowsDataSource(db, transactionManager);
   }
 
-  static CSVImportThesauriValuesDataSourceDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportThesauriValuesDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportThesauriValuesDataSource(db, transactionManager);
   }
 
   static default() {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = this.CSVImportDataSourceDefault(transactionManager);
+    const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
     const idGenerator = IdGeneratorFactory.default();
@@ -49,17 +49,17 @@ export class CSVImportEntitiesFactories {
 
   static CSVPreflightJobDefault() {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = this.CSVImportDataSourceDefault(transactionManager);
+    const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     return new CsvPreflightJob({
       csvImportsDS,
-      rowsDS: this.CSVImportRowsDataSourceDefault(transactionManager),
+      rowsDS: this.CSVImportRowsDSDefault(transactionManager),
       templatesDS,
       settingsDS,
       thesauriDS,
-      thesauriValuesDS: this.CSVImportThesauriValuesDataSourceDefault(transactionManager),
+      thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(transactionManager),
     });
   }
 }

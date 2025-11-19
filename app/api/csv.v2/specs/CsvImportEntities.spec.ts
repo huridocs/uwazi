@@ -50,7 +50,7 @@ describe('CsvImportEntities (integration)', () => {
 
   const setUp = async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
@@ -66,7 +66,7 @@ describe('CsvImportEntities (integration)', () => {
       [CsvExtractUploadedZipJobDispatcher.name]: async () => {
         // IMPORTANT: Use a fresh transaction manager for the job's use case
         const tmForJob = TransactionManagerFactory.default();
-        const dsForJob = CSVImportEntitiesFactories.CSVImportDataSourceDefault(tmForJob);
+        const dsForJob = CSVImportEntitiesFactories.CSVImportDSDefault(tmForJob);
         const jobUseCase = new CsvExtractUploadedZipJob({
           csvImportsDS: dsForJob,
           fileStorage: new FileSystemStorage(pathManager),
@@ -94,7 +94,7 @@ describe('CsvImportEntities (integration)', () => {
 
   const setUpIntermediate = async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
