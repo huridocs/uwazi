@@ -4,7 +4,15 @@ import { getTenant } from '../mongodb/common/getConnectionForCurrentTenant';
 
 export class LoggerFactory {
   static default(writer = StandardJSONWriter) {
+    if (process.env.NODE_ENV === 'test') {
+      return this.fake();
+    }
     return new StandardLogger(writer, getTenant());
+  }
+
+  static fake() {
+    // eslint-disable-next-line no-empty-function
+    return new StandardLogger(() => {}, getTenant());
   }
 
   static systemLogger(writer = StandardJSONWriter) {

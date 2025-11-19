@@ -17,7 +17,7 @@ import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 
 const factory = getFixturesFactory();
 
@@ -55,11 +55,7 @@ const createService = () => {
       SettingsDataSource,
       transactionManager
     ),
-    new MongoFilesDataSource(
-      connection,
-      transactionManager,
-      FileStorageStrategyFactory.createDefault()
-    ),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default()),
     transactionManager,
     MongoIdHandler,
     authServiceMock,
@@ -222,7 +218,12 @@ describe('create()', () => {
     it('should persist new connections', async () => {
       await execute();
 
-      const relationshipsInDb = await collectionInDb().find({}).sort({ from: 1 }).toArray();
+      const relationshipsInDb = await collectionInDb()
+        .find({})
+        .sort({
+          from: 1,
+        })
+        .toArray();
 
       expect(relationshipsInDb).toEqual([
         {
