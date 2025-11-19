@@ -127,7 +127,6 @@ describe('CsvImportEntities (integration)', () => {
       template: 'template-1',
       file: inputFile,
       userId: f.idString('uploader'),
-      sessionId: 'sess-1',
     });
     createdImportIds.push(result.id);
 
@@ -158,7 +157,6 @@ describe('CsvImportEntities (integration)', () => {
           tenantName: tenants.current().name,
           userId: f.idString('uploader'),
           importId: result.id,
-          sessionId: 'sess-1',
         }),
       }),
     ]);
@@ -184,7 +182,6 @@ describe('CsvImportEntities (integration)', () => {
       template: 'template-1',
       file: inputFile,
       userId: f.idString('uploader'),
-      sessionId: 'sess-1',
     });
     createdImportIds.push(result.id);
 
@@ -230,7 +227,6 @@ describe('CsvImportEntities (integration)', () => {
           tenantName: tenants.current().name,
           userId: f.idString('uploader'),
           importId: result.id,
-          sessionId: 'sess-1',
         }),
       }),
     ]);

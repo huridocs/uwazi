@@ -8,7 +8,6 @@ import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploa
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
-  sessionId?: string;
 };
 
 type Deps = {

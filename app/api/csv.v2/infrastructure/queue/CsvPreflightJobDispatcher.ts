@@ -8,7 +8,6 @@ import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
-  sessionId?: string;
 };
 
 type Deps = {

@@ -70,7 +70,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const executeJob = async (
     job: CsvExtractUploadedZipJobDispatcher,
-    params: { importId: string; sessionId?: string },
+    params: { importId: string },
     jobInfo: { maxRetries: number; retryCount: number } = { maxRetries: 5, retryCount: 1 }
   ) => {
     const f = getFixturesFactory();
@@ -120,7 +120,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     );
     await csvImportsDS.insert(importDoc);
 
-    const heartBeat = await executeJob(job, { importId: id, sessionId: 'sess-1' });
+    const heartBeat = await executeJob(job, { importId: id });
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
@@ -142,43 +142,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     );
     // progress implies at least one heartbeat
     expect(heartBeat).toHaveBeenCalled();
-  });
-
-  it('should emit events regardless of sessionId presence', async () => {
-    const { csvImportsDS, fileStorage, job, sockets } = setUp();
-    const f = getFixturesFactory();
-    const id = f.idString('zip-happy-no-session');
-    const destination = `csv-imports/${id}`;
-    const zipFilename = 'upload.zip';
-
-    const zipDir = path.join(__dirname, '../../../specs/zipData');
-    const tempZipDir = path.join(
-      __dirname,
-      'tmp',
-      `${Date.now()}_${Math.random().toString(36).slice(2)}`
-    );
-    await fs.mkdir(tempZipDir, { recursive: true });
-    await fs.mkdir(path.join(tempZipDir, 'zipData'), { recursive: true });
-    await createTestingZip([path.join(zipDir, 'import.csv')], zipFilename, tempZipDir);
-    await fileStorage.storeContent(
-      new DiskFile(path.join(tempZipDir, 'zipData', zipFilename)).toContent(),
-      `${destination}/${zipFilename}`
-    );
-    createdTempDirs.push(tempZipDir);
-    const importDoc = CsvImportDomain.withStorage(
-      CsvImportDomain.create({
-        id,
-        templateId: 't1',
-        file: { originalName: 'upload.zip', mimeType: 'application/zip', size: 10 },
-        createdBy: 'u1',
-      }),
-      `${destination}/${zipFilename}`
-    );
-    await csvImportsDS.insert(importDoc);
-
-    await executeJob(job, { importId: id });
-    createdImportIds.push(id);
-    expect(sockets.emitToTenantAdmins).toHaveBeenCalled();
   });
 
   it('should mark failed on last retry after error', async () => {
@@ -211,7 +174,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     await csvImportsDS.insert(importDoc);
 
     await expect(
-      executeJob(job, { importId: id, sessionId: 'sess-1' }, { maxRetries: 5, retryCount: 5 })
+      executeJob(job, { importId: id }, { maxRetries: 5, retryCount: 5 })
     ).rejects.toThrow();
     createdImportIds.push(id);
 

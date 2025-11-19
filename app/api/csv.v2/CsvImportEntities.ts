@@ -17,7 +17,6 @@ export type RegisterCsvImportInput = {
   template: string;
   file: InputFile;
   userId: string;
-  sessionId?: string;
 };
 
 export type RegisterCsvImportOutput = {
@@ -57,7 +56,6 @@ export class CsvImportEntities extends AbstractUseCase<
         tenantName: tenants.current().name,
         userId: input.userId,
         importId: id,
-        sessionId: input.sessionId,
       });
     });
 
