@@ -76,6 +76,69 @@ describe('LinkProperty', () => {
       );
     });
 
+    it('should filter out entries with empty URLs', () => {
+      const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = link.createPropertyAssignment({
+        value: [
+          { value: { url: '', label: 'Empty URL' } },
+          { value: { url: 'https://uwazi.io', label: 'Valid URL' } },
+        ],
+      });
+
+      expect(assignment).toEqual({
+        name: link.name,
+        type: link.type,
+        value: [{ value: { url: 'https://uwazi.io', label: 'Valid URL' } }],
+      });
+    });
+
+    it('should handle whitespace-only URLs', () => {
+      const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = link.createPropertyAssignment({
+        value: [{ value: { url: '   ', label: 'Whitespace URL' } }],
+      });
+
+      expect(assignment).toEqual({
+        name: link.name,
+        type: link.type,
+        value: [],
+      });
+    });
+
+    it('should return empty array when all URLs are empty', () => {
+      const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = link.createPropertyAssignment({
+        value: [{ value: { url: '', label: 'Empty' } }],
+      });
+
+      expect(assignment).toEqual({
+        name: link.name,
+        type: link.type,
+        value: [],
+      });
+    });
+
+    it('should throw if required and all URLs are filtered out', () => {
+      const link = new LinkProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() =>
+        link.createPropertyAssignment(
+          {
+            value: [{ value: { url: '', label: 'Empty' } }],
+          },
+          true
+        )
+      ).toThrow('Link Property is required');
+    });
+
     it('should throw if url is invalid', () => {
       const link = new LinkProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 

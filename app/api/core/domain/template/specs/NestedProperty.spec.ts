@@ -59,6 +59,25 @@ describe('NestedProperty', () => {
       });
     });
 
+    it('should allow empty nested objects by design', () => {
+      const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
+
+      // Nested properties allow null values as they represent intentionally empty nested structures
+      const assignment = nested.createPropertyAssignment({
+        value: [
+          { value: null as any },
+          { value: {} },
+          { value: { child_text: [{ value: 'some text' }] } },
+        ],
+      });
+
+      expect(assignment.value).toEqual([
+        { value: null },
+        { value: {} },
+        { value: { child_text: [{ value: 'some text' }] } },
+      ]);
+    });
+
     it('should create property assignment with nested children', () => {
       const nested = new NestedProperty({ id: 'any_id', label: 'A label', template: 'any' });
 

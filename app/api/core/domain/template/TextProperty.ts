@@ -11,7 +11,7 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 const EntrySchema = z.object({
-  value: z.string().trim().min(1, 'Text Property must be a non-empty string.'),
+  value: z.string().trim(),
 });
 
 const createSchema = (isRequired: boolean) =>
@@ -42,7 +42,7 @@ class TextProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ) {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.length)
+      value.filter(v => v?.value?.trim()?.length)
     );
 
     return {

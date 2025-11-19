@@ -47,7 +47,9 @@ class AbstractSelectProperty extends FilterableProperty {
     input: CreatePropertyAssignmentInput<SelectionEntry>,
     shouldValidateForRequired = false
   ): SelectPropertyAssignment {
-    const deduplicated = ArrayUtils.deduplicate(input.value, v => v.value);
+    const filtered = input.value.filter(v => v?.value?.trim()?.length);
+
+    const deduplicated = ArrayUtils.deduplicate(filtered, v => v.value);
 
     const { language, value } = createSchema(
       shouldValidateForRequired ? this.required : false,

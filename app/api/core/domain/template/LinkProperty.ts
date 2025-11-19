@@ -44,7 +44,7 @@ class LinkProperty extends Property {
     shouldValidateForRequired = false
   ): PropertyAssignment<LinkEntry> {
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.url?.length)
+      value.filter(v => v?.value?.url?.trim()?.length)
     );
 
     return {

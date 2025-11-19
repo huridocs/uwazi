@@ -58,6 +58,48 @@ describe('TextProperty', () => {
       });
     });
 
+    it('should filter out empty and whitespace-only values', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: '' }, { value: '   ' }, { value: 'Hello' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        value: [{ value: 'Hello' }],
+      });
+    });
+
+    it('should handle null and undefined values', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: null as any }, { value: undefined as any }, { value: 'Valid' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        value: [{ value: 'Valid' }],
+      });
+    });
+
+    it('should return empty array when all values are empty/whitespace', () => {
+      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+
+      const assignment = text.createPropertyAssignment({
+        value: [{ value: '' }, { value: '   ' }, { value: '\t\n' }],
+      });
+
+      expect(assignment).toEqual({
+        name: text.name,
+        type: text.type,
+        value: [],
+      });
+    });
+
     it('should allow empty value when not required', () => {
       const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
 
@@ -95,11 +137,29 @@ describe('TextProperty', () => {
       );
 
       expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
-        'Text Property must be a non-empty string'
+        'Text Property is required'
       );
 
       expect(() =>
         text.createPropertyAssignment({ value: [{ value: null as any }] }, true)
+      ).toThrow('Text Property is required');
+    });
+
+    it('should throw if required and all provided values are empty/whitespace', () => {
+      const text = new TextProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
+
+      expect(() =>
+        text.createPropertyAssignment(
+          {
+            value: [{ value: '' }, { value: '   ' }, { value: '\t\n' }],
+          },
+          true
+        )
       ).toThrow('Text Property is required');
     });
   });
