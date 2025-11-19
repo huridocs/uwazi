@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
@@ -36,13 +37,15 @@ import settings from 'api/settings';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import relationships from 'api/relationships';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
 import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 
@@ -177,6 +180,14 @@ export function registerJobs(
       }),
     });
   });
+
+  register(
+    RelationshipSyncJob,
+    async () =>
+      new RelationshipSyncJob({
+        relationships,
+      })
+  );
 
   register(CsvExtractUploadedZipJob, async () => {
     const transactionManager = TransactionManagerFactory.default();

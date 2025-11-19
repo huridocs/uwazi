@@ -46,7 +46,9 @@ class GeolocationProperty extends Property {
     { value }: CreatePropertyAssignmentInput<GeolocationEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<GeolocationEntry> {
-    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.lat?.toString()?.length && v?.value?.lon?.toString()?.length)
+    );
 
     return {
       name: this.name,

@@ -144,12 +144,17 @@ describe('ImageProperty', () => {
     });
 
     it('should throw when provided value is empty string or whitespace', () => {
-      const image = new ImageProperty({ id: 'any_id', label: 'A Title', template: 'any' });
+      const image = new ImageProperty({
+        id: 'any_id',
+        label: 'A Title',
+        template: 'any',
+        required: true,
+      });
 
-      expect(() => image.createPropertyAssignment({ value: [{ value: '' }] })).toThrow(
-        'Image Property must be a non-empty string.'
+      expect(() => image.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
+        'Image Property is required'
       );
-      expect(() => image.createPropertyAssignment({ value: [{ value: '   ' }] })).toThrow(
+      expect(() => image.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
         'Image Property must be a non-empty string.'
       );
     });
