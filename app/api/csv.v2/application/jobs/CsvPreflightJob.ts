@@ -178,7 +178,10 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       const clearedFailure = CsvImportDomain.clearFailure(csvImport);
-      const updated = CsvImportDomain.withStatus(clearedFailure, CsvImportStatus.PreflightThesauriDone);
+      const updated = CsvImportDomain.withStatus(
+        clearedFailure,
+        CsvImportStatus.PreflightThesauriDone
+      );
       await this.deps.csvImportsDS.update(updated);
     });
 
