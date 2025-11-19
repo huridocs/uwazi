@@ -16,9 +16,8 @@ declare module 'express-serve-static-core' {
 }
 
 const getFieldAndIndex = (fieldname: string) => {
-  const fieldAndIndexPattern = /([a-zA-Z0-9]+)\[([0-9]+)\]/g;
-  const groups = fieldAndIndexPattern.exec(fieldname);
-  return groups && { field: groups[1], index: parseInt(groups[2], 10) };
+  const [field, index] = fieldname.replace(']', '').split('[');
+  return field && index && { field, index: parseInt(index, 10) };
 };
 
 class UploadMiddleware {
