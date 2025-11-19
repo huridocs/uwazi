@@ -6,7 +6,7 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
@@ -139,7 +139,7 @@ const CreateRelationshipService = async () => {
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
-  const filesDS = DefaultFilesDataSource(transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
   const denormalizationService = await DenormalizationService(transactionManager);

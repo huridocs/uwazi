@@ -3,7 +3,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { FilesHealthCheck } from '../FilesHealthCheck';
 import { FileStorage } from '../contracts/FileStorage';
-import { DefaultFilesDataSource } from '../database/data_source_defaults';
+import { FilesDataSourceFactory } from '../../core/infrastructure/factories/FilesDataSourceFactory';
 import { CustomUpload } from '../model/CustomUpload';
 import { StoredFile } from '../model/StoredFile';
 import { URLAttachment } from '../model/URLAttachment';
@@ -46,7 +46,7 @@ describe('FilesHealthCheck', () => {
     filesHealthCheck = new FilesHealthCheck(
       //@ts-ignore
       new TestFileStorage(),
-      DefaultFilesDataSource(TransactionManagerFactory.default())
+      FilesDataSourceFactory.default(TransactionManagerFactory.default())
     );
   });
 
