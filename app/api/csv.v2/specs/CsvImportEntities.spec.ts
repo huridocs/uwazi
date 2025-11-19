@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs/promises';
@@ -6,7 +7,6 @@ import path from 'path';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultCsvImportsDataSource } from 'api/csv.v2/infrastructure/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
@@ -20,6 +20,7 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { createUploadedInputFile } from 'api/files.v2/testing/InputFileTestFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CsvImportEntities } from '../CsvImportEntities';
+import { CSVImportEntitiesFactories } from '../infrastructure/factories/CSVImportEntitiesFactories';
 
 describe('CsvImportEntities (integration)', () => {
   const createdImportIds: string[] = [];
@@ -27,22 +28,17 @@ describe('CsvImportEntities (integration)', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({});
     await testingEnvironment.setTenant(undefined, 'csvV2-register');
-    // clean tenant upload paths to avoid cross-test interference (tenant-scoped)
     await testingEnvironment.cleanupUploadPaths();
   });
 
   afterEach(async () => {
     const base = tenants.current().uploadedDocuments;
     // remove per-test csv-imports folders deterministically to avoid leftovers
-    // eslint-disable-next-line no-restricted-syntax
     for (const id of createdImportIds.splice(0)) {
-      // eslint-disable-next-line no-await-in-loop
       await fs.rm(path.join(base, 'csv-imports', id), { recursive: true, force: true });
     }
     // remove local temporary upload dirs
-    // eslint-disable-next-line no-restricted-syntax
     for (const dir of createdTempDirs.splice(0)) {
-      // eslint-disable-next-line no-await-in-loop
       await fs.rm(dir, { recursive: true, force: true });
     }
   });
@@ -54,7 +50,7 @@ describe('CsvImportEntities (integration)', () => {
 
   const setUp = async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
@@ -70,7 +66,7 @@ describe('CsvImportEntities (integration)', () => {
       [CsvExtractUploadedZipJobDispatcher.name]: async () => {
         // IMPORTANT: Use a fresh transaction manager for the job's use case
         const tmForJob = TransactionManagerFactory.default();
-        const dsForJob = DefaultCsvImportsDataSource(tmForJob);
+        const dsForJob = CSVImportEntitiesFactories.CSVImportDataSourceDefault(tmForJob);
         const jobUseCase = new CsvExtractUploadedZipJob({
           csvImportsDS: dsForJob,
           fileStorage: new FileSystemStorage(pathManager),
@@ -98,7 +94,7 @@ describe('CsvImportEntities (integration)', () => {
 
   const setUpIntermediate = async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);

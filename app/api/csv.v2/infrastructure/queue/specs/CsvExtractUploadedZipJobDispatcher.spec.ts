@@ -6,7 +6,6 @@ import path from 'path';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultCsvImportsDataSource } from 'api/csv.v2/infrastructure/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
@@ -18,6 +17,7 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CsvExtractUploadedZipJobDispatcher } from '../CsvExtractUploadedZipJobDispatcher';
+import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];
@@ -49,7 +49,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);

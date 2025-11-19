@@ -41,15 +41,13 @@ import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/qu
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
 import { CsvPreflightJobDispatcher } from 'api/csv.v2/infrastructure/queue/CsvPreflightJobDispatcher';
 import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
-import { DefaultCsvImportsDataSource } from 'api/csv.v2/infrastructure/data_source_defaults';
-import { DefaultCsvImportRowsDataSource } from 'api/csv.v2/infrastructure/csv_import_rows_defaults';
-import { DefaultCsvImportThesauriValuesDataSource } from 'api/csv.v2/infrastructure/csv_import_thesauri_values_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -185,7 +183,7 @@ export function registerJobs(
 
   register(CsvExtractUploadedZipJobDispatcher, async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
     const useCase = new CsvExtractUploadedZipJob({
@@ -200,12 +198,13 @@ export function registerJobs(
 
   register(CsvPreflightJobDispatcher, async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
-    const rowsDS = DefaultCsvImportRowsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDataSourceDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDataSourceDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-    const thesauriValuesDS = DefaultCsvImportThesauriValuesDataSource(transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDataSourceDefault(transactionManager);
     const useCase = new CsvPreflightJob({
       csvImportsDS,
       rowsDS,

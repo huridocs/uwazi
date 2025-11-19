@@ -8,16 +8,32 @@ import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/Te
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DefaultCsvImportsDataSource } from '../data_source_defaults';
+import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { CsvImportEntities } from '../../CsvImportEntities';
 import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
-import { DefaultCsvImportRowsDataSource } from '../csv_import_rows_defaults';
-import { DefaultCsvImportThesauriValuesDataSource } from '../csv_import_thesauri_values_defaults';
+import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource';
+import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource';
+import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
 
 export class CSVImportEntitiesFactories {
+  static CSVImportDataSourceDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportsDataSource(db, transactionManager);
+  }
+
+  static CSVImportRowsDataSourceDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRowsDataSource(db, transactionManager);
+  }
+
+  static CSVImportThesauriValuesDataSourceDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportThesauriValuesDataSource(db, transactionManager);
+  }
+
   static default() {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = this.CSVImportDataSourceDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
     const idGenerator = IdGeneratorFactory.default();
@@ -31,19 +47,19 @@ export class CSVImportEntitiesFactories {
     });
   }
 
-  static CSVPreflightJobFactory() {
+  static CSVPreflightJobDefault() {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = this.CSVImportDataSourceDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     return new CsvPreflightJob({
       csvImportsDS,
-      rowsDS: DefaultCsvImportRowsDataSource(transactionManager),
+      rowsDS: this.CSVImportRowsDataSourceDefault(transactionManager),
       templatesDS,
       settingsDS,
       thesauriDS,
-      thesauriValuesDS: DefaultCsvImportThesauriValuesDataSource(transactionManager),
+      thesauriValuesDS: this.CSVImportThesauriValuesDataSourceDefault(transactionManager),
     });
   }
 }
