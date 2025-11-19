@@ -31,6 +31,7 @@ When continuing work:
 - Routing: `POST /api/import`, admin-only, feature-flagged via `v2CSVImport`.
 - MVP statuses so far: `queued` → `extracting files` → `files extracted`.
 - Events: Job-scoped session notifications, not tenant-wide broadcasts.
+- **Naming convention (Nov 2025)**: application-layer jobs live in `app/api/csv.v2/application/jobs/*Job.ts` (e.g., `CsvExtractUploadedZipJob`, `CsvPreflightJob`). Queue wrappers now live in `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts`. References to “job” in this doc always mean the application-layer class unless explicitly stated.
 
 ### Current module layout & naming (Nov 2025)
 
@@ -41,6 +42,8 @@ When continuing work:
 - `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts` hosts the queue dispatchers that wrap each job.
 - `app/api/csv.v2/infrastructure/mongodb/` holds Mongo DS implementations (imports, rows, **thesauri plan** storage).
 - `app/api/csv.v2/domain/` exposes `CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, and `CsvImportThesauriValues`.
+- `app/api/csv.v2/specs/` holds integration helpers + shared fixtures (e.g., `zipData`, upload temp directories) so v2 tests no longer reach into the v1 folder.
+- `csv_import_thesauri_values` (new Mongo collection) stores per-thesaurus plan documents until the apply job runs.
 
 Whenever this doc or the addenda mention “Job”, assume the application-layer class (`*Job.ts`). “Dispatcher” refers to the queue wrapper under `infrastructure/queue/*JobDispatcher.ts`.
 
