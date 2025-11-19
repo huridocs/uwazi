@@ -1,0 +1,77 @@
+/* eslint-disable max-statements */
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+
+import relationships from 'api/relationships';
+import { RelationshipSyncJob } from '../RelationshipSyncJob';
+
+const factory = getFixturesFactory();
+
+const fixtures: DBFixture = {
+  settings: [
+    {
+      languages: [
+        { default: true, key: 'en', label: 'English' },
+        { key: 'es', label: 'Spanish' },
+      ],
+    },
+  ],
+
+  templates: [
+    factory.template(
+      'Document',
+      [factory.property('text', 'text'), factory.property('numeric', 'numeric')],
+      { default: true }
+    ),
+  ],
+
+  entities: [
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_1', 'Document', {
+      text: [{ value: 'Some text' }],
+      numeric: [{ value: 42 }],
+    }),
+  ],
+};
+
+const createSut = () => {
+  const saveEntityBasedReferencesSpy = jest
+    .spyOn(relationships, 'saveEntityBasedReferences')
+    .mockResolvedValue();
+
+  const sut = new RelationshipSyncJob({ relationships });
+
+  return { sut, saveEntityBasedReferencesSpy };
+};
+
+describe('RelationshipSyncJob', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, true);
+  });
+
+  beforeEach(async () => testingEnvironment.setFixtures(fixtures));
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  it('should call relationships.saveEntityBasedReferences with the correct params', async () => {
+    const { sut, saveEntityBasedReferencesSpy } = createSut();
+    const templateId = factory.id('Document');
+
+    await sut.handleDispatch(async () => Promise.resolve(), {
+      sharedId: 'entity_1',
+      targetLanguage: 'en',
+      templateId: templateId.toHexString(),
+    });
+
+    const template = await testingEnvironment.db
+      .getCollection('templates')
+      ?.findOne({ _id: templateId });
+    const entity = await testingEnvironment.db
+      .getCollection('entities')
+      ?.findOne({ sharedId: 'entity_1', language: 'en' });
+
+    expect(saveEntityBasedReferencesSpy).toHaveBeenCalledWith(entity, 'en', template);
+  });
+});

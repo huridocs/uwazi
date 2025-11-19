@@ -49,7 +49,9 @@ class MultiDateRangeProperty extends FilterableProperty {
     { value }: CreatePropertyAssignmentInput<DateRangeEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<DateRangeEntry> {
-    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.from?.toString()?.length && v?.value?.to?.toString()?.length)
+    );
 
     return {
       name: this.name,

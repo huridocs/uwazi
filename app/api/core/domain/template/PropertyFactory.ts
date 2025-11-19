@@ -3,6 +3,7 @@ import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
 } from 'api/core/domain/template/V1RelationshipProperty';
+import { UnhandledPropertyTypeError } from './errors';
 import { TextProperty, TextPropertyProps } from './TextProperty';
 import { NumericProperty, NumericPropertyProps } from './NumericProperty';
 import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty';
@@ -96,7 +97,7 @@ class PropertyFactory {
         return new NestedProperty(input);
 
       default:
-        throw new Error(`The following type was not handled. Type = ${input.type}`);
+        throw new UnhandledPropertyTypeError(input.type || 'undefined');
     }
   }
 }

@@ -5,6 +5,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { PropertyNotFoundError } from 'api/core/domain/template/errors';
 import { InputFile } from 'api/files.v2/model/InputFile';
+import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
 import { ImagePropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/ImagePropertyAssignmentCreatorService';
 
 const factory = getFixturesFactory();
@@ -119,7 +120,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
           value: [{ attachment: 5 }],
         },
       })
-    ).rejects.toThrow('Attachment with index 5 not found.');
+    ).rejects.toThrow(AttachmentNotFoundError);
   });
 
   it('throws if the property name does not exist in the template', async () => {

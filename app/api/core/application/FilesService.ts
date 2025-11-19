@@ -5,8 +5,6 @@ import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { UwaziFile } from 'api/files.v2/model/UwaziFile';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
@@ -18,6 +16,10 @@ type Deps = {
   filesDS: FilesDataSource;
   jobsDispatcher: JobsDispatcher;
 };
+
+function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
+  return arr.length > 0;
+}
 
 class FilesService {
   constructor(protected deps: Deps) {}
@@ -55,24 +57,19 @@ class FilesService {
   }
 
   async insert(files: UwaziFile[]) {
-    const { _id: userId } = permissionsContext.getUserInContext()!;
-    if (!userId) {
-      throw new Error('No user in context !');
-    }
+    if (isNonEmptyArray<UwaziFile>(files)) {
+      await this.deps.filesDS.bulkCreate(files);
 
-    await this.deps.filesDS.bulkCreate(files);
-
-    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-      files.forEach(file => {
-        if (file instanceof Document) {
-          dispatch(PDFPostProcessJob, {
-            documentId: file.id,
-            userId: userId.toString(),
-            tenantName: tenants.current().name,
-          });
-        }
+      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+        files.forEach(file => {
+          if (file instanceof Document) {
+            dispatch(PDFPostProcessJob, {
+              documentId: file.id,
+            });
+          }
+        });
       });
-    });
+    }
   }
 }
 
