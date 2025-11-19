@@ -51,17 +51,14 @@ export class CsvImportEntities extends AbstractUseCase<
       `${destination}/${filename}`
     );
 
-    this.transactionManager.onCommitted(async () => {
+    await this.transactionManager.run(async () => {
+      await this.deps.csvImportsDS.insert(csvImportWithStorage);
       await this.deps.jobsDispatcher.dispatch(CsvExtractUploadedZipJobDispatcher, {
         tenantName: tenants.current().name,
         userId: input.userId,
         importId: id,
         sessionId: input.sessionId,
       });
-    });
-
-    await this.transactionManager.run(async () => {
-      await this.deps.csvImportsDS.insert(csvImportWithStorage);
     });
 
     return {

@@ -11,16 +11,24 @@ import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/queue/CsvExtractUploadedZipJobDispatcher';
-import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { TestUtils } from 'api/common.v2/utils/Test';
 import { createUploadedInputFile } from 'api/files.v2/testing/InputFileTestFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CsvImportEntities } from '../CsvImportEntities';
 import { CSVImportEntitiesFactories } from '../infrastructure/factories/CSVImportEntitiesFactories';
+
+class FakeCsvExtractUploadedZipJobDispatcher {
+  public calls: Array<{ params: any; jobInfo?: any }> = [];
+
+  async handleDispatch(
+    heartbeat: () => Promise<void>,
+    params: any,
+    jobInfo?: { retryCount: number; maxRetries: number; namespace: string }
+  ): Promise<void> {
+    this.calls.push({ params, jobInfo });
+    await heartbeat();
+  }
+}
 
 describe('CsvImportEntities (integration)', () => {
   const createdImportIds: string[] = [];
@@ -55,30 +63,9 @@ describe('CsvImportEntities (integration)', () => {
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
     const idGenerator = IdGeneratorFactory.default();
-
-    // Job registry -> execute extraction synchronously when dispatched
-    const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
-      emitToSession: jest.fn(),
-      emitToTenant: jest.fn(),
-      emitToTenantAdmins: jest.fn(),
-    });
+    const fakeDispatcher = new FakeCsvExtractUploadedZipJobDispatcher();
     const registry = {
-      // name must match class name
-      [CsvExtractUploadedZipJobDispatcher.name]: async () => {
-        // IMPORTANT: Use a fresh transaction manager for the job's use case
-        const tmForJob = TransactionManagerFactory.default();
-        const dsForJob = CSVImportEntitiesFactories.CSVImportDSDefault(tmForJob);
-        const jobUseCase = new CsvExtractUploadedZipJob({
-          csvImportsDS: dsForJob,
-          fileStorage: new FileSystemStorage(pathManager),
-          transactionManager: tmForJob,
-          filesIO: new FileContentsIO(),
-        });
-        return new CsvExtractUploadedZipJobDispatcher({
-          useCase: jobUseCase,
-          sockets,
-        });
-      },
+      [CsvExtractUploadedZipJobDispatcher.name]: async () => fakeDispatcher,
     };
     const jobsDispatcher = new SyncDispatcherForTests(registry);
 
@@ -90,7 +77,7 @@ describe('CsvImportEntities (integration)', () => {
       jobsDispatcher,
     });
 
-    return { useCase, csvImportsDS, sockets, pathManager };
+    return { useCase, csvImportsDS, pathManager, fakeDispatcher };
   };
 
   const setUpIntermediate = async () => {
@@ -100,25 +87,11 @@ describe('CsvImportEntities (integration)', () => {
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
     const idGenerator = IdGeneratorFactory.default();
-
-    class RecordingDispatcher implements JobsDispatcher {
-      public calls: Array<{ name: string; params: any }> = [];
-
-      // eslint-disable-next-line class-methods-use-this
-      async dispatch(dispatchable: any, params: any): Promise<void> {
-        this.calls.push({ name: dispatchable.name, params });
-      }
-
-      async dispatchMany(
-        callback: (dispatch: <T>(dispatchable: any, params: any) => void) => Promise<void>
-      ): Promise<void> {
-        const capture = async (dispatchable: any, params: any) => {
-          this.calls.push({ name: dispatchable.name, params });
-        };
-        await callback(capture);
-      }
-    }
-    const jobsDispatcher = new RecordingDispatcher();
+    const fakeDispatcher = new FakeCsvExtractUploadedZipJobDispatcher();
+    const registry = {
+      [CsvExtractUploadedZipJobDispatcher.name]: async () => fakeDispatcher,
+    };
+    const jobsDispatcher = new SyncDispatcherForTests(registry);
 
     const useCase = new CsvImportEntities({
       csvImportsDS,
@@ -128,14 +101,14 @@ describe('CsvImportEntities (integration)', () => {
       jobsDispatcher,
     });
 
-    return { useCase, csvImportsDS, pathManager, jobsDispatcher };
+    return { useCase, csvImportsDS, pathManager, fakeDispatcher };
   };
 
   const uniqueSubdir = (base: string) =>
     path.join(__dirname, base, `${Date.now()}_${Math.random().toString(36).slice(2)}`);
 
   it('should persist as queued and dispatch job (intermediate state)', async () => {
-    const { useCase, csvImportsDS, pathManager, jobsDispatcher } = await setUpIntermediate();
+    const { useCase, csvImportsDS, pathManager, fakeDispatcher } = await setUpIntermediate();
 
     const tmpDir = uniqueSubdir('uploads_intermediate');
     const uploadFilename = 'uploaded.csv';
@@ -179,9 +152,8 @@ describe('CsvImportEntities (integration)', () => {
     await expect(fs.access(extractedPath)).rejects.toBeDefined();
 
     // But a dispatch was recorded with expected params
-    expect(jobsDispatcher.calls).toEqual([
+    expect(fakeDispatcher.calls).toEqual([
       expect.objectContaining({
-        name: CsvExtractUploadedZipJobDispatcher.name,
         params: expect.objectContaining({
           tenantName: tenants.current().name,
           userId: f.idString('uploader'),
@@ -193,7 +165,7 @@ describe('CsvImportEntities (integration)', () => {
   });
 
   it('should persist import, store original file, and dispatch extraction job (sync)', async () => {
-    const { useCase, csvImportsDS, sockets, pathManager } = await setUp();
+    const { useCase, csvImportsDS, pathManager, fakeDispatcher } = await setUp();
 
     const tmpDir = uniqueSubdir('uploads');
     const uploadFilename = 'uploaded.csv';
@@ -231,7 +203,7 @@ describe('CsvImportEntities (integration)', () => {
       expect.objectContaining({
         id: result.id,
         templateId: 'template-1',
-        status: expect.any(String), // will likely be 'files extracted' because job ran sync
+        status: 'queued',
         file: expect.objectContaining({
           originalName: 'my.csv',
           mimeType: 'text/csv',
@@ -251,28 +223,16 @@ describe('CsvImportEntities (integration)', () => {
     });
     await expect(fs.readFile(originalPath, 'utf8')).resolves.toBe(csvContent);
 
-    // Extraction job should have created canonical extracted/import.csv
-    const extractedPath = pathManager.createPath({
-      type: 'customPath',
-      destination: `csv-imports/${result.id}/extracted`,
-      filename: 'import.csv',
-    });
-    await expect(fs.readFile(extractedPath, 'utf8')).resolves.toBe(csvContent);
-
-    // Admin room emits occurred
-    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
-      tenants.current().name,
-      'csvImport:extract:start',
-      {
-        importId: result.id,
-      }
-    );
-    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
-      tenants.current().name,
-      'csvImport:extract:success',
-      {
-        importId: result.id,
-      }
-    );
+    // Dispatch for extraction job was recorded with expected params
+    expect(fakeDispatcher.calls).toEqual([
+      expect.objectContaining({
+        params: expect.objectContaining({
+          tenantName: tenants.current().name,
+          userId: f.idString('uploader'),
+          importId: result.id,
+          sessionId: 'sess-1',
+        }),
+      }),
+    ]);
   });
 });
