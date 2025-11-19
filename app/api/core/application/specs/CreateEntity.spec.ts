@@ -20,7 +20,12 @@ import { InputFile } from 'api/files.v2/model/InputFile';
 import { tenants } from 'api/tenants';
 import { PermissionType } from 'api/core/domain/entity/PermissionType';
 import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { CreateEntityUseCase } from '../CreateEntity';
+import { FilesService } from '../FilesService';
+import { EntitiesService } from '../EntitiesService';
+import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
 const factory = getFixturesFactory();
 
@@ -198,31 +203,53 @@ const createSut = (props: CreateSutProps = {}) => {
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
 
-  const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-    getConnection(),
-    transactionManager
-  );
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
-  const filesStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+  const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
+  const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+
+  const jobsDispatcher = DefaultDispatcher(tenants.current().name);
+  const fileService = new FilesService({
+    idGenerator,
+    fileStorage,
+    filesDS,
+    jobsDispatcher,
+  });
+
+  const entitiesService = new EntitiesService({
+    entitiesDS,
+    eventBus,
+    settingsDS,
+    templatesDS,
+    transactionManager,
+    dispatcher: jobsDispatcher,
+  });
+
+  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
+    entitiesDS,
+    settingsDS,
+    thesauriDS,
+    translationsDS,
+  });
+
+  jest.spyOn(fileService, 'storeFiles').mockResolvedValue();
+  jest.spyOn(fileService, 'insert').mockResolvedValue();
 
   const sut = new CreateEntityUseCase(
     {
+      fileService,
       transactionManager,
       idGenerator,
-      settingsDS,
-      multiLanguageEntityDS,
-      templatesDS,
-      thesauriDS,
-      translationsDS,
-      filesDS,
-      filesStorage,
+      entitiesService,
+      eventBus,
+      propertyAssignmentCreatorServiceStrategy,
     },
     context
   );
 
-  return { sut, filesStorage };
+  return { sut, fileService, eventBus };
 };
 
 describe('CreateEntityUseCase', () => {
@@ -237,11 +264,11 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, filesStorage } = createSut();
+    const { sut, fileService } = createSut();
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
-      attachments: [
+      inputFiles: [
         new InputFile(
           {
             fieldname: 'attachments[0]',
@@ -254,6 +281,19 @@ describe('CreateEntityUseCase', () => {
             size: 78636,
           },
           'attachment'
+        ),
+        new InputFile(
+          {
+            fieldname: 'documents[0]',
+            encoding: '7bit',
+            mimetype: 'image/png',
+            destination: '/tmp',
+            originalname: 'primary.pdf',
+            filename: '1162280821775nhs3epb55g7.png',
+            path: '/tmp/1162280821775nhs3epb55g7.png',
+            size: 78636,
+          },
+          'document'
         ),
         new InputFile(
           {
@@ -354,11 +394,6 @@ describe('CreateEntityUseCase', () => {
       ?.find({ sharedId: entity.sharedId })
       .toArray();
 
-    const attachments = await testingEnvironment.db
-      .getCollection('files')
-      ?.find({ type: 'attachment' })
-      .toArray();
-
     const commonFields = {
       template: factory.id('Document'),
       sharedId: expect.any(String),
@@ -366,7 +401,6 @@ describe('CreateEntityUseCase', () => {
       creationDate: expect.any(Number),
       editDate: expect.any(Number),
       published: false,
-      user: null,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
       permissions: [],
@@ -427,7 +461,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 EN',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text EN' }],
@@ -450,7 +483,6 @@ describe('CreateEntityUseCase', () => {
             {
               value: 'B1',
               label: 'B1 ES',
-              icon: null,
               type: 'entity',
               inheritedType: 'text',
               inheritedValue: [{ value: 'B1 Text ES' }],
@@ -462,51 +494,21 @@ describe('CreateEntityUseCase', () => {
 
     expect(entities![0]._id.toHexString()).not.toEqual(entities![1]._id.toHexString());
 
-    expect(attachments).toHaveLength(4);
-    expect(attachments).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 1.png',
-        filename: '1762280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 2.png',
-        filename: '1162280821775nhs3epb55g7.png',
-        mimetype: 'image/png',
-        size: 78636,
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 3.mp4',
-        filename: 'attachment_3.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        type: 'attachment',
-      },
-      {
-        _id: expect.any(ObjectId),
-        creationDate: expect.any(Number),
-        entity: expect.any(String),
-        originalname: 'Attachment 4.mp4',
-        filename: 'attachment_4.mp4',
-        mimetype: 'video/mp4',
-        size: 78636,
-        type: 'attachment',
-      },
+    expect(fileService.storeFiles).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
     ]);
 
-    expect(filesStorage.storeFile).toHaveBeenCalledTimes(4);
+    expect(fileService.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ originalname: 'Attachment 1.png' }),
+      expect.objectContaining({ originalname: 'primary.pdf' }),
+      expect.objectContaining({ originalname: 'Attachment 2.png' }),
+      expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
+      expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+    ]);
   });
 
   it('should add grant access when actor is present', async () => {
@@ -525,7 +527,7 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-      attachments: [],
+      inputFiles: [],
     });
 
     const entities = await testingEnvironment.db

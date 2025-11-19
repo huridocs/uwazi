@@ -1,8 +1,13 @@
+/* eslint-disable max-statements */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
+import { InputFile } from 'api/files.v2/model/InputFile';
 import { search } from 'api/search';
+import { tenants } from 'api/tenants';
 import { withTransaction } from 'api/utils/withTransaction';
+import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -80,9 +85,31 @@ export default app => {
     uploadMiddleware.multiple(),
     activitylogMiddleware,
     async (req, res, next) => {
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+      if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
+        const inputFiles = req?.files?.map(
+          f => new InputFile(f, f.fieldname.match(/document/) ? 'document' : 'attachment')
+        );
+
+        const savedEntity = await EntityFacade.create(entityToSave, inputFiles);
+        const entityInTargetLanguage = MongoEntityMapper.toDBO(savedEntity).find(
+          e => e.language === req.language
+        );
+
+        await updateThesauriWithEntity(entityInTargetLanguage, req);
+
+        // Return in the same format as V1 for client compatibility
+        const response = req.body.entity
+          ? { entity: entityInTargetLanguage, errors: [] }
+          : entityInTargetLanguage;
+
+        res.json(response);
+
+        return;
+      }
+
       try {
         const result = await withTransaction(async ({ abort }) => {
-          const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
           const saveResult = await saveEntity(entityToSave, {
             user: req.user,
             language: req.language,

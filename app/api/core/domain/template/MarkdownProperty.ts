@@ -37,7 +37,9 @@ class MarkdownProperty extends FilterableProperty {
     { value }: CreatePropertyAssignmentInput<MarkdownEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<MarkdownEntry> {
-    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.toString()?.length)
+    );
 
     return {
       name: this.name,

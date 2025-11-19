@@ -136,9 +136,9 @@ describe('Entity', () => {
     expect(entity.getTranslation('en').creationDate.value[0].value).toEqual(expect.any(Number));
 
     expect(entity.translations).toEqual({
-      en: entityLanguage,
-      es: { ...entityLanguage, language: 'es' },
-      fr: { ...entityLanguage, language: 'fr' },
+      en: { ...entityLanguage, id: { value: expect.any(String) } },
+      es: { ...entityLanguage, id: { value: expect.any(String) }, language: 'es' },
+      fr: { ...entityLanguage, id: { value: expect.any(String) }, language: 'fr' },
     });
   });
 
@@ -387,9 +387,9 @@ describe('Entity', () => {
     });
 
     expect(entity.translations).toEqual({
-      en: entityLanguage,
-      es: { ...entityLanguage, language: 'es' },
-      fr: { ...entityLanguage, language: 'fr' },
+      en: { ...entityLanguage, id: { value: expect.any(String) } },
+      es: { ...entityLanguage, id: { value: expect.any(String) }, language: 'es' },
+      fr: { ...entityLanguage, id: { value: expect.any(String) }, language: 'fr' },
     });
   });
 
