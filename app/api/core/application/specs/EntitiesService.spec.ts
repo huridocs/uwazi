@@ -10,7 +10,6 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { tenants } from 'api/tenants';
@@ -24,6 +23,7 @@ import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { Entity } from 'api/core/domain/entity/Entity';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesService } from '../FilesService';
 import { EntitiesService } from '../EntitiesService';
 
@@ -56,7 +56,7 @@ const createSut = () => {
 
   const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
-  const filesDS = DefaultFilesDataSource(transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
