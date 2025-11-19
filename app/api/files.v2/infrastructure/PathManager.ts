@@ -31,7 +31,7 @@ export class PathManager {
   createPath(input: UwaziFile | CreatePathInput) {
     if (input instanceof BaseFile) {
       const directory = this.directory[input.type];
-      if (!directory) throw new Error(`The following File Type is not supported ${input.type}`);
+      if (!directory) throw new Error(`The following File Type is not supported -> ${input.type}`);
 
       return path.join(directory, input.filename);
     }

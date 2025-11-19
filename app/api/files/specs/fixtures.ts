@@ -1,6 +1,7 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
+import { custom } from 'zod';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -19,10 +20,81 @@ const importTemplate = db.id('507f1f77bcf86cd799439011');
 const thesaurusId = db.id('507f1f77bcf86cd799439012');
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
-const fileName1 = 'english_testing_file.pdf';
+const mainDocument1 = 'english_testing_file.pdf';
 const fileOnPublicEntity = 'fileOnPublicEntity.pdf';
-const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
+const restrictedFileName = 'restricted.pdf';
 const customPdfFileName = 'customPDF.pdf';
+
+const publicEntityFile = {
+  _id: db.id(),
+  creationDate: 1,
+  entity: 'publicEntity',
+  generatedToc: true,
+  originalname: 'publicEntityFile',
+  filename: fileOnPublicEntity,
+  mimetype: 'application/pdf',
+  type: 'document',
+  language: 'eng',
+} as const;
+
+const mainDoc = {
+  _id: uploadId,
+  creationDate: 1,
+  entity: 'sharedId1',
+  generatedToc: true,
+  originalname: '테스트 한글chinese-file',
+  filename: mainDocument1,
+  mimetype: 'application/pdf',
+  type: 'document',
+  language: 'eng',
+} as const;
+
+const restrictedCustomPdf = {
+  _id: db.id(),
+  entity: 'restrictedSharedId',
+  creationDate: 1,
+  originalname: 'customPdf',
+  filename: customPdfFileName,
+  mimetype: 'application/pdf',
+  type: 'custom',
+  language: 'eng',
+} as const;
+
+const attachment = {
+  _id: db.id(),
+  creationDate: 1,
+  originalname: 'originalAttachmentName',
+  entity: 'sharedId1',
+  type: 'attachment',
+  filename: 'attachment.txt',
+} as const;
+
+const thumbnail = {
+  _id: db.id(),
+  creationDate: 1,
+  originalname: 'thumbnailOriginalName',
+  entity: 'publicEntity',
+  type: 'thumbnail',
+  filename: 'thumbnail.jpg',
+} as const;
+
+const restrictedThumbnail = {
+  _id: db.id(),
+  creationDate: 1,
+  originalname: 'restrictedThumbnail',
+  entity: 'restrictedSharedId',
+  type: 'thumbnail',
+  filename: 'restricted.jpg',
+} as const;
+
+const downloadFixtures = {
+  thumbnail,
+  attachment,
+  restrictedCustomPdf,
+  mainDoc,
+  publicEntityFile,
+  restrictedThumbnail,
+};
 
 const collabUser = {
   _id: db.id(),
@@ -45,28 +117,7 @@ const adminUser = {
 
 const fixtures: DBFixture = {
   files: [
-    {
-      _id: db.id(),
-      creationDate: 1,
-      entity: 'publicEntity',
-      generatedToc: true,
-      originalname: 'publicEntityFile',
-      filename: fileOnPublicEntity,
-      mimetype: 'application/pdf',
-      type: 'document',
-      language: 'eng',
-    },
-    {
-      _id: uploadId,
-      creationDate: 1,
-      entity: 'sharedId1',
-      generatedToc: true,
-      originalname: 'upload1',
-      filename: fileName1,
-      mimetype: 'application/pdf',
-      type: 'document',
-      language: 'eng',
-    },
+    ...Object.values(downloadFixtures),
     {
       _id: uploadId2,
       generatedToc: true,
@@ -74,24 +125,6 @@ const fixtures: DBFixture = {
       filename: 'fileNotInDisk',
       originalname: 'fileNotInDisk',
       type: 'document',
-    },
-    {
-      _id: db.id(),
-      entity: 'restrictedSharedId',
-      originalname: 'customPdf',
-      filename: customPdfFileName,
-      mimetype: 'application/pdf',
-      type: 'custom',
-      language: 'eng',
-    },
-    {
-      _id: customFileId,
-      entity: 'restrictedSharedId',
-      originalname: 'customPdf',
-      filename: 'custom_file.pdf',
-      mimetype: 'application/pdf',
-      type: 'custom',
-      language: 'eng',
     },
     {
       _id: restrictedUploadId,
@@ -125,7 +158,12 @@ const fixtures: DBFixture = {
       entity: 'sharedId1',
       filename: 'fileWithoutTocFlag',
     },
-    { _id: db.id(), originalname: 'fileNotONDisk', filename: 'fileNotOnDisk', type: 'custom' },
+    {
+      _id: db.id(),
+      originalname: 'fileNotONDisk',
+      filename: 'fileNotOnDisk',
+      type: 'custom',
+    },
     { _id: db.id(), originalname: 'upload2', type: 'document' },
     { _id: db.id(), originalname: 'upload3', type: 'custom' },
     {
@@ -158,6 +196,7 @@ const fixtures: DBFixture = {
       generatedToc: true,
       template: allowedPublicTemplate,
       metadata: {},
+      published: true,
     },
     {
       _id: entityEnId,
@@ -207,7 +246,13 @@ const fixtures: DBFixture = {
       _id: importTemplate,
       default: true,
       name: 'import',
-      properties: [{ name: 'select_with_spaces', type: 'select', content: thesaurusId }],
+      properties: [
+        {
+          name: 'select_with_spaces',
+          type: 'select',
+          content: thesaurusId,
+        },
+      ],
     },
   ],
   dictionaries: [
@@ -290,21 +335,22 @@ const fixtures: DBFixture = {
 export {
   adminUser,
   allowedPublicTemplate,
+  allowedPublicTemplate as templateId,
   collabUser,
   customFileId,
   customPdfFileName,
+  downloadFixtures,
   entityEnId,
   entityId,
   externalUrlFileId,
-  fileName1,
   fileOnPublicEntity,
   fixtures,
   importTemplate,
+  mainDocument1,
   readOnlyUploadId,
   restrictedFileName,
   restrictedUploadId,
   restrictedUploadId2,
-  allowedPublicTemplate as templateId,
   uploadId,
   uploadId2,
   writerUser,
