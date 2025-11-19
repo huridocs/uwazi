@@ -363,6 +363,7 @@
     "plop": "^4.0.1",
     "postcss": "8.5.2",
     "postcss-nesting": "^13.0.2",
+    "postcss-prefixwrap": "^1.57.0",
     "prettier": "3.5.0",
     "puppeteer": "^13.5.2",
     "redux-mock-store": "^1.5.5",

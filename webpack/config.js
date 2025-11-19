@@ -113,7 +113,7 @@ module.exports = production => {
             /\.css$/,
           ],
           use: [
-            MiniCssExtractPlugin.loader,
+            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
