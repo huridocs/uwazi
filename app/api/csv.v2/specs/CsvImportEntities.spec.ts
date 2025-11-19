@@ -60,6 +60,7 @@ describe('CsvImportEntities (integration)', () => {
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
       emitToSession: jest.fn(),
       emitToTenant: jest.fn(),
+      emitToTenantAdmins: jest.fn(),
     });
     const registry = {
       // name must match class name
@@ -258,12 +259,20 @@ describe('CsvImportEntities (integration)', () => {
     });
     await expect(fs.readFile(extractedPath, 'utf8')).resolves.toBe(csvContent);
 
-    // Session emits occurred
-    expect(sockets.emitToSession).toHaveBeenCalledWith('sess-1', 'csvImport:extract:start', {
-      importId: result.id,
-    });
-    expect(sockets.emitToSession).toHaveBeenCalledWith('sess-1', 'csvImport:extract:success', {
-      importId: result.id,
-    });
+    // Admin room emits occurred
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:start',
+      {
+        importId: result.id,
+      }
+    );
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:success',
+      {
+        importId: result.id,
+      }
+    );
   });
 });

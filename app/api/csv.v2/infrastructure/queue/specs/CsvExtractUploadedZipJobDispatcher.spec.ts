@@ -62,6 +62,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
       emitToSession: jest.fn(),
       emitToTenant: jest.fn(),
+      emitToTenantAdmins: jest.fn(),
     });
     const job = new CsvExtractUploadedZipJobDispatcher({ useCase, sockets });
     return { csvImportsDS, pathManager, fileStorage, job, sockets };
@@ -82,7 +83,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     return heartBeat;
   };
 
-  it('should emit start/progress/success to session and extract files', async () => {
+  it('should emit start/progress/success to tenant admins and extract files', async () => {
     const { csvImportsDS, fileStorage, job, sockets } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-happy');
@@ -125,17 +126,25 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const updated = await csvImportsDS.getById(id);
     expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
     expect(updated?.failure ?? undefined).toBeUndefined();
-    expect(sockets.emitToSession).toHaveBeenCalledWith('sess-1', 'csvImport:extract:start', {
-      importId: id,
-    });
-    expect(sockets.emitToSession).toHaveBeenCalledWith('sess-1', 'csvImport:extract:success', {
-      importId: id,
-    });
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:start',
+      {
+        importId: id,
+      }
+    );
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:success',
+      {
+        importId: id,
+      }
+    );
     // progress implies at least one heartbeat
     expect(heartBeat).toHaveBeenCalled();
   });
 
-  it('should not emit when sessionId is missing', async () => {
+  it('should emit events regardless of sessionId presence', async () => {
     const { csvImportsDS, fileStorage, job, sockets } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-happy-no-session');
@@ -169,7 +178,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
     await executeJob(job, { importId: id });
     createdImportIds.push(id);
-    expect(sockets.emitToSession).not.toHaveBeenCalled();
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalled();
   });
 
   it('should mark failed on last retry after error', async () => {

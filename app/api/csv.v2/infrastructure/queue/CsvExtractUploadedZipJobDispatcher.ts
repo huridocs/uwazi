@@ -22,16 +22,16 @@ export class CsvExtractUploadedZipJobDispatcher extends UserAwareDispatchable<Pa
   }
 
   async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
+    const { tenantName } = this;
+
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:start', {
-                importId,
-              });
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:start', {
+              importId,
+            });
           },
           onProgress: ({
             importId,
@@ -43,27 +43,21 @@ export class CsvExtractUploadedZipJobDispatcher extends UserAwareDispatchable<Pa
             // Renew lock while making progress
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:progress', {
-                importId,
-                processedFiles,
-              });
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:progress', {
+              importId,
+              processedFiles,
+            });
           },
           onSuccess: ({ importId }: { importId: string }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:success', {
-                importId,
-              });
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:success', {
+              importId,
+            });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:error', {
-                importId,
-                message: error.message,
-              });
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:error', {
+              importId,
+              message: error.message,
+            });
           },
         },
       });

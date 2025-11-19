@@ -22,36 +22,29 @@ export class CsvPreflightJobDispatcher extends UserAwareDispatchable<Params> {
   }
 
   async handle(_heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
+    const { tenantName } = this;
+
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(
-                this.params.sessionId,
-                'csvImport:preflight:thesauri:start',
-                { importId }
-              );
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:start', {
+              importId,
+            });
           },
           onSuccess: ({ importId }: { importId: string }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(
-                this.params.sessionId,
-                'csvImport:preflight:thesauri:success',
-                { importId }
-              );
-            }
+            this.deps.sockets.emitToTenantAdmins(
+              tenantName,
+              'csvImport:preflight:thesauri:success',
+              { importId }
+            );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
-            if (this.params.sessionId) {
-              this.deps.sockets.emitToSession(
-                this.params.sessionId,
-                'csvImport:preflight:thesauri:error',
-                { importId, message: error.message }
-              );
-            }
+            this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:error', {
+              importId,
+              message: error.message,
+            });
           },
         },
       });
