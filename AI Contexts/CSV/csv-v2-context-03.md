@@ -32,6 +32,18 @@ When continuing work:
 - MVP statuses so far: `queued` → `extracting files` → `files extracted`.
 - Events: Job-scoped session notifications, not tenant-wide broadcasts.
 
+### Current module layout & naming (Nov 2025)
+
+- `app/api/csv.v2/application/` holds the job/business logic:
+  - `jobs/*Job.ts` are the actual application-layer jobs (e.g., `CsvExtractUploadedZipJob`, `CsvPreflightJob`).
+  - `services/` contains helpers such as `CsvHeaderAnalyzer`, `CsvReader`, `CsvThesauriValuesBuilder`.
+  - `contracts/` declares DS interfaces (`CsvImportsDataSource`, `CsvImportRowsDataSource`, `CsvImportThesauriValuesDataSource`, etc.).
+- `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts` hosts the queue dispatchers that wrap each job.
+- `app/api/csv.v2/infrastructure/mongodb/` holds Mongo DS implementations (imports, rows, **thesauri plan** storage).
+- `app/api/csv.v2/domain/` exposes `CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, and `CsvImportThesauriValues`.
+
+Whenever this doc or the addenda mention “Job”, assume the application-layer class (`*Job.ts`). “Dispatcher” refers to the queue wrapper under `infrastructure/queue/*JobDispatcher.ts`.
+
 ### Legacy CSV Import (V1) — Preflight and Import Flow (Deep Dive)
 
 The legacy flow is executed via the non-v2-flagged route, which directly constructs a `CSVLoader` and processes the upload immediately on the request thread:
@@ -159,7 +171,7 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
 - After `files extracted`:
-  1. `CsvPreflightPreparationUseCase` + Job
+  1. `CsvPreflightJob` (preflight preparation)
      - Reads `extracted/import.csv` and the target template.
      - Replicates V1 `arrangeThesauri` behavior with domain/DS patterns and transactions.
      - On success: set status to `preflight:thesauri:done` (or keep in `preflight` with a substage field if we add `stages` later).
@@ -386,7 +398,7 @@ sequenceDiagram
 
 ### Testing discipline and current test status (must fix)
 
-- The current use case tests for preflight (`app/api/csv.v2/services/specs/CsvPreflightPreparationUseCase.spec.ts`) contain errors and have not been validated end-to-end. Before any merge:
+- The current preflight tests (`app/api/csv.v2/application/jobs/specs/CsvPreflightJob.spec.ts`) contain errors and have not been validated end-to-end. Before any merge:
   - Fix and run these tests locally; they must pass.
   - Add missing scenarios (parent/child, multiselect, case-insensitive, trimming, translations, error paths).
   - Ensure rows are staged as DB fixtures in tests; no file reads in preflight tests.
@@ -422,7 +434,7 @@ sequenceDiagram
   - Run unit/integration tests for affected areas; fix before proceeding.
   - If design assumptions change, update this MD first and confirm alignment; do not proceed coding against outdated assumptions.
 
-### Testing plan (v2) — CsvPreflightPreparationUseCase (full parity with V1)
+### Testing plan (v2) — CsvPreflightJob (full parity with V1)
 
 - Philosophy:
   - Integration-first: real Mongo via TM-aware DS, real FS (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
@@ -507,7 +519,7 @@ sequenceDiagram
 ### ToDos (near-term, preflight)
 
 - Define preflight statuses and (temporary) event names under `csvImport:preflight:*`.
-- Implement `CsvPreflightPreparationUseCase`:
+- Implement `CsvPreflightJob` preparation stage:
   - Mirror V1 `arrangeThesauri` parsing and save behavior with domain/DS patterns and transactions.
   - Write tests: happy path, invalid formats, translation updates, idempotency.
 - Implement `CsvPreflightRelationshipEntitiesUseCase`:
@@ -540,7 +552,7 @@ sequenceDiagram
 - Ensure fairness across tenants/imports and prevent queue flooding; add metrics for queue depth per import/tenant and worker utilization.
 - Thesauri preflight test ToDos:
   - Create CSV fixtures under `app/api/csv.v2/specs/thesauri/fixtures/` as listed.
-  - Implement integration tests for `CsvPreflightPreparationUseCase` covering the matrix above.
+  - Implement integration tests for `CsvPreflightJob` covering the matrix above (once apply stage exists).
   - Verify idempotency by re-running the use case; assert no additional thesauri writes.
   - Assert translations updates match v1 expectations for sanitized labels.
 

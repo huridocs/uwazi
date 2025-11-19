@@ -12,13 +12,15 @@ This addendum captures _everything_ required to continue the CsvHeaderAnalyzer w
 
 Read `csv-v2-context-01.md → 02 → 03` first. They describe the program-wide constraints (hexagonal architecture, staged rows, job sequencing, status/event rules, DS factories, etc.). This addendum narrows the lens to the header analyzer + tests.
 
+**Naming note (Nov 2025):** Job logic now lives under `app/api/csv.v2/application/jobs/*Job.ts`, while queue-facing dispatchers live under `infrastructure/queue/*JobDispatcher.ts`. Whenever this doc mentions a “job”, it refers to the application-layer class (e.g., `CsvPreflightJob`); emitters/queues use the dispatcher counterpart.
+
 ### Current status
 
 - `app/api/csv.v2/application/CsvHeaderAnalyzer.ts` is a placeholder that:
   - Depends on `TemplateSchema` + `propertyTypes` from v1.
   - Skips header sanitization, mixed-column checks, and the full validation matrix from V1’s `validateColumns.ts`.
   - Lacks dedicated error types/tests.
-- `CsvPreflightPreparationUseCase` already imports this analyzer, so once we give it the new signature (Template domain, settings data) TypeScript will force the follow-up fixes in that use case.
+- `CsvPreflightJob` already imports this analyzer, so once we give it the new signature (Template domain, settings data) TypeScript will force the follow-up fixes in that job.
 - No standalone spec exists for the analyzer yet.
 
 ### Goal (non-negotiable)
@@ -62,7 +64,7 @@ The template must be the V2 domain object; the options object comes directly fro
 ### Error classification & messaging
 
 - Analyzer errors are deterministic and therefore **non-retriable**. They should bubble up as `NonRetryableJobError` from the use case, set the import status to `failed`, and persist a failure payload on the import document (`{ message, retryable: false, at: 'preflight:thesauri', stage: 'header-analyzer' }` or similar).
-- Analyzer aggregates *all* header issues per run. `CsvHeaderAnalyzerError` now exposes `issues: AnalyzerIssue[]` so clients can emit/persist multi-error feedback instead of surfacing one failure per upload attempt. `CsvPreflightPreparationUseCase` persists these issues into `csv_imports.failure.issues` (and marks the import `failed`) before rethrowing a `NonRetryableJobError`.
+- Analyzer aggregates *all* header issues per run. `CsvHeaderAnalyzerError` now exposes `issues: AnalyzerIssue[]` so clients can emit/persist multi-error feedback instead of surfacing one failure per upload attempt. `CsvPreflightJob` persists these issues into `csv_imports.failure.issues` (and marks the import `failed`) before rethrowing a `NonRetryableJobError`.
 - Suggested error reasons: `MixedLanguageColumns`, `UnsupportedLanguageColumn`, `MissingDefaultLanguage`, `PropertyNotFound`, `InvalidLanguageSuffix`. Payload should mention the offending columns/properties to aid users.
 - Keep messages user-friendly (plain language, actionable). Avoid internal jargon like “PropertyName.fromLabel” in errors.
 
@@ -91,19 +93,19 @@ Testing approach:
    - Analyzer now receives the Template domain + analyzer options (`availableLanguages`, `defaultLanguage`, `newNameGeneration`) and throws `CsvHeaderAnalyzerError` on failures.
 3. **Add analyzer specs** ✅
    - Covers all v1 scenarios plus `file__` behavior and new-name-generation sanitization.
-4. **Update `CsvPreflightPreparationUseCase`** ✅
+4. **Update `CsvPreflightJob`** ✅
    - Retrieves the Template domain via `templatesDS.getById`, pulls analyzer options from `settingsDS`, and wraps analyzer errors in `NonRetryableJobError`.
 5. **Propagate status/error handling** (future)
    - Ensure job/use-case emits informative session events when analyzer fails.
-6. **Fix CsvPreflightPreparationUseCase.spec.ts** ⛔ (TODO)
-   - Current spec file is broken (TS, lint, runtime). Track fixes under todo `Fix CsvPreflightPreparationUseCase.spec.ts errors and reenable tests`.
+- **Fix CsvPreflightJob integration spec** ⛔ (TODO)
+   - The job spec under `app/api/csv.v2/application/jobs/specs/CsvPreflightJob.spec.ts` is still out of date (TS/lint/runtime errors). Update once the apply-stage exists.
 
 ### References
 
 - V1 behavior: `app/api/csv/validateColumns.ts`
 - Template domain naming: `app/api/core/domain/template/PropertyName.ts`
 - Template validation (title/common properties): `TemplateWithMissingCommonPropertyValidator`
-- Existing use case consumer: `app/api/csv.v2/services/CsvPreflightPreparationUseCase.ts`
+- Existing consumer: `app/api/csv.v2/application/jobs/CsvPreflightJob.ts`
 - Program-wide contexts: `csv-v2-context-01.md`, `csv-v2-context-02.md`, `csv-v2-context-03.md`
 
 Keep this document updated whenever requirements evolve. The success metric is: a new agent reads this file + the earlier context docs and can continue the analyzer work without any additional oral history.

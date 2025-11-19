@@ -73,7 +73,8 @@ tenants/*
 .babel-cache/
 
 # CSV v2 test temp dirs
-app/api/csv.v2/services/specs/uploads/
-app/api/csv.v2/services/specs/uploads_intermediate/
-app/api/csv.v2/services/specs/tmp/
-app/api/csv.v2/jobs/specs/tmp/
+app/api/csv.v2/application/jobs/specs/uploads/
+app/api/csv.v2/application/jobs/specs/uploads_intermediate/
+app/api/csv.v2/application/jobs/specs/tmp/
+app/api/csv.v2/specs/uploads/
+app/api/csv.v2/specs/uploads_intermediate/

@@ -37,12 +37,13 @@ import settings from 'api/settings';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
-import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
-import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
-import { CsvPreflightPreparationJob } from 'api/csv.v2/jobs/CsvPreflightPreparationJob';
-import { CsvPreflightPreparationUseCase } from 'api/csv.v2/services/CsvPreflightPreparationUseCase';
-import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
-import { DefaultCsvImportRowsDataSource } from 'api/csv.v2/database/csv_import_rows_defaults';
+import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/queue/CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
+import { CsvPreflightJobDispatcher } from 'api/csv.v2/infrastructure/queue/CsvPreflightJobDispatcher';
+import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
+import { DefaultCsvImportsDataSource } from 'api/csv.v2/infrastructure/data_source_defaults';
+import { DefaultCsvImportRowsDataSource } from 'api/csv.v2/infrastructure/csv_import_rows_defaults';
+import { DefaultCsvImportThesauriValuesDataSource } from 'api/csv.v2/infrastructure/csv_import_thesauri_values_defaults';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
@@ -182,36 +183,38 @@ export function registerJobs(
     });
   });
 
-  register(CsvExtractUploadedZipJob, async () => {
+  register(CsvExtractUploadedZipJobDispatcher, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
-    const useCase = new CsvExtractUploadedZipUseCase({
+    const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileStorage,
       transactionManager,
       filesIO: new FileContentsIO(),
     });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvExtractUploadedZipJob({ useCase, sockets });
+    return new CsvExtractUploadedZipJobDispatcher({ useCase, sockets });
   });
 
-  register(CsvPreflightPreparationJob, async () => {
+  register(CsvPreflightJobDispatcher, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
     const rowsDS = DefaultCsvImportRowsDataSource(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-    const useCase = new CsvPreflightPreparationUseCase({
+    const thesauriValuesDS = DefaultCsvImportThesauriValuesDataSource(transactionManager);
+    const useCase = new CsvPreflightJob({
       csvImportsDS,
       rowsDS,
       templatesDS,
       settingsDS,
       thesauriDS,
+      thesauriValuesDS,
     });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvPreflightPreparationJob({ useCase, sockets });
+    return new CsvPreflightJobDispatcher({ useCase, sockets });
   });
 }

@@ -8,15 +8,35 @@
 
 ### Why this addendum exists
 
-We discovered that the current `CsvPreflightPreparationUseCase` only performs a shallow, incomplete version of v1’s `arrangeThesauri` logic, and lumps parsing + DB writes into one step. This doc spells out:
+We discovered that the current preflight stage (`CsvPreflightJob`) only performs a shallow, incomplete version of v1’s `arrangeThesauri` logic, and lumps parsing + DB writes into one step. This doc spells out:
 
 1. What v1 actually did and why.
 2. What the current v2 code is missing.
 3. How we will evolve the flow into two clear responsibilities:
-   - **Preparation**: analyze staged rows, replicate v1 parsing, surface _all_ deterministic errors, and persist a “plan” of missing values/translations.
+   - **Preparation** (`CsvPreflightJob`): analyze staged rows, replicate v1 parsing, surface _all_ deterministic errors, and persist a “plan” of missing values/translations.
    - **Application**: consume the plan and perform idempotent thesaurus writes plus translation updates.
 
 New agents should be able to pick up this plan without re-litigating the legacy behavior.
+
+---
+
+### Module layout (Nov 2025)
+
+- `application/`
+  - `contracts/`: CSV imports DS, CSV import rows DS, **CsvImportThesauriValuesDataSource** (new).
+  - `jobs/`: `CsvExtractUploadedZipJob` (extraction) and `CsvPreflightJob` (headers + thesauri preparation).
+  - `services/`: helper utilities (`CsvHeaderAnalyzer`, `CsvThesauriValuesBuilder`, `CsvReader`, etc.).
+- `domain/`
+  - `CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, **`CsvImportThesauriValues`**.
+- `infrastructure/`
+  - `data_source_defaults.ts`, `csv_import_rows_defaults.ts`, **`csv_import_thesauri_values_defaults.ts`**.
+  - `mongodb/`: `MongoCsvImportsDataSource`, `MongoCsvImportRowsDataSource`, **`MongoCsvImportThesauriValuesDataSource`**.
+  - `queue/`: dispatchers for extraction and preflight jobs.
+  - `schemas/`: `CsvImportTypes`, **`CsvImportThesauriValuesTypes`**.
+
+Use this map when navigating the refactored module.
+
+**Job naming:** Application-layer jobs live in `application/jobs/*Job.ts`, while queue wrappers live in `infrastructure/queue/*JobDispatcher.ts`. When this doc references `CsvPreflightJob`, it means the application job (not the dispatcher).
 
 ---
 
@@ -51,7 +71,7 @@ Key responsibilities:
 
 ### Current V2 implementation (pre-refactor)
 
-File: `app/api/csv.v2/services/CsvPreflightPreparationUseCase.ts`
+File: `app/api/csv.v2/application/jobs/CsvPreflightJob.ts`
 
 Issues / gaps:
 
@@ -75,7 +95,7 @@ Issues / gaps:
 
 ### Proposed architecture
 
-#### Stage 1: `CsvPreflightPreparationUseCase` (analysis-only)
+#### Stage 1: `CsvPreflightJob` (analysis-only)
 
 Responsibilities:
 
@@ -132,11 +152,13 @@ Responsibilities:
 ### Implementation plan
 
 1. **Parser extraction** ✅
-   - Implemented `CsvThesauriValuesBuilder` (see specs) to read staged rows, mirror v1 parsing behaviors, emit aggregated issues, and return plan entries grouped per thesaurus. Plans are now stored in `csv_import_thesauri_values`.
-2. **Preparation use case updates**:
-   - Replace inlined parsing with the builder.
-   - Persist plan documents in `csv_import_thesauri_values` and aggregated issues (`failure.issues`) before throwing.
-   - Dispatch the new “apply plan” job after successful plan creation.
+   - Implemented `CsvThesauriValuesBuilder` (see specs) to read staged rows, mirror v1 parsing behaviors, emit aggregated issues, and return plan entries grouped per thesaurus. Plans are persisted in `csv_import_thesauri_values`.
+2. **Preparation stage updates** ✅
+   - `CsvPreflightJob` now uses the builder, persists aggregated issues, and stores per-thesaurus plan docs via `CsvImportThesauriValuesDataSource`.
+   - Status transitions remain `preflight:thesauri` → `preflight:thesauri:done`.
+3. **Apply-plan job/use case**:
+   - Build `CsvApplyThesauriPlanUseCase` + job similar to extraction job patterns.
+   - Wire it in `queueRegistry`, reusing the same `thesauriDS` etc.
 3. **Apply-plan job/use case**:
    - Build `CsvApplyThesauriPlanUseCase` + job similar to extraction job patterns.
    - Wire it in `queueRegistry`, reusing the same `thesauriDS` etc.
@@ -152,11 +174,9 @@ Responsibilities:
 
 ### Current TODOs (from this addendum)
 
-1. Implement `CsvThesauriPlanBuilder` (v1 parity parser).
-2. Modify `CsvPreflightPreparationUseCase` to use the builder, persist plans, and aggregate/persist errors.
-3. Introduce `CsvApplyThesauriPlanUseCase` + job; dispatch it after preparation completes.
-4. Implement `csv_import_thesauri_values` schema + DS for plan persistence.
-5. Revive/replace `CsvPreflightPreparationUseCase.spec.ts` to cover the new behavior.
-6. Document the plan format and failure schema for the future `/csv_imports/{importId}` endpoint.
+1. Introduce `CsvApplyThesauriPlanUseCase` + job; dispatch it after preparation completes.
+2. Implement `csv_import_thesauri_values` read/update flows inside the apply job (delete docs when done, resume safely).
+3. Restore/replace preflight integration tests (`CsvPreflightJob.spec.ts`) once the apply flow exists.
+4. Document the plan format and failure schema for the future `/csv_imports/{importId}` endpoint + GET API.
 
 Keep this document synchronized with reality so the next agent can pick up any remaining steps without digging through history.
