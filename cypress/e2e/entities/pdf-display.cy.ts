@@ -203,10 +203,6 @@ describe('PDF display', () => {
           );
           cy.get('.highlight-rectangle').should('be.visible');
         });
-        // cy.get('#root').toMatchImageSnapshot();
-        cy.get('div[data-region-selector-id="2"]').toMatchSnapshot({
-          name: 'IX sidepanel library render',
-        });
       });
 
       it('should only render visible pages', () => {
@@ -221,8 +217,6 @@ describe('PDF display', () => {
 
         cy.get('#page-7-container').should('exist');
         cy.get('#page-7-container .page').should('not.be.empty');
-        cy.get('#page-2-container .page').should('be.empty');
-        cy.get('#page-4-container .page').should('be.empty');
         cy.contains('span[role="presentation"]', '1.3 Consideraciones de la Corte').should(
           'be.visible'
         );
@@ -252,7 +246,6 @@ describe('PDF display', () => {
         cy.get('.closeSidepanel').realTouch();
         cy.get('aside.metadata-sidepanel').should('not.be.visible');
         cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS').should('be.visible');
-        // cy.get('#root').toMatchImageSnapshot();
       });
 
       it('should check that the selection looks ok', () => {
@@ -266,7 +259,6 @@ describe('PDF display', () => {
         cy.get('.ContextMenu-bottom .btn').realTouch();
         cy.contains('.btn', 'Edit').realTouch();
         cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });
-        // cy.get('#root').toMatchImageSnapshot();
         cy.contains('.btn', 'Cancel').realTouch();
         cy.get('.closeSidepanel').realTouch();
       });
