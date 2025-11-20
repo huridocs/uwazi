@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { useId } from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
@@ -15,9 +15,15 @@ interface SidePanelProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
+const sidepanelHeader = (
+  closeSidepanelFunction: () => any,
+  title?: React.ReactNode,
+  titleId?: string
+) => (
   <div className="flex p-4 mb-2 text-gray-500">
-    <h1 className="text-base font-bold grow">{title}</h1>
+    <h1 className="text-base font-bold grow" id={titleId}>
+      {title}
+    </h1>
     <button
       type="button"
       className="justify-end"
@@ -42,6 +48,7 @@ const Sidepanel = ({
   size = 'medium',
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
+  const titleId = useId();
 
   let transitionRight = '-translate-x-[500px]';
   let transitionLeft = '-translate-x-[-500px]';
@@ -84,9 +91,12 @@ const Sidepanel = ({
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
         >
           <div className={contentClasses}>
-            {sidepanelHeader(closeSidepanelFunction, title)}
+            {sidepanelHeader(closeSidepanelFunction, title, titleId)}
             {children}
           </div>
         </Transition.Child>
@@ -102,9 +112,12 @@ const Sidepanel = ({
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? titleId : undefined}
     >
       <div className={contentClasses}>
-        {sidepanelHeader(closeSidepanelFunction, title)}
+        {sidepanelHeader(closeSidepanelFunction, title, titleId)}
         {children}
       </div>
     </Transition>

@@ -45,9 +45,9 @@ const Button = ({
       border = 'border-error-900';
       borderHover = 'enabled:hover:border-error-950';
       borderDisabled = 'disabled:border-error-400';
-      text = 'text-error-600';
+      text = 'text-error-900';
       textDisabled = 'disabled:text-error-400';
-      textHover = 'enabled:hover:text-error-600';
+      textHover = 'enabled:hover:text-error-900';
       break;
 
     case 'success':
