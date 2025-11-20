@@ -10,7 +10,7 @@ import { t, Translate } from 'app/I18N';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
-import { Button } from 'V2/Components/UI';
+// Replaced the `Button` component with an accessible clickable div
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
@@ -58,6 +58,8 @@ const SearchResults = () => {
     defaultValues: { search: initial },
   });
 
+  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+
   const onSubmit = async (data: FormValues) => {
     const params = new URLSearchParams(searchParams);
     const value = data.search.trim();
@@ -83,7 +85,7 @@ const SearchResults = () => {
   return (
     <div className="flex flex-col gap-2 h-full">
       <div className="px-1">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl mx-auto">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <label htmlFor="entity-search" className="sr-only">
             <Translate>Search</Translate>
           </label>
@@ -114,7 +116,7 @@ const SearchResults = () => {
           </div>
         </form>
       </div>
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto px-1">
         {!snippets && (
           <div className="flex flex-col gap-4 items-center justify-center h-full">
             <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
@@ -139,27 +141,39 @@ const SearchResults = () => {
             </Translate>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            {snippets?.data.map(entry => {
+          <div className="flex flex-col gap-4 pt-1">
+            {snippets?.data.map((entry, i) => {
               if (entry.snippets?.fullText?.length) {
-                return entry.snippets.fullText.map(pageText => (
-                  <div
-                    key={`snippet-${entry._id}-${pageText.page}`}
-                    className="p-5 border border-gray-100 shadow-sm rounded-lg"
-                  >
-                    <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                    <p className="mb-4 px-2 font-bold">{pageText.page}</p>
-                    <Button
-                      className="float-end"
-                      styling="light"
+                return entry.snippets.fullText.map((pageText, j) => {
+                  const snippetKey = `${i}-${j}`;
+                  const isActive = activeSnippet === snippetKey;
+
+                  return (
+                    <div
+                      key={snippetKey}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isActive}
                       onClick={() => {
+                        setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
                         console.log(pageText.page);
                       }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                          console.log(pageText.page);
+                        }
+                      }}
+                      className={`p-5 border border-gray-100 shadow-md rounded-lg cursor-pointer
+                        ${isActive ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-300' : null}
+                        focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-gray-50 transition`}
                     >
-                      View
-                    </Button>
-                  </div>
-                ));
+                      <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                      <p className="mb-4 px-2 font-bold">{pageText.page}</p>
+                    </div>
+                  );
+                });
               }
               return undefined;
             })}
