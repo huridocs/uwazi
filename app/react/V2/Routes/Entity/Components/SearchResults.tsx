@@ -1,0 +1,89 @@
+import React from 'react';
+import { useSearchParams } from 'react-router';
+import { useForm, Controller } from 'react-hook-form';
+import { useSetAtom } from 'jotai';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { t, Translate } from 'app/I18N';
+import { SEARCH_PARAM } from './urlParams';
+import { searchHintsModalAtom } from './atoms';
+
+type FormValues = {
+  search: string;
+};
+
+const SearchResults = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openHints = useSetAtom(searchHintsModalAtom);
+  const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
+
+  const { control, handleSubmit } = useForm<FormValues>({
+    defaultValues: { search: initial },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    const params = new URLSearchParams(searchParams);
+    const value = data.search.trim();
+    if (value) {
+      params.set(SEARCH_PARAM, value);
+    } else {
+      params.delete(SEARCH_PARAM);
+    }
+    setSearchParams(params);
+  };
+
+  return (
+    <div className="flex flex-col gap-2 h-full">
+      <div className="px-1">
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-xl mx-auto">
+          <label htmlFor="entity-search" className="sr-only">
+            <Translate>Search</Translate>
+          </label>
+
+          <div className="relative">
+            <Controller
+              name="search"
+              control={control}
+              render={({ field }) => (
+                <input
+                  id="entity-search"
+                  type="search"
+                  placeholder={t('System', 'Search', null, false)}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...field}
+                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              )}
+            />
+
+            <button
+              type="submit"
+              aria-label="Search"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+            >
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="flex-grow">
+        <div className="flex flex-col gap-4 items-center justify-center h-full">
+          <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
+          <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+          <Translate
+            className="text-gray-600 font-semibold"
+            translationKey="Search text description"
+          >
+            Search text description
+          </Translate>
+        </div>
+      </div>
+      <div>
+        <button type="button" onClick={() => openHints(true)}>
+          <Translate className="text-gray-600 underline font-bold">Search Tips</Translate>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export { SearchResults };

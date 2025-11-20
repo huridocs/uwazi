@@ -10,12 +10,13 @@ import { NeedAuthorization, Truncate } from 'V2/Components/UI';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from './urlParams';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isRaw = searchParams.get('raw') === 'true';
-  const page = searchParams.get('page') || '1';
+  const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
   const [scrollToPage, setScrollTopage] = useState(page);
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
@@ -25,7 +26,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
       const next = new URLSearchParams(searchParams.toString());
-      next.set('page', String(pageParam));
+      next.set(PAGE_PARAM, String(pageParam));
       return next;
     },
     [searchParams]
@@ -42,12 +43,12 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const { value } = event.target;
       const next = new URLSearchParams(searchParams.toString());
-      if (value === 'raw') {
-        next.set('raw', 'true');
+      if (value === VIEW_MODE_PARAM) {
+        next.set(VIEW_MODE_PARAM, 'true');
       } else {
-        const currentPage = searchParams.get('page') || '1';
-        next.delete('raw');
-        next.set('page', currentPage);
+        const currentPage = searchParams.get(PAGE_PARAM) || '1';
+        next.delete(VIEW_MODE_PARAM);
+        next.set(PAGE_PARAM, currentPage);
         setScrollTopage(currentPage);
       }
       setSearchParams(next, { replace: true, preventScrollReset: true });

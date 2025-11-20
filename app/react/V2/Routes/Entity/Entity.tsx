@@ -7,7 +7,11 @@ import {
   useLoaderData,
   useSearchParams,
 } from 'react-router';
-import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import {
+  Bars3CenterLeftIcon,
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { getPagePlaintext } from 'V2/api/files';
@@ -18,10 +22,14 @@ import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
-import { TabLabel, PDFView } from './Components';
-
-const MAIN_TAB_PARAM = 'm';
-const SIDE_TAB_PARAM = 's';
+import {
+  TabLabel,
+  PDFView,
+  SearchHintsModal,
+  MAIN_TAB_PARAM,
+  SIDE_TAB_PARAM,
+  SearchResults,
+} from './Components';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -32,6 +40,7 @@ const MAIN_TABS = {
 const SIDE_TABS = {
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
+  SEARCH: 'search',
 };
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
@@ -214,6 +223,11 @@ const Entity = () => {
           ),
           content: <div no-translate>This content is not yet available</div>,
         },
+        {
+          id: SIDE_TABS.SEARCH,
+          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
+          content: <SearchResults />,
+        },
       ],
       [MAIN_TABS.METADATA]: [
         {
@@ -297,6 +311,8 @@ const Entity = () => {
           </Tabs>
         </PaneLayout.Pane>
       </PaneLayout>
+
+      <SearchHintsModal />
     </div>
   );
 };
