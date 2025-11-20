@@ -15,7 +15,8 @@ import {
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { getPagePlaintext } from 'V2/api/files';
-import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import { snippets } from 'V2/api/search';
+import { SnippetsSearchResponse } from 'V2/api/types';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
 import { fullDetailOptions } from 'V2/application/optionsPresets';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
@@ -29,6 +30,8 @@ import {
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
   SearchResults,
+  SEARCH_PARAM,
+  LoaderResponse,
 } from './Components';
 
 const MAIN_TABS = {
@@ -55,8 +58,6 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
-type LoaderResponse = { entity: EntityType; pagePlaintext: string } | undefined;
-
 const shouldRevalidate = ({
   currentParams,
   nextParams,
@@ -81,7 +82,9 @@ const entityLoader =
     const entitySharedId = params.sharedId;
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get('page') || '1';
+    const currentSearchTerm = searchParams.get(SEARCH_PARAM);
     let pagePlaintext = '';
+    let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entitySharedId) {
       return undefined;
@@ -138,8 +141,16 @@ const entityLoader =
       } else {
         pagePlaintext = response;
       }
+
+      if (currentSearchTerm) {
+        searchResults = await snippets({
+          sharedId: composition.entity.sharedId,
+          limit: 0,
+          searchString: currentSearchTerm,
+        });
+      }
     }
-    return { entity: composition.entity, pagePlaintext };
+    return { entity: composition.entity, pagePlaintext, searchResults };
   };
 
 const Entity = () => {

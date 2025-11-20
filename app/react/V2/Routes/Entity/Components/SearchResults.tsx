@@ -1,26 +1,32 @@
-import React from 'react';
-import { useSearchParams } from 'react-router';
+import React, { useState } from 'react';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
+import { handleUnexpectedError } from 'V2/shared/errorUtils';
+import { SnippetsSearchResponse } from 'V2/api/types';
+import { snippets as snippetsSearch } from 'V2/api/search';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
+import { LoaderResponse } from './types';
 
 type FormValues = {
   search: string;
 };
 
 const SearchResults = () => {
+  const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
+  const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
 
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { search: initial },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     const params = new URLSearchParams(searchParams);
     const value = data.search.trim();
     if (value) {
@@ -29,6 +35,17 @@ const SearchResults = () => {
       params.delete(SEARCH_PARAM);
     }
     setSearchParams(params);
+
+    try {
+      const newSnippets = await snippetsSearch({
+        sharedId: entity?.sharedId!,
+        searchString: value,
+        limit: 0,
+      });
+      setSnippets(newSnippets);
+    } catch (error) {
+      handleUnexpectedError(error, 'Error searching');
+    }
   };
 
   return (
@@ -66,16 +83,31 @@ const SearchResults = () => {
         </form>
       </div>
       <div className="flex-grow">
-        <div className="flex flex-col gap-4 items-center justify-center h-full">
-          <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
-          <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
-          <Translate
-            className="text-gray-600 font-semibold"
-            translationKey="Search text description"
-          >
-            Search text description
-          </Translate>
-        </div>
+        {!snippets && (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
+            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            <Translate
+              className="text-gray-600 font-semibold"
+              translationKey="Search text description"
+            >
+              Search text description
+            </Translate>
+          </div>
+        )}
+        {!snippets?.data.length && (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <Translate className="text-gray-600 font-bold text-lg">No text match</Translate>
+            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            <Translate
+              className="text-gray-600 font-semibold"
+              translationKey="No text match description"
+            >
+              No text match description
+            </Translate>
+          </div>
+        )}
+        {snippets?.data.length && 'yay!'}
       </div>
       <div>
         <button type="button" onClick={() => openHints(true)}>
