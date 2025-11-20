@@ -317,12 +317,7 @@ const UserFormSidepanel = ({
           </Sidepanel.Body>
           <Sidepanel.Footer className="px-4 py-3">
             <div className="flex gap-2">
-              <Button
-                className="grow"
-                type="button"
-                styling="outline"
-                onClick={closeSidepanel}
-              >
+              <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
                 <Translate>Cancel</Translate>
               </Button>
               <Button

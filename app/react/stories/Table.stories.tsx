@@ -25,7 +25,7 @@ const ActionHeader = () => <span className="sr-only">Actions</span>;
 const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
   const actionFn = cell.getContext().column.columnDef.meta?.action
     ? cell.getContext().column.columnDef.meta?.action!
-    : () => { };
+    : () => {};
 
   return (
     <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>
