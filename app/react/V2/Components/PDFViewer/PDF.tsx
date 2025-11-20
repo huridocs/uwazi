@@ -18,7 +18,7 @@ interface PDFProps {
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
   onPageChange?: (page: number) => void;
-  scrollToPage?: string;
+  scrollToPage?: string | number;
   size?: { height?: string; width?: string; overflow?: string };
 }
 
@@ -145,7 +145,7 @@ const PDF = ({
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
-            const shouldScrollToPage = scrollToPage === regionId;
+            const shouldScrollToPage = scrollToPage?.toString() === regionId;
 
             return (
               <div

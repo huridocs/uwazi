@@ -33,6 +33,8 @@ import {
   SEARCH_PARAM,
   LoaderResponse,
 } from './Components';
+import { atomStore } from 'app/V2/atoms';
+import { currentPageAtom } from './Components/atoms';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -78,6 +80,7 @@ const shouldRevalidate = ({
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
+  // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
     const { searchParams } = new URL(request.url);
@@ -150,6 +153,8 @@ const entityLoader =
         });
       }
     }
+
+    atomStore.set(currentPageAtom, Number(currentPage));
 
     return { entity: composition.entity, pagePlaintext, searchResults };
   };

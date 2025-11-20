@@ -13,7 +13,7 @@ import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
 import { Entity } from 'V2/domain';
 import { SEARCH_PARAM } from './urlParams';
-import { searchHintsModalAtom } from './atoms';
+import { currentPageAtom, searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
 
 type FormValues = {
@@ -65,6 +65,7 @@ const SearchResults = () => {
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
+  const scrollToPage = useSetAtom(currentPageAtom);
 
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { search: initial },
@@ -198,18 +199,18 @@ const SearchResults = () => {
                             aria-pressed={isActive}
                             onClick={() => {
                               setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                              console.log(pageText.page);
+                              scrollToPage(pageText.page);
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
                                 setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                                console.log(pageText.page);
+                                scrollToPage(pageText.page);
                               }
                             }}
                             className={`p-5 border border-gray-100 shadow-md rounded-lg cursor-pointer
-                        ${isActive ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-300' : null}
-                        focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-gray-50 transition`}
+                        ${isActive ? 'border-indigo-400' : null}
+                        focus:outline-none focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
                           >
                             <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                             <p className="mb-4 px-2 font-bold">{pageText.page}</p>

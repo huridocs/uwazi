@@ -2,4 +2,6 @@ import { atom } from 'jotai';
 
 const searchHintsModalAtom = atom(false);
 
-export { searchHintsModalAtom };
+const currentPageAtom = atom<number>();
+
+export { searchHintsModalAtom, currentPageAtom };
