@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -10,13 +11,24 @@ import { t, Translate } from 'app/I18N';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
-// Replaced the `Button` component with an accessible clickable div
+import { Entity } from 'V2/domain';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
 
 type FormValues = {
   search: string;
+};
+
+const getFieldName = (fieldName: string, template: Entity['template'] | undefined) => {
+  if (fieldName === 'title') {
+    return 'Title';
+  }
+
+  const propertyName = fieldName.split('.')[1];
+  const propertyLabel = template?.properties?.get(propertyName)?.label || '';
+
+  return propertyLabel;
 };
 
 const createNode = (node: ChildNode, key: number): React.ReactNode => {
@@ -143,39 +155,70 @@ const SearchResults = () => {
         ) : (
           <div className="flex flex-col gap-4 pt-1">
             {snippets?.data.map((entry, i) => {
-              if (entry.snippets?.fullText?.length) {
-                return entry.snippets.fullText.map((pageText, j) => {
-                  const snippetKey = `${i}-${j}`;
-                  const isActive = activeSnippet === snippetKey;
+              const { metadata, fullText } = entry.snippets;
 
-                  return (
-                    <div
-                      key={snippetKey}
-                      role="button"
-                      tabIndex={0}
-                      aria-pressed={isActive}
-                      onClick={() => {
-                        setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                        console.log(pageText.page);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                          console.log(pageText.page);
-                        }
-                      }}
-                      className={`p-5 border border-gray-100 shadow-md rounded-lg cursor-pointer
+              if (!metadata?.length && !fullText?.length) {
+                return undefined;
+              }
+
+              return (
+                <div key={`entry-${i}`} className="flex flex-col gap-4">
+                  {metadata?.length ? (
+                    <>
+                      <dl className="grid gap-y-2">
+                        {metadata.map((m, j) => (
+                          <div key={`metadata-${i}-${j}`}>
+                            <dt className="text-sm font-semibold text-gray-900">
+                              <Translate context={entity!.template!._id}>
+                                {getFieldName(m.field, entity?.template)}
+                              </Translate>
+                            </dt>
+                            {m.texts.map((text, k) => (
+                              <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-gray-900">
+                                {parseSnippetToNodes(text)}
+                              </dd>
+                            ))}
+                          </div>
+                        ))}
+                      </dl>
+                      <hr className="w-full" />
+                    </>
+                  ) : null}
+
+                  {fullText?.length
+                    ? fullText.map((pageText, j) => {
+                        const snippetKey = `${i}-${j}`;
+                        const isActive = activeSnippet === snippetKey;
+
+                        return (
+                          <div
+                            key={snippetKey}
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={isActive}
+                            onClick={() => {
+                              setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                              console.log(pageText.page);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                                console.log(pageText.page);
+                              }
+                            }}
+                            className={`p-5 border border-gray-100 shadow-md rounded-lg cursor-pointer
                         ${isActive ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-300' : null}
                         focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-gray-50 transition`}
-                    >
-                      <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                      <p className="mb-4 px-2 font-bold">{pageText.page}</p>
-                    </div>
-                  );
-                });
-              }
-              return undefined;
+                          >
+                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                            <p className="mb-4 px-2 font-bold">{pageText.page}</p>
+                          </div>
+                        );
+                      })
+                    : null}
+                </div>
+              );
             })}
           </div>
         )}
