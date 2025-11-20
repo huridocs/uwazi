@@ -150,6 +150,7 @@ const entityLoader =
         });
       }
     }
+
     return { entity: composition.entity, pagePlaintext, searchResults };
   };
 

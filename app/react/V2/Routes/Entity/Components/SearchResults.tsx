@@ -2,17 +2,49 @@ import React, { useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
+import sanitizeHtml from 'sanitize-html';
+import { parseDocument } from 'htmlparser2';
+import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
+import { Button } from 'V2/Components/UI';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
 
 type FormValues = {
   search: string;
+};
+
+const createNode = (node: ChildNode, key: number): React.ReactNode => {
+  if (node.type === 'text') {
+    return node.data;
+  }
+
+  if (node.type === 'tag') {
+    const element = node;
+    return React.createElement(
+      'b',
+      { key },
+      element.children &&
+        element.children.map((child: ChildNode, index: number) => createNode(child, index))
+    );
+  }
+
+  return '';
+};
+
+const parseSnippetToNodes = (html?: string) => {
+  const sanitized = sanitizeHtml(html || '', { allowedTags: ['b'], allowedAttributes: {} });
+  if (!sanitized) {
+    return '';
+  }
+
+  const document = parseDocument(sanitized);
+  return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
 const SearchResults = () => {
@@ -82,7 +114,7 @@ const SearchResults = () => {
           </div>
         </form>
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow overflow-y-auto">
         {!snippets && (
           <div className="flex flex-col gap-4 items-center justify-center h-full">
             <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
@@ -107,7 +139,33 @@ const SearchResults = () => {
             </Translate>
           </div>
         )}
-        {snippets?.data.length && 'yay!'}
+        {snippets?.data.length && (
+          <div className="flex flex-col gap-4">
+            {snippets?.data.map(entry => {
+              if (entry.snippets?.fullText?.length) {
+                return entry.snippets.fullText.map(pageText => (
+                  <div
+                    key={`snippet-${entry._id}-${pageText.page}`}
+                    className="p-5 border border-gray-100 shadow-sm rounded-lg"
+                  >
+                    <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                    <p className="mb-4 px-2 font-bold">{pageText.page}</p>
+                    <Button
+                      className="float-end"
+                      styling="light"
+                      onClick={() => {
+                        console.log(pageText.page);
+                      }}
+                    >
+                      View
+                    </Button>
+                  </div>
+                ));
+              }
+              return undefined;
+            })}
+          </div>
+        )}
       </div>
       <div>
         <button type="button" onClick={() => openHints(true)}>
