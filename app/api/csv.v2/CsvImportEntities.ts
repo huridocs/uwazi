@@ -5,7 +5,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource';
 import { CsvImportDomain } from './domain/CsvImport';
-import { CsvExtractUploadedZipJobDispatcher } from './infrastructure/queue/CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJobDispatcher } from './infrastructure/queueHandlers/CsvExtractUploadedZipJobDispatcher';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

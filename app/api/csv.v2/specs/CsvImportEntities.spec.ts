@@ -11,7 +11,7 @@ import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/queue/CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/queueHandlers/CsvExtractUploadedZipJobDispatcher';
 import { createUploadedInputFile } from 'api/files.v2/testing/InputFileTestFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CsvImportEntities } from '../CsvImportEntities';
