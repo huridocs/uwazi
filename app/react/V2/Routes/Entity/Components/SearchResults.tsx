@@ -127,7 +127,7 @@ const SearchResults = () => {
             </Translate>
           </div>
         )}
-        {!snippets?.data.length && (
+        {snippets?.data && snippets.data.length < 1 ? (
           <div className="flex flex-col gap-4 items-center justify-center h-full">
             <Translate className="text-gray-600 font-bold text-lg">No text match</Translate>
             <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
@@ -138,8 +138,7 @@ const SearchResults = () => {
               No text match description
             </Translate>
           </div>
-        )}
-        {snippets?.data.length && (
+        ) : (
           <div className="flex flex-col gap-4">
             {snippets?.data.map(entry => {
               if (entry.snippets?.fullText?.length) {
