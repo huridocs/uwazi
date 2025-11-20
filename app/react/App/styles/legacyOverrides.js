@@ -24,6 +24,9 @@ const legacyOverrides = {
     border: '0 solid #e5e7eb',
     'box-sizing': 'border-box',
   },
+  '.tw-content *:not(.monaco-code-editor-container):not(.monaco-code-editor-container *)': {
+    'font-family': "'Inter', sans-serif !important",
+  },
   '.tw-content .font-thin': { 'font-weight': 100 },
   '.tw-content .font-extralight': { 'font-weight': 200 },
   '.tw-content .font-light': { 'font-weight': 300 },
@@ -59,6 +62,9 @@ const legacyOverrides = {
   '.tw-content .border-b-2': {
     'border-bottom-style': 'solid',
     'border-bottom-width': '2px',
+  },
+  '.no-tailwind, .no-tailwind *': {
+    all: 'revert !important',
   },
 };
 

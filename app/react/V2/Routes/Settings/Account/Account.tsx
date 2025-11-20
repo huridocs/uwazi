@@ -18,8 +18,8 @@ import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      getCurrentUser(headers);
+  async () =>
+    getCurrentUser(headers);
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;

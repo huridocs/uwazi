@@ -59,8 +59,9 @@ const Tabs = ({
     <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
       <div className={`flex flex-col h-full ${className ?? ''}`}>
         <HeadlessTab.List
-          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow-xs divide-x-2 divide-gray-100 w-max ${tabListClassName || ''
-            }`}
+          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow-xs divide-x-2 divide-gray-100 w-max ${
+            tabListClassName || ''
+          }`}
           aria-label={tabListAriaLabel}
           data-testid="tabs-comp"
         >

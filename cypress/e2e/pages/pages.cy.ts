@@ -1,40 +1,7 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
 import { contents, script } from '../helpers/entityViewPageFixtures';
-
-const logA11yViolations = (violations: any[]) => {
-  if (!violations || !violations.length) {
-    return;
-  }
-
-  cy.task(
-    'log',
-    `${violations.length} accessibility violation${violations.length === 1 ? '' : 's'} detected`
-  );
-  const violationData = violations.map(
-    ({
-      id,
-      impact,
-      description,
-      nodes,
-    }: {
-      id: string;
-      impact: string;
-      description: string;
-      nodes: any[];
-    }) => ({
-      id,
-      impact,
-      description,
-      nodes: nodes.length,
-      target: nodes
-        .map(node => node.target && node.target.join(', '))
-        .filter(Boolean)
-        .join(' | '),
-    })
-  );
-  cy.task('table', violationData);
-};
+import { logA11yViolations } from '../helpers/a11y';
 
 describe('Pages', () => {
   before(() => {
@@ -48,12 +15,15 @@ describe('Pages', () => {
   describe('accessibility', () => {
     it('should check for accessibility violations', () => {
       cy.contains('a', 'Pages').click();
-      cy.checkA11y(null, null, logA11yViolations);
+      cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('a', 'Add page').click();
       cy.get('.translation').each($el => {
         const parent = $el.parent()[0];
         if (parent && parent.className.includes('hover:text-white')) {
-          const win = parent.ownerDocument.defaultView;
+          const win = parent.ownerDocument?.defaultView;
+          if (!win) {
+            return;
+          }
           const styles = win.getComputedStyle($el[0]);
           cy.task(
             'log',
@@ -61,7 +31,7 @@ describe('Pages', () => {
           );
         }
       });
-      cy.checkA11y(null, null, logA11yViolations);
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
   });
 

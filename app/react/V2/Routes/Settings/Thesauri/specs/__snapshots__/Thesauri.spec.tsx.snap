@@ -222,7 +222,7 @@ exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selec
     class="flex items-center gap-2"
   >
     <button
-      class=" text-white bg-error-600 border-error-700  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-700 enabled:hover:border-error-700 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      class=" text-white bg-error-900 border-error-900  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-950 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 "
       data-testid="thesaurus-delete-link"
       type="button"
