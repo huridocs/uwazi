@@ -87,6 +87,7 @@ const setUpUseCase = () => {
     getFile: jest.fn(),
     getPath: jest.fn(),
     list: jest.fn(),
+    fileExists: jest.fn(),
   };
 
   const connection = getConnection();

@@ -1,13 +1,10 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import entities from 'api/entities';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -16,7 +13,6 @@ import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request, Response } from 'express';
-import { Readable } from 'node:stream';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -24,7 +20,6 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -310,9 +305,29 @@ export default (app: Application) => {
   //   res.redirect(301, `/api/files/${req.params.fileName}`);
   // });
 
-  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
-  app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
-  app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
+  const checkFilePermissions = async (file: FileType) =>
+    checkEntityPermission(file, permissionsContext.getUserInContext());
+
+  app.get(
+    '/assets/:filename',
+    DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible)
+  );
+  app.get(
+    '/files/thumbnails/:filename',
+    DownloadFileController.customHandler(
+      ['thumbnail'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
+  );
+  app.get(
+    '/files/:filename',
+    DownloadFileController.customHandler(
+      ['document', 'attachment'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
+  );
 
   app.get(
     '/api/files/:filename',

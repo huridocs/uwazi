@@ -43,12 +43,12 @@ export class CsvExtractUploadedZipJob extends UserAwareDispatchable<Params> {
             // Renew lock while making progress
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
-            // if (this.params.sessionId) {
-            //   this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:progress', {
-            //     importId,
-            //     processedFiles,
-            //   });
-            // }
+            if (this.params.sessionId) {
+              this.deps.sockets.emitToSession(this.params.sessionId, 'csvImport:extract:progress', {
+                importId,
+                processedFiles,
+              });
+            }
           },
           onSuccess: ({ importId }: { importId: string }) => {
             if (this.params.sessionId) {
@@ -69,9 +69,9 @@ export class CsvExtractUploadedZipJob extends UserAwareDispatchable<Params> {
       );
     } catch (e) {
       // If this was the last retry attempt, mark as definitively failed.
-      // if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
-      //   await this.deps.useCase.markAsFailed(this.params.importId);
-      // }
+      if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
+        await this.deps.useCase.markAsFailed(this.params.importId);
+      }
       throw e;
     }
   }

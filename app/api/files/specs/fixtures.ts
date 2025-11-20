@@ -1,7 +1,6 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
-import { custom } from 'zod';
 
 const fixturesFactory = getFixturesFactory();
 
