@@ -37,7 +37,7 @@ class NumericProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => (v.value as any) !== '')
+      value.filter(v => v?.value?.toString()?.length)
     );
 
     return {

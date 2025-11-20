@@ -1,6 +1,7 @@
 import { ThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { Context, Property } from '../../domain/template/Property';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
+import { IncorrectPropertyTypeError } from '../errors';
 import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
@@ -37,9 +38,7 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
 
     if (props.type === 'multiselect') return new MultiSelectProperty(props, context);
 
-    throw new Error(
-      `The following type is incorrect for SelectPropertyCreatorService. Type = ${props.type}`
-    );
+    throw new IncorrectPropertyTypeError(props.type || 'undefined', 'SelectPropertyCreatorService');
   }
 }
 

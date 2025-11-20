@@ -78,17 +78,6 @@ describe('TextProperty', () => {
       ).toThrow('Text Property only accepts a single value.');
     });
 
-    it('should throw when provided value is empty string even if not required', () => {
-      const text = new TextProperty({ id: 'any_id', label: 'A Title', template: 'any' });
-
-      expect(() => text.createPropertyAssignment({ value: [{ value: '' }] })).toThrow(
-        'Text Property must be a non-empty string.'
-      );
-      expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] })).toThrow(
-        'Text Property must be a non-empty string.'
-      );
-    });
-
     it('should throw if required and no value is provided', () => {
       const text = new TextProperty({
         id: 'any_id',
@@ -100,6 +89,18 @@ describe('TextProperty', () => {
       expect(() => text.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Text Property is required'
       );
+
+      expect(() => text.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
+        'Text Property is required'
+      );
+
+      expect(() => text.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
+        'Text Property must be a non-empty string'
+      );
+
+      expect(() =>
+        text.createPropertyAssignment({ value: [{ value: null as any }] }, true)
+      ).toThrow('Text Property is required');
     });
   });
 });

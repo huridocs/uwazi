@@ -100,7 +100,7 @@ describe('TemplateMapper', () => {
 
     expect(result.translations).toEqual({
       en: {
-        id: expect.any(String),
+        id: { value: expect.any(String) },
         language: 'en',
         metadata: {
           nested: { type: 'nested', name: 'nested', value: [], language: 'en' },
@@ -211,7 +211,7 @@ describe('TemplateMapper', () => {
         },
       },
       es: {
-        id: expect.any(String),
+        id: { value: expect.any(String) },
         language: 'es',
         metadata: {
           nested: { type: 'nested', name: 'nested', value: [], language: 'es' },

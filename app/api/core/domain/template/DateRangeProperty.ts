@@ -53,7 +53,7 @@ class DateRangeProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ): PropertyAssignment<DateRangeEntry> {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value
+      value.filter(v => v?.value?.from?.toString()?.length && v?.value?.to?.toString()?.length)
     );
 
     return {
