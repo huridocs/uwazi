@@ -54,6 +54,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [{ value: 'Hello' }],
       });
     });
@@ -68,6 +69,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [{ value: 'Hello' }],
       });
     });
@@ -82,6 +84,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [{ value: 'Valid' }],
       });
     });
@@ -96,6 +99,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [],
       });
     });
@@ -108,6 +112,7 @@ describe('TextProperty', () => {
       expect(assignment).toEqual({
         name: text.name,
         type: text.type,
+        isTranslatable: true,
         value: [],
       });
     });

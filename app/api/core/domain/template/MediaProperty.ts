@@ -34,6 +34,10 @@ class MediaProperty extends AbstractImageProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<MediaEntry>,
     shouldValidateForRequired = false
@@ -46,6 +50,7 @@ class MediaProperty extends AbstractImageProperty {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

@@ -39,6 +39,10 @@ class ImageProperty extends AbstractImageProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   private isFromURL(value: ImageEntry[]) {
     return !!value?.[0]?.value && value[0].value.startsWith('http');
   }
@@ -66,6 +70,7 @@ class ImageProperty extends AbstractImageProperty {
       name: this.name,
       value: postProcessed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

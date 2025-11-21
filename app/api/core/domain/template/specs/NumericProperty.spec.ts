@@ -37,6 +37,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [{ value: 42 }],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -49,6 +50,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [{ value: 42 }],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -61,6 +63,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -94,6 +97,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [],
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 
@@ -106,6 +110,7 @@ describe('NumericProperty', () => {
         name: numeric.name,
         value: [{ value: 0 }], // Whitespace coerced to 0
         type: numeric.type,
+        isTranslatable: false,
       });
     });
 

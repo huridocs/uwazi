@@ -31,7 +31,12 @@ describe('NestedProperty', () => {
 
       const assignment = nested.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: nested.name, type: nested.type, value: [] });
+      expect(assignment).toEqual({
+        name: nested.name,
+        type: nested.type,
+        isTranslatable: false,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {
@@ -55,6 +60,7 @@ describe('NestedProperty', () => {
       expect(assignment).toEqual({
         name: nested.name,
         type: nested.type,
+        isTranslatable: false,
         value: [{ value: null }],
       });
     });
@@ -101,6 +107,7 @@ describe('NestedProperty', () => {
       expect(assignment).toEqual({
         name: nested.name,
         type: nested.type,
+        isTranslatable: false,
         value: [
           {
             value: {

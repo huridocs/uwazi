@@ -36,6 +36,7 @@ describe('LinkProperty', () => {
       });
 
       expect(assignment).toEqual({
+        isTranslatable: true,
         name: link.name,
         type: link.type,
         value: [{ value: { url: 'https://uwazi.io', label: 'Uwazi' } }],
@@ -47,7 +48,12 @@ describe('LinkProperty', () => {
 
       const assignment = link.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: link.name, type: link.type, value: [] });
+      expect(assignment).toEqual({
+        isTranslatable: true,
+        name: link.name,
+        type: link.type,
+        value: [],
+      });
     });
 
     it('should throw if more than one value is provided', () => {
@@ -87,6 +93,7 @@ describe('LinkProperty', () => {
       });
 
       expect(assignment).toEqual({
+        isTranslatable: true,
         name: link.name,
         type: link.type,
         value: [{ value: { url: 'https://uwazi.io', label: 'Valid URL' } }],
@@ -101,6 +108,7 @@ describe('LinkProperty', () => {
       });
 
       expect(assignment).toEqual({
+        isTranslatable: true,
         name: link.name,
         type: link.type,
         value: [],
@@ -115,6 +123,7 @@ describe('LinkProperty', () => {
       });
 
       expect(assignment).toEqual({
+        isTranslatable: true,
         name: link.name,
         type: link.type,
         value: [],

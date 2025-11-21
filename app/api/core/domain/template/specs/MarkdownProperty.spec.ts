@@ -53,6 +53,7 @@ describe('MarkdownProperty', () => {
       expect(assignment).toEqual({
         name: markdown.name,
         type: markdown.type,
+        isTranslatable: true,
         value: [{ value: 'Hello' }],
       });
     });
@@ -67,6 +68,7 @@ describe('MarkdownProperty', () => {
       expect(assignment).toEqual({
         name: markdown.name,
         type: markdown.type,
+        isTranslatable: true,
         value: [{ value: 'Hello' }],
       });
     });
@@ -95,6 +97,7 @@ describe('MarkdownProperty', () => {
       expect(assignment).toEqual({
         name: markdown.name,
         type: markdown.type,
+        isTranslatable: true,
         value: [],
       });
     });
@@ -104,7 +107,12 @@ describe('MarkdownProperty', () => {
 
       const assignment = markdown.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: markdown.name, type: markdown.type, value: [] });
+      expect(assignment).toEqual({
+        name: markdown.name,
+        type: markdown.type,
+        isTranslatable: true,
+        value: [],
+      });
     });
 
     it('should throw if more than one value is provided', () => {

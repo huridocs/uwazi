@@ -37,6 +37,10 @@ class TextProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<TextPropertyValue>,
     shouldValidateForRequired = false
@@ -49,6 +53,7 @@ class TextProperty extends FilterableProperty {
       name: this.name,
       type: this.type,
       value: parsedValue,
+      isTranslatable: this.isTranslatable,
     };
   }
 

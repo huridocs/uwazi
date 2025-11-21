@@ -39,6 +39,10 @@ class LinkProperty extends Property {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
@@ -51,6 +55,7 @@ class LinkProperty extends Property {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

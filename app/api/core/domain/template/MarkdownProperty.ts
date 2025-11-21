@@ -33,6 +33,10 @@ class MarkdownProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<MarkdownEntry>,
     shouldValidateForRequired = false
@@ -45,6 +49,7 @@ class MarkdownProperty extends FilterableProperty {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

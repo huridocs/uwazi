@@ -65,6 +65,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
 
     expect(result).toEqual([
       {
+        isTranslatable: true,
         name: 'url_image',
         type: 'image',
         value: [{ value: 'https://example.com/image.jpg' }],
@@ -96,6 +97,7 @@ describe('ImagePropertyAssignmentCreatorService', () => {
 
     expect(result).toEqual([
       {
+        isTranslatable: true,
         name: 'attached_image_1',
         type: 'image',
         value: [{ value: '/api/files/def456.png' }],

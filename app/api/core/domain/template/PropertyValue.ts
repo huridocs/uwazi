@@ -88,4 +88,5 @@ export type PropertyAssignment<Value = PropertyValue> = {
   name: string;
   type: PropertyType;
   value: Value[];
+  isTranslatable: boolean;
 };
