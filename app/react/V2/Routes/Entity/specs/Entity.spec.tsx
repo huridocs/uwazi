@@ -171,6 +171,95 @@ describe('Entity view', () => {
         expect(sideTabs.queryByRole('tab', { name: 'Relationships' })).not.toBeInTheDocument();
       });
     });
+
+    it('should preserve active side tab when switching to a main tab that supports it', async () => {
+      render(
+        <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      let tablists = screen.getAllByTestId('tabs-comp');
+      let mainTabs = within(tablists[0]);
+      let sideTabs = within(tablists[1]);
+
+      const relsSideTab = sideTabs.getByRole('tab', { name: 'Relationships' });
+      fireEvent.click(relsSideTab);
+
+      await waitFor(() => {
+        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+
+      const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
+      fireEvent.click(metadataMainTab);
+
+      await waitFor(() => {
+        tablists = screen.getAllByTestId('tabs-comp');
+        mainTabs = within(tablists[0]);
+        sideTabs = within(tablists[1]);
+
+        expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+
+        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+    });
+
+    it('should clear side tab when switching to a main tab that does not support it', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, pagePlaintext: '' }}
+          initialEntries={['/?main=document&side=metadata']}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      let tablists = screen.getAllByTestId('tabs-comp');
+      let mainTabs = within(tablists[0]);
+      let sideTabs = within(tablists[1]);
+
+      expect(mainTabs.getByRole('tab', { name: 'Document' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      );
+      expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      );
+
+      const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
+      fireEvent.click(metadataMainTab);
+
+      await waitFor(() => {
+        tablists = screen.getAllByTestId('tabs-comp');
+        mainTabs = within(tablists[0]);
+        sideTabs = within(tablists[1]);
+
+        expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+
+        expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTabs.getByRole('tab', { name: 'Relationships' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+    });
   });
 
   describe('Plain text view', () => {
