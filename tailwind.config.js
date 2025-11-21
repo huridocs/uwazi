@@ -62,6 +62,18 @@ module.exports = {
     extend: {
       colors: {
         blue: colors.indigo,
+        alert: {
+          50: 'var(--color-alert-50)',
+          100: 'var(--color-alert-100)',
+          200: 'var(--color-alert-200)',
+          300: 'var(--color-alert-300)',
+          400: 'var(--color-alert-400)',
+          500: 'var(--color-alert-500)',
+          600: 'var(--color-alert-600)',
+          700: 'var(--color-alert-700)',
+          800: 'var(--color-alert-800)',
+          900: 'var(--color-alert-900)',
+        },
       },
       minWidth: {
         56: '14rem',

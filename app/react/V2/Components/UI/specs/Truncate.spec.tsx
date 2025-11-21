@@ -39,7 +39,7 @@ describe('Truncate', () => {
   it.each([
     ['Simple text', 'text-white'],
     ['Text with primary background', 'bg-primary-400 text-white'],
-    ['Text with orange background', 'bg-orange-400 text-white'],
+    ['Text with orange background', 'bg-alert-400 text-white'],
   ])('renders styled text "%s" with classes %s', (text, className) => {
     render(
       <Truncate maxLength={40} ellipsisPosition="center">

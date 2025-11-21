@@ -75,6 +75,13 @@ const Sidepanel = ({
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
   const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
+  const panelContent = (
+    <div className={contentClasses}>
+      {sidepanelHeader(closeSidepanelFunction, title, titleId)}
+      {children}
+    </div>
+  );
+
   if (withOverlay) {
     return (
       <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
@@ -86,7 +93,7 @@ const Sidepanel = ({
           onClick={closeSidepanelFunction}
         />
         <Transition.Child
-          as="aside"
+          as="div"
           className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
@@ -95,10 +102,7 @@ const Sidepanel = ({
           aria-modal="true"
           aria-labelledby={title ? titleId : undefined}
         >
-          <div className={contentClasses}>
-            {sidepanelHeader(closeSidepanelFunction, title, titleId)}
-            {children}
-          </div>
+          <aside className="h-full">{panelContent}</aside>
         </Transition.Child>
       </Transition>
     );
@@ -107,19 +111,13 @@ const Sidepanel = ({
   return (
     <Transition
       show={isOpen}
-      as="aside"
+      as="div"
       className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={title ? titleId : undefined}
     >
-      <div className={contentClasses}>
-        {sidepanelHeader(closeSidepanelFunction, title, titleId)}
-        {children}
-      </div>
+      <aside className="h-full">{panelContent}</aside>
     </Transition>
   );
 };

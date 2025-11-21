@@ -52,17 +52,25 @@ const testCheckboxes = async (expectedSelected?: string) => {
   });
 };
 
+const findSidepanel = async () => {
+  try {
+    return await screen.findByRole('dialog');
+  } catch (e) {
+    return screen.findByRole('complementary');
+  }
+};
+
 const openSuggestion = async (index: number, title: string) => {
   expect(await screen.findByText('Extractor 1'));
   const openButtons = screen.getAllByRole('button', { name: 'Open' });
   fireEvent.click(openButtons[index]);
-  const sidepanel = await screen.findByRole('complementary');
+  const sidepanel = await findSidepanel();
   await within(sidepanel).findByText(title);
   await within(sidepanel).findByText('Select Property');
 };
 
 const closeSidepanel = async (text: string = 'Cancel') => {
-  const sidepanel = await screen.findByRole('complementary');
+  const sidepanel = await findSidepanel();
   const saveButton = await within(sidepanel).findByRole('button', { name: text });
   fireEvent.click(saveButton);
 };

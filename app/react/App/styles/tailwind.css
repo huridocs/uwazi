@@ -97,6 +97,18 @@
   --color-warning-900: #78350f;
   --color-warning-950: #451a03;
   
+  /* Alert colors (orange) */
+  --color-alert-50: #fff7ed;
+  --color-alert-100: #ffedd5;
+  --color-alert-200: #fed7aa;
+  --color-alert-300: #fdba74;
+  --color-alert-400: #fb923c;
+  --color-alert-500: #f97316;
+  --color-alert-600: #ea580c;
+  --color-alert-700: #c2410c;
+  --color-alert-800: #9a3412;
+  --color-alert-900: #7c2d12;
+  
   /* Responsive breakpoints */
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
