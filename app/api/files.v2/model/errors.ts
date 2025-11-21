@@ -21,3 +21,9 @@ export class FileContentError extends DomainError {
     super(message, 'file.contents.error', cause);
   }
 }
+
+export class FileNotFound extends DomainError {
+  constructor(message: string, cause?: Error) {
+    super(message, 'file.not_found', cause);
+  }
+}
