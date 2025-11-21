@@ -96,27 +96,25 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   }, []);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    let animationFrameId = 0;
+    if (pdf && containerWidth) {
+      let animationFrameId = 0;
 
-    const onScrollToPageHandler = (pageNumber: number = 1) => {
-      console.log('calling', pdf);
-      if (pdf) {
+      const onScrollToPageHandler = (pageNumber: number = 1) => {
         const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
-        timeoutId = setTimeout(() => {
-          animationFrameId = triggerScroll(pageRef, animationFrameId);
-        }, 100);
-      }
-    };
+        animationFrameId = triggerScroll(pageRef, animationFrameId);
+      };
 
-    const { unsubscribe } = pdfEventBus.on('goToPage', onScrollToPageHandler);
+      const { unsubscribe } = pdfEventBus.on('goToPage', onScrollToPageHandler);
+      pdfEventBus.dispatch('pdfReady');
 
-    return () => {
-      clearTimeout(timeoutId);
-      cancelAnimationFrame(animationFrameId);
-      unsubscribe();
-    };
-  }, [pdf]);
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        unsubscribe();
+      };
+    }
+
+    return () => undefined;
+  }, [pdf, containerWidth]);
 
   if (error) {
     return <div>{error}</div>;

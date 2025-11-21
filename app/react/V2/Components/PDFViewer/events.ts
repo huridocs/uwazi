@@ -1,6 +1,7 @@
 const events = {
   ON_PAGE_CHANGE: 'onPageChange',
   GO_TO_PAGE: 'goToPage',
+  PDF_READY: 'pdfReady',
 } as const;
 
 type EventType = (typeof events)[keyof typeof events];
@@ -8,6 +9,7 @@ type EventType = (typeof events)[keyof typeof events];
 interface EventPayloadMap {
   onPageChange: number;
   goToPage: number;
+  pdfReady: void;
 }
 
 interface Subscription {
@@ -28,7 +30,7 @@ class EventBus {
       this.listeners.set(eventType, new Set());
     }
 
-    this.listeners.get(eventType)!.add(callback);
+    this.listeners.get(eventType)?.add(callback);
 
     return {
       unsubscribe: () => {

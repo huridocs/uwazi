@@ -106,9 +106,15 @@ const PDFSidepanel = ({
     if (highlights && !selectedText) {
       const firstPage = Object.keys(highlights)[0];
       if (firstPage) {
-        pdfEventBus.dispatch('goToPage', Number(firstPage));
+        const handlePdfReady = () => {
+          pdfEventBus.dispatch('goToPage', Number(firstPage));
+        };
+
+        const { unsubscribe } = pdfEventBus.on('pdfReady', handlePdfReady);
+        return unsubscribe;
       }
     }
+    return undefined;
   }, [highlights, selectedText]);
 
   useEffect(() => {
