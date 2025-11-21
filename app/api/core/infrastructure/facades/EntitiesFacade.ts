@@ -4,7 +4,7 @@ import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
 
 export class EntityFacade {
-  static async create(dto: CreateEntityDTO, inputFiles: InputFile[]) {
+  static async create(dto: CreateEntityDTO, inputFiles?: InputFile[]) {
     const useCase = CreateEntityUseCaseFactory.default();
 
     const parsed = CreateEntitySchema.parse(dto);
