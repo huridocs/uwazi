@@ -319,4 +319,17 @@ describe('S3FileStorage', () => {
       expect(await toString(s3File)).toBe('content created\n');
     });
   });
+
+  describe('fileExists', () => {
+    it('should check if file exists', async () => {
+      const doc = FileBuilder.document('docId', {
+        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+      });
+      expect(await s3fileStorage.fileExists(doc)).toBe(false);
+
+      await s3fileStorage.storeFile(doc);
+
+      expect(await s3fileStorage.fileExists(doc)).toBe(true);
+    });
+  });
 });
