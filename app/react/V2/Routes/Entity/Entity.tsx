@@ -254,6 +254,11 @@ const Entity = () => {
           ),
           content: <div no-translate>This content is not yet available</div>,
         },
+        {
+          id: SIDE_TABS.SEARCH,
+          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
+          content: <SearchResults />,
+        },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
         {

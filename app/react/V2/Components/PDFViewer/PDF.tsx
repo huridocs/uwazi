@@ -4,9 +4,10 @@ import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selec
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Translate } from 'app/I18N';
-import { PDFJS, CMAP_URL, EventBus, events, OnPageChagenEventHandler } from './pdfjs';
+import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
+import { pdfEventBus } from './events';
 
 const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
 
@@ -17,8 +18,6 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
-  onPageChange?: (page: number) => void;
-  scrollToPage?: string | number;
   size?: { height?: string; width?: string; overflow?: string };
 }
 
@@ -30,16 +29,8 @@ const getPDFFile = async (fileUrl: string) =>
     isEvalSupported: false,
   }).promise;
 
-const PDF = ({
-  fileUrl,
-  highlights,
-  onSelect = () => undefined,
-  onDeselect,
-  onPageChange,
-  scrollToPage,
-  size,
-}: PDFProps) => {
-  const scrollToRef = useRef<HTMLDivElement>(null);
+const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size }: PDFProps) => {
+  const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
@@ -105,34 +96,27 @@ const PDF = ({
   }, []);
 
   useEffect(() => {
-    let animationFrameId = 0;
     let timeoutId: NodeJS.Timeout;
+    let animationFrameId = 0;
 
-    if (pdf && scrollToPage) {
-      timeoutId = setTimeout(() => {
-        animationFrameId = triggerScroll(scrollToRef, animationFrameId);
-      }, 100);
-    }
+    const onScrollToPageHandler = (pageNumber: number = 1) => {
+      console.log('calling', pdf);
+      if (pdf) {
+        const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
+        timeoutId = setTimeout(() => {
+          animationFrameId = triggerScroll(pageRef, animationFrameId);
+        }, 100);
+      }
+    };
+
+    const { unsubscribe } = pdfEventBus.on('goToPage', onScrollToPageHandler);
 
     return () => {
       clearTimeout(timeoutId);
       cancelAnimationFrame(animationFrameId);
+      unsubscribe();
     };
-  }, [scrollToPage, pdf]);
-
-  useEffect(() => {
-    const handlePageChange: OnPageChagenEventHandler = page => {
-      if (onPageChange) {
-        onPageChange(page);
-      }
-    };
-
-    eventBus.on(events.ON_PAGE_CHANGE, handlePageChange);
-
-    return () => {
-      eventBus.off(events.ON_PAGE_CHANGE, handlePageChange);
-    };
-  }, [onPageChange]);
+  }, [pdf]);
 
   if (error) {
     return <div>{error}</div>;
@@ -145,13 +129,14 @@ const PDF = ({
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
-            const shouldScrollToPage = scrollToPage?.toString() === regionId;
 
             return (
               <div
                 key={`page-${regionId}`}
                 id={`page-${regionId}-container`}
-                ref={shouldScrollToPage ? scrollToRef : undefined}
+                ref={el => {
+                  pageRefsMap.current[regionId] = el;
+                }}
               >
                 <SelectionRegion regionId={regionId}>
                   <PDFPage
@@ -174,4 +159,4 @@ const PDF = ({
 };
 
 export type { PDFProps };
-export default PDF;
+export { PDF };

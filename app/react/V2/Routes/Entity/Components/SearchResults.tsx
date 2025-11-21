@@ -13,22 +13,24 @@ import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
 import { Entity } from 'V2/domain';
 import { SEARCH_PARAM } from './urlParams';
-import { currentPageAtom, searchHintsModalAtom } from './atoms';
+import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
+import { scrollToPage } from './functions';
 
 type FormValues = {
   search: string;
 };
 
 const getFieldName = (fieldName: string, template: Entity['template'] | undefined) => {
-  if (fieldName === 'title') {
-    return 'Title';
-  }
+  // if (fieldName === 'title') {
+  //   return 'Title';
+  // }
 
-  const propertyName = fieldName.split('.')[1];
-  const propertyLabel = template?.properties?.get(propertyName)?.label || '';
+  // const propertyName = fieldName.split('.')[1];
+  // const propertyLabel = template?.properties?.get(propertyName)?.label || '';
 
-  return propertyLabel;
+  // return propertyLabel;
+  return '';
 };
 
 const createNode = (node: ChildNode, key: number): React.ReactNode => {
@@ -65,7 +67,6 @@ const SearchResults = () => {
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
-  const scrollToPage = useSetAtom(currentPageAtom);
 
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { search: initial },

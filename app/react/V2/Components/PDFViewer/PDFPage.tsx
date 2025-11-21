@@ -4,10 +4,11 @@ import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
 import { pdfScaleAtom } from 'V2/atoms';
-import { EventBus, PDFJSViewer, PDFJS, events } from './pdfjs';
+import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
 import { TextHighlight } from './types';
 import { calculateScaling } from './functions/calculateScaling';
 import { adjustSelectionsToScale } from './functions/handleTextSelection';
+import { pdfEventBus } from './events';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
@@ -64,7 +65,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
                 pageViewer
                   .draw()
                   .then(() => {
-                    eventBus.dispatch(events.ON_PAGE_CHANGE, pdfPage.pageNumber);
+                    pdfEventBus.dispatch('onPageChange', pdfPage.pageNumber);
                   })
                   .catch(e => {
                     setError(e.message);

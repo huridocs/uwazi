@@ -9,7 +9,7 @@ import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
-import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
+import { PDF, selectionHandlers, pdfEventBus } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
 import { Checkbox } from 'V2/Components/Forms';
 import {
@@ -29,6 +29,7 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
+// eslint-disable-next-line max-statements
 const PDFSidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -100,6 +101,15 @@ const PDFSidepanel = ({
       );
     }
   }, [pdfFile, setHighlights, showSidepanel, suggestion]);
+
+  useEffect(() => {
+    if (highlights && !selectedText) {
+      const firstPage = Object.keys(highlights)[0];
+      if (firstPage) {
+        pdfEventBus.dispatch('goToPage', Number(firstPage));
+      }
+    }
+  }, [highlights, selectedText]);
 
   useEffect(() => {
     if (dirtyFields.field) {
@@ -203,7 +213,6 @@ const PDFSidepanel = ({
               setSelectionError(undefined);
               setSelectedText(undefined);
             }}
-            scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
           />
         )}
       </Sidepanel.Body>
