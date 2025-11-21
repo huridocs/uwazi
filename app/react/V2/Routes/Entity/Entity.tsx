@@ -276,11 +276,19 @@ const Entity = () => {
       if (selectedMainTab !== activeMainTab) {
         const next = new URLSearchParams(searchParams.toString());
         next.set(MAIN_TAB_PARAM, selectedMainTab);
-        next.delete(SIDE_TAB_PARAM);
+
+        const currentSideTab = next.get(SIDE_TAB_PARAM);
+        const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
+        const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
+
+        if (currentSideTab && !isSideTabAvailable) {
+          next.delete(SIDE_TAB_PARAM);
+        }
+
         setSearchParams(next, { replace: true, preventScrollReset: true });
       }
     },
-    [activeMainTab, searchParams, setSearchParams]
+    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
   );
 
   const onSideTabChange = useCallback(
