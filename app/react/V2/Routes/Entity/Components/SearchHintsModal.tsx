@@ -10,7 +10,7 @@ const SearchHintsModal = () => {
   return showModal ? (
     <Modal size="xl">
       <Modal.Header>
-        <Translate className="text-xl font-medium text-gray-900">Search tips</Translate>
+        <Translate className="text-xl font-medium text-gray-900">Search Tips</Translate>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
       <Modal.Body className="max-w-[100vw]">

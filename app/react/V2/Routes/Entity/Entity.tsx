@@ -143,14 +143,14 @@ const entityLoader =
       } else {
         pagePlaintext = response;
       }
+    }
 
-      if (currentSearchTerm) {
-        searchResults = await snippets({
-          sharedId: composition.entity.sharedId,
-          limit: 0,
-          searchString: currentSearchTerm,
-        });
-      }
+    if (currentSearchTerm) {
+      searchResults = await snippets({
+        sharedId: composition.entity.sharedId,
+        limit: 0,
+        searchString: currentSearchTerm,
+      });
     }
 
     return { entity: composition.entity, pagePlaintext, searchResults };
