@@ -5,7 +5,8 @@ import { Document } from '../model/Document';
 import { Segmentation } from '../model/Segmentation';
 import { UwaziFile } from '../model/UwaziFile';
 import { ProcessedDocument } from '../model/ProcessedDocument';
-import { ProcessingFileNotFound } from '../model/errors';
+import { FileNotFound, ProcessingFileNotFound } from '../model/errors';
+import { FileType } from '../model/FileType';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];
@@ -28,5 +29,9 @@ interface FilesDataSource {
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
   ): ResultSet<ProcessedDocument>;
+  getByFilename(
+    filename: string,
+    allowedTypes?: FileType[]
+  ): Promise<ResultType<UwaziFile, FileNotFound>>;
 }
 export type { FilesDataSource, GetDocumentsForEntityOptions };

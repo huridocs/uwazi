@@ -3,6 +3,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
+import { FileNotFound } from 'api/files.v2/model/errors';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -52,7 +53,7 @@ const fixtures = {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures, true);
+  await testingEnvironment.setUp(fixtures);
 });
 
 afterAll(async () => {
@@ -86,6 +87,7 @@ describe('MongoFilesDataSource', () => {
 
   describe('update', () => {
     it('should update and reindex related entity if file type is "processedDocument"', async () => {
+      await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       const processingDoc = (
         await ds.getProcessingById(f.idString('anotherProcessingDoc'))
@@ -107,6 +109,7 @@ describe('MongoFilesDataSource', () => {
     });
 
     it('should update and reindex related entity if file type is "Document"', async () => {
+      await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       const processingDoc = (
         await ds.getProcessingById(f.idString('anotherProcessingDoc'))
@@ -123,6 +126,7 @@ describe('MongoFilesDataSource', () => {
   });
   describe('create', () => {
     it('should reindex related entity if file type is "processedDocument"', async () => {
+      await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
@@ -149,6 +153,7 @@ describe('MongoFilesDataSource', () => {
       );
     });
     it('should reindex related entity if file type is "Document"', async () => {
+      await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
         await ds.create(
@@ -258,6 +263,7 @@ describe('MongoFilesDataSource', () => {
       ]);
     });
   });
+
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
       const { ds } = createDs();
@@ -296,6 +302,26 @@ describe('MongoFilesDataSource', () => {
       expect(documentsForEntity.length).toBe(2);
       expect(documentsForEntity[0].filename).toBe('file4');
       expect(documentsForEntity[1].filename).toBe('file6');
+    });
+  });
+
+  describe('getByFilename', () => {
+    it('should return file matching filename', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getByFilename('file2')).getData();
+      expect(doc).toBeInstanceOf(Document);
+    });
+
+    it('should return FileNotFound when restricting filetype', async () => {
+      const { ds } = createDs();
+      const error = (await ds.getByFilename('file2', ['attachment'])).getError();
+      expect(error).toBeInstanceOf(FileNotFound);
+    });
+
+    it('should return file when file type restriction match', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getByFilename('file3', ['document', 'attachment'])).getData();
+      expect(doc).toBeInstanceOf(Document);
     });
   });
 
