@@ -150,4 +150,4 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   );
 };
 
-export default PDFPage;
+export { PDFPage };

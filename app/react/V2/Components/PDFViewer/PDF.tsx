@@ -9,7 +9,9 @@ import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 import { pdfEventBus } from './events';
 
-const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
+const PDFPage = loadable(
+  async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
+);
 
 const eventBus = new EventBus();
 

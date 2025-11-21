@@ -3,11 +3,10 @@ import loadable from '@loadable/component';
 import * as selectionHandlers from './functions/handleTextSelection';
 
 const PDF = loadable(
-  async () => {
-    const module = await import(/* webpackChunkName: "LazyLoadPDF" */ './PDF');
-    return module.PDF;
-  },
-  { ssr: false }
+  async () => (await import(/* webpackChunkName: "LazyLoadPDF" */ './PDF')).PDF,
+  {
+    ssr: false,
+  }
 );
 
 export { pdfEventBus } from './events';

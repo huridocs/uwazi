@@ -1,10 +1,4 @@
-const events = {
-  ON_PAGE_CHANGE: 'onPageChange',
-  GO_TO_PAGE: 'goToPage',
-  PDF_READY: 'pdfReady',
-} as const;
-
-type EventType = (typeof events)[keyof typeof events];
+type EventType = 'onPageChange' | 'goToPage' | 'pdfReady';
 
 interface EventPayloadMap {
   onPageChange: number;
