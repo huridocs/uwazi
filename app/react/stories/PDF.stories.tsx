@@ -22,7 +22,6 @@ const Primary: Story = {
           onSelect={args.onSelect}
           onDeselect={args.onDeselect}
           highlights={args.highlights}
-          scrollToPage={args.scrollToPage}
           size={{ height: '500px', width: 'auto' }}
         />
       </div>
@@ -44,9 +43,7 @@ const WithSelections: Story = {
 
 const WithScroll: Story = {
   ...Primary,
-  args: {
-    scrollToPage: '3',
-  },
+  args: {},
 };
 
 export { Basic, WithSelections, WithScroll };

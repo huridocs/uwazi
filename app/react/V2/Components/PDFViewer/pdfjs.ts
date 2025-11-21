@@ -2,10 +2,6 @@ import * as pdfJsDist from 'pdfjs-dist';
 import * as viewer from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
-type OnPageChagenEventHandler = (page: number) => void;
-
-const events = { ON_PAGE_CHANGE: 'onPageChange' };
-
 let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus } = viewer;
@@ -28,5 +24,4 @@ await pdfjsLoader();
 
 const PDFJS = pdfjs;
 
-export type { OnPageChagenEventHandler };
-export { PDFJS, PDFJSViewer, EventBus, events, CMAP_URL };
+export { PDFJS, PDFJSViewer, EventBus, CMAP_URL };

@@ -7,21 +7,33 @@ import {
   useLoaderData,
   useSearchParams,
 } from 'react-router';
-import { Bars3CenterLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import {
+  Bars3CenterLeftIcon,
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { getPagePlaintext } from 'V2/api/files';
-import { Entity as EntityType } from 'V2/domain/entities/Entity';
+import { snippets } from 'V2/api/search';
+import { SnippetsSearchResponse } from 'V2/api/types';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
 import { fullDetailOptions } from 'V2/application/optionsPresets';
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
 import { Tabs } from 'V2/Components/UI';
-import { TabLabel, PDFView } from './Components';
-
-const MAIN_TAB_PARAM = 'm';
-const SIDE_TAB_PARAM = 's';
+import {
+  TabLabel,
+  PDFView,
+  SearchHintsModal,
+  MAIN_TAB_PARAM,
+  SIDE_TAB_PARAM,
+  SearchResults,
+  SEARCH_PARAM,
+  LoaderResponse,
+  PAGE_PARAM,
+} from './Components';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -32,6 +44,7 @@ const MAIN_TABS = {
 const SIDE_TABS = {
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
+  SEARCH: 'search',
 };
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
@@ -45,8 +58,6 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
-
-type LoaderResponse = { entity: EntityType; pagePlaintext: string } | undefined;
 
 const shouldRevalidate = ({
   currentParams,
@@ -68,11 +79,14 @@ const shouldRevalidate = ({
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
+  // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
     const { searchParams } = new URL(request.url);
-    const currentPage = searchParams.get('page') || '1';
+    const currentPage = searchParams.get(PAGE_PARAM) || '1';
+    const currentSearchTerm = searchParams.get(SEARCH_PARAM);
     let pagePlaintext = '';
+    let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entitySharedId) {
       return undefined;
@@ -130,7 +144,16 @@ const entityLoader =
         pagePlaintext = response;
       }
     }
-    return { entity: composition.entity, pagePlaintext };
+
+    if (currentSearchTerm) {
+      searchResults = await snippets({
+        sharedId: composition.entity.sharedId,
+        limit: 0,
+        searchString: currentSearchTerm,
+      });
+    }
+
+    return { entity: composition.entity, pagePlaintext, searchResults };
   };
 
 const Entity = () => {
@@ -214,6 +237,11 @@ const Entity = () => {
           ),
           content: <div no-translate>This content is not yet available</div>,
         },
+        {
+          id: SIDE_TABS.SEARCH,
+          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
+          content: <SearchResults />,
+        },
       ],
       [MAIN_TABS.METADATA]: [
         {
@@ -225,6 +253,11 @@ const Entity = () => {
             />
           ),
           content: <div no-translate>This content is not yet available</div>,
+        },
+        {
+          id: SIDE_TABS.SEARCH,
+          label: <TabLabel text="Search" icon={<MagnifyingGlassIcon className="w-5 h-5" />} />,
+          content: <SearchResults />,
         },
       ],
       [MAIN_TABS.RELATIONSHIPS]: [
@@ -243,11 +276,19 @@ const Entity = () => {
       if (selectedMainTab !== activeMainTab) {
         const next = new URLSearchParams(searchParams.toString());
         next.set(MAIN_TAB_PARAM, selectedMainTab);
-        next.delete(SIDE_TAB_PARAM);
+
+        const currentSideTab = next.get(SIDE_TAB_PARAM);
+        const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
+        const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
+
+        if (currentSideTab && !isSideTabAvailable) {
+          next.delete(SIDE_TAB_PARAM);
+        }
+
         setSearchParams(next, { replace: true, preventScrollReset: true });
       }
     },
-    [activeMainTab, searchParams, setSearchParams]
+    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
   );
 
   const onSideTabChange = useCallback(
@@ -297,6 +338,8 @@ const Entity = () => {
           </Tabs>
         </PaneLayout.Pane>
       </PaneLayout>
+
+      <SearchHintsModal />
     </div>
   );
 };
