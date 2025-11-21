@@ -90,7 +90,7 @@ export default app => {
         return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
       }
 
-      return uploadMiddleware.multiple();
+      return uploadMiddleware.multiple()(req, res, next);
     },
     activitylogMiddleware,
     async (req, res, next) => {
