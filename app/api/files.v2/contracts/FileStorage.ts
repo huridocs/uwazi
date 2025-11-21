@@ -16,4 +16,5 @@ export interface FileStorage {
   getPath(file: UwaziFile): string;
   getFiles(inputs: GetFileInput[]): Promise<FileContents[]>;
   getFile(input: GetFileInput): Promise<FileContents>;
+  fileExists(filePath: UwaziFile): Promise<boolean>;
 }
