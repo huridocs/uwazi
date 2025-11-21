@@ -57,4 +57,4 @@ class EventBus {
 
 const pdfEventBus = new EventBus();
 
-export { events, pdfEventBus };
+export { pdfEventBus };
