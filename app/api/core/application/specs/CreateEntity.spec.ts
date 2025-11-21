@@ -3,28 +3,30 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { UseCaseContext } from 'api/core/libs/UseCase';
-import { ObjectId } from 'mongodb';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
+import { PermissionType } from 'api/core/domain/entity/PermissionType';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { tenants } from 'api/tenants';
-import { PermissionType } from 'api/core/domain/entity/PermissionType';
-import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { UseCaseContext } from 'api/core/libs/UseCase';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
+import { InputFile } from 'api/files.v2/model/InputFile';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { tenants } from 'api/tenants';
+import { ObjectId } from 'mongodb';
 import { CreateEntityUseCase } from '../CreateEntity';
-import { FilesService } from '../FilesService';
 import { EntitiesService } from '../EntitiesService';
+import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
 const factory = getFixturesFactory();
@@ -216,6 +218,8 @@ const createSut = (props: CreateSutProps = {}) => {
     fileStorage,
     filesDS,
     jobsDispatcher,
+    filesIO: new FileContentsIO(),
+    pdfService: new PDFService(),
   });
 
   const entitiesService = new EntitiesService({

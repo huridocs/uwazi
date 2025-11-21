@@ -26,6 +26,8 @@ import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSy
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesService } from '../FilesService';
 import { EntitiesService } from '../EntitiesService';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
 
 const factory = getFixturesFactory();
 
@@ -66,6 +68,8 @@ const createSut = () => {
     fileStorage,
     filesDS,
     jobsDispatcher: DefaultDispatcher(tenants.current().name),
+    filesIO: new FileContentsIO(),
+    pdfService: new PDFService(),
   });
 
   const dispatcher = DefaultDispatcher(tenants.current().name);
