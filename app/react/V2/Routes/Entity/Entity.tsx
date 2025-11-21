@@ -32,9 +32,8 @@ import {
   SearchResults,
   SEARCH_PARAM,
   LoaderResponse,
+  PAGE_PARAM,
 } from './Components';
-import { atomStore } from 'app/V2/atoms';
-import { currentPageAtom } from './Components/atoms';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -84,7 +83,7 @@ const entityLoader =
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
     const { searchParams } = new URL(request.url);
-    const currentPage = searchParams.get('page') || '1';
+    const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
     let pagePlaintext = '';
     let searchResults: SnippetsSearchResponse | undefined;
@@ -153,8 +152,6 @@ const entityLoader =
         });
       }
     }
-
-    atomStore.set(currentPageAtom, Number(currentPage));
 
     return { entity: composition.entity, pagePlaintext, searchResults };
   };
