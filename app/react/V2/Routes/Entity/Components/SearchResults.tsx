@@ -1,17 +1,18 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import sanitizeHtml from 'sanitize-html';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
+import { templatesAtom } from 'V2/atoms';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
-import { Entity } from 'V2/domain';
+import { ClientTemplateSchema } from 'V2/shared/types';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
@@ -21,16 +22,16 @@ type FormValues = {
   search: string;
 };
 
-const getFieldName = (fieldName: string, template: Entity['template'] | undefined) => {
-  // if (fieldName === 'title') {
-  //   return 'Title';
-  // }
+const getFieldName = (fieldName: string, template?: ClientTemplateSchema) => {
+  if (fieldName === 'title') {
+    return 'Title';
+  }
 
-  // const propertyName = fieldName.split('.')[1];
-  // const propertyLabel = template?.properties?.get(propertyName)?.label || '';
+  const propertyName = fieldName.split('.')[1];
+  const propertyLabel =
+    template?.properties?.find(property => property.name === propertyName)?.label || '';
 
-  // return propertyLabel;
-  return '';
+  return propertyLabel;
 };
 
 const createNode = (node: ChildNode, key: number): React.ReactNode => {
@@ -67,6 +68,12 @@ const SearchResults = () => {
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
+  const templates = useAtomValue(templatesAtom);
+
+  const template = useMemo(
+    () => templates.find(temp => temp._id === entity?.template?._id),
+    [entity, templates]
+  );
 
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { search: initial },
@@ -169,10 +176,13 @@ const SearchResults = () => {
                     <>
                       <dl className="grid gap-y-2">
                         {metadata.map((m, j) => (
-                          <div key={`metadata-${i}-${j}`}>
+                          <div
+                            key={`metadata-${i}-${j}`}
+                            className="p-2 border border-gray-100 shadow-md rounded-lg"
+                          >
                             <dt className="text-sm font-semibold text-gray-900">
                               <Translate context={entity!.template!._id}>
-                                {getFieldName(m.field, entity?.template)}
+                                {getFieldName(m.field, template)}
                               </Translate>
                             </dt>
                             {m.texts.map((text, k) => (
@@ -209,12 +219,14 @@ const SearchResults = () => {
                                 scrollToPage(pageText.page);
                               }
                             }}
-                            className={`p-5 border border-gray-100 shadow-md rounded-lg cursor-pointer
+                            className={`p-4 border border-gray-100 shadow-md rounded-lg cursor-pointer
                         ${isActive ? 'border-indigo-400' : null}
                         focus:outline-none focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
                           >
                             <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                            <p className="mb-4 px-2 font-bold">{pageText.page}</p>
+                            <p className="font-bold float-end">
+                              {t('System', 'Page', null, false)} {pageText.page}
+                            </p>
                           </div>
                         );
                       })
