@@ -19,7 +19,7 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';

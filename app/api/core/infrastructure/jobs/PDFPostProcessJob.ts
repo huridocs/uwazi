@@ -2,7 +2,7 @@ import { WebSockets } from 'api/core/application/contracts/WebSockets';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/files.v2/model/errors';
 import { V1CompatTenantDispatchable } from 'api/core/libs/queue/application/contracts/V1CompatTenantDispatchable';
 import { FileIsNotAPDF } from '../services/PDFService';

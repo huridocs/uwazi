@@ -12,15 +12,15 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
-import { Attachment } from '../model/Attachment';
-import { CustomUpload } from '../model/CustomUpload';
-import { FileContents } from '../model/FileContents';
-import { StoredFile } from '../model/StoredFile';
-import { URLAttachment } from '../model/URLAttachment';
-import { UwaziFile } from '../model/UwaziFile';
+import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
+import { Attachment } from '../../../files.v2/model/Attachment';
+import { CustomUpload } from '../../../files.v2/model/CustomUpload';
+import { FileContents } from '../../../files.v2/model/FileContents';
+import { StoredFile } from '../../../files.v2/model/StoredFile';
+import { URLAttachment } from '../../../files.v2/model/URLAttachment';
+import { UwaziFile } from '../../../files.v2/model/UwaziFile';
+import { BaseFile } from '../../../files.v2/model/BaseFile';
 import { PathManager } from './PathManager';
-import { BaseFile } from '../model/BaseFile';
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;

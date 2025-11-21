@@ -2,7 +2,6 @@
 import * as fs from 'fs/promises';
 
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -35,7 +34,8 @@ describe('FileSystemStorage', () => {
   };
 
   beforeAll(async () => {
-    await testingEnvironment.setTenant('testTenant');
+    await testingEnvironment.setTenant();
+    await testingEnvironment.setupTenantTmpPaths([]);
     tenant = tenants.current();
     pathManager = new PathManager({ tenant });
     fileSystemStorage = new FileSystemStorage(pathManager);
@@ -59,17 +59,6 @@ describe('FileSystemStorage', () => {
     });
     await fs.mkdir(path.dirname(customPath), { recursive: true });
     await fs.writeFile(customPath, createFileContent('customPath'));
-  });
-
-  afterAll(async () => {
-    await testingEnvironment.cleanupUploadPaths();
-    await fs.rm(
-      pathManager.createPath({
-        filename: createFileName('customPath'),
-        type: 'customPath',
-        destination: 'custom/path',
-      })
-    );
   });
 
   describe('getFile', () => {
@@ -138,13 +127,10 @@ describe('FileSystemStorage', () => {
     });
   });
 
-  const testingFilesPath = (filename: string) =>
-    path.join(__dirname, '../../../files/specs/testing_files', filename);
-
   describe('storeFile', () => {
     it('should store it on the disk', async () => {
       const document = FileBuilder.document(f.idString('doc'), {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content created\n'),
         filename: 'document.txt',
       });
 
@@ -171,7 +157,7 @@ describe('FileSystemStorage', () => {
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
       await fileSystemStorage.storeContent(
-        new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        FileBuilder.content('content created\n'),
         'custom_path/deep/documento.txt'
       );
 
@@ -187,16 +173,8 @@ describe('FileSystemStorage', () => {
   describe('fileExists', () => {
     it('should check if file exists', async () => {
       const doc = FileBuilder.document('docId', {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content created\n'),
       });
-
-      try {
-        await fs.rm(pathManager.createPath(doc));
-      } catch (e) {
-        if (e.code !== 'ENOENT') {
-          throw e;
-        }
-      }
 
       expect(await fileSystemStorage.fileExists(doc)).toBe(false);
 

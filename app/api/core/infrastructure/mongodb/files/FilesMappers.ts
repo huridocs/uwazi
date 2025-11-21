@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb';
 import { LanguageUtils } from 'shared/language';
-import { Attachment } from '../model/Attachment';
-import { CustomUpload } from '../model/CustomUpload';
-import { Document } from '../model/Document';
-import { Thumbnail } from '../model/Thumbnail';
-import { URLAttachment } from '../model/URLAttachment';
-import { UwaziFile } from '../model/UwaziFile';
+import { Attachment } from '../../../../files.v2/model/Attachment';
+import { CustomUpload } from '../../../../files.v2/model/CustomUpload';
+import { Document } from '../../../../files.v2/model/Document';
+import { Thumbnail } from '../../../../files.v2/model/Thumbnail';
+import { URLAttachment } from '../../../../files.v2/model/URLAttachment';
+import { UwaziFile } from '../../../../files.v2/model/UwaziFile';
+import { ProcessedDocument } from '../../../../files.v2/model/ProcessedDocument';
+import { FileContents } from '../../../../files.v2/model/FileContents';
 import { fileDBO } from './schemas/filesTypes';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { FileContents } from '../model/FileContents';
 
 export const FileMappers = {
   toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO, fileContents: FileContents): R {

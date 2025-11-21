@@ -1,6 +1,6 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
 import { InputFile } from 'api/files.v2/model/InputFile';

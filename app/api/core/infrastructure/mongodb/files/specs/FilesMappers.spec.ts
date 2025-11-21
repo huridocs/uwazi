@@ -4,10 +4,10 @@ import { Thumbnail } from 'api/files.v2/model/Thumbnail';
 import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
-import { Attachment } from '../../model/Attachment';
-import { CustomUpload } from '../../model/CustomUpload';
-import { Document } from '../../model/Document';
-import { URLAttachment } from '../../model/URLAttachment';
+import { Attachment } from '../../../../../files.v2/model/Attachment';
+import { CustomUpload } from '../../../../../files.v2/model/CustomUpload';
+import { Document } from '../../../../../files.v2/model/Document';
+import { URLAttachment } from '../../../../../files.v2/model/URLAttachment';
 import { FileMappers } from '../FilesMappers';
 import {
   AttachmentDBO,
@@ -76,7 +76,9 @@ describe('FileMappers', () => {
     });
 
     it('should map Attachment to FileDBOType', () => {
-      const attachment = FileBuilder.attachment(f.idString('attId'), { entity: 'entity3' });
+      const attachment = FileBuilder.attachment(f.idString('attId'), {
+        entity: 'entity3',
+      });
       const result = FileMappers.toDBO(attachment) as AttachmentDBO;
 
       expect(result._id.toString()).toBe(f.idString('attId'));

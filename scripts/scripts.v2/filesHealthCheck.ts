@@ -3,7 +3,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { config } from 'api/config';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
-import { S3FileStorage } from 'api/files.v2/infrastructure/S3FileStorage';
+import { S3FileStorage } from 'api/core/infrastructure/files/S3FileStorage';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';

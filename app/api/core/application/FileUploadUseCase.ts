@@ -1,8 +1,8 @@
 // eslint-disable-next-line node/no-restricted-import
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { InputFile } from 'api/files.v2/model/InputFile';
-import { fileDBO } from 'api/files.v2/database/schemas/filesTypes';
+import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { FilesService } from './FilesService';
 import { AJVObject, ValidationError } from '../domain/error/ValidationError';
 import { AbstractUseCase } from '../libs/UseCase';

@@ -2,7 +2,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { FilesHealthCheck } from '../FilesHealthCheck';
-import { FileStorage } from '../contracts/FileStorage';
+import { FileStorage } from '../../core/application/contracts/FileStorage';
 import { FilesDataSourceFactory } from '../../core/infrastructure/factories/FilesDataSourceFactory';
 import { CustomUpload } from '../model/CustomUpload';
 import { StoredFile } from '../model/StoredFile';

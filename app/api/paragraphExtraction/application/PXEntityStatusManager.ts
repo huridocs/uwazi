@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileType } from 'api/files.v2/model/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FileType as LegacyFileType } from 'shared/types/fileType';

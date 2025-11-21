@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ProcessingFileFailed } from 'api/files.v2/model/errors';
 import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';

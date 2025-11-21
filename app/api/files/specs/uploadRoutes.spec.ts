@@ -13,7 +13,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { tenants } from 'api/tenants';
 import { csvImportRoutes } from 'api/csv.v2/routes/routes';
 import { UserSchema } from 'shared/types/userType';

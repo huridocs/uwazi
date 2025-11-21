@@ -6,8 +6,8 @@ import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { UseCase } from 'api/core/libs/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 

@@ -4,11 +4,11 @@ import { access, mkdir } from 'fs/promises';
 
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
-import { DiskFile } from '../model/DiskFile';
-import { FileContents } from '../model/FileContents';
-import { StoredFile } from '../model/StoredFile';
-import { UwaziFile } from '../model/UwaziFile';
+import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
+import { DiskFile } from '../../../files.v2/model/DiskFile';
+import { FileContents } from '../../../files.v2/model/FileContents';
+import { StoredFile } from '../../../files.v2/model/StoredFile';
+import { UwaziFile } from '../../../files.v2/model/UwaziFile';
 import { PathManager } from './PathManager';
 
 export class FileSystemStorage implements FileStorage {

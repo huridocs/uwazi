@@ -1,6 +1,7 @@
 import { Attachment } from '../model/Attachment';
 import { DiskFile } from '../model/DiskFile';
 import { Document } from '../model/Document';
+import { FileContents } from '../model/FileContents';
 import { ProcessedDocument } from '../model/ProcessedDocument';
 import { Thumbnail } from '../model/Thumbnail';
 import { URLAttachment } from '../model/URLAttachment';
@@ -88,6 +89,13 @@ export class FileBuilder {
       creationDate: 1234567892,
       content: new DiskFile('fake/path').toContent(),
       ...props,
+    });
+  }
+
+  static content(content: string) {
+    return new FileContents(async function* streamCallback() {
+      const encoder = new TextEncoder();
+      yield encoder.encode(content);
     });
   }
 }

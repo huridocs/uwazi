@@ -1,4 +1,4 @@
-import { Segmentation } from '../model/Segmentation';
+import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { SegmentationDBO } from './MongoFilesDataSource';
 
 export class SegmentationMapper {

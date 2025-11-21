@@ -4,7 +4,7 @@ import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesD
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
 import { PDFPostProcessJob } from '../jobs/PDFPostProcessJob';

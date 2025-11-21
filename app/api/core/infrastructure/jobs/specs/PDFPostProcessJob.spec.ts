@@ -9,7 +9,7 @@ import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesD
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { ProcessingFileNotFound } from 'api/files.v2/model/errors';
 import { tenants } from 'api/tenants';

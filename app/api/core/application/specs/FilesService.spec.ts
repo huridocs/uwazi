@@ -12,7 +12,7 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';

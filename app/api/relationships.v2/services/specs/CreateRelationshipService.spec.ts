@@ -4,7 +4,7 @@ import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGe
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { MongoFilesDataSource } from 'api/files.v2/database/MongoFilesDataSource';
+import { MongoFilesDataSource } from 'api/core/infrastructure/mongodb/files/MongoFilesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
@@ -17,7 +17,7 @@ import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 
 const factory = getFixturesFactory();
 

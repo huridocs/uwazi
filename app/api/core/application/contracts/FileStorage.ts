@@ -1,7 +1,7 @@
-import { FileContents } from '../model/FileContents';
-import { FileType } from '../model/FileType';
-import { StoredFile } from '../model/StoredFile';
-import { UwaziFile } from '../model/UwaziFile';
+import { FileContents } from '../../../files.v2/model/FileContents';
+import { FileType } from '../../../files.v2/model/FileType';
+import { StoredFile } from '../../../files.v2/model/StoredFile';
+import { UwaziFile } from '../../../files.v2/model/UwaziFile';
 
 export type GetFileInput = {
   type: FileType | 'customPath';

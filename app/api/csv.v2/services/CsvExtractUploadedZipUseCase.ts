@@ -1,7 +1,7 @@
 import path from 'path';
 import yauzl from 'yauzl';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';

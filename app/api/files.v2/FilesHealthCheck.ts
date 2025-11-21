@@ -1,5 +1,5 @@
-import { FilesDataSource } from './contracts/FilesDataSource';
-import { FileStorage } from './contracts/FileStorage';
+import { FilesDataSource } from '../core/application/contracts/FilesDataSource';
+import { FileStorage } from '../core/application/contracts/FileStorage';
 import { StoredFile } from './model/StoredFile';
 import { URLAttachment } from './model/URLAttachment';
 
