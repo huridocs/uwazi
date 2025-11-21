@@ -1,7 +1,9 @@
 import {
   _Object,
   GetObjectCommand,
+  HeadObjectCommand,
   ListObjectsV2Command,
+  NotFound,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -81,6 +83,23 @@ export class S3FileStorage implements FileStorage {
     const promises = inputs.map(async input => this.getFile(input));
 
     return Promise.all(promises);
+  }
+
+  async fileExists(file: UwaziFile) {
+    try {
+      await this.s3Client.send(
+        new HeadObjectCommand({
+          Bucket: this.bucket,
+          Key: this.pathManager.createPath(file),
+        })
+      );
+    } catch (e) {
+      if (e instanceof NotFound) {
+        return false;
+      }
+      throw e;
+    }
+    return true;
   }
 
   getPath(file: UwaziFile): string {

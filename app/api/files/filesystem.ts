@@ -43,7 +43,7 @@ async function deleteFiles(files: FilePath[]) {
 
 const createDirIfNotExists = async (dirPath: string) => {
   try {
-    await fs.mkdir(dirPath);
+    await fs.mkdir(dirPath, { recursive: true });
   } catch (e) {
     if (!e.message.match(/file already exists/)) {
       throw e;
@@ -111,7 +111,9 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
   const fileName = `${Date.now()}${ID()}`;
 
   const extensionFromOriginalName = getExtension(getMimetypeFromOriginalName(originalname) || '');
-  if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
+  if (extensionFromOriginalName) {
+    return `${fileName}.${extensionFromOriginalName}`;
+  }
 
   const extensionFromMime = getExtension(mimetype);
   if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
@@ -124,7 +126,6 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
  * @param destination by default this will be uploadsPaths,
  * if you want another one you can pass filesystem destinatations
  * e.g. attachmentsPath()
- *
  */
 const fileFromReadStream = async (
   fileName: FilePath,

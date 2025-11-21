@@ -1,6 +1,6 @@
 /* eslint-disable node/no-restricted-import */
 import { createWriteStream } from 'fs';
-import { mkdir } from 'fs/promises';
+import { access, mkdir } from 'fs/promises';
 
 import path from 'path';
 import { pipeline } from 'stream/promises';
@@ -51,6 +51,18 @@ export class FileSystemStorage implements FileStorage {
 
   async getFile(input: GetFileInput): Promise<FileContents> {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
+  }
+
+  async fileExists(file: UwaziFile) {
+    try {
+      await access(this.pathManager.createPath(file));
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        return false;
+      }
+      throw e;
+    }
+    return true;
   }
 
   async getFiles(inputs: GetFileInput[]): Promise<FileContents[]> {
