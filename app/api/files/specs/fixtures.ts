@@ -48,7 +48,7 @@ const mainDoc = {
   language: 'eng',
 } as const;
 
-const restrictedCustomPdf = {
+const customPDF = {
   _id: db.id(),
   entity: 'restrictedSharedId',
   creationDate: 1,
@@ -89,7 +89,7 @@ const restrictedThumbnail = {
 const downloadFixtures = {
   thumbnail,
   attachment,
-  restrictedCustomPdf,
+  customPDF,
   mainDoc,
   publicEntityFile,
   restrictedThumbnail,
