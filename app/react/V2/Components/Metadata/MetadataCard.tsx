@@ -1,7 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 
-const MetadataCard = ({ children }: PropsWithChildren) => (
-  <div className="bg-white border-gray-100 rounded-lg border flex flex-col gap-4 py-3 px-4">
+const MetadataCard = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
+  <div
+    className={`border-gray-100 rounded-lg border flex flex-col text-sm gap-2 py-3 px-4 ${className}`}
+  >
     {children}
   </div>
 );
