@@ -9,18 +9,27 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { S3Error } from 'api/files/S3Storage';
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
 import { Attachment } from '../../domain/files/Attachment';
+import { BaseFile } from '../../domain/files/BaseFile';
 import { CustomUpload } from '../../domain/files/CustomUpload';
 import { FileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { URLAttachment } from '../../domain/files/URLAttachment';
 import { UwaziFile } from '../../domain/files/UwaziFile';
-import { BaseFile } from '../../domain/files/BaseFile';
 import { PathManager } from './PathManager';
+
+const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
+  try {
+    return await cb();
+  } catch (err) {
+    throw new S3Error(err);
+  }
+};
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;
@@ -41,26 +50,30 @@ export class S3FileStorage implements FileStorage {
   }
 
   async storeContent(content: FileContents, subpath: string): Promise<void> {
-    await this.s3Client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: this.pathManager.createPath({
-          filename: path.basename(subpath),
-          destination: path.dirname(subpath),
-          type: 'customPath',
-        }),
-        Body: (await this.fileIO.toBuffer(content)).getDataOrThrow(),
-      })
+    await catchS3Errors(async () =>
+      this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: this.pathManager.createPath({
+            filename: path.basename(subpath),
+            destination: path.dirname(subpath),
+            type: 'customPath',
+          }),
+          Body: (await this.fileIO.toBuffer(content)).getDataOrThrow(),
+        })
+      )
     );
   }
 
   async storeFile(file: BaseFile) {
-    await this.s3Client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: this.pathManager.createPath(file),
-        Body: (await this.fileIO.toBuffer(file.content)).getDataOrThrow(),
-      })
+    await catchS3Errors(async () =>
+      this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: this.pathManager.createPath(file),
+          Body: (await this.fileIO.toBuffer(file.content)).getDataOrThrow(),
+        })
+      )
     );
   }
 
@@ -72,7 +85,7 @@ export class S3FileStorage implements FileStorage {
 
     const client = this.s3Client;
     return new FileContents(async function* streamCallback() {
-      const stream = (await client.send(command)).Body as Readable;
+      const stream = (await catchS3Errors(async () => client.send(command))).Body as Readable;
       for await (const chunk of stream) {
         yield chunk;
       }
@@ -97,7 +110,7 @@ export class S3FileStorage implements FileStorage {
       if (e instanceof NotFound) {
         return false;
       }
-      throw e;
+      throw new S3Error(e);
     }
     return true;
   }
@@ -118,13 +131,15 @@ export class S3FileStorage implements FileStorage {
   async list() {
     const objects: _Object[] = [];
     const requestNext = async (token?: string) => {
-      const response = await this.s3Client.send(
-        new ListObjectsV2Command({
-          Bucket: config.s3.bucket,
-          Prefix: `${this.tenant.name}/`,
-          ContinuationToken: token,
-          MaxKeys: config.s3.batchSize,
-        })
+      const response = await catchS3Errors(async () =>
+        this.s3Client.send(
+          new ListObjectsV2Command({
+            Bucket: config.s3.bucket,
+            Prefix: `${this.tenant.name}/`,
+            ContinuationToken: token,
+            MaxKeys: config.s3.batchSize,
+          })
+        )
       );
       objects.push(...(response.Contents || []));
       return response.NextContinuationToken;
