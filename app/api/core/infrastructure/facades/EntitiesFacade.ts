@@ -40,9 +40,9 @@ export class EntityFacade {
 
       return entity;
     } catch (error) {
-      logger.info(
-        `[EntityCreation] - Error - ${JSON.stringify(error)} - DTO: ${JSON.stringify(dto)}`
-      );
+      logger.info(`Error - ${JSON.stringify(error)} - DTO: ${JSON.stringify(dto)}`, {
+        workflow: 'Entity_Creation',
+      });
 
       throw error;
     }
