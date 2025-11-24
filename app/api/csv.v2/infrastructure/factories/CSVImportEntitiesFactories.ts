@@ -1,5 +1,5 @@
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { tenants } from 'api/tenants/tenantContext';

@@ -6,4 +6,3 @@ export interface CsvImportThesauriValuesDBO {
   createdAt: number;
   entries: CsvThesauriPlanEntry[];
 }
-

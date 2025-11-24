@@ -2,7 +2,7 @@ import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { tenants } from 'api/tenants/tenantContext';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource';
 import { CsvImportDomain } from './domain/CsvImport';
 import { CsvExtractUploadedZipJobHandler } from './infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
