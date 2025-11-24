@@ -3,8 +3,11 @@ import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource'
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ProcessingFileFailed } from 'api/core/domain/files/errors';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
+import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
+import { EventsBus } from '../libs/eventsbus';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
 import { FilesService } from './FilesService';
@@ -16,6 +19,7 @@ type Input = {
 type Output = ProcessedDocument;
 
 type Deps = {
+  eventBus: EventsBus;
   filesDS: FilesDataSource;
   fileStorage: FileStorage;
   pdfService: PDFService;
@@ -45,6 +49,13 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
         await this.deps.filesDS.create(thumbnail);
         await this.deps.fileStorage.storeFile(thumbnail);
       });
+
+      await this.eventBus.emit(
+        new FileUpdatedEvent({
+          before: FileMappers.toDTO(document),
+          after: FileMappers.toDTO(processedDoc),
+        })
+      );
 
       return processedDoc;
     } catch (e) {

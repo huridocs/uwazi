@@ -5,13 +5,14 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
 import { FilesService } from 'api/core/application/FilesService';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -21,6 +22,7 @@ import { TransactionManagerFactory } from '../../factories/TransactionManagerFac
 import { FileContentsIO } from '../../files/FileContentIO';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -29,9 +31,14 @@ const setUpJob = (pdfService = new PDFService()) => {
     emitToTenant: jest.fn(),
   });
 
+  const eventBus = TestUtils.mockClass<EventsBus>({
+    emit: jest.fn(),
+  });
+
   return {
     job: new PDFPostProcessJob({
       useCase: new PDFPostProcess({
+        eventBus,
         transactionManager,
         filesDS: FilesDataSourceFactory.default(transactionManager),
         fileStorage: FileStorageFactory.default(),
@@ -50,6 +57,7 @@ const setUpJob = (pdfService = new PDFService()) => {
       wSockets,
     }),
     wSockets,
+    eventBus,
   };
 };
 
@@ -102,6 +110,18 @@ describe('PDFPostProcessJob', () => {
       'documentProcessed',
       'fileEntity',
       expect.objectContaining({ filename: 'eng.pdf', status: 'ready' })
+    );
+  });
+
+  it('should emit FileUpdatedEvent', async () => {
+    const { job, eventBus } = setUpJob();
+    await executeJob(job, f.idString('processing_doc'));
+
+    expect(eventBus.emit).toHaveBeenCalledWith(
+      new FileUpdatedEvent({
+        before: expect.objectContaining({ filename: 'eng.pdf', status: 'processing' }),
+        after: expect.objectContaining({ filename: 'eng.pdf', status: 'ready' }),
+      })
     );
   });
 
