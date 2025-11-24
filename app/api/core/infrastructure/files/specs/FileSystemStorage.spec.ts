@@ -2,7 +2,7 @@
 import * as fs from 'fs/promises';
 
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';

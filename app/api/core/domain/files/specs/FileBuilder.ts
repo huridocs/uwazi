@@ -1,10 +1,10 @@
-import { Attachment } from '../model/Attachment';
-import { DiskFile } from '../model/DiskFile';
-import { Document } from '../model/Document';
-import { FileContents } from '../model/FileContents';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { Thumbnail } from '../model/Thumbnail';
-import { URLAttachment } from '../model/URLAttachment';
+import { Attachment } from '../Attachment';
+import { DiskFile } from '../DiskFile';
+import { Document } from '../Document';
+import { FileContents } from '../FileContents';
+import { ProcessedDocument } from '../ProcessedDocument';
+import { Thumbnail } from '../Thumbnail';
+import { URLAttachment } from '../URLAttachment';
 
 type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]) => any
   ? A extends object

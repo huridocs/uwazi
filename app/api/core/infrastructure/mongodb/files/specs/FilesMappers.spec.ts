@@ -1,13 +1,13 @@
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { Thumbnail } from 'api/files.v2/model/Thumbnail';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
-import { Attachment } from '../../../../../files.v2/model/Attachment';
-import { CustomUpload } from '../../../../../files.v2/model/CustomUpload';
-import { Document } from '../../../../../files.v2/model/Document';
-import { URLAttachment } from '../../../../../files.v2/model/URLAttachment';
+import { Attachment } from '../../../../domain/files/Attachment';
+import { CustomUpload } from '../../../../domain/files/CustomUpload';
+import { Document } from '../../../../domain/files/Document';
+import { URLAttachment } from '../../../../domain/files/URLAttachment';
 import { FileMappers } from '../FilesMappers';
 import {
   AttachmentDBO,

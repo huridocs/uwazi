@@ -13,13 +13,13 @@ import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { Attachment } from '../../../files.v2/model/Attachment';
-import { CustomUpload } from '../../../files.v2/model/CustomUpload';
-import { FileContents } from '../../../files.v2/model/FileContents';
-import { StoredFile } from '../../../files.v2/model/StoredFile';
-import { URLAttachment } from '../../../files.v2/model/URLAttachment';
-import { UwaziFile } from '../../../files.v2/model/UwaziFile';
-import { BaseFile } from '../../../files.v2/model/BaseFile';
+import { Attachment } from '../../domain/files/Attachment';
+import { CustomUpload } from '../../domain/files/CustomUpload';
+import { FileContents } from '../../domain/files/FileContents';
+import { StoredFile } from '../../domain/files/StoredFile';
+import { URLAttachment } from '../../domain/files/URLAttachment';
+import { UwaziFile } from '../../domain/files/UwaziFile';
+import { BaseFile } from '../../domain/files/BaseFile';
 import { PathManager } from './PathManager';
 
 export class S3FileStorage implements FileStorage {

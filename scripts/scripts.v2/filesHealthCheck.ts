@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { config } from 'api/config';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
+import { FilesHealthCheck } from 'api/core/application/FilesHealthCheck';
 import { S3FileStorage } from 'api/core/infrastructure/files/S3FileStorage';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants';

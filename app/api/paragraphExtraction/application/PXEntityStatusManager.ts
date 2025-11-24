@@ -3,11 +3,11 @@ import { ObjectId } from 'mongodb';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FileType } from 'api/files.v2/model/FileType';
+import { FileType } from 'api/core/domain/files/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FileType as LegacyFileType } from 'shared/types/fileType';
 
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';

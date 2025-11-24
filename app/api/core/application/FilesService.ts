@@ -1,12 +1,12 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { Document } from 'api/files.v2/model/Document';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { Thumbnail } from 'api/files.v2/model/Thumbnail';
-import { UwaziFile } from 'api/files.v2/model/UwaziFile';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { Document } from 'api/core/domain/files/Document';
+import { InputFile } from 'api/core/domain/files/InputFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';

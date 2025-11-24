@@ -9,7 +9,7 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/model/CsvImport';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { TestUtils } from 'api/common.v2/utils/Test';

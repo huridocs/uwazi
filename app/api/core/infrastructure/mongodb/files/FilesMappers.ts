@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { LanguageUtils } from 'shared/language';
-import { Attachment } from '../../../../files.v2/model/Attachment';
-import { CustomUpload } from '../../../../files.v2/model/CustomUpload';
-import { Document } from '../../../../files.v2/model/Document';
-import { Thumbnail } from '../../../../files.v2/model/Thumbnail';
-import { URLAttachment } from '../../../../files.v2/model/URLAttachment';
-import { UwaziFile } from '../../../../files.v2/model/UwaziFile';
-import { ProcessedDocument } from '../../../../files.v2/model/ProcessedDocument';
-import { FileContents } from '../../../../files.v2/model/FileContents';
+import { Attachment } from '../../../domain/files/Attachment';
+import { CustomUpload } from '../../../domain/files/CustomUpload';
+import { Document } from '../../../domain/files/Document';
+import { Thumbnail } from '../../../domain/files/Thumbnail';
+import { URLAttachment } from '../../../domain/files/URLAttachment';
+import { UwaziFile } from '../../../domain/files/UwaziFile';
+import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
+import { FileContents } from '../../../domain/files/FileContents';
 import { fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {

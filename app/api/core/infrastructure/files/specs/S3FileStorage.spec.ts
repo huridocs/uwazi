@@ -10,10 +10,10 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Tenant } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingTenants } from 'api/utils/testingTenants';

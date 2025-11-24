@@ -17,7 +17,7 @@ import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUplo
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { createUploadedInputFile } from 'api/files.v2/testing/InputFileTestFactory';
+import { createUploadedInputFile } from 'api/core/domain/files/specs/InputFileTestFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { RegisterCsvImportUseCase } from '../RegisterCsvImportUseCase';
 

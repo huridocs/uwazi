@@ -16,12 +16,12 @@ import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
 } from '../../../application/contracts/FilesDataSource';
-import { Document } from '../../../../files.v2/model/Document';
-import { ProcessedDocument } from '../../../../files.v2/model/ProcessedDocument';
-import { Segmentation } from '../../../../files.v2/model/Segmentation';
-import { UwaziFile } from '../../../../files.v2/model/UwaziFile';
-import { FileNotFound, ProcessingFileNotFound } from '../../../../files.v2/model/errors';
-import { BaseDocument } from '../../../../files.v2/model/BaseDocument';
+import { Document } from '../../../domain/files/Document';
+import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
+import { Segmentation } from '../../../domain/files/Segmentation';
+import { UwaziFile } from '../../../domain/files/UwaziFile';
+import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
+import { BaseDocument } from '../../../domain/files/BaseDocument';
 import { FileStorage } from '../../../application/contracts/FileStorage';
 import { FileMappers } from './FilesMappers';
 import { SegmentationMapper } from './SegmentationMapper';

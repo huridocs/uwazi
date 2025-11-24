@@ -1,8 +1,8 @@
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
-import { BaseFile } from '../../../files.v2/model/BaseFile';
-import { FileType } from '../../../files.v2/model/FileType';
-import { UwaziFile } from '../../../files.v2/model/UwaziFile';
+import { BaseFile } from '../../domain/files/BaseFile';
+import { FileType } from '../../domain/files/FileType';
+import { UwaziFile } from '../../domain/files/UwaziFile';
 
 type PathManagerProps = {
   tenant: Tenant;

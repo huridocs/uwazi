@@ -14,7 +14,7 @@ import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors'
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CsvExtractUploadedZipUseCase } from '../CsvExtractUploadedZipUseCase';
 
 describe('CsvExtractUploadedZipUseCase (integration)', () => {

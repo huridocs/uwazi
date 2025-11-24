@@ -1,4 +1,4 @@
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import express, { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 

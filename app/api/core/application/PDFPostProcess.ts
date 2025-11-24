@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { ProcessingFileFailed } from 'api/files.v2/model/errors';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { ProcessingFileFailed } from 'api/core/domain/files/errors';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
 import { AbstractUseCase } from '../libs/UseCase';

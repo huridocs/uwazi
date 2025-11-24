@@ -1,5 +1,5 @@
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import superagent from 'superagent';
 import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
 import { HttpField } from '../contracts/HttpField';

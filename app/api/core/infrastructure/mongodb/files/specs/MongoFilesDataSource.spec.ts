@@ -1,11 +1,11 @@
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { Document } from 'api/files.v2/model/Document';
-import { FileNotFound } from 'api/files.v2/model/errors';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { Document } from 'api/core/domain/files/Document';
+import { FileNotFound } from 'api/core/domain/files/errors';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
