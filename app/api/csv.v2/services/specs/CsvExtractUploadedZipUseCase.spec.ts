@@ -7,14 +7,14 @@ import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/model/CsvImport';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CsvExtractUploadedZipUseCase } from '../CsvExtractUploadedZipUseCase';
 
 describe('CsvExtractUploadedZipUseCase (integration)', () => {

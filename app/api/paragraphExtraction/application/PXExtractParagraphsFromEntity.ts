@@ -6,18 +6,18 @@ import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { UseCase } from 'api/core/libs/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { Segmentation } from 'api/files.v2/model/Segmentation';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { Segmentation } from 'api/core/domain/files/Segmentation';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 type PXExtractParagraphsFromEntityInput = {

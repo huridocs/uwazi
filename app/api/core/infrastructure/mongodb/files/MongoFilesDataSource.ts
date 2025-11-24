@@ -12,17 +12,20 @@ import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResu
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { Result } from 'api/core/libs/Result';
 import { search } from 'api/search';
-import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
-import { Document } from '../model/Document';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { Segmentation } from '../model/Segmentation';
-import { UwaziFile } from '../model/UwaziFile';
+import {
+  FilesDataSource,
+  GetDocumentsForEntityOptions,
+} from '../../../application/contracts/FilesDataSource';
+import { Document } from '../../../domain/files/Document';
+import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
+import { Segmentation } from '../../../domain/files/Segmentation';
+import { UwaziFile } from '../../../domain/files/UwaziFile';
+import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
+import { BaseDocument } from '../../../domain/files/BaseDocument';
+import { FileStorage } from '../../../application/contracts/FileStorage';
 import { FileMappers } from './FilesMappers';
-import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
-import { FileNotFound, ProcessingFileNotFound } from '../model/errors';
-import { BaseDocument } from '../model/BaseDocument';
-import { FileStorage } from '../contracts/FileStorage';
+import { fileDBO } from './schemas/filesTypes';
 
 type GetDocumentsForEntityQuery = {
   entity: string;

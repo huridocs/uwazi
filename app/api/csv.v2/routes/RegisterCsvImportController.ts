@@ -1,7 +1,7 @@
 import * as cookie from 'cookie';
 import { z } from 'zod';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { RegisterCsvImportUseCaseFactory } from '../services/service_factories';
 
 const RequestSchema = z.object({

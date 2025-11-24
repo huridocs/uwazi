@@ -1,6 +1,6 @@
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { Template } from 'api/core/domain/template/Template';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 type PropertyValueInput =

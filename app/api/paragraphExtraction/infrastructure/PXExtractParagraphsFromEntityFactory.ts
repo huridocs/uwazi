@@ -2,7 +2,7 @@ import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGe
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';

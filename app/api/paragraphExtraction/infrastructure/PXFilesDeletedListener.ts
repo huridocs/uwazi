@@ -4,11 +4,11 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
