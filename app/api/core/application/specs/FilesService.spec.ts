@@ -1,23 +1,35 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import { readFile } from 'fs/promises';
+
 /* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { Document } from 'api/files.v2/model/Document';
-import { FileContents } from 'api/files.v2/model/FileContents';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { UwaziFile } from 'api/files.v2/model/UwaziFile';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { Document } from 'api/core/domain/files/Document';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { InputFile } from 'api/core/domain/files/InputFile';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { UwaziFile } from 'api/core/domain/files/UwaziFile';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
+import { tmpdir } from 'os';
 import path from 'path';
+import { pipeline } from 'stream/promises';
 import { FilesService } from '../FilesService';
+import { createHash } from 'crypto';
 
 const f = getFixturesFactory();
 
@@ -58,6 +70,8 @@ const createSut = () => {
     fileStorage,
     filesDS: FilesDataSourceFactory.default(TransactionManagerFactory.default()),
     jobsDispatcher,
+    filesIO: new FileContentsIO(),
+    pdfService: new PDFService(),
   });
   return { service };
 };
@@ -191,6 +205,7 @@ describe('FilesService', () => {
       creationDate: 0,
       content: fileContents(),
     });
+
     beforeAll(async () => {
       const { service } = createSut();
       await service.insert([document, attachment]);
@@ -210,6 +225,52 @@ describe('FilesService', () => {
       expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJob, {
         documentId: document.id,
       });
+    });
+  });
+
+  describe('createThumbnail', () => {
+    async function filesAreIdentical(file1: string, file2: string) {
+      const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
+      const hash1 = createHash('sha256').update(buf1).digest('hex');
+      const hash2 = createHash('sha256').update(buf2).digest('hex');
+      return hash1 === hash2;
+    }
+    it('should create thumbnail from a ProcessedDocument', async () => {
+      const { service } = createSut();
+
+      const doc = FileBuilder.processedDocument(f.idString('doc'), {
+        content: new DiskFile(
+          path.join(
+            __dirname,
+            '../../infrastructure/services/specs/testing_files',
+            '12345.test.pdf'
+          )
+        ).toContent(),
+      });
+
+      const thumbnail = (await service.createThumbnail(doc, 'en')).getDataOrThrow();
+      expect(thumbnail).toBeInstanceOf(Thumbnail);
+
+      expect(thumbnail).toMatchObject({
+        filename: `${doc.id}.jpg`,
+        size: 1936,
+        language: 'en',
+        mimetype: 'image/jpeg',
+        entity: doc.entity,
+      });
+
+      const thumbnailPath = path.join(tmpdir(), `thumbnail_${Date.now()}_${Math.random()}.jpg`);
+      await pipeline(thumbnail.content.read(), createWriteStream(thumbnailPath));
+
+      expect(
+        await filesAreIdentical(
+          path.join(
+            __dirname,
+            '../../infrastructure/services/specs/testing_files/12345.thumb.proof.jpg'
+          ),
+          thumbnailPath
+        )
+      ).toBe(true);
     });
   });
 });

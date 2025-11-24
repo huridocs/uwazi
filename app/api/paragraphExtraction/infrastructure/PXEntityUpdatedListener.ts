@@ -3,7 +3,7 @@ import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EntitySchema } from 'shared/types/entityType';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';

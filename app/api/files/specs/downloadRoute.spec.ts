@@ -4,6 +4,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Application, NextFunction, Request, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
+import privateInstanceMiddleware from 'api/auth/privateInstanceMiddleware';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import uploadRoutes from '../routes';
@@ -29,6 +30,7 @@ const setAppWithUser = (routes: any, user: any) => {
 
 describe('files routes download', () => {
   let app: Application;
+  const deprecatedEndpoint = '/api/files';
 
   beforeAll(async () => {
     app = setUpApp(uploadRoutes);
@@ -49,10 +51,10 @@ describe('files routes download', () => {
   });
 
   describe.each([
-    { file: downloadFixtures.mainDoc, endpoint: '/api/files' },
-    { file: downloadFixtures.restrictedCustomPdf, endpoint: '/api/files' },
-    { file: downloadFixtures.publicEntityFile, endpoint: '/api/files' },
-    { file: downloadFixtures.thumbnail, endpoint: '/api/files' },
+    { file: downloadFixtures.mainDoc, endpoint: deprecatedEndpoint },
+    { file: downloadFixtures.customPDF, endpoint: deprecatedEndpoint },
+    { file: downloadFixtures.publicEntityFile, endpoint: deprecatedEndpoint },
+    { file: downloadFixtures.thumbnail, endpoint: deprecatedEndpoint },
 
     { file: downloadFixtures.mainDoc, endpoint: '/files' },
     { file: downloadFixtures.attachment, endpoint: '/files' },
@@ -60,7 +62,7 @@ describe('files routes download', () => {
 
     { file: downloadFixtures.thumbnail, endpoint: '/files/thumbnails' },
 
-    { file: downloadFixtures.restrictedCustomPdf, endpoint: '/assets' },
+    { file: downloadFixtures.customPDF, endpoint: '/assets' },
   ])('Get $endpoint, $file.filename', ({ file, endpoint }) => {
     it('should get the file', async () => {
       const response = await request(app).get(path.join(endpoint, file.filename));
@@ -94,17 +96,17 @@ describe('files routes download', () => {
   describe.each([
     {
       file: { filename: 'unexistent.pdf' },
-      endpoint: '/api/files',
+      endpoint: deprecatedEndpoint,
       desc: 'when not in db',
     },
     {
       file: { filename: 'fileNotOnDisk' },
-      endpoint: '/api/files',
+      endpoint: deprecatedEndpoint,
       desc: 'when not in disk',
     },
     {
       file: { filename: restrictedFileName },
-      endpoint: '/api/files',
+      endpoint: deprecatedEndpoint,
       desc: 'when permissions restricted',
     },
 
@@ -152,7 +154,7 @@ describe('files routes download', () => {
   });
 
   describe.each([
-    { file: { filename: restrictedFileName }, endpoint: '/api/files' },
+    { file: { filename: restrictedFileName }, endpoint: deprecatedEndpoint },
     { file: { filename: restrictedFileName }, endpoint: '/files' },
     {
       file: downloadFixtures.restrictedThumbnail,
@@ -197,10 +199,10 @@ describe('files routes download', () => {
       });
 
       it.each([
-        { endpoint: '/api/files' },
+        { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.restrictedCustomPdf },
+        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set "public, no-cache" for documents from published entities accessed without authentication $endpoint',
         async ({ endpoint, file }) => {
@@ -214,10 +216,10 @@ describe('files routes download', () => {
       );
 
       it.each([
-        { endpoint: '/api/files' },
+        { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.restrictedCustomPdf },
+        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified header based on file creationDate ($endpoint)',
         async ({ endpoint, file }) => {
@@ -238,13 +240,13 @@ describe('files routes download', () => {
       });
 
       it.each([
-        { endpoint: '/api/files', file: downloadFixtures.mainDoc },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.mainDoc },
         { endpoint: '/files', file: downloadFixtures.mainDoc },
-        { endpoint: '/api/files', file: downloadFixtures.attachment },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.attachment },
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/api/files', file: downloadFixtures.restrictedCustomPdf },
-        { endpoint: '/assets', file: downloadFixtures.restrictedCustomPdf },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
+        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified and "private, max-age=3600" ($endpoint/$file.filename)',
         async ({ endpoint, file }) => {
@@ -257,24 +259,26 @@ describe('files routes download', () => {
       );
     });
 
-    describe('when instance is private', () => {
+    describe('when instance is private and no authenticated user', () => {
       beforeEach(async () => {
         await settings.save({ private: true });
         testingEnvironment.userInContextMockFactory.mock(undefined);
-        app = setUpApp(uploadRoutes);
+        app = setUpApp(uploadRoutes, privateInstanceMiddleware);
       });
 
-      it.each([{ endpoint: '/api/files' }, { endpoint: '/assets' }])(
-        'should set "private, max-age=3600" for all files ($endpoint)',
-        async ({ endpoint }) => {
-          const response = await request(app).get(
-            path.join(endpoint, downloadFixtures.restrictedCustomPdf.filename)
-          );
+      it.each([
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.mainDoc },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
+        { endpoint: deprecatedEndpoint, file: downloadFixtures.attachment },
 
-          expect(response).toHaveStatus(200);
-          expect(response.get('Cache-Control')).toBe('private, max-age=3600');
-        }
-      );
+        { endpoint: '/files', file: downloadFixtures.mainDoc },
+        { endpoint: '/files', file: downloadFixtures.attachment },
+        { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
+        { endpoint: '/assets', file: downloadFixtures.customPDF },
+      ])('should respond unauthorized 401 ($endpoint)', async ({ endpoint, file }) => {
+        const response = await request(app).get(path.join(endpoint, file.filename));
+        expect(response).toHaveStatus(401);
+      });
     });
 
     describe('when feature flag is disabled', () => {
@@ -288,10 +292,10 @@ describe('files routes download', () => {
       });
 
       it.each([
-        { endpoint: '/api/files' },
+        { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.restrictedCustomPdf },
+        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should not set Cache-Control and Last-Modifeid headers ($endpoint)',
         async ({ endpoint, file }) => {

@@ -1,6 +1,6 @@
 import { ResultType } from 'api/core/libs/Result';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
 export interface PDFService {

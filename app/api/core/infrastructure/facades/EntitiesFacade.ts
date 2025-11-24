@@ -1,5 +1,5 @@
 import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
 

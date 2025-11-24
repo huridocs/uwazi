@@ -1,12 +1,12 @@
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { ResultType } from 'api/core/libs/Result';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Document } from '../model/Document';
-import { Segmentation } from '../model/Segmentation';
-import { UwaziFile } from '../model/UwaziFile';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { FileNotFound, ProcessingFileNotFound } from '../model/errors';
-import { FileType } from '../model/FileType';
+import { Document } from '../../domain/files/Document';
+import { Segmentation } from '../../domain/files/Segmentation';
+import { UwaziFile } from '../../domain/files/UwaziFile';
+import { ProcessedDocument } from '../../domain/files/ProcessedDocument';
+import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors';
+import { FileType } from '../../domain/files/FileType';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];

@@ -10,7 +10,7 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { tenants } from 'api/tenants';
 import { EventsBus } from 'api/core/libs/eventsbus';
@@ -26,6 +26,8 @@ import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSy
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesService } from '../FilesService';
 import { EntitiesService } from '../EntitiesService';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
 
 const factory = getFixturesFactory();
 
@@ -66,6 +68,8 @@ const createSut = () => {
     fileStorage,
     filesDS,
     jobsDispatcher: DefaultDispatcher(tenants.current().name),
+    filesIO: new FileContentsIO(),
+    pdfService: new PDFService(),
   });
 
   const dispatcher = DefaultDispatcher(tenants.current().name);

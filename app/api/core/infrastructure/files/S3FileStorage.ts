@@ -12,15 +12,15 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
-import { Attachment } from '../model/Attachment';
-import { CustomUpload } from '../model/CustomUpload';
-import { FileContents } from '../model/FileContents';
-import { StoredFile } from '../model/StoredFile';
-import { URLAttachment } from '../model/URLAttachment';
-import { UwaziFile } from '../model/UwaziFile';
+import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
+import { Attachment } from '../../domain/files/Attachment';
+import { CustomUpload } from '../../domain/files/CustomUpload';
+import { FileContents } from '../../domain/files/FileContents';
+import { StoredFile } from '../../domain/files/StoredFile';
+import { URLAttachment } from '../../domain/files/URLAttachment';
+import { UwaziFile } from '../../domain/files/UwaziFile';
+import { BaseFile } from '../../domain/files/BaseFile';
 import { PathManager } from './PathManager';
-import { BaseFile } from '../model/BaseFile';
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;
