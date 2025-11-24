@@ -37,9 +37,9 @@ import settings from 'api/settings';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
-import { CsvExtractUploadedZipJobDispatcher } from 'api/csv.v2/infrastructure/queueHandlers/CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
-import { CsvPreflightJobDispatcher } from 'api/csv.v2/infrastructure/queueHandlers/CsvPreflightJobDispatcher';
+import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
 import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
 import { PathManager } from 'api/files.v2/infrastructure/PathManager';
@@ -181,7 +181,7 @@ export function registerJobs(
     });
   });
 
-  register(CsvExtractUploadedZipJobDispatcher, async () => {
+  register(CsvExtractUploadedZipJobHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
@@ -193,10 +193,10 @@ export function registerJobs(
       filesIO: new FileContentsIO(),
     });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvExtractUploadedZipJobDispatcher({ useCase, sockets });
+    return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
   });
 
-  register(CsvPreflightJobDispatcher, async () => {
+  register(CsvPreflightJobHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
@@ -214,6 +214,6 @@ export function registerJobs(
       thesauriValuesDS,
     });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvPreflightJobDispatcher({ useCase, sockets });
+    return new CsvPreflightJobHandler({ useCase, sockets });
   });
 }

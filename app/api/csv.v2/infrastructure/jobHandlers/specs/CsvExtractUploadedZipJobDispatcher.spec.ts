@@ -16,7 +16,7 @@ import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocke
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { CsvExtractUploadedZipJobDispatcher } from '../CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
@@ -64,12 +64,12 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       emitToTenant: jest.fn(),
       emitToTenantAdmins: jest.fn(),
     });
-    const job = new CsvExtractUploadedZipJobDispatcher({ useCase, sockets });
+    const job = new CsvExtractUploadedZipJobHandler({ useCase, sockets });
     return { csvImportsDS, pathManager, fileStorage, job, sockets };
   };
 
   const executeJob = async (
-    job: CsvExtractUploadedZipJobDispatcher,
+    job: CsvExtractUploadedZipJobHandler,
     params: { importId: string },
     jobInfo: { maxRetries: number; retryCount: number } = { maxRetries: 5, retryCount: 1 }
   ) => {

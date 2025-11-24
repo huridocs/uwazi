@@ -15,7 +15,7 @@ type Deps = {
   sockets: V1WebSocketsWrapper;
 };
 
-export class CsvExtractUploadedZipJobDispatcher extends UserAwareDispatchable<Params> {
+export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
   }

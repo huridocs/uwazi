@@ -5,7 +5,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { CsvImportsDataSource } from './application/contracts/CsvImportsDataSource';
 import { CsvImportDomain } from './domain/CsvImport';
-import { CsvExtractUploadedZipJobDispatcher } from './infrastructure/queueHandlers/CsvExtractUploadedZipJobDispatcher';
+import { CsvExtractUploadedZipJobHandler } from './infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
@@ -52,7 +52,7 @@ export class CsvImportEntities extends AbstractUseCase<
 
     await this.transactionManager.run(async () => {
       await this.deps.csvImportsDS.insert(csvImportWithStorage);
-      await this.deps.jobsDispatcher.dispatch(CsvExtractUploadedZipJobDispatcher, {
+      await this.deps.jobsDispatcher.dispatch(CsvExtractUploadedZipJobHandler, {
         tenantName: tenants.current().name,
         userId: input.userId,
         importId: id,
