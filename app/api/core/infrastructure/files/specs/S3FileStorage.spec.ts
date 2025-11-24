@@ -19,6 +19,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { S3Error } from 'api/files/S3Storage';
 
 const f = getFixturesFactory();
 
@@ -326,6 +328,87 @@ describe('S3FileStorage', () => {
       await s3fileStorage.storeFile(doc);
 
       expect(await s3fileStorage.fileExists(doc)).toBe(true);
+    });
+  });
+
+  describe('on Error', () => {
+    const expectedMetadata = {
+      requestId: 'mock-request-123',
+      cfId: 'mock-cf-456',
+      httpStatusCode: 500,
+      attempts: 3,
+      totalRetryDelay: 1000,
+    };
+
+    class MockS3Error extends Error {
+      $metadata = expectedMetadata;
+
+      constructor() {
+        super('Mock S3 Error');
+        this.name = 'S3ServiceError';
+      }
+    }
+    const mockS3Client = TestUtils.mockClass<S3Client>({
+      async send() {
+        throw new MockS3Error();
+      },
+    });
+    it('should wrap error with S3Error (getFile)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      const fileContents = await s3fileStorage.getFile({ type: 'document', filename: 'filename' });
+      const iterable = fileContents.read()[Symbol.asyncIterator]();
+      try {
+        await iterable.next();
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (storeFile)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.storeFile(FileBuilder.document('docId'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (storeContent)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.storeContent(FileBuilder.content('test content'), '/fake/path');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (fileExists)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.fileExists(FileBuilder.document('docId'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (list)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.list();
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
   });
 });
