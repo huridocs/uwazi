@@ -10,6 +10,7 @@ import {
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
+  ListBulletIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
@@ -33,6 +34,7 @@ import {
   SEARCH_PARAM,
   LoaderResponse,
   PAGE_PARAM,
+  ToCPanel,
 } from './Components';
 
 const MAIN_TABS = {
@@ -42,6 +44,7 @@ const MAIN_TABS = {
 };
 
 const SIDE_TABS = {
+  TOC: 'toc',
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
@@ -101,7 +104,6 @@ const entityLoader =
         headers,
       }
     );
-    console.log(composition);
 
     if (!composition.success || !composition.entity) {
       throw new Response(
@@ -160,7 +162,6 @@ const entityLoader =
 const Entity = () => {
   const { entity, pagePlaintext } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
-
   const activeMainTab = useMemo<MainTabId>(() => {
     const mainTab = searchParams.get(MAIN_TAB_PARAM);
     if (isValidMainTab(mainTab)) {
@@ -223,6 +224,11 @@ const Entity = () => {
   > = useMemo(
     () => ({
       [MAIN_TABS.DOCUMENT]: [
+        {
+          id: SIDE_TABS.TOC,
+          label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
+          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
+        },
         {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
@@ -306,6 +312,16 @@ const Entity = () => {
     [activeMainTab, activeSideTab, searchParams, setSearchParams]
   );
 
+  const sideTabElements = useMemo(
+    () =>
+      sideTabsByMain[activeMainTab]?.map(tab => (
+        <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
+          {tab.content}
+        </Tabs.Tab>
+      )),
+    [sideTabsByMain, activeMainTab]
+  );
+
   if (!entity) {
     return <Translate>Loading</Translate>;
   }
@@ -326,16 +342,11 @@ const Entity = () => {
         <PaneLayout.Pane className="p-2 h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
-            key={activeMainTab}
             unmountTabs={false}
             initialTabId={activeSideTab || sideTabsByMain[activeMainTab]?.[0]?.id}
             onTabSelected={onSideTabChange}
           >
-            {sideTabsByMain[activeMainTab].map(tab => (
-              <Tabs.Tab id={tab.id} key={tab.id} label={tab.label}>
-                {tab.content}
-              </Tabs.Tab>
-            ))}
+            {sideTabElements}
           </Tabs>
         </PaneLayout.Pane>
       </PaneLayout>
