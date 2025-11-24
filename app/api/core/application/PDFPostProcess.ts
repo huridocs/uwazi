@@ -1,14 +1,13 @@
 /* eslint-disable max-statements */
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { ProcessingFileFailed } from 'api/files.v2/model/errors';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { Thumbnail } from 'api/files.v2/model/Thumbnail';
-import date from 'api/utils/date';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { ProcessingFileFailed } from 'api/core/domain/files/errors';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileContentsIO } from '../infrastructure/files/FileContentIO';
+import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
 import { AbstractUseCase } from '../libs/UseCase';
 import { PDFService } from './contracts/PDFService';
-import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
-import { FileContentsIO } from '../infrastructure/files/FileContentIO';
+import { FilesService } from './FilesService';
 
 type Input = {
   documentId: string;
@@ -21,6 +20,7 @@ type Deps = {
   fileStorage: FileStorage;
   pdfService: PDFService;
   filesIO: FileContentsIO;
+  filesService: FilesService;
 };
 
 export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
@@ -29,30 +29,16 @@ export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
     try {
       const pdfInfo = (await this.deps.pdfService.extractText(document.content)).getDataOrThrow();
 
-      const diskThumbnail = (
-        await this.deps.pdfService.createThumbnail(document.content)
-      ).getDataOrThrow();
-
-      const thumbContents = diskThumbnail.toContent();
-
-      const thumbnail = new Thumbnail({
-        originalname: 'originalThumbnailName.jpg',
-        filename: `${document.id}.jpg`,
-        mimetype: 'image/jpeg',
-        size: (await this.deps.filesIO.size(diskThumbnail)).getDataOrThrow(),
-        id: this.idGenerator.generate(),
-        entity: document.entity,
-        language: pdfInfo.language.key,
-        creationDate: date.currentUTC(),
-        uploaded: true,
-        content: thumbContents,
-      });
-
       const processedDoc = ProcessedDocument.fromDocument(document, {
         language: pdfInfo.language.key,
         totalPages: pdfInfo.totalPages,
         fullText: pdfInfo.pages,
       });
+
+      const thumbnail = (
+        await this.deps.filesService.createThumbnail(processedDoc, pdfInfo.language.key)
+      ).getDataOrThrow();
+
       await this.transactionManager.run(async () => {
         await this.deps.filesDS.update(processedDoc);
 

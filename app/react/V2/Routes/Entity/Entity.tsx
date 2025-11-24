@@ -101,6 +101,7 @@ const entityLoader =
         headers,
       }
     );
+    console.log(composition);
 
     if (!composition.success || !composition.entity) {
       throw new Response(

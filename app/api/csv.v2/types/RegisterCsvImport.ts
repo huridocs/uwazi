@@ -1,4 +1,4 @@
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 
 export type RegisterCsvImportInput = {
   template: string;

@@ -2,7 +2,7 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { withTransaction } from 'api/utils/withTransaction';

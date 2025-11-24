@@ -1,20 +1,28 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { Document } from 'api/files.v2/model/Document';
-import { InputFile } from 'api/files.v2/model/InputFile';
-import { UwaziFile } from 'api/files.v2/model/UwaziFile';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { Document } from 'api/core/domain/files/Document';
+import { InputFile } from 'api/core/domain/files/InputFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import date from 'api/utils/date';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
+import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { IdGenerator } from './contracts/IdGenerator';
+import { Result } from '../libs/Result';
 
 type Deps = {
   idGenerator: IdGenerator;
   fileStorage: FileStorage;
   filesDS: FilesDataSource;
   jobsDispatcher: JobsDispatcher;
+  pdfService: PDFService;
+  filesIO: FileContentsIO;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -70,6 +78,28 @@ class FilesService {
         });
       });
     }
+  }
+
+  async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {
+    const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
+    if (thumbnailResult.isError()) {
+      return thumbnailResult;
+    }
+    const diskThumbnail = thumbnailResult.getData();
+    return Result.ok(
+      new Thumbnail({
+        originalname: `${doc.id}.jpg`,
+        filename: `${doc.id}.jpg`,
+        mimetype: 'image/jpeg',
+        size: (await this.deps.filesIO.size(diskThumbnail)).getDataOrThrow(),
+        id: this.deps.idGenerator.generate(),
+        entity: doc.entity,
+        language,
+        creationDate: date.currentUTC(),
+        uploaded: true,
+        content: diskThumbnail.toContent(),
+      })
+    );
   }
 }
 
