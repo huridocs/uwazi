@@ -113,5 +113,4 @@ export class CsvImportDomain {
       failure: undefined,
     };
   }
-
 }

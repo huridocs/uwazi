@@ -55,9 +55,7 @@ export class MongoCsvImportThesauriValuesDataSource
   }
 
   async getByImport(importId: string): Promise<CsvImportThesauriValues[]> {
-    const docs = await this.getCollection()
-      .find({ importId })
-      .toArray();
+    const docs = await this.getCollection().find({ importId }).toArray();
     return docs.map(doc => ({
       importId: doc.importId,
       thesaurusId: doc.thesaurusId,
@@ -70,4 +68,3 @@ export class MongoCsvImportThesauriValuesDataSource
     await this.getCollection().deleteMany({ importId });
   }
 }
-

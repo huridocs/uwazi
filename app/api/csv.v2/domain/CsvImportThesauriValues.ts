@@ -6,4 +6,3 @@ export type CsvImportThesauriValues = {
   entries: CsvThesauriPlanEntry[];
   createdAt: number;
 };
-
