@@ -4,20 +4,21 @@ import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
 import { getPagePlaintext } from 'V2/api/files';
-import { PDF } from 'V2/Components/PDFViewer';
+import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate } from 'V2/Components/UI';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from './urlParams';
+import { scrollToPage } from './functions';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isRaw = searchParams.get('raw') === 'true';
-  const page = searchParams.get('page') || '1';
+  const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
-  const [scrollToPage, setScrollTopage] = useState(page);
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const [firstRender, setFirstRender] = useState(true);
   const [pageText, setPageText] = useState(pagePlaintext || '');
@@ -25,7 +26,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
       const next = new URLSearchParams(searchParams.toString());
-      next.set('page', String(pageParam));
+      next.set(PAGE_PARAM, String(pageParam));
       return next;
     },
     [searchParams]
@@ -42,13 +43,12 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const { value } = event.target;
       const next = new URLSearchParams(searchParams.toString());
-      if (value === 'raw') {
-        next.set('raw', 'true');
+      if (value === VIEW_MODE_PARAM) {
+        next.set(VIEW_MODE_PARAM, 'true');
       } else {
-        const currentPage = searchParams.get('page') || '1';
-        next.delete('raw');
-        next.set('page', currentPage);
-        setScrollTopage(currentPage);
+        const currentPage = searchParams.get(PAGE_PARAM) || '1';
+        next.delete(VIEW_MODE_PARAM);
+        next.set(PAGE_PARAM, currentPage);
       }
       setSearchParams(next, { replace: true, preventScrollReset: true });
     },
@@ -72,6 +72,18 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       }
     }
   }, [pageNumber, entity, firstRender, isRaw]);
+
+  useEffect(() => {
+    const handlePageChange = (p?: number) => {
+      updatePageParam(p || 1);
+    };
+
+    const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [updatePageParam]);
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
@@ -114,11 +126,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       <div
         className={`flex-1 min-h-0 overflow-y-auto ${firstRender || isRaw ? 'hidden' : 'block'}`}
       >
-        <PDF
-          fileUrl={`/api/files/${filename}`}
-          scrollToPage={scrollToPage}
-          onPageChange={p => updatePageParam(p)}
-        />
+        <PDF fileUrl={`/api/files/${filename}`} />
       </div>
       <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
         <PlainText text={pageText} />
@@ -138,7 +146,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
               if (isRaw) {
                 updatePageParam(prevPage);
               } else {
-                setScrollTopage(String(prevPage));
+                scrollToPage(prevPage);
               }
             }}
             disabled={pageNumber <= 1}
@@ -155,7 +163,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
               if (isRaw) {
                 updatePageParam(nextPage);
               } else {
-                setScrollTopage(String(nextPage));
+                scrollToPage(nextPage);
               }
             }}
             disabled={totalPages ? nextPage > totalPages : false}

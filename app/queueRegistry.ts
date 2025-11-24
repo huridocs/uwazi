@@ -19,7 +19,7 @@ import {
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
@@ -43,11 +43,12 @@ import relationships from 'api/relationships';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
 import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
 import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -64,7 +65,12 @@ export class TestJob implements Dispatchable {
         () => {
           if (Math.floor(Math.random() * 5) === 0) {
             reject(
-              new ValidationError([{ path: '/', message: 'Random validation error occurred' }])
+              new ValidationError([
+                {
+                  path: '/',
+                  message: 'Random validation error occurred',
+                },
+              ])
             );
           }
           if (Math.floor(Math.random() * 5) === 0) {
@@ -114,8 +120,12 @@ export function registerJobs(
 
   register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
     const batchSize = 50;
-    const useCase = PXCreateEntityStatusesFactory.createDefault({ batchSize });
-    const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
+    const useCase = PXCreateEntityStatusesFactory.createDefault({
+      batchSize,
+    });
+    const dispatcher = DefaultDispatcher(namespace, {
+      lockWindow: 1000 * 60,
+    });
 
     return new CreateParagraphExtractionEntityStatusesJob(
       {
@@ -141,8 +151,16 @@ export function registerJobs(
 
     return new IXTrainModelJob({
       tenantName,
-      trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
-      trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
+      trainModelForPDF: new TrainModelForPDF({
+        tenantName,
+        serviceUrl,
+        iXTaskService,
+      }),
+      trainModelForText: new TrainModelForText({
+        iXTaskService,
+        tenantName,
+        serviceUrl,
+      }),
     });
   });
 
@@ -156,13 +174,16 @@ export function registerJobs(
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
+        filesService: FilesServiceFactory.default(),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });
   });
 
   register(AcceptSuggestionsJob, async (tenantName: string) => {
-    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName });
+    const { job } = await AcceptSuggestionsFactory.createDefault({
+      tenantName,
+    });
     return job;
   });
 

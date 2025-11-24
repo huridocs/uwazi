@@ -10,6 +10,9 @@ module.exports = {
         if (filePath.includes('flowbite.min.css')) {
           return selector;
         }
+        if (selector.includes('.tw-content')) {
+          return selector;
+        }
         return prefixedSelector;
       },
     }),

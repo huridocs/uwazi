@@ -2,7 +2,7 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array'; // Todo
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection'; // Todo
 import { cloneDeep } from 'lodash';

@@ -1,9 +1,10 @@
-import { Attachment } from '../model/Attachment';
-import { DiskFile } from '../model/DiskFile';
-import { Document } from '../model/Document';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { Thumbnail } from '../model/Thumbnail';
-import { URLAttachment } from '../model/URLAttachment';
+import { Attachment } from '../Attachment';
+import { DiskFile } from '../DiskFile';
+import { Document } from '../Document';
+import { FileContents } from '../FileContents';
+import { ProcessedDocument } from '../ProcessedDocument';
+import { Thumbnail } from '../Thumbnail';
+import { URLAttachment } from '../URLAttachment';
 
 type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]) => any
   ? A extends object
@@ -88,6 +89,13 @@ export class FileBuilder {
       creationDate: 1234567892,
       content: new DiskFile('fake/path').toContent(),
       ...props,
+    });
+  }
+
+  static content(content: string) {
+    return new FileContents(async function* streamCallback() {
+      const encoder = new TextEncoder();
+      yield encoder.encode(content);
     });
   }
 }

@@ -1,6 +1,6 @@
-import { FileContents } from 'api/files.v2/model/FileContents';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { Segmentation } from 'api/files.v2/model/Segmentation';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { Segmentation } from 'api/core/domain/files/Segmentation';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { PXExtractionKey } from './PXExtractionKey';
 

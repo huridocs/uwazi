@@ -1,7 +1,7 @@
 import { FilesDataSource } from './contracts/FilesDataSource';
 import { FileStorage } from './contracts/FileStorage';
-import { StoredFile } from './model/StoredFile';
-import { URLAttachment } from './model/URLAttachment';
+import { StoredFile } from '../domain/files/StoredFile';
+import { URLAttachment } from '../domain/files/URLAttachment';
 
 function filterFilesInStorage(files: StoredFile[]) {
   return files.filter(

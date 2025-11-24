@@ -1,10 +1,10 @@
 import { createError } from 'api/utils';
 
 import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { fileDBO } from 'api/files.v2/database/schemas/filesTypes';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
+import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { tenants } from 'api/tenants';
 import { Request, Response } from 'express';
 import { FileType } from 'shared/types/fileType';

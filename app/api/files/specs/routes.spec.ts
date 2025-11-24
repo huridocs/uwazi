@@ -355,7 +355,7 @@ describe('files routes', () => {
 
       mockCurrentUser(adminUser);
       response = await request(app).delete('/api/files').query({
-        _id: downloadFixtures.restrictedCustomPdf._id.toString(),
+        _id: downloadFixtures.customPDF._id.toString(),
       });
       expect(response.status).toBe(200);
     });

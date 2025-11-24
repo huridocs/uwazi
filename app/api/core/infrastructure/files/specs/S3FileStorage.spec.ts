@@ -10,14 +10,13 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Tenant } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingTenants } from 'api/utils/testingTenants';
-import path from 'node:path';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
 
@@ -254,9 +253,6 @@ describe('S3FileStorage', () => {
     });
   });
 
-  const testingFilesPath = (filename: string) =>
-    path.join(__dirname, '../../../files/specs/testing_files', filename);
-
   describe('storeFile', () => {
     afterEach(async () => {
       await s3Client.send(
@@ -269,7 +265,7 @@ describe('S3FileStorage', () => {
 
     it('should store it on s3 bucket', async () => {
       const document = FileBuilder.document(f.idString('document'), {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content created\n'),
         filename: 'documento.txt',
       });
 
@@ -306,7 +302,7 @@ describe('S3FileStorage', () => {
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
       await s3fileStorage.storeContent(
-        new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        FileBuilder.content('content created\n'),
         'custom_path/deep/documento.txt'
       );
 
@@ -323,7 +319,7 @@ describe('S3FileStorage', () => {
   describe('fileExists', () => {
     it('should check if file exists', async () => {
       const doc = FileBuilder.document('docId', {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content'),
       });
       expect(await s3fileStorage.fileExists(doc)).toBe(false);
 
