@@ -7,8 +7,11 @@ import { Translate } from 'app/I18N';
 import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
+import { pdfEventBus } from './events';
 
-const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
+const PDFPage = loadable(
+  async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
+);
 
 const eventBus = new EventBus();
 
@@ -17,7 +20,6 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
-  scrollToPage?: string;
   size?: { height?: string; width?: string; overflow?: string };
 }
 
@@ -29,25 +31,21 @@ const getPDFFile = async (fileUrl: string) =>
     isEvalSupported: false,
   }).promise;
 
-const PDF = ({
-  fileUrl,
-  highlights,
-  onSelect = () => {},
-  onDeselect,
-  scrollToPage,
-  size,
-}: PDFProps) => {
-  const scrollToRef = useRef<HTMLDivElement>(null);
+const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size }: PDFProps) => {
+  const pageRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const padding = 10;
   const containerStyles = {
     height: size?.height || '100%',
     width: size?.width || '100%',
     overflow: size?.overflow || 'auto',
-    paddingLeft: '10px',
-    paddingRight: '10px',
+    paddingLeft: `${padding}px`,
+    paddingRight: `${padding}px`,
   };
 
   useEffect(() => {
@@ -61,16 +59,64 @@ const PDF = ({
   }, [fileUrl]);
 
   useEffect(() => {
-    let animationFrameId = 0;
+    const container = pdfContainerRef.current;
 
-    if (pdf && scrollToPage) {
-      animationFrameId = triggerScroll(scrollToRef, animationFrameId);
+    if (!container) {
+      return undefined;
     }
 
+    const initialWidth = Math.max(
+      0,
+      (container.clientWidth || container.offsetWidth) - padding * 2
+    );
+
+    setContainerWidth(initialWidth);
+
+    const resizeObserver = new ResizeObserver(entries => {
+      const [entry] = entries;
+      if (entry && entry.contentRect) {
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+
+        resizeTimeoutRef.current = setTimeout(() => {
+          const newWidth = Math.max(0, entry.contentRect.width - padding * 2);
+          setContainerWidth(newWidth);
+        }, 150);
+      }
+    });
+
+    resizeObserver.observe(container);
+
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+        resizeTimeoutRef.current = null;
+      }
+      resizeObserver.disconnect();
     };
-  }, [scrollToPage, pdf]);
+  }, []);
+
+  useEffect(() => {
+    if (pdf && containerWidth) {
+      let animationFrameId = 0;
+
+      const onScrollToPageHandler = (pageNumber: number = 1) => {
+        const pageRef = { current: pageRefsMap.current[pageNumber.toString()] };
+        animationFrameId = triggerScroll(pageRef, animationFrameId);
+      };
+
+      const { unsubscribe } = pdfEventBus.on('goToPage', onScrollToPageHandler);
+      pdfEventBus.dispatch('pdfReady');
+
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        unsubscribe();
+      };
+    }
+
+    return () => undefined;
+  }, [pdf, containerWidth]);
 
   if (error) {
     return <div>{error}</div>;
@@ -83,15 +129,14 @@ const PDF = ({
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
-            const shouldScrollToPage = scrollToPage === regionId;
-            const containerWidth =
-              pdfContainerRef.current?.offsetWidth && pdfContainerRef.current.offsetWidth - 20;
 
             return (
               <div
                 key={`page-${regionId}`}
                 id={`page-${regionId}-container`}
-                ref={shouldScrollToPage ? scrollToRef : undefined}
+                ref={el => {
+                  pageRefsMap.current[regionId] = el;
+                }}
               >
                 <SelectionRegion regionId={regionId}>
                   <PDFPage
@@ -114,4 +159,4 @@ const PDF = ({
 };
 
 export type { PDFProps };
-export default PDF;
+export { PDF };

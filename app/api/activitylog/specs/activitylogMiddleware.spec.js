@@ -15,8 +15,8 @@ describe('activitylogMiddleware', () => {
   let res;
   let next;
 
-  beforeAll(() => {
-    testingEnvironment.setTenant();
+  beforeAll(async () => {
+    await testingEnvironment.setTenant();
   });
 
   beforeEach(() => {

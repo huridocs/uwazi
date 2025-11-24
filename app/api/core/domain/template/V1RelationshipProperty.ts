@@ -2,7 +2,10 @@ import {
   FilterableProperty,
   FilterablePropertyProps,
 } from 'api/core/domain/template/FilterableProperty';
-import { PropertyInheritedTypeMismatchError } from 'api/core/domain/template/errors';
+import {
+  PropertyInheritedTypeMismatchError,
+  InvalidPropertyComparisonTypeError,
+} from 'api/core/domain/template/errors';
 import { z } from 'zod';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
@@ -84,7 +87,7 @@ class V1RelationshipProperty extends FilterableProperty {
 
   override updatedAttributes(other: Property): PropertyUpdateInfo {
     if (!(other instanceof V1RelationshipProperty)) {
-      throw new Error('Can only compare with another V1RelationshipProperty');
+      throw new InvalidPropertyComparisonTypeError('V1RelationshipProperty');
     }
 
     const updateInfo = super.updatedAttributes(other);

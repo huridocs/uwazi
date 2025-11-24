@@ -1,9 +1,14 @@
-import { setupTestUploadedPaths, cleanupTestUploadedPaths } from 'api/files';
+// eslint-disable-next-line node/no-restricted-import
+import { copyFile } from 'fs/promises';
+
+import { cleanupTestUploadedPaths, createDirIfNotExists, setupTestUploadedPaths } from 'api/files';
+import { FileType } from 'api/migrations/migrations/172-files_detect_and_assign_mimetype/types';
 import { appContext } from 'api/utils/AppContext';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import path from 'path';
 import { UserSchema } from 'shared/types/userType';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
@@ -15,11 +20,48 @@ const testingEnvironment = {
   userInContextMockFactory: new UserInContextMockFactory(),
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
+    if (!elasticIndex) {
+      this.elasticIndex = '';
+    }
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+  },
+
+  async setupTenantTmpPaths(files: FileType[]) {
+    const basePath = `/tmp/uwazi_upload_route${Date.now()}`;
+    const uploadsPath = path.join(basePath, 'uploads');
+    const customUploadsPath = path.join(basePath, 'customUploads');
+    const segmentation = path.join(uploadsPath, 'segmentation');
+    await createDirIfNotExists(uploadsPath);
+    await createDirIfNotExists(segmentation);
+    await createDirIfNotExists(customUploadsPath);
+
+    const paths = {
+      uploadedDocuments: uploadsPath,
+      attachments: uploadsPath,
+      customUploads: customUploadsPath,
+      activityLogs: uploadsPath,
+    };
+
+    await files.reduce(async (prev, file) => {
+      await prev;
+      if (file.filename) {
+        try {
+          await copyFile(
+            path.join(__dirname, `../files/specs/testing_files/${file.filename}`),
+            path.join(file.type === 'custom' ? customUploadsPath : uploadsPath, file.filename)
+          );
+        } catch (e) {
+          if (!e.message.match(/ENOENT/)) {
+            throw e;
+          }
+        }
+      }
+    }, Promise.resolve());
+    testingTenants.changeCurrentTenant(paths);
   },
 
   async setTenant(name?: string, subPath = '') {

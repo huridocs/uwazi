@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
@@ -17,8 +18,8 @@ import {
 } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
@@ -37,16 +38,19 @@ import settings from 'api/settings';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import relationships from 'api/relationships';
 import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 
 function randomIntFromInterval(min: number, max: number) {
@@ -64,7 +68,12 @@ export class TestJob implements Dispatchable {
         () => {
           if (Math.floor(Math.random() * 5) === 0) {
             reject(
-              new ValidationError([{ path: '/', message: 'Random validation error occurred' }])
+              new ValidationError([
+                {
+                  path: '/',
+                  message: 'Random validation error occurred',
+                },
+              ])
             );
           }
           if (Math.floor(Math.random() * 5) === 0) {
@@ -114,8 +123,12 @@ export function registerJobs(
 
   register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
     const batchSize = 50;
-    const useCase = PXCreateEntityStatusesFactory.createDefault({ batchSize });
-    const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
+    const useCase = PXCreateEntityStatusesFactory.createDefault({
+      batchSize,
+    });
+    const dispatcher = DefaultDispatcher(namespace, {
+      lockWindow: 1000 * 60,
+    });
 
     return new CreateParagraphExtractionEntityStatusesJob(
       {
@@ -141,8 +154,16 @@ export function registerJobs(
 
     return new IXTrainModelJob({
       tenantName,
-      trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
-      trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
+      trainModelForPDF: new TrainModelForPDF({
+        tenantName,
+        serviceUrl,
+        iXTaskService,
+      }),
+      trainModelForText: new TrainModelForText({
+        iXTaskService,
+        tenantName,
+        serviceUrl,
+      }),
     });
   });
 
@@ -151,18 +172,21 @@ export function registerJobs(
     return new PDFPostProcessJob({
       useCase: new PDFPostProcess({
         transactionManager,
-        filesDS: DefaultFilesDataSource(transactionManager),
-        fileStorage: FileStorageStrategyFactory.createDefault(),
+        filesDS: FilesDataSourceFactory.default(transactionManager),
+        fileStorage: FileStorageFactory.default(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
+        filesService: FilesServiceFactory.default(),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });
   });
 
   register(AcceptSuggestionsJob, async (tenantName: string) => {
-    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName });
+    const { job } = await AcceptSuggestionsFactory.createDefault({
+      tenantName,
+    });
     return job;
   });
 
@@ -173,13 +197,21 @@ export function registerJobs(
       templatesDS: TemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager),
-        filesDS: DefaultFilesDataSource(transactionManager),
+        filesDS: FilesDataSourceFactory.default(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: TemplatesDataSourceFactory.default(transactionManager),
         transactionManager,
       }),
     });
   });
+
+  register(
+    RelationshipSyncJob,
+    async () =>
+      new RelationshipSyncJob({
+        relationships,
+      })
+  );
 
   register(CsvExtractUploadedZipJobHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();

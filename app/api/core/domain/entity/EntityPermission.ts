@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AccessLevel } from './AccessLevel';
 import { PermissionType } from './PermissionType';
+import { DuplicatePermissionsError } from './errors';
 
 const AccessGrantSchema = z.object({
   refId: z.string().min(1, 'refId cannot be empty'),
@@ -27,7 +28,7 @@ class EntityPermission {
     const uniqueRefIds = [...new Set(refIds)];
 
     if (refIds.length !== uniqueRefIds.length) {
-      throw new Error('Permissions should be unique by person/group');
+      throw new DuplicatePermissionsError();
     }
   }
 }

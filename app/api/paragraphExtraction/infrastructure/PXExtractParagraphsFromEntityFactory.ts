@@ -1,8 +1,8 @@
 import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
@@ -28,8 +28,8 @@ export class PXExtractParagraphsFromEntityFactory {
         connection,
         mongoTransactionManager,
       }),
-      filesDS: DefaultFilesDataSource(mongoTransactionManager),
-      fileStorage: FileStorageStrategyFactory.createDefault(),
+      filesDS: FilesDataSourceFactory.default(mongoTransactionManager),
+      fileStorage: FileStorageFactory.default(),
       idGenerator: MongoIdHandler,
       settingsDS: SettingsDataSourceFactory.default(mongoTransactionManager),
       logger: LoggerFactory.default(),

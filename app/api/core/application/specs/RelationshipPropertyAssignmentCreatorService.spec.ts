@@ -374,15 +374,12 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const multiLanguageEntityDS = new MongoMultiLanguageEntityDataSource(
-    getConnection(),
-    transactionManager
-  );
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
   const sut = new RelationshipPropertyAssignmentCreatorService({
-    multiLanguageEntityDS,
+    entitiesDS,
     settingsDS,
   });
 

@@ -4,11 +4,11 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
@@ -38,7 +38,7 @@ export class PXFilesDeletedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 
     this.dependencies = { entitiesStatusDS, filesDS, settingsDS };

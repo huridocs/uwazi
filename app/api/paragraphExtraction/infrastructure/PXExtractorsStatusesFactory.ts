@@ -4,7 +4,7 @@ import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnect
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 
 import { PXGetExtractorStatuses } from '../application/PXGetExtractorStatuses';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
@@ -26,7 +26,7 @@ export class PXExtractorsStatusesFactory {
     });
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const filesDS = DefaultFilesDataSource(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
 
     return new PXGetExtractorStatuses({ extractorsQueryService, settingsDS, filesDS });
   }

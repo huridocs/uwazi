@@ -3,13 +3,15 @@ import { copyFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
+import { FilesService } from 'api/core/application/FilesService';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessingFileNotFound } from 'api/files.v2/model/errors';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -31,11 +33,19 @@ const setUpJob = (pdfService = new PDFService()) => {
     job: new PDFPostProcessJob({
       useCase: new PDFPostProcess({
         transactionManager,
-        filesDS: DefaultFilesDataSource(transactionManager),
-        fileStorage: FileStorageStrategyFactory.createDefault(),
+        filesDS: FilesDataSourceFactory.default(transactionManager),
+        fileStorage: FileStorageFactory.default(),
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
+        filesService: new FilesService({
+          idGenerator: IdGeneratorFactory.default(),
+          fileStorage: FileStorageFactory.default(),
+          filesDS: FilesDataSourceFactory.default(transactionManager),
+          jobsDispatcher: DefaultDispatcher(tenants.current().name),
+          pdfService: new PDFService(),
+          filesIO: new FileContentsIO(),
+        }),
       }),
       wSockets,
     }),
@@ -72,11 +82,14 @@ describe('PDFPostProcessJob', () => {
   const executeJob = async (
     job: PDFPostProcessJob,
     documentId: string,
-    jobInfo: { maxRetries: number; retryCount: number } = { maxRetries: 5, retryCount: 1 }
+    jobInfo: { maxRetries: number; retryCount: number } = {
+      maxRetries: 5,
+      retryCount: 1,
+    }
   ) =>
     job.handleDispatch(
       heartBeatCallBack,
-      { documentId, tenantName: tenants.current().name, userId: f.idString('user') },
+      { documentId },
       { namespace: tenants.current().name, ...jobInfo }
     );
 
@@ -105,7 +118,12 @@ describe('PDFPostProcessJob', () => {
       await expect(async () => executeJob(job, f.idString('processing_doc'))).rejects.toThrow();
 
       const files = await testingEnvironment.db.getAllFrom('files');
-      expect(files).toMatchObject([{ filename: 'eng.pdf', status: 'processing' }]);
+      expect(files).toMatchObject([
+        {
+          filename: 'eng.pdf',
+          status: 'processing',
+        },
+      ]);
     });
   });
 
@@ -120,7 +138,10 @@ describe('PDFPostProcessJob', () => {
       );
 
       await expect(async () =>
-        executeJob(job, f.idString('processing_doc'), { maxRetries: 5, retryCount: 5 })
+        executeJob(job, f.idString('processing_doc'), {
+          maxRetries: 5,
+          retryCount: 5,
+        })
       ).rejects.toThrow();
 
       const files = await testingEnvironment.db.getAllFrom('files');
@@ -137,14 +158,20 @@ describe('PDFPostProcessJob', () => {
       );
 
       await expect(async () =>
-        executeJob(job, f.idString('processing_doc'), { maxRetries: 5, retryCount: 5 })
+        executeJob(job, f.idString('processing_doc'), {
+          maxRetries: 5,
+          retryCount: 5,
+        })
       ).rejects.toThrow();
 
       expect(wSockets.emitToTenant).toHaveBeenCalledWith(
         tenants.current().name,
         'conversionFailed',
         'fileEntity',
-        expect.objectContaining({ _id: f.idString('processing_doc'), status: 'failed' })
+        expect.objectContaining({
+          _id: f.idString('processing_doc'),
+          status: 'failed',
+        })
       );
     });
   });
@@ -179,7 +206,10 @@ describe('PDFPostProcessJob', () => {
         tenants.current().name,
         'conversionFailed',
         'fileEntity',
-        expect.objectContaining({ _id: f.idString('processing_doc'), status: 'failed' })
+        expect.objectContaining({
+          _id: f.idString('processing_doc'),
+          status: 'failed',
+        })
       );
     });
   });

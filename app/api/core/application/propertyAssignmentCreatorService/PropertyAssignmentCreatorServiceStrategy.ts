@@ -4,7 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
@@ -29,7 +29,7 @@ type CreateProps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   thesauriDS: ThesauriDataSource;
-  multiLanguageEntityDS: MultiLanguageEntityDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
 };
 
 class PropertyAssignmentCreatorServiceStrategy {
@@ -70,7 +70,7 @@ class PropertyAssignmentCreatorServiceStrategy {
     return created.flat();
   }
 
-  static create({ settingsDS, thesauriDS, translationsDS, multiLanguageEntityDS }: CreateProps) {
+  static create({ settingsDS, thesauriDS, translationsDS, entitiesDS }: CreateProps) {
     return new PropertyAssignmentCreatorServiceStrategy({
       select: new SelectPropertyAssignmentCreatorService({
         settingsDS,
@@ -79,7 +79,7 @@ class PropertyAssignmentCreatorServiceStrategy {
       }),
       relationship: new RelationshipPropertyAssignmentCreatorService({
         settingsDS,
-        multiLanguageEntityDS,
+        entitiesDS,
       }),
       image: new ImagePropertyAssignmentCreatorService(),
       media: new MediaPropertyAssignmentCreatorService(),

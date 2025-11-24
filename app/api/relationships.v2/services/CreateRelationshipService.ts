@@ -3,7 +3,7 @@ import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';

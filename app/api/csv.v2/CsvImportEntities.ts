@@ -1,5 +1,5 @@
 import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { tenants } from 'api/tenants/tenantContext';
 import { InputFile } from 'api/files.v2/model/InputFile';

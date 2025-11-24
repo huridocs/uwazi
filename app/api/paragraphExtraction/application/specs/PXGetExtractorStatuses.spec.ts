@@ -4,7 +4,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { GetExtractorStatusesInput } from 'api/paragraphExtraction/domain/PXExtractorsQueryService';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
@@ -19,7 +19,7 @@ const setupUseCase = () => {
   const connection = getConnection();
 
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-  const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,

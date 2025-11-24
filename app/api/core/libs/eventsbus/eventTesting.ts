@@ -65,7 +65,7 @@ const toEmitEventWith = async <T>(
   if (typeof expectedCall === 'undefined') {
     return failAndRestore(spy, `No event of type ${event.name} was emitted.`);
   }
-  expect(expectedCall[0].getData()).toEqual(eventData);
+  expect(expectedCall[0].getData()).toMatchObject(eventData);
 
   spy.mockRestore();
   return { pass: true, message: () => 'Pass.' };

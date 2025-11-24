@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { InputFile } from 'api/files.v2/model/InputFile';
+import { InputFile } from 'api/core/domain/files/InputFile';
 import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
 
 const RequestSchema = z.object({

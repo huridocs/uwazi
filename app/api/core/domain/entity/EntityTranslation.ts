@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { Id, IdProps } from 'api/core/libs/Id';
 import {
   DateEntry,
   PropertyAssignment,
@@ -9,22 +10,22 @@ import {
   SelectPropertyAssignment,
   TextPropertyValue,
 } from '../template/PropertyValue';
+import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
 
 type Props = {
-  id?: string;
   language: LanguageISO6391;
   metadata?: Record<string, PropertyAssignment>;
-};
+} & IdProps;
 
 class EntityTranslation {
-  id?: string;
+  id: Id;
 
   language: LanguageISO6391;
 
   metadata: Record<string, PropertyAssignment>;
 
   constructor(props: Props) {
-    this.id = props.id;
+    this.id = new Id(props);
     this.metadata = props.metadata || {};
     this.language = props.language;
   }
@@ -53,12 +54,14 @@ class EntityTranslation {
   setValue(propertyValue: PropertyAssignment) {
     const currentValue = this.metadata[propertyValue.name];
     if (!currentValue) {
-      throw new Error(`Property ${propertyValue.name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(propertyValue.name);
     }
 
     if (currentValue.type !== propertyValue.type) {
-      throw new Error(
-        `Cannot change the type of property ${propertyValue.name} from ${currentValue.type} to ${propertyValue.type}`
+      throw new PropertyTypeMismatchOnSetError(
+        propertyValue.name,
+        currentValue.type,
+        propertyValue.type
       );
     }
 
@@ -80,7 +83,7 @@ class EntityTranslation {
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {
     if (!this.metadata[name]) {
-      throw new Error(`Property ${name} does not exist in entity metadata`);
+      throw new PropertyDoesNotExistError(name);
     }
 
     return this.metadata[name] as unknown as PropertyAssignment<Value>;

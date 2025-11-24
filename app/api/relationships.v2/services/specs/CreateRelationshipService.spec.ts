@@ -4,7 +4,7 @@ import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGe
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { MongoFilesDataSource } from 'api/files.v2/database/MongoFilesDataSource';
+import { MongoFilesDataSource } from 'api/core/infrastructure/mongodb/files/MongoFilesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
@@ -17,7 +17,7 @@ import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 
 const factory = getFixturesFactory();
 
@@ -55,11 +55,7 @@ const createService = () => {
       SettingsDataSource,
       transactionManager
     ),
-    new MongoFilesDataSource(
-      connection,
-      transactionManager,
-      FileStorageStrategyFactory.createDefault()
-    ),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default()),
     transactionManager,
     MongoIdHandler,
     authServiceMock,
@@ -222,7 +218,12 @@ describe('create()', () => {
     it('should persist new connections', async () => {
       await execute();
 
-      const relationshipsInDb = await collectionInDb().find({}).sort({ from: 1 }).toArray();
+      const relationshipsInDb = await collectionInDb()
+        .find({})
+        .sort({
+          from: 1,
+        })
+        .toArray();
 
       expect(relationshipsInDb).toEqual([
         {

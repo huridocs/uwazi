@@ -6,8 +6,8 @@ import { createWriteStream } from 'fs';
 
 import { Result } from 'api/core/libs/Result';
 import { generateFileName } from 'api/files';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { tmpdir } from 'os';
 import path from 'path';
 import { Readable } from 'stream';

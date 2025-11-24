@@ -23,7 +23,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
-import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
+import { MongoSegmentationBuilder } from 'api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder';
 import { LanguageUtils } from 'shared/language';
 import { ConnectionSchema } from 'shared/types/connectionType';
 
