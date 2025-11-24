@@ -97,7 +97,7 @@ export default app => {
     activitylogMiddleware,
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-      if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
+      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
         const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
         const result = await EntityFacade.create(entityToSave, req.inputFiles);
         const entityInTargetLanguage = await entityDAO
