@@ -1,8 +1,8 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
+import { DocumentUploadController } from 'api/core/infrastructure/express/files/DocumentUploadController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
-import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
@@ -167,14 +167,7 @@ export default (app: Application) => {
     async (req, res) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
       if (tenants.current().featureFlags?.v2UploadFile) {
-        if (!req.inputFile) {
-          throw new Error('inputFile is not available on request object');
-        }
-        const savedFile = await FileUploadUseCaseFactory.default().execute({
-          uploadedFile: req.inputFile,
-          entityId: req.body.entity,
-        });
-        res.json(savedFile);
+        await DocumentUploadController.createHandler()(req, res);
       } else {
         if (!req.file) {
           throw new Error('File is not available on request object');
