@@ -1,7 +1,9 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
@@ -10,7 +12,7 @@ import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
-import { Application, Request } from 'express';
+import { Application, Request, Response } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -18,7 +20,6 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -108,6 +109,44 @@ const getCacheControlHeader = (
 };
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
+
+async function addFileCacheHeaders(res: Response, file: FileType, currentUser?: UserSchema) {
+  if (tenants.current().featureFlags?.fileCacheHeaders) {
+    if (currentUser) {
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+    } else {
+      const appSettings = await settings.get();
+      const isPrivateInstance = appSettings.private || false;
+
+      const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
+
+      const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+      res.setHeader('Cache-Control', cacheControl);
+    }
+
+    if (file.creationDate) {
+      const lastModified = timestampToHTTPDate(file.creationDate);
+      res.setHeader('Last-Modified', lastModified);
+    }
+  }
+}
+
+function addContentHeaders(
+  res: Response,
+  req: Request<{ filename: string }, {}, {}, { download?: boolean }, Record<string, any>>,
+  headerFilename: string,
+  mimetype?: string
+) {
+  res.setHeader('Content-Disposition', `filename*=UTF-8''${encodeURIComponent(headerFilename)}`);
+
+  if (req.query.download === true) {
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
+    );
+  }
+  res.setHeader('Content-Type', mimetype || 'application/octet-stream');
+}
 
 // eslint-disable-next-line max-statements
 export default (app: Application) => {
@@ -238,10 +277,6 @@ export default (app: Application) => {
     }
   );
 
-  app.use('/assets/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
-
   app.use('/uploaded_documents/:fileName', (req, res) => {
     res.redirect(301, `/api/files/${req.params.fileName}`);
   });
@@ -264,6 +299,34 @@ export default (app: Application) => {
     async (req, res) => {
       res.redirect(301, `/api/files/${req.query.file}?download=true`);
     }
+  );
+
+  // app.use('/assets/:fileName', (req, res) => {
+  //   res.redirect(301, `/api/files/${req.params.fileName}`);
+  // });
+
+  const checkFilePermissions = async (file: FileType) =>
+    checkEntityPermission(file, permissionsContext.getUserInContext());
+
+  app.get(
+    '/assets/:filename',
+    DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible)
+  );
+  app.get(
+    '/files/thumbnails/:filename',
+    DownloadFileController.customHandler(
+      ['thumbnail'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
+  );
+  app.get(
+    '/files/:filename',
+    DownloadFileController.customHandler(
+      ['document', 'attachment'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
   );
 
   app.get(
@@ -302,40 +365,9 @@ export default (app: Application) => {
         throw createError('file not found', 404);
       }
 
-      // Set cache control and Last-Modified headers (only if feature flag is enabled)
-      if (tenants.current().featureFlags?.fileCacheHeaders) {
-        if (currentUser) {
-          res.setHeader('Cache-Control', 'private, max-age=3600');
-        } else {
-          const appSettings = await settings.get();
-          const isPrivateInstance = appSettings.private || false;
+      await addFileCacheHeaders(res, file, currentUser);
+      addContentHeaders(res, req, file.originalname || file.filename, file.mimetype);
 
-          const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
-
-          const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
-          res.setHeader('Cache-Control', cacheControl);
-        }
-
-        if (file.creationDate) {
-          const lastModified = timestampToHTTPDate(file.creationDate);
-          res.setHeader('Last-Modified', lastModified);
-        }
-      }
-
-      const headerFilename = file.originalname || file.filename;
-      res.setHeader(
-        'Content-Disposition',
-        `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-      );
-
-      if (req.query.download === true) {
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-        );
-      }
-
-      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
       const stream = await storage.readableFile(file.filename, file.type);
       res.on('close', () => {
         stream.destroy();

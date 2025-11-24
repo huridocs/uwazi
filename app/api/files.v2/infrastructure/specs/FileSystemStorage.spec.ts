@@ -3,15 +3,15 @@ import * as fs from 'fs/promises';
 
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
+import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createReadStream } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
@@ -181,6 +181,28 @@ describe('FileSystemStorage', () => {
         )
       );
       expect(contents).toBe('content created\n');
+    });
+  });
+
+  describe('fileExists', () => {
+    it('should check if file exists', async () => {
+      const doc = FileBuilder.document('docId', {
+        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+      });
+
+      try {
+        await fs.rm(pathManager.createPath(doc));
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
+
+      expect(await fileSystemStorage.fileExists(doc)).toBe(false);
+
+      await fileSystemStorage.storeFile(doc);
+
+      expect(await fileSystemStorage.fileExists(doc)).toBe(true);
     });
   });
 });

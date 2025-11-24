@@ -7,8 +7,9 @@ import { render, act, queryAllByAttribute, cleanup, RenderResult } from '@testin
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
 import { pdfScaleAtom } from 'V2/atoms';
 import { TestAtomStoreProvider } from 'V2/testing';
-import PDF, { PDFProps } from '../PDF';
+import { PDF, PDFProps } from '../PDF';
 import * as helpers from '../functions/helpers';
+import { pdfEventBus } from '../events';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
@@ -65,8 +66,9 @@ jest.mock('../pdfjs.ts', () => ({
       return {
         promise: Promise.resolve({
           numPages: 5,
-          getPage: jest.fn(async () =>
+          getPage: jest.fn(async (pageNum: number) =>
             Promise.resolve({
+              pageNumber: pageNum,
               getViewport: () => ({ width: 100, height: 300 }),
             })
           ),
@@ -104,10 +106,10 @@ jest.mock('../pdfjs.ts', () => ({
 describe('PDF', () => {
   let renderResult: RenderResult;
 
-  const renderComponet = (scrollToPage?: PDFProps['scrollToPage']) => {
+  const renderComponet = () => {
     renderResult = render(
       <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-        <PDF fileUrl="url/of/file.pdf" scrollToPage={scrollToPage} highlights={highlights} />
+        <PDF fileUrl="url/of/file.pdf" highlights={highlights} />
       </TestAtomStoreProvider>
     );
   };
@@ -167,15 +169,99 @@ describe('PDF', () => {
     expect(container).toMatchSnapshot();
   });
 
-  it('should scroll to page', async () => {
-    jest.useFakeTimers();
-    await act(() => {
-      renderComponet('2');
+  describe('pdfEventBus', () => {
+    beforeEach(() => {
+      jest.spyOn(pdfEventBus, 'dispatch');
     });
-    jest.advanceTimersByTime(200);
 
-    expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
-    jest.useRealTimers();
+    it('should dispatch pdfReady event when PDF and containerWidth are ready', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      expect(pdfEventBus.dispatch).toHaveBeenCalledWith('pdfReady');
+    });
+
+    it('should dispatch onPageChange event when a page is rendered', async () => {
+      const dispatchSpy = jest.spyOn(pdfEventBus, 'dispatch');
+
+      await act(() => {
+        renderComponet();
+      });
+
+      const { container } = renderResult;
+      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+
+      await act(() => {
+        oberserverMock.enterNode(page1);
+      });
+
+      expect(mockPageRender).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith('onPageChange', 1);
+    });
+
+    it('should scroll to page when goToPage event is dispatched', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      const { container } = renderResult;
+      const page3Container = container.querySelector('#page-3-container') as HTMLDivElement;
+
+      act(() => {
+        pdfEventBus.dispatch('goToPage', 3);
+      });
+
+      expect(helpers.triggerScroll).toHaveBeenCalledWith({ current: page3Container }, 0);
+    });
+
+    it('should unsubscribe from goToPage event on unmount', async () => {
+      const mockCallback = jest.fn();
+
+      await act(() => {
+        renderComponet();
+      });
+
+      pdfEventBus.on('goToPage', mockCallback);
+
+      cleanup();
+
+      act(() => {
+        pdfEventBus.dispatch('goToPage', 1);
+      });
+
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+      expect(helpers.triggerScroll).not.toHaveBeenCalled();
+    });
+
+    it('should handle multiple PDF instances without listener accumulation', async () => {
+      let unmountInstanceOne: RenderResult['unmount'];
+
+      await act(async () => {
+        const result = render(
+          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
+            <PDF fileUrl="url/of/file1.pdf" highlights={highlights} />
+          </TestAtomStoreProvider>
+        );
+        unmountInstanceOne = result.unmount;
+      });
+
+      await act(async () => {
+        render(
+          <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
+            <PDF fileUrl="url/of/file2.pdf" highlights={highlights} />
+          </TestAtomStoreProvider>
+        );
+      });
+
+      unmountInstanceOne!();
+
+      act(() => {
+        pdfEventBus.dispatch('goToPage', 1);
+      });
+
+      expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('intersection observer', () => {

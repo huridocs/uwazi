@@ -135,7 +135,7 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
 
   return (
     <dl className="flex flex-col gap-4">
-      <MetadataCard>
+      <MetadataCard className="bg-gray-50">
         <dt className="sr-only">
           <Translate>Template</Translate>
         </dt>

@@ -1,0 +1,249 @@
+/* eslint-disable react/no-array-index-key */
+import React, { useMemo, useState } from 'react';
+import { useLoaderData, useSearchParams } from 'react-router';
+import { useForm, Controller } from 'react-hook-form';
+import { useAtomValue, useSetAtom } from 'jotai';
+import sanitizeHtml from 'sanitize-html';
+import { parseDocument } from 'htmlparser2';
+import { ChildNode } from 'domhandler';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { t, Translate } from 'app/I18N';
+import { templatesAtom } from 'V2/atoms';
+import { handleUnexpectedError } from 'V2/shared/errorUtils';
+import { SnippetsSearchResponse } from 'V2/api/types';
+import { snippets as snippetsSearch } from 'V2/api/search';
+import { ClientTemplateSchema } from 'V2/shared/types';
+import { SEARCH_PARAM } from './urlParams';
+import { searchHintsModalAtom } from './atoms';
+import { LoaderResponse } from './types';
+import { scrollToPage } from './functions';
+
+type FormValues = {
+  search: string;
+};
+
+const getFieldName = (fieldName: string, template?: ClientTemplateSchema) => {
+  if (fieldName === 'title') {
+    return 'Title';
+  }
+
+  const propertyName = fieldName.split('.')[1];
+  const propertyLabel =
+    template?.properties?.find(property => property.name === propertyName)?.label || '';
+
+  return propertyLabel;
+};
+
+const createNode = (node: ChildNode, key: number): React.ReactNode => {
+  if (node.type === 'text') {
+    return node.data;
+  }
+
+  if (node.type === 'tag') {
+    const element = node;
+    return React.createElement(
+      'b',
+      { key },
+      element.children &&
+        element.children.map((child: ChildNode, index: number) => createNode(child, index))
+    );
+  }
+
+  return '';
+};
+
+const parseSnippetToNodes = (html?: string) => {
+  const sanitized = sanitizeHtml(html || '', { allowedTags: ['b'], allowedAttributes: {} });
+  if (!sanitized) {
+    return '';
+  }
+
+  const document = parseDocument(sanitized);
+  return document.children.map((node, i) => createNode(node as ChildNode, i));
+};
+
+const SearchResults = () => {
+  const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openHints = useSetAtom(searchHintsModalAtom);
+  const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
+  const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
+  const templates = useAtomValue(templatesAtom);
+
+  const template = useMemo(
+    () => templates.find(temp => temp._id === entity?.template?._id),
+    [entity, templates]
+  );
+
+  const { control, handleSubmit } = useForm<FormValues>({
+    defaultValues: { search: initial },
+  });
+
+  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+
+  const onSubmit = async (data: FormValues) => {
+    const params = new URLSearchParams(searchParams);
+    const value = data.search.trim();
+    if (value) {
+      params.set(SEARCH_PARAM, value);
+    } else {
+      params.delete(SEARCH_PARAM);
+    }
+    setSearchParams(params);
+
+    try {
+      const newSnippets = await snippetsSearch({
+        sharedId: entity?.sharedId!,
+        searchString: value,
+        limit: 0,
+      });
+      setSnippets(newSnippets);
+    } catch (error) {
+      handleUnexpectedError(error, 'Error searching');
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2 h-full">
+      <div className="px-1">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <label htmlFor="entity-search" className="sr-only">
+            <Translate>Search</Translate>
+          </label>
+
+          <div className="relative">
+            <Controller
+              name="search"
+              control={control}
+              render={({ field }) => (
+                <input
+                  id="entity-search"
+                  type="search"
+                  placeholder={t('System', 'Search', null, false)}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...field}
+                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              )}
+            />
+
+            <button
+              type="submit"
+              aria-label="Search"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+            >
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="flex-grow overflow-y-auto px-1">
+        {!snippets && (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
+            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            <Translate
+              className="text-gray-600 font-semibold"
+              translationKey="Search text description"
+            >
+              Search text description
+            </Translate>
+          </div>
+        )}
+        {snippets?.data && snippets.data.length < 1 ? (
+          <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <Translate className="text-gray-600 font-bold text-lg">No text match</Translate>
+            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            <Translate
+              className="text-gray-600 font-semibold"
+              translationKey="No text match description"
+            >
+              No text match description
+            </Translate>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 pt-1">
+            {snippets?.data.map((entry, i) => {
+              const { metadata, fullText } = entry.snippets;
+
+              if (!metadata?.length && !fullText?.length) {
+                return undefined;
+              }
+
+              return (
+                <div key={`entry-${i}`} className="flex flex-col gap-4">
+                  {metadata?.length ? (
+                    <>
+                      <dl className="grid gap-y-2">
+                        {metadata.map((m, j) => (
+                          <div
+                            key={`metadata-${i}-${j}`}
+                            className="p-2 border border-gray-100 shadow-md rounded-lg"
+                          >
+                            <dt className="text-sm font-semibold text-gray-900">
+                              <Translate context={entity!.template!._id}>
+                                {getFieldName(m.field, template)}
+                              </Translate>
+                            </dt>
+                            {m.texts.map((text, k) => (
+                              <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-gray-900">
+                                {parseSnippetToNodes(text)}
+                              </dd>
+                            ))}
+                          </div>
+                        ))}
+                      </dl>
+                      <hr className="w-full" />
+                    </>
+                  ) : null}
+
+                  {fullText?.length
+                    ? fullText.map((pageText, j) => {
+                        const snippetKey = `${i}-${j}`;
+                        const isActive = activeSnippet === snippetKey;
+
+                        return (
+                          <div
+                            key={snippetKey}
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={isActive}
+                            onClick={() => {
+                              setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                              scrollToPage(pageText.page);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                                scrollToPage(pageText.page);
+                              }
+                            }}
+                            className={`p-4 border border-gray-100 shadow-md rounded-lg cursor-pointer
+                        ${isActive ? 'border-indigo-400' : null}
+                        focus:outline-none focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
+                          >
+                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                            <p className="font-bold float-end">
+                              {t('System', 'Page', null, false)} {pageText.page}
+                            </p>
+                          </div>
+                        );
+                      })
+                    : null}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <div>
+        <button type="button" onClick={() => openHints(true)}>
+          <Translate className="text-gray-600 underline font-bold">Search Tips</Translate>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export { SearchResults };
