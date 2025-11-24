@@ -20,7 +20,7 @@ const SimpleValue = ({ label, translationContext, values, hideLabel }: SimpleVal
           hideLabel={hideLabel}
         />
       </dt>
-      <dd className="font-medium text-gray-900">{value}</dd>
+      <dd className="font-medium text-sm text-gray-900">{value}</dd>
     </MetadataCard>
   );
 };
