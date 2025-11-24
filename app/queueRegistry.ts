@@ -219,6 +219,7 @@ export function registerJobs(
   register(CsvExtractUploadedZipJobHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
     const useCase = new CsvExtractUploadedZipJob({
@@ -226,6 +227,7 @@ export function registerJobs(
       fileStorage,
       transactionManager,
       filesIO: new FileContentsIO(),
+      rowsDS,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvExtractUploadedZipJobHandler({ useCase, sockets });

@@ -55,6 +55,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
@@ -63,21 +64,22 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       fileStorage,
       transactionManager,
       filesIO: new FileContentsIO(),
+      rowsDS,
     });
-    return { useCase, csvImportsDS, pathManager, fileStorage };
+    return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage };
   };
 
-  it('should normalize a single CSV to extracted/import.csv and set final status', async () => {
-    const { useCase, csvImportsDS, pathManager, fileStorage } = setUp();
+  it('should normalize a single CSV to extracted/import.csv, stage rows, and set final status', async () => {
+    const { useCase, csvImportsDS, rowsDS, pathManager, fileStorage } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('csv-only');
 
     // prepare original CSV in storage path
     const destination = `csv-imports/${id}`;
     const originalFilename = 'original.csv';
-    const disk = path.join(__dirname, '../../../../files/specs/testing_files', 'documento.txt');
+    const simpleCsvFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-simple.csv');
     await fileStorage.storeContent(
-      new DiskFile(disk).toContent(),
+      new DiskFile(simpleCsvFixture).toContent(),
       `${destination}/${originalFilename}`
     );
 
@@ -105,16 +107,52 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       filename: 'import.csv',
     });
     await expect(fs.access(extractedPath)).resolves.toBeUndefined();
+    const stagedRows = await rowsDS.getByImport(id);
+    expect(stagedRows).toHaveLength(2);
+    expect(stagedRows[0].headers).toEqual(['title', 'description']);
+    expect(stagedRows[0].values).toEqual(['Doc 1', 'Value, With, Commas']);
   });
 
-  it('should extract a ZIP with root files and require import.csv', async () => {
-    const { useCase, csvImportsDS, pathManager, fileStorage } = setUp();
+  it('should stage empty CSV rows so indexes match the source file', async () => {
+    const { useCase, csvImportsDS, rowsDS, fileStorage } = setUp();
+    const f = getFixturesFactory();
+    const id = f.idString('csv-empty-rows');
+
+    const destination = `csv-imports/${id}`;
+    const originalFilename = 'original.csv';
+    const emptyRowFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-empty-row.csv');
+    await fileStorage.storeContent(
+      new DiskFile(emptyRowFixture).toContent(),
+      `${destination}/${originalFilename}`
+    );
+
+    const importDoc = CsvImportDomain.withStorage(
+      CsvImportDomain.create({
+        id,
+        templateId: 't1',
+        file: { originalName: 'orig', mimeType: 'text/csv', size: 10 },
+        createdBy: 'u1',
+      }),
+      `${destination}/${originalFilename}`
+    );
+    await csvImportsDS.insert(importDoc);
+
+    await useCase.execute({ importId: id, callbacks });
+    createdImportIds.push(id);
+
+    const stagedRows = await rowsDS.getByImport(id);
+    expect(stagedRows).toHaveLength(3);
+    expect(stagedRows[1].values).toEqual(['', '']);
+    expect(stagedRows[1].index).toBe(1);
+  });
+
+  it('should extract a ZIP with root files, stage rows, and require import.csv', async () => {
+    const { useCase, csvImportsDS, rowsDS, pathManager, fileStorage } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-happy');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
 
-    const zipDir = path.join(__dirname, '../../../specs/zipData');
     const tempZipDir = path.join(
       __dirname,
       'tmp',
@@ -122,11 +160,14 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     );
     await fs.mkdir(tempZipDir, { recursive: true });
     await fs.mkdir(path.join(tempZipDir, 'zipData'), { recursive: true });
-    await createTestingZip(
-      [path.join(zipDir, 'test.csv'), path.join(zipDir, 'import.csv'), path.join(zipDir, '1.pdf')],
-      zipFilename,
-      tempZipDir
+    const csvPath = path.join(tempZipDir, 'zipData', 'import.csv');
+    const extraFile = path.join(tempZipDir, 'zipData', '1.pdf');
+    const csvContent = ['title,description', 'Zip Row 1,Zip Value 1', 'Zip Row 2,Zip Value 2'].join(
+      '\n'
     );
+    await fs.writeFile(csvPath, csvContent);
+    await fs.writeFile(extraFile, 'pdf-placeholder');
+    await createTestingZip([csvPath, extraFile], zipFilename, tempZipDir);
     createdTempDirs.push(tempZipDir);
 
     const zipPath = path.join(tempZipDir, 'zipData', zipFilename);
@@ -164,6 +205,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       filename: '',
     });
     await expect(fs.access(path.join(extractedDir, 'import.csv'))).resolves.toBeUndefined();
+    const stagedRows = await rowsDS.getByImport(id);
+    expect(stagedRows).toHaveLength(2);
+    expect(stagedRows[1].values).toEqual(['Zip Row 2', 'Zip Value 2']);
   });
 
   it('should throw NonRetryableJobError when import not found', async () => {

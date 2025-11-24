@@ -4,7 +4,10 @@ import {
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploadedZipJob';
+import {
+  CsvExtractUploadedZipJob,
+  ExtractionProgress,
+} from '../../application/jobs/CsvExtractUploadedZipJob';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
@@ -32,19 +35,22 @@ export class CsvExtractUploadedZipJobHandler extends UserAwareDispatchable<Param
               importId,
             });
           },
-          onProgress: ({
-            importId,
-            processedFiles,
-          }: {
-            importId: string;
-            processedFiles: number;
-          }) => {
+          onProgress: (info: ExtractionProgress) => {
             // Renew lock while making progress
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             heartbeat();
+            if (info.type === 'files') {
+              this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:progress', {
+                importId: info.importId,
+                stage: 'files',
+                processedFiles: info.processedFiles,
+              });
+              return;
+            }
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:extract:progress', {
-              importId,
-              processedFiles,
+              importId: info.importId,
+              stage: 'rows',
+              stagedRows: info.stagedRows,
             });
           },
           onSuccess: ({ importId }: { importId: string }) => {

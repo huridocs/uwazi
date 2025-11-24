@@ -50,6 +50,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
   const setUp = () => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
@@ -58,6 +59,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       fileStorage,
       transactionManager,
       filesIO: new FileContentsIO(),
+      rowsDS,
     });
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
       emitToSession: jest.fn(),
@@ -139,6 +141,24 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       {
         importId: id,
       }
+    );
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:progress',
+      expect.objectContaining({
+        importId: id,
+        stage: 'files',
+        processedFiles: expect.any(Number),
+      })
+    );
+    expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
+      tenants.current().name,
+      'csvImport:extract:progress',
+      expect.objectContaining({
+        importId: id,
+        stage: 'rows',
+        stagedRows: expect.any(Number),
+      })
     );
     // progress implies at least one heartbeat
     expect(heartBeat).toHaveBeenCalled();
