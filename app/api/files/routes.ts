@@ -1,9 +1,10 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
+import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { FileUploadUseCaseFactory } from 'api/core/infrastructure/factories/FileUploadUseCaseFactory';
-import { CSVLoader } from 'api/csv';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
-import { InputFile } from 'api/files.v2/model/InputFile';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -11,15 +12,13 @@ import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
-import { Application, Request } from 'express';
-import multer from 'multer';
+import { Application, Request, Response } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
-import { createError, handleError, validation } from '../utils';
+import { createError, validation } from '../utils';
 import { files } from './files';
-import { generateFileName } from './filesystem';
 import { storage } from './storage';
 
 const checkEntityPermission = async (
@@ -109,9 +108,45 @@ const getCacheControlHeader = (
   return 'private, max-age=3600';
 };
 
-const timestampToHTTPDate = (timestamp: number): string => {
-  return new Date(timestamp).toUTCString();
-};
+const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
+
+async function addFileCacheHeaders(res: Response, file: FileType, currentUser?: UserSchema) {
+  if (tenants.current().featureFlags?.fileCacheHeaders) {
+    if (currentUser) {
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+    } else {
+      const appSettings = await settings.get();
+      const isPrivateInstance = appSettings.private || false;
+
+      const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
+
+      const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
+      res.setHeader('Cache-Control', cacheControl);
+    }
+
+    if (file.creationDate) {
+      const lastModified = timestampToHTTPDate(file.creationDate);
+      res.setHeader('Last-Modified', lastModified);
+    }
+  }
+}
+
+function addContentHeaders(
+  res: Response,
+  req: Request<{ filename: string }, {}, {}, { download?: boolean }, Record<string, any>>,
+  headerFilename: string,
+  mimetype?: string
+) {
+  res.setHeader('Content-Disposition', `filename*=UTF-8''${encodeURIComponent(headerFilename)}`);
+
+  if (req.query.download === true) {
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
+    );
+  }
+  res.setHeader('Content-Type', mimetype || 'application/octet-stream');
+}
 
 // eslint-disable-next-line max-statements
 export default (app: Application) => {
@@ -120,32 +155,30 @@ export default (app: Application) => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
       if (tenants.current().featureFlags?.v2UploadFile) {
-        const defaultStorage = multer.diskStorage({
-          filename(_req, file: Express.Multer.File, cb) {
-            cb(null, generateFileName(file));
-          },
-        });
-        await new Promise<void>((resolve, reject) => {
-          multer({ storage: defaultStorage }).single('file')(req, res, err => {
-            if (!err) resolve();
-            reject(err);
-          });
-        });
-        next();
+        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
+          req,
+          res,
+          next
+        );
       } else {
         await uploadMiddleware('document')(req, res, next);
       }
     },
     async (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
       req.emitToSessionSocket('conversionStart', req.body.entity);
       if (tenants.current().featureFlags?.v2UploadFile) {
+        if (!req.inputFile) {
+          throw new Error('inputFile is not available on request object');
+        }
         const savedFile = await FileUploadUseCaseFactory.default().execute({
-          uploadedFile: new InputFile(req.file, 'document'),
+          uploadedFile: req.inputFile,
           entityId: req.body.entity,
         });
         res.json(savedFile);
       } else {
+        if (!req.file) {
+          throw new Error('File is not available on request object');
+        }
         const savedFile = await createProcessingFile(req.body.entity, req.file);
         res.json(savedFile);
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -244,17 +277,12 @@ export default (app: Application) => {
     }
   );
 
-  app.use('/assets/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
-
   app.use('/uploaded_documents/:fileName', (req, res) => {
     res.redirect(301, `/api/files/${req.params.fileName}`);
   });
 
   app.get(
     '/api/attachments/download',
-
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -268,10 +296,37 @@ export default (app: Application) => {
       },
       required: ['query'],
     }),
-
     async (req, res) => {
       res.redirect(301, `/api/files/${req.query.file}?download=true`);
     }
+  );
+
+  // app.use('/assets/:fileName', (req, res) => {
+  //   res.redirect(301, `/api/files/${req.params.fileName}`);
+  // });
+
+  const checkFilePermissions = async (file: FileType) =>
+    checkEntityPermission(file, permissionsContext.getUserInContext());
+
+  app.get(
+    '/assets/:filename',
+    DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible)
+  );
+  app.get(
+    '/files/thumbnails/:filename',
+    DownloadFileController.customHandler(
+      ['thumbnail'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
+  );
+  app.get(
+    '/files/:filename',
+    DownloadFileController.customHandler(
+      ['document', 'attachment'],
+      checkFilePermissions,
+      isFilePubliclyAccessible
+    )
   );
 
   app.get(
@@ -294,7 +349,6 @@ export default (app: Application) => {
         },
       },
     }),
-
     async (req: Request<{ filename: string }, {}, {}, { download?: boolean }>, res) => {
       const [file] = await files.get({
         filename: req.params.filename,
@@ -311,40 +365,9 @@ export default (app: Application) => {
         throw createError('file not found', 404);
       }
 
-      // Set cache control and Last-Modified headers (only if feature flag is enabled)
-      if (tenants.current().featureFlags?.fileCacheHeaders) {
-        if (currentUser) {
-          res.setHeader('Cache-Control', 'private, max-age=3600');
-        } else {
-          const appSettings = await settings.get();
-          const isPrivateInstance = appSettings.private || false;
+      await addFileCacheHeaders(res, file, currentUser);
+      addContentHeaders(res, req, file.originalname || file.filename, file.mimetype);
 
-          const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
-
-          const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
-          res.setHeader('Cache-Control', cacheControl);
-        }
-
-        if (file.creationDate) {
-          const lastModified = timestampToHTTPDate(file.creationDate);
-          res.setHeader('Last-Modified', lastModified);
-        }
-      }
-
-      const headerFilename = file.originalname || file.filename;
-      res.setHeader(
-        'Content-Disposition',
-        `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-      );
-
-      if (req.query.download === true) {
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-        );
-      }
-
-      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
       const stream = await storage.readableFile(file.filename, file.type);
       res.on('close', () => {
         stream.destroy();
@@ -356,7 +379,6 @@ export default (app: Application) => {
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -370,7 +392,6 @@ export default (app: Application) => {
         },
       },
     }),
-
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       await withTransaction(async () => {
         const [fileToDelete] = await files.get({ _id: req.query._id });
@@ -411,60 +432,6 @@ export default (app: Application) => {
     }),
     async (req, res) => {
       res.json(await filterByEntityPermissions(await files.get(req.query)));
-    }
-  );
-
-  app.post(
-    '/api/import',
-
-    needsAuthorization(['admin']),
-
-    uploadMiddleware(),
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['template'],
-          properties: {
-            template: { type: 'string' },
-          },
-        },
-      },
-    }),
-
-    (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-
-      const loader = new CSVLoader();
-      let loaded = 0;
-
-      loader.on('entityLoaded', () => {
-        loaded += 1;
-        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
-      });
-
-      loader.on('rowExceptions', exceptions => {
-        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
-      });
-
-      loader.on('loadError', error => {
-        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
-      });
-
-      req.emitToSessionSocket('IMPORT_CSV_START');
-
-      loader
-        .load(req.file.path, req.body.template, { language: req.language, user: req.user })
-        .then(() => {
-          req.emitToSessionSocket('IMPORT_CSV_END');
-        })
-        .catch((e: Error) => {
-          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
-        });
-
-      res.json('ok');
     }
   );
 };

@@ -38,7 +38,9 @@ class MediaProperty extends AbstractImageProperty {
     { value }: CreatePropertyAssignmentInput<MediaEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<MediaEntry> {
-    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.length)
+    );
 
     return {
       name: this.name,

@@ -140,7 +140,7 @@ export const FileMappers = {
     }
 
     if (file instanceof Attachment) {
-      return { ...baseDBO, entity: file.entity, url: '', type: 'attachment' };
+      return { ...baseDBO, entity: file.entity, type: 'attachment' };
     }
 
     if (file instanceof CustomUpload) {

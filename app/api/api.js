@@ -46,4 +46,5 @@ export default (app, server) => {
   require('./testing_errors/routes').default(app);
 
   require('./paragraphExtraction/adapters/PXRoutes').paragraphExtractionRoutes(app);
+  require('./csv.v2/routes/routes').csvImportRoutes(app);
 };

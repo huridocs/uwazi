@@ -42,7 +42,7 @@ class TextProperty extends FilterableProperty {
     shouldValidateForRequired = false
   ) {
     const parsedValue = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value
+      value.filter(v => v?.value?.length)
     );
 
     return {

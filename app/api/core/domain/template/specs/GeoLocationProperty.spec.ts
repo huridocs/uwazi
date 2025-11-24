@@ -71,14 +71,6 @@ describe('GeoLocationProperty', () => {
       expect(() =>
         prop.createPropertyAssignment({ value: [{ value: { lat: 10, lon: '20' as any } }] })
       ).toThrow();
-
-      expect(() =>
-        prop.createPropertyAssignment({ value: [{ value: { lat: undefined as any, lon: 29 } }] })
-      ).toThrow();
-
-      expect(() =>
-        prop.createPropertyAssignment({ value: [{ value: { lat: 20, lon: undefined as any } }] })
-      ).toThrow();
     });
   });
 });

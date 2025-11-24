@@ -54,7 +54,7 @@ class ImageProperty extends AbstractImageProperty {
     const isFromURL = this.isFromURL(value);
     const isFromFilePath = this.isFromFilePath(value);
     const parsed = createSchema(shouldValidateForRequired ? this.required : false, isFromURL).parse(
-      value
+      value.filter(v => v?.value?.length)
     );
     let postProcessed = parsed;
 

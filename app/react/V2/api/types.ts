@@ -23,4 +23,19 @@ type EntityResponse = Response<
   Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string }
 >;
 
-export type { SearchResponse, Response, EntitySearchResponse, EntityResponse };
+type SnippetsSearchResponse = SearchResponse<{
+  _id: string;
+  snippets: {
+    count: number;
+    metadata?: { field: string; texts: string[] }[];
+    fullText?: { text: string; page: number }[];
+  };
+}>;
+
+export type {
+  SearchResponse,
+  Response,
+  EntitySearchResponse,
+  EntityResponse,
+  SnippetsSearchResponse,
+};

@@ -5,7 +5,8 @@ import { Document } from '../model/Document';
 import { Segmentation } from '../model/Segmentation';
 import { UwaziFile } from '../model/UwaziFile';
 import { ProcessedDocument } from '../model/ProcessedDocument';
-import { ProcessingFileNotFound } from '../model/errors';
+import { FileNotFound, ProcessingFileNotFound } from '../model/errors';
+import { FileType } from '../model/FileType';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];
@@ -13,7 +14,7 @@ type GetDocumentsForEntityOptions = {
 
 interface FilesDataSource {
   create(file: UwaziFile): Promise<void>;
-  bulkCreate(files: UwaziFile[]): Promise<void>;
+  bulkCreate(files: [UwaziFile, ...UwaziFile[]]): Promise<void>;
   update(file: UwaziFile): Promise<void>;
   getProcessingById(documentId: string): Promise<ResultType<Document, ProcessingFileNotFound>>;
   deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
@@ -28,5 +29,9 @@ interface FilesDataSource {
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
   ): ResultSet<ProcessedDocument>;
+  getByFilename(
+    filename: string,
+    allowedTypes?: FileType[]
+  ): Promise<ResultType<UwaziFile, FileNotFound>>;
 }
 export type { FilesDataSource, GetDocumentsForEntityOptions };

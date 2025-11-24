@@ -5,8 +5,8 @@ import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDi
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
@@ -25,9 +25,9 @@ class FileUploadUseCaseFactory {
     if (process.env.NODE_ENV !== 'test') {
       transactionManager = TransactionManagerFactory.default();
     }
-    const filesDS = DefaultFilesDataSource(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
-    const fileStorage = FileStorageStrategyFactory.createDefault();
+    const fileStorage = FileStorageFactory.default();
     const entitiesDS = new MongoMultiLanguageEntityDataSource(db, transactionManager);
 
     let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({

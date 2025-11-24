@@ -5,15 +5,13 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { DiskFile } from 'api/files.v2/model/DiskFile';
 import { Document } from 'api/files.v2/model/Document';
 import { FileContents } from 'api/files.v2/model/FileContents';
 import { InputFile } from 'api/files.v2/model/InputFile';
 import { UwaziFile } from 'api/files.v2/model/UwaziFile';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -58,7 +56,7 @@ const createSut = () => {
   const service = new FilesService({
     idGenerator: IdGeneratorFactory.default(),
     fileStorage,
-    filesDS: DefaultFilesDataSource(TransactionManagerFactory.default()),
+    filesDS: FilesDataSourceFactory.default(TransactionManagerFactory.default()),
     jobsDispatcher,
   });
   return { service };
@@ -211,8 +209,6 @@ describe('FilesService', () => {
       expect(dispatchMock).toHaveBeenCalledTimes(1);
       expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJob, {
         documentId: document.id,
-        userId: permissionsContext.getUserInContext()?._id?.toString(),
-        tenantName: tenants.current().name,
       });
     });
   });

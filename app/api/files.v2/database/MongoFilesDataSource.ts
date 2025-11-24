@@ -20,7 +20,7 @@ import { UwaziFile } from '../model/UwaziFile';
 import { FileMappers } from './FilesMappers';
 import { fileDBO } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
-import { ProcessingFileNotFound } from '../model/errors';
+import { FileNotFound, ProcessingFileNotFound } from '../model/errors';
 import { BaseDocument } from '../model/BaseDocument';
 import { FileStorage } from '../contracts/FileStorage';
 
@@ -68,7 +68,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.ok(
         FileMappers.toModel(
           processing,
-          await this.fileStorage.getFile({ type: 'document', filename: processing.filename })
+          await this.fileStorage.getFile({
+            type: 'document',
+            filename: processing.filename,
+          })
         ) as Document
       );
     }
@@ -92,7 +95,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     }
   }
 
-  async bulkCreate(files: UwaziFile[]): Promise<void> {
+  async bulkCreate(files: [UwaziFile, ...UwaziFile[]]): Promise<void> {
     await this.getCollection().insertMany(files.map(FileMappers.toDBO));
 
     files.forEach(async file => {
@@ -104,7 +107,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
   async deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]) {
     await this.getCollection().updateMany(
-      { entity: { $in: entitySharedIds }, extractedMetadata: { $exists: true, $ne: [] } },
+      {
+        entity: { $in: entitySharedIds },
+        extractedMetadata: { $exists: true, $ne: [] },
+      },
       { $pull: { extractedMetadata: { name: { $in: entityPropertyNames } } } }
     );
   }
@@ -191,7 +197,10 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       async dbo =>
         FileMappers.toModel<ProcessedDocument>(
           dbo,
-          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+          await this.fileStorage.getFile({
+            type: dbo.type,
+            filename: dbo.filename,
+          })
         )
     );
   }
@@ -202,16 +211,42 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       async dbo =>
         FileMappers.toModel<ProcessedDocument>(
           dbo,
-          await this.fileStorage.getFile({ type: dbo.type, filename: dbo.filename })
+          await this.fileStorage.getFile({
+            type: dbo.type,
+            filename: dbo.filename,
+          })
         )
     );
   }
 
   async filesExistForEntities(files: { entity: string; _id: string }[]) {
     const query = {
-      $or: files.map(file => ({ _id: new ObjectId(file._id), entity: file.entity })),
+      $or: files.map(file => ({
+        _id: new ObjectId(file._id),
+        entity: file.entity,
+      })),
     };
     const foundFiles = await this.getCollection().countDocuments(query);
     return foundFiles === files.length;
+  }
+
+  async getByFilename(filename: string, allowedTypes?: fileDBO['type'][]) {
+    const dbo = await this.getCollection().findOne({
+      filename,
+      ...(allowedTypes ? { type: { $in: allowedTypes } } : {}),
+    });
+    if (!dbo) {
+      return Result.fail(new FileNotFound(`file: ${filename} not found`));
+    }
+
+    return Result.ok(
+      FileMappers.toModel(
+        dbo,
+        await this.fileStorage.getFile({
+          type: dbo.type,
+          filename: dbo.filename,
+        })
+      )
+    );
   }
 }

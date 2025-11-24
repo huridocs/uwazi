@@ -84,16 +84,13 @@ describe('MarkdownProperty', () => {
       expect(() => markdown.createPropertyAssignment({ value: [] }, true)).toThrow(
         'Markdown Property is required'
       );
-    });
 
-    it('should throw when provided value is empty string or whitespace', () => {
-      const markdown = new MarkdownProperty({ id: 'any_id', label: 'A Title', template: 'any' });
-
-      expect(() => markdown.createPropertyAssignment({ value: [{ value: '' }] })).toThrow(
-        'Markdown Property must be a non-empty string.'
+      expect(() => markdown.createPropertyAssignment({ value: [{ value: '' }] }, true)).toThrow(
+        'Markdown Property is required'
       );
-      expect(() => markdown.createPropertyAssignment({ value: [{ value: '   ' }] })).toThrow(
-        'Markdown Property must be a non-empty string.'
+
+      expect(() => markdown.createPropertyAssignment({ value: [{ value: '   ' }] }, true)).toThrow(
+        'Markdown Property must be a non-empty string'
       );
     });
   });
