@@ -1,18 +1,14 @@
 // eslint-disable-next-line node/no-restricted-import
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { InputFile } from 'api/core/domain/files/InputFile';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { FilesService } from './FilesService';
-import { AJVObject, ValidationError } from '../domain/error/ValidationError';
-import { AbstractUseCase } from '../libs/UseCase';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { ObjectId } from 'mongodb';
-
-type Input = {
-  uploadedFile: InputFile;
-  entityId: string;
-};
+import { z } from 'zod';
+import { AbstractUseCase } from '../libs/UseCase';
+import { FilesService } from './FilesService';
+import { EntityNotFoundError } from './errors';
 
 type Output = Omit<fileDBO, '_id'> & { _id: string };
 
@@ -21,20 +17,16 @@ type Deps = {
   filesService: FilesService;
 };
 
-class EntityNotFoundError extends ValidationError {
-  constructor(sharedId: string) {
-    super(`Entity not found: [sharedId=${sharedId}]`, 'entity.entity_not_found');
-  }
+const fileUploadInputSchema = z.object({
+  entityId: z.string(),
+  uploadedFile: z.instanceof(InputFile),
+});
 
-  asAJV(): AJVObject {
-    return {
-      message: this.message,
-      keyword: 'notFound',
-    };
-  }
-}
+type Input = z.infer<typeof fileUploadInputSchema>;
 
 class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
+  static inputSchema = fileUploadInputSchema;
+
   protected async executeAsync({ entityId, uploadedFile }: Input): Promise<Output> {
     const entity = await (await this.deps.entitiesDS.getEntitiesBySharedIds([entityId])).first();
     if (!entity) {
@@ -57,4 +49,4 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { EntityNotFoundError, FileUploadUseCase };
+export { FileUploadUseCase };
