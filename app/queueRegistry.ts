@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -51,6 +52,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 
 function randomIntFromInterval(min: number, max: number) {
@@ -171,6 +173,7 @@ export function registerJobs(
     const transactionManager = TransactionManagerFactory.default();
     return new PDFPostProcessJob({
       useCase: new PDFPostProcess({
+        eventBus: applicationEventsBus,
         transactionManager,
         filesDS: FilesDataSourceFactory.default(transactionManager),
         fileStorage: FileStorageFactory.default(),
