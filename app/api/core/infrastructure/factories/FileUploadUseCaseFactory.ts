@@ -1,4 +1,5 @@
 import { FileUploadUseCase } from 'api/core/application/FileUploadUseCase';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -18,6 +19,7 @@ class FileUploadUseCaseFactory {
     const idGenerator = IdGeneratorFactory.default();
     const entitiesDS = new MongoMultiLanguageEntityDataSource(db, transactionManager);
     const filesService = FilesServiceFactory.default();
+    const eventBus = applicationEventsBus;
 
     const useCase = new FileUploadUseCase(
       {
@@ -25,6 +27,7 @@ class FileUploadUseCaseFactory {
         idGenerator,
         entitiesDS,
         filesService,
+        eventBus,
       },
       {
         actor: permissionsContext.getUserInContext()!,

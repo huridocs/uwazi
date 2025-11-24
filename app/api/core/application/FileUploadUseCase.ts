@@ -6,6 +6,8 @@ import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesType
 import { FilesService } from './FilesService';
 import { AJVObject, ValidationError } from '../domain/error/ValidationError';
 import { AbstractUseCase } from '../libs/UseCase';
+import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
+import { ObjectId } from 'mongodb';
 
 type Input = {
   uploadedFile: InputFile;
@@ -47,7 +49,11 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.filesService.insert([document]);
     });
 
-    return FileMappers.toDTO(document);
+    const dto = FileMappers.toDTO(document);
+    await this.eventBus.emit(
+      new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
+    );
+    return dto;
   }
 }
 

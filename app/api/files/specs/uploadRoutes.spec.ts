@@ -1,3 +1,6 @@
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+
 /* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
@@ -9,14 +12,14 @@ import { search } from 'api/search';
 import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
+import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
+import { csvImportRoutes } from 'api/csv.v2/routes/routes';
+import { tenants } from 'api/tenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { tenants } from 'api/tenants';
-import { csvImportRoutes } from 'api/csv.v2/routes/routes';
 import { UserSchema } from 'shared/types/userType';
+import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { adminUser, collabUser, fixtures, importTemplate, templateId } from './fixtures';
@@ -27,6 +30,8 @@ jest.mock(
     next();
   }
 );
+
+expect.extend({ toEmitEventWith });
 
 describe('upload routes', () => {
   let requestMockedUser: UserSchema = collabUser;
@@ -75,8 +80,14 @@ describe('upload routes', () => {
   });
 
   describe.each([
-    { title: 'POST /files/upload/documents V1', featureFlags: { v2UploadFile: false } },
-    { title: 'POST /files/upload/documents V2', featureFlags: { v2UploadFile: true } },
+    {
+      title: 'POST /files/upload/documents V1',
+      featureFlags: { v2UploadFile: false },
+    },
+    {
+      title: 'POST /files/upload/documents V2',
+      featureFlags: { v2UploadFile: true },
+    },
   ])('$title', ({ featureFlags }) => {
     let pathManager: PathManager;
     beforeAll(async () => {
@@ -107,6 +118,21 @@ describe('upload routes', () => {
       expect(
         await fileExistsOnPath(pathManager.createPath({ filename: filename!, type: 'document' }))
       ).toBe(true);
+    });
+
+    it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
+      const caller = async () =>
+        socketEmit('documentProcessed', async () =>
+          uploadDocument('testing_files/english_testing_file.pdf')
+        );
+
+      await expect(caller).toEmitEventWith(FileCreatedEvent, {
+        newFile: {
+          entity: 'sharedId1',
+          type: 'document',
+          originalname: 'english_testing_file.pdf',
+        },
+      });
     });
 
     it('should process and reindex the document after upload', async () => {
@@ -351,9 +377,13 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
         originalname: 'english_testing_file.pdf',
       });
 
-      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
+      await request(app).delete('/api/files').query({
+        _id: file._id?.toString(),
+      });
 
-      const [thumbnail]: FileType[] = await files.get({ filename: `${file._id}.jpg` });
+      const [thumbnail]: FileType[] = await files.get({
+        filename: `${file._id}.jpg`,
+      });
       expect(thumbnail).not.toBeDefined();
     });
   });
