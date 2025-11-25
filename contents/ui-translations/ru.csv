@@ -97,6 +97,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Вложения
 Authentication code,Код аутентификации
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,автоматически созданный
 Automatic Table of Contents,Автоматическое оглавление
@@ -546,6 +547,7 @@ No References description,References are parts of this document related with oth
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,Нет содержания
+No Table of contents,No Table of contents
 No Table of Contents description,Нет описания содержания
 No text match,Нет совпадающего текста
 No text match description,You can type something different in the search box to get some results.
@@ -1018,6 +1020,7 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
+"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
