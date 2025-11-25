@@ -1,5 +1,9 @@
-import React, { useMemo } from 'react';
-import { InformationCircleIcon, ListBulletIcon } from '@heroicons/react/24/outline';
+import React, { useMemo, useState } from 'react';
+import {
+  ChevronDownIcon,
+  InformationCircleIcon,
+  ListBulletIcon,
+} from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { TocSchema } from 'shared/types/commonTypes';
 import { Tooltip } from 'flowbite-react';
@@ -49,7 +53,12 @@ const getPageNumber = (entry: TocSchema) => {
 };
 
 const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const normalizedToc = useMemo(() => normalizeToc(toc), [toc]);
+
+  const toggleExpand = (topIndex: number) => {
+    setExpanded(prev => ({ ...prev, [topIndex]: !prev[topIndex] }));
+  };
 
   if (!normalizedToc.length) {
     return (
@@ -84,6 +93,20 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
             const label = item.entry.label?.trim() || `Section ${item.index + 1}`;
             const paddingLeft = item.isTopLevel ? 0 : item.indentation * 16;
             const isInteractive = typeof pageNumber === 'number';
+            const parentIndex = item.isTopLevel ? item.index : item.topIndex;
+            const isExpanded = expanded[parentIndex] ?? false;
+            const shouldHide = !item.isTopLevel && !isExpanded;
+
+            if (shouldHide) {
+              return null;
+            }
+
+            const hasChildren = item.isTopLevel
+              ? normalizedToc.some(
+                  otherItem => !otherItem.isTopLevel && otherItem.topIndex === item.index
+                )
+              : false;
+            const isCollapsed = !isExpanded;
 
             const interactiveProps = isInteractive
               ? {
@@ -112,6 +135,26 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
                 style={{ paddingLeft: paddingLeft + 12 }}
               >
                 <div className="flex items-center gap-2">
+                  {item.isTopLevel && hasChildren ? (
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        toggleExpand(item.index);
+                      }}
+                      className="p-1 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+                      aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
+                      aria-expanded={isExpanded}
+                    >
+                      <ChevronDownIcon
+                        className={`h-4 w-4 text-gray-700 transition-transform ${
+                          isCollapsed ? '-rotate-90' : ''
+                        }`}
+                      />
+                    </button>
+                  ) : (
+                    <div className="w-6" />
+                  )}
                   <p className="text-sm font-semibold text-gray-900">{label}</p>
                 </div>
                 {typeof pageNumber === 'number' && (
