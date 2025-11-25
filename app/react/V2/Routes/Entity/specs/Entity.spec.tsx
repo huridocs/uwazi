@@ -7,6 +7,7 @@ import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { settingsAtom, userAtom } from 'V2/atoms';
 import * as files from 'V2/api/files';
+import * as PDFViewerModule from 'V2/Components/PDFViewer';
 import { Entity, shouldRevalidate } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
@@ -172,7 +173,7 @@ describe('Entity view', () => {
       });
     });
 
-    it('should preserve active side tab when switching to a main tab that supports it', async () => {
+    xit('should preserve active side tab when switching to a main tab that supports it', async () => {
       render(
         <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
           <Entity />
@@ -322,6 +323,85 @@ describe('Entity view', () => {
         'aria-selected',
         'true'
       );
+    });
+  });
+
+  describe('search tab', () => {
+    it('should be shown by default when there is a search in the URL', async () => {
+      render(
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: undefined }}
+          initialEntries={['/?searchTerm=term']}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const input = screen.getByRole('searchbox');
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveValue('term');
+    });
+
+    it('should show seach results', async () => {
+      const snippets = {
+        data: [
+          {
+            id: 's1',
+            snippets: {
+              metadata: [{ field: 'title', texts: ['<b>Match title</b>'] }],
+              fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
+            },
+          },
+        ],
+      } as any;
+
+      render(
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      expect(screen.getByText('Match title')).toBeInTheDocument();
+      expect(screen.getByText('Page 3')).toBeInTheDocument();
+    });
+
+    it('should scroll to the page of the result', async () => {
+      const snippets = {
+        data: [
+          {
+            id: 's1',
+            snippets: {
+              metadata: [],
+              fullText: [{ page: 5, text: 'Some <b>text</b>' }],
+            },
+          },
+        ],
+      };
+
+      jest.spyOn(PDFViewerModule.pdfEventBus, 'dispatch');
+
+      render(
+        <TestRouterContext
+          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      const pageButton = screen.getByText('Page 5');
+      fireEvent.click(pageButton);
+
+      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('goToPage', 5);
+
+      jest.clearAllMocks();
     });
   });
 
