@@ -68,8 +68,6 @@ jobs:
       - name: Install Cypress
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
-      - name: generate global css
-        run: yarn tailwind
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:

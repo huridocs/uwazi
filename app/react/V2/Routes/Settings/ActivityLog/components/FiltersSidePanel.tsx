@@ -146,7 +146,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
             <Button
-              className="flex-grow"
+              className="grow"
               type="button"
               styling="outline"
               onClick={() => {
@@ -165,7 +165,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             >
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Apply</Translate>
             </Button>
           </div>

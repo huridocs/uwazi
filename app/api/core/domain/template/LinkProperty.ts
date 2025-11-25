@@ -39,18 +39,23 @@ class LinkProperty extends Property {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<LinkEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<LinkEntry> {
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.url?.length)
+      value.filter(v => v?.value?.url?.trim()?.length)
     );
 
     return {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

@@ -342,6 +342,7 @@ describe('metadata formater', () => {
       expect(preview.style).toBe('contain');
       expect(preview.noLabel).toBe(false);
       expect(preview.showInCard).toBe(true);
+      expect(preview.status).toBe('processing');
 
       expect(media.value).toBe('mediaURL');
       expect(media.noLabel).toBe(false);

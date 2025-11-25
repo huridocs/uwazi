@@ -59,6 +59,7 @@ describe('MultiDateRangeProperty', () => {
       expect(assignment).toEqual({
         name: multiDateRange.name,
         type: multiDateRange.type,
+        isTranslatable: false,
         value: [{ value: { from: 100, to: 200 } }, { value: { from: 300, to: 400 } }],
       });
     });
@@ -75,6 +76,7 @@ describe('MultiDateRangeProperty', () => {
       expect(assignment).toEqual({
         name: multiDateRange.name,
         type: multiDateRange.type,
+        isTranslatable: false,
         value: [],
       });
     });

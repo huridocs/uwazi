@@ -67,7 +67,7 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
         }
       >
         {semanticData.action !== 'RAW' && (
-          <div className="space-x-2">
+          <div className="gap-x-2">
             {semanticData.description && (
               <>
                 <Translate className="font-semibold">{semanticData.description}</Translate>&#58;
@@ -78,7 +78,7 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
           </div>
         )}
         {semanticData.action === 'RAW' && (
-          <div className="space-x-2">
+          <div className="gap-x-2">
             <Translate className="font-semibold">{cell.row.original.method}</Translate>
             <Translate>{cell.row.original.url}</Translate>
           </div>

@@ -293,7 +293,7 @@ const IXSuggestions = () => {
           path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}
           title={extractor.name}
         />
-        <SettingsContent.Body>
+        <SettingsContent.Body className="flex flex-col flex-1 overflow-hidden min-h-0">
           <Table
             data={currentSuggestions}
             enableSelections
@@ -356,7 +356,7 @@ const IXSuggestions = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
-          <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center gap-x-4">
             {status.status === ixStatus.ready ? (
               <Button
                 size="small"

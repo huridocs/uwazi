@@ -42,7 +42,7 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   return (
     <div className="relative w-full h-full" style={overlayBackgroundStyle}>
       <p
-        className={`overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
+        className={`overflow-hidden p-4 font-normal text-left text-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
       >
         {thumbnail?.fileName}
       </p>
@@ -85,7 +85,7 @@ const MediaPlayer = ({
       ref={containerRef}
     >
       {mediaType === 'invalid' && (
-        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded-sm border">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>

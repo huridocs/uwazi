@@ -36,6 +36,7 @@ describe('PreviewProperty', () => {
       expect(assignment).toEqual({
         name: preview.name,
         type: preview.type,
+        isTranslatable: true,
         value: [],
       });
     });

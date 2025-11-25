@@ -1,6 +1,7 @@
 import 'cypress-axe';
 import { SinonSpy } from 'cypress/types/sinon';
 import { clearCookiesAndLogin } from '../helpers/login';
+import { logA11yViolations } from '../helpers/a11y';
 
 let spy: Cypress.Agent<SinonSpy<any[], any>>;
 Cypress.on('window:before:load', win => {
@@ -17,7 +18,7 @@ describe('customization', () => {
 
   it('should add custom CSS', () => {
     cy.contains('a', 'Global CSS').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.get('div[data-mode-id="css"]').type('header {background-color: red;}', {
       parseSpecialCharSequences: false,
       delay: 0,
@@ -55,7 +56,7 @@ describe('customization', () => {
 
   it('should add custom javascript', () => {
     cy.contains('a', 'Global CSS & JS').click();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('Custom JS').click();
     cy.get('div[data-mode-id="javascript"]').type('console.log("My custom js log")', {
       parseSpecialCharSequences: false,

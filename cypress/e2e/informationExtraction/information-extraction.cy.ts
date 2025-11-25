@@ -2,6 +2,7 @@
 /* eslint-disable max-lines */
 import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers';
 import 'cypress-axe';
+import { logA11yViolations } from '../helpers/a11y';
 
 const labelEntityTitle = (
   entityPos: number,
@@ -203,7 +204,7 @@ describe('Information Extraction', () => {
 
     it('should check table display and accessibility', () => {
       cy.getByTestId('settings-ix').toMatchImageSnapshot();
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
     it('should disable buttons while saving', () => {
@@ -255,13 +256,13 @@ describe('Information Extraction', () => {
         disableTimersAndAnimations: true,
         threshold: 0.08,
       });
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
     it('should train the model and find suggestions', () => {
       cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
       cy.get('table tr').should('have.length.above', 1);
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('button', 'Train model').click();
       cy.get('[data-testid="modal"]').within(() => {
         cy.contains('Find suggestions after training').click();
@@ -443,11 +444,11 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Process').click();
       });
       cy.contains('tr', '2023 (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'A title (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
     });
@@ -463,17 +464,17 @@ describe('Information Extraction', () => {
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)'
-      ).contains('span[class="text-left text-green-600"]', 'February 3, 2020');
+      ).contains('span[class="text-left text-success-600"]', 'February 3, 2020');
       cy.contains('tr', 'Spider-Man: Shattered Dimensions (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'Batman v Superman: Dawn of Justice (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'The Amazing Spider-Man (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
     });

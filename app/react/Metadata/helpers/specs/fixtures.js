@@ -1,6 +1,9 @@
 import Immutable from 'immutable';
 
-const entityDocs = [{ _id: 'doc1' }, { _id: 'doc2' }];
+const entityDocs = [
+  { _id: 'doc1', status: 'ready' },
+  { _id: 'doc2', status: 'processing' },
+];
 
 export const doc = {
   _id: 'languageSpecificId',

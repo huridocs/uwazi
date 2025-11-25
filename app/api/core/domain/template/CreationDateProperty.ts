@@ -39,6 +39,7 @@ class CreationDateProperty extends CommonProperty {
       name: this.name,
       value: [{ value: this.defaultCreationDate }],
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 }

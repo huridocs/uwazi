@@ -2,12 +2,15 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { uploadMiddleware } from 'api/files';
-import { InputFile } from 'api/core/domain/files/InputFile';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { withTransaction } from 'api/utils/withTransaction';
 import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
-import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
+import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
+import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -82,19 +85,24 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware.multiple(),
+    (req, res, next) => {
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+
+      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
+      }
+
+      return uploadMiddleware.multiple()(req, res, next);
+    },
     activitylogMiddleware,
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-      if (tenants.current().featureFlags.v2CreateEntity && !entityToSave?.sharedId) {
-        const inputFiles = req?.files?.map(
-          f => new InputFile(f, f.fieldname.match(/document/) ? 'document' : 'attachment')
-        );
-
-        const savedEntity = await EntityFacade.create(entityToSave, inputFiles);
-        const entityInTargetLanguage = MongoEntityMapper.toDBO(savedEntity).find(
-          e => e.language === req.language
-        );
+      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const result = await EntityFacade.create(entityToSave, req.inputFiles);
+        const entityInTargetLanguage = await entityDAO
+          .getWithFile({ language: req.language, sharedId: result.sharedId })
+          .next();
 
         await updateThesauriWithEntity(entityInTargetLanguage, req);
 
