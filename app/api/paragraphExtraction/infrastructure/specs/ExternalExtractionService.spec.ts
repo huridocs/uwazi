@@ -7,7 +7,7 @@ import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactor
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 

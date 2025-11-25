@@ -10,16 +10,17 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { DiskFile } from 'api/files.v2/model/DiskFile';
-import { ProcessedDocument } from 'api/files.v2/model/ProcessedDocument';
-import { FileBuilder } from 'api/files.v2/specs/FileBuilder';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Tenant } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingTenants } from 'api/utils/testingTenants';
-import path from 'node:path';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { S3Error } from 'api/files/S3Storage';
 
 const f = getFixturesFactory();
 
@@ -254,9 +255,6 @@ describe('S3FileStorage', () => {
     });
   });
 
-  const testingFilesPath = (filename: string) =>
-    path.join(__dirname, '../../../files/specs/testing_files', filename);
-
   describe('storeFile', () => {
     afterEach(async () => {
       await s3Client.send(
@@ -269,7 +267,7 @@ describe('S3FileStorage', () => {
 
     it('should store it on s3 bucket', async () => {
       const document = FileBuilder.document(f.idString('document'), {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content created\n'),
         filename: 'documento.txt',
       });
 
@@ -306,7 +304,7 @@ describe('S3FileStorage', () => {
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
       await s3fileStorage.storeContent(
-        new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        FileBuilder.content('content created\n'),
         'custom_path/deep/documento.txt'
       );
 
@@ -323,13 +321,94 @@ describe('S3FileStorage', () => {
   describe('fileExists', () => {
     it('should check if file exists', async () => {
       const doc = FileBuilder.document('docId', {
-        content: new DiskFile(testingFilesPath('documento.txt')).toContent(),
+        content: FileBuilder.content('content'),
       });
       expect(await s3fileStorage.fileExists(doc)).toBe(false);
 
       await s3fileStorage.storeFile(doc);
 
       expect(await s3fileStorage.fileExists(doc)).toBe(true);
+    });
+  });
+
+  describe('on Error', () => {
+    const expectedMetadata = {
+      requestId: 'mock-request-123',
+      cfId: 'mock-cf-456',
+      httpStatusCode: 500,
+      attempts: 3,
+      totalRetryDelay: 1000,
+    };
+
+    class MockS3Error extends Error {
+      $metadata = expectedMetadata;
+
+      constructor() {
+        super('Mock S3 Error');
+        this.name = 'S3ServiceError';
+      }
+    }
+    const mockS3Client = TestUtils.mockClass<S3Client>({
+      async send() {
+        throw new MockS3Error();
+      },
+    });
+    it('should wrap error with S3Error (getFile)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      const fileContents = await s3fileStorage.getFile({ type: 'document', filename: 'filename' });
+      const iterable = fileContents.read()[Symbol.asyncIterator]();
+      try {
+        await iterable.next();
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (storeFile)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.storeFile(FileBuilder.document('docId'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (storeContent)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.storeContent(FileBuilder.content('test content'), '/fake/path');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (fileExists)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.fileExists(FileBuilder.document('docId'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (list)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.list();
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
   });
 });

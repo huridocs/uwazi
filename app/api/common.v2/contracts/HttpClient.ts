@@ -1,4 +1,4 @@
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { HttpField } from './HttpField';
 
 type PostFormDataInput = {

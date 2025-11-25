@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { readFile, unlink } from 'fs/promises';
 
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { tmpdir } from 'os';
 import path from 'path';
 

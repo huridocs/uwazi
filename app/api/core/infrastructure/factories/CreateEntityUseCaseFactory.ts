@@ -1,21 +1,19 @@
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { FileStorageFactory } from 'api/files.v2/infrastructure/FileStorageFactory';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { FilesService } from 'api/core/application/FilesService';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
+import { FilesServiceFactory } from './FilesServiceFactory';
 
 class CreateEntityUseCaseFactory {
   static default() {
@@ -25,8 +23,6 @@ class CreateEntityUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const fileStorage = FileStorageFactory.default();
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
@@ -50,12 +46,7 @@ class CreateEntityUseCaseFactory {
       dispatcher: jobsDispatcher,
     });
 
-    const fileService = new FilesService({
-      idGenerator,
-      filesDS,
-      fileStorage,
-      jobsDispatcher,
-    });
+    const fileService = FilesServiceFactory.default();
 
     const useCase = new CreateEntityUseCase(
       {

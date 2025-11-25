@@ -3,10 +3,10 @@ import { PDFService } from 'api/core/application/contracts/PDFService';
 import { DomainError } from 'api/core/domain/error/DomainError';
 import { Result } from 'api/core/libs/Result';
 import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
-import { FileContents } from 'api/files.v2/model/FileContents';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import franc from 'franc';
 // eslint-disable-next-line node/no-restricted-import
-import { DiskFile } from 'api/files.v2/model/DiskFile';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from 'shared/language';

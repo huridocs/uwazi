@@ -31,10 +31,12 @@ const testingEnvironment = {
   },
 
   async setupTenantTmpPaths(files: FileType[]) {
-    const basePath = `/tmp/downloadRoute_${Date.now()}`;
+    const basePath = `/tmp/uwazi_upload_route${Date.now()}`;
     const uploadsPath = path.join(basePath, 'uploads');
     const customUploadsPath = path.join(basePath, 'customUploads');
+    const segmentation = path.join(uploadsPath, 'segmentation');
     await createDirIfNotExists(uploadsPath);
+    await createDirIfNotExists(segmentation);
     await createDirIfNotExists(customUploadsPath);
 
     const paths = {

@@ -7,8 +7,8 @@ import { tenants } from 'api/tenants/tenantContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
-import { FileSystemStorage } from 'api/files.v2/infrastructure/FileSystemStorage';
-import { PathManager } from 'api/files.v2/infrastructure/PathManager';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
@@ -17,7 +17,7 @@ import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUplo
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { createUploadedInputFile } from 'api/files.v2/testing/InputFileTestFactory';
+import { createUploadedInputFile } from 'api/core/domain/files/specs/InputFileTestFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { RegisterCsvImportUseCase } from '../RegisterCsvImportUseCase';
 

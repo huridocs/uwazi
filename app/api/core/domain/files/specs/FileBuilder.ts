@@ -1,9 +1,9 @@
-import { Attachment } from '../model/Attachment';
-import { DiskFile } from '../model/DiskFile';
-import { Document } from '../model/Document';
-import { ProcessedDocument } from '../model/ProcessedDocument';
-import { Thumbnail } from '../model/Thumbnail';
-import { URLAttachment } from '../model/URLAttachment';
+import { Attachment } from '../Attachment';
+import { Document } from '../Document';
+import { FileContents } from '../FileContents';
+import { ProcessedDocument } from '../ProcessedDocument';
+import { Thumbnail } from '../Thumbnail';
+import { URLAttachment } from '../URLAttachment';
 
 type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]) => any
   ? A extends object
@@ -22,7 +22,7 @@ export class FileBuilder {
       size: 1024,
       creationDate: 1234567890,
       status: 'processing',
-      content: new DiskFile('fake/path').toContent(),
+      content: FileBuilder.content('document'),
       ...props,
     });
   }
@@ -39,7 +39,7 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 1024,
       creationDate: 1234567890,
-      content: new DiskFile('fake/path').toContent(),
+      content: FileBuilder.content('document'),
       language: 'en',
       totalPages: 10,
       fullText: {},
@@ -57,7 +57,7 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 2048,
       creationDate: 1234567891,
-      content: new DiskFile('fake/path').toContent(),
+      content: FileBuilder.content('urlAttachment'),
       ...props,
     });
   }
@@ -71,7 +71,7 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 2048,
       creationDate: 1234567891,
-      content: new DiskFile('fake/path').toContent(),
+      content: FileBuilder.content('attachment'),
       ...props,
     });
   }
@@ -86,8 +86,15 @@ export class FileBuilder {
       mimetype: 'image/jpeg',
       size: 3072,
       creationDate: 1234567892,
-      content: new DiskFile('fake/path').toContent(),
+      content: FileBuilder.content('thumbnail'),
       ...props,
+    });
+  }
+
+  static content(content: string) {
+    return new FileContents(async function* streamCallback() {
+      const encoder = new TextEncoder();
+      yield encoder.encode(content);
     });
   }
 }
