@@ -229,12 +229,14 @@ export function registerJobs(
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage });
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,
       rowsStager,
       rowsDS,
       transactionManager,
+      jobsDispatcher,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvExtractUploadedZipJobHandler({ useCase, sockets });

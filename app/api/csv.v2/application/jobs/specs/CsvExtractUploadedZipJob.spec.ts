@@ -15,6 +15,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer';
 import { CsvImportRowsStager } from '../../services/CsvImportRowsStager';
 import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob';
@@ -66,20 +68,33 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options?.batchSize });
+    const jobsDispatcher: jest.Mocked<JobsDispatcher> = {
+      dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
+    };
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,
       rowsStager,
       rowsDS,
       transactionManager,
+      jobsDispatcher,
     });
-    return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage };
+    return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage, jobsDispatcher };
   };
 
+  const buildInput = (importId: string, userId = 'u1') => ({
+    importId,
+    tenantName: tenants.current().name,
+    userId,
+    callbacks,
+  });
+
   it('should normalize a single CSV to extracted/import.csv, stage rows, and set final status', async () => {
-    const { useCase, csvImportsDS, rowsDS, pathManager, fileStorage } = setUp();
+    const { useCase, csvImportsDS, rowsDS, pathManager, fileStorage, jobsDispatcher } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('csv-only');
+    const userId = f.idString('uploader');
 
     // prepare original CSV in storage path
     const destination = `csv-imports/${id}`;
@@ -96,13 +111,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'orig', mimeType: 'text/csv', size: 10 },
-        createdBy: 'u1',
+        createdBy: userId,
       }),
       `${destination}/${originalFilename}`
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id, callbacks });
+    await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
@@ -118,12 +133,18 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     expect(stagedRows).toHaveLength(2);
     expect(stagedRows[0].headers).toEqual(['title', 'description']);
     expect(stagedRows[0].values).toEqual(['Doc 1', 'Value, With, Commas']);
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledWith(CsvPreflightJobHandler, {
+      tenantName: tenants.current().name,
+      userId,
+      importId: id,
+    });
   });
 
   it('should stage empty CSV rows so indexes match the source file', async () => {
     const { useCase, csvImportsDS, rowsDS, fileStorage } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('csv-empty-rows');
+    const userId = f.idString('uploader-empty');
 
     const destination = `csv-imports/${id}`;
     const originalFilename = 'original.csv';
@@ -138,13 +159,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'orig', mimeType: 'text/csv', size: 10 },
-        createdBy: 'u1',
+        createdBy: userId,
       }),
       `${destination}/${originalFilename}`
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id, callbacks });
+    await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
     const stagedRows = await rowsDS.getByImport(id);
@@ -158,6 +179,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const insertSpy = jest.spyOn(rowsDS, 'insertMany');
     const f = getFixturesFactory();
     const id = f.idString('csv-batch');
+    const userId = f.idString('uploader-batch');
 
     const destination = `csv-imports/${id}`;
     const originalFilename = 'original.csv';
@@ -172,13 +194,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'orig', mimeType: 'text/csv', size: 10 },
-        createdBy: 'u1',
+        createdBy: userId,
       }),
       `${destination}/${originalFilename}`
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id, callbacks });
+    await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
     expect(insertSpy.mock.calls.length).toBeGreaterThan(1);
@@ -191,6 +213,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { useCase, csvImportsDS, rowsDS, pathManager, fileStorage } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-happy');
+    const userId = f.idString('uploader-zip');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
 
@@ -228,13 +251,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'upload.zip', mimeType: 'application/zip', size: 10 },
-        createdBy: 'u1',
+        createdBy: userId,
       }),
       `${destination}/${zipFilename}`
     );
     await csvImportsDS.insert(importDoc);
 
-    await useCase.execute({ importId: id, callbacks });
+    await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
     const updated = await csvImportsDS.getById(id);
@@ -254,9 +277,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
   it('should throw NonRetryableJobError when import not found', async () => {
     const { useCase } = setUp();
     const f = getFixturesFactory();
-    await expect(
-      useCase.execute({ importId: f.idString('non-existent'), callbacks })
-    ).rejects.toBeInstanceOf(NonRetryableJobError);
+    await expect(useCase.execute(buildInput(f.idString('non-existent')))).rejects.toBeInstanceOf(
+      NonRetryableJobError
+    );
   });
 
   it('should throw NonRetryableJobError when storage path is missing', async () => {
@@ -270,9 +293,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       createdBy: 'u1',
     });
     await csvImportsDS.insert(importDoc);
-    await expect(useCase.execute({ importId: id, callbacks })).rejects.toBeInstanceOf(
-      NonRetryableJobError
-    );
+    await expect(useCase.execute(buildInput(id))).rejects.toBeInstanceOf(NonRetryableJobError);
     const after = await csvImportsDS.getById(id);
     expect(after?.status).toBe(CsvImportStatus.ExtractingFiles);
   });
@@ -281,6 +302,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { useCase, csvImportsDS, fileStorage } = setUp();
     const f = getFixturesFactory();
     const id = f.idString('zip-missing-import');
+    const userId = f.idString('uploader-missing-zip');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload_no_import.zip';
 
@@ -306,13 +328,13 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
         id,
         templateId: 't1',
         file: { originalName: 'upload.zip', mimeType: 'application/zip', size: 10 },
-        createdBy: 'u1',
+        createdBy: userId,
       }),
       `${destination}/${zipFilename}`
     );
     await csvImportsDS.insert(importDoc);
 
-    await expect(useCase.execute({ importId: id, callbacks })).rejects.toBeInstanceOf(
+    await expect(useCase.execute(buildInput(id, userId))).rejects.toBeInstanceOf(
       NonRetryableJobError
     );
     createdImportIds.push(id);

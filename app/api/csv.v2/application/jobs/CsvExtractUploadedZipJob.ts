@@ -1,6 +1,7 @@
 import path from 'path';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
@@ -8,6 +9,7 @@ import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
 import { CsvImportRow } from '../../domain/CsvImportRow';
 import { CsvImportFileNormalizer } from '../services/CsvImportFileNormalizer';
 import { CsvImportRowsStager } from '../services/CsvImportRowsStager';
+import { CsvPreflightJobHandler } from '../../infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
 
 type Deps = {
@@ -16,6 +18,7 @@ type Deps = {
   rowsStager: CsvImportRowsStager;
   rowsDS: CsvImportRowsDataSource;
   transactionManager: TransactionManager;
+  jobsDispatcher: JobsDispatcher;
 };
 
 type ExtractionProgress =
@@ -28,6 +31,8 @@ type Callbacks = BaseCallbacks & {
 
 type Input = {
   importId: string;
+  tenantName: string;
+  userId: string;
   callbacks: Callbacks;
 };
 
@@ -73,7 +78,15 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     await this.setStatus(importId, CsvImportStatus.Failed);
   }
 
-  async handleExtractionSuccess(importId: string) {
+  private async dispatchPreflight(importId: string, tenantName: string, userId: string) {
+    await this.deps.jobsDispatcher.dispatch(CsvPreflightJobHandler, {
+      tenantName,
+      userId,
+      importId,
+    });
+  }
+
+  async handleExtractionSuccess(importId: string, context: { tenantName: string; userId: string }) {
     // success: clear any prior failure and mark files extracted
     const existing = await this.deps.csvImportsDS.getById(importId);
     if (existing) {
@@ -81,6 +94,7 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
         const cleared = CsvImportDomain.clearFailure(existing);
         const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.ExtractingFilesDone);
         await this.deps.csvImportsDS.update(updated);
+        await this.dispatchPreflight(importId, context.tenantName, context.userId);
       });
     } else {
       await this.setStatus(importId, CsvImportStatus.ExtractingFilesDone);
@@ -141,6 +155,8 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     destination: string;
     filename: string;
     callbacks: Callbacks;
+    tenantName: string;
+    userId: string;
   }) {
     try {
       await this.deps.fileNormalizer.normalize({
@@ -155,7 +171,10 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
           }),
       });
       await this.stageRows(params.importId, params.destination, params.callbacks);
-      await this.handleExtractionSuccess(params.importId);
+      await this.handleExtractionSuccess(params.importId, {
+        tenantName: params.tenantName,
+        userId: params.userId,
+      });
       CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
     } catch (e) {
       await this.handleError(params.importId, params.callbacks, e as Error);
@@ -164,7 +183,7 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   protected async executeAsync(input: Input): Promise<void> {
-    const { importId, callbacks } = input;
+    const { importId, callbacks, tenantName, userId } = input;
 
     CsvExtractUploadedZipJob.emitStart(callbacks, importId);
     await this.setStatus(importId, CsvImportStatus.ExtractingFiles);
@@ -178,6 +197,8 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
       destination,
       filename,
       callbacks,
+      tenantName,
+      userId,
     });
   }
 }
