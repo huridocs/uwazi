@@ -89,7 +89,7 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       v2UploadFile: false,
       v2CreateEntity: false,
-      v2CSVImport: true,
+      v2CSVImport: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
