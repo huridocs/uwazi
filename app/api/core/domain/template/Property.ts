@@ -75,6 +75,10 @@ class Property {
     return this._name.value;
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   isSame(other: Property) {
     return this.id === other.id;
   }
@@ -116,14 +120,14 @@ class Property {
   }
 
   createDefaultValue(): PropertyAssignment {
-    return { name: this.name, value: [], type: this.type };
+    return { name: this.name, value: [], type: this.type, isTranslatable: this.isTranslatable };
   }
 
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput,
     _shouldValidateForRequired: boolean
   ): PropertyAssignment {
-    return { name: this.name, value, type: this.type };
+    return { name: this.name, value, type: this.type, isTranslatable: this.isTranslatable };
   }
 
   validatePropertyAssignment(

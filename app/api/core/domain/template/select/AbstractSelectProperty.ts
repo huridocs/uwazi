@@ -26,6 +26,10 @@ class AbstractSelectProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   ensurePropertyIsConsistent(property: AbstractSelectProperty): void {
     super.ensurePropertyIsConsistent(property);
 
@@ -40,6 +44,7 @@ class AbstractSelectProperty extends FilterableProperty {
       type: this.type,
       language: 'n/a' as LanguageISO6391,
       value: [],
+      isTranslatable: this.isTranslatable,
     };
   }
 
@@ -47,7 +52,9 @@ class AbstractSelectProperty extends FilterableProperty {
     input: CreatePropertyAssignmentInput<SelectionEntry>,
     shouldValidateForRequired = false
   ): SelectPropertyAssignment {
-    const deduplicated = ArrayUtils.deduplicate(input.value, v => v.value);
+    const filtered = input.value.filter(v => v?.value?.trim()?.length);
+
+    const deduplicated = ArrayUtils.deduplicate(filtered, v => v.value);
 
     const { language, value } = createSchema(
       shouldValidateForRequired ? this.required : false,
@@ -62,6 +69,7 @@ class AbstractSelectProperty extends FilterableProperty {
       type: this.type,
       value,
       language: language as LanguageISO6391,
+      isTranslatable: this.isTranslatable,
     };
   }
 

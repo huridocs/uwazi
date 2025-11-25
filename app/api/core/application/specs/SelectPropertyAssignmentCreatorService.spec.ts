@@ -310,12 +310,14 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         value: [{ value: 'apple_id', label: 'Apple' }],
         type: 'select',
         language: 'en',
+        isTranslatable: false,
       },
       {
         name: 'select',
         value: [{ value: 'apple_id', label: 'Apple in Portuguese' }],
         type: 'select',
         language: 'pt',
+        isTranslatable: false,
       },
     ]);
   });
@@ -378,12 +380,14 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         value: [{ value: 'apple_id', label: 'Apple in English' }],
         type: 'select',
         language: 'en',
+        isTranslatable: false,
       },
       {
         name: 'select',
         value: [{ value: 'apple_id', label: 'Apple' }],
         type: 'select',
         language: 'pt',
+        isTranslatable: false,
       },
     ]);
   });
@@ -413,6 +417,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
           { value: 'apple_id', label: 'Apple' },
           { value: 'banana_id', label: 'Banana' },
         ],
+        isTranslatable: false,
       },
 
       {
@@ -423,6 +428,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
           { value: 'apple_id', label: 'Apple in Portuguese' },
           { value: 'banana_id', label: 'Banana in Portuguese' },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -480,6 +486,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         ],
         type: 'select',
         language: 'en',
+        isTranslatable: false,
       },
       {
         name: 'select_grouped',
@@ -492,6 +499,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         ],
         type: 'select',
         language: 'pt',
+        isTranslatable: false,
       },
     ]);
   });

@@ -33,6 +33,10 @@ class DateProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable() {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<DateEntry>,
     shouldValidateForRequired = false
@@ -45,6 +49,7 @@ class DateProperty extends FilterableProperty {
       name: this.name,
       value: parsedValue,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

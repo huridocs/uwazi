@@ -4,7 +4,6 @@ import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipP
 import { IndexTypes } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { SharedId } from 'api/core/domain/entity/SharedId';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
 import {
   PropertyAssignment,
   PropertyValue,
@@ -164,24 +163,10 @@ class Entity {
   }
 
   private setValue(value: PropertyAssignment, targetLanguage: LanguageISO6391) {
-    const sync: PropertyType[] = [
-      'date',
-      'daterange',
-      'geolocation',
-      'multidate',
-      'multidaterange',
-      'multiselect',
-      'select',
-      'numeric',
-      'nested',
-      'relationship',
-      'generatedid',
-    ];
-
-    if (sync.includes(value.type)) {
-      this.setValueInAllLanguages(value);
-    } else {
+    if (value.isTranslatable) {
       this.setValueInLanguage(value, targetLanguage);
+    } else {
+      this.setValueInAllLanguages(value);
     }
   }
 
