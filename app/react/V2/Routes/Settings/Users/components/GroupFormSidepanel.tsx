@@ -112,7 +112,7 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border border-gray-50 shadow-xs">
+            <div className="mb-5 rounded-md border border-gray-50 shadow-md">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
