@@ -122,7 +122,7 @@ const SearchResults = () => {
                   placeholder={t('System', 'Search', null, false)}
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   {...field}
-                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-400"
                 />
               )}
             />
@@ -221,7 +221,7 @@ const SearchResults = () => {
                             }}
                             className={`p-4 border border-gray-100 shadow-md rounded-lg cursor-pointer
                         ${isActive ? 'border-indigo-400' : null}
-                        focus:outline-none focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
+                        focus:outline-hidden focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
                           >
                             <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                             <p className="font-bold float-end">

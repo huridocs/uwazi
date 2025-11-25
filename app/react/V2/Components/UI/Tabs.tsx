@@ -59,7 +59,7 @@ const Tabs = ({
     <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
       <div className={`flex flex-col h-full ${className ?? ''}`}>
         <HeadlessTab.List
-          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow-xs divide-x-2 divide-gray-100 w-max ${
+          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow-md shadow-black/10 border border-gray-100 w-full ${
             tabListClassName || ''
           }`}
           aria-label={tabListAriaLabel}
@@ -80,6 +80,7 @@ const Tabs = ({
               }
               return 'rounded-none';
             })();
+            const dividerClass = isFirst ? '' : 'border-l border-gray-100';
 
             return (
               <HeadlessTab
@@ -90,10 +91,11 @@ const Tabs = ({
                 className={({ selected }) =>
                   [
                     'p-2 text-left flex items-center justify-start h-full',
-                    'focus-visible:outline-none focus-visible:ring-2',
+                    'focus-visible:outline-hidden focus-visible:ring-2',
                     'focus-visible:ring-offset-2 focus-visible:ring-primary-600',
                     'focus-visible:ring-offset-white',
                     shapeClass,
+                    dividerClass,
                     selected ? activeClass : inactiveClass,
                   ].join(' ')
                 }
@@ -108,7 +110,7 @@ const Tabs = ({
             <HeadlessTab.Panel
               key={child.props.id}
               id={`panel-${child.props.id}`}
-              className="w-full h-full focus:outline-none"
+              className="w-full h-full focus:outline-hidden"
               unmount={unmountTabs}
             >
               {child.props.children}
