@@ -97,6 +97,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Attachments
 Authentication code,Authentication code
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,auto-created
 Automatic Table of Contents,Automatic Table of Contents
@@ -551,6 +552,7 @@ No References description,References are parts of this document related with oth
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,No Table of Contents
+No Table of contents,No Table of contents
 No Table of Contents description,No Table of Contents description
 No text match,No text match
 No text match description,You can type something different in the search box to get some results.
@@ -1023,6 +1025,7 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
+"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
