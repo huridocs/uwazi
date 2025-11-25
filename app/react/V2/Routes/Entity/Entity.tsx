@@ -44,8 +44,8 @@ const MAIN_TABS = {
 };
 
 const SIDE_TABS = {
-  TOC: 'toc',
   METADATA: 'metadata',
+  TOC: 'toc',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
 };
@@ -225,14 +225,14 @@ const Entity = () => {
     () => ({
       [MAIN_TABS.DOCUMENT]: [
         {
-          id: SIDE_TABS.TOC,
-          label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
-          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
-        },
-        {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
           content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
+        },
+        {
+          id: SIDE_TABS.TOC,
+          label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
+          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
