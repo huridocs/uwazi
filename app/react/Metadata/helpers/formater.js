@@ -254,11 +254,14 @@ export default {
 
   preview(property, _value, _thesauri, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
-    return this.multimedia(
-      property,
-      [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
-      'image'
-    );
+    return {
+      ...this.multimedia(
+        property,
+        [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+        'image'
+      ),
+      ...(defaultDoc?.status ? { status: defaultDoc.status } : {}),
+    };
   },
 
   media(property, value) {
