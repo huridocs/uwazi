@@ -124,7 +124,7 @@ Responsibilities:
      ```
    - Persist this plan (option TBD: `csv_imports.plan` or a separate `csv_import_plans` collection for larger payloads).
 4. Aggregate **all** deterministic errors (invalid group usage, missing parents, duplicated conflicting entries) and throw a single `CsvPreflightPreparationError`, persisting `{ failure: { stage: 'preflight:preparation:thesauri', issues } }`.
-5. On success, set status to `preflight:thesauri:done` and invoke `transactionManager.onCommitted(...)` to dispatch Stage 2.
+5. On success, set status to `preflight:thesauri:done` and dispatch Stage 2 from inside that same `transactionManager.run` block (no `onCommitted` hop).
 
 #### Stage 2: `CsvApplyThesauriPlanJob` (mutation)
 

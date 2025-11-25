@@ -220,9 +220,11 @@
 - **Jobs (extraction, preflight, future stages)**:
   - Use `transactionManager.run` for DB mutations inside the job/use‑case.
   - Jobs own the transaction boundaries. Services invoked by the jobs (e.g., `CsvImportRowsStager`) should accept callbacks such as `deleteRows` / `insertBatch` instead of calling `transactionManager.run` themselves. This keeps failure handling and retry semantics centralized.
-  - Use `transactionManager.onCommitted` **only** for:
-    - Enqueuing downstream jobs (e.g., eventual extraction → preflight chaining).
-    - Non‑DB side‑effects that must happen only after a stage has committed (e.g., scheduling cleanup).
+- Job dispatch for downstream stages happens as the final action inside the same
+  `transactionManager.run` block that performed the DB mutation; do **not** hop through
+  `transactionManager.onCommitted` for queue chaining.
+- Use `transactionManager.onCommitted` **only** for non‑queue side-effects that truly must wait
+  until the commit is durable (e.g., scheduling cleanup/deletes outside Mongo).
 
 #### 3.3 Testing patterns
 
@@ -274,14 +276,12 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 1. **Chaining extraction → preflight**
 
    - Implement the missing dispatch from `CsvExtractUploadedZipJob` to `CsvPreflightJob`:
-     - After a successful extraction and status `ExtractingFilesDone`, use `transactionManager.onCommitted(...)` inside the extraction use case or job to dispatch `CsvPreoth`.
+     - After a successful extraction and status `ExtractingFilesDone`, dispatch `CsvPreflightJob` from inside the same `transactionManager.run` block (right after persisting the status/failure cleanup). No `onCommitted` hop.
    - Ensure this dispatch is covered by integration tests (e.g., using `SyncDispatcherForTests` or a recording dispatcher).
 
-2. **Refine registration & dispatch semantics (if required)**
-   - If product/ops later require strict “no side‑effects until commit” semantics for job dispatch, refactor `CsvImportEntities` to:
-     - Perform `csvImportsDS.insert(...)` inside `transactionManager.runHandlingOnCommitted`: return `importId`.
-     - In `.onCommitted(...)`, call `jobsDispatcher.dispatch(...)`.
-   - If we stick with the current “dispatch inside `run`” model (as currently implemented and desired), update this doc to mark this item as intentionally **not planned**.
+2. **Registration & dispatch semantics (decision)**
+   - Current and desired behavior: dispatch extraction (and any future stage) as the last statement inside the same `transactionManager.run` that inserted/updated the import.
+   - Only revisit this if product/ops explicitly require a “post-commit only” guarantee; until then this item is intentionally **not planned**.
 
 #### 4.2 Row staging after extraction (`csv_import_rows`)
 
@@ -305,7 +305,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
      - Compute missing root/child labels vs existing dictionaries.
      - Perform idempotent `appendRootLabelsIfMissing` / `appendNestedLabelsIfMissing` and i18n translation updates.
      - Mark plan entries as applied or delete them.
-   - Wire the apply job into the preflight pipeline (after `CsvPreflightJob`), using `transactionManager.onCommitted` for dispatch.
+   - Wire the apply job into the preflight pipeline (after `CsvPreflightJob`) by dispatching it from inside the same `transactionManager.run` block that persists the “preflight:thesauri:done” status.
 
 7. **Finalize `CsvPreflightJob` behavior**
 
@@ -319,7 +319,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
      - On success:
        - Clears any prior `failure`.
        - Sets `status = preflight:thesauri:done`.
-       - Uses `transactionManager.onCommitted(...)` to dispatch the apply‑plan job.
+       - Dispatches the apply‑plan job before exiting the success transaction (after clearing failure + storing status).
 
 8. **Design & implement relationship preflight**
 
@@ -330,7 +330,7 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
      - Create any missing related entities (using entities.v2 with minimal required fields).
      - Ensure idempotency (no duplicate related entities on retries).
    - Emit `csvImport:preflight:relationships:start|progress|success|error`.
-   - Chain from thesauri preflight via `onCommitted`.
+   - Chain from thesauri preflight by dispatching the relationship job inside the transaction that marks thesauri preflight as done.
 
 9. **(Optional) Domain‑validation preflight**
    - Implement `CsvPreflightDomainAssignmentUseCase` + job that:

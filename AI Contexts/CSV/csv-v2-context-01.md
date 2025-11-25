@@ -103,7 +103,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Add request validation (file present, `templateId` valid, size/type constraints).
 - Basic error handling and consistent API responses.
 - Unit/integration tests for route + persistence + storage handoff.
-- Enqueue next-step jobs after commit: use `transactionManager.onCommitted` to dispatch processing/extraction jobs only if the insert/update transaction succeeds. Define job payload to include tenant and `importId`.
+- Enqueue next-step jobs as the final step inside the same `transactionManager.run` that persists the DB change. Dispatching (e.g., extraction) happens only after the insert succeeds and before exiting the transaction block. Define job payload to include tenant and `importId`.
 
 ### Implementation progress (current status)
 

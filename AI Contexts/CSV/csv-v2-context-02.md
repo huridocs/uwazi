@@ -57,7 +57,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
   - File storage OUTSIDE the transaction.
   - DB writes INSIDE `transactionManager.run(...)`.
-  - Use `transactionManager.onCommitted(...)` only for enqueuing next jobs or side-effects that must happen after commit.
+- Dispatch downstream jobs (or any queue side-effects) as the final action inside the same `transactionManager.run(...)` that performed the DB mutation. Reserve `transactionManager.onCommitted(...)` only for non-queue side-effects that absolutely require post-commit ordering (e.g., async cleanup outside this module).
 
 - Job dependencies:
 
@@ -89,17 +89,14 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 ### Dispatch and transaction hook
 
 - Extend `RegisterCsvImportUseCase` factory to inject `jobsDispatcher`.
-- **Current implementation (Nov 2025)**: `CsvImportEntities` calls
+- `CsvImportEntities` calls
   `jobsDispatcher.dispatch(CsvExtractUploadedZipJobDispatcher, { tenantName, userId, importId })`
-  **inside** `transactionManager.run(async () => { ... })` after inserting the import. This
-  guarantees that dispatch only happens if the insert succeeds, but dispatch is not yet
-  deferred to `onCommitted`.
-- **ToDo (behavioral refinement)**: if we want “side-effects only after commit”, refactor
-  registration to use `transactionManager.runHandlingOnCommitted(...).onCommitted(...)` for
-  dispatch, mirroring the pattern used in `MongoTransactionManager` specs.
-- After Job 1 completes and sets status to `files extracted`, a future stage will trigger the
-  preflight job (see Context 03); job chaining via `onCommitted` is still pending for that part
-  of the pipeline.
+  **inside** `transactionManager.run(async () => { ... })` immediately after inserting the import.
+  This is the preferred pattern: dispatch is part of the same transaction scope, so it only
+  executes if the write succeeded, and we do not defer to `onCommitted`.
+- Every downstream stage should follow the same rule: once a job updates `csv_imports` inside a
+  `transactionManager.run`, it dispatches the next job from inside that same block (typically as the
+  final statement before returning/emitting).
 
 ### Emits and notifications
 
@@ -276,7 +273,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - `RegisterCsvImportUseCase`:
       - Stores the original upload via `storeContent` to `csv-imports/{id}/{filename}`.
       - Persists import with `status: queued` and `storage.path`.
-      - Enqueues extraction via `onCommitted` with `{ tenantName, userId, importId, sessionId }`.
+      - Enqueues extraction inside the same `transactionManager.run` block using `jobsDispatcher.dispatch(...)` with `{ tenantName, userId, importId }` (no `onCommitted` step).
     - `CsvExtractUploadedZipUseCase`:
       - `queued` → `extracting files` → `files extracted` success path.
       - Persists a concise `failure` object on errors `{ message, retryable, at, stage }`; clears it on success.
@@ -317,7 +314,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     - WebSockets: use `TestUtils.mockClass<V1WebSocketsWrapper>` only to assert `emitToSession` calls.
   - Do not mock data sources, transaction managers, or storage in these tests.
   - Use `getFixturesFactory().idString('key')` for any ids expected to be `ObjectId`-like (e.g., `importId`, `userId`).
-  - Ensure fresh transaction managers for nested job executions (e.g., register → onCommitted → extraction) to avoid "Transaction already finished".
+  - Ensure fresh transaction managers for nested job executions (e.g., registration dispatch inside `transactionManager.run` → extraction job) to avoid "Transaction already finished".
 
 - Filesystem and zips in tests
 
@@ -343,7 +340,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 - Queue and jobs
 
   - Jobs extend `UserAwareDispatchable` and receive `{ tenantName, userId, importId, sessionId? }`.
-  - Use `TransactionManager.onCommitted` to dispatch the extraction job from `RegisterCsvImportUseCase`.
+- Dispatch the extraction job from `RegisterCsvImportUseCase` as the last statement inside the `transactionManager.run` block that inserted the import.
   - Error classification in extraction use case:
     - Throw `NonRetryableJobError` for policy violations (missing import, missing storage path, ZIP missing `import.csv`, detectably corrupt formats).
     - Propagate operational errors (IO/DB) to allow queue retry policy to mark as `retrying`.
@@ -372,7 +369,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
     1. Create a use case (domain-first, TM-aware DS usage, file ops outside TM).
     2. Add a job that orchestrates the use case, wiring sockets and heartbeats.
     3. Register the job in `queueRegistry`, injecting real factories (TM, DS, storage, IO).
-    4. Dispatch the job via `onCommitted` at the correct stage boundary.
+    4. Dispatch the downstream job from within the same `transactionManager.run` that just persisted the stage’s output (no `onCommitted` hop).
     5. Write integration tests with real DS/FS/IO, unique temp dirs, and deterministic cleanup.
 
 ### References

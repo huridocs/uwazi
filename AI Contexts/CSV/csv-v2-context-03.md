@@ -169,7 +169,7 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
   - Implement a V2 data source that extends `MongoDataSource` and operates on `dictionaries` via `this.getCollection()` so that writes participate in the active transaction.
   - The DS MUST expose explicit append/update methods (e.g., `appendValues(thesaurusId, values)`) and MUST be transaction-aware. If a v1 wrapper is ever needed for read convenience, it must not be used for writes.
 - Data sources: All DS must be transaction-aware (extend `MongoDataSource`), using `transactionManager.run(...)` for writes. Do not bypass TM by calling raw collections.
-- Jobs and use cases: Jobs orchestrate stage boundaries and own the `transactionManager.run` calls; heavy business logic lives in dedicated services/use cases invoked by the job. File IO occurs outside TM; DB writes occur inside TM. Chain jobs via `transactionManager.onCommitted(...)`.
+- Jobs and use cases: Jobs orchestrate stage boundaries and own the `transactionManager.run` calls; heavy business logic lives in dedicated services/use cases invoked by the job. File IO occurs outside TM; DB writes occur inside TM. Chain jobs by dispatching the next stage from inside the same `transactionManager.run` block once the DB update succeeds (no `onCommitted` hop for queue dispatch).
 
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
@@ -192,23 +192,23 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 ```mermaid
 sequenceDiagram
   participant R as RegisterCsvImportUseCase
-  participant Q as Queue (onCommitted)
+  participant Q as Queue Dispatcher
   participant J1 as ExtractUploadedZipOrPrepareCsv
   participant J2 as PreflightThesauriValues
   participant J3 as PreflightRelationshipEntities
   participant J4 as (Optional) PreflightDomainAssignment
 
-  R->>Q: onCommitted(dispatch Extract...)
+  R->>Q: dispatch Extract (inside Tx)
   Q->>J1: { tenant, userId, importId, sessionId }
   J1->>J1: set status: extracting files → files extracted
-  J1->>Q: onCommitted(dispatch PreflightThesauriValues)
+  J1->>Q: dispatch PreflightThesauriValues (inside Tx)
   Q->>J2: { tenant, userId, importId, sessionId }
   J2->>J2: arrangeThesauri, set status preflight:thesauri:done
-  J2->>Q: onCommitted(dispatch PreflightRelationshipEntities)
+  J2->>Q: dispatch PreflightRelationshipEntities (inside Tx)
   Q->>J3: { tenant, userId, importId, sessionId }
   J3->>J3: scan relationships, ensure related entities, set status preflight:relationships:done
   alt Optional validation
-    J3->>Q: onCommitted(dispatch PreflightDomainAssignment)
+    J3->>Q: dispatch PreflightDomainAssignment (inside Tx)
     Q->>J4: { tenant, userId, importId, sessionId }
     J4->>J4: dry-run parse to Entities Domain, surface warnings/errors
   end
@@ -219,7 +219,7 @@ sequenceDiagram
 - Transactions and storage:
   - Reads from `csv-imports/{id}/extracted/import.csv`.
   - DS are transaction-aware; write updates inside `transactionManager.run(...)`.
-  - Use `onCommitted` for dispatching the next job in the pipeline.
+- Dispatch the next job from inside the same `transactionManager.run(...)` block that just persisted the stage’s state change; avoid `onCommitted` for queue chaining.
 - Idempotency:
   - Jobs should tolerate re-execution. V1’s thesauri append is naturally append-only; ensure the relationship preflight checks for existence before create.
 - Progress/events:
@@ -299,7 +299,9 @@ sequenceDiagram
 3. Transactions and idempotency
 
 - All DB writes MUST be inside `transactionManager.run`.
-- Side-effects (job dispatch) MUST run via `transactionManager.onCommitted`.
+- Job dispatch MUST be executed as the final action inside that same `transactionManager.run`
+  block so we never rely on `onCommitted` for queue chaining. Reserve `transactionManager.onCommitted`
+  solely for non-queue side-effects that must strictly happen after commit (e.g., async cleanup).
 - Idempotency: Write methods should upsert/skip duplicates so re-run on retry does not create duplicates.
 
 4. Testing-first, with DB fixtures
@@ -324,7 +326,7 @@ sequenceDiagram
 
 - V2-only DS usage (no direct `templates`/`settings`/v1 imports in use cases).
 - Reads from `csv_import_rows` (no CSV file reads beyond the extraction/staging step).
-- All writes inside TM; side-effects via `onCommitted`.
+- All writes inside TM; downstream job dispatch happens before the transaction resolves (no `onCommitted` hop).
 - TS/ESLint clean; tests added/updated and passing.
 - Event names correct; no tenant-wide broadcasts for job progress; session-only emissions if applicable.
 - Docs updated if behavior/conventions changed.
@@ -420,7 +422,7 @@ sequenceDiagram
   - [ ] “Start” status is committed and observable before heavy work; “done” after heavy work.
   - [ ] Emissions are done via job callbacks; use cases do not depend on websockets.
 - Transactions and idempotency:
-  - [ ] All writes are inside transactionManager.run; side-effects via onCommitted (if applicable).
+- [ ] All writes are inside transactionManager.run; downstream job dispatch happens before the `run` resolves (reserve onCommitted only for non-queue side-effects, if any).
   - [ ] DS writes are idempotent (no duplicates on retries).
 - Error handling:
   - [ ] Analyzer/validation failures stop the job; failure persists in DB; error emit is sent; no partial writes.
@@ -477,7 +479,7 @@ sequenceDiagram
   - Row staging prerequisite: persist normalized rows once (see Performance model) and track total row count.
   - Batch definition: contiguous slices by row index, with configurable `batchSize` (e.g., 500–5000). Store progress in `csv_imports` using row-centric fields (e.g., `progress: { totalRows, processedRows, lastProcessedRow, batchSize }`) so user-facing progress reflects rows, not abstract batches.
   - Dispatch model:
-    - Option A (chained): dispatch the next batch from `onCommitted` of the previous batch to limit concurrency per import.
+    - Option A (chained): dispatch the next batch as soon as the previous batch successfully updates DB state (inside the same `transactionManager.run`), keeping at most one in-flight batch per import.
     - Option B (pre-dispatch window): enqueue N upcoming batches capped to a window; each batch on success enqueues the next window segment (throttled).
     - Partitioning: ensure queue partitioning by `importId` to avoid interleaved batches across different imports if required.
     - Option C (eager dispatch): enqueue all batches upfront (`ceil(totalRows / batchSize)` jobs). Pros: maximizes horizontal scaling across multiple worker instances. Cons: risks queue flooding and unfairness across tenants/imports; requires strong idempotency and per-import concurrency caps at worker level to prevent stampedes. Consider an upper bound on total enqueued batches per import (or global), and optionally combine with Option B (windowed eager) as a hybrid.
@@ -533,7 +535,7 @@ sequenceDiagram
   - Dry-run parse of rows into Entities Domain objects, collect warnings/errors.
   - Persist a concise report in `csv_imports.failure` or a future `errors` field; emit session events.
 - Wire jobs and dispatch:
-  - Register jobs, inject factories per V2 conventions, and chain via `transactionManager.onCommitted` from extraction → preflight stages.
+  - Register jobs, inject factories per V2 conventions, and chain by dispatching the next stage from inside the same `transactionManager.run` block (extraction → preflight, preflight → apply, etc.).
 - Event emissions:
   - Use `V1WebSocketsWrapper.emitToSession(sessionId, ...)` for `start|progress|success|error` per preflight job.
 - Integration tests:
