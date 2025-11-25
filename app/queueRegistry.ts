@@ -258,6 +258,7 @@ export function registerJobs(
       settingsDS,
       thesauriDS,
       thesauriValuesDS,
+      transactionManager,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvPreflightJobHandler({ useCase, sockets });
