@@ -1,10 +1,11 @@
 import { FilesService } from 'api/core/application/FilesService';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
 import { PDFPostProcessJob } from '../jobs/PDFPostProcessJob';
@@ -28,6 +29,7 @@ class FilesServiceFactory {
       PDFPostProcessJob: async () =>
         new PDFPostProcessJob({
           useCase: new PDFPostProcess({
+            eventBus: applicationEventsBus,
             transactionManager,
             filesDS,
             fileStorage,
