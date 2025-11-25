@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -101,7 +101,6 @@ const entityLoader =
         headers,
       }
     );
-    console.log(composition);
 
     if (!composition.success || !composition.entity) {
       throw new Response(
@@ -314,21 +313,14 @@ const Entity = () => {
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="p-2 h-full">
-          <Tabs
-            className=""
-            unmountTabs={false}
-            initialTabId={activeMainTab}
-            onTabSelected={onMainTabChange}
-          >
+          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
         <PaneLayout.Pane className="p-2 h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
-            key={activeMainTab}
             unmountTabs={false}
-            initialTabId={activeSideTab || sideTabsByMain[activeMainTab]?.[0]?.id}
             onTabSelected={onSideTabChange}
           >
             {sideTabsByMain[activeMainTab].map(tab => (
