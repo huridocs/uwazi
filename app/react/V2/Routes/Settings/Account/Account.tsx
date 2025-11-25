@@ -193,7 +193,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="px-3 py-2 text-xs font-medium text-white bg-error-900 rounded-lg border border-error-900 hover:bg-error-950 hover:border-error-950 focus:outline-hidden focus:ring-4 focus:ring-error-200"
             >
               <Translate>Logout</Translate>
             </a>

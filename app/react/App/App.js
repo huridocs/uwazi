@@ -20,9 +20,10 @@ import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
 import 'flag-icons/sass/flag-icons.scss';
-import './scss/styles.scss';
-import './styles/globals.css';
+import 'flowbite/dist/flowbite.min.css';
 import 'flowbite';
+import './styles/tailwind.css';
+import './scss/styles.scss';
 
 const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);

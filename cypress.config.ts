@@ -54,6 +54,9 @@ export default defineConfig({
   env: {
     FAIL_FAST_ENABLED: process.env.CYPRESS_FAIL_FAST_ENABLED || 'false',
     FAIL_FAST_STRATEGY: process.env.CYPRESS_FAIL_FAST_STRATEGY || 'run',
+    'cypress-plugin-snapshots': {
+      serverEnabled: false,
+    },
   },
   e2e: {
     baseUrl: 'http://localhost:3000',
