@@ -93,7 +93,7 @@ module.exports = production => {
             /flowbite\.min\.css$/,
           ],
           use: [
-            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
+            MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             {
               loader: 'postcss-loader',
@@ -113,7 +113,7 @@ module.exports = production => {
             /\.css$/,
           ],
           use: [
-            process.env.HOT ? 'style-loader' : MiniCssExtractPlugin.loader,
+            MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],

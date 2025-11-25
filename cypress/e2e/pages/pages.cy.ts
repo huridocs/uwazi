@@ -17,20 +17,6 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('a', 'Add page').click();
-      cy.get('.translation').each($el => {
-        const parent = $el.parent()[0];
-        if (parent && parent.className.includes('hover:text-white')) {
-          const win = parent.ownerDocument?.defaultView;
-          if (!win) {
-            return;
-          }
-          const styles = win.getComputedStyle($el[0]);
-          cy.task(
-            'log',
-            `add-page translation "${$el.text()}" color ${styles.color} background ${styles.backgroundColor} parent classes: ${parent.className}`
-          );
-        }
-      });
       cy.checkA11y(undefined, undefined, logA11yViolations);
     });
   });
