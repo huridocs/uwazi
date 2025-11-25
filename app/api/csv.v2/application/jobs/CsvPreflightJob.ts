@@ -119,6 +119,30 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
     }
   }
 
+  private async persistGenericFailure(
+    importId: string,
+    csvImport: CsvImport | undefined,
+    error: Error
+  ) {
+    const existing = csvImport ?? (await this.deps.csvImportsDS.getById(importId));
+    if (!existing) {
+      return;
+    }
+    await this.transactionManager.run(async () => {
+      const withFailure = CsvImportDomain.withFailure(existing, {
+        message: error.message,
+        retryable: !(error instanceof NonRetryableJobError),
+        at: Date.now(),
+        stage: 'preflight:thesauri',
+      });
+      const withStatus = CsvImportDomain.withStatus(
+        withFailure,
+        error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
+      );
+      await this.deps.csvImportsDS.update(withStatus);
+    });
+  }
+
   // eslint-disable-next-line max-statements
   protected async executeAsync(input: Input): Promise<Output> {
     const { importId, callbacks } = input;
@@ -126,69 +150,79 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauri);
 
-    const csvImport = await this.getImport(importId);
-    const stagedRows = await this.getStagedRows(importId);
-    const template = await this.getTemplate(csvImport.templateId);
-    const [availableLanguages, defaultLanguage, settings] = await Promise.all([
-      this.deps.settingsDS.getLanguageKeys(),
-      this.deps.settingsDS.getDefaultLanguageKey(),
-      this.deps.settingsDS.get(),
-    ]);
-    const newNameGeneration = Boolean(settings?.newNameGeneration);
+    let csvImport: CsvImport | undefined;
+    let failureRecorded = false;
 
-    const { headers } = stagedRows[0];
-    const headerAnalysis = await this.analyzeHeaders(csvImport, headers, template, {
-      availableLanguages,
-      defaultLanguage,
-      newNameGeneration,
-    });
+    try {
+      csvImport = await this.getImport(importId);
+      const stagedRows = await this.getStagedRows(importId);
+      const template = await this.getTemplate(csvImport.templateId);
+      const [availableLanguages, defaultLanguage, settings] = await Promise.all([
+        this.deps.settingsDS.getLanguageKeys(),
+        this.deps.settingsDS.getDefaultLanguageKey(),
+        this.deps.settingsDS.get(),
+      ]);
+      const newNameGeneration = Boolean(settings?.newNameGeneration);
 
-    const { plan, issues: planIssues } = CsvThesauriValuesBuilder.build({
-      importId,
-      rows: stagedRows,
-      template,
-      headerAnalysis,
-      defaultLanguage,
-      newNameGeneration,
-    });
-
-    if (planIssues.length) {
-      await this.transactionManager.run(async () => {
-        const failed = CsvImportDomain.withFailure(
-          CsvImportDomain.withStatus(csvImport, CsvImportStatus.Failed),
-          {
-            message: 'Thesauri values contain errors',
-            retryable: false,
-            at: Date.now(),
-            stage: 'preflight:preparation:thesauri',
-            code: 'THESAURI_VALUES_INVALID',
-            issues: planIssues.map(issue => ({
-              reason: issue.reason,
-              message: issue.reason,
-              property: issue.property,
-            })),
-          }
-        );
-        await this.deps.csvImportsDS.update(failed);
+      const { headers } = stagedRows[0];
+      const headerAnalysis = await this.analyzeHeaders(csvImport, headers, template, {
+        availableLanguages,
+        defaultLanguage,
+        newNameGeneration,
       });
-      throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
+
+      const { plan, issues: planIssues } = CsvThesauriValuesBuilder.build({
+        importId,
+        rows: stagedRows,
+        template,
+        headerAnalysis,
+        defaultLanguage,
+        newNameGeneration,
+      });
+
+      if (planIssues.length) {
+        await this.transactionManager.run(async () => {
+          const failed = CsvImportDomain.withFailure(
+            CsvImportDomain.withStatus(csvImport!, CsvImportStatus.Failed),
+            {
+              message: 'Thesauri values contain errors',
+              retryable: false,
+              at: Date.now(),
+              stage: 'preflight:preparation:thesauri',
+              code: 'THESAURI_VALUES_INVALID',
+              issues: planIssues.map(issue => ({
+                reason: issue.reason,
+                message: issue.reason,
+                property: issue.property,
+              })),
+            }
+          );
+          await this.deps.csvImportsDS.update(failed);
+        });
+        failureRecorded = true;
+        throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
+      }
+
+      await this.deps.thesauriValuesDS.replacePlan(importId, plan.entries, plan.createdAt);
+
+      await this.transactionManager.run(async () => {
+        const clearedFailure = CsvImportDomain.clearFailure(csvImport!);
+        const updated = CsvImportDomain.withStatus(
+          clearedFailure,
+          CsvImportStatus.PreflightThesauriDone
+        );
+        await this.deps.csvImportsDS.update(updated);
+      });
+
+      callbacks.onSuccess({ importId });
+      return { importId, status: CsvImportStatus.PreflightThesauriDone };
+    } catch (error) {
+      if (!failureRecorded) {
+        await this.persistGenericFailure(importId, csvImport, error as Error);
+      }
+      callbacks.onError({ importId, error: error as Error });
+      throw error;
     }
-
-    await this.deps.thesauriValuesDS.replacePlan(importId, plan.entries, plan.createdAt);
-
-    await this.transactionManager.run(async () => {
-      const clearedFailure = CsvImportDomain.clearFailure(csvImport);
-      const updated = CsvImportDomain.withStatus(
-        clearedFailure,
-        CsvImportStatus.PreflightThesauriDone
-      );
-      await this.deps.csvImportsDS.update(updated);
-    });
-
-    // Notify success
-    callbacks.onSuccess({ importId });
-
-    return { importId, status: CsvImportStatus.PreflightThesauriDone };
   }
 }
 

@@ -302,6 +302,10 @@ sequenceDiagram
 - Job dispatch MUST be executed as the final action inside that same `transactionManager.run`
   block so we never rely on `onCommitted` for queue chaining. Reserve `transactionManager.onCommitted`
   solely for non-queue side-effects that must strictly happen after commit (e.g., async cleanup).
+- Every job/use case must wrap its execution in a catch-all that:
+  - Persists `csv_imports.failure` with `{ message, stage, retryable }`.
+  - Sets status to `failed` (`NonRetryableJobError`) or `retrying`.
+  - Invokes `callbacks.onError` so the dispatcher emits `csvImport:*:error` before rethrowing.
 - Idempotency: Write methods should upsert/skip duplicates so re-run on retry does not create duplicates.
 
 4. Testing-first, with DB fixtures

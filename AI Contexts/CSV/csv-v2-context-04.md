@@ -145,6 +145,10 @@
       - The dispatcher enqueues `CsvPreflightJobHandler` with `{ tenantName, userId, importId }` so the next stage starts immediately.
   - The previous `'should not emit if sessionId not present'` test has been **removed** as it was no longer meaningful after removing all `sessionId` branching.
   - `CsvExtractUploadedZipJob.spec.ts` gained assertions that the mocked dispatcher is called on success, guaranteeing the extraction → preflight chain even at the use-case level.
+- All CSV V2 jobs must wrap their execution in a catch-all that (a) records `csv_imports.failure`
+  with `{ message, stage, retryable }`, (b) flips the status to `failed` or `retrying`, and (c)
+  emits the corresponding `csvImport:*:error` socket event before rethrowing. `CsvPreflightJob`
+  now follows this pattern—see `CsvPreflightJobErrorHandling.spec.ts`.
 - Supporting services:
   - `CsvImportFileNormalizer` handles the ZIP/CSV branching and per-file progress callbacks.
   - `CsvImportRowsStager` stages rows in configurable batches (default 500) and uses job-supplied `deleteRows`/`insertBatch` callbacks so only the job opens transactions. Tests can override the batch size to verify batching without staging hundreds of rows.
@@ -282,7 +286,15 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
      and `CsvExtractUploadedZipJobDispatcher.spec.ts` both assert the dispatcher call and tenant/user
      payload, so the pipeline automatically proceeds to preflight after extraction completes.
 
-2. **Registration & dispatch semantics (decision)**
+2. ~~**Preflight catch-all failure handling**~~ **(Done)**
+
+   - `CsvPreflightJob` now wraps its execution in a catch-all that:
+     - Persists a `failure` object on `csv_imports` with `{ message, stage: 'preflight:thesauri' }`,
+       marking the import `retrying` (or `failed` for `NonRetryableJobError`s) when unexpected errors happen.
+     - Invokes `callbacks.onError` so the dispatcher emits `csvImport:preflight:thesauri:error`.
+     - Has a dedicated spec (`CsvPreflightJobErrorHandling.spec.ts`) that verifies the failure + emit path.
+
+3. **Registration & dispatch semantics (decision)**
    - Current and desired behavior: dispatch extraction (and any future stage) as the last statement inside the same `transactionManager.run` that inserted/updated the import.
    - Only revisit this if product/ops explicitly require a “post-commit only” guarantee; until then this item is intentionally **not planned**.
 
