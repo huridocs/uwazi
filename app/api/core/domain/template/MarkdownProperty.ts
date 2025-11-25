@@ -10,7 +10,7 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 const EntrySchema = z.object({
-  value: z.string().trim().min(1, 'Markdown Property must be a non-empty string.'),
+  value: z.string().trim(),
 });
 
 const createSchema = (isRequired: boolean) =>
@@ -33,18 +33,23 @@ class MarkdownProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<MarkdownEntry>,
     shouldValidateForRequired = false
   ): PropertyAssignment<MarkdownEntry> {
     const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
-      value.filter(v => v?.value?.toString()?.length)
+      value.filter(v => v?.value?.trim()?.length)
     );
 
     return {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

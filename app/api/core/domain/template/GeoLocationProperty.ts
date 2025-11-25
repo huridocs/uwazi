@@ -42,6 +42,10 @@ class GeolocationProperty extends Property {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<GeolocationEntry>,
     shouldValidateForRequired = false
@@ -54,6 +58,7 @@ class GeolocationProperty extends Property {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

@@ -39,6 +39,7 @@ class MongoEntityLanguageMapper {
           name,
           type: property.getData().type,
           language: dbo.language,
+          isTranslatable: property.getData().isTranslatable,
         } as PropertyAssignment,
       };
     }, commonProperties);

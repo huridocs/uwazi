@@ -1059,6 +1059,7 @@ describe('Entity', () => {
                 type: 'entity',
               },
             ],
+            isTranslatable: false,
           },
           {
             name: 'text_rel',
@@ -1074,6 +1075,7 @@ describe('Entity', () => {
                 type: 'entity',
               },
             ],
+            isTranslatable: false,
           },
         ]);
       });
