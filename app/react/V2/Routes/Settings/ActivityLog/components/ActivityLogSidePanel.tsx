@@ -46,7 +46,7 @@ const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSid
                 </>
               )}
               {selectedEntry.semantic.action === 'RAW' && (
-                <div className="content-start space-x-1">
+                <div className="content-start gap-x-1">
                   <Translate className="font-semibold">{selectedEntry.method}</Translate>&#58;
                   <Translate>{selectedEntry.url}</Translate>
                 </div>

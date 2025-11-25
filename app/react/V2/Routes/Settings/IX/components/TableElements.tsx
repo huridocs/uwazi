@@ -270,7 +270,7 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
   }
   if (segment === '') {
     return (
-      <span className="text-xs font-normal text-alert-600">
+      <span className="text-xs font-normal text-alert-800">
         <Translate>No context</Translate>
       </span>
     );

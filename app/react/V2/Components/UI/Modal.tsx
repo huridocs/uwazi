@@ -60,7 +60,7 @@ Modal.Body = ({ children, className }: ModalChildrenProps) => (
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+  <div className="flex justify-center p-6 gap-x-2 border-t border-gray-200 rounded-b">
     {children}
   </div>
 );
