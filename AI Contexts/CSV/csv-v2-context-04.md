@@ -142,7 +142,9 @@
         - Status transitions to `ExtractingFiles` → `ExtractingFilesDone`.
         - `emitToTenantAdmins(tenantName, 'csvImport:extract:start|progress|success', ...)` were called appropriately.
         - `heartbeat` is called at least once.
-      - The previous `'should not emit if sessionId not present'` test has been **removed** as it was no longer meaningful after removing all `sessionId` branching.
+      - The dispatcher enqueues `CsvPreflightJobHandler` with `{ tenantName, userId, importId }` so the next stage starts immediately.
+  - The previous `'should not emit if sessionId not present'` test has been **removed** as it was no longer meaningful after removing all `sessionId` branching.
+  - `CsvExtractUploadedZipJob.spec.ts` gained assertions that the mocked dispatcher is called on success, guaranteeing the extraction → preflight chain even at the use-case level.
 - Supporting services:
   - `CsvImportFileNormalizer` handles the ZIP/CSV branching and per-file progress callbacks.
   - `CsvImportRowsStager` stages rows in configurable batches (default 500) and uses job-supplied `deleteRows`/`insertBatch` callbacks so only the job opens transactions. Tests can override the batch size to verify batching without staging hundreds of rows.
@@ -273,11 +275,12 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
 #### 4.1 Registration & extraction pipeline
 
-1. **Chaining extraction → preflight**
+1. ~~**Chaining extraction → preflight**~~ **(Done)**
 
-   - Implement the missing dispatch from `CsvExtractUploadedZipJob` to `CsvPreflightJob`:
-     - After a successful extraction and status `ExtractingFilesDone`, dispatch `CsvPreflightJob` from inside the same `transactionManager.run` block (right after persisting the status/failure cleanup). No `onCommitted` hop.
-   - Ensure this dispatch is covered by integration tests (e.g., using `SyncDispatcherForTests` or a recording dispatcher).
+   - `CsvExtractUploadedZipJob` now dispatches `CsvPreflightJob` as the final statement inside the
+     transaction that clears failures and sets `ExtractingFilesDone`. `CsvExtractUploadedZipJob.spec.ts`
+     and `CsvExtractUploadedZipJobDispatcher.spec.ts` both assert the dispatcher call and tenant/user
+     payload, so the pipeline automatically proceeds to preflight after extraction completes.
 
 2. **Registration & dispatch semantics (decision)**
    - Current and desired behavior: dispatch extraction (and any future stage) as the last statement inside the same `transactionManager.run` that inserted/updated the import.

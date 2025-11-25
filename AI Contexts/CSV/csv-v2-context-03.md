@@ -173,7 +173,7 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
 
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
-- After `files extracted`:
+- After `files extracted` (now implemented in code):
   1. `CsvPreflightJob` (preflight preparation)
      - Reads `extracted/import.csv` and the target template.
      - Replicates V1 `arrangeThesauri` behavior with domain/DS patterns and transactions.
@@ -198,10 +198,10 @@ sequenceDiagram
   participant J3 as PreflightRelationshipEntities
   participant J4 as (Optional) PreflightDomainAssignment
 
-  R->>Q: dispatch Extract (inside Tx)
+  R->>Q: dispatch Extract (inside Tx) ✅
   Q->>J1: { tenant, userId, importId, sessionId }
   J1->>J1: set status: extracting files → files extracted
-  J1->>Q: dispatch PreflightThesauriValues (inside Tx)
+  J1->>Q: dispatch PreflightThesauriValues (inside Tx) ✅
   Q->>J2: { tenant, userId, importId, sessionId }
   J2->>J2: arrangeThesauri, set status preflight:thesauri:done
   J2->>Q: dispatch PreflightRelationshipEntities (inside Tx)
