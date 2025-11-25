@@ -1,24 +1,21 @@
-/* eslint-disable max-lines */
 import path from 'path';
-import yauzl from 'yauzl';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
 import { CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
 import { CsvImportRow } from '../../domain/CsvImportRow';
-import { CsvReader } from '../services/CsvReader';
-import { CsvReaderError } from '../services/CsvReaderError';
+import { CsvImportFileNormalizer } from '../services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from '../services/CsvImportRowsStager';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
-  fileStorage: FileStorage;
-  filesIO: FileContentsIO;
+  fileNormalizer: CsvImportFileNormalizer;
+  rowsStager: CsvImportRowsStager;
   rowsDS: CsvImportRowsDataSource;
+  transactionManager: TransactionManager;
 };
 
 type ExtractionProgress =
@@ -34,23 +31,11 @@ type Input = {
   callbacks: Callbacks;
 };
 
-const ROWS_BATCH_SIZE = 500;
-
-export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
+class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
   private static parseStoragePath(storagePath: string) {
     const filename = path.basename(storagePath);
     const destination = path.dirname(storagePath);
     return { filename, destination };
-  }
-
-  private static streamFromReadable(readStream: NodeJS.ReadableStream): AsyncIterable<Uint8Array> {
-    async function* streamReadable() {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      for await (const chunk of readStream as any) {
-        yield chunk as Uint8Array;
-      }
-    }
-    return streamReadable();
   }
 
   private static emitStart(callbacks: Callbacks, importId: string) {
@@ -82,98 +67,6 @@ export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps>
       throw new NonRetryableJobError(new Error('CSV import storage path not found'));
     }
     return csvImport.storage.path;
-  }
-
-  private async copyCsvToExtracted(originalDestination: string, originalFilename: string) {
-    const source = await this.deps.fileStorage.getFile({
-      type: 'customPath',
-      destination: originalDestination,
-      filename: originalFilename,
-    });
-
-    const file = new FileContents(() => source.read());
-
-    await this.deps.fileStorage.storeContent(file, `${originalDestination}/extracted/import.csv`);
-  }
-
-  private async extractZipToExtracted(
-    importId: string,
-    zipDestination: string,
-    zipFilename: string,
-    callbacks: Callbacks
-  ) {
-    const zipFileContents = await this.deps.fileStorage.getFile({
-      type: 'customPath',
-      destination: zipDestination,
-      filename: zipFilename,
-    });
-
-    const disk = await this.deps.filesIO.toDisk(zipFileContents);
-    const zipPath = disk.path;
-
-    const extractedDestination = `${zipDestination}/extracted`;
-    let hasImportCsv = false;
-    let processedFiles = 0;
-
-    await new Promise<void>((resolve, reject) => {
-      yauzl.open(zipPath, { lazyEntries: true }, (err, zip) => {
-        if (err || !zip) {
-          reject(err || new Error('Unable to open zip file'));
-          return;
-        }
-        const next = () => zip.readEntry();
-        zip.on('entry', entry => {
-          if (/\/$/.test(entry.fileName)) {
-            next();
-            return;
-          }
-
-          // Only root-level files are supported/expected
-          if (entry.fileName.includes('/')) {
-            next();
-            return;
-          }
-
-          if (entry.fileName === 'import.csv') {
-            hasImportCsv = true;
-          }
-
-          zip.openReadStream(entry, async (streamErr, readStream) => {
-            if (streamErr || !readStream) {
-              reject(streamErr || new Error('Failed to read zip entry'));
-              return;
-            }
-
-            const file = new FileContents(() =>
-              CsvExtractUploadedZipJob.streamFromReadable(readStream)
-            );
-
-            try {
-              await this.deps.fileStorage.storeContent(
-                file,
-                `${extractedDestination}/${entry.fileName}`
-              );
-              processedFiles += 1;
-              callbacks.onProgress({
-                type: 'files',
-                importId,
-                processedFiles,
-              });
-              next();
-            } catch (e) {
-              reject(e);
-            }
-          });
-        });
-        zip.on('end', () => resolve());
-        zip.on('error', reject);
-        next();
-      });
-    });
-
-    if (!hasImportCsv) {
-      throw new NonRetryableJobError(new Error('import.csv not found at zip root'));
-    }
   }
 
   async markAsFailed(importId: string) {
@@ -218,15 +111,6 @@ export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps>
     });
   }
 
-  private async fetchExtractedCsvFile(destination: string) {
-    const extractedDestination = `${destination}/extracted`;
-    return this.deps.fileStorage.getFile({
-      type: 'customPath',
-      destination: extractedDestination,
-      filename: 'import.csv',
-    });
-  }
-
   private async deleteExistingRows(importId: string) {
     await this.transactionManager.run(async () => {
       await this.deps.rowsDS.deleteByImport(importId);
@@ -242,128 +126,34 @@ export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps>
     });
   }
 
-  private async streamAndPersistRows(
-    importId: string,
-    file: FileContents,
-    callbacks: Callbacks,
-    emptyRowIndexes: number[]
-  ) {
-    const batch: CsvImportRow[] = [];
-    let stagedRows = 0;
-    let headers: string[] | null = null;
-    let emptyPointer = 0;
-    let currentIndex = 0;
-    const sortedEmptyIndexes = [...emptyRowIndexes].sort((a, b) => a - b);
-
-    const flushBatch = async () => {
-      if (!batch.length) {
-        return;
-      }
-      const rowsToInsert = batch.splice(0, batch.length);
-      await this.insertRowsBatch(rowsToInsert);
-    };
-
-    const flushEmptyRows = async () => {
-      if (!headers) {
-        return;
-      }
-      let requiresFlush = false;
-      while (sortedEmptyIndexes[emptyPointer] === currentIndex) {
-        batch.push({
-          importId,
-          index: currentIndex,
-          headers,
-          values: new Array(headers.length).fill(''),
-        });
-        stagedRows += 1;
-        currentIndex += 1;
-        emptyPointer += 1;
-        if (batch.length >= ROWS_BATCH_SIZE) {
-          requiresFlush = true;
-        }
-        callbacks.onProgress({ type: 'rows', importId, stagedRows });
-      }
-      if (requiresFlush) {
-        await flushBatch();
-      }
-    };
-
-    await CsvExtractUploadedZipJob.processCsvStream(file, {
-      onHeaders: parsedHeaders => {
-        headers = parsedHeaders;
-      },
-      onRow: async ({ values }) => {
-        if (!headers) {
-          throw new CsvReaderError('CSV header row missing.');
-        }
-        await flushEmptyRows();
-        batch.push({
-          importId,
-          index: currentIndex,
-          headers,
-          values,
-        });
-        stagedRows += 1;
-        currentIndex += 1;
-        if (batch.length >= ROWS_BATCH_SIZE) {
-          await flushBatch();
-        }
-        callbacks.onProgress({ type: 'rows', importId, stagedRows });
-      },
-    });
-
-    if (!headers) {
-      throw new NonRetryableJobError(new Error('CSV file must contain headers.'));
-    }
-
-    await flushEmptyRows();
-    await flushBatch();
-    callbacks.onProgress({ type: 'rows', importId, stagedRows });
-  }
-
-  private static async processCsvStream(
-    file: FileContents,
-    csvCallbacks: Parameters<typeof CsvReader.stream>[1]
-  ) {
-    try {
-      await CsvReader.stream(file, csvCallbacks);
-    } catch (error) {
-      if (error instanceof CsvReaderError) {
-        throw new NonRetryableJobError(error);
-      }
-      throw error;
-    }
-  }
-
   private async stageRows(importId: string, destination: string, callbacks: Callbacks) {
-    const [fileForRows, fileForEmptyDetection] = await Promise.all([
-      this.fetchExtractedCsvFile(destination),
-      this.fetchExtractedCsvFile(destination),
-    ]);
-    const emptyRowIndexes = await CsvReader.collectEmptyRowIndexes(fileForEmptyDetection);
-    await this.deleteExistingRows(importId);
-    await this.streamAndPersistRows(importId, fileForRows, callbacks, emptyRowIndexes);
+    await this.deps.rowsStager.stage({
+      importId,
+      destination,
+      onRowProgress: info => callbacks.onProgress({ type: 'rows', ...info }),
+      deleteRows: async () => this.deleteExistingRows(importId),
+      insertBatch: async rows => this.insertRowsBatch(rows),
+    });
   }
 
   private async processExtraction(params: {
     importId: string;
-    isZip: boolean;
     destination: string;
     filename: string;
     callbacks: Callbacks;
   }) {
     try {
-      if (params.isZip) {
-        await this.extractZipToExtracted(
-          params.importId,
-          params.destination,
-          params.filename,
-          params.callbacks
-        );
-      } else {
-        await this.copyCsvToExtracted(params.destination, params.filename);
-      }
-
+      await this.deps.fileNormalizer.normalize({
+        importId: params.importId,
+        destination: params.destination,
+        filename: params.filename,
+        onFileProgress: info =>
+          params.callbacks.onProgress({
+            type: 'files',
+            importId: info.importId,
+            processedFiles: info.processedFiles,
+          }),
+      });
       await this.stageRows(params.importId, params.destination, params.callbacks);
       await this.handleExtractionSuccess(params.importId);
       CsvExtractUploadedZipJob.emitSuccess(params.callbacks, params.importId);
@@ -382,11 +172,9 @@ export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps>
     const storagePath = await this.getImportStoragePath(importId);
 
     const { filename, destination } = CsvExtractUploadedZipJob.parseStoragePath(storagePath);
-    const isZip = filename.toLowerCase().endsWith('.zip');
 
     await this.processExtraction({
       importId,
-      isZip,
       destination,
       filename,
       callbacks,
@@ -394,4 +182,5 @@ export class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps>
   }
 }
 
+export { CsvExtractUploadedZipJob };
 export type { Callbacks, ExtractionProgress };

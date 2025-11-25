@@ -15,6 +15,8 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
+import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
@@ -54,12 +56,17 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
+    const fileNormalizer = new CsvImportFileNormalizer({
+      fileStorage,
+      filesIO: new FileContentsIO(),
+    });
+    const rowsStager = new CsvImportRowsStager({ fileStorage });
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
-      fileStorage,
-      transactionManager,
-      filesIO: new FileContentsIO(),
+      fileNormalizer,
+      rowsStager,
       rowsDS,
+      transactionManager,
     });
     const sockets = TestUtils.mockClass<V1WebSocketsWrapper>({
       emitToSession: jest.fn(),

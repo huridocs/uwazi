@@ -15,6 +15,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from '../../services/CsvImportRowsStager';
 import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob';
 
 const callbacks: Callbacks = {
@@ -59,12 +61,17 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const tenant = tenants.current();
     const pathManager = new PathManager({ tenant });
     const fileStorage = new FileSystemStorage(pathManager);
+    const fileNormalizer = new CsvImportFileNormalizer({
+      fileStorage,
+      filesIO: new FileContentsIO(),
+    });
+    const rowsStager = new CsvImportRowsStager({ fileStorage });
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
-      fileStorage,
-      transactionManager,
-      filesIO: new FileContentsIO(),
+      fileNormalizer,
+      rowsStager,
       rowsDS,
+      transactionManager,
     });
     return { useCase, csvImportsDS, rowsDS, pathManager, fileStorage };
   };

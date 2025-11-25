@@ -44,6 +44,8 @@ import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSy
 import relationships from 'api/relationships';
 import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
+import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
@@ -222,12 +224,17 @@ export function registerJobs(
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
+    const fileNormalizer = new CsvImportFileNormalizer({
+      fileStorage,
+      filesIO: new FileContentsIO(),
+    });
+    const rowsStager = new CsvImportRowsStager({ fileStorage });
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
-      fileStorage,
-      transactionManager,
-      filesIO: new FileContentsIO(),
+      fileNormalizer,
+      rowsStager,
       rowsDS,
+      transactionManager,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
