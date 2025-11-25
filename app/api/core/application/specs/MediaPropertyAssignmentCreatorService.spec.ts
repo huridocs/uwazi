@@ -66,6 +66,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
           type: 'media',
           value: [{ value: 'https://www.youtube.com/watch?v=kvX9Hbg7q88' }],
@@ -96,6 +97,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
           type: 'media',
           value: [
@@ -134,6 +136,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '/api/files/video.mp4' }],
@@ -141,7 +144,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
       ]);
     });
 
-    it('should map an attachment with the correct index', async () => {
+    it('should throw error when attachment index is missing', async () => {
       const { sut } = createSut();
       const templateDBO = await testingEnvironment.db
         .getCollection('templates')!
@@ -165,6 +168,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_2',
           type: 'media',
           value: [{ value: '/api/files/audio.mp3' }],
@@ -193,6 +197,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '(/api/files/video.mp4, {"timelinks":{"00:00:00":"titleeeeee"}})' }],
@@ -221,6 +226,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'attached_media_1',
           type: 'media',
           value: [{ value: '/api/files/video.mp4' }],
@@ -387,6 +393,7 @@ describe('MediaPropertyAssignmentCreatorService', () => {
 
       expect(result).toEqual([
         {
+          isTranslatable: true,
           name: 'url_media',
           type: 'media',
           value: [],

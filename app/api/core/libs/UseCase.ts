@@ -6,6 +6,7 @@ import { UserSchema } from 'shared/types/userType';
 import { Tenant } from 'api/tenants/tenantContext';
 import { TransactionManager } from '../application/contracts/TransactionManager';
 import { IdGenerator } from '../application/contracts/IdGenerator';
+import { Logger } from './logger/contracts/Logger';
 
 interface UseCase<Input, Output> {
   execute(input: Input, ...args: any): Promise<Output>;
@@ -16,6 +17,7 @@ type Deps<ExtendedDeps> = {
   eventBus?: EventsBus;
   jobsDispatcher?: JobsDispatcher;
   idGenerator?: IdGenerator;
+  logger?: Logger;
 } & ExtendedDeps;
 
 type Context = {
@@ -28,6 +30,14 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
   ) {}
+
+  get logger(): Logger {
+    if (!this.deps.logger) {
+      throw new Error('Logger dependency not provided');
+    }
+
+    return this.deps.logger;
+  }
 
   get actor() {
     const id = this.context?.actor?._id?.toString();

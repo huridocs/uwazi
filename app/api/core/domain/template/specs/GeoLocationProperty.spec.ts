@@ -36,6 +36,7 @@ describe('GeoLocationProperty', () => {
       expect(assignment).toEqual({
         name: prop.name,
         type: prop.type,
+        isTranslatable: false,
         value: [{ value: { lat: 10, lon: 20, label: 'Point A' } }],
       });
     });
@@ -45,7 +46,12 @@ describe('GeoLocationProperty', () => {
 
       const assignment = prop.createPropertyAssignment({ value: [] });
 
-      expect(assignment).toEqual({ name: prop.name, type: prop.type, value: [] });
+      expect(assignment).toEqual({
+        name: prop.name,
+        type: prop.type,
+        isTranslatable: false,
+        value: [],
+      });
     });
 
     it('should throw if required and no value is provided', () => {

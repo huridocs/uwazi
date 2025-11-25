@@ -56,6 +56,7 @@ describe('DateRangeProperty', () => {
         name: dateRange.name,
         value: [{ value: { from: 1761576489, to: 1761576490 } }],
         type: dateRange.type,
+        isTranslatable: false,
       });
     });
 
@@ -70,6 +71,7 @@ describe('DateRangeProperty', () => {
         name: dateRange.name,
         value: [{ value: { from: 1761576489, to: 1761576489 } }],
         type: dateRange.type,
+        isTranslatable: false,
       });
     });
 
@@ -82,6 +84,7 @@ describe('DateRangeProperty', () => {
         name: dateRange.name,
         value: [],
         type: dateRange.type,
+        isTranslatable: false,
       });
     });
 

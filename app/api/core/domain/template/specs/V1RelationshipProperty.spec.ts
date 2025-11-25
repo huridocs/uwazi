@@ -164,6 +164,7 @@ describe('V1RelationshipProperty', () => {
         language: 'en',
         name: relationship.name,
         type: relationship.type,
+        isTranslatable: false,
         value: [
           {
             value: 'A',
@@ -199,6 +200,7 @@ describe('V1RelationshipProperty', () => {
         language: 'en',
         name: relationship.name,
         type: relationship.type,
+        isTranslatable: false,
         value: [],
       });
     });

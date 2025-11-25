@@ -8,7 +8,7 @@ import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCr
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
-  inputFiles: InputFile[];
+  inputFiles?: InputFile[];
   templateId?: string;
   icon?: EntityIcon;
 };
@@ -22,33 +22,31 @@ type Deps = {
 };
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync({
-    templateId,
-    icon,
-    propertyAssignments: propertyAssignmentsInput,
-    inputFiles,
-  }: Input): Promise<Output> {
+  protected async executeAsync(input: Input): Promise<Output> {
     const entity = await this.deps.entitiesService.create({
-      templateId,
-      icon,
+      templateId: input.templateId,
+      icon: input.icon,
       userId: this.actor?.id,
     });
 
     const propertyAssignments = await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
-      propertyAssignmentsInput,
+      input.propertyAssignments,
       entity.template,
-      inputFiles.filter(f => f.isAttachment())
+      input?.inputFiles?.filter(f => f.isAttachment()) || []
     );
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
 
-    const attachments = await this.deps.fileService.fromInputFiles(entity.sharedId, inputFiles);
+    const documentsOrAttachments = await this.deps.fileService.fromInputFiles(
+      entity.sharedId,
+      input?.inputFiles || []
+    );
 
-    await this.deps.fileService.storeFiles(attachments);
+    await this.deps.fileService.storeFiles(documentsOrAttachments);
 
     await this.transactionManager.run(async () => {
       await this.deps.entitiesService.insert(entity);
-      await this.deps.fileService.insert(attachments);
+      await this.deps.fileService.insert(documentsOrAttachments);
     });
 
     return entity;

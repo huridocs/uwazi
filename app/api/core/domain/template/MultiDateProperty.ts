@@ -30,6 +30,10 @@ class MultiDateProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<DateEntry>,
     shouldValidateForRequired = false
@@ -42,6 +46,7 @@ class MultiDateProperty extends FilterableProperty {
       name: this.name,
       value: parsed,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

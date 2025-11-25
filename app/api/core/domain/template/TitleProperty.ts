@@ -30,6 +30,10 @@ class TitleProperty extends CommonProperty {
       throw new TitlePropertyInvalidNameError(this.name);
     }
   }
+
+  get isTranslatable(): boolean {
+    return true;
+  }
 }
 
 export { TitleProperty };
