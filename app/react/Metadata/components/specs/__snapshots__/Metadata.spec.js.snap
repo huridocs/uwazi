@@ -635,9 +635,14 @@ exports[`Metadata when status "processing" image field should render a loading i
   <dd
     className=""
   >
-    <Icon
-      icon="clock"
-    />
+    <div
+      className="processing-placeholder"
+    >
+      <ForwardRef(ClockIcon) />
+      <Translate>
+        Processing
+      </Translate>
+    </div>
   </dd>
 </dl>
 `;

@@ -3,8 +3,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { flattenDeep } from 'lodash';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { ClockIcon } from '@heroicons/react/24/outline';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
 import { MediaPlayer } from 'V2/Components/UI';
@@ -66,7 +67,12 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
       break;
     case 'image':
       if (prop.status === 'processing') {
-        result = <Icon icon="clock" />;
+        result = (
+          <div className="processing-placeholder">
+            <ClockIcon />
+            <Translate>Processing</Translate>
+          </div>
+        );
       } else if (prop.value) {
         result = (
           <ImageViewer
