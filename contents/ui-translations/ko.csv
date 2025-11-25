@@ -97,6 +97,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,첨부 파일
 Authentication code,인증 코드
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,자동 생성 완료
 Automatic Table of Contents,자동 생성 목차
@@ -549,6 +550,7 @@ No References description,References are parts of this document related with oth
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,목차 없음
+No Table of contents,No Table of contents
 No Table of Contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
@@ -1021,6 +1023,7 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
+"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

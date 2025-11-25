@@ -97,6 +97,7 @@ Attachment renamed,Archivo adjunto renombrado
 Attachment uploaded,Archivo adjunto subido
 Attachments,Archivos adjuntos
 Authentication code,Código de autenticación
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,autogenerado
 Automatic Table of Contents,Tabla de contenidos automática.
@@ -547,6 +548,7 @@ No References description,Las referencias son partes de este documento relaciona
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No Table of Contents,Sin Tabla de Contenidos
+No Table of contents,No Table of contents
 No Table of Contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
@@ -1018,6 +1020,7 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
+"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
