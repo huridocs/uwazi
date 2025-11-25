@@ -15,6 +15,8 @@ import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { IdGenerator } from './contracts/IdGenerator';
 import { Result } from '../libs/Result';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -71,8 +73,14 @@ class FilesService {
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
         files.forEach(file => {
           if (file instanceof Document) {
+            const userId = permissionsContext.getUserInContext()?._id?.toString();
+            if (!userId) {
+              throw new Error('PDFPostProcess needs a user Id');
+            }
             dispatch(PDFPostProcessJob, {
+              tenantName: tenants.current().name,
               documentId: file.id,
+              userId,
             });
           }
         });

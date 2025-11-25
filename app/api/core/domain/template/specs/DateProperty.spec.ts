@@ -54,6 +54,7 @@ describe('DateProperty', () => {
         name: date.name,
         value: [{ value: 1761576489 }],
         type: date.type,
+        isTranslatable: false,
       });
     });
 
@@ -66,6 +67,7 @@ describe('DateProperty', () => {
         name: date.name,
         value: [],
         type: date.type,
+        isTranslatable: false,
       });
     });
 

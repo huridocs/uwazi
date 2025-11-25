@@ -23,6 +23,7 @@ import { FileContentsIO } from '../../files/FileContentIO';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -97,7 +98,11 @@ describe('PDFPostProcessJob', () => {
   ) =>
     job.handleDispatch(
       heartBeatCallBack,
-      { documentId },
+      {
+        documentId,
+        tenantName: tenants.current().name,
+        userId: permissionsContext.getUserInContext()?._id?.toString() || '',
+      },
       { namespace: tenants.current().name, ...jobInfo }
     );
 

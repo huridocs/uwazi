@@ -85,6 +85,10 @@ class V1RelationshipProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   override updatedAttributes(other: Property): PropertyUpdateInfo {
     if (!(other instanceof V1RelationshipProperty)) {
       throw new InvalidPropertyComparisonTypeError('V1RelationshipProperty');
@@ -119,6 +123,7 @@ class V1RelationshipProperty extends FilterableProperty {
       type: this.type,
       language: 'n/a' as LanguageISO6391,
       value: [],
+      isTranslatable: this.isTranslatable,
     };
   }
 
@@ -138,6 +143,7 @@ class V1RelationshipProperty extends FilterableProperty {
       type: this.type,
       value: parsed.value,
       language: parsed.language as LanguageISO6391,
+      isTranslatable: this.isTranslatable,
     };
   }
 
