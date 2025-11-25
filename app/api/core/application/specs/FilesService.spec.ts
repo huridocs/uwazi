@@ -30,6 +30,8 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FilesService } from '../FilesService';
 import { createHash } from 'crypto';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 
 const f = getFixturesFactory();
 
@@ -224,6 +226,8 @@ describe('FilesService', () => {
       expect(dispatchMock).toHaveBeenCalledTimes(1);
       expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJob, {
         documentId: document.id,
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
       });
     });
   });

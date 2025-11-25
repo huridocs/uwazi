@@ -1,13 +1,17 @@
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/core/domain/files/errors';
+import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
-import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/core/domain/files/errors';
-import { V1CompatTenantDispatchable } from 'api/core/libs/queue/application/contracts/V1CompatTenantDispatchable';
 import { FileIsNotAPDF } from '../services/PDFService';
 
-type Params = {
+import {
+  UserAwareDispatchable,
+  UserAwareDispatchableParams,
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+
+type Params = UserAwareDispatchableParams & {
   documentId: string;
 };
 
@@ -16,15 +20,15 @@ type JobDependencies = {
   wSockets: WebSockets;
 };
 
-class PDFPostProcessJob extends V1CompatTenantDispatchable<Params> {
+export class PDFPostProcessJob extends UserAwareDispatchable<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, params: Params, jobInfo: JobInfo) {
+  async handle(_heartbeat: HeartbeatCallback, jobInfo: JobInfo) {
     try {
       const processedDoc = await this.deps.useCase.execute(
-        params,
+        this.params,
         jobInfo.retryCount !== jobInfo.maxRetries
       );
       this.deps.wSockets.emitToTenant(
@@ -56,5 +60,3 @@ class PDFPostProcessJob extends V1CompatTenantDispatchable<Params> {
     }
   }
 }
-
-export { PDFPostProcessJob };
