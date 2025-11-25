@@ -12,7 +12,7 @@ type StageRowsParams = {
   insertBatch: (rows: CsvImportRow[]) => Promise<void>;
 };
 
-const ROWS_BATCH_SIZE = 500;
+const DEFAULT_ROWS_BATCH_SIZE = 500;
 
 type RowsAccumulator = {
   setHeaders: (headers: string[]) => void;
@@ -25,6 +25,7 @@ type RowsAccumulatorParams = {
   emptyRowIndexes: number[];
   onRowProgress: (info: { importId: string; stagedRows: number }) => void;
   insertBatch: (rows: CsvImportRow[]) => Promise<void>;
+  batchSize: number;
 };
 
 type AccumulatorContext = {
@@ -45,7 +46,7 @@ const flushBatch = async (ctx: AccumulatorContext, params: RowsAccumulatorParams
 };
 
 const ensureCapacity = async (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
-  if (ctx.batch.length >= ROWS_BATCH_SIZE) {
+  if (ctx.batch.length >= params.batchSize) {
     await flushBatch(ctx, params);
   }
 };
@@ -131,11 +132,16 @@ const createRowsAccumulator = (params: RowsAccumulatorParams): RowsAccumulator =
 };
 
 export class CsvImportRowsStager {
+  private readonly batchSize: number;
+
   constructor(
     private deps: {
       fileStorage: FileStorage;
-    }
-  ) {}
+    },
+    options?: { batchSize?: number }
+  ) {
+    this.batchSize = options?.batchSize ?? DEFAULT_ROWS_BATCH_SIZE;
+  }
 
   private async getCsvFiles(destination: string) {
     return Promise.all([this.getExtractedCsv(destination), this.getExtractedCsv(destination)]);
@@ -150,6 +156,7 @@ export class CsvImportRowsStager {
       emptyRowIndexes,
       onRowProgress: params.onRowProgress,
       insertBatch: params.insertBatch,
+      batchSize: this.batchSize,
     });
 
     await CsvReader.stream(streamFile, {

@@ -54,7 +54,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     await testingEnvironment.tearDown();
   });
 
-  const setUp = () => {
+  const setUp = (options?: { batchSize?: number }) => {
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
@@ -65,7 +65,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       fileStorage,
       filesIO: new FileContentsIO(),
     });
-    const rowsStager = new CsvImportRowsStager({ fileStorage });
+    const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options?.batchSize });
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,
@@ -151,6 +151,40 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     expect(stagedRows).toHaveLength(3);
     expect(stagedRows[1].values).toEqual(['', '']);
     expect(stagedRows[1].index).toBe(1);
+  });
+
+  it('should stage rows in batches for large CSVs', async () => {
+    const { useCase, csvImportsDS, rowsDS, fileStorage } = setUp({ batchSize: 3 });
+    const insertSpy = jest.spyOn(rowsDS, 'insertMany');
+    const f = getFixturesFactory();
+    const id = f.idString('csv-batch');
+
+    const destination = `csv-imports/${id}`;
+    const originalFilename = 'original.csv';
+    const batchFixture = path.join(__dirname, '../../../specs/zipData/csv-v2-batch.csv');
+    await fileStorage.storeContent(
+      new DiskFile(batchFixture).toContent(),
+      `${destination}/${originalFilename}`
+    );
+
+    const importDoc = CsvImportDomain.withStorage(
+      CsvImportDomain.create({
+        id,
+        templateId: 't1',
+        file: { originalName: 'orig', mimeType: 'text/csv', size: 10 },
+        createdBy: 'u1',
+      }),
+      `${destination}/${originalFilename}`
+    );
+    await csvImportsDS.insert(importDoc);
+
+    await useCase.execute({ importId: id, callbacks });
+    createdImportIds.push(id);
+
+    expect(insertSpy.mock.calls.length).toBeGreaterThan(1);
+    const totalInserted = insertSpy.mock.calls.reduce((sum, [rows]) => sum + rows.length, 0);
+    expect(totalInserted).toBe(9);
+    insertSpy.mockRestore();
   });
 
   it('should extract a ZIP with root files, stage rows, and require import.csv', async () => {
