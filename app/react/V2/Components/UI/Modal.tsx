@@ -22,7 +22,7 @@ const Modal = ({ children, size, id }: ModalProps) => {
   return (
     <div
       aria-hidden="false"
-      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900 bg-opacity-50"
+      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900/50"
       data-testid="modal"
       role="dialog"
       aria-label="Modal"

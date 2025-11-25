@@ -7,6 +7,7 @@
 
 .tw-content {
   color-scheme: light;
+  --tw-shadow-color: rgba(15, 23, 42, 0.12);
 }
 
 @theme {
