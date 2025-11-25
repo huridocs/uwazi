@@ -444,11 +444,11 @@ describe('Information Extraction', () => {
         cy.contains('button', 'Process').click();
       });
       cy.contains('tr', '2023 (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'A title (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
     });
@@ -464,17 +464,17 @@ describe('Information Extraction', () => {
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)'
-      ).contains('span[class="text-left text-green-600"]', 'February 3, 2020');
+      ).contains('span[class="text-left text-success-600"]', 'February 3, 2020');
       cy.contains('tr', 'Spider-Man: Shattered Dimensions (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'Batman v Superman: Dawn of Justice (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
       cy.contains('tr', 'The Amazing Spider-Man (en)').contains(
-        'span[class="text-left text-green-600"]',
+        'span[class="text-left text-success-600"]',
         'February 3, 2020'
       );
     });
