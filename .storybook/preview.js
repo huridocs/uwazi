@@ -1,5 +1,5 @@
 import { configureActions } from '@storybook/addon-actions';
-import '../app/react/App/styles/globals.css';
+import '../app/react/App/styles/tailwind.css';
 
 configureActions({
   depth: 100,

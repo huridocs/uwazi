@@ -127,12 +127,12 @@ export const calculateOptimalProportions = (suggestions: TableSuggestion[]) => {
     finalContextWidth = 'w-2/5';
     finalValueWidth = 'w-2/5';
   } else if (hasLongValues && hasLongTitles) {
-    finalTitleWidth = 'w-1/4 min-w-[150px]';
+    finalTitleWidth = 'w-5/12 min-w-[150px]';
     finalContextWidth = 'w-1/6';
-    finalValueWidth = 'w-7/12';
+    finalValueWidth = 'w-5/12';
   } else if (hasLongContext && hasLongTitles) {
-    finalTitleWidth = 'w-1/4 min-w-[150px]';
-    finalContextWidth = 'w-7/12';
+    finalTitleWidth = 'w-5/12 min-w-[150px]';
+    finalContextWidth = 'w-5/12';
     finalValueWidth = 'w-1/6';
   } else if (hasLongContext) {
     finalTitleWidth = 'w-1/4';
