@@ -211,6 +211,8 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Avoid using `as any` unless absolutely indispensable; prefer proper typings, narrowing, or adapter types.
   - Extract legacy blocks into helpers to reduce lint noise and ease future removal.
   - Use explicit, descriptive names (e.g., `RegisterCsvImport*`).
+  - Keep one class per file; extract helper functions (or new modules) instead of nesting additional classes so lint stays happy and files read top-down.
+  - Within a module, define depended-upon helpers before their callers so the file reads naturally from top to bottom.
 
 ### Open questions / pending decisions
 

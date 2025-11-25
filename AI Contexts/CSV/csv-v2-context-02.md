@@ -35,11 +35,12 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - V2 patterns to follow (critical):
 
-  - Jobs are thin orchestrators; they delegate business logic to Use Cases.
-  - Use cases own transactions (via `transactionManager`). No transactions in jobs.
+  - **JobHandlers** (queue wrappers under `infrastructure/jobHandlers/*`) are thin orchestrators; they build the application-layer job and wire sockets/heartbeats.
+  - **Jobs** (application-layer classes under `application/jobs/*`) orchestrate stage boundaries and own `transactionManager.run`, delegating heavy lifting to dedicated services (`CsvImportFileNormalizer`, `CsvImportRowsStager`, etc.).
+  - Services invoked by a job accept callbacks (e.g., `deleteRows`, `insertBatch`) instead of opening their own transactions, so retry semantics stay centralized.
   - Dependencies are injected via factories; DSs must be transaction-aware (extend `MongoDataSource`).
-  - Emits should use a sockets wrapper and be passed as callbacks to the use case when appropriate (mirrors templates.v2 patterns).
-  - Jobs pass params and context only (tenantName, userId, sessionId).
+  - Emits should use a sockets wrapper and be passed as callbacks to the use case when appropriate (mirrors templates.v2 patterns). All CSV V2 jobs emit only to tenant admins (no per-session events).
+  - Jobs pass params and context only (tenantName, userId, importId). Session IDs are no longer required for CSV V2 flows.
   - Domain-first mutations: All state changes must be done via Domain methods; DS updates persist the resulting Domain object. Never shape partial updates ad hoc.
 
 #### Domain and mapping rules (enforced)
@@ -60,23 +61,24 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Job dependencies:
 
-  - `useCase`: `CsvExtractUploadedZipUseCase`
-  - `sockets`: `V1WebSocketsWrapper` exposing `emitToSession` (and `emitToTenant` if ever needed)
+  - `fileNormalizer`: `CsvImportFileNormalizer`
+  - `rowsStager`: `CsvImportRowsStager`
+  - `sockets`: `V1WebSocketsWrapper` exposing `emitToTenantAdmins`
 
 - Behavior:
 
   1. Load import by `importId`. If missing → hard fail.
   2. Immediately set status to `extracting files` via `CsvImportDomain.withStatus(...)` and persist using `csvImportsDS.update(...)` inside a transaction.
-  3. Determine input kind by `storage.path`/extension or `file.mimeType`:
-     - ZIP case:
-       - Open the uploaded ZIP (flat structure expected).
-       - Extract ALL entries to `csv-imports/{importId}/extracted/`.
-       - Require that `import.csv` exists at the root. Fail if not present.
-     - CSV case (non-ZIP):
-       - Copy the original uploaded file to `csv-imports/{importId}/extracted/import.csv`.
-       - This enforces the same downstream invariant as the ZIP path: a canonical `import.csv` in `extracted/`.
-  4. Idempotency: overwrite-on-retry is acceptable for MVP (safe to re-run job).
-  5. On success, set status to `files extracted` only via domain mutation + DS update. Do not advance to `processing`. On failure:
+  3. Normalize input files through `CsvImportFileNormalizer`:
+     - ZIP: stream each root-level entry into `csv-imports/{importId}/extracted/`, track `processedFiles`, and push `{ type: 'files', importId, processedFiles }` progress events (dispatcher renews the heartbeat on each progress event).
+     - CSV: copy the original upload to `csv-imports/{importId}/extracted/import.csv` so downstream stages always read from the same path.
+  4. Stage rows via `CsvImportRowsStager`:
+     - Read the canonical `import.csv` once, preserving empty rows so row indexes match the user's file.
+     - Insert normalized rows into `csv_import_rows` in batches (default 500 rows) using job-provided `deleteRows` / `insertBatch` callbacks so transactions remain in the job layer.
+     - Emit `{ type: 'rows', importId, stagedRows }` progress events for sockets/heartbeats.
+     - Integration tests can inject a smaller `batchSize` to assert multiple batch flushes without relying on 500+ row fixtures.
+  5. Idempotency: the job rewrites extracted files and staged rows on each retry. Overwrite-on-retry is acceptable.
+  6. On success, clear failures and set status to `files extracted`. On failure:
      - If non-retriable → mark `failed`.
      - If retriable → set `retrying` and let the queue reschedule.
 

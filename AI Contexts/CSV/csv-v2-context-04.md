@@ -101,18 +101,20 @@
     - Emits `onStart({ importId })`.
     - Calls `setStatus(importId, CsvImportStatus.ExtractingFiles)` in a TM `run`.
     - Loads the import via `csvImportsDS.getById(importId)` and validates `storage.path`.
-    - Distinguishes ZIP vs CSV (`.toLowerCase().endsWith('.zip')`):
-      - ZIP: streams all root‑level entries from the uploaded zip to `csv-imports/{id}/extracted/`, tracking `processedFiles` and calling `onProgress({ importId, processedFiles })` after each file.
+    - Delegates file preparation to `CsvImportFileNormalizer`:
+      - ZIP: streams each root-level entry to `csv-imports/{id}/extracted/`, calling `callbacks.onProgress({ type: 'files', importId, processedFiles })` after each file so the dispatcher can emit socket events and call `heartbeat()`.
       - CSV: copies the original upload to `csv-imports/{id}/extracted/import.csv`.
+    - Delegates row staging to `CsvImportRowsStager`, which:
+      - Reads the canonical `import.csv`, preserves empty rows to keep row indexes aligned with the user’s CSV, and persists rows into `csv_import_rows`.
+      - Supports configurable batching (default 500 rows). The job injects `deleteRows` / `insertBatch` callbacks so all `transactionManager.run` calls still happen inside the job layer.
+      - Emits `callbacks.onProgress({ type: 'rows', importId, stagedRows })`.
     - On success:
-      - If import exists, runs a transaction to:
-        - Clear any prior `failure`.
-        - Set `status = ExtractingFilesDone`.
+      - Clears any prior `failure` and sets `status = ExtractingFilesDone` inside a TM `run`.
       - Calls `onSuccess({ importId })`.
     - On error:
       - Calls `onError({ importId, error })`.
       - Persists a `failure` object with `{ message, retryable, at, stage: 'extracting files' }`.
-      - Sets `status` to `Failed` (for non‑retriable errors) or `Retrying` (for transient ones).
+      - Sets `status` to `Failed` (for non-retriable errors) or `Retrying` (for transient ones).
 
 - **Dispatcher** (`CsvExtractUploadedZipJobDispatcher`):
 
@@ -141,6 +143,9 @@
         - `emitToTenantAdmins(tenantName, 'csvImport:extract:start|progress|success', ...)` were called appropriately.
         - `heartbeat` is called at least once.
       - The previous `'should not emit if sessionId not present'` test has been **removed** as it was no longer meaningful after removing all `sessionId` branching.
+- Supporting services:
+  - `CsvImportFileNormalizer` handles the ZIP/CSV branching and per-file progress callbacks.
+  - `CsvImportRowsStager` stages rows in configurable batches (default 500) and uses job-supplied `deleteRows`/`insertBatch` callbacks so only the job opens transactions. Tests can override the batch size to verify batching without staging hundreds of rows.
 
 #### 2.4 Socket model (`setupSockets.ts` & `socketClusterMode.spec.ts`)
 
@@ -177,6 +182,9 @@
 
 ### 3. Coding patterns & guardrails (reaffirmed)
 
+- Prefer “helpers first” ordering inside each file: define dependent helper functions before the caller so files read top-down.
+- Keep one class per file. If you need supporting logic, extract pure helper functions (or a separate module) instead of nesting additional classes.
+
 #### 3.1 V2‑only boundaries (no v1 leakage)
 
 - **Never import v1 CSV modules** (`app/api/csv/**`) into `app/api/csv.v2/**`:
@@ -211,6 +219,7 @@
 
 - **Jobs (extraction, preflight, future stages)**:
   - Use `transactionManager.run` for DB mutations inside the job/use‑case.
+  - Jobs own the transaction boundaries. Services invoked by the jobs (e.g., `CsvImportRowsStager`) should accept callbacks such as `deleteRows` / `insertBatch` instead of calling `transactionManager.run` themselves. This keeps failure handling and retry semantics centralized.
   - Use `transactionManager.onCommitted` **only** for:
     - Enqueuing downstream jobs (e.g., eventual extraction → preflight chaining).
     - Non‑DB side‑effects that must happen only after a stage has committed (e.g., scheduling cleanup).
@@ -231,6 +240,7 @@
     - Status transitions.
     - File system side‑effects.
     - Emitted events via `V1WebSocketsWrapper` fakes (now using `emitToTenantAdmins`).
+  - `CsvExtractUploadedZipJob.spec.ts` now includes a batching scenario: by injecting a smaller `batchSize` into `CsvImportRowsStager`, the test asserts that `rowsDS.insertMany` flushes multiple batches without having to create 500+ fixture rows.
 
 - **Sockets**:
 
@@ -275,28 +285,16 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
 #### 4.2 Row staging after extraction (`csv_import_rows`)
 
-3. **Implement row staging in `CsvExtractUploadedZipJob`**
+3. ~~**Implement row staging in `CsvExtractUploadedZipJob`**~~ **(Done)**
 
-   - After copying/extracting `import.csv` to `csv-imports/{id}/extracted/import.csv`:
-     - Use a robust `CsvReader` to read and parse the CSV once.
-     - Persist normalized rows into `csv_import_rows` as domain objects:
-       - `{ id, importId, index, headers: string[], values: string[] }`.
-   - Ensure staging runs **before** any preflight job is dispatched.
+   - `CsvImportRowsStager` now reads the canonical `import.csv`, preserves empty lines (so row indexes match user CSVs), and persists normalized rows into `csv_import_rows` before any downstream jobs run. Batching is configurable (default 500) and covered by integration specs.
 
-4. **Implement a robust `CsvReader`**
+4. ~~**Implement a robust `CsvReader`**~~ **(Done)**
 
-   - Replace the current minimal placeholder with a production‑grade implementation:
-     - Handle quoted fields, escaped quotes, embedded commas/newlines.
-     - Support configurable delimiters and encodings.
-     - Provide deterministic header parsing and standardized trimming/sanitization rules.
-   - Add focused unit tests for parsing edge cases and integration tests verifying that staged rows match source CSVs (including tricky inputs).
+   - `CsvReader` now uses `csvtojson` with proper quoting/delimiter/BOM handling plus `collectEmptyRowIndexes`. Edge cases (quoted commas, embedded newlines, blank rows) are exercised by the extraction job specs.
 
-5. **Fix `csv_import_rows` data‑source mapping**
-   - Define a `CsvImportRow` domain type and a mapper that converts Mongo `_id` ↔ `id`.
-   - Ensure `CsvImportRowsDataSource` methods:
-     - Accept domain types as input.
-     - Return domain‑shaped objects (no raw `_id`).
-     - Use `this.getCollection()` so all writes participate in the active TM session.
+5. ~~**Fix `csv_import_rows` data-source mapping**~~ **(Done)**
+   - `CsvImportRow` domain + Mongo mapper were introduced earlier. All staging writes go through domain-shaped objects and reuse the active TM session via injected callbacks from the job.
 
 #### 4.3 Preflight (thesauri, relationships, validation)
 

@@ -169,7 +169,7 @@ Key takeaway: V1 creates missing related entities “on the fly” during row pa
   - Implement a V2 data source that extends `MongoDataSource` and operates on `dictionaries` via `this.getCollection()` so that writes participate in the active transaction.
   - The DS MUST expose explicit append/update methods (e.g., `appendValues(thesaurusId, values)`) and MUST be transaction-aware. If a v1 wrapper is ever needed for read convenience, it must not be used for writes.
 - Data sources: All DS must be transaction-aware (extend `MongoDataSource`), using `transactionManager.run(...)` for writes. Do not bypass TM by calling raw collections.
-- Jobs and use cases: Jobs only orchestrate; business logic lives in use cases. File IO occurs outside TM; DB writes occur inside TM. Chain jobs via `transactionManager.onCommitted(...)`.
+- Jobs and use cases: Jobs orchestrate stage boundaries and own the `transactionManager.run` calls; heavy business logic lives in dedicated services/use cases invoked by the job. File IO occurs outside TM; DB writes occur inside TM. Chain jobs via `transactionManager.onCommitted(...)`.
 
 ### Proposed V2 Job Pipeline Additions (Preflight)
 
