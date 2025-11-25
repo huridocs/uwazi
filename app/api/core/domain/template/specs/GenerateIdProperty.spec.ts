@@ -36,6 +36,7 @@ describe('GenerateIdProperty', () => {
       expect(assignment).toEqual({
         name: prop.name,
         type: prop.type,
+        isTranslatable: false,
         value: [{ value: 'CPW6528-7568' }],
       });
     });

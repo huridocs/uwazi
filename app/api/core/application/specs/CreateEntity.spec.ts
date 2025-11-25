@@ -531,7 +531,6 @@ describe('CreateEntityUseCase', () => {
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
       propertyAssignments: [{ name: 'title', value: [{ value: 'My entity title' }] }],
-      inputFiles: [],
     });
 
     const entities = await testingEnvironment.db

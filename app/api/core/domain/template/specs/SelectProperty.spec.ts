@@ -122,6 +122,7 @@ describe('SelectProperty', () => {
           language: 'en',
         })
       ).toEqual({
+        isTranslatable: false,
         language: 'en',
         name: select.name,
         type: select.type,
@@ -136,6 +137,7 @@ describe('SelectProperty', () => {
           language: 'en',
         })
       ).toEqual({
+        isTranslatable: false,
         language: 'en',
         name: select.name,
         type: select.type,

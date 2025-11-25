@@ -42,6 +42,10 @@ class NestedProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<NestedEntry>,
     shouldValidateForRequired = false
@@ -52,6 +56,7 @@ class NestedProperty extends FilterableProperty {
       name: this.name,
       value: parsed as NestedEntry[], // Todo: fix type issue
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

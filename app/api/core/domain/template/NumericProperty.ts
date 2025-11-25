@@ -32,6 +32,10 @@ class NumericProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<NumericPropertyValue>,
     shouldValidateForRequired = false
@@ -44,6 +48,7 @@ class NumericProperty extends FilterableProperty {
       name: this.name,
       value: parsedValue,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

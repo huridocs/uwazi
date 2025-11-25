@@ -33,6 +33,10 @@ class GenerateIdProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<GeneratedIdEntry>,
     shouldValidateForRequired = false
@@ -45,6 +49,7 @@ class GenerateIdProperty extends FilterableProperty {
       name: this.name,
       type: this.type,
       value: parsedValue,
+      isTranslatable: this.isTranslatable,
     };
   }
 
