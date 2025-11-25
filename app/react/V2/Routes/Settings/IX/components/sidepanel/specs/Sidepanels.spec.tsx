@@ -345,7 +345,7 @@ describe('Sidepanel forms', () => {
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
       await waitFor(() => {
         const suggestionElement = screen.getByText('Suggested Option');
-        expect(suggestionElement).toHaveClass('bg-orange-50', 'text-orange-800');
+        expect(suggestionElement).toHaveClass('bg-alert-50', 'text-alert-800');
       });
     });
 
@@ -376,7 +376,7 @@ describe('Sidepanel forms', () => {
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
       await waitFor(() => {
         const suggestionElement = screen.getByText('suggested_entity');
-        expect(suggestionElement).toHaveClass('bg-orange-50', 'text-orange-800');
+        expect(suggestionElement).toHaveClass('bg-alert-50', 'text-alert-800');
       });
     });
 
