@@ -64,7 +64,7 @@ describe('Table', () => {
         'class',
         'relative px-4 py-2 bg-gray-100 text-red-700 '
       );
-      cy.get('div[class="text-white bg-orange-500"]').should('have.length', 5);
+      cy.get('div[class="text-white bg-alert-500"]').should('have.length', 5);
       cy.get('button').should('have.length', 5);
     });
   });

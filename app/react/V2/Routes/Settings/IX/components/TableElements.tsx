@@ -131,7 +131,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
+            <span className="text-alert-500">{amountOfMissmatches}</span>{' '}
             <Translate>mismatching</Translate>
           </span>
         </>
@@ -270,7 +270,7 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
   }
   if (segment === '') {
     return (
-      <span className="text-xs font-normal text-orange-600">
+      <span className="text-xs font-normal text-alert-800">
         <Translate>No context</Translate>
       </span>
     );
