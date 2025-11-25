@@ -48,6 +48,10 @@ class DateRangeProperty extends FilterableProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return false;
+  }
+
   createPropertyAssignment(
     { value }: CreatePropertyAssignmentInput<DateRangeEntry>,
     shouldValidateForRequired = false
@@ -60,6 +64,7 @@ class DateRangeProperty extends FilterableProperty {
       name: this.name,
       value: parsedValue,
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 

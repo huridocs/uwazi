@@ -21,11 +21,16 @@ class PreviewProperty extends AbstractImageProperty {
     }
   }
 
+  get isTranslatable(): boolean {
+    return true;
+  }
+
   createPropertyAssignment(): PropertyAssignment<PreviewEntry> {
     return {
       name: this.name,
       value: [],
       type: this.type,
+      isTranslatable: this.isTranslatable,
     };
   }
 }

@@ -443,6 +443,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -466,6 +467,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -497,6 +499,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -516,6 +519,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -543,6 +547,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -558,6 +563,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -589,6 +595,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -604,6 +611,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -635,6 +643,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -654,6 +663,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -685,6 +695,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -704,6 +715,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -735,6 +747,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -754,6 +767,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -785,6 +799,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -804,6 +819,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -835,6 +851,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
       {
         language: 'pt',
@@ -854,6 +871,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             type: 'entity',
           },
         ],
+        isTranslatable: false,
       },
     ]);
   });
@@ -868,6 +886,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'multidaterange_rel',
         type: 'relationship',
@@ -886,6 +905,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'multidaterange_rel',
         type: 'relationship',
@@ -916,6 +936,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'select_rel',
         type: 'relationship',
@@ -935,6 +956,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'select_rel',
         type: 'relationship',
@@ -962,6 +984,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'multiselect_rel',
         type: 'relationship',
@@ -984,6 +1007,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'multiselect_rel',
         type: 'relationship',
@@ -1018,6 +1042,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'link_rel',
         type: 'relationship',
@@ -1037,6 +1062,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'link_rel',
         type: 'relationship',
@@ -1068,6 +1094,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'image_rel',
         type: 'relationship',
@@ -1087,6 +1114,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'image_rel',
         type: 'relationship',
@@ -1118,6 +1146,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'generatedid_rel',
         type: 'relationship',
@@ -1137,6 +1166,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'generatedid_rel',
         type: 'relationship',
@@ -1168,6 +1198,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
@@ -1181,6 +1212,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
@@ -1213,6 +1245,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
@@ -1227,10 +1260,11 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 EN', type: 'entity' },
+          { value: 'B2', label: 'B2 EN', icon: undefined, type: 'entity' },
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
@@ -1245,7 +1279,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
             },
             type: 'entity',
           },
-          { value: 'B2', label: 'B2 PT', type: 'entity' },
+          { value: 'B2', label: 'B2 PT', icon: undefined, type: 'entity' },
         ],
       },
     ]);
@@ -1257,12 +1291,14 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(empty).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
         value: [],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'rel_prop_no_inherit',
         type: 'relationship',
@@ -1281,6 +1317,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'media_rel',
         type: 'relationship',
@@ -1296,6 +1333,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'media_rel',
         type: 'relationship',
@@ -1323,6 +1361,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
 
     expect(assignments).toEqual([
       {
+        isTranslatable: false,
         language: 'en',
         name: 'nested_rel',
         type: 'relationship',
@@ -1345,6 +1384,7 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         ],
       },
       {
+        isTranslatable: false,
         language: 'pt',
         name: 'nested_rel',
         type: 'relationship',
