@@ -65,7 +65,7 @@ const MultiSelect = ({
   }, [value]);
 
   return (
-    <div data-testid="multiselect" className="rounded-lg shadow-xs">
+    <div data-testid="multiselect" className="rounded-lg shadow-md">
       <div
         className={`flex items-center px-4 h-12 rounded-t-lg ${
           hasErrors ? 'bg-error-50' : 'bg-gray-50'

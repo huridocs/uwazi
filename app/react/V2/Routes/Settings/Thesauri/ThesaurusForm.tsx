@@ -77,7 +77,7 @@ const ThesaurusForm = ({
 
   return (
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-      <div data-testid="thesauri" className="border rounded-md shadow-xs border-gray-50">
+      <div data-testid="thesauri" className="border rounded-md shadow-md border-gray-50">
         <Table
           data={thesaurusValues}
           columns={columnsThesaurus({ edit }, thesaurus)}
