@@ -1,5 +1,4 @@
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
@@ -48,5 +47,3 @@ export class TemplatePostProcessEntitiesJob extends UserAwareDispatchable<Params
     });
   }
 }
-
-export { PXCreateParagraphsJob };
