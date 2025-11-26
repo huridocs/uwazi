@@ -91,9 +91,9 @@ const Tabs = ({
                 className={({ selected }) =>
                   [
                     'p-2 text-left flex items-center justify-start h-full',
-                    'focus-visible:outline-hidden focus-visible:ring-2',
-                    'focus-visible:ring-offset-2 focus-visible:ring-primary-600',
-                    'focus-visible:ring-offset-white',
+                    'focus-visible:outline-none focus-visible:ring-2',
+                    'focus-visible:ring-indigo-400 focus-visible:ring-inset',
+
                     shapeClass,
                     dividerClass,
                     selected ? activeClass : inactiveClass,
