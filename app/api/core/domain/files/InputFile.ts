@@ -2,6 +2,7 @@
 import { createReadStream } from 'fs';
 
 import path from 'path';
+import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { DiskFile } from './DiskFile';
 import { FileContents } from './FileContents';
 
@@ -14,14 +15,23 @@ type FileMetadata = {
   filename: string;
   path: string;
   size: number;
+  url?: string;
+};
+
+type CreateUrlAttachmentProps = {
+  originalname: string;
+  url: string;
 };
 
 export class InputFile {
   private _metadata: FileMetadata;
 
-  private type: 'document' | 'attachment' | 'raw';
+  private type: 'document' | 'attachment' | 'url_attachment' | 'raw';
 
-  constructor(metadata: FileMetadata, type: 'document' | 'attachment' | 'raw' = 'raw') {
+  constructor(
+    metadata: FileMetadata,
+    type: 'document' | 'attachment' | 'url_attachment' | 'raw' = 'raw'
+  ) {
     this._metadata = metadata;
     this.type = type;
   }
@@ -32,6 +42,10 @@ export class InputFile {
 
   isAttachment() {
     return this.type === 'attachment';
+  }
+
+  isUrlAttachment() {
+    return this.type === 'url_attachment';
   }
 
   get filename() {
@@ -59,6 +73,25 @@ export class InputFile {
       originalname: this._metadata.originalname,
       mimetype: this._metadata.mimetype,
       size: this._metadata.size,
+      url: this._metadata.url,
     };
+  }
+
+  static createUrlAttachment({ originalname, url }: CreateUrlAttachmentProps) {
+    return new InputFile(
+      {
+        mimetype: mimeTypeFromUrl(url),
+        originalname,
+        url,
+
+        destination: '',
+        encoding: '',
+        fieldname: '',
+        filename: '',
+        path: '',
+        size: 0,
+      },
+      'url_attachment'
+    );
   }
 }

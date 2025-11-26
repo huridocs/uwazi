@@ -9,14 +9,15 @@ import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { IdGenerator } from './contracts/IdGenerator';
 import { Result } from '../libs/Result';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { URLAttachment } from '../domain/files/URLAttachment';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -34,7 +35,10 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 class FilesService {
   constructor(protected deps: Deps) {}
 
-  async fromInputFiles(entity: string, input: InputFile[]): Promise<(Document | Attachment)[]> {
+  async fromInputFiles(
+    entity: string,
+    input: InputFile[]
+  ): Promise<(Document | Attachment | URLAttachment)[]> {
     return input.map(inputFile => {
       if (inputFile.isAttachment()) {
         return new Attachment({
@@ -47,6 +51,19 @@ class FilesService {
           content: inputFile.content,
         });
       }
+
+      if (inputFile.isUrlAttachment()) {
+        return new URLAttachment({
+          entity,
+          id: this.deps.idGenerator.generate(),
+          ...inputFile.metadata,
+          url: inputFile.metadata.url!,
+          creationDate: date.currentUTC(),
+          filename: inputFile.filename,
+          content: inputFile.content,
+        });
+      }
+
       return new Document({
         entity,
         id: this.deps.idGenerator.generate(),
@@ -61,9 +78,9 @@ class FilesService {
   }
 
   async storeFiles(files: UwaziFile[]) {
-    await ArrayUtils.sequentialFor(files, async file => {
-      await this.deps.fileStorage.storeFile(file);
-    });
+    await ArrayUtils.sequentialFor(files, async file =>
+      file instanceof URLAttachment ? Promise.resolve() : this.deps.fileStorage.storeFile(file)
+    );
   }
 
   async insert(files: UwaziFile[]) {

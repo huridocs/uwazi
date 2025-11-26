@@ -338,6 +338,11 @@ describe('CreateEntityUseCase', () => {
           },
           'attachment'
         ),
+
+        InputFile.createUrlAttachment({
+          originalname: 'URL_attachment.png',
+          url: 'https://example.com/image.svg',
+        }),
       ],
       propertyAssignments: [
         { name: 'title', value: [{ value: 'My entity title' }] },
@@ -504,6 +509,7 @@ describe('CreateEntityUseCase', () => {
       expect.objectContaining({ originalname: 'Attachment 2.png' }),
       expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
       expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+      expect.objectContaining({ originalname: 'URL_attachment.png' }),
     ]);
 
     expect(fileService.insert).toHaveBeenCalledWith([
@@ -512,6 +518,7 @@ describe('CreateEntityUseCase', () => {
       expect.objectContaining({ originalname: 'Attachment 2.png' }),
       expect.objectContaining({ originalname: 'Attachment 3.mp4' }),
       expect.objectContaining({ originalname: 'Attachment 4.mp4' }),
+      expect.objectContaining({ originalname: 'URL_attachment.png' }),
     ]);
   });
 
