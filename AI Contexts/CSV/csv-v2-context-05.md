@@ -241,4 +241,96 @@ We want richer telemetry once a CSV import finishes:
 
 ---
 
+### 14. Detailed design checklist (current decisions)
+
+- **Existing thesauri/translation surfaces**
+
+  - We do **not** have v2 domain models for thesauri yet. The only reusable pieces today are:
+    - `api/thesauri` (legacy module with `get`, `save`, `appendValues`).
+    - `api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.ts` (read-heavy DS already used by templates.v2).
+    - `api/i18n/translations` (legacy translations module).
+  - Plan: introduce thin adapters in csv.v2 (`ThesauriRepositoryAdapter`, `TranslationsRepositoryAdapter`) that wrap those modules but expose v2-style interfaces (`findByIdWithValues`, `appendValues`, `updateEntries`). Adapters will map `_id` ↔ `id` internally so the job only sees strings.
+
+- **Pending-values schema**
+
+  - Target TypeScript shape (to be enforced in DS + domain mapper):
+    ```ts
+    type CsvImportThesauriPendingValues = {
+      importId: string;
+      thesaurusId: string;
+      propertyId: string;
+      pendingRoots: Array<{
+        label: string;
+        normalizedLabel: string;
+        translations: Record<string, string>;
+        children: Array<{
+          label: string;
+          normalizedLabel: string;
+          translations: Record<string, string>;
+        }>;
+      }>;
+      warnings?: PendingWarning[];
+      createdAt: number;
+      appliedAt?: number;
+      appliedValues?: Array<{ label: string; parentLabel?: string; valueId: string }>;
+      stats?: {
+        valuesObserved: number;
+        valuesCreated: number;
+      };
+    };
+    ```
+
+- **Comparison helper**
+
+  - We will mirror V1’s logic from `arrangeThesauri.ts`: compute normalized-label sets per parent, use the same “sanitize then compare” rules, and treat `::`/multiselect parsing identically. The helper lives in a pure service (`CsvThesauriValuesDiff`) so both the job and future tests reuse it.
+
+- **Stats persistence**
+
+  - Store counters under `csv_imports.stats`. Initial schema:
+    ```ts
+    stats?: {
+      thesaurusValuesObserved?: number;
+      thesaurusValuesCreated?: number;
+      thesauriTouched?: number;
+    };
+    ```
+  - Future jobs (row import, relationships) will extend `stats` with their own counters.
+
+- **Failure payload schema**
+
+  - Reuse the pattern from `CsvPreflightJob`: `failure = { message, retryable, stage, issues? }`.
+  - Stage identifiers for this job: `preflight:thesauri:create`, `preflight:thesauri:create:translations`.
+  - Issues array (when present) uses `{ code: string, details?: Record<string, any> }` so the UI can render structured feedback.
+
+- **Progress events & heartbeat**
+
+  - Emit one `csvImport:preflight:thesauri:create:progress` per thesaurus doc processed with payload `{ importId, thesaurusId, processedThesauri, totalThesauri, createdValues }`.
+  - Call `heartbeat()` alongside each progress emission. No per-value heartbeats for now.
+
+- **Status enum additions**
+
+  - Add `PreflightThesauriCreate` + `PreflightThesauriCreateDone` to `CsvImportStatus`.
+  - Mapping helper (shared util) converts enum → colon string for socket emissions and vice versa for logs/tests.
+
+- **Testing strategy**
+
+  - Keep the v2 rule: prefer integration-style tests with real Mongo + filesystem; mock only queue/socket adapters.
+  - Test matrix:
+    1. Happy path with one thesaurus (roots + children).
+    2. Sanitized duplicate scenario (existing label should be skipped).
+    3. Translation write failure → job retries and records failure.
+    4. Idempotency (rerunning job with `appliedAt` set does nothing).
+    5. Stats updated correctly (`stats.thesaurusValuesCreated` increments).
+    6. Full pipeline test (registration → extraction → preflight → create job) once the downstream jobs exist.
+
+- **Thesauri/translation migration**
+  - After this job lands, create a follow-up epic to:
+    - Promote the adapters to full-fledged v2 data sources.
+    - Define `Thesaurus` + `ThesaurusValue` domain objects with transaction-aware repos.
+    - Replace direct usage of `api/thesauri` / `api/i18n/translations` across csv.v2 with the new repos so `_id` leakage disappears.
+
+These decisions should unblock implementation; update this section as any detail changes.
+
+---
+
 Keep this document synchronized with the code. Any change to the job behavior, data schema, or naming must be reflected here so the next agent can jump in without re-reading V1. Only after these decisions/tests are in place should we touch the code.
