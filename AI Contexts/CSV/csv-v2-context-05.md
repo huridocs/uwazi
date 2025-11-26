@@ -52,8 +52,12 @@ This new stage must keep every guarantee highlighted above and explicitly docume
   - Uses `CsvHeaderAnalyzer` for the column checks above.
   - Reads staged rows from `csv_import_rows`.
   - Builds per-thesaurus pending data in `csv_import_thesauri_values` via `CsvThesauriPendingValuesBuilder`.
-  - Persists aggregated failures and status transitions (`preflight:thesauri`, `...:done`).
-- There is **no** job yet that consumes `csv_import_thesauri_values` to create actual values and translations. This doc defines that missing stage.
+  - Persists aggregated failures and status transitions (`preflight:thesauri`, `...:done`) and dispatches the next stage inside the same transaction.
+- `CsvCreateThesauriValuesJob` (new):
+  - Runs immediately after preflight.
+  - Streams each pending doc, compares it with the live thesaurus using `CsvThesauriValuesDiff`, writes any missing values through the legacy adapters, upserts translations, updates per-import stats, and records progress/events for tenant admins.
+  - Supports retries/idempotency by persisting `appliedAt`, `appliedValues`, and per-doc stats in `csv_import_thesauri_values`.
+- Relationships preflight and downstream stages remain TODO, but the extraction → preflight → thesaurus creation chain is now fully automatic.
 
 ---
 
@@ -74,9 +78,9 @@ This new stage must keep every guarantee highlighted above and explicitly docume
 
 ### 5. Data contracts
 
-#### 5.1 Plan documents (existing collection `csv_import_thesauri_values`)
+#### 5.1 Pending-value documents (existing collection `csv_import_thesauri_values`)
 
-Keep the per-`{importId, thesaurusId}` documents created by preflight. They should contain:
+`CsvPreflightJob` now groups entries per `{ importId, thesaurusId }` and stores the following shape:
 
 ```ts
 {
@@ -102,10 +106,10 @@ Keep the per-`{importId, thesaurusId}` documents created by preflight. They shou
 
 Notes:
 
-- Each document represents the complete set of labels found in the CSV for a given `{propertyId, thesaurusId}`. The create job will compare them against the live thesaurus to decide which entries are new.
-- **Do not delete** these docs after creation. Later stages (e.g., relationships or final import) may need the mapping between the human label and the generated `_id`.
-- `appliedValues` (or a similar map) lets subsequent jobs look up the newly created value IDs without round-trips.
-- Add indexes on `{ importId, thesaurusId }` for quick lookups.
+- Each document represents the complete set of labels found in the CSV for a given `{propertyId, thesaurusId}`. `CsvCreateThesauriValuesJob` compares them against the live thesaurus to determine inserts.
+- **Do not delete** these docs after creation. Later stages (e.g., relationships or final import) may need the mapping between the human label and the generated `valueId`.
+- `appliedValues` lets subsequent jobs look up the newly created IDs without re-querying the thesaurus.
+- Indexed by `{ importId, thesaurusId }` for quick lookups.
 
 #### 5.2 Domain responsibility vs DS
 
@@ -200,19 +204,15 @@ Idempotency:
 
 ### 11. TODOs & tech debt
 
-1. **Implement `CsvCreateThesauriValuesJob`** in `application/jobs`.
-2. **Implement `CsvCreateThesauriValuesJobHandler`** and register it in `queueRegistry.ts`.
-3. **Wire dispatch**: `CsvPreflightJob` must dispatch this job inside the TM block that sets `preflight:thesauri:done`.
-4. **Domain cleanup (tech debt)**: move transformation logic from `MongoCsvImportThesauriValuesDataSource` into domain helpers (`CsvImportThesauriValues` or a dedicated service).
-5. **Pending doc schema update**: add `appliedAt`, `appliedValues`, `translations`, and indexes.
-6. **Translations DS integration**: ensure the job uses the i18n v2 data source (not legacy `translations` module) inside the TM.
-7. **Status/emit plumbing**: follow the “start status committed before heavy work” rule; ensure callbacks emit all events.
-8. **Tests**:
-   - Unit tests for the domain helper that computes “still-missing values”.
-   - Integration tests covering: simple root insert, parent/child insert, sanitized duplicates, translation updates, idempotent reruns, failure propagation, socket emissions.
-9. **Metrics/diagnostics**: accumulate per-import counters (see §13) and log how many values were inserted per thesaurus; surface the counts via progress events (useful for debugging).
-10. **Documentation**: keep this file + Context 04 updated as implementation lands.
-11. **Thesaurus domain migration roadmap**: spike a follow-up to define v2 domain objects (`Thesaurus`, `ThesaurusValue`, `TranslationContext`) so we can eliminate `_id` reliance entirely.
+1. **DS/domain cleanup**: finish moving any shaping/aggregation logic out of `MongoCsvImportThesauriValuesDataSource` into domain helpers so the DS is pure CRUD.
+2. **Legacy adapter hardening**: replace `LegacyThesauriRepository` / `LegacyTranslationsRepository` with proper transaction-aware v2 repositories so we can drop direct `api/thesauri` and `api/i18n/translations` dependencies.
+3. **Relationships preflight follow-up**: once that stage exists, ensure it reads `appliedValues`, emits tenant-admin events, and inherits the lint/TS rules defined here.
+4. **Tests still pending**:
+   - Integration coverage for `CsvCreateThesauriValuesJob` (happy path, translation failure, retry/idempotency).
+   - Unit tests for `CsvThesauriValuesDiff` edge cases (case-insensitive roots, sanitized duplicates, nested structures).
+5. **Metrics wiring**: expose the new counters (`thesaurusValuesObserved`, `thesaurusValuesCreated`, `thesauriTouched`) through whatever telemetry/monitoring we standardize on, and document how to consume them.
+6. **Documentation hygiene**: keep this file plus Contexts 03/04 updated whenever the pipeline or terminology changes; treat lint/TS checks as part of “done”.
+7. **Thesaurus domain migration roadmap**: spike a follow-up to define `Thesaurus`, `ThesaurusValue`, and `TranslationContext` domain objects so `_id` never leaks outside adapters.
 
 ---
 

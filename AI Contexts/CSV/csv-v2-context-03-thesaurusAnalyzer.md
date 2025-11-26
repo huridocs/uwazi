@@ -126,16 +126,16 @@ Responsibilities:
 4. Aggregate **all** deterministic errors (invalid group usage, missing parents, duplicated conflicting entries) and throw a single `CsvPreflightPreparationError`, persisting `{ failure: { stage: 'preflight:preparation:thesauri', issues } }`.
 5. On success, set status to `preflight:thesauri:done` and dispatch Stage 2 from inside that same `transactionManager.run` block (no `onCommitted` hop).
 
-#### Stage 2: `CsvApplyThesauriPlanJob` (mutation)
+#### Stage 2: `CsvCreateThesauriValuesJob` (mutation)
 
 Responsibilities:
 
-1. Load the persisted Thesauri Plan for the import.
-2. Fetch current thesauri values + translations, compute missing entries, and perform idempotent writes:
-   - Append new roots/nested entries (skip duplicates).
-   - Upsert translations via i18n services.
-3. On error, set status → `failed` (with failure info) respecting retry semantics.
-4. On success, either (a) delete the pending doc or (b) mark it applied; then dispatch the next preflight stage (relationships).
+1. Load the persisted pending-value docs for the import.
+2. Fetch current thesauri values + translations (via the legacy adapters), compute missing entries, and perform idempotent writes:
+   - Append new roots/nested entries (skip duplicates; honor sanitized comparisons).
+   - Upsert translations via the temporary `LegacyTranslationsRepository`.
+3. On error, set status → `retrying` / `failed` (with failure info) respecting retry semantics.
+4. On success, mark the pending doc as applied (`appliedAt`, `appliedValues`, stats) and dispatch the next preflight stage (relationships) before leaving the transaction.
 
 #### Data persistence
 
@@ -156,13 +156,12 @@ Responsibilities:
 2. **Preparation stage updates** ✅
    - `CsvPreflightJob` now uses the builder, persists aggregated issues, and stores per-thesaurus pending docs via `CsvImportThesauriValuesDataSource`.
    - Status transitions remain `preflight:thesauri` → `preflight:thesauri:done`.
-3. **Apply-pending-values job/use case**:
-   - Build `CsvApplyThesauriPendingValuesJob` (or equivalent) similar to extraction job patterns.
-   - Wire it in `queueRegistry`, reusing the same `thesauriDS` etc.
-4. **Testing**:
+3. **Apply-pending-values job/use case** ✅
+   - `CsvCreateThesauriValuesJob` + handler are wired in `queueRegistry`, using the interim legacy adapters for thesauri/translation writes. Job emits tenant-admin events and records stats.
+4. **Testing** (in progress):
    - Add unit tests for the parser (covering v1 scenarios).
    - Add integration tests for the preparation use case (pending docs persisted, failure issues saved).
-   - Add integration tests for the apply-pending-values job (idempotent writes, translations).
+   - Add integration tests for the apply-pending-values job (idempotent writes, translations, retries).
 5. **Docs + TODOs**:
    - Keep this addendum updated as we implement each step.
    - Ensure TODO list references pending-value persistence, apply job, and spec repairs.
@@ -171,9 +170,9 @@ Responsibilities:
 
 ### Current TODOs (from this addendum)
 
-1. Introduce the apply-pending-values job; dispatch it after preparation completes.
-2. Implement `csv_import_thesauri_values` read/update flows inside the apply job (delete docs when done, resume safely).
-3. Restore/replace preflight integration tests (`CsvPreflightJob.spec.ts`) once the apply flow exists.
-4. Document the pending-values format and failure schema for the future `/csv_imports/{importId}` endpoint + GET API.
+1. Add integration coverage for the apply-pending-values job (translations failure, retry/idempotency, stats).
+2. Restore/replace preflight integration tests (`CsvPreflightJob.spec.ts`) so the staged rows + dispatch chain are exercised end-to-end.
+3. Document the pending-values format and failure schema for the future `/csv_imports/{importId}` endpoint + GET API.
+4. Track the follow-up work to replace the legacy adapters with real v2 repositories.
 
 Keep this document synchronized with reality so the next agent can pick up any remaining steps without digging through history.

@@ -313,14 +313,14 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
 #### 4.3 Preflight (thesauri, relationships, validation)
 
-6. **Complete thesauri preflight “apply pending values” stage**
+6. ~~**Complete thesauri preflight “apply pending values” stage**~~ **(Done)**
 
-   - Implement `CsvApplyThesauriPendingValuesJob` (or equivalent) that:
+   - `CsvPreflightJob` now dispatches `CsvCreateThesauriValuesJob` from inside the same `transactionManager.run` block that writes `preflight:thesauri:done`.
+   - `CsvCreateThesauriValuesJob`:
      - Loads per‑thesaurus pending-value docs from `csv_import_thesauri_values`.
-     - Compute missing root/child labels vs existing dictionaries.
-     - Perform idempotent `appendRootLabelsIfMissing` / `appendNestedLabelsIfMissing` and i18n translation updates.
-     - Mark pending entries as applied or delete them.
-   - Wire the apply job into the preflight pipeline (after `CsvPreflightJob`) by dispatching it from inside the same `transactionManager.run` block that persists the “preflight:thesauri:done” status.
+     - Uses `CsvThesauriValuesDiff` to compare pending roots/children against the live thesaurus and append any missing values via the legacy adapters.
+     - Upserts translations through the temporary `LegacyTranslationsRepository`, records `appliedValues`, and emits tenant-admin progress events (with `heartbeat()` renewals).
+     - Updates per-import stats (`thesaurusValuesObserved`, `thesaurusValuesCreated`, `thesauriTouched`) before dispatching the next stage.
 
 7. **Finalize `CsvPreflightJob` behavior**
 
