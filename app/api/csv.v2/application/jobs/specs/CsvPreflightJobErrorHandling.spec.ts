@@ -52,7 +52,10 @@ describe('CsvPreflightJob error handling', () => {
         appendNestedLabelsIfMissing: noop,
       },
       thesauriValuesDS: {
-        replacePlan: jest.fn(),
+        replacePendingValues: jest.fn(),
+      } as any,
+      jobsDispatcher: {
+        dispatch: jest.fn(),
       } as any,
       transactionManager,
     });
@@ -63,9 +66,14 @@ describe('CsvPreflightJob error handling', () => {
       onError: jest.fn(),
     };
 
-    await expect(useCase.execute({ importId: 'import', callbacks })).rejects.toThrow(
-      'rows explode'
-    );
+    await expect(
+      useCase.execute({
+        importId: 'import',
+        tenantName: 'tenant',
+        userId: 'user',
+        callbacks,
+      })
+    ).rejects.toThrow('rows explode');
 
     expect(callbacks.onError).toHaveBeenCalledWith({
       importId: 'import',

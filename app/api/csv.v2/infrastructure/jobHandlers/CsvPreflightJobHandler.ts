@@ -26,6 +26,8 @@ export class CsvPreflightJobHandler extends UserAwareDispatchable<Params> {
     try {
       await this.deps.useCase.execute({
         importId: this.params.importId,
+        tenantName,
+        userId: this.params.userId,
         callbacks: {
           onStart: ({ importId }: { importId: string }) => {
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:preflight:thesauri:start', {

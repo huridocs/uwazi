@@ -53,6 +53,8 @@ export class CSVImportEntitiesFactories {
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
     return new CsvPreflightJob({
       csvImportsDS,
       rowsDS: this.CSVImportRowsDSDefault(transactionManager),
@@ -60,6 +62,8 @@ export class CSVImportEntitiesFactories {
       settingsDS,
       thesauriDS,
       thesauriValuesDS: this.CSVImportThesauriValuesDSDefault(transactionManager),
+      jobsDispatcher,
+      transactionManager,
     });
   }
 }

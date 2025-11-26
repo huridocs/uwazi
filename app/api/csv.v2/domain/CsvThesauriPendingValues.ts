@@ -1,32 +1,32 @@
-type CsvThesauriPlanChild = {
+type CsvThesauriPendingChild = {
   label: string;
   normalized: string;
   languages: Record<string, string>;
 };
 
-type CsvThesauriPlanRoot = {
+type CsvThesauriPendingRoot = {
   label: string;
   normalized: string;
   languages: Record<string, string>;
-  children: CsvThesauriPlanChild[];
+  children: CsvThesauriPendingChild[];
 };
 
-type CsvThesauriPlanEntry = {
+type CsvThesauriPendingEntry = {
   propertyId: string;
   propertyName: string;
   thesaurusId: string;
   type: 'select' | 'multiselect';
-  roots: CsvThesauriPlanRoot[];
+  roots: CsvThesauriPendingRoot[];
 };
 
-export type CsvThesauriPlan = {
+export type CsvThesauriPendingValues = {
   importId: string;
   createdAt: number;
   defaultLanguage: string;
-  entries: CsvThesauriPlanEntry[];
+  entries: CsvThesauriPendingEntry[];
 };
 
-export type CsvThesauriPlanIssue = {
+export type CsvThesauriPendingIssue = {
   property: string;
   reason: string;
   value?: string;
@@ -34,4 +34,4 @@ export type CsvThesauriPlanIssue = {
   type: 'parse' | 'translation' | 'conflict';
 };
 
-export type { CsvThesauriPlanEntry, CsvThesauriPlanRoot, CsvThesauriPlanChild };
+export type { CsvThesauriPendingEntry, CsvThesauriPendingRoot, CsvThesauriPendingChild };

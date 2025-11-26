@@ -1,16 +1,21 @@
+/* eslint-disable max-lines */
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Template } from 'api/core/domain/template/Template';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
 import { CsvHeaderAnalyzer, AnalyzerOptions, HeaderAnalysis } from '../services/CsvHeaderAnalyzer';
 import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError';
-import { CsvThesauriValuesBuilder } from '../services/CsvThesauriValuesBuilder';
+import { CsvThesauriPendingValuesBuilder } from '../services/CsvThesauriPendingValuesBuilder';
 import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
 import { Callbacks } from './types/UseCaseCallbacks';
+import { CsvCreateThesauriValuesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
+import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues';
+import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;
@@ -22,6 +27,8 @@ type ThesauriWritePort = {
 
 type Input = {
   importId: string;
+  tenantName: string;
+  userId: string;
   callbacks: Callbacks;
 };
 
@@ -37,9 +44,31 @@ type Deps = {
   settingsDS: SettingsDataSource;
   thesauriDS: ThesauriWritePort;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
+  jobsDispatcher: JobsDispatcher;
 };
 
 export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
+  private static groupPendingEntries(
+    importId: string,
+    entries: CsvThesauriPendingEntry[],
+    createdAt: number
+  ): CsvImportThesauriValues[] {
+    const grouped = new Map<string, CsvThesauriPendingEntry[]>();
+    entries.forEach(entry => {
+      const list = grouped.get(entry.thesaurusId) || [];
+      list.push(entry);
+      grouped.set(entry.thesaurusId, list);
+    });
+
+    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) => ({
+      importId,
+      thesaurusId,
+      createdAt,
+      entries: groupedEntries,
+      appliedValues: [],
+    }));
+  }
+
   private async setStatus(importId: string, status: CsvImportStatus) {
     const existing = await this.deps.csvImportsDS.getById(importId);
     if (!existing) {
@@ -145,7 +174,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
 
   // eslint-disable-next-line max-statements
   protected async executeAsync(input: Input): Promise<Output> {
-    const { importId, callbacks } = input;
+    const { importId, callbacks, tenantName, userId } = input;
 
     callbacks.onStart({ importId });
     await this.setStatus(importId, CsvImportStatus.PreflightThesauri);
@@ -171,7 +200,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         newNameGeneration,
       });
 
-      const { plan, issues: planIssues } = CsvThesauriValuesBuilder.build({
+      const { pendingValues, issues: pendingIssues } = CsvThesauriPendingValuesBuilder.build({
         importId,
         rows: stagedRows,
         template,
@@ -180,7 +209,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         newNameGeneration,
       });
 
-      if (planIssues.length) {
+      if (pendingIssues.length) {
         await this.transactionManager.run(async () => {
           const failed = CsvImportDomain.withFailure(
             CsvImportDomain.withStatus(csvImport!, CsvImportStatus.Failed),
@@ -190,7 +219,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
               at: Date.now(),
               stage: 'preflight:preparation:thesauri',
               code: 'THESAURI_VALUES_INVALID',
-              issues: planIssues.map(issue => ({
+              issues: pendingIssues.map(issue => ({
                 reason: issue.reason,
                 message: issue.reason,
                 property: issue.property,
@@ -203,7 +232,12 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
         throw new NonRetryableJobError(new Error('Thesauri values contain errors'));
       }
 
-      await this.deps.thesauriValuesDS.replacePlan(importId, plan.entries, plan.createdAt);
+      const groupedPendingValues = CsvPreflightJob.groupPendingEntries(
+        importId,
+        pendingValues.entries,
+        pendingValues.createdAt
+      );
+      await this.deps.thesauriValuesDS.replacePendingValues(importId, groupedPendingValues);
 
       await this.transactionManager.run(async () => {
         const clearedFailure = CsvImportDomain.clearFailure(csvImport!);
@@ -212,6 +246,11 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
           CsvImportStatus.PreflightThesauriDone
         );
         await this.deps.csvImportsDS.update(updated);
+        await this.jobsDispatcher.dispatch(CsvCreateThesauriValuesJobHandler, {
+          tenantName,
+          userId,
+          importId,
+        });
       });
 
       callbacks.onSuccess({ importId });

@@ -1,15 +1,10 @@
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { CsvThesauriPlanEntry } from '../../domain/CsvThesauriPlan';
-import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
+import {
+  CsvImportThesauriAppliedValue,
+  CsvImportThesauriValues,
+} from '../../domain/CsvImportThesauriValues';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
 import { CsvImportThesauriValuesDBO } from '../schemas/CsvImportThesauriValuesTypes';
-
-type GroupedPlan = {
-  importId: string;
-  thesaurusId: string;
-  createdAt: number;
-  entries: CsvThesauriPlanEntry[];
-};
 
 export class MongoCsvImportThesauriValuesDataSource
   extends MongoDataSource<CsvImportThesauriValuesDBO>
@@ -17,41 +12,24 @@ export class MongoCsvImportThesauriValuesDataSource
 {
   protected collectionName = 'csv_import_thesauri_values';
 
-  private static groupByThesaurus(
+  async replacePendingValues(
     importId: string,
-    entries: CsvThesauriPlanEntry[],
-    createdAt: number
-  ): GroupedPlan[] {
-    const grouped = new Map<string, CsvThesauriPlanEntry[]>();
-    entries.forEach(entry => {
-      const list = grouped.get(entry.thesaurusId) || [];
-      list.push(entry);
-      grouped.set(entry.thesaurusId, list);
-    });
-
-    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) => ({
-      importId,
-      thesaurusId,
-      createdAt,
-      entries: groupedEntries,
-    }));
-  }
-
-  async replacePlan(
-    importId: string,
-    planEntries: CsvThesauriPlanEntry[],
-    createdAt: number
+    pendingValues: CsvImportThesauriValues[]
   ): Promise<void> {
     await this.deleteByImport(importId);
-    const grouped = MongoCsvImportThesauriValuesDataSource.groupByThesaurus(
-      importId,
-      planEntries,
-      createdAt
-    );
-    if (!grouped.length) {
+    if (!pendingValues.length) {
       return;
     }
-    await this.getCollection().insertMany(grouped);
+    const docs: CsvImportThesauriValuesDBO[] = pendingValues.map(pendingDoc => ({
+      importId: pendingDoc.importId,
+      thesaurusId: pendingDoc.thesaurusId,
+      createdAt: pendingDoc.createdAt,
+      entries: pendingDoc.entries,
+      appliedAt: pendingDoc.appliedAt,
+      appliedValues: pendingDoc.appliedValues,
+      stats: pendingDoc.stats,
+    }));
+    await this.getCollection().insertMany(docs);
   }
 
   async getByImport(importId: string): Promise<CsvImportThesauriValues[]> {
@@ -61,10 +39,33 @@ export class MongoCsvImportThesauriValuesDataSource
       thesaurusId: doc.thesaurusId,
       createdAt: doc.createdAt,
       entries: doc.entries,
+      appliedAt: doc.appliedAt,
+      appliedValues: doc.appliedValues,
+      stats: doc.stats,
     }));
   }
 
   async deleteByImport(importId: string): Promise<void> {
     await this.getCollection().deleteMany({ importId });
+  }
+
+  async markAsApplied(input: {
+    importId: string;
+    thesaurusId: string;
+    appliedAt: number;
+    appliedValues: CsvImportThesauriAppliedValue[];
+    stats: { valuesObserved: number; valuesCreated: number };
+  }): Promise<void> {
+    const { importId, thesaurusId, appliedAt, appliedValues, stats } = input;
+    await this.getCollection().updateOne(
+      { importId, thesaurusId },
+      {
+        $set: {
+          appliedAt,
+          appliedValues,
+          stats,
+        },
+      }
+    );
   }
 }

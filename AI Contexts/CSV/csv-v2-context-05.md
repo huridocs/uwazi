@@ -2,16 +2,17 @@
 
 **Date:** 2025-11-26
 **Owner:** CSV Import V2 initiative
-**Scope:** Design + requirements for the post-preflight stage that actually creates thesaurus values and translations (formerly called “apply plan”).
+**Scope:** Design + requirements for the post-preflight stage that actually creates thesaurus values and translations (formerly called “apply pending values”).
 
 ---
 
 ### 1. Purpose
 
-- Extend Context Docs 01–04 with a focused plan for the stage after `CsvPreflightJob`.
+- Extend Context Docs 01–04 with a focused design for the stage after `CsvPreflightJob`.
 - Nail down naming, responsibilities, and data contracts for creating thesaurus values in V2.
 - Capture all V1 behaviors (from `validateColumns.ts`, `arrangeThesauri.ts`, `typeParsers/*`) that must remain true as we refactor.
 - Record tech debt and TODOs so the next contributor can continue without rediscovery.
+- Reinforce the non-negotiable verification requirements (TypeScript + ESLint) for **every** file we touch or create in this effort, so we stop wasting cycles on preventable regressions.
 
 Read order: `csv-v2-context-01.md → ... → csv-v2-context-04.md → this file`.
 
@@ -50,7 +51,7 @@ This new stage must keep every guarantee highlighted above and explicitly docume
 - `CsvPreflightJob` now:
   - Uses `CsvHeaderAnalyzer` for the column checks above.
   - Reads staged rows from `csv_import_rows`.
-  - Builds per-thesaurus pending data in `csv_import_thesauri_values` via `CsvThesauriValuesBuilder`.
+  - Builds per-thesaurus pending data in `csv_import_thesauri_values` via `CsvThesauriPendingValuesBuilder`.
   - Persists aggregated failures and status transitions (`preflight:thesauri`, `...:done`).
 - There is **no** job yet that consumes `csv_import_thesauri_values` to create actual values and translations. This doc defines that missing stage.
 
@@ -211,7 +212,7 @@ Idempotency:
    - Integration tests covering: simple root insert, parent/child insert, sanitized duplicates, translation updates, idempotent reruns, failure propagation, socket emissions.
 9. **Metrics/diagnostics**: accumulate per-import counters (see §13) and log how many values were inserted per thesaurus; surface the counts via progress events (useful for debugging).
 10. **Documentation**: keep this file + Context 04 updated as implementation lands.
-11. **Thesaurus domain migration plan**: spike a follow-up to define v2 domain objects (`Thesaurus`, `ThesaurusValue`, `TranslationContext`) so we can eliminate `_id` reliance entirely.
+11. **Thesaurus domain migration roadmap**: spike a follow-up to define v2 domain objects (`Thesaurus`, `ThesaurusValue`, `TranslationContext`) so we can eliminate `_id` reliance entirely.
 
 ---
 
@@ -220,7 +221,7 @@ Idempotency:
 - **Status naming decision** (Context 04 ToDo #10) still unresolved. We currently assume colon-based values are acceptable in DB.
 - **Batching strategy**: do we need intra-job batching (per N values) or is “per thesaurus” enough? If we later chunk by N values, ensure progress events include counts.
 - **Maximum payload**: we currently expect only a handful to a few hundred values per thesaurus, so one doc per `{ importId, thesaurusId }` is acceptable. Revisit if we encounter larger datasets.
-- **Future consumers**: relationships preflight is deliberately postponed. Once extraction → preflight → thesaurus creation → entity insertion flows are stable, we’ll circle back and design relationships preflight using these plan docs as the single source of truth.
+- **Future consumers**: relationships preflight is deliberately postponed. Once extraction → preflight → thesaurus creation → entity insertion flows are stable, we’ll circle back and design relationships preflight using these context docs as the single source of truth.
 
 ---
 
@@ -242,6 +243,12 @@ We want richer telemetry once a CSV import finishes:
 ---
 
 ### 14. Detailed design checklist (current decisions)
+
+- **Lint / TS verification (non-negotiable)**
+
+  - Every file we edit or introduce in this pipeline **must** pass TypeScript type-checking and ESLint before we consider the task “done”.
+  - That means running the appropriate `tsc` / `eslint` targets (or the repo’s checker) on each touched path, not just trusting CI to tell us later.
+  - If a file cannot be linted/typechecked locally (rare), call it out explicitly in PR notes so reviewers know the gap—but the default expectation is “zero unchecked files”.
 
 - **Existing thesauri/translation surfaces**
 

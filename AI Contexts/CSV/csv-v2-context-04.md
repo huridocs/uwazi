@@ -27,7 +27,7 @@
   - Controllers (`routes/`, `RegisterCsvImportController` using `AbstractController` + Zod).
   - Application use cases (`CsvImportEntities`, `CsvExtractUploadedZipJob`, `CsvPreflightJob`, etc.) extending `AbstractUseCase`.
   - Transaction‑aware Mongo DS implementations under `app/api/csv.v2/database` & `app/api/csv.v2/infrastructure/mongodb/`.
-  - Domain layer under `app/api/csv.v2/domain` (`CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, `CsvImportThesauriValues`).
+  - Domain layer under `app/api/csv.v2/domain` (`CsvImport`, `CsvImportRow`, `CsvThesauriPendingValues`, `CsvImportThesauriValues`).
   - Queue dispatchers under `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts`.
   - Specs and fixtures under `app/api/csv.v2/specs/**` and `app/api/csv.v2/application/jobs/specs/**`.
 
@@ -313,28 +313,28 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
 
 #### 4.3 Preflight (thesauri, relationships, validation)
 
-6. **Complete thesauri preflight “apply plan” stage**
+6. **Complete thesauri preflight “apply pending values” stage**
 
-   - Implement `CsvApplyThesauriPlanUseCase` + `CsvApplyThesauriPlanJob`:
-     - Load per‑thesaurus plan docs from `csv_import_thesauri_values`.
+   - Implement `CsvApplyThesauriPendingValuesJob` (or equivalent) that:
+     - Loads per‑thesaurus pending-value docs from `csv_import_thesauri_values`.
      - Compute missing root/child labels vs existing dictionaries.
      - Perform idempotent `appendRootLabelsIfMissing` / `appendNestedLabelsIfMissing` and i18n translation updates.
-     - Mark plan entries as applied or delete them.
+     - Mark pending entries as applied or delete them.
    - Wire the apply job into the preflight pipeline (after `CsvPreflightJob`) by dispatching it from inside the same `transactionManager.run` block that persists the “preflight:thesauri:done” status.
 
 7. **Finalize `CsvPreflightJob` behavior**
 
    - Ensure `CsvPreflightJob`:
-     - Uses `CsvHeaderAnalyzer` and `CsvThesauriValuesBuilder` only on staged `csv_import_rows`.
+     - Uses `CsvHeaderAnalyzer` and `CsvThesauriPendingValuesBuilder` only on staged `csv_import_rows`.
      - Sets `status` to `preflight:thesauri` in a small TM run and emits `csvImport:preflight:thesauri:start`.
-     - On header/plan errors:
+     - On header/pending-values errors:
        - Persists `failure` with `issues` and `stage` (`preflight:preparation:headers` / `...:thesauri`).
        - Sets `status = failed`.
        - Emits `csvImport:preflight:thesauri:error`.
      - On success:
        - Clears any prior `failure`.
        - Sets `status = preflight:thesauri:done`.
-       - Dispatches the apply‑plan job before exiting the success transaction (after clearing failure + storing status).
+       - Dispatches the apply‑pending-values job before exiting the success transaction (after clearing failure + storing status).
 
 8. **Design & implement relationship preflight**
 
@@ -385,11 +385,11 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
       - Cover error scenarios (invalid group labels, missing default language, unsupported types).
       - Cover `failure` persistence and event emission on errors.
 
-13. **Thesauri plan & apply tests**
+13. **Thesauri pending-values apply tests**
 
     - Add:
-      - Unit tests for `CsvThesauriValuesBuilder` covering all V1 parity cases (as listed in `csv-v2-context-03-thesaurusAnalyzer.md`).
-      - Integration tests for the apply‑plan job (idempotent writes, translation updates).
+      - Unit tests for `CsvThesauriPendingValuesBuilder` covering all V1 parity cases (as listed in `csv-v2-context-03-thesaurusAnalyzer.md`).
+      - Integration tests for the apply‑pending-values job (idempotent writes, translation updates).
 
 14. **Large‑scale & batching tests (future phase)**
     - Once batching is implemented:

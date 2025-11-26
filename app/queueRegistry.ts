@@ -56,6 +56,10 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { CsvCreateThesauriValuesJob } from 'api/csv.v2/application/jobs/CsvCreateThesauriValuesJob';
+import { CsvCreateThesauriValuesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
+import { LegacyThesauriRepository } from 'api/csv.v2/infrastructure/services/LegacyThesauriRepository';
+import { LegacyTranslationsRepository } from 'api/csv.v2/infrastructure/services/LegacyTranslationsRepository';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -251,6 +255,8 @@ export function registerJobs(
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const thesauriValuesDS =
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
     const useCase = new CsvPreflightJob({
       csvImportsDS,
       rowsDS,
@@ -258,9 +264,26 @@ export function registerJobs(
       settingsDS,
       thesauriDS,
       thesauriValuesDS,
+      jobsDispatcher,
       transactionManager,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvPreflightJobHandler({ useCase, sockets });
+  });
+
+  register(CsvCreateThesauriValuesJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const useCase = new CsvCreateThesauriValuesJob({
+      csvImportsDS,
+      thesauriValuesDS,
+      thesauriRepo: new LegacyThesauriRepository(),
+      translationsRepo: new LegacyTranslationsRepository(),
+      transactionManager,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
 }

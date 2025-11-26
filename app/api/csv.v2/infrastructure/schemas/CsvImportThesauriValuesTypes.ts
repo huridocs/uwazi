@@ -1,8 +1,14 @@
-import { CsvThesauriPlanEntry } from '../../domain/CsvThesauriPlan';
+import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues';
 
 export interface CsvImportThesauriValuesDBO {
   importId: string;
   thesaurusId: string;
   createdAt: number;
-  entries: CsvThesauriPlanEntry[];
+  entries: CsvThesauriPendingEntry[];
+  appliedAt?: number;
+  appliedValues?: Array<{ label: string; parentLabel?: string; valueId: string }>;
+  stats?: {
+    valuesObserved: number;
+    valuesCreated: number;
+  };
 }

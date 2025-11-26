@@ -2,7 +2,7 @@
 
 **Date:** 2025-11-18
 **Owner:** CSV Import V2 initiative
-**Scope:** Thesauri preflight analysis → plan generation → execution
+**Scope:** Thesauri preflight analysis → pending-value generation → execution
 
 ---
 
@@ -13,10 +13,10 @@ We discovered that the current preflight stage (`CsvPreflightJob`) only performs
 1. What v1 actually did and why.
 2. What the current v2 code is missing.
 3. How we will evolve the flow into two clear responsibilities:
-   - **Preparation** (`CsvPreflightJob`): analyze staged rows, replicate v1 parsing, surface _all_ deterministic errors, and persist a “plan” of missing values/translations.
-   - **Application**: consume the plan and perform idempotent thesaurus writes plus translation updates.
+   - **Preparation** (`CsvPreflightJob`): analyze staged rows, replicate v1 parsing, surface _all_ deterministic errors, and persist a pending-values document (missing values + translations).
+   - **Application**: consume the pending-values document and perform idempotent thesaurus writes plus translation updates.
 
-New agents should be able to pick up this plan without re-litigating the legacy behavior.
+New agents should be able to pick up this reference without re-litigating the legacy behavior.
 
 ---
 
@@ -25,9 +25,9 @@ New agents should be able to pick up this plan without re-litigating the legacy 
 - `application/`
   - `contracts/`: CSV imports DS, CSV import rows DS, **CsvImportThesauriValuesDataSource** (new).
   - `jobs/`: `CsvExtractUploadedZipJob` (extraction) and `CsvPreflightJob` (headers + thesauri preparation).
-  - `services/`: helper utilities (`CsvHeaderAnalyzer`, `CsvThesauriValuesBuilder`, `CsvReader`, etc.).
+  - `services/`: helper utilities (`CsvHeaderAnalyzer`, `CsvThesauriPendingValuesBuilder`, `CsvReader`, etc.).
 - `domain/`
-  - `CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, **`CsvImportThesauriValues`**.
+  - `CsvImport`, `CsvImportRow`, `CsvThesauriPendingValues`, **`CsvImportThesauriValues`**.
 - `infrastructure/`
   - `data_source_defaults.ts`, `csv_import_rows_defaults.ts`, **`csv_import_thesauri_values_defaults.ts`**.
   - `mongodb/`: `MongoCsvImportsDataSource`, `MongoCsvImportRowsDataSource`, **`MongoCsvImportThesauriValuesDataSource`**.
@@ -122,7 +122,7 @@ Responsibilities:
        warnings?: Array<{ property: string; message: string; row?: number }>;
      };
      ```
-   - Persist this plan (option TBD: `csv_imports.plan` or a separate `csv_import_plans` collection for larger payloads).
+   - Persist these pending values (option TBD: `csv_imports.pendingValues` or a separate `csv_import_pending_values` collection for larger payloads).
 4. Aggregate **all** deterministic errors (invalid group usage, missing parents, duplicated conflicting entries) and throw a single `CsvPreflightPreparationError`, persisting `{ failure: { stage: 'preflight:preparation:thesauri', issues } }`.
 5. On success, set status to `preflight:thesauri:done` and dispatch Stage 2 from inside that same `transactionManager.run` block (no `onCommitted` hop).
 
@@ -135,48 +135,45 @@ Responsibilities:
    - Append new roots/nested entries (skip duplicates).
    - Upsert translations via i18n services.
 3. On error, set status → `failed` (with failure info) respecting retry semantics.
-4. On success, either (a) delete the plan or (b) mark it applied; then dispatch the next preflight stage (relationships).
+4. On success, either (a) delete the pending doc or (b) mark it applied; then dispatch the next preflight stage (relationships).
 
 #### Data persistence
 
 - `csv_imports.failure`: now includes aggregated analyzer + parser issues (`failure.issues`).
-- `csv_import_thesauri_values`: new collection storing one plan document per `{ importId, thesaurusId }`. Each document contains the pending root/child labels + translations for that thesaurus. This avoids `csv_imports` documents growing past Mongo’s 16 MB limit and keeps Stage 2 idempotent.
+- `csv_import_thesauri_values`: new collection storing one pending-value document per `{ importId, thesaurusId }`. Each document contains the pending root/child labels + translations for that thesaurus. This avoids `csv_imports` documents growing past Mongo’s 16 MB limit and keeps Stage 2 idempotent.
 
 #### Socket emissions
 
 - Keep current `start/success/error` events minimal (just `importId` + `message` for error), with the expectation that the frontend will fetch `GET /csv_imports/{importId}` to read `failure.issues`.
-- Later, when the API endpoint exists, ensure it exposes both `status` and the plan/failure metadata.
+- Later, when the API endpoint exists, ensure it exposes both `status` and the pending-values/failure metadata.
 
 ---
 
-### Implementation plan
+### Implementation roadmap
 
 1. **Parser extraction** ✅
-   - Implemented `CsvThesauriValuesBuilder` (see specs) to read staged rows, mirror v1 parsing behaviors, emit aggregated issues, and return plan entries grouped per thesaurus. Plans are persisted in `csv_import_thesauri_values`.
+   - Implemented `CsvThesauriPendingValuesBuilder` (see specs) to read staged rows, mirror v1 parsing behaviors, emit aggregated issues, and return pending entries grouped per thesaurus. Pending docs are persisted in `csv_import_thesauri_values`.
 2. **Preparation stage updates** ✅
-   - `CsvPreflightJob` now uses the builder, persists aggregated issues, and stores per-thesaurus plan docs via `CsvImportThesauriValuesDataSource`.
+   - `CsvPreflightJob` now uses the builder, persists aggregated issues, and stores per-thesaurus pending docs via `CsvImportThesauriValuesDataSource`.
    - Status transitions remain `preflight:thesauri` → `preflight:thesauri:done`.
-3. **Apply-plan job/use case**:
-   - Build `CsvApplyThesauriPlanUseCase` + job similar to extraction job patterns.
-   - Wire it in `queueRegistry`, reusing the same `thesauriDS` etc.
-3. **Apply-plan job/use case**:
-   - Build `CsvApplyThesauriPlanUseCase` + job similar to extraction job patterns.
+3. **Apply-pending-values job/use case**:
+   - Build `CsvApplyThesauriPendingValuesJob` (or equivalent) similar to extraction job patterns.
    - Wire it in `queueRegistry`, reusing the same `thesauriDS` etc.
 4. **Testing**:
    - Add unit tests for the parser (covering v1 scenarios).
-   - Add integration tests for the preparation use case (plan persisted, failure issues saved).
-   - Add integration tests for the apply-plan job (idempotent writes, translations).
+   - Add integration tests for the preparation use case (pending docs persisted, failure issues saved).
+   - Add integration tests for the apply-pending-values job (idempotent writes, translations).
 5. **Docs + TODOs**:
    - Keep this addendum updated as we implement each step.
-   - Ensure TODO list references plan persistence, apply job, and spec repairs.
+   - Ensure TODO list references pending-value persistence, apply job, and spec repairs.
 
 ---
 
 ### Current TODOs (from this addendum)
 
-1. Introduce `CsvApplyThesauriPlanUseCase` + job; dispatch it after preparation completes.
+1. Introduce the apply-pending-values job; dispatch it after preparation completes.
 2. Implement `csv_import_thesauri_values` read/update flows inside the apply job (delete docs when done, resume safely).
 3. Restore/replace preflight integration tests (`CsvPreflightJob.spec.ts`) once the apply flow exists.
-4. Document the plan format and failure schema for the future `/csv_imports/{importId}` endpoint + GET API.
+4. Document the pending-values format and failure schema for the future `/csv_imports/{importId}` endpoint + GET API.
 
 Keep this document synchronized with reality so the next agent can pick up any remaining steps without digging through history.

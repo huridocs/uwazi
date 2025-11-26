@@ -2,7 +2,7 @@ import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder'
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { MultiSelectProperty } from 'api/core/domain/template/select/MultiSelectProperty';
 import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
-import { CsvThesauriValuesBuilder } from '../CsvThesauriValuesBuilder';
+import { CsvThesauriPendingValuesBuilder } from '../CsvThesauriPendingValuesBuilder';
 import { CsvImportRow } from '../../../domain/CsvImportRow';
 
 const TEMPLATE_ID = 'template-id';
@@ -43,8 +43,8 @@ const analyzeHeaders = (
     newNameGeneration,
   });
 
-describe('CsvThesauriValuesBuilder', () => {
-  it('should build plan entries for select properties', () => {
+describe('CsvThesauriPendingValuesBuilder', () => {
+  it('should build pending entries for select properties', () => {
     const headers = ['title', 'select_property__en'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
@@ -56,7 +56,7 @@ describe('CsvThesauriValuesBuilder', () => {
       },
     ];
 
-    const { plan, issues } = CsvThesauriValuesBuilder.build({
+    const { pendingValues, issues } = CsvThesauriPendingValuesBuilder.build({
       importId: IMPORT_ID,
       rows,
       template,
@@ -66,8 +66,8 @@ describe('CsvThesauriValuesBuilder', () => {
     });
 
     expect(issues).toHaveLength(0);
-    expect(plan.entries).toHaveLength(1);
-    const entry = plan.entries[0];
+    expect(pendingValues.entries).toHaveLength(1);
+    const entry = pendingValues.entries[0];
     expect(entry.propertyName).toBe('select_property');
     expect(entry.roots).toHaveLength(1);
     expect(entry.roots[0]).toMatchObject({
@@ -89,7 +89,7 @@ describe('CsvThesauriValuesBuilder', () => {
       },
     ];
 
-    const { plan } = CsvThesauriValuesBuilder.build({
+    const { pendingValues } = CsvThesauriPendingValuesBuilder.build({
       importId: IMPORT_ID,
       rows,
       template,
@@ -98,7 +98,7 @@ describe('CsvThesauriValuesBuilder', () => {
       newNameGeneration: false,
     });
 
-    const entry = plan.entries[0];
+    const entry = pendingValues.entries[0];
     expect(entry.roots[0].label).toBe('Fruits');
     expect(entry.roots[0].children).toEqual([expect.objectContaining({ label: 'Apple' })]);
   });
@@ -115,7 +115,7 @@ describe('CsvThesauriValuesBuilder', () => {
       },
     ];
 
-    const { issues } = CsvThesauriValuesBuilder.build({
+    const { issues } = CsvThesauriPendingValuesBuilder.build({
       importId: IMPORT_ID,
       rows,
       template,
@@ -143,7 +143,7 @@ describe('CsvThesauriValuesBuilder', () => {
       },
     ];
 
-    const { plan } = CsvThesauriValuesBuilder.build({
+    const { pendingValues } = CsvThesauriPendingValuesBuilder.build({
       importId: IMPORT_ID,
       rows,
       template,
@@ -152,7 +152,7 @@ describe('CsvThesauriValuesBuilder', () => {
       newNameGeneration: false,
     });
 
-    const root = plan.entries[0].roots[0];
+    const root = pendingValues.entries[0].roots[0];
     expect(root.languages).toEqual({ en: 'Apple', es: 'Manzana' });
   });
 
@@ -168,7 +168,7 @@ describe('CsvThesauriValuesBuilder', () => {
       },
     ];
 
-    const { issues } = CsvThesauriValuesBuilder.build({
+    const { issues } = CsvThesauriPendingValuesBuilder.build({
       importId: IMPORT_ID,
       rows,
       template,

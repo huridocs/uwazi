@@ -37,13 +37,13 @@ When continuing work:
 
 - `app/api/csv.v2/application/` holds the job/business logic:
   - `jobs/*Job.ts` are the actual application-layer jobs (e.g., `CsvExtractUploadedZipJob`, `CsvPreflightJob`).
-  - `services/` contains helpers such as `CsvHeaderAnalyzer`, `CsvReader`, `CsvThesauriValuesBuilder`.
+  - `services/` contains helpers such as `CsvHeaderAnalyzer`, `CsvReader`, `CsvThesauriPendingValuesBuilder`.
   - `contracts/` declares DS interfaces (`CsvImportsDataSource`, `CsvImportRowsDataSource`, `CsvImportThesauriValuesDataSource`, etc.).
 - `app/api/csv.v2/infrastructure/queue/*JobDispatcher.ts` hosts the queue dispatchers that wrap each job.
-- `app/api/csv.v2/infrastructure/mongodb/` holds Mongo DS implementations (imports, rows, **thesauri plan** storage).
-- `app/api/csv.v2/domain/` exposes `CsvImport`, `CsvImportRow`, `CsvThesauriPlan`, and `CsvImportThesauriValues`.
+- `app/api/csv.v2/infrastructure/mongodb/` holds Mongo DS implementations (imports, rows, **thesauri pending-values** storage).
+- `app/api/csv.v2/domain/` exposes `CsvImport`, `CsvImportRow`, `CsvThesauriPendingValues`, and `CsvImportThesauriValues`.
 - `app/api/csv.v2/specs/` holds integration helpers + shared fixtures (e.g., `zipData`, upload temp directories) so v2 tests no longer reach into the v1 folder.
-- `csv_import_thesauri_values` (new Mongo collection) stores per-thesaurus plan documents until the apply job runs.
+- `csv_import_thesauri_values` (new Mongo collection) stores per-thesaurus pending-value documents until the apply job runs.
 
 Whenever this doc or the addenda mention “Job”, assume the application-layer class (`*Job.ts`). “Dispatcher” refers to the queue wrapper under `infrastructure/queue/*JobDispatcher.ts`.
 
@@ -443,7 +443,7 @@ sequenceDiagram
   - Run unit/integration tests for affected areas; fix before proceeding.
   - If design assumptions change, update this MD first and confirm alignment; do not proceed coding against outdated assumptions.
 
-### Testing plan (v2) — CsvPreflightJob (full parity with V1)
+### Testing outline (v2) — CsvPreflightJob (full parity with V1)
 
 - Philosophy:
   - Integration-first: real Mongo via TM-aware DS, real FS (`FileSystemStorage` + `PathManager`), and real `FileContentsIO`.
@@ -488,7 +488,7 @@ sequenceDiagram
     - Partitioning: ensure queue partitioning by `importId` to avoid interleaved batches across different imports if required.
     - Option C (eager dispatch): enqueue all batches upfront (`ceil(totalRows / batchSize)` jobs). Pros: maximizes horizontal scaling across multiple worker instances. Cons: risks queue flooding and unfairness across tenants/imports; requires strong idempotency and per-import concurrency caps at worker level to prevent stampedes. Consider an upper bound on total enqueued batches per import (or global), and optionally combine with Option B (windowed eager) as a hybrid.
   - Relationships preflight specifics:
-    - Two-phase batched plan:
+    - Two-phase batched strategy:
       1. Collect distinct relationship titles per target template across staged rows (batched aggregation over row slices; results stored in a temporary, import-scoped set).
       2. Compute missing titles (existing vs. requested) and perform bulk, idempotent creation per template (batched write, retry-safe).
   - Optional validation or import stage:

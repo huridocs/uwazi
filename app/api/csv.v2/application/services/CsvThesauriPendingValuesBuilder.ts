@@ -6,12 +6,12 @@ import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import { CsvImportRow } from '../../domain/CsvImportRow';
 import { HeaderAnalysis } from './CsvHeaderAnalyzer';
 import {
-  CsvThesauriPlan,
-  CsvThesauriPlanEntry,
-  CsvThesauriPlanIssue,
-  CsvThesauriPlanRoot,
-  CsvThesauriPlanChild,
-} from '../../domain/CsvThesauriPlan';
+  CsvThesauriPendingValues,
+  CsvThesauriPendingEntry,
+  CsvThesauriPendingIssue,
+  CsvThesauriPendingRoot,
+  CsvThesauriPendingChild,
+} from '../../domain/CsvThesauriPendingValues';
 
 type BuildParams = {
   importId: string;
@@ -23,8 +23,8 @@ type BuildParams = {
 };
 
 type BuildResult = {
-  plan: CsvThesauriPlan;
-  issues: CsvThesauriPlanIssue[];
+  pendingValues: CsvThesauriPendingValues;
+  issues: CsvThesauriPendingIssue[];
 };
 
 type SelectLikeProperty = Property & { content?: string };
@@ -40,14 +40,14 @@ type ParsedLabel = {
   };
 };
 
-type PlanEntryInternal = {
-  entry: CsvThesauriPlanEntry;
-  roots: Map<string, PlanRootInternal>;
+type PendingEntryInternal = {
+  entry: CsvThesauriPendingEntry;
+  roots: Map<string, PendingRootInternal>;
 };
 
-type PlanRootInternal = {
-  data: CsvThesauriPlanRoot;
-  children: Map<string, CsvThesauriPlanChild>;
+type PendingRootInternal = {
+  data: CsvThesauriPendingRoot;
+  children: Map<string, CsvThesauriPendingChild>;
 };
 
 const MULTIVALUE_SEPARATOR = '|';
@@ -141,23 +141,23 @@ const parseValues = (rawValue: string, property: SelectLikeProperty) => {
   return { labels, errors };
 };
 
-const ensurePlanEntry = (
+const ensurePendingEntry = (
   property: SelectLikeProperty,
-  entries: Map<string, PlanEntryInternal>
-): PlanEntryInternal => {
+  entries: Map<string, PendingEntryInternal>
+): PendingEntryInternal => {
   const existing = entries.get(property.id);
   if (existing) {
     return existing;
   }
 
-  const entry: CsvThesauriPlanEntry = {
+  const entry: CsvThesauriPendingEntry = {
     propertyId: property.id,
     propertyName: property.name,
     thesaurusId: (property as SelectLikeProperty).content || '',
     type: property.type === 'multiselect' ? 'multiselect' : 'select',
     roots: [],
   };
-  const internal: PlanEntryInternal = {
+  const internal: PendingEntryInternal = {
     entry,
     roots: new Map(),
   };
@@ -166,11 +166,11 @@ const ensurePlanEntry = (
 };
 
 const ensureRoot = (
-  parent: PlanEntryInternal,
+  parent: PendingEntryInternal,
   label: string,
   normalized: string,
   defaultLanguage: string
-): PlanRootInternal => {
+): PendingRootInternal => {
   const existing = parent.roots.get(normalized);
   if (existing) {
     if (!existing.data.languages[defaultLanguage]) {
@@ -179,13 +179,13 @@ const ensureRoot = (
     return existing;
   }
 
-  const root: CsvThesauriPlanRoot = {
+  const root: CsvThesauriPendingRoot = {
     label,
     normalized,
     languages: { [defaultLanguage]: label },
     children: [],
   };
-  const internal: PlanRootInternal = {
+  const internal: PendingRootInternal = {
     data: root,
     children: new Map(),
   };
@@ -195,7 +195,7 @@ const ensureRoot = (
 };
 
 const ensureChild = (
-  parent: PlanRootInternal,
+  parent: PendingRootInternal,
   label: string,
   normalized: string,
   defaultLanguage: string
@@ -208,7 +208,7 @@ const ensureChild = (
     return existing;
   }
 
-  const child: CsvThesauriPlanChild = {
+  const child: CsvThesauriPendingChild = {
     label,
     normalized,
     languages: { [defaultLanguage]: label },
@@ -218,16 +218,16 @@ const ensureChild = (
   return child;
 };
 
-export class CsvThesauriValuesBuilder {
+export class CsvThesauriPendingValuesBuilder {
   static build(params: BuildParams): BuildResult {
     const { importId, rows, template, headerAnalysis, defaultLanguage, newNameGeneration } = params;
-    const planEntries = new Map<string, PlanEntryInternal>();
-    const issues: CsvThesauriPlanIssue[] = [];
+    const pendingEntries = new Map<string, PendingEntryInternal>();
+    const issues: CsvThesauriPendingIssue[] = [];
 
     const properties = template.properties.filter(isSelectLikeProperty) as SelectLikeProperty[];
     if (!properties.length) {
       return {
-        plan: {
+        pendingValues: {
           importId,
           createdAt: Date.now(),
           defaultLanguage,
@@ -267,7 +267,7 @@ export class CsvThesauriValuesBuilder {
           return;
         }
 
-        const entry = ensurePlanEntry(property, planEntries);
+        const entry = ensurePendingEntry(property, pendingEntries);
         labels.forEach(labelInfo => {
           const root = ensureRoot(
             entry,
@@ -315,7 +315,7 @@ export class CsvThesauriValuesBuilder {
                 });
                 return;
               }
-              const entryRef = planEntries.get(property.id);
+              const entryRef = pendingEntries.get(property.id);
               const root = entryRef?.roots.get(target.root.normalized);
               if (!root) {
                 return;
@@ -343,13 +343,13 @@ export class CsvThesauriValuesBuilder {
       });
     });
 
-    const plan: CsvThesauriPlan = {
+    const pendingValues: CsvThesauriPendingValues = {
       importId,
       createdAt: Date.now(),
       defaultLanguage,
-      entries: Array.from(planEntries.values()).map(entry => entry.entry),
+      entries: Array.from(pendingEntries.values()).map(entry => entry.entry),
     };
 
-    return { plan, issues };
+    return { pendingValues, issues };
   }
 }

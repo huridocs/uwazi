@@ -30,4 +30,9 @@ export interface CsvImportDBO {
       columns?: string[];
     }>;
   };
+  stats?: {
+    thesaurusValuesObserved?: number;
+    thesaurusValuesCreated?: number;
+    thesauriTouched?: number;
+  };
 }

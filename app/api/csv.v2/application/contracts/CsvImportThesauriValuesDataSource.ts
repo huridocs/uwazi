@@ -1,8 +1,18 @@
-import { CsvThesauriPlanEntry } from '../../domain/CsvThesauriPlan';
-import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
+import {
+  CsvImportThesauriAppliedValue,
+  CsvImportThesauriStats,
+  CsvImportThesauriValues,
+} from '../../domain/CsvImportThesauriValues';
 
 export interface CsvImportThesauriValuesDataSource {
-  replacePlan(importId: string, entries: CsvThesauriPlanEntry[], createdAt: number): Promise<void>;
+  replacePendingValues(importId: string, pendingValues: CsvImportThesauriValues[]): Promise<void>;
   getByImport(importId: string): Promise<CsvImportThesauriValues[]>;
   deleteByImport(importId: string): Promise<void>;
+  markAsApplied(input: {
+    importId: string;
+    thesaurusId: string;
+    appliedAt: number;
+    appliedValues: CsvImportThesauriAppliedValue[];
+    stats: CsvImportThesauriStats;
+  }): Promise<void>;
 }

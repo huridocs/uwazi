@@ -5,6 +5,8 @@ export enum CsvImportStatus {
   ExtractingFilesDone = 'extracting files:done',
   PreflightThesauri = 'preflight:thesauri',
   PreflightThesauriDone = 'preflight:thesauri:done',
+  PreflightThesauriCreate = 'preflight:thesauri:create',
+  PreflightThesauriCreateDone = 'preflight:thesauri:create:done',
   Retrying = 'retrying',
   Processing = 'processing',
   Completed = 'completed',
@@ -41,10 +43,17 @@ export type CsvImportFailureIssue = {
   columns?: string[];
 };
 
+export type CsvImportStats = {
+  thesaurusValuesObserved?: number;
+  thesaurusValuesCreated?: number;
+  thesauriTouched?: number;
+};
+
 export type CsvImport = CsvImportToCreate & {
   id: string;
   storage?: CsvImportStorage;
   rowErrors?: any; // intentionally flexible for MVP
+  stats?: CsvImportStats;
   failure?: {
     message: string;
     retryable: boolean;
