@@ -13,6 +13,7 @@ import { IXValidationError } from 'api/services/informationextraction/IXValidati
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
 import util from 'node:util';
+import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -115,7 +116,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 401, message: error.message, logLevel: 'debug' };
   }
 
-  if (error instanceof FileNotFound) {
+  if (error instanceof FileNotFound || error instanceof FileNotFoundV2) {
     result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 

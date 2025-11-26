@@ -11,6 +11,8 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
+import { NullFileContents } from 'api/core/domain/files/FileContents';
+import { fileExistsOnPath } from 'api/files';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
@@ -154,6 +156,20 @@ describe('FileSystemStorage', () => {
     // });
   });
 
+  describe('removeFile', () => {
+    it('should delete the file in s3', async () => {
+      const document = FileBuilder.document(f.idString('document'), {
+        content: FileBuilder.content('content created\n'),
+        filename: 'documento.txt',
+      });
+
+      await fileSystemStorage.storeFile(document);
+      await fileSystemStorage.removeFile(document);
+
+      expect(await fileExistsOnPath(pathManager.createPath(document))).toBe(false);
+    });
+  });
+
   describe('storeContent', () => {
     it('should store it on the destination', async () => {
       await fileSystemStorage.storeContent(
@@ -167,6 +183,19 @@ describe('FileSystemStorage', () => {
         )
       );
       expect(contents).toBe('content created\n');
+    });
+
+    it('should do nothing if passing NullFileContents', async () => {
+      await fileSystemStorage.storeContent(
+        new NullFileContents(),
+        'custom_path/deep/null_contents.txt'
+      );
+
+      const exists = await fileExistsOnPath(
+        path.join(tenants.current().uploadedDocuments, 'custom_path/deep/null_contents.txt')
+      );
+
+      expect(exists).toBe(false);
     });
   });
 

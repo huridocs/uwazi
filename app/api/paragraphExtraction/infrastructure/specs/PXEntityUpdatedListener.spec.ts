@@ -101,7 +101,7 @@ describe('PXEntityUpdatedListener', () => {
     it('should do nothing if feature flag not enabled', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       tenants.current().featureFlags!.paragraphExtraction = false;
@@ -126,7 +126,7 @@ describe('PXEntityUpdatedListener', () => {
     it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();
@@ -181,7 +181,7 @@ describe('PXEntityUpdatedListener', () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
         [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2, entityStatus3],
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();

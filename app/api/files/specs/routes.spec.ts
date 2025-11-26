@@ -36,6 +36,7 @@ import {
   uploadId2,
   writerUser,
 } from './fixtures';
+import { testingTenants } from 'api/utils/testingTenants';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 
@@ -56,7 +57,7 @@ describe('files routes', () => {
   };
 
   beforeEach(async () => {
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    // jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     mockCurrentUser(collabUser);
@@ -283,16 +284,28 @@ describe('files routes', () => {
     });
   });
 
-  describe('DELETE/api/files', () => {
-    beforeEach(() => {
+  describe.each([
+    {
+      title: 'DELETE /api/files V1',
+      featureFlags: { v2DeleteFile: false },
+    },
+    // {
+    //   title: 'DELETE /api/files V2',
+    //   featureFlags: { v2DeleteFile: true },
+    // },
+  ])('$title', ({ featureFlags }) => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+      testingTenants.changeCurrentTenant({ featureFlags });
       mockCurrentUser(adminUser);
     });
 
     it('should properly delete files that are external urls', async () => {
-      await request(app)
+      const response = await request(app)
         .delete('/api/files')
-        .query({ _id: externalUrlFileId.toString() })
-        .expect(200);
+        .query({ _id: externalUrlFileId.toString() });
+
+      expect(response).toHaveStatus(200);
 
       const [file] = await files.get({ _id: externalUrlFileId.toString() });
       expect(file).toBeUndefined();
@@ -361,12 +374,13 @@ describe('files routes', () => {
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({
-          _id: uploadId2.toString(),
-        })
-        .expect(200);
+      // @ts-ignore
+      search.indexEntities.mockReset();
+      const response = await request(app).delete('/api/files').query({
+        _id: uploadId2.toString(),
+      });
+
+      expect(response).toHaveStatus(200);
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['sharedId1'] } },
