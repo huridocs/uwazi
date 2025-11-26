@@ -44,3 +44,10 @@ export function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
     queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter(), queueOptions)
   );
 }
+
+export function TestingDispatcher(tenant: string, queueOptions?: QueueOptions) {
+  return new JobsRouter(
+    queueName =>
+      new NamespacedDispatcher(tenant, queueName, DefaultTestingQueueAdapter(), queueOptions)
+  );
+}
