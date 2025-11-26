@@ -17,6 +17,7 @@ import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
 import { scrollToPage } from './functions';
+import { BlankState } from './BlankState';
 
 type FormValues = {
   search: string;
@@ -122,7 +123,7 @@ const SearchResults = () => {
                   placeholder={t('System', 'Search', null, false)}
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   {...field}
-                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-400"
                 />
               )}
             />
@@ -139,28 +140,30 @@ const SearchResults = () => {
       </div>
       <div className="flex-grow overflow-y-auto px-1">
         {!snippets && (
-          <div className="flex flex-col gap-4 items-center justify-center h-full">
-            <Translate className="text-gray-600 font-bold text-lg">Search text</Translate>
-            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
-            <Translate
-              className="text-gray-600 font-semibold"
-              translationKey="Search text description"
-            >
-              Search text description
-            </Translate>
-          </div>
+          <BlankState
+            icon={
+              <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            }
+            title={<Translate>Search text</Translate>}
+            description={
+              <Translate translationKey="Search text description">
+                Search text description
+              </Translate>
+            }
+          />
         )}
         {snippets?.data && snippets.data.length < 1 ? (
-          <div className="flex flex-col gap-4 items-center justify-center h-full">
-            <Translate className="text-gray-600 font-bold text-lg">No text match</Translate>
-            <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
-            <Translate
-              className="text-gray-600 font-semibold"
-              translationKey="No text match description"
-            >
-              No text match description
-            </Translate>
-          </div>
+          <BlankState
+            icon={
+              <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
+            }
+            title={<Translate>No text match</Translate>}
+            description={
+              <Translate translationKey="No text match description">
+                No text match description
+              </Translate>
+            }
+          />
         ) : (
           <div className="flex flex-col gap-4 pt-1">
             {snippets?.data.map((entry, i) => {
@@ -221,7 +224,7 @@ const SearchResults = () => {
                             }}
                             className={`p-4 border border-gray-100 shadow-md rounded-lg cursor-pointer
                         ${isActive ? 'border-indigo-400' : null}
-                        focus:outline-none focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
+                        focus:outline-hidden focus:ring-1 focus:ring-indigo-400 hover:bg-gray-50 transition`}
                           >
                             <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
                             <p className="font-bold float-end">

@@ -41,7 +41,7 @@ const EntityFilter = ({ filters, setFilters }: EntityFilterProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="p-4 rounded-lg shadow-xs">
+      <div className="p-4 rounded-lg shadow-md">
         <h2 className="text-sm font-semibold font-roboto text-gray-900 mb-3">
           <Translate>Status</Translate>
         </h2>
