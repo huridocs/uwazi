@@ -162,21 +162,6 @@ const entityLoader =
 const Entity = () => {
   const { entity, pagePlaintext } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeMainTab = useMemo<MainTabId>(() => {
-    const mainTab = searchParams.get(MAIN_TAB_PARAM);
-    if (isValidMainTab(mainTab)) {
-      return mainTab;
-    }
-    if (entity?.mainDocument?.filename) {
-      return MAIN_TABS.DOCUMENT;
-    }
-    return MAIN_TABS.METADATA;
-  }, [searchParams, entity]);
-
-  const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const sideTab = searchParams.get(SIDE_TAB_PARAM);
-    return isValidSideTab(sideTab) ? sideTab : undefined;
-  }, [searchParams]);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -278,6 +263,33 @@ const Entity = () => {
     [entity]
   );
 
+  const activeMainTab = useMemo<MainTabId>(() => {
+    const mainTab = searchParams.get(MAIN_TAB_PARAM);
+    if (isValidMainTab(mainTab)) {
+      return mainTab;
+    }
+    if (entity?.mainDocument?.filename) {
+      return MAIN_TABS.DOCUMENT;
+    }
+    return MAIN_TABS.METADATA;
+  }, [searchParams, entity]);
+
+  const activeSideTab = useMemo<SideTabId | undefined>(() => {
+    const availableTabs = sideTabsByMain[activeMainTab] || [];
+    const sideTab = searchParams.get(SIDE_TAB_PARAM);
+
+    if (isValidSideTab(sideTab) && availableTabs.some(tab => tab.id === sideTab)) {
+      return sideTab;
+    }
+
+    const searchTerm = searchParams.get(SEARCH_PARAM);
+    if (searchTerm && availableTabs.some(tab => tab.id === SIDE_TABS.SEARCH)) {
+      return SIDE_TABS.SEARCH;
+    }
+
+    return availableTabs[0]?.id;
+  }, [searchParams, activeMainTab, sideTabsByMain]);
+
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
       if (selectedMainTab !== activeMainTab) {
@@ -338,6 +350,7 @@ const Entity = () => {
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             unmountTabs={false}
+            initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
           >
             {sideTabElements}
