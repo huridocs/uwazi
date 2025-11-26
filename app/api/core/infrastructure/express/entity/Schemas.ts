@@ -6,24 +6,24 @@ const LinkSchema = z.object({
 });
 
 const DateRangeSchema = z.object({
-  from: z.number().optional().nullable(),
-  to: z.number().optional().nullable(),
+  from: z.number().nullable(),
+  to: z.number().nullable(),
 });
 
 const GeolocationSchema = z.object({
-  label: z.string().optional(),
+  label: z.string(),
   lat: z.number(),
   lon: z.number(),
 });
 
 const PropertyValueSchema = z.union([
+  DateRangeSchema,
+  GeolocationSchema,
+  LinkSchema,
   z.string(),
   z.null(),
   z.number(),
   z.boolean(),
-  LinkSchema,
-  DateRangeSchema,
-  GeolocationSchema,
 ]);
 
 const SelectParentSchema = z.object({
