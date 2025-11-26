@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -160,8 +160,9 @@ const entityLoader =
   };
 
 const Entity = () => {
-  const { entity, pagePlaintext } = useLoaderData<LoaderResponse>() || {};
+  const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialSearchResults = useRef(searchResults);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -278,12 +279,11 @@ const Entity = () => {
     const availableTabs = sideTabsByMain[activeMainTab] || [];
     const sideTab = searchParams.get(SIDE_TAB_PARAM);
 
-    if (isValidSideTab(sideTab) && availableTabs.some(tab => tab.id === sideTab)) {
+    if (isValidSideTab(sideTab)) {
       return sideTab;
     }
 
-    const searchTerm = searchParams.get(SEARCH_PARAM);
-    if (searchTerm && availableTabs.some(tab => tab.id === SIDE_TABS.SEARCH)) {
+    if (initialSearchResults.current) {
       return SIDE_TABS.SEARCH;
     }
 

@@ -173,7 +173,7 @@ describe('Entity view', () => {
       });
     });
 
-    xit('should preserve active side tab when switching to a main tab that supports it', async () => {
+    it('should preserve active side tab when switching to a main tab that supports it', async () => {
       render(
         <TestRouterContext loaderData={{ entity: sampleEntity, pagePlaintext: '' }}>
           <Entity />
@@ -328,9 +328,13 @@ describe('Entity view', () => {
 
   describe('search tab', () => {
     it('should be shown by default when there is a search in the URL', async () => {
+      const snippets = {
+        data: [],
+      };
+
       render(
         <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: undefined }}
+          loaderData={{ entity: sampleEntity, pagePlaintext: '', searchResults: snippets }}
           initialEntries={['/?searchTerm=term']}
         >
           <Entity />
