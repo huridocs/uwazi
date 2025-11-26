@@ -39,7 +39,7 @@ const Tabs = ({
   const [selectedIndex, setSelectedIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
   useEffect(() => {
     const newIndex = tabChildren.findIndex(child => child.props.id === initialTabId);
-    if (newIndex !== -1 && newIndex !== selectedIndex) {
+    if (newIndex !== -1) {
       setSelectedIndex(newIndex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
