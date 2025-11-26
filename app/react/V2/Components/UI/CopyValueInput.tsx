@@ -61,7 +61,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           {copied && (
             <div
               role="tooltip"
-              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-xs -top-11 w-max border-gray-50"
+              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-md -top-11 w-max border-gray-50"
             >
               <Translate>Copied to clipboard</Translate>
             </div>

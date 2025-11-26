@@ -97,6 +97,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,المرفقات
 Authentication code,رمز المصادقة
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,منشأ تلقائياً
 Automatic Table of Contents,جدول محتويات تلقائي
@@ -548,6 +549,7 @@ No References description,المراجع هي اجزاء من الوثيقة ا�
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
 No Table of Contents,لا يوجد جدول المحتويات
+No Table of contents,No Table of contents
 No Table of Contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
@@ -1020,6 +1022,7 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,يمكنك إنشاء قوالب البيانات الوصفية في
+"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,يجب عليك تفعيل هذه الميزة لتحقيق تأمين أفضل للحساب
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

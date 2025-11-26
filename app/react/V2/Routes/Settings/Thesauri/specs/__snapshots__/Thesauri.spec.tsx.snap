@@ -34,7 +34,7 @@ HTMLCollection [
             Animals
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
@@ -98,7 +98,7 @@ HTMLCollection [
             Colors
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
@@ -163,7 +163,7 @@ HTMLCollection [
             Names
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
