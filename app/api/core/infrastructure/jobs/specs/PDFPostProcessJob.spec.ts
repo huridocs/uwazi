@@ -67,11 +67,7 @@ const heartBeatCallBack = jest.fn();
 
 describe('PDFPostProcessJob', () => {
   beforeEach(async () => {
-    await copyFile(
-      path.join(__dirname, '../../../../files/specs', 'testing_files/eng.pdf'),
-      path.join(__dirname, '../../../../files/specs', 'uploads/pdfPostProcessJob/eng.pdf')
-    );
-    await testingEnvironment.setUp({
+    const fixtures = {
       files: [
         f.document('processing_doc', {
           status: 'processing',
@@ -79,12 +75,12 @@ describe('PDFPostProcessJob', () => {
           entity: 'fileEntity',
         }),
       ],
-    });
-    await testingEnvironment.setTenant(undefined, 'pdfPostProcessJob');
+    };
+    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setupTenantTmpPaths(fixtures.files);
   });
 
   afterAll(async () => {
-    await testingEnvironment.cleanupUploadPaths();
     await testingEnvironment.tearDown();
   });
 
