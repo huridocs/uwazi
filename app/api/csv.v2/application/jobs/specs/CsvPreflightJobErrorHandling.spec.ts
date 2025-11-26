@@ -1,5 +1,13 @@
+/* eslint-disable max-classes-per-file */
 import { CsvPreflightJob } from '../CsvPreflightJob';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+
+jest.mock('api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob', () => ({
+  TemplatePostProcessEntitiesJob: class {},
+}));
+jest.mock('api/core/application/TemplatePostProcessService', () => ({
+  TemplatePostProcessService: class {},
+}));
 
 const noop = jest.fn();
 
