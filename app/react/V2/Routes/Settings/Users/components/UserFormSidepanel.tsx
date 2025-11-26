@@ -297,7 +297,7 @@ const UserFormSidepanel = ({
                 </div>
               </Card>
 
-              <div className="rounded-md border border-gray-50 shadow-xs">
+              <div className="rounded-md border border-gray-50 shadow-md">
                 <MultiSelect
                   label={
                     <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
