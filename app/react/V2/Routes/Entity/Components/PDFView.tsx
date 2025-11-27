@@ -97,7 +97,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   return (
     <Panel className="gap-2">
       <Panel.Body>
-        <div className="flex flex-col gap-2 pb-20">
+        <div className="flex flex-col gap-2">
           <div className="w-full p-4 rounded-md bg-gray-50">
             <div className="flex flex-row justify-between gap-2">
               <div>

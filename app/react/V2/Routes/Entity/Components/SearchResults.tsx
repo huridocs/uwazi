@@ -8,11 +8,13 @@ import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
+import { Panel } from 'V2/Components/Layouts/Panel';
 import { templatesAtom } from 'V2/atoms';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
 import { ClientTemplateSchema } from 'V2/shared/types';
+import { Entity } from 'V2/domain';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
@@ -63,6 +65,107 @@ const parseSnippetToNodes = (html?: string) => {
   return document.children.map((node, i) => createNode(node as ChildNode, i));
 };
 
+type RenderSearchContentProps = {
+  snippets: SnippetsSearchResponse | undefined;
+  entity: Entity | undefined;
+  template: ClientTemplateSchema | undefined;
+  activeSnippet: string | null;
+  setActiveSnippet: (updater: (prev: string | null) => string | null) => void;
+};
+
+const renderSearchContent = ({
+  snippets,
+  entity,
+  template,
+  activeSnippet,
+  setActiveSnippet,
+}: RenderSearchContentProps) => {
+  if (!snippets) {
+    return <NoSearch />;
+  }
+
+  if (snippets.data && snippets.data.length < 1) {
+    return <NoResults />;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 pt-1">
+        {snippets.data.map((entry, i) => {
+          const { metadata, fullText } = entry.snippets;
+
+          if (!metadata?.length && !fullText?.length) {
+            return undefined;
+          }
+
+          return (
+            <div key={`entry-${i}`} className="flex flex-col gap-4">
+              {metadata?.length ? (
+                <>
+                  <dl className="grid gap-y-2">
+                    {metadata.map((m, j) => (
+                      <div
+                        key={`metadata-${i}-${j}`}
+                        className="p-2 border border-gray-100 shadow-md rounded-lg"
+                      >
+                        <dt className="text-sm font-semibold text-gray-900">
+                          <Translate context={entity!.template!._id}>
+                            {getFieldName(m.field, template)}
+                          </Translate>
+                        </dt>
+                        {m.texts.map((text, k) => (
+                          <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-gray-900">
+                            {parseSnippetToNodes(text)}
+                          </dd>
+                        ))}
+                      </div>
+                    ))}
+                  </dl>
+                  <hr className="w-full" />
+                </>
+              ) : null}
+
+              {fullText?.length
+                ? fullText.map((pageText, j) => {
+                    const snippetKey = `${i}-${j}`;
+                    const isActive = activeSnippet === snippetKey;
+
+                    return (
+                      <div
+                        key={snippetKey}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={isActive}
+                        onClick={() => {
+                          setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                          scrollToPage(pageText.page);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
+                            scrollToPage(pageText.page);
+                          }
+                        }}
+                        className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
+                          ${isActive ? 'border-primary-400' : 'border-gray-100'}`}
+                      >
+                        <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                        <p className="font-bold float-right">
+                          {t('System', 'Page', null, false)} {pageText.page}
+                        </p>
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const SearchResults = () => {
   const { searchResults, entity } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
@@ -105,124 +208,57 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 h-full">
-      <div className="px-1">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="entity-search" className="sr-only">
-            <Translate>Search</Translate>
-          </label>
+    <Panel>
+      <Panel.Body>
+        <div className="flex flex-col gap-2 h-full">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label htmlFor="entity-search" className="sr-only">
+              <Translate>Search</Translate>
+            </label>
 
-          <div className="relative">
-            <Controller
-              name="search"
-              control={control}
-              render={({ field }) => (
-                <input
-                  id="entity-search"
-                  type="search"
-                  placeholder={t('System', 'Search', null, false)}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...field}
-                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 p-2"
-                />
-              )}
-            />
+            <div className="relative">
+              <Controller
+                name="search"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    id="entity-search"
+                    type="search"
+                    placeholder={t('System', 'Search', null, false)}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...field}
+                    className="w-full border border-gray-200 rounded-lg bg-white shadow-sm placeholder-gray-400 p-2"
+                  />
+                )}
+              />
 
-            <button
-              type="submit"
-              aria-label="Search"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2"
-            >
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
-            </button>
-          </div>
-        </form>
-      </div>
-      <div className="grow overflow-y-auto px-1">
-        {!snippets && <NoSearch />}
-        {snippets?.data && snippets.data.length < 1 ? (
-          <NoResults />
-        ) : (
-          <div className="flex flex-col gap-4 pt-1">
-            {snippets?.data.map((entry, i) => {
-              const { metadata, fullText } = entry.snippets;
-
-              if (!metadata?.length && !fullText?.length) {
-                return undefined;
-              }
-
-              return (
-                <div key={`entry-${i}`} className="flex flex-col gap-4">
-                  {metadata?.length ? (
-                    <>
-                      <dl className="grid gap-y-2">
-                        {metadata.map((m, j) => (
-                          <div
-                            key={`metadata-${i}-${j}`}
-                            className="p-2 border border-gray-100 shadow-md rounded-lg"
-                          >
-                            <dt className="text-sm font-semibold text-gray-900">
-                              <Translate context={entity!.template!._id}>
-                                {getFieldName(m.field, template)}
-                              </Translate>
-                            </dt>
-                            {m.texts.map((text, k) => (
-                              <dd key={`metadata-${i}-${j}-${k}`} className="text-sm text-gray-900">
-                                {parseSnippetToNodes(text)}
-                              </dd>
-                            ))}
-                          </div>
-                        ))}
-                      </dl>
-                      <hr className="w-full" />
-                    </>
-                  ) : null}
-
-                  {fullText?.length
-                    ? fullText.map((pageText, j) => {
-                        const snippetKey = `${i}-${j}`;
-                        const isActive = activeSnippet === snippetKey;
-
-                        return (
-                          <div
-                            key={snippetKey}
-                            role="button"
-                            tabIndex={0}
-                            aria-pressed={isActive}
-                            onClick={() => {
-                              setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                              scrollToPage(pageText.page);
-                            }}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                                scrollToPage(pageText.page);
-                              }
-                            }}
-                            className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
-                              ${isActive ? 'border-primary-400' : 'border-gray-100'}`}
-                          >
-                            <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                            <p className="font-bold float-right">
-                              {t('System', 'Page', null, false)} {pageText.page}
-                            </p>
-                          </div>
-                        );
-                      })
-                    : null}
-                </div>
-              );
+              <button
+                type="submit"
+                aria-label="Search"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+              >
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+              </button>
+            </div>
+          </form>
+          <div className="flex-1 min-h-0">
+            {renderSearchContent({
+              snippets,
+              entity,
+              template,
+              activeSnippet,
+              setActiveSnippet,
             })}
           </div>
-        )}
-      </div>
-      <div>
+        </div>
+      </Panel.Body>
+
+      <Panel.Footer>
         <button type="button" onClick={() => openHints(true)}>
           <Translate className="text-gray-600 underline font-bold">Search Tips</Translate>
         </button>
-      </div>
-    </div>
+      </Panel.Footer>
+    </Panel>
   );
 };
 
