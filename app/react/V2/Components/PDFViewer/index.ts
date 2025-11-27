@@ -9,6 +9,7 @@ const PDF = loadable(
   }
 );
 
+export type { Snippet } from './events';
 export { pdfEventBus } from './events';
 export { PDF, selectionHandlers };
 export { calculateScaling } from './functions/calculateScaling';

@@ -8,6 +8,7 @@ import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 import { pdfEventBus } from './events';
+import { highlightSnippetInPage, clearHighlights } from './functions/snippetToHighlight';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
@@ -106,12 +107,53 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
         animationFrameId = triggerScroll(pageRef, animationFrameId);
       };
 
-      const { unsubscribe } = pdfEventBus.on('goToPage', onScrollToPageHandler);
+      const onActivateSnippetHandler = (snippet?: {
+        text: string;
+        page: number;
+        filename?: string;
+      }) => {
+        if (snippet) {
+          const pageContainer = pageRefsMap.current[snippet.page.toString()];
+
+          if (pageContainer) {
+            highlightSnippetInPage(pageContainer, snippet);
+
+            const firstMark = pageContainer.querySelector('mark');
+
+            if (firstMark) {
+              firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+      };
+
+      const onDeactivateSnippetHandler = () => {
+        Object.values(pageRefsMap.current).forEach(container => {
+          if (container) {
+            clearHighlights(container);
+          }
+        });
+      };
+
+      const subscriptionGoToPage = pdfEventBus.on('goToPage', onScrollToPageHandler);
+
+      const subscriptionActivateSnippet = pdfEventBus.on(
+        'activateSnippet',
+        onActivateSnippetHandler
+      );
+
+      const subscriptionDeactivateSnippet = pdfEventBus.on(
+        'deactivateSnippet',
+        onDeactivateSnippetHandler
+      );
+
       pdfEventBus.dispatch('pdfReady');
 
       return () => {
         cancelAnimationFrame(animationFrameId);
-        unsubscribe();
+        subscriptionGoToPage.unsubscribe();
+        subscriptionActivateSnippet.unsubscribe();
+        subscriptionDeactivateSnippet.unsubscribe();
       };
     }
 

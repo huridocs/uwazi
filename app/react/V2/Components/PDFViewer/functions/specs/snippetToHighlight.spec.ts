@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import { highlightSnippetInPage, clearHighlights } from '../snippetToHighlight';
 
 describe('snippetToHighlight', () => {
