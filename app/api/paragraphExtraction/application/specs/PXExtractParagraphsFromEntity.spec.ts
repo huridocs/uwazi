@@ -1,60 +1,61 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
 import { ApiResponse } from '@elastic/elasticsearch';
+import { ObjectId } from 'mongodb';
 
-import { search } from 'api/search';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
-import { DBFixture } from 'api/utils/testing_db';
-import { tenants } from 'api/tenants';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
+import { search } from 'api/search';
+import { tenants } from 'api/tenants';
+import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
-  extractor,
-  sourceTemplate,
-  targetTemplate,
   defaultTemplate,
   entity1,
-  invalidEntity,
-  segmentation,
-  segmentation2,
+  entity2,
+  entity3,
+  entityStatus1,
+  extractor,
   failedSegmentation,
-  processingSegmentation,
   file,
   file2,
-  files,
   fileWithLanguageNotInstalled,
-  userId,
-  entityStatus1,
+  invalidEntity,
   paragraph1,
   paragraph2,
   paragraph3,
-  relationshipE1Hub1,
-  relationshipP1Hub1,
-  relationshipP2Hub1,
-  relationshipP3Hub3,
-  entity2,
   paragraph4,
   paragraph5,
+  processingSegmentation,
+  relationshipE1Hub1,
+  relationshipE1Hub3,
   relationshipE2Hub1,
+  relationshipE2Hub2,
+  relationshipP1Hub1,
+  relationshipP1Hub1Repeated,
+  relationshipP2Hub1,
+  relationshipP3Hub3,
   relationshipP4Hub1,
   relationshipP5Hub2,
-  entity3,
-  relationshipE1Hub3,
-  relationshipE2Hub2,
-  relationshipP1Hub1Repeated,
+  segmentation,
+  segmentation2,
+  sourceTemplate,
+  targetTemplate,
+  userId,
 } from './fixtures';
 
 const createFixtures = (): DBFixture => ({
@@ -80,15 +81,9 @@ const setUpUseCase = () => {
     getParagraphsResult: jest.fn(),
   };
 
-  const fileStorage = {
-    storeContent: jest.fn(),
-    storeFile: jest.fn(),
-    getFiles: jest.fn().mockResolvedValue(files),
+  const fileStorage = TestUtils.mockClass<FileStorage>({
     getFile: jest.fn(),
-    getPath: jest.fn(),
-    list: jest.fn(),
-    fileExists: jest.fn(),
-  };
+  });
 
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();

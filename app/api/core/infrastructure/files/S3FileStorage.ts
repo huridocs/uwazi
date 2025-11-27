@@ -1,5 +1,6 @@
 import {
   _Object,
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
   ListObjectsV2Command,
@@ -15,12 +16,11 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
 import { Attachment } from '../../domain/files/Attachment';
-import { BaseFile } from '../../domain/files/BaseFile';
 import { CustomUpload } from '../../domain/files/CustomUpload';
-import { FileContents } from '../../domain/files/FileContents';
+import { FileContents, NullFileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { URLAttachment } from '../../domain/files/URLAttachment';
-import { UwaziFile } from '../../domain/files/UwaziFile';
+import { UwaziFile, UwaziFileWithContents } from '../../domain/files/UwaziFile';
 import { PathManager } from './PathManager';
 
 const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
@@ -50,6 +50,9 @@ export class S3FileStorage implements FileStorage {
   }
 
   async storeContent(content: FileContents, subpath: string): Promise<void> {
+    if (content instanceof NullFileContents) {
+      return;
+    }
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
@@ -65,13 +68,24 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async storeFile(file: BaseFile) {
+  async storeFile(file: UwaziFileWithContents) {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.bucket,
           Key: this.pathManager.createPath(file),
           Body: (await this.fileIO.toBuffer(file.content)).getDataOrThrow(),
+        })
+      )
+    );
+  }
+
+  async removeFile(file: UwaziFileWithContents) {
+    await catchS3Errors(async () =>
+      this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucket,
+          Key: this.pathManager.createPath(file),
         })
       )
     );
