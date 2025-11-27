@@ -67,7 +67,7 @@ const CreateEntitySchema = z.object({
     .array(
       z.object({
         originalname: z.string(),
-        url: z.string().url(),
+        url: z.string().url().optional(),
       })
     )
     .optional(),

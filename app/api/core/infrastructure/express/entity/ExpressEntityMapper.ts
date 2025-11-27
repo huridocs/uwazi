@@ -23,7 +23,10 @@ class ExpressEntityMapper {
     }
 
     if (props.dto?.attachments?.length) {
-      const urlAttachments = props.dto.attachments.map(({ originalname, url }) =>
+      const attachmentsWithUrl = props.dto.attachments.filter(
+        (a): a is typeof a & { url: string } => !!a.url
+      );
+      const urlAttachments = attachmentsWithUrl.map(({ originalname, url }) =>
         InputFile.createUrlAttachment({
           originalname,
           url,

@@ -75,14 +75,9 @@ describe('ExpressEntityMapper', () => {
       const dto: CreateEntityDTO = {
         title: 'Test Entity',
         attachments: [
-          {
-            originalname: 'Document 1.pdf',
-            url: 'https://example.com/doc1.pdf',
-          },
-          {
-            originalname: 'Document 2.docx',
-            url: 'https://example.com/doc2.docx',
-          },
+          { originalname: 'not a url attachment' },
+          { originalname: 'Document 1.pdf', url: 'https://example.com/doc1.pdf' },
+          { originalname: 'Document 2.docx', url: 'https://example.com/doc2.docx' },
         ],
       };
 
@@ -90,10 +85,10 @@ describe('ExpressEntityMapper', () => {
 
       expect(result.inputFiles).toBeDefined();
       expect(result.inputFiles).toHaveLength(2);
-      expect(result.inputFiles![0].metadata.originalname).toBe('Document 1.pdf');
-      expect(result.inputFiles![0].metadata.url).toBe('https://example.com/doc1.pdf');
-      expect(result.inputFiles![1].metadata.originalname).toBe('Document 2.docx');
-      expect(result.inputFiles![1].metadata.url).toBe('https://example.com/doc2.docx');
+      expect(result.inputFiles?.[0].metadata.originalname).toBe('Document 1.pdf');
+      expect(result.inputFiles?.[0].metadata.url).toBe('https://example.com/doc1.pdf');
+      expect(result.inputFiles?.[1].metadata.originalname).toBe('Document 2.docx');
+      expect(result.inputFiles?.[1].metadata.url).toBe('https://example.com/doc2.docx');
     });
 
     it('should combine inputFiles and URL attachments', () => {
