@@ -9,6 +9,7 @@ import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipP
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { Property } from 'api/core/domain/template/Property';
+import { Result, ResultType } from 'api/core/libs/Result';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -26,6 +27,20 @@ export class MongoMultiLanguageEntityDataSource
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
+  }
+
+  async bulkDelete(sharedIds: string[]): Promise<void> {
+    await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+  }
+
+  async getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>> {
+    const entities = await (await this.getByQuery({ sharedId: { $in: sharedIds } })).all();
+
+    if (!entities.length) {
+      return Result.fail(new Error(`Entities with sharedIds ${sharedIds.join(', ')} not found`));
+    }
+
+    return Result.ok(entities);
   }
 
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {

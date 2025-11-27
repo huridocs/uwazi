@@ -3,6 +3,7 @@ import { search } from 'api/search';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { AbstractUseCase } from '../libs/UseCase';
 import { BatchDeleteEntityJob } from '../infrastructure/jobs/BatchDeleteEntityJob';
+import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
 
 const InputSchema = z.object({
   sharedIds: z
@@ -17,22 +18,32 @@ type Output = Input;
 
 type Deps = {
   search: typeof search;
+  entityPermissionChecker: EntityPermissionChecker;
 };
 
 class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
   protected async executeAsync(input: Input): Promise<Output> {
-    const { sharedIds } = InputSchema.parse(input);
+    const { sharedIds } = InputSchema.parse({
+      sharedIds: ArrayUtils.deduplicate(input.sharedIds, s => s),
+    });
 
-    const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
+    const grantedSharedIds = (
+      await this.deps.entityPermissionChecker.filterEntities(
+        sharedIds,
+        Specification.createDeleteSpecification(this.getActor())
+      )
+    ).getDataOrThrow();
+
+    const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
     await this.transactionManager.run(async () => {
       await this.jobsDispatcher.dispatchMany(async dispatch =>
         chunks.forEach(chunk => dispatch(BatchDeleteEntityJob, { sharedIds: chunk }))
       );
 
-      await this.deps.search.bulkDeleteBySharedId(sharedIds);
+      await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
     });
 
     return input;
