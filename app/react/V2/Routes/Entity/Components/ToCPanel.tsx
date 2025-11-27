@@ -7,6 +7,7 @@ import {
 import { Translate } from 'app/I18N';
 import { TocSchema } from 'shared/types/commonTypes';
 import { Tooltip } from 'flowbite-react';
+import { Panel } from 'V2/Components/Layouts/Panel';
 import { BlankState } from './BlankState';
 import { scrollToPage } from './functions';
 
@@ -65,29 +66,31 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
       <BlankState
         icon={<ListBulletIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />}
         title=<Translate>No Table of contents</Translate>
-        description=<Translate>
-          You can start by selecting text in the document and clicking the "Add to ToC" button.
-        </Translate>
+        description={
+          <Translate>
+            You can start by selecting text in the document and clicking the &quot;Add to ToC&quot;
+            button.
+          </Translate>
+        }
       />
     );
   }
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <div className="flex items-center gap-2">
-        <p className="text-sm font-bold text-gray-900">
-          <Translate>Table of contents</Translate>
-        </p>
-        <Tooltip content="This table of contents was automatically created by the system.">
-          <span className="text-xs font-semibold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-full tracking-wide flex items-center gap-1">
-            <Translate>auto created</Translate>
-            <InformationCircleIcon className="w-5 h-5 text-blue-900" />
-          </span>
-        </Tooltip>
-      </div>
-
-      <div className="flex-1 overflow-y-auto pr-1">
-        <div className="flex flex-col gap-2">
+    <Panel className="gap-4">
+      <Panel.Body className="pr-1">
+        <div className="flex flex-col gap-2 pb-20">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-bold text-gray-900">
+              <Translate>Table of contents</Translate>
+            </p>
+            <Tooltip content="This table of contents was automatically created by the system.">
+              <span className="text-xs font-semibold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-full tracking-wide flex items-center gap-1">
+                <Translate>auto created</Translate>
+                <InformationCircleIcon className="w-5 h-5 text-blue-900" />
+              </span>
+            </Tooltip>
+          </div>
           {normalizedToc.map(item => {
             const pageNumber = getPageNumber(item.entry);
             const label = item.entry.label?.trim() || `Section ${item.index + 1}`;
@@ -131,7 +134,7 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
                 {...interactiveProps}
                 className={`border border-gray-100 rounded-xl shadow-sm p-3 flex items-center justify-between gap-4 transition cursor-pointer
                   ${item.isTopLevel ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100
-                  focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-inset`}
+                  focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-inset`}
                 style={{ paddingLeft: paddingLeft + 12 }}
               >
                 <div className="flex items-center gap-2">
@@ -166,8 +169,25 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
             );
           })}
         </div>
-      </div>
-    </div>
+      </Panel.Body>
+
+      <Panel.Footer>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-400"
+          >
+            <Translate>Edit</Translate>
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-400"
+          >
+            <Translate>Mark as reviewed</Translate>
+          </button>
+        </div>
+      </Panel.Footer>
+    </Panel>
   );
 };
 

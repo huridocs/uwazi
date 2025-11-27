@@ -341,12 +341,12 @@ const Entity = () => {
   return (
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="p-2 h-full">
+        <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="p-2 h-full">
+        <PaneLayout.Pane className="h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             unmountTabs={false}
