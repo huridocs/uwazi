@@ -37,9 +37,8 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
 
-    const documentsOrAttachments = await this.deps.fileService.fromInputFiles(
-      entity.sharedId,
-      input?.inputFiles || []
+    const documentsOrAttachments = (input.inputFiles || []).map(f =>
+      f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 
     await this.deps.fileService.storeFiles(documentsOrAttachments);
