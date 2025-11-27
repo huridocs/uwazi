@@ -9,19 +9,19 @@ import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncD
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
 import { PDFPostProcessJob } from '../jobs/PDFPostProcessJob';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
 import { PDFService } from '../services/PDFService';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 
 class FilesServiceFactory {
-  static default() {
-    let transactionManager = TransactionManagerFactory.fake();
-
+  static default(transactionManager: MongoTransactionManager) {
+    let _transactionManager = transactionManager;
     if (process.env.NODE_ENV !== 'test') {
-      transactionManager = TransactionManagerFactory.default();
+      _transactionManager = TransactionManagerFactory.default();
     }
-    const filesDS = FilesDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(_transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const fileStorage = FileStorageFactory.default();
 
@@ -30,7 +30,7 @@ class FilesServiceFactory {
         new PDFPostProcessJob({
           useCase: new PDFPostProcess({
             eventBus: applicationEventsBus,
-            transactionManager,
+            transactionManager: _transactionManager,
             filesDS,
             fileStorage,
             pdfService: new PDFService(),
@@ -39,7 +39,7 @@ class FilesServiceFactory {
             filesService: new FilesService({
               idGenerator: IdGeneratorFactory.default(),
               fileStorage: FileStorageFactory.default(),
-              filesDS: FilesDataSourceFactory.default(transactionManager),
+              filesDS: FilesDataSourceFactory.default(_transactionManager),
               jobsDispatcher,
               pdfService: new PDFService(),
               filesIO: new FileContentsIO(),
@@ -56,7 +56,7 @@ class FilesServiceFactory {
     return new FilesService({
       idGenerator: IdGeneratorFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      filesDS: FilesDataSourceFactory.default(transactionManager),
+      filesDS: FilesDataSourceFactory.default(_transactionManager),
       jobsDispatcher,
       pdfService: new PDFService(),
       filesIO: new FileContentsIO(),

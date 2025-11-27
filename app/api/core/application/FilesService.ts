@@ -1,22 +1,22 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Attachment } from 'api/core/domain/files/Attachment';
 import { Document } from 'api/core/domain/files/Document';
-import { InputFile } from 'api/core/domain/files/InputFile';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
+import { UwaziFile, UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { BaseFile } from '../domain/files/BaseFile';
+import { URLAttachment } from '../domain/files/URLAttachment';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
-import { IdGenerator } from './contracts/IdGenerator';
 import { Result } from '../libs/Result';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { IdGenerator } from './contracts/IdGenerator';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -34,36 +34,13 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 class FilesService {
   constructor(protected deps: Deps) {}
 
-  async fromInputFiles(entity: string, input: InputFile[]): Promise<(Document | Attachment)[]> {
-    return input.map(inputFile => {
-      if (inputFile.isAttachment()) {
-        return new Attachment({
-          entity,
-          id: this.deps.idGenerator.generate(),
-          ...inputFile.metadata,
-          filename: inputFile.filename,
-          uploaded: true,
-          creationDate: date.currentUTC(),
-          content: inputFile.content,
-        });
+  async storeFiles(files: BaseFile[]) {
+    await ArrayUtils.sequentialFor(
+      files.filter((f): f is UwaziFileWithContents => !(f instanceof URLAttachment)),
+      async file => {
+        await this.deps.fileStorage.storeFile(file);
       }
-      return new Document({
-        entity,
-        id: this.deps.idGenerator.generate(),
-        ...inputFile.metadata,
-        filename: inputFile.filename,
-        uploaded: true,
-        status: 'processing',
-        creationDate: date.currentUTC(),
-        content: inputFile.content,
-      });
-    });
-  }
-
-  async storeFiles(files: UwaziFile[]) {
-    await ArrayUtils.sequentialFor(files, async file => {
-      await this.deps.fileStorage.storeFile(file);
-    });
+    );
   }
 
   async insert(files: UwaziFile[]) {
@@ -86,6 +63,17 @@ class FilesService {
         });
       });
     }
+  }
+
+  async delete(files: [UwaziFile, ...UwaziFile[]]) {
+    const contentFiles = files.filter(
+      (f): f is UwaziFileWithContents => !(f instanceof URLAttachment)
+    );
+    const processedDocs = contentFiles.filter(f => f instanceof ProcessedDocument);
+    const thumbnails = await this.deps.filesDS.getThumbnails(processedDocs).all();
+
+    await this.deps.filesDS.delete([...files, ...thumbnails]);
+    await ArrayUtils.sequentialFor(contentFiles, async f => this.deps.fileStorage.removeFile(f));
   }
 
   async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {

@@ -23,6 +23,7 @@ type Tenant = {
     v2BulkDeleteEntity?: boolean;
     fileCacheHeaders?: boolean;
     v2UploadFile?: boolean;
+    v2DeleteFile?: boolean;
     v2CSVImport?: boolean;
   };
   globalMatomo?: { id: string; url: string };

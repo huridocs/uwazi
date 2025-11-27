@@ -1,24 +1,29 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { Document } from 'api/core/domain/files/Document';
 import { FileNotFound } from 'api/core/domain/files/errors';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
+import { URLAttachment } from 'api/core/domain/files/URLAttachment';
+import { NullFileContents } from 'api/core/domain/files/FileContents';
 
 const f = getFixturesFactory();
 
 const fixtures = {
   files: [
-    f.document('file1', {
+    ...f.processedDocument('processed1', {
       entity: 'entity1',
       extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'property1' }],
-      status: 'ready',
+    }),
+    ...f.processedDocument('processed2', {
+      entity: 'entity1',
     }),
     f.document('file2', {
       entity: 'entity2',
@@ -42,6 +47,7 @@ const fixtures = {
       language: 'en',
       status: 'processing',
     }),
+    f.attachment('url_attachment', { url: 'my_url' }),
   ],
 
   templates: [f.template('template')],
@@ -270,7 +276,7 @@ describe('MongoFilesDataSource', () => {
 
       expect(
         await ds.filesExistForEntities([
-          { entity: 'entity1', _id: f.id('file1').toHexString() },
+          { entity: 'entity1', _id: f.id('processed1').toHexString() },
           { entity: 'entity2', _id: f.id('file2').toHexString() },
         ])
       ).toBe(true);
@@ -289,7 +295,7 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
 
       const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
-      expect(documentsForEntity.length).toBe(4);
+      expect(documentsForEntity.length).toBe(5);
     });
 
     it('should allow fetching documents only in specific languages', async () => {
@@ -323,6 +329,40 @@ describe('MongoFilesDataSource', () => {
       const doc = (await ds.getByFilename('file3', ['document', 'attachment'])).getData();
       expect(doc).toBeInstanceOf(Document);
     });
+    it('should return URLAttachment properly (with nullFileContents)', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getByFilename('url_attachment')).getData();
+      expect(doc).toBeInstanceOf(URLAttachment);
+      expect(doc?.content).toBeInstanceOf(NullFileContents);
+    });
+  });
+
+  describe('getById', () => {
+    it('should return file matching id', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getById(f.idString('processed1'))).getData();
+      expect(doc).toBeInstanceOf(ProcessedDocument);
+    });
+
+    it('should return URLAttachment properly (with nullFileContents)', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getById(f.idString('url_attachment'))).getData();
+      expect(doc).toBeInstanceOf(URLAttachment);
+      expect(doc?.content).toBeInstanceOf(NullFileContents);
+    });
+  });
+
+  describe('getThumbnails', () => {
+    it('should return thumbnails for ProcessedDocuments', async () => {
+      const { ds } = createDs();
+      const processed = [
+        (await ds.getById(f.idString('processed1'))).getDataOrThrow() as ProcessedDocument,
+        (await ds.getById(f.idString('processed2'))).getDataOrThrow() as ProcessedDocument,
+      ];
+      const thumbnails = await ds.getThumbnails(processed).all();
+      expect(thumbnails[0]).toBeInstanceOf(Thumbnail);
+      expect(thumbnails[1]).toBeInstanceOf(Thumbnail);
+    });
   });
 
   describe('bulkCreate', () => {
@@ -348,6 +388,24 @@ describe('MongoFilesDataSource', () => {
           _id: f.id('attachmentId'),
         },
       ]);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete files from db', async () => {
+      const { ds } = createDs();
+      const files = [
+        FileBuilder.document(f.idString('file1')),
+        FileBuilder.document(f.idString('file2')),
+      ];
+      await ds.delete(files);
+
+      const dbFiles = (await testingEnvironment.db.getAllFrom('files'))?.filter(
+        file =>
+          file._id.toString() === f.idString('file1') || file._id.toString() === f.idString('file2')
+      );
+
+      expect(dbFiles).toMatchObject([]);
     });
   });
 });

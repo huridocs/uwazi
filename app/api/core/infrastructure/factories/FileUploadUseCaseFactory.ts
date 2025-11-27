@@ -18,7 +18,7 @@ class FileUploadUseCaseFactory {
     }
     const idGenerator = IdGeneratorFactory.default();
     const entitiesDS = new MongoMultiLanguageEntityDataSource(db, transactionManager);
-    const filesService = FilesServiceFactory.default();
+    const filesService = FilesServiceFactory.default(transactionManager);
     const eventBus = applicationEventsBus;
 
     const useCase = new FileUploadUseCase(

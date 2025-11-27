@@ -63,6 +63,14 @@ const CreateEntitySchema = z.object({
   icon: EntityIconSchema.optional(),
   user: z.string().optional(),
   metadata: MetadataObjectSchema.default({}).optional(),
+  attachments: z
+    .array(
+      z.object({
+        originalname: z.string(),
+        url: z.string().url().optional(),
+      })
+    )
+    .optional(),
 });
 
 export { CreateEntitySchema };

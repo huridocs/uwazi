@@ -177,7 +177,7 @@ export function registerJobs(
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
-        filesService: FilesServiceFactory.default(),
+        filesService: FilesServiceFactory.default(transactionManager),
       }),
       wSockets: new V1WebSocketsWrapper(),
     });

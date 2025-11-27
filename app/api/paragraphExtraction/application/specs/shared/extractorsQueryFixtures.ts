@@ -366,12 +366,12 @@ const fixtures = {
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
   entities: Object.values(entityFixtures).map(value => value),
   files: [
-    fileEntity1En,
-    secondFileEntity1En,
-    fileEntity1Pt,
-    fileEntity1It,
-    fileEntity2It,
-    fileEntity4En,
+    ...fileEntity1En,
+    ...secondFileEntity1En,
+    ...fileEntity1Pt,
+    ...fileEntity1It,
+    ...fileEntity2It,
+    ...fileEntity4En,
   ],
   connections: Object.values(relationshipFixtures).map(value => value),
   settings: [
