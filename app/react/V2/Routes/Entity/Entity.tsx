@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -160,23 +160,9 @@ const entityLoader =
   };
 
 const Entity = () => {
-  const { entity, pagePlaintext } = useLoaderData<LoaderResponse>() || {};
+  const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeMainTab = useMemo<MainTabId>(() => {
-    const mainTab = searchParams.get(MAIN_TAB_PARAM);
-    if (isValidMainTab(mainTab)) {
-      return mainTab;
-    }
-    if (entity?.mainDocument?.filename) {
-      return MAIN_TABS.DOCUMENT;
-    }
-    return MAIN_TABS.METADATA;
-  }, [searchParams, entity]);
-
-  const activeSideTab = useMemo<SideTabId | undefined>(() => {
-    const sideTab = searchParams.get(SIDE_TAB_PARAM);
-    return isValidSideTab(sideTab) ? sideTab : undefined;
-  }, [searchParams]);
+  const initialSearchResults = useRef(searchResults);
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -278,6 +264,32 @@ const Entity = () => {
     [entity]
   );
 
+  const activeMainTab = useMemo<MainTabId>(() => {
+    const mainTab = searchParams.get(MAIN_TAB_PARAM);
+    if (isValidMainTab(mainTab)) {
+      return mainTab;
+    }
+    if (entity?.mainDocument?.filename) {
+      return MAIN_TABS.DOCUMENT;
+    }
+    return MAIN_TABS.METADATA;
+  }, [searchParams, entity]);
+
+  const activeSideTab = useMemo<SideTabId | undefined>(() => {
+    const availableTabs = sideTabsByMain[activeMainTab] || [];
+    const sideTab = searchParams.get(SIDE_TAB_PARAM);
+
+    if (isValidSideTab(sideTab)) {
+      return sideTab;
+    }
+
+    if (initialSearchResults.current) {
+      return SIDE_TABS.SEARCH;
+    }
+
+    return availableTabs[0]?.id;
+  }, [searchParams, activeMainTab, sideTabsByMain]);
+
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
       if (selectedMainTab !== activeMainTab) {
@@ -330,12 +342,7 @@ const Entity = () => {
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="p-2 h-full">
-          <Tabs
-            className=""
-            unmountTabs={false}
-            initialTabId={activeMainTab}
-            onTabSelected={onMainTabChange}
-          >
+          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
@@ -343,7 +350,7 @@ const Entity = () => {
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             unmountTabs={false}
-            initialTabId={activeSideTab || sideTabsByMain[activeMainTab]?.[0]?.id}
+            initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
           >
             {sideTabElements}
