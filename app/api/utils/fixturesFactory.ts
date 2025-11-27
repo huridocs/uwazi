@@ -26,6 +26,10 @@ import { PermissionSchema } from 'shared/types/permissionType';
 import { MongoSegmentationBuilder } from 'api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder';
 import { LanguageUtils } from 'shared/language';
 import { ConnectionSchema } from 'shared/types/connectionType';
+import {
+  ProcessedDocumentDBO,
+  ThumbnailDBO,
+} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -200,8 +204,17 @@ function getFixturesFactory() {
       return this.file(id, { ...extra, type: 'document' });
     },
 
-    processedDocument(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
-      return this.file(id, { ...extra, type: 'document', status: 'ready' });
+    processedDocument(
+      id: string,
+      extra: Partial<FileType> = {}
+    ): [ProcessedDocumentDBO, ThumbnailDBO] {
+      return [
+        this.file(id, { ...extra, type: 'document', status: 'ready' }) as ProcessedDocumentDBO,
+        this.file(`${id}-thumb`, {
+          filename: `${idMapper(id)}.jpg`,
+          type: 'thumbnail',
+        }) as ThumbnailDBO,
+      ];
     },
 
     custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
