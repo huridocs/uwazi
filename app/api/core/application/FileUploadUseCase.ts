@@ -33,7 +33,7 @@ class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
       throw new EntityNotFoundError(`Entity ${entityId}, not found`);
     }
 
-    const [document] = await this.deps.filesService.fromInputFiles(entityId, [uploadedFile]);
+    const document = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
 
     await this.deps.filesService.storeFiles([document]);
 
