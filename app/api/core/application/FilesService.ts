@@ -6,18 +6,19 @@ import { Document } from 'api/core/domain/files/Document';
 import { InputFile } from 'api/core/domain/files/InputFile';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
+import { UwaziFile, UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { BaseFile } from '../domain/files/BaseFile';
+import { URLAttachment } from '../domain/files/URLAttachment';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
-import { IdGenerator } from './contracts/IdGenerator';
 import { Result } from '../libs/Result';
-import { URLAttachment } from '../domain/files/URLAttachment';
+import { IdGenerator } from './contracts/IdGenerator';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -77,9 +78,12 @@ class FilesService {
     });
   }
 
-  async storeFiles(files: UwaziFile[]) {
-    await ArrayUtils.sequentialFor(files, async file =>
-      file instanceof URLAttachment ? Promise.resolve() : this.deps.fileStorage.storeFile(file)
+  async storeFiles(files: BaseFile[]) {
+    await ArrayUtils.sequentialFor(
+      files.filter((f): f is UwaziFileWithContents => !(f instanceof URLAttachment)),
+      async file => {
+        await this.deps.fileStorage.storeFile(file);
+      }
     );
   }
 
@@ -103,6 +107,17 @@ class FilesService {
         });
       });
     }
+  }
+
+  async delete(files: [UwaziFile, ...UwaziFile[]]) {
+    const contentFiles = files.filter(
+      (f): f is UwaziFileWithContents => !(f instanceof URLAttachment)
+    );
+    const processedDocs = contentFiles.filter(f => f instanceof ProcessedDocument);
+    const thumbnails = await this.deps.filesDS.getThumbnails(processedDocs).all();
+
+    await this.deps.filesDS.delete([...files, ...thumbnails]);
+    await ArrayUtils.sequentialFor(contentFiles, async f => this.deps.fileStorage.removeFile(f));
   }
 
   async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {

@@ -37,6 +37,7 @@ const mongoSchema = new mongoose.Schema({
     v2CreateEntity: Boolean,
     fileCacheHeaders: Boolean,
     v2UploadFile: Boolean,
+    v2DeleteFile: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

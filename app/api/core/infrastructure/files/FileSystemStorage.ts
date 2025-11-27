@@ -1,14 +1,14 @@
 /* eslint-disable node/no-restricted-import */
 import { createWriteStream } from 'fs';
-import { access, mkdir } from 'fs/promises';
+import { access, mkdir, rm } from 'fs/promises';
 
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
 import { DiskFile } from '../../domain/files/DiskFile';
-import { FileContents } from '../../domain/files/FileContents';
+import { FileContents, NullFileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
-import { UwaziFile } from '../../domain/files/UwaziFile';
+import { UwaziFile, UwaziFileWithContents } from '../../domain/files/UwaziFile';
 import { PathManager } from './PathManager';
 
 export class FileSystemStorage implements FileStorage {
@@ -19,6 +19,9 @@ export class FileSystemStorage implements FileStorage {
   }
 
   async storeContent(content: FileContents, subpath: string): Promise<void> {
+    if (content instanceof NullFileContents) {
+      return;
+    }
     const filepath = this.pathManager.createPath({
       filename: path.basename(subpath),
       destination: path.dirname(subpath),
@@ -35,7 +38,17 @@ export class FileSystemStorage implements FileStorage {
     await pipeline(content.read(), createWriteStream(filepath));
   }
 
-  async storeFile(file: UwaziFile) {
+  async removeFile(file: UwaziFileWithContents) {
+    try {
+      await rm(this.pathManager.createPath(file));
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+
+  async storeFile(file: UwaziFileWithContents) {
     const filepath = this.pathManager.createPath(file);
 
     try {

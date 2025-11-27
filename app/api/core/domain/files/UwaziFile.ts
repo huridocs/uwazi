@@ -12,3 +12,10 @@ export type UwaziFile =
   | URLAttachment
   | CustomUpload
   | Thumbnail;
+
+export type UwaziFileWithContents =
+  | Document
+  | ProcessedDocument
+  | Attachment
+  | CustomUpload
+  | Thumbnail;

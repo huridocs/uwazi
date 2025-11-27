@@ -1,5 +1,4 @@
 // eslint-disable-next-line node/no-restricted-import
-import { copyFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
@@ -13,17 +12,16 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
+import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import path from 'path';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { FileContentsIO } from '../../files/FileContentIO';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -67,11 +65,7 @@ const heartBeatCallBack = jest.fn();
 
 describe('PDFPostProcessJob', () => {
   beforeEach(async () => {
-    await copyFile(
-      path.join(__dirname, '../../../../files/specs', 'testing_files/eng.pdf'),
-      path.join(__dirname, '../../../../files/specs', 'uploads/pdfPostProcessJob/eng.pdf')
-    );
-    await testingEnvironment.setUp({
+    const fixtures = {
       files: [
         f.document('processing_doc', {
           status: 'processing',
@@ -79,12 +73,12 @@ describe('PDFPostProcessJob', () => {
           entity: 'fileEntity',
         }),
       ],
-    });
-    await testingEnvironment.setTenant(undefined, 'pdfPostProcessJob');
+    };
+    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setupTenantTmpPaths(fixtures.files);
   });
 
   afterAll(async () => {
-    await testingEnvironment.cleanupUploadPaths();
     await testingEnvironment.tearDown();
   });
 
