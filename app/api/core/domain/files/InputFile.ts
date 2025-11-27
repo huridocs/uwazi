@@ -5,6 +5,10 @@ import path from 'path';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { DiskFile } from './DiskFile';
 import { FileContents } from './FileContents';
+import date from 'api/utils/date';
+import { Attachment } from './Attachment';
+import { Document } from './Document';
+import { URLAttachment } from './URLAttachment';
 
 type FileMetadata = {
   fieldname: string;
@@ -75,6 +79,30 @@ export class InputFile {
       size: this._metadata.size,
       url: this._metadata.url,
     };
+  }
+
+  private fileProps() {
+    return { ...this.metadata, filename: this.filename, uploaded: true, content: this.content };
+  }
+
+  toEntityFile(entity: string, id: string) {
+    const fileProps = { entity, id, creationDate: date.currentUTC(), ...this.fileProps() };
+
+    switch (this.type) {
+      case 'document':
+        return new Document({ ...fileProps, status: 'processing' });
+      case 'attachment':
+        return new Attachment(fileProps);
+      case 'url_attachment':
+        if (typeof fileProps.url === 'string') {
+          return new URLAttachment({ ...fileProps, url: fileProps.url });
+        }
+        throw new Error('url_attachment needs a url defined');
+      case 'raw':
+        throw new Error('raw is not a valid inputFile type to to map to an entityFile');
+      default:
+        throw new Error(`${this.type} is not a valid inputFile type`);
+    }
   }
 
   static createUrlAttachment({ originalname, url }: CreateUrlAttachmentProps) {

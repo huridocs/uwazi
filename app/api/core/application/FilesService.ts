@@ -1,9 +1,7 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Attachment } from 'api/core/domain/files/Attachment';
 import { Document } from 'api/core/domain/files/Document';
-import { InputFile } from 'api/core/domain/files/InputFile';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { UwaziFile, UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
@@ -35,48 +33,6 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 
 class FilesService {
   constructor(protected deps: Deps) {}
-
-  async fromInputFiles(
-    entity: string,
-    input: InputFile[]
-  ): Promise<(Document | Attachment | URLAttachment)[]> {
-    return input.map(inputFile => {
-      if (inputFile.isAttachment()) {
-        return new Attachment({
-          entity,
-          id: this.deps.idGenerator.generate(),
-          ...inputFile.metadata,
-          filename: inputFile.filename,
-          uploaded: true,
-          creationDate: date.currentUTC(),
-          content: inputFile.content,
-        });
-      }
-
-      if (inputFile.isUrlAttachment()) {
-        return new URLAttachment({
-          entity,
-          id: this.deps.idGenerator.generate(),
-          ...inputFile.metadata,
-          url: inputFile.metadata.url!,
-          creationDate: date.currentUTC(),
-          filename: inputFile.filename,
-          content: inputFile.content,
-        });
-      }
-
-      return new Document({
-        entity,
-        id: this.deps.idGenerator.generate(),
-        ...inputFile.metadata,
-        filename: inputFile.filename,
-        uploaded: true,
-        status: 'processing',
-        creationDate: date.currentUTC(),
-        content: inputFile.content,
-      });
-    });
-  }
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
