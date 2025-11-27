@@ -46,7 +46,7 @@ class CreateEntityUseCaseFactory {
       dispatcher: jobsDispatcher,
     });
 
-    const fileService = FilesServiceFactory.default();
+    const fileService = FilesServiceFactory.default(transactionManager);
 
     const useCase = new CreateEntityUseCase(
       {
