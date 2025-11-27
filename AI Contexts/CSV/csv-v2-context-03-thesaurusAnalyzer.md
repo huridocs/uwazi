@@ -176,3 +176,12 @@ Responsibilities:
 4. Track the follow-up work to replace the legacy adapters with real v2 repositories.
 
 Keep this document synchronized with reality so the next agent can pick up any remaining steps without digging through history.
+
+### Testing convention reminder
+
+- When adding or updating specs for the preflight/pending-values flow:
+  - Seed data using `getFixturesFactory()` + `testingEnvironment.setUp(fixtures, indexName)`; no ad-hoc template/thesaurus objects.
+  - Instantiate the use case with the real factories (`CSVImportEntitiesFactories`, `TransactionManagerFactory.default()`, `TemplatesDataSourceFactory`, `SettingsDataSourceFactory`, `MongoThesauriDataSource`) just like the production wiring.
+  - Only mock the queue/socket dispatchers; everything else (data sources, transaction manager, builders) must be the real implementation so Mongo collections are exercised.
+  - Stage rows/imports through the actual DS methods; assert results by reading the collections (`csv_import_rows`, `csv_import_thesauri_values`, etc.).
+  - Keep every spec lint/TS clean by running `npx eslint <spec>` and `npx tsc --noEmit` locally before handoff.

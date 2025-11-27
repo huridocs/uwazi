@@ -341,3 +341,13 @@ These decisions should unblock implementation; update this section as any detail
 ---
 
 Keep this document synchronized with the code. Any change to the job behavior, data schema, or naming must be reflected here so the next agent can jump in without re-reading V1. Only after these decisions/tests are in place should we touch the code.
+
+### 15. Testing convention addendum
+
+- Integration specs **must** follow the entities.v2/templates.v2 playbook:
+  - Build fixtures exclusively via `getFixturesFactory()` and pass them to `testingEnvironment.setUp(fixtures, indexName)`. No ad-hoc object literals for templates/thesauri/settings.
+  - Reuse the production builders (`CSVImportEntitiesFactories`, `TemplatesDataSourceFactory`, `SettingsDataSourceFactory`, `MongoThesauriDataSource`, `TransactionManagerFactory.default()`) so every test exercises the actual Mongo-aware data sources and transaction manager.
+  - The only mocks allowed are the outer queue/socket dispatchers; all persistence, staging, and domain adapters must be the real implementations to catch regressions.
+  - Stage CSV rows by calling the real `CsvImportRowsDataSource.insertMany` (via helpers) and persist imports through `CsvImportsDataSource.insert`; never short-circuit those writes.
+  - Lifecycle: `beforeAll` seeds fixtures once, `afterEach` resets to the canonical fixtures via `testingEnvironment.setFixtures(fixtures)` and deletes only the stage-specific collections (`csv_imports`, `csv_import_rows`, `csv_import_thesauri_values`), `afterAll` tears everything down.
+  - Always run `npx jest`, `npx eslint <touched files>`, and `npx tsc --noEmit` locally before handing off—even test-only changes must remain type/lint clean to honor the “non-negotiable” gate above.
