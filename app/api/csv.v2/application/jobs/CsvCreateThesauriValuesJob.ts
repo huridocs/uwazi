@@ -1,7 +1,6 @@
-/* eslint-disable max-lines, max-statements */
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
 import { ThesauriRepository } from '../../application/contracts/ThesauriRepository';
@@ -15,8 +14,10 @@ import {
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
+  CsvImportThesauriValuesDomain,
+  PendingValuesDiffSummary,
 } from '../../domain/CsvImportThesauriValues';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from '../services/CsvThesauriValuesDiff';
+import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
 
 type ThesauriCreationProgress = {
@@ -41,6 +42,7 @@ type Deps = {
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
   thesauriRepo: ThesauriRepository;
   translationsRepo: TranslationsRepository;
+  transactionManager: TransactionManager;
 };
 
 type PendingValuesProcessingResult = {
@@ -49,6 +51,16 @@ type PendingValuesProcessingResult = {
 };
 
 class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
+  private pendingValuesApplier: PendingThesauriValuesApplier;
+
+  constructor(deps: Deps) {
+    super(deps);
+    this.pendingValuesApplier = new PendingThesauriValuesApplier({
+      thesauriRepo: deps.thesauriRepo,
+      translationsRepo: deps.translationsRepo,
+    });
+  }
+
   private async setStatus(importId: string, status: CsvImportStatus) {
     const existing = await this.deps.csvImportsDS.getById(importId);
     if (!existing) {
@@ -77,80 +89,29 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     return pendingDocs;
   }
 
-  private static extractAppliedValues(
-    thesaurus: ThesaurusSchema,
-    descriptors: ThesauriDiffResult['createdDescriptors']
-  ): CsvImportThesauriAppliedValue[] {
-    const roots = new Map<string, any>();
-    (thesaurus.values || []).forEach(root => {
-      roots.set(root.label, root);
-    });
-
-    return descriptors
-      .map((descriptor: ThesauriDiffResult['createdDescriptors'][number]) => {
-        if (!descriptor.parentLabel) {
-          const root = roots.get(descriptor.label);
-          if (root?.id) {
-            return {
-              label: descriptor.label,
-              valueId: root.id,
-            };
-          }
-          return undefined;
-        }
-        const parent = roots.get(descriptor.parentLabel);
-        const child = parent?.values?.find((value: any) => value.label === descriptor.label);
-        if (child?.id) {
-          return {
-            label: descriptor.label,
-            parentLabel: descriptor.parentLabel,
-            valueId: child.id,
-          };
-        }
-        return undefined;
-      })
-      .filter(Boolean) as CsvImportThesauriAppliedValue[];
-  }
-
   private async persistPendingValuesApplication(params: {
     pendingDoc: CsvImportThesauriValues;
-    diff: ThesauriDiffResult;
+    summary: Pick<PendingValuesDiffSummary, 'observedValues' | 'createdCount'>;
     appliedValues: CsvImportThesauriAppliedValue[];
   }) {
-    const { pendingDoc, diff, appliedValues } = params;
-    const previousStats = pendingDoc.stats ?? {
-      valuesObserved: diff.observedValues,
-      valuesCreated: pendingDoc.appliedValues?.length ?? 0,
-    };
-    const updatedStats = {
-      valuesObserved: diff.observedValues,
-      valuesCreated: previousStats.valuesCreated + diff.createdDescriptors.length,
-    };
-    const combinedAppliedValues = [
-      ...(pendingDoc.appliedValues || []),
-      ...appliedValues.filter(
-        newValue =>
-          !(pendingDoc.appliedValues || []).some(
-            existing =>
-              existing.valueId === newValue.valueId &&
-              existing.label === newValue.label &&
-              existing.parentLabel === newValue.parentLabel
-          )
-      ),
-    ];
+    const { pendingDoc, summary, appliedValues } = params;
+    const payload = CsvImportThesauriValuesDomain.buildPersistencePayload(
+      pendingDoc,
+      summary,
+      appliedValues
+    );
 
-    const appliedAt = Date.now();
     await this.deps.thesauriValuesDS.markAsApplied({
       importId: pendingDoc.importId,
       thesaurusId: pendingDoc.thesaurusId,
-      appliedAt,
-      appliedValues: combinedAppliedValues,
-      stats: updatedStats,
+      appliedAt: payload.appliedAt,
+      appliedValues: payload.appliedValues,
+      stats: payload.stats,
     });
 
-    pendingDoc.appliedAt = appliedAt;
-    pendingDoc.appliedValues = combinedAppliedValues;
-    pendingDoc.stats = updatedStats;
+    pendingDoc.appliedAt = payload.appliedAt;
+    pendingDoc.appliedValues = payload.appliedValues;
+    pendingDoc.stats = payload.stats;
   }
 
   private async applyPendingThesaurusValues(params: {
@@ -160,35 +121,16 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     callbacks: Callbacks;
   }): Promise<PendingValuesProcessingResult> {
     const { pendingDoc, index, total, callbacks } = params;
-    const existingThesaurus = await this.deps.thesauriRepo.getById(pendingDoc.thesaurusId);
-    const diff = CsvThesauriValuesDiff.diff(pendingDoc, existingThesaurus);
+    const { diff, appliedValues } = await this.pendingValuesApplier.apply(pendingDoc);
 
-    let appliedValues: CsvImportThesauriAppliedValue[] = [];
+    const summary: PendingValuesDiffSummary = {
+      observedValues: diff.observedValues,
+      createdCount: diff.createdDescriptors.length,
+      hasPendingAppends: diff.valuesToAppend.length > 0,
+    };
 
-    let updatedThesaurus = existingThesaurus;
-
-    if (diff.valuesToAppend.length) {
-      updatedThesaurus = await this.deps.thesauriRepo.appendValues(
-        pendingDoc.thesaurusId,
-        diff.valuesToAppend
-      );
-      if (Object.keys(diff.translations).length) {
-        await this.deps.translationsRepo.updateEntries(pendingDoc.thesaurusId, diff.translations);
-      }
-      appliedValues = CsvCreateThesauriValuesJob.extractAppliedValues(
-        updatedThesaurus,
-        diff.createdDescriptors
-      );
-    }
-
-    const shouldPersist =
-      diff.valuesToAppend.length > 0 ||
-      !pendingDoc.appliedAt ||
-      !pendingDoc.stats ||
-      pendingDoc.stats.valuesObserved !== diff.observedValues;
-
-    if (shouldPersist) {
-      await this.persistPendingValuesApplication({ pendingDoc, diff, appliedValues });
+    if (CsvImportThesauriValuesDomain.shouldPersist(pendingDoc, summary)) {
+      await this.persistPendingValuesApplication({ pendingDoc, summary, appliedValues });
     }
 
     callbacks.onProgress({
@@ -196,38 +138,17 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
       thesaurusId: pendingDoc.thesaurusId,
       processedThesauri: index,
       totalThesauri: total,
-      createdValues: diff.createdDescriptors.length,
+      createdValues: summary.createdCount,
     });
 
     return {
-      created: diff.createdDescriptors.length,
-      observed: diff.observedValues,
+      created: summary.createdCount,
+      observed: summary.observedValues,
     };
   }
 
-  private static aggregateStats(pendingDocs: CsvImportThesauriValues[]): {
-    observed: number;
-    created: number;
-    touched: number;
-  } {
-    return pendingDocs.reduce(
-      (acc, pendingDoc) => {
-        const { stats } = pendingDoc;
-        if (stats) {
-          acc.observed += stats.valuesObserved;
-          acc.created += stats.valuesCreated;
-        }
-        if (pendingDoc.entries.length) {
-          acc.touched += 1;
-        }
-        return acc;
-      },
-      { observed: 0, created: 0, touched: 0 }
-    );
-  }
-
   private async finalizeSuccess(csvImport: CsvImport, pendingDocs: CsvImportThesauriValues[]) {
-    const totals = CsvCreateThesauriValuesJob.aggregateStats(pendingDocs);
+    const totals = CsvImportThesauriValuesDomain.aggregateStats(pendingDocs);
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(
