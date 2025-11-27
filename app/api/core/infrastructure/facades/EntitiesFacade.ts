@@ -1,8 +1,8 @@
-import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
 import { InputFile } from 'api/core/domain/files/InputFile';
 import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
 import { LoggerFactory } from '../factories/LoggerFactory';
+import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper';
 
 export class EntityFacade {
   static async create(dto: CreateEntityDTO, inputFiles?: InputFile[]) {
@@ -13,28 +13,7 @@ export class EntityFacade {
 
       const parsed = CreateEntitySchema.parse(dto);
 
-      const input: CreateEntityUseCaseInput = {
-        templateId: parsed?.template?.toString(),
-        icon: parsed?.icon && {
-          id: parsed.icon._id!,
-          label: parsed.icon.label!,
-          type: parsed.icon.type!,
-        },
-
-        inputFiles,
-
-        propertyAssignments: [
-          {
-            name: 'title',
-            value: [{ value: parsed.title }],
-          },
-
-          ...(Object.entries(parsed.metadata || {}).map(([name, value]) => ({
-            name,
-            value,
-          })) as CreateEntityUseCaseInput['propertyAssignments']),
-        ],
-      };
+      const input = ExpressEntityMapper.toEntityCreateInput({ dto: parsed, inputFiles });
 
       const entity = await useCase.execute(input);
 

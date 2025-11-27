@@ -5,6 +5,14 @@ import { readFile } from 'fs/promises';
 
 /* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { Attachment } from 'api/core/domain/files/Attachment';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { Document } from 'api/core/domain/files/Document';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
@@ -12,26 +20,17 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Attachment } from 'api/core/domain/files/Attachment';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { Document } from 'api/core/domain/files/Document';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { InputFile } from 'api/core/domain/files/InputFile';
-import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { createHash } from 'crypto';
 import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FilesService } from '../FilesService';
-import { createHash } from 'crypto';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
 
 const f = getFixturesFactory();
 
@@ -85,66 +84,6 @@ describe('FilesService', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
-
-  describe('fromInputFiles', () => {
-    it('should return array of Documents/attachments', async () => {
-      const { service } = createSut();
-      const documentInput = new InputFile(
-        {
-          fieldname: '',
-          originalname: 'test-files.pdf',
-          mimetype: 'application/pdf',
-          encoding: 'encoding',
-          destination: '',
-          filename: '',
-          path: 'path',
-          size: 1,
-        },
-        'document'
-      );
-      const attachmentInput = new InputFile(
-        {
-          fieldname: '',
-          originalname: 'test-files.txt',
-          mimetype: 'text/plain',
-          encoding: 'encoding',
-          destination: '',
-          filename: '',
-          path: 'path',
-          size: 1,
-        },
-        'attachment'
-      );
-
-      const [document, attachment] = await service.fromInputFiles('entity', [
-        documentInput,
-        attachmentInput,
-      ]);
-
-      expect(document).toBeInstanceOf(Document);
-      expect(attachment).toBeInstanceOf(Attachment);
-      expect(document).toMatchObject({
-        id: expect.any(String),
-        entity: 'entity',
-        originalname: 'test-files.pdf',
-        mimetype: 'application/pdf',
-        size: 1,
-        filename: '',
-        status: 'processing',
-        creationDate: expect.any(Number),
-      });
-
-      expect(attachment).toMatchObject({
-        id: expect.any(String),
-        entity: 'entity',
-        originalname: 'test-files.txt',
-        mimetype: 'text/plain',
-        size: 1,
-        filename: '',
-        creationDate: expect.any(Number),
-      });
-    });
   });
 
   describe('storeFiles', () => {
