@@ -9,6 +9,8 @@ import { TestingDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import { elastic, search } from 'api/search';
 import { ObjectId } from 'mongodb';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity';
 
 const factory = getFixturesFactory();
@@ -102,19 +104,26 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = () => {
+type CreateSutProps = {
+  search?: typeof search;
+  jobsDispatcher?: JobsDispatcher;
+};
+
+const createSut = (props?: CreateSutProps) => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
-  const jobsDispatcher = TestingDispatcher(tenants.current().name);
+  const jobsDispatcher =
+    props?.jobsDispatcher ?? TestingDispatcher(tenants.current().name, transactionManager);
+  const searchInstance = props?.search ?? search;
 
   const sut = new BulkDeleteEntityUseCase({
-    search,
+    search: searchInstance,
     jobsDispatcher,
     idGenerator,
     transactionManager,
   });
 
-  return { sut };
+  return { sut, search };
 };
 
 describe('BulkDeleteEntityUseCase', () => {
@@ -167,6 +176,51 @@ describe('BulkDeleteEntityUseCase', () => {
 
     // Should deleted on elastic sync.
     expect(elasticResult.body.hits.hits.map(hit => hit._source.sharedId)).toEqual(['C1', 'C1']); // ES and EN
+  });
+
+  it('should not create jobs when search deletion fails', async () => {
+    const searchMock = TestUtils.mockClass<typeof search>({
+      bulkDeleteBySharedId: jest.fn().mockRejectedValue(new Error('Deletion failed')),
+    });
+
+    const { sut } = createSut({ search: searchMock });
+
+    const input: BulkDeleteEntityInput = {
+      sharedIds: ['A1', 'A2', 'B1'],
+    };
+
+    await expect(sut.execute(input)).rejects.toThrow('Deletion failed');
+
+    const jobs = await testingEnvironment.db.getAllFrom('jobs');
+
+    // Should not have created any jobs
+    expect(jobs.length).toBe(0);
+  });
+
+  it('should not delete on Elastic when dispatching of jobs fails', async () => {
+    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
+      dispatchMany: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
+    });
+
+    const { sut } = createSut({ jobsDispatcher });
+    const input: BulkDeleteEntityInput = {
+      sharedIds: ['A1', 'A2', 'B1'],
+    };
+
+    await expect(sut.execute(input)).rejects.toThrow('Dispatch failed');
+    const elasticResult = await elastic.search({ size: 100 });
+
+    // Should not delete on elastic
+    expect(elasticResult.body.hits.hits.map(hit => hit._source.sharedId)).toEqual([
+      'A1',
+      'A1',
+      'A2',
+      'A2',
+      'B1',
+      'B1',
+      'C1',
+      'C1',
+    ]);
   });
 
   it('should create jobs in chunks of 100 items', async () => {

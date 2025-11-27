@@ -6,6 +6,7 @@ import {
   getSharedConnection,
 } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { JobsRouter } from '../infrastructure/JobsRouter';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
@@ -25,10 +26,10 @@ export function RoundRobinQueueAdapter() {
   );
 }
 
-export function DefaultTestingQueueAdapter() {
+export function DefaultTestingQueueAdapter(transactionManager?: MongoTransactionManager) {
   return new MongoQueueAdapter(
     getConnection(),
-    new MongoTransactionManager(getClient(), LoggerFactory.default())
+    transactionManager ?? new MongoTransactionManager(getClient(), LoggerFactory.default())
   );
 }
 
@@ -45,9 +46,13 @@ export function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
   );
 }
 
-export function TestingDispatcher(tenant: string, queueOptions?: QueueOptions) {
+export function TestingDispatcher(tenant: string, transactionManager: TransactionManager) {
   return new JobsRouter(
     queueName =>
-      new NamespacedDispatcher(tenant, queueName, DefaultTestingQueueAdapter(), queueOptions)
+      new NamespacedDispatcher(
+        tenant,
+        queueName,
+        DefaultTestingQueueAdapter(transactionManager as MongoTransactionManager)
+      )
   );
 }

@@ -25,15 +25,15 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   protected async executeAsync(input: Input): Promise<Output> {
     const { sharedIds } = InputSchema.parse(input);
 
-    await this.deps.search.bulkDeleteBySharedId(sharedIds);
-
     const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
 
-    await ArrayUtils.sequentialFor(chunks, async chunk =>
-      this.jobsDispatcher.dispatchMany(async dispatch =>
-        dispatch(BatchDeleteEntityJob, { sharedIds: chunk })
-      )
-    );
+    await this.transactionManager.run(async () => {
+      await this.jobsDispatcher.dispatchMany(async dispatch =>
+        chunks.forEach(chunk => dispatch(BatchDeleteEntityJob, { sharedIds: chunk }))
+      );
+
+      await this.deps.search.bulkDeleteBySharedId(sharedIds);
+    });
 
     return input;
   }
