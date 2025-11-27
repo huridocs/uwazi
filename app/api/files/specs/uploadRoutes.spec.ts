@@ -368,22 +368,44 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
     });
   });
 
-  describe('DELETE/files', () => {
+  describe.each([
+    {
+      title: 'DELETE /files V1',
+      featureFlags: { v2DeleteFile: false },
+    },
+    {
+      title: 'DELETE /files V2',
+      featureFlags: { v2DeleteFile: true },
+    },
+  ])('$title', ({ featureFlags }) => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+      testingTenants.changeCurrentTenant({ featureFlags });
+    });
     it('should delete thumbnails asociated with documents deleted', async () => {
       mockCurrentUser(adminUser);
-      await uploadDocument('testing_files/english_testing_file.pdf');
-
+      await socketEmit('documentProcessed', async () =>
+        uploadDocument('testing_files/english_testing_file.pdf')
+      );
       const [file]: FileType[] = await files.get({
         originalname: 'english_testing_file.pdf',
       });
 
-      await request(app).delete('/api/files').query({
+      const response = await request(app).delete('/api/files').query({
         _id: file._id?.toString(),
+      });
+
+      expect(response).toHaveStatus(200);
+
+      const [deletedFile]: FileType[] = await files.get({
+        originalname: 'english_testing_file.pdf',
       });
 
       const [thumbnail]: FileType[] = await files.get({
         filename: `${file._id}.jpg`,
       });
+
+      expect(deletedFile).not.toBeDefined();
       expect(thumbnail).not.toBeDefined();
     });
   });

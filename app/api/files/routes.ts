@@ -1,9 +1,13 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
+import { FileDelete } from 'api/core/application/FileDelete';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
 import { DocumentUploadController } from 'api/core/infrastructure/express/files/DocumentUploadController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import entities from 'api/entities';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
@@ -386,24 +390,35 @@ export default (app: Application) => {
       },
     }),
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      await withTransaction(async () => {
-        const [fileToDelete] = await files.get({ _id: req.query._id });
-        if (
-          !fileToDelete ||
-          !(await checkEntityPermission(
-            fileToDelete,
-            permissionsContext.getUserInContext(),
-            'write'
-          ))
-        ) {
-          throw createError('file not found', 404);
-        }
+      if (tenants.current().featureFlags?.v2DeleteFile) {
+        const transactionManager = TransactionManagerFactory.fake();
+        const useCase = new FileDelete({
+          filesDS: FilesDataSourceFactory.default(transactionManager),
+          filesService: FilesServiceFactory.default(transactionManager),
+          transactionManager,
+        });
+        const response = await useCase.execute({ fileId: req.query._id });
+        res.json(response);
+      } else {
+        await withTransaction(async () => {
+          const [fileToDelete] = await files.get({ _id: req.query._id });
+          if (
+            !fileToDelete ||
+            !(await checkEntityPermission(
+              fileToDelete,
+              permissionsContext.getUserInContext(),
+              'write'
+            ))
+          ) {
+            throw createError('file not found', 404);
+          }
 
-        const [deletedFile] = await files.delete({ _id: req.query._id });
-        const thumbnailFileName = `${deletedFile._id}.jpg`;
-        await files.delete({ filename: thumbnailFileName });
-        res.json([deletedFile]);
-      }, 'DELETE /api/files');
+          const [deletedFile] = await files.delete({ _id: req.query._id });
+          const thumbnailFileName = `${deletedFile._id}.jpg`;
+          await files.delete({ filename: thumbnailFileName });
+          res.json([deletedFile]);
+        }, 'DELETE /api/files');
+      }
     }
   );
 

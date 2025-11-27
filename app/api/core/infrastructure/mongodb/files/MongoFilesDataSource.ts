@@ -4,6 +4,8 @@ import { LanguageUtils } from 'shared/language';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { FileContents, NullFileContents } from 'api/core/domain/files/FileContents';
+import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import {
   MongoDataSource,
   MongoDSOptions,
@@ -12,17 +14,17 @@ import { MongoResultSet } from 'api/core/infrastructure/mongodb/common/MongoResu
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { Result } from 'api/core/libs/Result';
 import { search } from 'api/search';
+import { FileStorage } from '../../../application/contracts/FileStorage';
 import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
 } from '../../../application/contracts/FilesDataSource';
+import { BaseDocument } from '../../../domain/files/BaseDocument';
 import { Document } from '../../../domain/files/Document';
 import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Segmentation } from '../../../domain/files/Segmentation';
 import { UwaziFile } from '../../../domain/files/UwaziFile';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
-import { BaseDocument } from '../../../domain/files/BaseDocument';
-import { FileStorage } from '../../../application/contracts/FileStorage';
 import { FileMappers } from './FilesMappers';
 import { SegmentationMapper } from './SegmentationMapper';
 import { fileDBO } from './schemas/filesTypes';
@@ -62,6 +64,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
+  getThumbnails(files: ProcessedDocument[]): ResultSet<Thumbnail> {
+    return new MongoResultSet<fileDBO, Thumbnail>(
+      this.getCollection().find({
+        filename: { $in: files.map(f => `${f.id}.jpg`) },
+      }),
+      async thumbnaildbo =>
+        FileMappers.toModel<Thumbnail>(
+          thumbnaildbo,
+          await this.fileStorage.getFile({
+            type: thumbnaildbo.type,
+            filename: thumbnaildbo.filename,
+          })
+        )
+    );
+  }
+
   async getProcessingById(fileId: string) {
     const processing = await this.getCollection().findOne({
       _id: new ObjectId(fileId),
@@ -96,6 +114,15 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
+  }
+
+  async delete(files: UwaziFile[]) {
+    await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
+    files
+      .filter(f => f instanceof BaseDocument)
+      .forEach(f => {
+        this.entitiesToIndex.add(f.entity);
+      });
   }
 
   async bulkCreate(files: [UwaziFile, ...UwaziFile[]]): Promise<void> {
@@ -242,14 +269,39 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file: ${filename} not found`));
     }
 
-    return Result.ok(
-      FileMappers.toModel(
-        dbo,
-        await this.fileStorage.getFile({
-          type: dbo.type,
-          filename: dbo.filename,
-        })
-      )
-    );
+    let contents: FileContents;
+
+    if (dbo.type === 'attachment' && dbo.url) {
+      contents = new NullFileContents();
+    } else {
+      contents = await this.fileStorage.getFile({
+        type: dbo.type,
+        filename: dbo.filename,
+      });
+    }
+
+    return Result.ok(FileMappers.toModel(dbo, contents));
+  }
+
+  async getById(id: string) {
+    const dbo = await this.getCollection().findOne({
+      _id: new ObjectId(id),
+    });
+    if (!dbo) {
+      return Result.fail(new FileNotFound(`file with id: ${id} not found`));
+    }
+
+    let contents: FileContents;
+
+    if (dbo.type === 'attachment' && dbo.url) {
+      contents = new NullFileContents();
+    } else {
+      contents = await this.fileStorage.getFile({
+        type: dbo.type,
+        filename: dbo.filename,
+      });
+    }
+
+    return Result.ok(FileMappers.toModel(dbo, contents));
   }
 }
