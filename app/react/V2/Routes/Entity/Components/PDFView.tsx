@@ -7,6 +7,7 @@ import { getPagePlaintext } from 'V2/api/files';
 import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate } from 'V2/Components/UI';
+import { Panel } from 'V2/Components/Layouts/Panel';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
@@ -94,94 +95,101 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
   return (
-    <div className="flex flex-col h-full gap-2 min-h-0">
-      <div className="w-full p-4 rounded-md bg-gray-50">
-        <div className="flex flex-row justify-between gap-2">
-          <div>
-            <TemplateLabel
-              label={entity.template?.label || ''}
-              templateId={entity.template?._id}
-              color={entity.template?.color}
-            />
+    <Panel className="gap-2">
+      <Panel.Body>
+        <div className="flex flex-col gap-2 pb-20">
+          <div className="w-full p-4 rounded-md bg-gray-50">
+            <div className="flex flex-row justify-between gap-2">
+              <div>
+                <TemplateLabel
+                  label={entity.template?.label || ''}
+                  templateId={entity.template?._id}
+                  color={entity.template?.color}
+                />
+              </div>
+              <div>
+                <label htmlFor="render-mode" className="sr-only">
+                  <Translate>View</Translate>
+                </label>
+                <select
+                  id="render-mode"
+                  className="bg-white rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800"
+                  value={isRaw ? 'raw' : 'normal'}
+                  onChange={onDisplayModeChange}
+                >
+                  <option value="raw">{t('System', 'Plain text', null, false)}</option>
+                  <option value="normal">{t('System', 'PDF', null, false)}</option>
+                </select>
+              </div>
+            </div>
+            <Truncate maxLength={80}>
+              <h2 className="font-bold text-gray-900 mt-2 text-lg">{originalname}</h2>
+            </Truncate>
           </div>
-          <div>
-            <label htmlFor="render-mode" className="sr-only">
-              <Translate>View</Translate>
-            </label>
-            <select
-              id="render-mode"
-              className="bg-white rounded-md border-gr border-indigo-100 px-4 py-0 text-indigo-800"
-              value={isRaw ? 'raw' : 'normal'}
-              onChange={onDisplayModeChange}
+          <div
+            className={`flex-1 min-h-0 overflow-y-auto ${firstRender || isRaw ? 'hidden' : 'block'}`}
+          >
+            <PDF fileUrl={`/api/files/${filename}`} />
+          </div>
+          <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
+            <PlainText text={pageText} />
+          </div>
+        </div>
+      </Panel.Body>
+
+      <Panel.Footer>
+        <div className="flex flex-row items-center w-full">
+          <div className="justify-self-start grow">
+            {ocrServiceEnabled && entity.mainDocument && (
+              <NeedAuthorization roles={['admin', 'editor']}>
+                <OCRButton file={entity.mainDocument} />
+              </NeedAuthorization>
+            )}
+          </div>
+          <div className="justify-self-end flex items-center gap-2 font-medium">
+            <button
+              type="button"
+              onClick={() => {
+                if (isRaw) {
+                  updatePageParam(prevPage);
+                } else {
+                  scrollToPage(prevPage);
+                }
+              }}
+              disabled={pageNumber <= 1}
+              className="text-primary-700 disabled:text-gray-500"
             >
-              <option value="raw">{t('System', 'Plain text', null, false)}</option>
-              <option value="normal">{t('System', 'PDF', null, false)}</option>
-            </select>
+              <Translate>Previous</Translate>
+            </button>
+            <div className="text-base text-primary-900">
+              {pageNumber} / {totalPages}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (isRaw) {
+                  updatePageParam(nextPage);
+                } else {
+                  scrollToPage(nextPage);
+                }
+              }}
+              disabled={totalPages ? nextPage > totalPages : false}
+              className="text-primary-700 disabled:text-gray-500"
+            >
+              <Translate>Next</Translate>
+            </button>
+          </div>
+          <div className="sr-only">
+            <a href={`?${getPageSearchParams(prevPage).toString()}`} rel="prev">
+              {t('System', 'Previous', null, false)}
+            </a>
+            <a href={`?${getPageSearchParams(nextPage).toString()}`} rel="next">
+              {t('System', 'Next', null, false)}
+            </a>
           </div>
         </div>
-        <Truncate maxLength={80}>
-          <h2 className="font-bold text-gray-900 mt-2 text-lg">{originalname}</h2>
-        </Truncate>
-      </div>
-      <div
-        className={`flex-1 min-h-0 overflow-y-auto ${firstRender || isRaw ? 'hidden' : 'block'}`}
-      >
-        <PDF fileUrl={`/api/files/${filename}`} />
-      </div>
-      <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
-        <PlainText text={pageText} />
-      </div>
-      <div className="flex flex-row">
-        <div className="justify-self-start grow">
-          {ocrServiceEnabled && entity.mainDocument && (
-            <NeedAuthorization roles={['admin', 'editor']}>
-              <OCRButton file={entity.mainDocument} />
-            </NeedAuthorization>
-          )}
-        </div>
-        <div className="justify-self-end flex items-center gap-2 font-medium">
-          <button
-            type="button"
-            onClick={() => {
-              if (isRaw) {
-                updatePageParam(prevPage);
-              } else {
-                scrollToPage(prevPage);
-              }
-            }}
-            disabled={pageNumber <= 1}
-            className="text-primary-700 disabled:text-gray-500"
-          >
-            <Translate>Previous</Translate>
-          </button>
-          <div className="text-primary-900">
-            {pageNumber} / {totalPages}
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              if (isRaw) {
-                updatePageParam(nextPage);
-              } else {
-                scrollToPage(nextPage);
-              }
-            }}
-            disabled={totalPages ? nextPage > totalPages : false}
-            className="text-primary-700 disabled:text-gray-500"
-          >
-            <Translate>Next</Translate>
-          </button>
-        </div>
-        <div className="sr-only">
-          <a href={`?${getPageSearchParams(prevPage).toString()}`} rel="prev">
-            {t('System', 'Previous', null, false)}
-          </a>
-          <a href={`?${getPageSearchParams(nextPage).toString()}`} rel="next">
-            {t('System', 'Next', null, false)}
-          </a>
-        </div>
-      </div>
-    </div>
+      </Panel.Footer>
+    </Panel>
   );
 };
 
