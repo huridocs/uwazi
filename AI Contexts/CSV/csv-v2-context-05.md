@@ -204,6 +204,7 @@ Idempotency:
 
 ### 11. TODOs & tech debt
 
+0. **Populate existing value IDs**: we currently write the newly generated `_id`s for inserted roots/children to `appliedValues`, but we do not keep the IDs for existing entries. As a result downstream stages must re-fetch the thesauri to resolve IDs before entity creation. Capture those IDs during thesauri creation when we already have the full documents so later jobs can read mappings without another round-trip.
 1. **DS/domain cleanup**: finish moving any shaping/aggregation logic out of `MongoCsvImportThesauriValuesDataSource` into domain helpers so the DS is pure CRUD.
 2. **Legacy adapter hardening**: replace `LegacyThesauriRepository` / `LegacyTranslationsRepository` with proper transaction-aware v2 repositories so we can drop direct `api/thesauri` and `api/i18n/translations` dependencies.
 3. **Relationships preflight follow-up**: once that stage exists, ensure it reads `appliedValues`, emits tenant-admin events, and inherits the lint/TS rules defined here.
