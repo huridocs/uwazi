@@ -7,6 +7,8 @@ import { search } from 'api/search';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import entities from 'api/entities';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
@@ -26,12 +28,21 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
         transactionManager
       );
 
-      const useCase = new RequestBulkDeleteEntityUseCase({
-        entityPermissionChecker,
-        search,
-        jobsDispatcher,
-        transactionManager,
-      });
+      const entitiesDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager
+      );
+
+      const useCase = new RequestBulkDeleteEntityUseCase(
+        {
+          entitiesDS,
+          entityPermissionChecker,
+          search,
+          jobsDispatcher,
+          transactionManager,
+        },
+        { actor: permissionsContext.getUserInContext()!, tenant: tenants.current()! }
+      );
 
       await useCase.execute(this.request.body);
 

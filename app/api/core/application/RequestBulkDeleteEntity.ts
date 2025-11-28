@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { search } from 'api/search';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
 import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
 import { BulkDeleteEntityJob } from '../infrastructure/jobs/BatchDeleteEntityJob';
@@ -17,6 +18,7 @@ type Input = z.infer<typeof InputSchema>;
 type Output = Input;
 
 type Deps = {
+  entitiesDS: MultiLanguageEntityDataSource;
   search: typeof search;
   entityPermissionChecker: EntityPermissionChecker;
 };
@@ -49,6 +51,7 @@ class RequestBulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps
         )
       );
 
+      await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
       await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
     });
 

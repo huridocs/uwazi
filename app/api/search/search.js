@@ -895,7 +895,6 @@ const search = {
       },
       conflicts: 'proceed',
       wait_for_completion: true,
-      refresh: true,
     });
   },
 
