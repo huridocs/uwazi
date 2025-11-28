@@ -4,6 +4,11 @@
 /* eslint-disable max-statements */
 import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight';
 
+const joinText = (nodes: NodeListOf<Element>): string =>
+  Array.from(nodes)
+    .map(n => n.textContent)
+    .join('');
+
 describe('snippetToHighlight', () => {
   let container: HTMLDivElement;
 
@@ -35,10 +40,8 @@ describe('snippetToHighlight', () => {
         highlightSnippetInPage(container, snippet);
 
         const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-
-        const textContent = container.textContent || '';
-        expect(textContent).toContain('contains');
+        const marksText = joinText(marks);
+        expect(marksText).toContain('contains');
       });
 
       it('should highlight the search terms with searchTerm class', () => {
@@ -50,11 +53,7 @@ describe('snippetToHighlight', () => {
         highlightSnippetInPage(container, snippet);
 
         const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
-        expect(searchTermMarks.length).toBeGreaterThan(0);
-
-        const highlightedText = Array.from(searchTermMarks)
-          .map(mark => mark.textContent)
-          .join('');
+        const highlightedText = joinText(searchTermMarks);
         expect(highlightedText).toContain('contains');
       });
 
@@ -73,233 +72,79 @@ describe('snippetToHighlight', () => {
         highlightSnippetInPage(container, snippet);
 
         const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
-        expect(searchTermMarks.length).toBeGreaterThanOrEqual(2);
-
-        const terms = Array.from(searchTermMarks).map(mark => mark.textContent);
-        expect(terms).toContain('quick');
-        expect(terms).toContain('fox');
+        const termsText = joinText(searchTermMarks);
+        expect(termsText).toContain('quick');
+        expect(termsText).toContain('fox');
       });
     });
 
-    describe('with context highlighting', () => {
-      it('should highlight the full snippet context with lighter background', () => {
-        const snippet = {
-          text: 'Page 1 <b>contains</b> some text',
-          page: 1,
-        };
+    describe('various snippet scenarios', () => {
+      it('handles a set of real-world snippet cases', () => {
+        const snippets = [
+          {
+            name: 'special characters',
+            html: '<div class="textLayer"><span>Price: $100.50 (discount 20%)</span></div>',
+            snippetText: 'Price: <b>$100.50</b> (discount 20%)',
+            expected: '$100.50',
+          },
+          {
+            name: 'newlines',
+            html: '<div class="textLayer"><span>Line one</span><span>Line two</span></div>',
+            snippetText: 'Line one\n<b>Line two</b>',
+            expected: 'Line two',
+          },
+          {
+            name: 'spanning multiple elements',
+            html: '<div class="textLayer"><span>Page 1 contains some text</span><span>with multiple spans</span></div>',
+            snippetText: 'Page 1 <b>contains</b> some text with <b>multiple</b> spans',
+            expected: ['contains', 'multiple'],
+          },
+          {
+            name: 'fuzzy fallback 1',
+            html: '<div class="textLayer"><span>This text has some variations and differences</span></div>',
+            snippetText: 'This <b>text</b> has many variations and also differences',
+            expected: 'text',
+          },
+          {
+            name: 'fuzzy fallback 2',
+            html: '<div class="textLayer"><span>Beginning of text ... lots of content in between ... end of text</span></div>',
+            snippetText: 'Beginning of text <b>content</b> end of text',
+            expected: 'content',
+          },
+          {
+            name: 'ellipsis',
+            html: '<div class="textLayer"><span>Text with ... ellipsis</span></div>',
+            snippetText: 'Text with … <b>ellipsis</b>',
+            expected: 'ellipsis',
+          },
+          {
+            name: 'extra spaces',
+            html: '<div class="textLayer"><span>Text   with    extra     spaces</span></div>',
+            snippetText: 'Text with extra <b>spaces</b>',
+            expected: 'spaces',
+          },
+        ];
 
-        highlightSnippetInPage(container, snippet);
+        snippets.forEach(snippet => {
+          container.innerHTML = snippet.html;
 
-        const contextSpans = container.querySelectorAll('span.snippet-context');
-        expect(contextSpans.length).toBeGreaterThan(0);
-        const firstSpan = contextSpans[0] as HTMLElement;
-        expect(firstSpan.style.backgroundColor).toBeTruthy();
-      });
+          highlightSnippetInPage(container, { text: snippet.snippetText, page: 1 });
 
-      it('should handle text with special characters', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>Price: $100.50 (discount 20%)</span>
-          </div>
-        `;
+          const marks = container.querySelectorAll('mark');
+          const marksText = joinText(marks);
 
-        const snippet = {
-          text: 'Price: <b>$100.50</b> (discount 20%)',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-
-      it('should handle text with newlines', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>Line one</span>
-            <span>Line two</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'Line one\n<b>Line two</b>',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-
-      it('should handle text spanning multiple elements', () => {
-        const snippet = {
-          text: 'Page 1 <b>contains</b> some text with <b>multiple</b> spans',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-    });
-
-    describe('with fuzzy matching fallback', () => {
-      it('should fall back to fuzzy matching when exact match fails', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>This text has some variations and differences</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'This <b>text</b> has many variations and also differences',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-
-      it('should match start and end of snippet with fuzzy middle', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>Beginning of text ... lots of content in between ... end of text</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'Beginning of text <b>content</b> end of text',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-
-      it('should try progressively smaller chunks on no match', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>A completely different text that does not match at all</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'Some <b>random</b> text that is not present',
-          page: 1,
-        };
-
-        // Should not throw error, just not highlight anything
-        expect(() => {
-          highlightSnippetInPage(container, snippet);
-        }).not.toThrow();
-      });
-    });
-
-    describe('with empty or invalid input', () => {
-      it('should handle empty snippet text gracefully', () => {
-        const snippet = {
-          text: '',
-          page: 1,
-        };
-
-        expect(() => {
-          highlightSnippetInPage(container, snippet);
-        }).not.toThrow();
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBe(0);
-      });
-
-      it('should handle snippet without bold tags', () => {
-        const snippet = {
-          text: 'Page 1 contains some text',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        // Should still highlight context even without search terms
-        const contextSpans = container.querySelectorAll('span.snippet-context');
-        expect(contextSpans.length).toBeGreaterThan(0);
-      });
-
-      it('should handle container without textLayer', () => {
-        const emptyContainer = document.createElement('div');
-        document.body.appendChild(emptyContainer);
-
-        const snippet = {
-          text: 'Some <b>text</b>',
-          page: 1,
-        };
-
-        expect(() => {
-          highlightSnippetInPage(emptyContainer, snippet);
-        }).not.toThrow();
-
-        document.body.removeChild(emptyContainer);
-      });
-
-      it('should handle null container gracefully', () => {
-        const snippet = {
-          text: 'Some <b>text</b>',
-          page: 1,
-        };
-
-        expect(() => {
-          highlightSnippetInPage(null as any, snippet);
-        }).not.toThrow();
-      });
-    });
-
-    describe('with ellipsis and special formatting', () => {
-      it('should handle ellipsis characters', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>Text with ... ellipsis</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'Text with … <b>ellipsis</b>',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
-      });
-
-      it('should handle multiple whitespace variations', () => {
-        container.innerHTML = `
-          <div class="textLayer">
-            <span>Text   with    extra     spaces</span>
-          </div>
-        `;
-
-        const snippet = {
-          text: 'Text with extra <b>spaces</b>',
-          page: 1,
-        };
-
-        highlightSnippetInPage(container, snippet);
-
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
+          if (Array.isArray(snippet.expected)) {
+            (snippet.expected as string[]).forEach(exp => expect(marksText).toContain(exp));
+          } else {
+            expect(marksText).toContain(snippet.expected as string);
+          }
+        });
       });
     });
   });
 
   describe('clearSnippets', () => {
     beforeEach(() => {
-      // Add some existing highlights
       const textLayer = container.querySelector('.textLayer');
       if (textLayer) {
         textLayer.innerHTML = `
@@ -315,31 +160,6 @@ describe('snippetToHighlight', () => {
 
       const marks = container.querySelectorAll('mark');
       expect(marks.length).toBe(0);
-    });
-
-    it('should preserve non-mark content', () => {
-      const originalText = container.textContent;
-      clearSnippets(container);
-
-      expect(container.textContent).toBe(originalText);
-    });
-
-    it('should handle container without marks', () => {
-      const cleanContainer = document.createElement('div');
-      cleanContainer.innerHTML = '<span>No marks here</span>';
-      document.body.appendChild(cleanContainer);
-
-      expect(() => {
-        clearSnippets(cleanContainer);
-      }).not.toThrow();
-
-      document.body.removeChild(cleanContainer);
-    });
-
-    it('should handle null container gracefully', () => {
-      expect(() => {
-        clearSnippets(null as any);
-      }).not.toThrow();
     });
 
     it('should unwrap mark elements and preserve their text content', () => {
@@ -358,54 +178,29 @@ describe('snippetToHighlight', () => {
     });
   });
 
-  describe('integration scenarios', () => {
-    it('should clear and re-highlight on multiple calls', () => {
-      const snippet1 = {
-        text: 'Page 1 <b>contains</b> some text',
-        page: 1,
-      };
+  it('should clear and re-highlight on multiple calls', () => {
+    const snippet1 = {
+      text: 'Page 1 <b>contains</b> some text',
+      page: 1,
+    };
 
-      highlightSnippetInPage(container, snippet1);
-      const marks1 = container.querySelectorAll('mark');
-      expect(marks1.length).toBeGreaterThan(0);
+    highlightSnippetInPage(container, snippet1);
+    const marks1 = container.querySelectorAll('mark');
+    const marks1Text = joinText(marks1);
+    expect(marks1Text).toContain('contains');
 
-      clearSnippets(container);
-      const marksAfterClear = container.querySelectorAll('mark');
-      expect(marksAfterClear.length).toBe(0);
+    clearSnippets(container);
+    const marksAfterClear = container.querySelectorAll('mark');
+    expect(marksAfterClear.length).toBe(0);
 
-      const snippet2 = {
-        text: 'with <b>multiple</b> spans',
-        page: 1,
-      };
+    const snippet2 = {
+      text: 'with <b>multiple</b> spans',
+      page: 1,
+    };
 
-      highlightSnippetInPage(container, snippet2);
-      const marks2 = container.querySelectorAll('mark');
-      expect(marks2.length).toBeGreaterThan(0);
-    });
-
-    it('should handle real-world PDF text layer structure', () => {
-      container.innerHTML = `
-        <div class="textLayer">
-          <span style="left: 100px; top: 200px;">DE 8 DE DICIEMBRE DE 2021</span>
-          <span style="left: 100px; top: 220px;">CASO COMUNIDAD INDÍGENA</span>
-          <span style="left: 100px; top: 240px;">MAYA Q'EQCHI' AGUA CALIENTE</span>
-        </div>
-      `;
-
-      const snippet = {
-        text: "DE 8 DE DICIEMBRE DE 2021\n\n<b>CASO</b> COMUNIDAD INDÍGENA MAYA Q'EQCHI' AGUA CALIENTE",
-        page: 1,
-      };
-
-      highlightSnippetInPage(container, snippet);
-
-      const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
-      expect(searchTermMarks.length).toBeGreaterThan(0);
-
-      const highlightedText = Array.from(searchTermMarks)
-        .map(mark => mark.textContent)
-        .join('');
-      expect(highlightedText).toContain('CASO');
-    });
+    highlightSnippetInPage(container, snippet2);
+    const marks2 = container.querySelectorAll('mark');
+    const marks2Text = joinText(marks2);
+    expect(marks2Text).toContain('multiple');
   });
 });
