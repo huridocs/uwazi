@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { settingsAtom, userAtom } from 'V2/atoms';
