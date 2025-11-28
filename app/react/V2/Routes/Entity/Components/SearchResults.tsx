@@ -16,7 +16,7 @@ import { ClientTemplateSchema } from 'V2/shared/types';
 import { SEARCH_PARAM } from './urlParams';
 import { searchHintsModalAtom } from './atoms';
 import { LoaderResponse } from './types';
-import { scrollToPage } from './functions';
+import { scrollToSnippet } from './functions';
 import { NoSearch, NoResults } from './BlankState';
 
 type FormValues = {
@@ -68,6 +68,7 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
   const templates = useAtomValue(templatesAtom);
 
@@ -190,14 +191,28 @@ const SearchResults = () => {
                             tabIndex={0}
                             aria-pressed={isActive}
                             onClick={() => {
-                              setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                              scrollToPage(pageText.page);
+                              const newActive = activeSnippet === snippetKey ? null : snippetKey;
+                              setActiveSnippet(newActive);
+
+                              if (newActive) {
+                                scrollToSnippet(
+                                  { text: pageText.text, page: pageText.page },
+                                  currentPage
+                                );
+                              }
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                                setActiveSnippet(prev => (prev === snippetKey ? null : snippetKey));
-                                scrollToPage(pageText.page);
+                                const newActive = activeSnippet === snippetKey ? null : snippetKey;
+                                setActiveSnippet(newActive);
+
+                                if (newActive) {
+                                  scrollToSnippet(
+                                    { text: pageText.text, page: pageText.page },
+                                    currentPage
+                                  );
+                                }
                               }
                             }}
                             className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition

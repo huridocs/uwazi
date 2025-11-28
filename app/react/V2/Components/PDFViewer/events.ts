@@ -1,9 +1,17 @@
-type EventType = 'onPageChange' | 'goToPage' | 'pdfReady';
+interface Snippet {
+  text: string;
+  page: number;
+  filename?: string;
+}
+
+type EventType = 'onPageChange' | 'goToPage' | 'pdfReady' | 'activateSnippet' | 'deactivateSnippet';
 
 interface EventPayloadMap {
   onPageChange: number;
   goToPage: number;
   pdfReady: void;
+  activateSnippet: Snippet;
+  deactivateSnippet: void;
 }
 
 interface Subscription {
@@ -51,4 +59,5 @@ class EventBus {
 
 const pdfEventBus = new EventBus();
 
+export type { Snippet };
 export { pdfEventBus };
