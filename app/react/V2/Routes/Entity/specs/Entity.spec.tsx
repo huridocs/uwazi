@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { settingsAtom, userAtom } from 'V2/atoms';
@@ -375,7 +375,9 @@ describe('Entity view', () => {
       expect(screen.getByText('Page 3')).toBeInTheDocument();
     });
 
-    it('should scroll to the page of the result', async () => {
+    it('should scroll to the page and then to the snippet of the result', async () => {
+      jest.useFakeTimers();
+
       const snippets = {
         data: [
           {
@@ -401,9 +403,18 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       const pageButton = screen.getByText('Page 5');
+
       fireEvent.click(pageButton);
 
+      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('deactivateSnippet');
       expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('goToPage', 5);
+
+      jest.advanceTimersByTime(100);
+
+      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith(
+        'activateSnippet',
+        snippets.data[0].snippets.fullText[0]
+      );
 
       jest.clearAllMocks();
     });
