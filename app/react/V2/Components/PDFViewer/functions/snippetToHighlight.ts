@@ -1,3 +1,5 @@
+import sanitizeHtml from 'sanitize-html';
+
 interface Snippet {
   text: string;
   page: number;
@@ -9,17 +11,21 @@ const SEARCH_TERM_CLASS = 'snippet-search-term';
 const SNIPPET_CONTEXT_BACKGROUND = 'rgba(247, 168, 168, 1)';
 const SEARCH_TERM_BACKGROUND = 'rgba(255, 74, 74, 0.6)';
 
-const textToMatcherRegExp = (text: string): string =>
-  text
+const textToMatcherRegExp = (text: string): string => {
+  const sanitized = sanitizeHtml(text, { allowedTags: [], allowedAttributes: {} });
+  return sanitized
     .replace(/…/g, '...')
     .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
-    .replace(/<[^>]*>/g, '')
     .replace(/\s+/g, '\\s*')
     .replace(/\n/g, '\\s*');
+};
 
 const extractSearchTerms = (snippetText: string): string[] => {
   const rawMatches = snippetText.match(/<b>(.|\n)*?<\/b>/g);
-  return rawMatches ? rawMatches.map(m => m.replace(/<.*?>/g, '')) : [];
+  const sanitized = rawMatches
+    ? rawMatches.map(match => sanitizeHtml(match, { allowedTags: [], allowedAttributes: {} }))
+    : [];
+  return sanitized;
 };
 
 // eslint-disable-next-line max-statements
