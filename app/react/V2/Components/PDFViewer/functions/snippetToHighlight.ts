@@ -4,6 +4,11 @@ interface Snippet {
   filename?: string;
 }
 
+const SNIPPET_CONTEXT_CLASS = 'snippet-context';
+const SEARCH_TERM_CLASS = 'snippet-search-term';
+const SNIPPET_CONTEXT_BACKGROUND = 'rgba(255, 200, 150, 0.3)';
+const SEARCH_TERM_BACKGROUND = 'rgba(255, 150, 50, 0.6)';
+
 const textToMatcherRegExp = (text: string): string =>
   text
     .replace(/…/g, '...')
@@ -35,6 +40,7 @@ const wrapTextWithMark = (
 
   const mark = document.createElement('mark');
   mark.className = className;
+  mark.style.backgroundColor = SEARCH_TERM_BACKGROUND;
   mark.textContent = matchText;
   fragment.appendChild(mark);
 
@@ -48,12 +54,15 @@ const wrapTextWithMark = (
 // eslint-disable-next-line max-statements
 const highlightTextInNode = (textNode: Text, searchText: string, className: string): void => {
   const parent = textNode.parentNode;
+
   if (!parent) {
     return;
   }
 
   const text = textNode.textContent || '';
+
   const index = text.toLowerCase().indexOf(searchText.toLowerCase());
+
   if (index === -1) {
     return;
   }
@@ -61,69 +70,36 @@ const highlightTextInNode = (textNode: Text, searchText: string, className: stri
   parent.replaceChild(wrapTextWithMark(text, index, searchText.length, className), textNode);
 
   const lastNode = parent.childNodes[parent.childNodes.length - 1];
+
   if (lastNode?.nodeType === Node.TEXT_NODE) {
     highlightTextInNode(lastNode as Text, searchText, className);
   }
 };
 
-const collectTextNodesFromWalker = (walker: TreeWalker): Text[] => {
-  const nodes: Text[] = [];
-  let currentNode = walker.nextNode();
-
-  const processNode = (node: Node | null): Node | null => {
-    if (node?.textContent?.trim()) {
-      nodes.push(node as Text);
-    }
-    return walker.nextNode();
-  };
-
-  while (currentNode) {
-    currentNode = processNode(currentNode);
-  }
-
-  return nodes;
-};
-
 const highlightText = (container: HTMLElement, searchText: string, className: string): void => {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
-  const textNodes = collectTextNodesFromWalker(walker);
+  let node = walker.nextNode();
 
-  textNodes.forEach(textNode => {
-    highlightTextInNode(textNode, searchText, className);
-  });
-};
-
-const processNodeForRegexMatch = (params: {
-  node: Node;
-  currentPos: number;
-  matchStart: number;
-  matchEnd: number;
-  className: string;
-}) => {
-  const { node, currentPos, matchStart, matchEnd, className } = params;
-  const nodeText = node.textContent || '';
-  const nodeStart = currentPos;
-  const nodeEnd = currentPos + nodeText.length;
-
-  if (nodeEnd > matchStart && nodeStart < matchEnd && node.parentNode) {
-    const overlapStart = Math.max(0, matchStart - nodeStart);
-    const overlapEnd = Math.min(nodeText.length, matchEnd - nodeStart);
-    node.parentNode.replaceChild(
-      wrapTextWithMark(nodeText, overlapStart, overlapEnd - overlapStart, className),
-      node
-    );
+  while (node) {
+    if (node.textContent?.trim()) {
+      highlightTextInNode(node as Text, searchText, className);
+    }
+    node = walker.nextNode();
   }
-
-  return nodeEnd;
 };
 
 // eslint-disable-next-line max-statements
-const highlightRegex = (container: HTMLElement, pattern: RegExp, className: string): boolean => {
+const highlightRegex = (
+  container: HTMLElement,
+  pattern: RegExp,
+  className: string
+): HTMLElement[] => {
   const match = pattern.exec(container.textContent || '');
   if (!match) {
-    return false;
+    return [];
   }
 
+  const markedSpans = new Set<HTMLElement>();
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
   const matchStart = match.index;
   const matchEnd = match.index + match[0].length;
@@ -131,11 +107,32 @@ const highlightRegex = (container: HTMLElement, pattern: RegExp, className: stri
   let node = walker.nextNode();
 
   while (node) {
-    currentPos = processNodeForRegexMatch({ node, currentPos, matchStart, matchEnd, className });
+    const nodeEnd = currentPos + (node.textContent || '').length;
+
+    if (nodeEnd > matchStart && currentPos < matchEnd && node.parentNode) {
+      const parent = node.parentNode as HTMLElement;
+      if (parent.classList) {
+        parent.classList.add(className);
+        parent.style.backgroundColor = SNIPPET_CONTEXT_BACKGROUND;
+        markedSpans.add(parent);
+      }
+    }
+
+    currentPos = nodeEnd;
     node = walker.nextNode();
   }
 
-  return true;
+  return Array.from(markedSpans);
+};
+
+const highlightSearchTermsInSpans = (spans: HTMLElement[], searchTerms: string[]): void => {
+  if (spans.length === 0) {
+    return;
+  }
+
+  spans.forEach(span => {
+    searchTerms.forEach(term => highlightText(span, term, SEARCH_TERM_CLASS));
+  });
 };
 
 const tryHighlightWithFuzzyMatch = (
@@ -143,21 +140,22 @@ const tryHighlightWithFuzzyMatch = (
   snippetText: string,
   searchTerms: string[]
 ): boolean => {
-  const chunkLengths = Array.from({ length: 4 }, (_, i) => 20 - i * 5);
+  // Try with 15 chars first, then 10 if that fails
+  const chunkLengths = [15, 10];
 
   return chunkLengths.some(chunkLength => {
     const startText = textToMatcherRegExp(snippetText.substring(0, chunkLength));
-    const endText = textToMatcherRegExp(
-      snippetText.substring(
-        Math.max(0, snippetText.length - chunkLength - 1),
-        snippetText.length - 1
-      )
-    );
+    const endText = textToMatcherRegExp(snippetText.substring(snippetText.length - chunkLength));
 
     const fuzzyPattern = `${startText}.{1,200}${endText}`;
 
-    if (highlightRegex(textLayer, new RegExp(fuzzyPattern, 'i'), 'bg-primary-100')) {
-      searchTerms.forEach(term => highlightText(textLayer, term, 'searchTerm bg-yellow-200'));
+    const markedSpans = highlightRegex(
+      textLayer,
+      new RegExp(fuzzyPattern, 'i'),
+      SNIPPET_CONTEXT_CLASS
+    );
+    if (markedSpans.length > 0) {
+      highlightSearchTermsInSpans(markedSpans, searchTerms);
       return true;
     }
 
@@ -165,34 +163,18 @@ const tryHighlightWithFuzzyMatch = (
   });
 };
 
-const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet): void => {
-  if (!container || !snippet.text) {
-    return;
-  }
-
-  const textLayer = container.querySelector('.textLayer') as HTMLElement;
-
-  if (!textLayer) {
-    return;
-  }
-
-  const searchTerms = extractSearchTerms(snippet.text);
-  const contextPattern = textToMatcherRegExp(snippet.text);
-
-  if (highlightRegex(textLayer, new RegExp(contextPattern, 'i'), 'bg-primary-100')) {
-    searchTerms.forEach(term => highlightText(textLayer, term, 'searchTerm bg-yellow-200'));
-  } else if (searchTerms.length > 0) {
-    tryHighlightWithFuzzyMatch(textLayer, snippet.text, searchTerms);
-  }
-};
-
-const clearHighlights = (container: HTMLElement | null): void => {
+const clearSnippets = (container: HTMLElement | null): void => {
   if (!container) {
     return;
   }
 
-  const marks = container.querySelectorAll('mark');
-  marks.forEach(mark => {
+  container.querySelectorAll(`.${SNIPPET_CONTEXT_CLASS}`)?.forEach(el => {
+    const element = el as HTMLElement;
+    element.classList.remove(SNIPPET_CONTEXT_CLASS);
+    element.style.backgroundColor = '';
+  });
+
+  container.querySelectorAll('mark')?.forEach(mark => {
     const parent = mark.parentNode;
     if (parent) {
       const children = Array.from(mark.childNodes);
@@ -202,4 +184,40 @@ const clearHighlights = (container: HTMLElement | null): void => {
   });
 };
 
-export { clearHighlights, highlightSnippetInPage };
+const performHighlighting = (
+  textLayer: HTMLElement,
+  snippet: Snippet,
+  searchTerms: string[]
+): void => {
+  const contextPattern = textToMatcherRegExp(snippet.text);
+  const markedSpans = highlightRegex(
+    textLayer,
+    new RegExp(contextPattern, 'i'),
+    SNIPPET_CONTEXT_CLASS
+  );
+
+  if (markedSpans.length > 0) {
+    highlightSearchTermsInSpans(markedSpans, searchTerms);
+  } else if (searchTerms.length > 0) {
+    tryHighlightWithFuzzyMatch(textLayer, snippet.text, searchTerms);
+  }
+};
+
+const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet): void => {
+  if (!container || !snippet.text) {
+    return;
+  }
+
+  clearSnippets(container);
+
+  const textLayer = container.querySelector('.textLayer') as HTMLElement;
+
+  if (!textLayer) {
+    return;
+  }
+
+  const searchTerms = extractSearchTerms(snippet.text);
+  performHighlighting(textLayer, snippet, searchTerms);
+};
+
+export { clearSnippets, highlightSnippetInPage };

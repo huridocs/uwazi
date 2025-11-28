@@ -8,7 +8,7 @@ import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
 import { TextHighlight } from './types';
 import { triggerScroll } from './functions/helpers';
 import { pdfEventBus } from './events';
-import { highlightSnippetInPage, clearHighlights } from './functions/snippetToHighlight';
+import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage
@@ -130,7 +130,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
       const onDeactivateSnippetHandler = () => {
         Object.values(pageRefsMap.current).forEach(container => {
           if (container) {
-            clearHighlights(container);
+            clearSnippets(container);
           }
         });
       };

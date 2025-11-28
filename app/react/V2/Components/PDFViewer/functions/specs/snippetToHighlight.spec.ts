@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { highlightSnippetInPage, clearHighlights } from '../snippetToHighlight';
+import { highlightSnippetInPage, clearSnippets } from '../snippetToHighlight';
 
 describe('snippetToHighlight', () => {
   let container: HTMLDivElement;
@@ -49,7 +49,7 @@ describe('snippetToHighlight', () => {
 
         highlightSnippetInPage(container, snippet);
 
-        const searchTermMarks = container.querySelectorAll('mark.searchTerm');
+        const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
         expect(searchTermMarks.length).toBeGreaterThan(0);
 
         const highlightedText = Array.from(searchTermMarks)
@@ -72,7 +72,7 @@ describe('snippetToHighlight', () => {
 
         highlightSnippetInPage(container, snippet);
 
-        const searchTermMarks = container.querySelectorAll('mark.searchTerm');
+        const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
         expect(searchTermMarks.length).toBeGreaterThanOrEqual(2);
 
         const terms = Array.from(searchTermMarks).map(mark => mark.textContent);
@@ -90,8 +90,10 @@ describe('snippetToHighlight', () => {
 
         highlightSnippetInPage(container, snippet);
 
-        const contextMarks = container.querySelectorAll('mark:not(.searchTerm)');
-        expect(contextMarks.length).toBeGreaterThan(0);
+        const contextSpans = container.querySelectorAll('span.snippet-context');
+        expect(contextSpans.length).toBeGreaterThan(0);
+        const firstSpan = contextSpans[0] as HTMLElement;
+        expect(firstSpan.style.backgroundColor).toBeTruthy();
       });
 
       it('should handle text with special characters', () => {
@@ -223,8 +225,9 @@ describe('snippetToHighlight', () => {
 
         highlightSnippetInPage(container, snippet);
 
-        const marks = container.querySelectorAll('mark');
-        expect(marks.length).toBeGreaterThan(0);
+        // Should still highlight context even without search terms
+        const contextSpans = container.querySelectorAll('span.snippet-context');
+        expect(contextSpans.length).toBeGreaterThan(0);
       });
 
       it('should handle container without textLayer', () => {
@@ -294,21 +297,21 @@ describe('snippetToHighlight', () => {
     });
   });
 
-  describe('clearHighlights', () => {
+  describe('clearSnippets', () => {
     beforeEach(() => {
       // Add some existing highlights
       const textLayer = container.querySelector('.textLayer');
       if (textLayer) {
         textLayer.innerHTML = `
-          <mark class="bg-primary-100">Highlighted</mark>
-          <mark class="searchTerm bg-yellow-200">Search term</mark>
+          <mark class="snippet-context">Highlighted</mark>
+          <mark class="snippet-search-term">Search term</mark>
           <span>Normal text</span>
         `;
       }
     });
 
     it('should remove all mark elements', () => {
-      clearHighlights(container);
+      clearSnippets(container);
 
       const marks = container.querySelectorAll('mark');
       expect(marks.length).toBe(0);
@@ -316,7 +319,7 @@ describe('snippetToHighlight', () => {
 
     it('should preserve non-mark content', () => {
       const originalText = container.textContent;
-      clearHighlights(container);
+      clearSnippets(container);
 
       expect(container.textContent).toBe(originalText);
     });
@@ -327,7 +330,7 @@ describe('snippetToHighlight', () => {
       document.body.appendChild(cleanContainer);
 
       expect(() => {
-        clearHighlights(cleanContainer);
+        clearSnippets(cleanContainer);
       }).not.toThrow();
 
       document.body.removeChild(cleanContainer);
@@ -335,7 +338,7 @@ describe('snippetToHighlight', () => {
 
     it('should handle null container gracefully', () => {
       expect(() => {
-        clearHighlights(null as any);
+        clearSnippets(null as any);
       }).not.toThrow();
     });
 
@@ -347,7 +350,7 @@ describe('snippetToHighlight', () => {
         `;
       }
 
-      clearHighlights(container);
+      clearSnippets(container);
 
       const marks = container.querySelectorAll('mark');
       expect(marks.length).toBe(0);
@@ -366,7 +369,7 @@ describe('snippetToHighlight', () => {
       const marks1 = container.querySelectorAll('mark');
       expect(marks1.length).toBeGreaterThan(0);
 
-      clearHighlights(container);
+      clearSnippets(container);
       const marksAfterClear = container.querySelectorAll('mark');
       expect(marksAfterClear.length).toBe(0);
 
@@ -396,7 +399,7 @@ describe('snippetToHighlight', () => {
 
       highlightSnippetInPage(container, snippet);
 
-      const searchTermMarks = container.querySelectorAll('mark.searchTerm');
+      const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
       expect(searchTermMarks.length).toBeGreaterThan(0);
 
       const highlightedText = Array.from(searchTermMarks)
