@@ -145,6 +145,7 @@ describe('MongoFilesDataSource', () => {
             filename: 'file.pdf',
             language: 'en',
             totalPages: 1,
+            generatedToc: false,
             creationDate: 0,
             uploaded: true,
             fullText: { 1: 'fullText' },

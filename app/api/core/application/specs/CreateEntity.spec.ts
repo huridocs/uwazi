@@ -15,7 +15,7 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { EventsBus } from 'api/core/libs/eventsbus';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
@@ -28,6 +28,7 @@ import { CreateEntityUseCase } from '../CreateEntity';
 import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 
 const factory = getFixturesFactory();
 
@@ -220,6 +221,9 @@ const createSut = (props: CreateSutProps = {}) => {
     jobsDispatcher,
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
+    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+    transactionManager: transactionManager,
+    eventBus: applicationEventsBus,
   });
 
   const entitiesService = new EntitiesService({

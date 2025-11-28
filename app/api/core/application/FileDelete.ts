@@ -29,7 +29,6 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.filesService.delete([file]);
     });
 
-    // await this.eventBus.emit(new FilesDeletedEvent({}));
     return FileMappers.toDTO(file);
   }
 }

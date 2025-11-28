@@ -17,6 +17,11 @@ import { PDFService } from '../infrastructure/services/PDFService';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { Result } from '../libs/Result';
 import { IdGenerator } from './contracts/IdGenerator';
+import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { TransactionManager } from './contracts/TransactionManager';
+import { EventsBus } from '../libs/eventsbus';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
+import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -25,6 +30,9 @@ type Deps = {
   jobsDispatcher: JobsDispatcher;
   pdfService: PDFService;
   filesIO: FileContentsIO;
+  relV1DS: MongoRelationshipsV1DataSource;
+  transactionManager: TransactionManager;
+  eventBus: EventsBus;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -72,8 +80,19 @@ class FilesService {
     const processedDocs = contentFiles.filter(f => f instanceof ProcessedDocument);
     const thumbnails = await this.deps.filesDS.getThumbnails(processedDocs).all();
 
-    await this.deps.filesDS.delete([...files, ...thumbnails]);
+    const toDeleteFiles = [...files, ...thumbnails];
+    await this.deps.filesDS.delete(toDeleteFiles);
+    await this.deps.relV1DS.deleteByFiles(files.map(f => f.id.toString()));
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await this.deps.eventBus.emit(
+        new FilesDeletedEvent({ files: toDeleteFiles.map(f => FileMappers.toDBO(f)) })
+      );
+    });
+
+    //this to be jobified
     await ArrayUtils.sequentialFor(contentFiles, async f => this.deps.fileStorage.removeFile(f));
+    //
   }
 
   async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {

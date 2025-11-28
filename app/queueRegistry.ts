@@ -27,7 +27,7 @@ import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PX
 import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { IXTaskService } from 'api/services/informationextraction/TaskService';
 import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF';

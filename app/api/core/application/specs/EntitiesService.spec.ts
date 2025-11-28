@@ -13,7 +13,7 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { tenants } from 'api/tenants';
-import { EventsBus } from 'api/core/libs/eventsbus';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
@@ -28,6 +28,7 @@ import { FilesService } from '../FilesService';
 import { EntitiesService } from '../EntitiesService';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 
 const factory = getFixturesFactory();
 
@@ -70,6 +71,9 @@ const createSut = () => {
     jobsDispatcher: DefaultDispatcher(tenants.current().name),
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
+    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+    transactionManager: transactionManager,
+    eventBus: applicationEventsBus,
   });
 
   const dispatcher = DefaultDispatcher(tenants.current().name);

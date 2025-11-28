@@ -18,7 +18,10 @@ import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGenerato
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -66,6 +69,7 @@ const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
 });
 
 const createSut = () => {
+  const transactionManager = TransactionManagerFactory.fake();
   const service = new FilesService({
     idGenerator: IdGeneratorFactory.default(),
     fileStorage,
@@ -73,6 +77,9 @@ const createSut = () => {
     jobsDispatcher,
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
+    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+    transactionManager: transactionManager,
+    eventBus: applicationEventsBus,
   });
   return { service };
 };
