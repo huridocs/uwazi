@@ -1,25 +1,28 @@
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1CompatTenantDispatchable } from 'api/core/libs/queue/application/contracts/V1CompatTenantDispatchable';
-import { BatchDeleteEntityUseCaseFactory } from '../factories/BatchDeleteEntityUseCaseFactory';
+import {
+  UserAwareDispatchable,
+  UserAwareDispatchableParams,
+} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { BulkDeleteEntityUseCaseFactory } from '../factories/BulkDeleteEntityUseCaseFactory';
 
-type Params = {
+type Params = UserAwareDispatchableParams & {
   sharedIds: string[];
 };
 
 type JobDependencies = {
-  BatchDeleteEntityUseCaseFactory: typeof BatchDeleteEntityUseCaseFactory;
+  BulkDeleteEntityUseCaseFactory: typeof BulkDeleteEntityUseCaseFactory;
 };
 
-class BatchDeleteEntityJob extends V1CompatTenantDispatchable<Params> {
+class BulkDeleteEntityJob extends UserAwareDispatchable<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
 
-  protected async handle(_heartbeat: HeartbeatCallback, params: Params, _jobInfo: JobInfo) {
-    const useCase = this.deps.BatchDeleteEntityUseCaseFactory.default();
+  protected async handle(_heartbeat: HeartbeatCallback, _jobInfo: JobInfo) {
+    const useCase = this.deps.BulkDeleteEntityUseCaseFactory.default();
 
-    await useCase.execute({ sharedIds: params.sharedIds });
+    await useCase.execute({ sharedIds: this.params.sharedIds });
   }
 }
 
-export { BatchDeleteEntityJob };
+export { BulkDeleteEntityJob };

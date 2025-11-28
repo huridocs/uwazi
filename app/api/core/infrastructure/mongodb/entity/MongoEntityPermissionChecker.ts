@@ -2,7 +2,6 @@ import {
   EntityPermissionChecker,
   Specification,
 } from 'api/core/domain/entity/EntityPermissionChecker';
-import { AccessLevel } from 'api/core/domain/entity/AccessLevel';
 import { Result, ResultType } from 'api/core/libs/Result';
 import { MongoEntityDAO } from './MongoEntityDAO';
 
@@ -38,11 +37,11 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
 
     const grantedSharedIds = entities
       .filter(entity => {
-        if (specification.level === AccessLevel.Write) {
+        if (specification.isWriteLevel) {
           return entity.permissions?.some(
             (perm: any) =>
               userRefIdsAsStrings.includes(perm.refId.toString()) &&
-              perm.level === AccessLevel.Write
+              specification.isSatisfiedBy(perm.level)
           );
         }
 

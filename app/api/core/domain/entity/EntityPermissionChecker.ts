@@ -27,6 +27,14 @@ class Specification {
     return this.actor.isPrivileged();
   }
 
+  get isWriteLevel() {
+    return this.level === AccessLevel.Write;
+  }
+
+  isSatisfiedBy(level: AccessLevel) {
+    return this.level === level;
+  }
+
   static createDeleteSpecification(actor: User) {
     return new Specification({ type: PermissionType.User, level: AccessLevel.Write, actor });
   }

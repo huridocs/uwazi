@@ -4,11 +4,11 @@ import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
-import { BatchDeleteEntityUseCase } from 'api/core/application/BatchDeleteEntity';
+import { BulkDeleteEntityUseCase } from 'api/core/application/BulkDeleteEntity';
 import { search } from 'api/search';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
-class BatchDeleteEntityUseCaseFactory {
+class BulkDeleteEntityUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
@@ -17,7 +17,7 @@ class BatchDeleteEntityUseCaseFactory {
 
     const eventBus = applicationEventsBus;
 
-    const useCase = new BatchDeleteEntityUseCase(
+    const useCase = new BulkDeleteEntityUseCase(
       {
         idGenerator,
         transactionManager,
@@ -31,4 +31,4 @@ class BatchDeleteEntityUseCaseFactory {
     return useCase;
   }
 }
-export { BatchDeleteEntityUseCaseFactory };
+export { BulkDeleteEntityUseCaseFactory };

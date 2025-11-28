@@ -50,7 +50,8 @@ import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtract
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { BatchDeleteEntityJob } from 'api/core/infrastructure/jobs/BatchDeleteEntityJob';
+import { BulkDeleteEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory';
+import { BulkDeleteEntityJob } from 'api/core/infrastructure/jobs/BatchDeleteEntityJob';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -228,5 +229,8 @@ export function registerJobs(
     return new CsvExtractUploadedZipJob({ useCase, sockets });
   });
 
-  register(BatchDeleteEntityJob, async () => new BatchDeleteEntityJob({}));
+  register(
+    BulkDeleteEntityJob,
+    async () => new BulkDeleteEntityJob({ BulkDeleteEntityUseCaseFactory })
+  );
 }
