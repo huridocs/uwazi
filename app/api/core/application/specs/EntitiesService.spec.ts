@@ -24,10 +24,10 @@ import { Entity } from 'api/core/domain/entity/Entity';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FilesService } from '../FilesService';
-import { EntitiesService } from '../EntitiesService';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { FilesService } from '../FilesService';
+import { EntitiesService } from '../EntitiesService';
 
 const factory = getFixturesFactory();
 
@@ -162,11 +162,15 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
 
-    it('should dispatch a RelationshipSyncJob', async () => {
-      const { sut, dispatcher } = createSut();
+    it('should dispatch a RelationshipSyncJob only on commit handler', async () => {
+      const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity);
+
+      expect(dispatcher.dispatch).not.toHaveBeenCalled();
+
+      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,
