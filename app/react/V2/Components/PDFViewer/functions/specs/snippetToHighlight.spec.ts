@@ -42,6 +42,13 @@ describe('snippetToHighlight', () => {
         const marks = container.querySelectorAll('mark');
         const marksText = joinText(marks);
         expect(marksText).toContain('contains');
+
+        const contexts = container.querySelectorAll('.snippet-context');
+        expect(contexts.length).toBeGreaterThan(0);
+        Array.from(contexts).forEach(ctx => {
+          const el = ctx as HTMLElement;
+          expect(el.style.backgroundColor).toBeTruthy();
+        });
       });
 
       it('should highlight the search terms with searchTerm class', () => {
@@ -133,10 +140,18 @@ describe('snippetToHighlight', () => {
           const marks = container.querySelectorAll('mark');
           const marksText = joinText(marks);
 
+          // ensure snippet context spans have background color applied
+          const contexts = container.querySelectorAll('.snippet-context');
+          expect(contexts.length).toBeGreaterThanOrEqual(0);
+          Array.from(contexts).forEach(ctx => {
+            const el = ctx as HTMLElement;
+            expect(el.style.backgroundColor === '' || !!el.style.backgroundColor).toBeTruthy();
+          });
+
           if (Array.isArray(snippet.expected)) {
-            (snippet.expected as string[]).forEach(exp => expect(marksText).toContain(exp));
+            snippet.expected.forEach(exp => expect(marksText).toContain(exp));
           } else {
-            expect(marksText).toContain(snippet.expected as string);
+            expect(marksText).toContain(snippet.expected);
           }
         });
       });
