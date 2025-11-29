@@ -1,8 +1,9 @@
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
+import settings from 'api/settings';
 import { withConnectedData } from './relationshipsHelpers';
 import { Relation } from './RelationsV1Collection';
-import settings from 'api/settings';
+import relationsFacade from './relationships';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -37,5 +38,9 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     }, {});
 
     return withConnectedData(relationships, connectedDocuments) as Relation[];
+  }
+
+  async bulkDeleteBySharedId(sharedIds: string[]) {
+    await relationsFacade.delete({ entity: { $in: sharedIds } }, null, false);
   }
 }

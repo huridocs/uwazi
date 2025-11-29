@@ -1,5 +1,3 @@
-import { Entity } from 'api/core/domain/entity/Entity';
-import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { AbstractEvent } from 'api/core/libs/eventsbus';
 import { EntitySchema } from 'shared/types/entityType';
 
@@ -8,9 +6,9 @@ interface EntityDeletedData {
 }
 
 class EntityDeletedEvent extends AbstractEvent<EntityDeletedData> {
-  static fromDomain(entity: Entity) {
+  static fromDomain(sharedId: string) {
     return new EntityDeletedEvent({
-      entity: MongoEntityMapper.toDBO(entity) as any[], // TOdo: this is concerning...
+      entity: [{ sharedId }] as any[], // Todo: this is concerning...
     });
   }
 }

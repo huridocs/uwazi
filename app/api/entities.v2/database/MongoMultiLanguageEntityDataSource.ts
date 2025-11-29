@@ -10,6 +10,7 @@ import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { Property } from 'api/core/domain/template/Property';
 import { Result, ResultType } from 'api/core/libs/Result';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -27,6 +28,70 @@ export class MongoMultiLanguageEntityDataSource
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
+  }
+
+  private async deleteSharedIdReferenceFromMetadata(sharedId: string) {
+    const affectedSharedIds = await this.getCollection().distinct('sharedId', {
+      $expr: {
+        $gt: [
+          {
+            $size: {
+              $filter: {
+                input: { $objectToArray: { $ifNull: ['$metadata', {}] } },
+                as: 'prop',
+                cond: {
+                  $anyElementTrue: {
+                    $map: {
+                      input: '$$prop.v',
+                      as: 'item',
+                      in: { $eq: ['$$item.value', sharedId] },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          0,
+        ],
+      },
+    });
+
+    if (affectedSharedIds.length === 0) return;
+
+    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+
+    await this.getCollection().updateMany({ sharedId: { $in: affectedSharedIds } }, [
+      {
+        $set: {
+          metadata: {
+            $arrayToObject: {
+              $map: {
+                input: { $objectToArray: '$metadata' },
+                as: 'prop',
+                in: {
+                  k: '$$prop.k',
+                  v: {
+                    $filter: {
+                      input: '$$prop.v',
+                      as: 'item',
+                      cond: { $ne: ['$$item.value', sharedId] },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+  }
+
+  async deleteReferencesToSharedIds(
+    deletedEntities: Array<{ sharedId: string; templateId: string }>
+  ): Promise<void> {
+    await ArrayUtils.sequentialFor(deletedEntities, async ({ sharedId }) =>
+      this.deleteSharedIdReferenceFromMetadata(sharedId)
+    );
   }
 
   async bulkDelete(sharedIds: string[]): Promise<void> {
@@ -83,7 +148,6 @@ export class MongoMultiLanguageEntityDataSource
               }
               return setOperation;
             }, {});
-
             return {
               updateOne: {
                 filter: { sharedId: entity.sharedId, language },
@@ -104,7 +168,6 @@ export class MongoMultiLanguageEntityDataSource
       { $group: { _id: '$sharedId' } },
       { $count: 'count' },
     ];
-
     const result = await this.getCollection().aggregate(aggregation).toArray();
     return result.length ? result[0].count : 0;
   }
@@ -115,7 +178,6 @@ export class MongoMultiLanguageEntityDataSource
       { $group: { _id: '$sharedId' } },
       { $project: { _id: 0, sharedId: '$_id' } },
     ];
-
     const cursor = this.getCollection().aggregate(aggregation);
     return new MongoResultSet(cursor, e => e.sharedId);
   }
@@ -178,9 +240,7 @@ export class MongoMultiLanguageEntityDataSource
 
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
-
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
-
     this.modifiedSharedIds.add(entity.sharedId);
   }
 }

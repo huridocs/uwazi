@@ -4,26 +4,26 @@ import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
-import { BulkDeleteEntityUseCase } from 'api/core/application/BulkDeleteEntity';
-import { search } from 'api/search';
+import { BulkCleanupEntityUseCase } from 'api/core/application/BulkCleanupEntity';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
-class BulkDeleteEntityUseCaseFactory {
+class BulkCleanupEntityUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
     const idGenerator = IdGeneratorFactory.default();
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-
+    const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
     const eventBus = applicationEventsBus;
 
-    const useCase = new BulkDeleteEntityUseCase(
+    const useCase = new BulkCleanupEntityUseCase(
       {
         idGenerator,
         transactionManager,
         eventBus,
         entitiesDS,
-        search,
+        relationshipsDS,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );
@@ -31,4 +31,4 @@ class BulkDeleteEntityUseCaseFactory {
     return useCase;
   }
 }
-export { BulkDeleteEntityUseCaseFactory };
+export { BulkCleanupEntityUseCaseFactory };

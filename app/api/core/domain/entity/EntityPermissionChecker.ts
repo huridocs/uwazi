@@ -40,12 +40,17 @@ class Specification {
   }
 }
 
+type FilterEntitiesOutput = {
+  sharedId: string;
+  templateId: string;
+};
+
 interface EntityPermissionChecker {
   filterEntities(
     sharedIds: string[],
     specification: Specification
-  ): Promise<ResultType<string[], Error>>;
+  ): Promise<ResultType<FilterEntitiesOutput[], Error>>;
 }
 
 export { Specification };
-export type { EntityPermissionChecker };
+export type { EntityPermissionChecker, FilterEntitiesOutput };

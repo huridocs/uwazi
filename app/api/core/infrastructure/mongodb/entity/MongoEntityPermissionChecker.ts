@@ -1,5 +1,6 @@
 import {
   EntityPermissionChecker,
+  FilterEntitiesOutput,
   Specification,
 } from 'api/core/domain/entity/EntityPermissionChecker';
 import { Result, ResultType } from 'api/core/libs/Result';
@@ -9,7 +10,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
   async filterEntities(
     sharedIds: string[],
     specification: Specification
-  ): Promise<ResultType<string[], Error>> {
+  ): Promise<ResultType<FilterEntitiesOutput[], Error>> {
     const entities = await this.getCollection()
       .aggregate([
         { $match: { sharedId: { $in: sharedIds } } },
@@ -17,6 +18,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
           $group: {
             _id: '$sharedId',
             sharedId: { $first: '$sharedId' },
+            template: { $first: '$template' },
             permissions: { $first: '$permissions' },
             published: { $first: '$published' },
           },
@@ -29,13 +31,18 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
     }
 
     if (specification.isPrivileged) {
-      return Result.ok(entities.map(entity => entity.sharedId));
+      return Result.ok(
+        entities.map(entity => ({
+          sharedId: entity.sharedId,
+          templateId: entity.template.toString(),
+        }))
+      );
     }
 
     const userRefIds = [specification.actor._id, ...specification.actor.groups];
     const userRefIdsAsStrings = userRefIds.map(id => id.toString());
 
-    const grantedSharedIds = entities
+    const grantedEntities = entities
       .filter(entity => {
         if (specification.isWriteLevel) {
           return entity.permissions?.some(
@@ -52,9 +59,12 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
           )
         );
       })
-      .map(entity => entity.sharedId);
+      .map(entity => ({
+        sharedId: entity.sharedId,
+        templateId: entity.template.toString(),
+      }));
 
-    if (grantedSharedIds.length === 0) {
+    if (grantedEntities.length === 0) {
       return Result.fail(
         new Error(
           `You do not have permission to any of the requested entities: ${sharedIds.join(', ')}`
@@ -62,7 +72,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
       );
     }
 
-    return Result.ok(grantedSharedIds);
+    return Result.ok(grantedEntities);
   }
 }
 

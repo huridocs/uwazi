@@ -1,8 +1,8 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import {
-  RequestBulkDeleteEntityInput,
-  RequestBulkDeleteEntityUseCase,
-} from 'api/core/application/RequestBulkDeleteEntity';
+  BulkDeleteEntityInput,
+  BulkDeleteEntityUseCase,
+} from 'api/core/application/BulkDeleteEntity';
 import { search } from 'api/search';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
@@ -13,7 +13,7 @@ import { TransactionManagerFactory } from '../../factories/TransactionManagerFac
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
 
-type RequestDto = RequestBulkDeleteEntityInput;
+type RequestDto = BulkDeleteEntityInput;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ResponseDto = string;
@@ -33,7 +33,7 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
         transactionManager
       );
 
-      const useCase = new RequestBulkDeleteEntityUseCase(
+      const useCase = new BulkDeleteEntityUseCase(
         {
           entitiesDS,
           entityPermissionChecker,
@@ -51,7 +51,7 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
     }
 
     await entities.deleteMultiple(
-      RequestBulkDeleteEntityUseCase.InputSchema.parse(this.request.body).sharedIds
+      BulkDeleteEntityUseCase.InputSchema.parse(this.request.body).sharedIds
     );
 
     this.response.json('ok');

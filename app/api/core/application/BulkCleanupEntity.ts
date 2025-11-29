@@ -1,0 +1,50 @@
+import { z } from 'zod';
+import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { AbstractUseCase } from '../libs/UseCase';
+
+const InputSchema = z.object({
+  deleteEntities: z
+    .array(
+      z.object({
+        sharedId: z.string().trim().min(1),
+        templateId: z.string().trim().min(1),
+      })
+    )
+    .min(1)
+    .max(100),
+});
+
+type Input = z.infer<typeof InputSchema>;
+
+type Output = Input;
+
+type Deps = {
+  relationshipsDS: MongoRelationshipsV1DataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
+};
+
+class BulkCleanupEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
+  static InputSchema = InputSchema;
+
+  protected async executeAsync(input: Input): Promise<Output> {
+    const { deleteEntities } = InputSchema.parse(input);
+    const sharedIds = deleteEntities.map(e => e.sharedId);
+
+    await this.transactionManager.run(async () => {
+      await this.deps.relationshipsDS.bulkDeleteBySharedId(sharedIds);
+      await this.deps.entitiesDS.deleteReferencesToSharedIds(deleteEntities);
+    });
+
+    await ArrayUtils.sequentialFor(sharedIds, async sharedId =>
+      this.eventBus.emit(EntityDeletedEvent.fromDomain(sharedId))
+    );
+
+    return input;
+  }
+}
+
+export { BulkCleanupEntityUseCase };
+export type { Input as BulkDeleteEntityUseCaseInput, Output as BulkDeleteEntityUseCaseOutput };
