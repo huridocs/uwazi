@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -28,6 +29,7 @@ import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructu
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { IXTaskService } from 'api/services/informationextraction/TaskService';
 import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF';
@@ -40,9 +42,12 @@ import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlank
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import relationships from 'api/relationships';
-import { CsvExtractUploadedZipJob } from 'api/csv.v2/jobs/CsvExtractUploadedZipJob';
-import { CsvExtractUploadedZipUseCase } from 'api/csv.v2/services/CsvExtractUploadedZipUseCase';
-import { DefaultCsvImportsDataSource } from 'api/csv.v2/database/data_source_defaults';
+import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
+import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
+import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
+import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
+import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { tenants } from 'api/tenants/tenantContext';
@@ -52,6 +57,11 @@ import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServ
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
 import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
+import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
+import { CsvCreateThesauriValuesJob } from 'api/csv.v2/application/jobs/CsvCreateThesauriValuesJob';
+import { CsvCreateThesauriValuesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
+import { LegacyThesauriRepository } from 'api/csv.v2/infrastructure/services/LegacyThesauriRepository';
+import { LegacyTranslationsRepository } from 'api/csv.v2/infrastructure/services/LegacyTranslationsRepository';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -214,19 +224,69 @@ export function registerJobs(
       })
   );
 
-  register(CsvExtractUploadedZipJob, async () => {
+  register(CsvExtractUploadedZipJobHandler, async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const csvImportsDS = DefaultCsvImportsDataSource(transactionManager);
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
-    const useCase = new CsvExtractUploadedZipUseCase({
-      csvImportsDS,
+    const fileNormalizer = new CsvImportFileNormalizer({
       fileStorage,
-      transactionManager,
       filesIO: new FileContentsIO(),
     });
+    const rowsStager = new CsvImportRowsStager({ fileStorage });
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const useCase = new CsvExtractUploadedZipJob({
+      csvImportsDS,
+      fileNormalizer,
+      rowsStager,
+      rowsDS,
+      transactionManager,
+      jobsDispatcher,
+    });
     const sockets = new V1WebSocketsWrapper();
-    return new CsvExtractUploadedZipJob({ useCase, sockets });
+    return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
+  });
+
+  register(CsvPreflightJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const useCase = new CsvPreflightJob({
+      csvImportsDS,
+      rowsDS,
+      templatesDS,
+      settingsDS,
+      thesauriDS,
+      thesauriValuesDS,
+      jobsDispatcher,
+      transactionManager,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvPreflightJobHandler({ useCase, sockets });
+  });
+
+  register(CsvCreateThesauriValuesJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const useCase = new CsvCreateThesauriValuesJob({
+      csvImportsDS,
+      thesauriValuesDS,
+      thesauriRepo: new LegacyThesauriRepository(),
+      translationsRepo: new LegacyTranslationsRepository(),
+      transactionManager,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
 
   register(
