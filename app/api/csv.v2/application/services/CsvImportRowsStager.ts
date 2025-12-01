@@ -67,12 +67,12 @@ const shouldInsertEmptyRow = (ctx: AccumulatorContext) =>
   ctx.sortedEmptyIndexes[ctx.emptyPointer] === ctx.currentIndex;
 
 const addEmptyRow = (ctx: AccumulatorContext, params: RowsAccumulatorParams) => {
-  const emptyRow: CsvImportRow = {
+  const emptyRow = CsvImportRow.create({
     importId: params.importId,
     index: ctx.currentIndex,
     headers: ctx.headers!,
     values: new Array(ctx.headers!.length).fill(''),
-  };
+  });
   pushRow(ctx, params, emptyRow);
   ctx.currentIndex += 1;
   ctx.emptyPointer += 1;
@@ -109,12 +109,12 @@ const createRowsAccumulator = (params: RowsAccumulatorParams): RowsAccumulator =
     handleRow: async (values: string[]) => {
       assertHeaders(ctx);
       await flushEmptyRows(ctx, params);
-      const row: CsvImportRow = {
+      const row = CsvImportRow.create({
         importId: params.importId,
         index: ctx.currentIndex,
         headers: ctx.headers!,
         values,
-      };
+      });
       pushRow(ctx, params, row);
       ctx.currentIndex += 1;
       await ensureCapacity(ctx, params);

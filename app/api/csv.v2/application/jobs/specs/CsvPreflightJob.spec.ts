@@ -12,6 +12,7 @@ import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvImportRow } from '../../../domain/CsvImportRow';
 import { CsvPreflightJob } from '../CsvPreflightJob';
 
 const fixturesFactory = getFixturesFactory();
@@ -24,9 +25,7 @@ const createCallbacks = () => ({
 
 const stageRows = async (
   rowsDS: {
-    insertMany: (
-      rows: Array<{ importId: string; index: number; headers: string[]; values: string[] }>
-    ) => Promise<void>;
+    insertMany: (rows: CsvImportRow[]) => Promise<void>;
   },
   params: { csv: string; importId: string }
 ) => {
@@ -35,13 +34,15 @@ const stageRows = async (
     .shift()!
     .split(',')
     .map(cell => cell.trim());
-  const docs = parsed.map((line, index) => ({
-    importId: params.importId,
-    index,
-    headers,
-    values: line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')),
-  }));
-  await rowsDS.insertMany(docs);
+  const rows = parsed.map((line, index) =>
+    CsvImportRow.create({
+      importId: params.importId,
+      index,
+      headers,
+      values: line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')),
+    })
+  );
+  await rowsDS.insertMany(rows);
 };
 
 const insertImport = async (
