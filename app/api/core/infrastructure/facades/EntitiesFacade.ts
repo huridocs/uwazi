@@ -38,7 +38,7 @@ export class EntityFacade {
         durationMs: duration,
         success: true,
 
-        entityId: entity.sharedId,
+        sharedId: entity.sharedId,
         templateId: entity.template.id.toString(),
       });
 

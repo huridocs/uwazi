@@ -23,6 +23,11 @@ type Deps = {
   dispatcher: JobsDispatcher;
 };
 
+type InsertContext = {
+  tenantName: string;
+  actorId: string;
+};
+
 class EntitiesService {
   constructor(private deps: Deps) {}
 
@@ -40,7 +45,7 @@ class EntitiesService {
     });
   }
 
-  async insert(entity: Entity) {
+  async insert(entity: Entity, context: InsertContext) {
     await this.deps.entitiesDS.create(entity);
 
     this.deps.transactionManager.onCommitted(async () => {
@@ -48,6 +53,8 @@ class EntitiesService {
         sharedId: entity.sharedId,
         targetLanguage: entity.languages[0],
         templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
       });
 
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
