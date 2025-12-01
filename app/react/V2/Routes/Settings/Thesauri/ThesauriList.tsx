@@ -14,8 +14,8 @@ import type { ThesauriRow } from './components/ThesauriTable';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      ThesauriAPI.get({}, headers);
+  async () =>
+    ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();
