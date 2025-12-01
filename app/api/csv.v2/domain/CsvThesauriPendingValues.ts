@@ -1,37 +1,12 @@
-type CsvThesauriPendingChild = {
-  label: string;
-  normalized: string;
-  languages: Record<string, string>;
-};
-
-type CsvThesauriPendingRoot = {
-  label: string;
-  normalized: string;
-  languages: Record<string, string>;
-  children: CsvThesauriPendingChild[];
-};
-
-type CsvThesauriPendingEntry = {
-  propertyId: string;
-  propertyName: string;
-  thesaurusId: string;
-  type: 'select' | 'multiselect';
-  roots: CsvThesauriPendingRoot[];
-};
+import { CsvThesauriPendingChild } from './CsvThesauriPendingChild';
+import { CsvThesauriPendingEntry } from './CsvThesauriPendingEntry';
+import { CsvThesauriPendingRoot } from './CsvThesauriPendingRoot';
 
 type CsvThesauriPendingValuesProps = {
   importId: string;
   createdAt: number;
   defaultLanguage: string;
   entries: CsvThesauriPendingEntry[];
-};
-
-type CsvThesauriPendingIssue = {
-  property: string;
-  reason: string;
-  value?: string;
-  row?: number;
-  type: 'parse' | 'translation' | 'conflict';
 };
 
 class CsvThesauriPendingValues {
@@ -59,15 +34,23 @@ class CsvThesauriPendingValues {
       importId: this.importId,
       createdAt: this.createdAt,
       defaultLanguage: this.defaultLanguage,
-      entries: this.entries,
+      entries: this.entries.map(entry => entry.toPersistence()),
     };
   }
 }
 
-export type {
+type CsvThesauriPendingIssue = {
+  property: string;
+  reason: string;
+  value?: string;
+  row?: number;
+  type: 'parse' | 'translation' | 'conflict';
+};
+
+export type { CsvThesauriPendingIssue };
+export {
+  CsvThesauriPendingChild,
   CsvThesauriPendingEntry,
   CsvThesauriPendingRoot,
-  CsvThesauriPendingChild,
-  CsvThesauriPendingIssue,
+  CsvThesauriPendingValues,
 };
-export { CsvThesauriPendingValues };
