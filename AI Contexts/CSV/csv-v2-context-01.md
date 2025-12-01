@@ -103,7 +103,7 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
 - Add request validation (file present, `templateId` valid, size/type constraints).
 - Basic error handling and consistent API responses.
 - Unit/integration tests for route + persistence + storage handoff.
-- Enqueue next-step jobs after commit: use `transactionManager.onCommitted` to dispatch processing/extraction jobs only if the insert/update transaction succeeds. Define job payload to include tenant and `importId`.
+- Enqueue next-step jobs as the final step inside the same `transactionManager.run` that persists the DB change. Dispatching (e.g., extraction) happens only after the insert succeeds and before exiting the transaction block. Define job payload to include tenant and `importId`.
 
 ### Implementation progress (current status)
 
@@ -211,6 +211,8 @@ Note on domain mapping: In code, we map Mongo `_id` to domain `id` for responses
   - Avoid using `as any` unless absolutely indispensable; prefer proper typings, narrowing, or adapter types.
   - Extract legacy blocks into helpers to reduce lint noise and ease future removal.
   - Use explicit, descriptive names (e.g., `RegisterCsvImport*`).
+  - Keep one class per file; extract helper functions (or new modules) instead of nesting additional classes so lint stays happy and files read top-down.
+  - Within a module, define depended-upon helpers before their callers so the file reads naturally from top to bottom.
 
 ### Open questions / pending decisions
 

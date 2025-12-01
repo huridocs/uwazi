@@ -3,32 +3,32 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { ObjectId } from 'mongodb';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { NumericProperty } from 'api/core/domain/template/NumericProperty';
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
+import { TextProperty } from 'api/core/domain/template/TextProperty';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { tenants } from 'api/tenants';
-import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
-import { Entity } from 'api/core/domain/entity/Entity';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FilesService } from '../FilesService';
-import { EntitiesService } from '../EntitiesService';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
+import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { tenants } from 'api/tenants';
+import { ObjectId } from 'mongodb';
+import { EntitiesService } from '../EntitiesService';
+import { FilesService } from '../FilesService';
 
 const factory = getFixturesFactory();
 
@@ -166,11 +166,15 @@ describe('EntitiesService', () => {
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
 
-    it('should dispatch a RelationshipSyncJob', async () => {
-      const { sut, dispatcher } = createSut();
+    it('should dispatch a RelationshipSyncJob only on commit handler', async () => {
+      const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity);
+
+      expect(dispatcher.dispatch).not.toHaveBeenCalled();
+
+      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,

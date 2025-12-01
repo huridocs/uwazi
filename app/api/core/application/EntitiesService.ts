@@ -43,15 +43,15 @@ class EntitiesService {
   async insert(entity: Entity) {
     await this.deps.entitiesDS.create(entity);
 
-    await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
-      sharedId: entity.sharedId,
-      targetLanguage: entity.languages[0],
-      templateId: entity.template.id,
-    });
+    this.deps.transactionManager.onCommitted(async () => {
+      await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
+        sharedId: entity.sharedId,
+        targetLanguage: entity.languages[0],
+        templateId: entity.template.id,
+      });
 
-    this.deps.transactionManager.onCommitted(async () =>
-      this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]))
-    );
+      await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
+    });
   }
 
   private async getTemplateByIdOrDefault(templateId?: string) {
