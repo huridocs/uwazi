@@ -28,7 +28,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
       pillColors = 'bg-red-100 text-red-800';
       break;
     case 'indigo':
-      pillColors = 'bg-indigo-100 text-indigo-800';
+      pillColors = 'bg-primary-100 text-indigo-800';
       break;
 
     default:

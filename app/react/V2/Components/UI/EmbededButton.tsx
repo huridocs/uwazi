@@ -40,7 +40,7 @@ const EmbededButton = ({
       break;
     case 'indigo':
       buttonColor =
-        'text-indigo-800 bg-indigo-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-indigo-50 disabled:border-indigo-200';
+        'text-indigo-800 bg-primary-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-primary-50 disabled:border-indigo-200';
       break;
     case 'white':
       buttonColor = 'bg-white border-gray-200 disabled:text-gray-300 disabled:bg-gray-50';
