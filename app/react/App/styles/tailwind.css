@@ -224,6 +224,20 @@
   }
 }
 
+@layer base {
+  .tw-content select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: none;
+  }
+
+  .tw-content input[type='radio'],
+  .tw-content input[type='checkbox'] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+
 /* Custom CSS to fix sidebar visibility */
 @media (min-width: 48rem) {
   .tw-content [class*="md:visible"] {
