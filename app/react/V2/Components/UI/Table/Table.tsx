@@ -226,7 +226,9 @@ const Table = <T extends TableRow<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className={`w-full rounded-md shadow flex flex-col ${containerClassName || ''}`}>
+      <div
+        className={`w-full overflow-auto rounded-md shadow-sm flex flex-col ${containerClassName || ''}`}
+      >
         <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
           {header && <div className="grow">{header}</div>}
           <div className="flex gap-2">
@@ -243,58 +245,56 @@ const Table = <T extends TableRow<T>>({
             {actions}
           </div>
         </div>
-        <div className="flex-1 overflow-auto">
-          <table className={`w-full ${className || ''}`}>
-            <thead className="bg-gray-50">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(hdr => {
-                    const headerSorting = hdr.column.getCanSort();
-                    const customClassName = hdr.column.columnDef.meta?.headerClassName;
-                    return (
-                      <th
-                        key={hdr.id}
-                        colSpan={hdr.colSpan}
-                        scope="col"
-                        className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName || ''}`}
-                        onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
+        <table className={`w-full ${className || ''}`}>
+          <thead className="bg-gray-50">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(hdr => {
+                  const headerSorting = hdr.column.getCanSort();
+                  const customClassName = hdr.column.columnDef.meta?.headerClassName;
+                  return (
+                    <th
+                      key={hdr.id}
+                      colSpan={hdr.colSpan}
+                      scope="col"
+                      className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName || ''}`}
+                      onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
+                    >
+                      <span
+                        className={`${headerSorting ? 'flex gap-2 cursor-pointer select-none' : ''}`}
                       >
-                        <span
-                          className={`${headerSorting ? 'flex gap-2 cursor-pointer select-none' : ''}`}
-                        >
-                          {flexRender(hdr.column.columnDef.header, hdr.getContext())}
-                          {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}
-                        </span>
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {dataState.length === 0 && (
-                <NoDataRow colSpan={memoizedColumns.length} DisplayElement={noDataMessage} />
-              )}
-              {dataState.length > 0 && (
-                <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
-                  {table.getRowModel().rows.map(row => (
-                    <DraggableRow
-                      key={row.id}
-                      row={row}
-                      colSpan={memoizedColumns.length}
-                      groupColumnIndex={groupColumnIndex}
-                      dndEnabled={!!dnd?.enable}
-                    />
-                  ))}
-                </SortableContext>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {footer && dataState.length > 0 && (
-          <div className="p-4 border-t border-gray-100">{footer}</div>
-        )}
+                        {flexRender(hdr.column.columnDef.header, hdr.getContext())}
+                        {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}
+                      </span>
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {dataState.length === 0 && (
+              <NoDataRow colSpan={memoizedColumns.length} DisplayElement={noDataMessage} />
+            )}
+            {dataState.length > 0 && (
+              <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
+                {table.getRowModel().rows.map(row => (
+                  <DraggableRow
+                    key={row.id}
+                    row={row}
+                    colSpan={memoizedColumns.length}
+                    groupColumnIndex={groupColumnIndex}
+                    dndEnabled={!!dnd?.enable}
+                  />
+                ))}
+              </SortableContext>
+            )}
+          </tbody>
+        </table>
       </div>
+      {footer && dataState.length > 0 && (
+        <div className="p-4 border-t border-gray-100">{footer}</div>
+      )}
     </DndContext>
   );
 };
