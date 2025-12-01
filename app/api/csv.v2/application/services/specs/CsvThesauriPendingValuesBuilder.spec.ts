@@ -48,12 +48,12 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const headers = ['title', 'select_property__en'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
-      {
+      CsvImportRow.create({
         importId: IMPORT_ID,
         index: 0,
         headers,
         values: ['entity-1', 'Apple'],
-      },
+      }),
     ];
 
     const { pendingValues, issues } = CsvThesauriPendingValuesBuilder.build({
@@ -81,12 +81,12 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const headers = ['title', 'select_property__en'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
-      {
+      CsvImportRow.create({
         importId: IMPORT_ID,
         index: 0,
         headers,
         values: ['entity-1', 'Fruits::Apple'],
-      },
+      }),
     ];
 
     const { pendingValues } = CsvThesauriPendingValuesBuilder.build({
@@ -107,12 +107,12 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const headers = ['title', 'select_property__en'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
-      {
+      CsvImportRow.create({
         importId: IMPORT_ID,
         index: 0,
         headers,
         values: ['entity-1', 'Invalid::'],
-      },
+      }),
     ];
 
     const { issues } = CsvThesauriPendingValuesBuilder.build({
@@ -135,12 +135,12 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const headers = ['title', 'select_property__en', 'select_property__es'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
-      {
+      CsvImportRow.create({
         importId: IMPORT_ID,
         index: 0,
         headers,
         values: ['entity-1', 'Apple', 'Manzana'],
-      },
+      }),
     ];
 
     const { pendingValues } = CsvThesauriPendingValuesBuilder.build({
@@ -160,12 +160,12 @@ describe('CsvThesauriPendingValuesBuilder', () => {
     const headers = ['title', 'select_property__en', 'select_property__es'];
     const template = buildTemplate('multiselect');
     const rows: CsvImportRow[] = [
-      {
+      CsvImportRow.create({
         importId: IMPORT_ID,
         index: 0,
         headers,
         values: ['entity-1', 'Apple|Orange', 'Manzana'],
-      },
+      }),
     ];
 
     const { issues } = CsvThesauriPendingValuesBuilder.build({

@@ -227,12 +227,12 @@ export class CsvThesauriPendingValuesBuilder {
     const properties = template.properties.filter(isSelectLikeProperty) as SelectLikeProperty[];
     if (!properties.length) {
       return {
-        pendingValues: {
+        pendingValues: CsvThesauriPendingValues.create({
           importId,
           createdAt: Date.now(),
           defaultLanguage,
           entries: [],
-        },
+        }),
         issues: [],
       };
     }
@@ -343,12 +343,12 @@ export class CsvThesauriPendingValuesBuilder {
       });
     });
 
-    const pendingValues: CsvThesauriPendingValues = {
+    const pendingValues = CsvThesauriPendingValues.create({
       importId,
       createdAt: Date.now(),
       defaultLanguage,
       entries: Array.from(pendingEntries.values()).map(entry => entry.entry),
-    };
+    });
 
     return { pendingValues, issues };
   }
