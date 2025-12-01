@@ -10,6 +10,8 @@ import { EventsBus } from 'api/core/libs/eventsbus';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { elastic } from 'api/search';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity';
 
 const factory = getFixturesFactory();
@@ -148,41 +150,65 @@ describe('BulkCleanupEntityUseCase', () => {
       ],
     };
 
-    // Verify references exist before deletion
     const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
-    const entity2Before = entitiesBefore.find(
-      (e: any) => e.sharedId === 'entity2' && e.language === 'en'
-    );
-    const entity3Before = entitiesBefore.find(
-      (e: any) => e.sharedId === 'entity3' && e.language === 'en'
-    );
-
-    // entity2 has multiple deleted sharedIds: sharedId1 and sharedId2 in selectProp, sharedId3 in relationProp
-    expect(entity2Before?.metadata.selectProp).toEqual([
-      { value: 'sharedId1' },
-      { value: 'sharedId2' },
-    ]);
-    expect(entity2Before?.metadata.relationProp).toEqual([{ value: 'sharedId3' }]);
-    expect(entity3Before?.metadata.selectProp).toEqual([{ value: 'sharedId1' }]);
 
     await sut.execute(input);
 
-    // Verify all references to all three deleted sharedIds were removed
     const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
-    const entity2After = entitiesAfter.find(
-      (e: any) => e.sharedId === 'entity2' && e.language === 'en'
+
+    const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
+    const entity3After = entitiesAfter.filter((e: any) => e.sharedId === 'entity3');
+
+    expect(entity2After[0]?.metadata.selectProp).toEqual([]);
+    expect(entity2After[1]?.metadata.selectProp).toEqual([]);
+
+    expect(entity2After[0]?.metadata.relationProp).toEqual([]);
+    expect(entity2After[1]?.metadata.relationProp).toEqual([]);
+
+    expect(entity3After[0]?.metadata.selectProp).toEqual([]);
+    expect(entity3After[1]?.metadata.selectProp).toEqual([]);
+
+    // Should not touch unrelated entities
+    expect(entitiesBefore.filter(e => e.sharedId === 'entity4')).toEqual(
+      entitiesAfter.filter(e => e.sharedId === 'entity4')
     );
-    const entity3After = entitiesAfter.find(
-      (e: any) => e.sharedId === 'entity3' && e.language === 'en'
+  });
+
+  it('should reindex entities that had references to the deleted sharedIds', async () => {
+    const { sut } = createSut();
+
+    const input = {
+      deleteEntities: [
+        { sharedId: 'sharedId1', templateId: templateB.toString() },
+        { sharedId: 'sharedId2', templateId: templateB.toString() },
+        { sharedId: 'sharedId3', templateId: templateB.toString() },
+      ],
+    };
+
+    await sut.execute(input);
+    await elasticTesting.refresh();
+
+    const elasticAfter = await elastic.search({ size: 100 });
+    const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
+
+    const affectedSharedIds = ['entity2', 'entity3'];
+
+    const affectedEntitiesAfter = entitiesAfter.filter(e => affectedSharedIds.includes(e.sharedId));
+    const affectedElasticAfter = elasticAfter.body.hits.hits.filter(hit =>
+      affectedSharedIds.includes(hit._source.sharedId!)
     );
 
-    expect(entity2After?.metadata.selectProp).toEqual([]);
-    expect(entity2After?.metadata.relationProp).toEqual([]);
-    expect(entity3After?.metadata.selectProp).toEqual([]);
+    expect(affectedElasticAfter).toHaveLength(4);
+    expect(affectedEntitiesAfter).toHaveLength(4);
 
-    // Verify other entities are not affected
-    const entity4After = entitiesAfter.find((e: any) => e.sharedId === 'entity4');
-    expect(entity4After).toBeDefined();
+    affectedElasticAfter.forEach(elasticEntity => {
+      const dbEntity = affectedEntitiesAfter.find(
+        e =>
+          e.sharedId === elasticEntity._source.sharedId &&
+          e.language === elasticEntity._source.language
+      );
+      expect(elasticEntity._source.metadata).toEqual(dbEntity?.metadata);
+    });
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {

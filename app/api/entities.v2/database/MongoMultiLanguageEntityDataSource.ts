@@ -40,13 +40,18 @@ export class MongoMultiLanguageEntityDataSource
                 input: { $objectToArray: { $ifNull: ['$metadata', {}] } },
                 as: 'prop',
                 cond: {
-                  $anyElementTrue: {
-                    $map: {
-                      input: '$$prop.v',
-                      as: 'item',
-                      in: { $eq: ['$$item.value', sharedId] },
+                  $gt: [
+                    {
+                      $size: {
+                        $filter: {
+                          input: '$$prop.v',
+                          as: 'item',
+                          cond: { $eq: ['$$item.value', sharedId] },
+                        },
+                      },
                     },
-                  },
+                    0,
+                  ],
                 },
               },
             },
