@@ -31,21 +31,20 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       sharedIds: ArrayUtils.deduplicate(input.sharedIds, s => s),
     });
 
-    const grantedEntities = (
+    const grantedSharedIds = (
       await this.deps.entityPermissionChecker.filterEntities(
         sharedIds,
         Specification.createDeleteSpecification(this.getActor())
       )
     ).getDataOrThrow();
 
-    const grantedSharedIds = grantedEntities.map(e => e.sharedId);
-    const chunks = ArrayUtils.splitInChunks(grantedEntities, 100);
+    const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
     await this.transactionManager.run(async () => {
       await this.jobsDispatcher.dispatchMany(async dispatch =>
         chunks.forEach(chunk =>
           dispatch(BulkCleanupEntityJob, {
-            deleteEntities: chunk,
+            sharedIds: chunk,
             userId: this.getActor()._id,
             tenantName: this.tenant.name,
           })

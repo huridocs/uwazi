@@ -6,7 +6,7 @@ import {
 import { BulkCleanupEntityUseCaseFactory } from '../factories/BulkCleanupEntityUseCaseFactory';
 
 type Params = UserAwareDispatchableParams & {
-  deleteEntities: { sharedId: string; templateId: string }[];
+  sharedIds: string[];
 };
 
 type JobDependencies = {
@@ -21,7 +21,7 @@ class BulkCleanupEntityJob extends UserAwareDispatchable<Params> {
   protected async handle(_heartbeat: HeartbeatCallback, _jobInfo: JobInfo) {
     const useCase = this.deps.BulkCleanupEntityUseCaseFactory.default();
 
-    await useCase.execute({ deleteEntities: this.params.deleteEntities });
+    await useCase.execute({ sharedIds: this.params.sharedIds });
   }
 }
 

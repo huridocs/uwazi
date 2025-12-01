@@ -116,24 +116,23 @@ describe('BulkCleanupEntityUseCase', () => {
     const { sut } = createSut();
 
     const input = {
-      deleteEntities: [
-        { sharedId: 'sharedId1', templateId: templateB.toString() },
-        { sharedId: 'sharedId2', templateId: templateB.toString() },
-        { sharedId: 'entity2', templateId: templateA.toString() },
-      ],
+      sharedIds: ['sharedId1', 'sharedId2', 'entity2'],
     };
 
     // Verify relationships exist before deletion
     const relationsBefore = await testingEnvironment.db.getAllFrom('connections');
-    const sharedIds = input.deleteEntities.map(e => e.sharedId);
-    const targetRelationsBefore = relationsBefore.filter((r: any) => sharedIds.includes(r.entity));
+    const targetRelationsBefore = relationsBefore.filter((r: any) =>
+      input.sharedIds.includes(r.entity)
+    );
     expect(targetRelationsBefore.length).toBeGreaterThan(0);
 
     const result = await sut.execute(input);
 
     // Verify relationships were deleted
     const relationsAfter = await testingEnvironment.db.getAllFrom('connections');
-    const targetRelationsAfter = relationsAfter.filter((r: any) => sharedIds.includes(r.entity));
+    const targetRelationsAfter = relationsAfter.filter((r: any) =>
+      input.sharedIds.includes(r.entity)
+    );
     expect(targetRelationsAfter.length).toBe(0);
 
     expect(result).toEqual(input);
@@ -143,11 +142,7 @@ describe('BulkCleanupEntityUseCase', () => {
     const { sut } = createSut();
 
     const input = {
-      deleteEntities: [
-        { sharedId: 'sharedId1', templateId: templateB.toString() },
-        { sharedId: 'sharedId2', templateId: templateB.toString() },
-        { sharedId: 'sharedId3', templateId: templateB.toString() },
-      ],
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
     };
 
     const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
@@ -178,11 +173,7 @@ describe('BulkCleanupEntityUseCase', () => {
     const { sut } = createSut();
 
     const input = {
-      deleteEntities: [
-        { sharedId: 'sharedId1', templateId: templateB.toString() },
-        { sharedId: 'sharedId2', templateId: templateB.toString() },
-        { sharedId: 'sharedId3', templateId: templateB.toString() },
-      ],
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
     };
 
     await sut.execute(input);
@@ -215,11 +206,7 @@ describe('BulkCleanupEntityUseCase', () => {
     const { sut, eventBus } = createSut();
 
     const input = {
-      deleteEntities: [
-        { sharedId: 'sharedId1', templateId: templateB.toString() },
-        { sharedId: 'sharedId2', templateId: templateB.toString() },
-        { sharedId: 'sharedId3', templateId: templateB.toString() },
-      ],
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
     };
 
     await sut.execute(input);
@@ -243,17 +230,13 @@ describe('BulkCleanupEntityUseCase', () => {
     const { sut } = createSut();
 
     // These should throw validation errors from Zod
-    await expect(sut.execute({ deleteEntities: null } as any)).rejects.toThrow();
-    await expect(sut.execute({ deleteEntities: [] } as any)).rejects.toThrow();
-    await expect(
-      sut.execute({ deleteEntities: [{ sharedId: 'id', templateId: null }] } as any)
-    ).rejects.toThrow();
-    await expect(
-      sut.execute({ deleteEntities: [{ sharedId: '', templateId: 'test' }] } as any)
-    ).rejects.toThrow();
+    await expect(sut.execute({ sharedIds: null } as any)).rejects.toThrow();
+    await expect(sut.execute({ sharedIds: [] } as any)).rejects.toThrow();
+    await expect(sut.execute({ sharedIds: [''] } as any)).rejects.toThrow();
+    await expect(sut.execute({ sharedIds: ['  '] } as any)).rejects.toThrow();
     await expect(
       sut.execute({
-        deleteEntities: Array(101).fill({ sharedId: 'id', templateId: 'test' }),
+        sharedIds: Array(101).fill('id'),
       } as any)
     ).rejects.toThrow();
     await expect(sut.execute({} as any)).rejects.toThrow();

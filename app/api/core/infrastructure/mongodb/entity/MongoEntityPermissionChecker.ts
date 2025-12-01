@@ -1,6 +1,5 @@
 import {
   EntityPermissionChecker,
-  FilterEntitiesOutput,
   Specification,
 } from 'api/core/domain/entity/EntityPermissionChecker';
 import { Result, ResultType } from 'api/core/libs/Result';
@@ -10,7 +9,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
   async filterEntities(
     sharedIds: string[],
     specification: Specification
-  ): Promise<ResultType<FilterEntitiesOutput[], Error>> {
+  ): Promise<ResultType<string[], Error>> {
     const entities = await this.getCollection()
       .aggregate([
         { $match: { sharedId: { $in: sharedIds } } },
@@ -31,12 +30,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
     }
 
     if (specification.isPrivileged) {
-      return Result.ok(
-        entities.map(entity => ({
-          sharedId: entity.sharedId,
-          templateId: entity.template.toString(),
-        }))
-      );
+      return Result.ok(entities.map(entity => entity.sharedId));
     }
 
     const userRefIds = [specification.actor._id, ...specification.actor.groups];
@@ -59,10 +53,7 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
           )
         );
       })
-      .map(entity => ({
-        sharedId: entity.sharedId,
-        templateId: entity.template.toString(),
-      }));
+      .map(entity => entity.sharedId);
 
     if (grantedEntities.length === 0) {
       return Result.fail(

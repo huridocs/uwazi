@@ -6,15 +6,7 @@ import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLa
 import { AbstractUseCase } from '../libs/UseCase';
 
 const InputSchema = z.object({
-  deleteEntities: z
-    .array(
-      z.object({
-        sharedId: z.string().trim().min(1),
-        templateId: z.string().trim().min(1),
-      })
-    )
-    .min(1)
-    .max(100),
+  sharedIds: z.array(z.string().trim().min(1)).min(1).max(100),
 });
 
 type Input = z.infer<typeof InputSchema>;
@@ -30,12 +22,11 @@ class BulkCleanupEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
   protected async executeAsync(input: Input): Promise<Output> {
-    const { deleteEntities } = InputSchema.parse(input);
-    const sharedIds = deleteEntities.map(e => e.sharedId);
+    const { sharedIds } = InputSchema.parse(input);
 
     await this.transactionManager.run(async () => {
       await this.deps.relationshipsDS.bulkDeleteBySharedId(sharedIds);
-      await this.deps.entitiesDS.deleteReferencesToSharedIds(deleteEntities);
+      await this.deps.entitiesDS.deleteReferencesToSharedIds(sharedIds);
     });
 
     await ArrayUtils.sequentialFor(sharedIds, async sharedId =>

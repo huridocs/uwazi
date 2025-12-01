@@ -201,20 +201,7 @@ describe('BulkDeleteEntityUseCase', () => {
         params: {
           tenantName: tenants.current().name,
           userId: actor!._id!.toString(),
-          deleteEntities: expect.arrayContaining([
-            {
-              sharedId: 'A1',
-              templateId: factory.id('Document A').toString(),
-            },
-            {
-              sharedId: 'A2',
-              templateId: factory.id('Document A').toString(),
-            },
-            {
-              sharedId: 'B1',
-              templateId: factory.id('Document B').toString(),
-            },
-          ]),
+          sharedIds: expect.arrayContaining(['A1', 'A2', 'B1']),
         },
         queue: 'uwazi_jobs',
         namespace: tenants.current().name,
@@ -361,15 +348,13 @@ describe('BulkDeleteEntityUseCase', () => {
     // Should have created jobs for deletion.
     expect(jobs.length).toBe(3);
 
-    const allJobSharedIds = jobs.flatMap((job: any) =>
-      job.params.deleteEntities.map((e: any) => e.sharedId)
-    );
+    const allJobSharedIds = jobs.flatMap((job: any) => job.params.sharedIds);
     expect(allJobSharedIds.sort()).toEqual(sharedIds.sort());
 
     // Check that jobs are properly chunked
-    expect(jobs[0].params.deleteEntities.length).toBe(100);
-    expect(jobs[1].params.deleteEntities.length).toBe(100);
-    expect(jobs[2].params.deleteEntities.length).toBe(1);
+    expect(jobs[0].params.sharedIds.length).toBe(100);
+    expect(jobs[1].params.sharedIds.length).toBe(100);
+    expect(jobs[2].params.sharedIds.length).toBe(1);
   });
 
   it('should throw when given empty sharedIds array', async () => {
@@ -741,7 +726,7 @@ describe('BulkDeleteEntityUseCase', () => {
             params: {
               tenantName: tenants.current().name,
               userId: collaboratorUser!._id!.toString(),
-              deleteEntities: [{ sharedId: 'entity_with_write', templateId: expect.any(String) }],
+              sharedIds: ['entity_with_write'],
             },
           }),
         ]);

@@ -10,7 +10,6 @@ import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { Property } from 'api/core/domain/template/Property';
 import { Result, ResultType } from 'api/core/libs/Result';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -30,41 +29,41 @@ export class MongoMultiLanguageEntityDataSource
     });
   }
 
-  private async deleteSharedIdReferenceFromMetadata(sharedId: string) {
-    const affectedSharedIds = await this.getCollection().distinct('sharedId', {
-      $expr: {
-        $gt: [
-          {
-            $size: {
-              $filter: {
-                input: { $objectToArray: { $ifNull: ['$metadata', {}] } },
-                as: 'prop',
-                cond: {
-                  $gt: [
-                    {
-                      $size: {
-                        $filter: {
-                          input: '$$prop.v',
-                          as: 'item',
-                          cond: { $eq: ['$$item.value', sharedId] },
-                        },
-                      },
-                    },
-                    0,
-                  ],
-                },
-              },
-            },
+  private async getReferencePropertyNames(): Promise<string[]> {
+    const result = await this.getCollection('templates')
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
           },
-          0,
-        ],
-      },
-    });
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
 
-    if (affectedSharedIds.length === 0) return;
+    return result.map((doc: any) => doc._id);
+  }
 
-    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+  private async findAffectedSharedIds(
+    deletedSharedIds: string[],
+    propertyNames: string[]
+  ): Promise<string[]> {
+    const orConditions = propertyNames.map(propName => ({
+      [`metadata.${propName}.value`]: { $in: deletedSharedIds },
+    }));
 
+    return this.getCollection().distinct('sharedId', { $or: orConditions });
+  }
+
+  private async updateMetadataReferences(
+    affectedSharedIds: string[],
+    deletedSharedIds: string[]
+  ): Promise<void> {
     await this.getCollection().updateMany({ sharedId: { $in: affectedSharedIds } }, [
       {
         $set: {
@@ -79,7 +78,7 @@ export class MongoMultiLanguageEntityDataSource
                     $filter: {
                       input: '$$prop.v',
                       as: 'item',
-                      cond: { $ne: ['$$item.value', sharedId] },
+                      cond: { $not: { $in: ['$$item.value', deletedSharedIds] } },
                     },
                   },
                 },
@@ -91,12 +90,18 @@ export class MongoMultiLanguageEntityDataSource
     ]);
   }
 
-  async deleteReferencesToSharedIds(
-    deletedEntities: Array<{ sharedId: string; templateId: string }>
-  ): Promise<void> {
-    await ArrayUtils.sequentialFor(deletedEntities, async ({ sharedId }) =>
-      this.deleteSharedIdReferenceFromMetadata(sharedId)
-    );
+  async deleteReferencesToSharedIds(deletedSharedIds: string[]): Promise<void> {
+    if (deletedSharedIds.length === 0) return;
+
+    const propertyNames = await this.getReferencePropertyNames();
+    if (propertyNames.length === 0) return;
+
+    const affectedSharedIds = await this.findAffectedSharedIds(deletedSharedIds, propertyNames);
+    if (affectedSharedIds.length === 0) return;
+
+    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+
+    await this.updateMetadataReferences(affectedSharedIds, deletedSharedIds);
   }
 
   async bulkDelete(sharedIds: string[]): Promise<void> {

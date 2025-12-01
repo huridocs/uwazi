@@ -9,9 +9,7 @@ export interface MultiLanguageEntityDataSource {
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
   bulkDelete(sharedIds: string[]): Promise<void>;
-  deleteReferencesToSharedIds(
-    entities: Array<{ sharedId: string; templateId: string }>
-  ): Promise<void>;
+  deleteReferencesToSharedIds(sharedIds: string[]): Promise<void>;
 
   renameMetadataProperties(
     propertyNames: { [oldName: string]: string },
