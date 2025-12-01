@@ -233,8 +233,16 @@
 
   .tw-content input[type='radio'],
   .tw-content input[type='checkbox'] {
-    -webkit-appearance: none;
-    appearance: none;
+    accent-color: var(--color-primary-700);
+    vertical-align: middle;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    .tw-content input[type='radio'] {
+      width: 0.875rem;
+      height: 0.875rem;
+      margin-top: 0.0625rem;
+    }
   }
 }
 
