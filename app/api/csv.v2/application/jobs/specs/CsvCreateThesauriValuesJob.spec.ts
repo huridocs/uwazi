@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
 import { CsvCreateThesauriValuesJob } from '../CsvCreateThesauriValuesJob';
 
 const createTransactionManager = () =>
@@ -25,7 +26,7 @@ describe('CsvCreateThesauriValuesJob', () => {
       update: jest.fn().mockResolvedValue(undefined),
     };
     const pendingDocs = [
-      {
+      CsvImportThesauriValues.create({
         importId: 'import-id',
         thesaurusId: 'thes',
         createdAt: Date.now(),
@@ -51,7 +52,7 @@ describe('CsvCreateThesauriValuesJob', () => {
             ],
           },
         ],
-      },
+      }),
     ];
     const thesauriValuesDS = {
       getByImport: jest.fn().mockResolvedValue(pendingDocs),

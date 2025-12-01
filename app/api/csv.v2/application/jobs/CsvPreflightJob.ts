@@ -60,13 +60,14 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
       grouped.set(entry.thesaurusId, list);
     });
 
-    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) => ({
-      importId,
-      thesaurusId,
-      createdAt,
-      entries: groupedEntries,
-      appliedValues: [],
-    }));
+    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) =>
+      CsvImportThesauriValues.create({
+        importId,
+        thesaurusId,
+        createdAt,
+        entries: groupedEntries,
+      })
+    );
   }
 
   private async setStatus(importId: string, status: CsvImportStatus) {
