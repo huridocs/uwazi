@@ -352,3 +352,7 @@ Keep this document synchronized with the code. Any change to the job behavior, d
   - Stage CSV rows by calling the real `CsvImportRowsDataSource.insertMany` (via helpers) and persist imports through `CsvImportsDataSource.insert`; never short-circuit those writes.
   - Lifecycle: `beforeAll` seeds fixtures once, `afterEach` resets to the canonical fixtures via `testingEnvironment.setFixtures(fixtures)` and deletes only the stage-specific collections (`csv_imports`, `csv_import_rows`, `csv_import_thesauri_values`), `afterAll` tears everything down.
   - Always run `npx jest`, `npx eslint <touched files>`, and `npx tsc --noEmit` locally before handing off—even test-only changes must remain type/lint clean to honor the “non-negotiable” gate above.
+
+### 16. Code review follow-up
+
+- The recent review of `CsvExtractUploadedZipJob` uncovered concerns about optional guards around `storage.path` and `existing` import documents. The reasoning, failure scenarios, and suggested tightening strategies (dispatcher-level assertions, payloading the storage path, domain helpers) live in `csv-v2-context-05-codeReview.md` so future contributors can see the thought process and follow-up plan.
