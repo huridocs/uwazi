@@ -44,14 +44,14 @@ const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusRow, strin
     <div className="flex items-center gap-2">
       <span className="text-indigo-700">{label}</span>
       {thesaurus !== undefined && hidden && (
-        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-t-0 border-b-0">
+        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-l-2 border-r-2 border-gray-400 border-solid rounded-lg border-t-0 border-b-0">
           <Translate context={thesaurus._id} className="text-gray-700 ">
             {label}
           </Translate>
         </div>
       )}
       {thesaurus !== undefined && !hidden && (
-        <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-t-0 border-b-0">
+        <div className="h-full p-1 ml-2 border-l-2 border-r-2 border-gray-400 border-solid rounded-lg border-t-0 border-b-0">
           <Translate context={thesaurus._id} className="text-gray-700 ">
             {label}
           </Translate>
