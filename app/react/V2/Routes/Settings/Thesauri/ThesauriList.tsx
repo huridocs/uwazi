@@ -14,8 +14,8 @@ import type { ThesauriRow } from './components/ThesauriTable';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    ThesauriAPI.get({}, headers);
+    async () =>
+      ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();
@@ -77,7 +77,7 @@ const ThesauriList = () => {
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-indigo-50" highlighted>
+        <SettingsContent.Footer className="bg-primary-50" highlighted>
           {selectedThesauri.length ? (
             <div className="flex items-center gap-2">
               <Button

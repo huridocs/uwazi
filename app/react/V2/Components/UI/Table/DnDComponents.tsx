@@ -27,7 +27,7 @@ const activeGradientStyle: CSSProperties = {
 
 const getSytles = (expanded: boolean, isOver: boolean, isDndDisable: boolean) => {
   const expandedGroupStyles = expanded
-    ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
+    ? 'bg-primary-100 border-indigo-100 hover:bg-primary-200 hover:border-indigo-200'
     : '';
   const dndHoverStyles = isOver && !isDndDisable ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;
