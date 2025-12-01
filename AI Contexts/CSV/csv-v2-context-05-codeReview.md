@@ -10,14 +10,22 @@
 
 ### 2. Suggested tightening strategies
 
-| Goal | Approach |
-| --- | --- |
-| Guarantee a storage path once registration completes | Add a helper in the registration flow that throws if `storage.path` is absent, and persist the path as part of the job dispatch payload so every downstream stage receives it explicitly (`CsvExtractUploadedZipJob` no longer needs to fetch it). |
+| Goal                                                     | Approach                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Guarantee a storage path once registration completes     | Add a helper in the registration flow that throws if `storage.path` is absent, and persist the path as part of the job dispatch payload so every downstream stage receives it explicitly (`CsvExtractUploadedZipJob` no longer needs to fetch it).                          |
 | Make status updates safe even if the import has vanished | Have the dispatcher read the import before every downstream dispatch, assert the document exists (maybe via `CsvImportDomain.assertExists(import)`), and pass the sanitized object to the job. Jobs can then skip optional branches and rely on the dispatcher’s pre-check. |
-| Keep domains strict for downstream jobs | Introduce a domain-level assertion (e.g., `CsvImportDomain.ensureStoragePath(import)`/`assertExists`) that throws early when invariants are missing. Call it at the dispatcher boundary so only fully-formed domains reach the job logic. |
+| Keep domains strict for downstream jobs                  | Introduce a domain-level assertion (e.g., `CsvImportDomain.ensureStoragePath(import)`/`assertExists`) that throws early when invariants are missing. Call it at the dispatcher boundary so only fully-formed domains reach the job logic.                                   |
 
 ### 3. Next steps
 
-- Discuss with the team which of the above tightening strategies to adopt. If we choose to bake the values into the dispatch payload or make new domain assertions, the job’s optional guards can be simplified or removed.
-- Once a direction is agreed, update this file (and `csv-v2-context-05.md`) with the chosen approach so future reviewers understand why the guards existed and how they were resolved.
-
+1. **Domain alignment recap for the next agent**
+   - `CsvImport`, `CsvImportRow`, `CsvThesauriPendingValues`, `CsvImportThesauriValues` now follow the Template V2 pattern: each is a class with readonly props, creation helpers, mutation methods, and `toPersistence()`; their DSs/services were updated and specs now instantiate them via factory methods.
+   - `CsvImportRowsStager` and its Mongo DS produce/consume `CsvImportRow` instances, and specs use `CsvImportRow.create(...)`.
+   - `CsvThesauriPendingValuesBuilder` now works with `CsvThesauriPendingEntry/Root/Child` classes instead of plain objects, so all parsing logic lives next to the domain invariants.
+   - `CsvImportThesauriValues` now owns `withAppliedValues`, stats aggregation, and persistence helpers that the job uses directly.
+2. **Remaining Template-style TODOs**
+   - Services such as `PendingThesauriValuesApplier` / `CsvThesauriValuesDiff` should keep operating on the domain objects; if they still return bare arrays, wrap them immediately in the appropriate class before reaching other layers.
+   - Queue/event specs should inspect domain instances (e.g., expect `pendingDoc.entries` to exist on a `CsvImportThesauriValues`), so the next agent doesn’t have to reason about raw schemas.
+   - Every new helper or DS in `csv.v2` should follow the same convention—one class per file, readonly props, `clone`/`withX` helpers, and `to/fromPersistence`.
+3. **Final note**
+   - Hand the next agent this file plus the updated `csv-v2-context-05.md`; they contain every reasoning, decision, and remaining TODO needed to extend the Template pattern further. Make sure they read them before diving into the code.
