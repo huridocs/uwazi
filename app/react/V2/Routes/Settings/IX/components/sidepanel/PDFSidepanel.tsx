@@ -104,19 +104,18 @@ const PDFSidepanel = ({
 
   useEffect(() => {
     if (highlights && !selectedText) {
-      const hightlightPage = Object.keys(highlights)[0];
+      const page = Object.keys(highlights)[0];
+      const firstHighlight = highlights[page]?.[0];
 
-      if (hightlightPage) {
-        const handlePdfReady = () => {
-          pdfEventBus.dispatch('goToPage', Number(hightlightPage));
-        };
+      const handlePdfReady = () => {
+        pdfEventBus.dispatch('scrollToHighlight', firstHighlight.key);
+      };
 
-        const { unsubscribe } = pdfEventBus.on('pdfReady', handlePdfReady);
+      const { unsubscribe } = pdfEventBus.on('pdfReady', handlePdfReady);
 
-        return () => {
-          unsubscribe();
-        };
-      }
+      return () => {
+        unsubscribe();
+      };
     }
 
     return undefined;
