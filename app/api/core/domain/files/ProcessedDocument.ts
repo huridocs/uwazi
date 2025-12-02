@@ -6,6 +6,7 @@ type Props = BaseDocumentProps & {
   entity: string;
   language: LanguageISO6391;
   totalPages: number;
+  generatedToc: boolean;
   fullText: {
     [k: string]: string;
   };
@@ -16,14 +17,17 @@ export class ProcessedDocument extends BaseDocument {
 
   readonly totalPages: number;
 
+  readonly generatedToc: boolean;
+
   readonly fullText: { [k: string]: string };
 
   constructor(props: Props) {
-    const { language, totalPages, fullText, ...baseProps } = props;
+    const { language, totalPages, fullText, generatedToc, ...baseProps } = props;
     super({ ...baseProps });
     this.language = language;
     this.totalPages = totalPages;
     this.fullText = fullText;
+    this.generatedToc = generatedToc;
   }
 
   static fromDocument(
@@ -36,6 +40,6 @@ export class ProcessedDocument extends BaseDocument {
       };
     }
   ) {
-    return new ProcessedDocument({ ...document, ...pdfInfo });
+    return new ProcessedDocument({ ...document, ...pdfInfo, generatedToc: false });
   }
 }
