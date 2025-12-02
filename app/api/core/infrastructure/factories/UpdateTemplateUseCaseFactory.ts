@@ -12,7 +12,7 @@ import { tenants } from 'api/tenants';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService';

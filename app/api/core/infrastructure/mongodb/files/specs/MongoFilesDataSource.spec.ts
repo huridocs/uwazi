@@ -91,6 +91,23 @@ describe('MongoFilesDataSource', () => {
     });
   });
 
+  describe('getByEntitiesIds', () => {
+    it('should get files belonging to entities', async () => {
+      const { ds } = createDs();
+      const files = await ds.getByEntitiesIds(['entity2', 'entity3']).all();
+
+      expect(files).toMatchObject([
+        { filename: 'file2' },
+        { filename: 'file3' },
+        { filename: 'processingDocument' },
+      ]);
+      const processed = (
+        await ds.getProcessingById(f.idString('processingDocument'))
+      ).getDataOrThrow();
+      expect(processed).toBeInstanceOf(Document);
+    });
+  });
+
   describe('update', () => {
     it('should update and reindex related entity if file type is "processedDocument"', async () => {
       await testingEnvironment.setUp(fixtures, true);
@@ -145,6 +162,7 @@ describe('MongoFilesDataSource', () => {
             filename: 'file.pdf',
             language: 'en',
             totalPages: 1,
+            generatedToc: false,
             creationDate: 0,
             uploaded: true,
             fullText: { 1: 'fullText' },

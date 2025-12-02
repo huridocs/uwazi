@@ -24,6 +24,7 @@ export type ProcessedDocumentDBO = BaseDocument & {
   language: LanguageISO6393;
   status: 'ready';
   fullText?: { [k: string]: string };
+  generatedToc: boolean;
 };
 
 export type AttachmentDBO = BaseFileDBO & {

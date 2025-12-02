@@ -14,6 +14,8 @@ import { PDFService } from '../services/PDFService';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
 class FilesServiceFactory {
   static default(transactionManager: MongoTransactionManager) {
@@ -43,6 +45,9 @@ class FilesServiceFactory {
               jobsDispatcher,
               pdfService: new PDFService(),
               filesIO: new FileContentsIO(),
+              relV1DS: new MongoRelationshipsV1DataSource(getConnection(), _transactionManager),
+              transactionManager: _transactionManager,
+              eventBus: applicationEventsBus,
             }),
           }),
           wSockets: new V1WebSocketsWrapper(),
@@ -60,6 +65,9 @@ class FilesServiceFactory {
       jobsDispatcher,
       pdfService: new PDFService(),
       filesIO: new FileContentsIO(),
+      relV1DS: new MongoRelationshipsV1DataSource(getConnection(), _transactionManager),
+      transactionManager: _transactionManager,
+      eventBus: applicationEventsBus,
     });
   }
 }

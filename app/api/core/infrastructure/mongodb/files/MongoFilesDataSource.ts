@@ -64,6 +64,22 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
+  getByEntitiesIds(entitySharedIds: string[]): ResultSet<UwaziFile> {
+    return new MongoResultSet<fileDBO, UwaziFile>(
+      this.getCollection().find({
+        entity: { $in: entitySharedIds },
+      }),
+      async thumbnaildbo =>
+        FileMappers.toModel(
+          thumbnaildbo,
+          await this.fileStorage.getFile({
+            type: thumbnaildbo.type,
+            filename: thumbnaildbo.filename,
+          })
+        )
+    );
+  }
+
   getThumbnails(files: ProcessedDocument[]): ResultSet<Thumbnail> {
     return new MongoResultSet<fileDBO, Thumbnail>(
       this.getCollection().find({

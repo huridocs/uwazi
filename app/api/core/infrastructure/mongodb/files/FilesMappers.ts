@@ -77,6 +77,7 @@ export const FileMappers = {
         totalPages: dbo.totalPages,
         fullText: dbo.fullText || {},
         content: fileContents,
+        generatedToc: dbo.generatedToc,
       }) as R;
     }
     if (dbo.type === 'document') {
@@ -114,6 +115,7 @@ export const FileMappers = {
         language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
         status: 'ready',
         fullText: file.fullText,
+        generatedToc: file.generatedToc,
       };
     }
 

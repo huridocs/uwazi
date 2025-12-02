@@ -1,9 +1,11 @@
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
 import settings from 'api/settings';
-import { withConnectedData } from './relationshipsHelpers';
-import { Relation } from './RelationsV1Collection';
-import relationsFacade from './relationships';
+import { dbSessionContext } from 'api/odm/sessionsContext';
+import relationships from 'api/relationships';
+import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -15,7 +17,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
       })
       .toArray();
 
-    const relationships = await this.getCollection()
+    const dbRelationships = await this.getCollection()
       .find({
         hub: { $in: ownRelations.map(relationship => relationship.hub) },
       })
@@ -25,7 +27,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
 
     const _connectedDocuments = await entities.getUnrestricted(
       {
-        sharedId: { $in: relationships.map(r => r.entity) },
+        sharedId: { $in: dbRelationships.map(r => r.entity) },
         language,
       },
       ['sharedId', 'template', 'title']
@@ -37,10 +39,21 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
       return res;
     }, {});
 
-    return withConnectedData(relationships, connectedDocuments) as Relation[];
+    return withConnectedData(dbRelationships, connectedDocuments) as Relation[];
+  }
+
+  async deleteByFiles(files: UwaziFileWithContents[]) {
+    const session = this.transactionManager.getSession();
+    if (session) {
+      dbSessionContext.setSession(session);
+    }
+
+    await relationships.delete({ file: { $in: files.map(f => f.id) } }, null, false);
+
+    dbSessionContext.clearContext();
   }
 
   async bulkDeleteBySharedId(sharedIds: string[]) {
-    await relationsFacade.delete({ entity: { $in: sharedIds } }, null, false);
+    await relationships.delete({ entity: { $in: sharedIds } }, null, false);
   }
 }
