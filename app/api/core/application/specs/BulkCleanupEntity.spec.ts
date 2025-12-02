@@ -7,12 +7,19 @@ import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGenerato
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { EventsBus } from 'api/core/libs/eventsbus';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { elastic } from 'api/search';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { appContext } from 'api/utils/AppContext';
 import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity';
+import { FilesService } from '../FilesService';
+import { FileStorage } from '../contracts/FileStorage';
 
 const factory = getFixturesFactory();
 
@@ -78,14 +85,91 @@ const fixtures: DBFixture = {
   ],
 
   connections: [...hub1, ...hub2, ...hub3],
+
+  files: [
+    factory.file('file_1_sharedId1', {
+      entity: 'sharedId1',
+      language: 'en',
+      mimetype: 'application/pdf',
+      type: 'document',
+    }),
+    factory.file('file_2_sharedId1', {
+      entity: 'sharedId1',
+      language: 'en',
+      mimetype: 'application/pdf',
+      type: 'document',
+    }),
+    factory.file('file_3_sharedId1', {
+      entity: 'sharedId1',
+      language: 'en',
+      mimetype: 'application/pdf',
+      type: 'attachment',
+    }),
+    factory.file('file_4_sharedId1', {
+      entity: 'sharedId1',
+      language: 'en',
+      mimetype: 'image/jpeg',
+      type: 'thumbnail',
+    }),
+    factory.file('file_1_sharedId2', {
+      entity: 'sharedId2',
+      language: 'en',
+      mimetype: 'application/pdf',
+      type: 'document',
+    }),
+    factory.file('file_2_sharedId2', {
+      entity: 'sharedId2',
+      language: 'en',
+      mimetype: 'application/pdf',
+      type: 'attachment',
+    }),
+    factory.file('file_1_sharedId4', {
+      entity: 'sharedId4',
+      language: 'en',
+      mimetype: 'image/jpeg',
+      type: 'thumbnail',
+    }),
+  ],
 };
 
-const createSut = () => {
+type CreateSutProps = {
+  filesService?: FilesService;
+  relationshipsDS?: MongoRelationshipsV1DataSource;
+  entitiesDS?: MongoMultiLanguageEntityDataSource;
+};
+
+const createSut = (props?: CreateSutProps) => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
+  const relationshipsDS =
+    props?.relationshipsDS ??
+    new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
+  const entitiesDS =
+    props?.entitiesDS ??
+    new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
+
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({});
+  const fileStorage = TestUtils.mockClass<FileStorage>({
+    removeFile: jest.fn().mockResolvedValue(undefined),
+  });
+  const filesIO = TestUtils.mockClass<FileContentsIO>({});
+  const pdfService = TestUtils.mockClass<PDFService>({});
+
+  const filesService =
+    props?.filesService ??
+    new FilesService({
+      filesDS,
+      fileStorage,
+      idGenerator,
+      jobsDispatcher,
+      pdfService,
+      filesIO,
+      relV1DS: relationshipsDS,
+      transactionManager,
+      eventBus,
+    });
 
   const sut = new BulkCleanupEntityUseCase({
     relationshipsDS,
@@ -93,9 +177,11 @@ const createSut = () => {
     idGenerator,
     transactionManager,
     eventBus,
+    jobsDispatcher,
+    filesService,
   });
 
-  return { sut, eventBus };
+  return { sut, eventBus, fileStorage };
 };
 
 describe('BulkCleanupEntityUseCase', () => {
@@ -202,6 +288,24 @@ describe('BulkCleanupEntityUseCase', () => {
     });
   });
 
+  it('should delete files associated with the deleted entities', async () => {
+    const { sut, fileStorage } = createSut();
+
+    const input = {
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
+    };
+
+    await sut.execute(input);
+
+    const files = await testingEnvironment.db.getAllFrom('files');
+
+    expect(files).toEqual([
+      expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
+    ]);
+
+    expect(fileStorage.removeFile).toHaveBeenCalledTimes(6);
+  });
+
   it('should emit EntityDeletedEvent for each sharedId', async () => {
     const { sut, eventBus } = createSut();
 
@@ -211,19 +315,113 @@ describe('BulkCleanupEntityUseCase', () => {
 
     await sut.execute(input);
 
-    expect(eventBus.emit).toHaveBeenCalledTimes(3);
+    expect(eventBus.emit).toHaveBeenCalledTimes(4);
+
     expect(eventBus.emit).toHaveBeenNthCalledWith(
-      1,
+      2,
       expect.objectContaining({ data: { entity: [{ sharedId: 'sharedId1' }] } })
     );
     expect(eventBus.emit).toHaveBeenNthCalledWith(
-      2,
+      3,
       expect.objectContaining({ data: { entity: [{ sharedId: 'sharedId2' }] } })
     );
     expect(eventBus.emit).toHaveBeenNthCalledWith(
-      3,
+      4,
       expect.objectContaining({ data: { entity: [{ sharedId: 'sharedId3' }] } })
     );
+  });
+
+  it('should revert if delete entity files fails', async () => {
+    const mockedFilesService = TestUtils.mockClass<FilesService>({
+      deleteEntityFiles: jest.fn().mockRejectedValue(new Error('File deletion failed')),
+    });
+
+    const { sut } = createSut({ filesService: mockedFilesService });
+
+    const input = {
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
+    };
+
+    const relationshipsBefore = await testingEnvironment.db.getAllFrom('connections');
+    const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
+    const entity2Before = entitiesBefore.filter((e: any) => e.sharedId === 'entity2');
+
+    await expect(sut.execute(input)).rejects.toThrow('File deletion failed');
+
+    const relationshipsAfter = await testingEnvironment.db.getAllFrom('connections');
+    expect(relationshipsAfter).toEqual(relationshipsBefore);
+
+    const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
+    const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
+    expect(entity2After[0]?.metadata.selectProp).toEqual(entity2Before[0]?.metadata.selectProp);
+    expect(entity2After[0]?.metadata.relationProp).toEqual(entity2Before[0]?.metadata.relationProp);
+
+    const filesAfter = await testingEnvironment.db.getAllFrom('files');
+    const filesForDeletedEntities = filesAfter.filter((f: any) =>
+      input.sharedIds.includes(f.entity)
+    );
+    expect(filesForDeletedEntities.length).toBeGreaterThan(0);
+  });
+
+  it('should revert if deleting relationships fails', async () => {
+    const mockedRelationshipsDS = TestUtils.mockClass<MongoRelationshipsV1DataSource>({
+      bulkDeleteBySharedId: jest.fn().mockRejectedValue(new Error('Relationships deletion failed')),
+      deleteByFiles: jest.fn().mockRejectedValue(new Error('Relationships deletion failed')),
+    });
+
+    const { sut } = createSut({ relationshipsDS: mockedRelationshipsDS });
+
+    const input = {
+      sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
+    };
+
+    await expect(sut.execute(input)).rejects.toThrow('Relationships deletion failed');
+
+    const relationshipsAfter = await testingEnvironment.db.getAllFrom('connections');
+    const relationshipsForDeletedEntities = relationshipsAfter.filter((r: any) =>
+      input.sharedIds.includes(r.entity)
+    );
+    expect(relationshipsForDeletedEntities.length).toBeGreaterThan(0);
+
+    const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
+    const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
+    expect(entity2After[0]?.metadata.selectProp).toEqual([
+      { value: 'sharedId1' },
+      { value: 'sharedId2' },
+    ]);
+    expect(entity2After[0]?.metadata.relationProp).toEqual([{ value: 'sharedId3' }]);
+  });
+
+  it('should revert if deleting references on entities fails', async () => {
+    await appContext.run(async () => {
+      const mockedEntitiesDS = TestUtils.mockClass<MongoMultiLanguageEntityDataSource>({
+        deleteReferencesToSharedIds: jest
+          .fn()
+          .mockRejectedValue(new Error('Reference deletion failed')),
+      });
+
+      const { sut } = createSut({ entitiesDS: mockedEntitiesDS });
+
+      const input = {
+        sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
+      };
+
+      const relationshipsBefore = await testingEnvironment.db.getAllFrom('connections');
+      const entitiesBefore = await testingEnvironment.db.getAllFrom('entities');
+      const entity2Before = entitiesBefore.filter((e: any) => e.sharedId === 'entity2');
+
+      await expect(sut.execute(input)).rejects.toThrow('Reference deletion failed');
+
+      const relationshipsAfter = await testingEnvironment.db.getAllFrom('connections');
+      expect(relationshipsAfter).toEqual(relationshipsBefore);
+
+      const entitiesAfter = await testingEnvironment.db.getAllFrom('entities');
+      const entity2After = entitiesAfter.filter((e: any) => e.sharedId === 'entity2');
+      expect(entity2After[0]?.metadata.selectProp).toEqual(entity2Before[0]?.metadata.selectProp);
+      expect(entity2After[0]?.metadata.relationProp).toEqual(
+        entity2Before[0]?.metadata.relationProp
+      );
+    });
   });
 
   it('should throw when input is invalid', async () => {

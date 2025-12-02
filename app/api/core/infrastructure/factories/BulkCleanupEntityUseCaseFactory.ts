@@ -5,8 +5,9 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
 import { BulkCleanupEntityUseCase } from 'api/core/application/BulkCleanupEntity';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { FilesServiceFactory } from './FilesServiceFactory';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
 
 class BulkCleanupEntityUseCaseFactory {
   static default() {
@@ -16,6 +17,7 @@ class BulkCleanupEntityUseCaseFactory {
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
     const eventBus = applicationEventsBus;
+    const filesService = FilesServiceFactory.default(transactionManager);
 
     const useCase = new BulkCleanupEntityUseCase(
       {
@@ -24,6 +26,7 @@ class BulkCleanupEntityUseCaseFactory {
         eventBus,
         entitiesDS,
         relationshipsDS,
+        filesService,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );

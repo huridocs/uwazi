@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
+import { FilesService } from './FilesService';
+import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
 
 const InputSchema = z.object({
   sharedIds: z.array(z.string().trim().min(1)).min(1).max(100),
@@ -14,6 +15,7 @@ type Input = z.infer<typeof InputSchema>;
 type Output = Input;
 
 type Deps = {
+  filesService: FilesService;
   relationshipsDS: MongoRelationshipsV1DataSource;
   entitiesDS: MultiLanguageEntityDataSource;
 };
@@ -25,8 +27,9 @@ class BulkCleanupEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     const { sharedIds } = InputSchema.parse(input);
 
     await this.transactionManager.run(async () => {
-      await this.deps.relationshipsDS.bulkDeleteBySharedId(sharedIds);
       await this.deps.entitiesDS.deleteReferencesToSharedIds(sharedIds);
+      await this.deps.filesService.deleteEntityFiles(sharedIds);
+      await this.deps.relationshipsDS.bulkDeleteBySharedId(sharedIds);
     });
 
     await ArrayUtils.sequentialFor(sharedIds, async sharedId =>

@@ -3,15 +3,10 @@ import {
   BulkDeleteEntityInput,
   BulkDeleteEntityUseCase,
 } from 'api/core/application/BulkDeleteEntity';
-import { search } from 'api/search';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import entities from 'api/entities';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
+import { LoggerFactory } from '../../factories/LoggerFactory';
 
 type RequestDto = BulkDeleteEntityInput;
 
@@ -21,33 +16,34 @@ type ResponseDto = string;
 class BulkDeleteEntityController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
     if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
-      const transactionManager = TransactionManagerFactory.default();
-      const jobsDispatcher = DefaultDispatcher(this.tenantName);
-      const entityPermissionChecker = new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager
-      );
+      const logger = LoggerFactory.default();
+      const useCase = BulkDeleteEntityUseCaseFactory.default();
 
-      const entitiesDS = new MongoMultiLanguageEntityDataSource(
-        getConnection(),
-        transactionManager
-      );
+      try {
+        const startTime = Date.now();
 
-      const useCase = new BulkDeleteEntityUseCase(
-        {
-          entitiesDS,
-          entityPermissionChecker,
-          search,
-          jobsDispatcher,
-          transactionManager,
-        },
-        { actor: permissionsContext.getUserInContext()!, tenant: tenants.current()! }
-      );
+        await useCase.execute(this.request.body);
+        logger.info('Bulk delete executed successfully', {
+          namespace: 'Bulk_Delete_Entity',
+          success: true,
 
-      await useCase.execute(this.request.body);
+          deletedCount: this.request.body.sharedIds.length,
+          durationMs: Date.now() - startTime,
+        });
+        this.response.json('ok');
+        return;
+      } catch (error: unknown) {
+        logger.info(
+          `Bulk delete execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          {
+            namespace: 'Bulk_Delete_Entity',
+            success: false,
 
-      this.response.json('ok');
-      return;
+            dto: JSON.stringify(this.request?.body || {}),
+            error: JSON.stringify(error),
+          }
+        );
+      }
     }
 
     await entities.deleteMultiple(
