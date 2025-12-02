@@ -280,6 +280,7 @@ describe('FileMappers', () => {
         type: 'document',
         entity: 'entity1',
         status: 'ready',
+        generatedToc: false,
         language: 'eng',
         totalPages: 1,
         fullText: { 1: 'text' },
@@ -317,6 +318,7 @@ describe('FileMappers', () => {
         totalPages: 10,
         language: 'eng',
         status: 'ready',
+        generatedToc: false,
       };
       const anotherDocumentDBO: fileDBO = {
         _id: new ObjectId(),

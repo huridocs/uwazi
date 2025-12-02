@@ -124,6 +124,7 @@ const fixtures: DBFixture = {
       filename: 'fileNotInDisk',
       originalname: 'fileNotInDisk',
       type: 'document',
+      status: 'ready',
     },
     {
       _id: restrictedUploadId,
