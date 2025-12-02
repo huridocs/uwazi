@@ -155,6 +155,9 @@ describe('FileMappers', () => {
         return FileBuilder.content('test content');
       },
     });
+
+    const toModel = (dbo: fileDBO) => FileMappers.toModel(dbo, { fileStorage });
+
     it('should map to URLAttachment when type is attachment and url is present', () => {
       const dbo: fileDBO = {
         _id: new ObjectId(),
@@ -168,7 +171,7 @@ describe('FileMappers', () => {
         url: 'http://example.com',
       };
 
-      const result = FileMappers.toModel(dbo, { fileStorage });
+      const result = toModel(dbo);
 
       expect(result).toBeInstanceOf(URLAttachment);
 
@@ -196,7 +199,7 @@ describe('FileMappers', () => {
         entity: 'entity3',
       };
 
-      const result = FileMappers.toModel<Attachment>(dbo, { fileStorage });
+      const result = toModel(dbo);
 
       expect(result).toBeInstanceOf(Attachment);
 
@@ -222,7 +225,7 @@ describe('FileMappers', () => {
         type: 'custom',
       };
 
-      const result = FileMappers.toModel(dbo, { fileStorage });
+      const result = toModel(dbo);
 
       expect(result).toBeInstanceOf(CustomUpload);
       expect(result.id).toBe(dbo._id.toString());
@@ -246,7 +249,7 @@ describe('FileMappers', () => {
         language: 'spa',
       };
 
-      const thumbnail = FileMappers.toModel<Thumbnail>(dbo, { fileStorage });
+      const thumbnail = toModel(dbo);
 
       expect(thumbnail).toBeInstanceOf(Thumbnail);
 
@@ -275,7 +278,7 @@ describe('FileMappers', () => {
         status: 'processing',
       };
 
-      const result = FileMappers.toModel(dbo, { fileStorage });
+      const result = toModel(dbo);
 
       expect(result).toBeInstanceOf(Document);
 
@@ -308,7 +311,7 @@ describe('FileMappers', () => {
         fullText: { 1: 'text' },
       };
 
-      const result = FileMappers.toModel(dbo, { fileStorage });
+      const result = toModel(dbo);
 
       expect(result).toBeInstanceOf(ProcessedDocument);
       const document = result as Document;
@@ -354,8 +357,8 @@ describe('FileMappers', () => {
         status: 'failed',
       };
 
-      const documentResult = FileMappers.toModel(documentDBO, { fileStorage });
-      const anotherResult = FileMappers.toModel(anotherDocumentDBO, { fileStorage });
+      const documentResult = toModel(documentDBO);
+      const anotherResult = toModel(anotherDocumentDBO);
 
       expect(documentResult).toBeInstanceOf(ProcessedDocument);
       expect(anotherResult).toBeInstanceOf(Document);

@@ -62,7 +62,11 @@ export const FileMappers = {
         entity: dbo.entity,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
         totalPages: dbo.totalPages,
-        fullText: dbo.fullText || {},
+        fullText:
+          dbo.fullText ||
+          (async () => {
+            throw new Error('not Implemented');
+          }),
         generatedToc: dbo.generatedToc,
       }) as R;
     }
