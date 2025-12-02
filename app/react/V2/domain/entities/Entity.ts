@@ -25,3 +25,5 @@ export interface Entity {
   documents?: FileType[];
   attachments?: FileType[];
 }
+
+export type { EntityRelation };

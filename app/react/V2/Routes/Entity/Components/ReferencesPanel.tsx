@@ -94,28 +94,7 @@ const ReferencesPanel = ({ relations }: ReferencesPanelProps) => {
       </Panel.Body>
 
       <Panel.Footer>
-        <div className="flex items-center justify-between w-full">
-          <p className="text-sm text-gray-600">
-            <Translate>To Add references check this guide</Translate>{' '}
-            <button
-              type="button"
-              className="underline text-left"
-              onClick={() => {
-                // TODO: Implement guide link navigation
-              }}
-            >
-              <Translate>here</Translate>
-            </button>
-            .
-          </p>
-          <button
-            type="button"
-            className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-400"
-            aria-label="Help"
-          >
-            <span className="text-xs text-gray-700">?</span>
-          </button>
-        </div>
+        <div className="flex items-center justify-between w-full" />
       </Panel.Footer>
     </Panel>
   );
