@@ -272,7 +272,17 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, fileService } = createSut();
+    const { sut, fileService } = createSut({
+      context: {
+        actor: {
+          _id: factory.id('user1'),
+          username: 'username',
+          email: 'email@email.com',
+          role: 'collaborator',
+        },
+        tenant: tenants.current(),
+      },
+    });
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
@@ -416,7 +426,14 @@ describe('CreateEntityUseCase', () => {
       published: false,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
-      permissions: [],
+      permissions: [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+      user: factory.id('user1'),
       metadata: {
         text: [{ value: 'Some text' }],
         numeric: [{ value: 42 }],

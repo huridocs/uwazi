@@ -142,7 +142,7 @@ describe('EntitiesService', () => {
       const { sut, eventBus, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity);
+      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
 
       const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
       await transactionManager.executeOnCommitHandlers(undefined);
@@ -161,7 +161,7 @@ describe('EntitiesService', () => {
       const { sut, eventBus } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity);
+      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
 
       expect(eventBus.emit).not.toHaveBeenCalled();
     });
@@ -170,7 +170,7 @@ describe('EntitiesService', () => {
       const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity);
+      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
 
       expect(dispatcher.dispatch).not.toHaveBeenCalled();
 
@@ -180,6 +180,8 @@ describe('EntitiesService', () => {
         sharedId: entity.sharedId,
         targetLanguage: entity.languages[0],
         templateId: entity.template.id,
+        tenantName: 'tenantName',
+        userId: 'actorId',
       });
     });
   });
