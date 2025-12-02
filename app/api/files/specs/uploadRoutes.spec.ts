@@ -14,10 +14,10 @@ import { FileType } from 'shared/types/fileType';
 
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
-import { csvImportRoutes } from 'api/csv.v2/routes/routes';
 import { tenants } from 'api/tenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
+import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
 import { UserSchema } from 'shared/types/userType';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { files } from '../files';

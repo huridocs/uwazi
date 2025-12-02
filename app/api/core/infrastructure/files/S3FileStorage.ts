@@ -91,7 +91,7 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async getFile(input: GetFileInput) {
+  getFile(input: GetFileInput): FileContents {
     const command = new GetObjectCommand({
       Bucket: this.bucket,
       Key: this.pathManager.createPath(input),

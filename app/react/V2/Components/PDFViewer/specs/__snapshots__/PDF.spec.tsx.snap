@@ -30,9 +30,13 @@ exports[`PDF should render the pdf file 1`] = `
             class="pdf-page"
           >
             <div
-              class="highlight-rectangle"
-              style="top: 32px; left: 0px; width: 160px; height: 48px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: red; z-index: 1;"
-            />
+              data-highlight-key="2"
+            >
+              <div
+                class="highlight-rectangle"
+                style="top: 32px; left: 0px; width: 160px; height: 48px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: red; z-index: 1;"
+              />
+            </div>
           </div>
         </div>
       </div>

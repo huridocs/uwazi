@@ -10,6 +10,7 @@ import { TestAtomStoreProvider } from 'V2/testing';
 import { PDF, PDFProps } from '../PDF';
 import * as helpers from '../functions/helpers';
 import { pdfEventBus } from '../events';
+import * as snippetFuncs from '../functions/snippetToHighlight';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
@@ -215,23 +216,51 @@ describe('PDF', () => {
       expect(helpers.triggerScroll).toHaveBeenCalledWith({ current: page3Container }, 0);
     });
 
-    it('should unsubscribe from goToPage event on unmount', async () => {
-      const mockCallback = jest.fn();
+    it('should call highlightSnippetInPage when activateSnippet event is dispatched', async () => {
+      const highlightSpy = jest.spyOn(snippetFuncs, 'highlightSnippetInPage');
 
       await act(() => {
         renderComponet();
       });
 
-      pdfEventBus.on('goToPage', mockCallback);
+      const { container } = renderResult;
+      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
 
-      cleanup();
-
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 1);
+      await act(() => {
+        oberserverMock.enterNode(page1);
       });
 
-      expect(mockCallback).toHaveBeenCalledTimes(1);
-      expect(helpers.triggerScroll).not.toHaveBeenCalled();
+      act(() => {
+        pdfEventBus.dispatch('activateSnippet', {
+          text: 'Page 1 <b>contains</b> some text',
+          page: 1,
+        });
+      });
+
+      expect(highlightSpy).toHaveBeenCalled();
+      highlightSpy.mockRestore();
+    });
+
+    it('should call clearSnippets when deactivateSnippet event is dispatched', async () => {
+      const clearSpy = jest.spyOn(snippetFuncs, 'clearSnippets');
+
+      await act(() => {
+        renderComponet();
+      });
+
+      const { container } = renderResult;
+      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+
+      await act(() => {
+        oberserverMock.enterNode(page1);
+      });
+
+      act(() => {
+        pdfEventBus.dispatch('deactivateSnippet');
+      });
+
+      expect(clearSpy).toHaveBeenCalled();
+      clearSpy.mockRestore();
     });
 
     it('should handle multiple PDF instances without listener accumulation', async () => {
@@ -261,6 +290,37 @@ describe('PDF', () => {
       });
 
       expect(helpers.triggerScroll).toHaveBeenCalledTimes(1);
+    });
+
+    it('should scroll to highlight when scrollToHighlight event is dispatched', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      const { container } = renderResult;
+      const page2 = queryAllByAttribute('class', container, 'pdf-page')[1];
+
+      await act(async () => {
+        oberserverMock.enterNode(page2);
+      });
+
+      const highlightWrapper = container.querySelector('[data-highlight-key="2"]') as HTMLElement;
+
+      const highlightRectangle = highlightWrapper.querySelector(
+        '.highlight-rectangle'
+      ) as HTMLElement;
+      const scrollIntoViewMock = jest.fn();
+
+      highlightRectangle.scrollIntoView = scrollIntoViewMock;
+
+      act(() => {
+        pdfEventBus.dispatch('scrollToHighlight', '2');
+      });
+
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      });
     });
   });
 

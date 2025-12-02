@@ -62,7 +62,7 @@ export class FileSystemStorage implements FileStorage {
     await pipeline(file.content.read(), createWriteStream(filepath));
   }
 
-  async getFile(input: GetFileInput): Promise<FileContents> {
+  getFile(input: GetFileInput) {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 

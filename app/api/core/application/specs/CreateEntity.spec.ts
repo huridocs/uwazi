@@ -15,7 +15,7 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { EventsBus } from 'api/core/libs/eventsbus';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
@@ -28,6 +28,7 @@ import { CreateEntityUseCase } from '../CreateEntity';
 import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 
 const factory = getFixturesFactory();
 
@@ -220,6 +221,9 @@ const createSut = (props: CreateSutProps = {}) => {
     jobsDispatcher,
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
+    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+    transactionManager: transactionManager,
+    eventBus: applicationEventsBus,
   });
 
   const entitiesService = new EntitiesService({
@@ -268,7 +272,17 @@ describe('CreateEntityUseCase', () => {
   });
 
   it('should create an Entity', async () => {
-    const { sut, fileService } = createSut();
+    const { sut, fileService } = createSut({
+      context: {
+        actor: {
+          _id: factory.id('user1'),
+          username: 'username',
+          email: 'email@email.com',
+          role: 'collaborator',
+        },
+        tenant: tenants.current(),
+      },
+    });
 
     const entity = await sut.execute({
       templateId: factory.id('Document').toHexString(),
@@ -412,7 +426,14 @@ describe('CreateEntityUseCase', () => {
       published: false,
       icon: { _id: 'iconId', label: 'iconLabel', type: 'iconType' },
       obsoleteMetadata: [],
-      permissions: [],
+      permissions: [
+        {
+          refId: factory.id('user1').toHexString(),
+          type: PermissionType.User,
+          level: AccessLevel.Write,
+        },
+      ],
+      user: factory.id('user1'),
       metadata: {
         text: [{ value: 'Some text' }],
         numeric: [{ value: 42 }],

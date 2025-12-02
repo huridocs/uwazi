@@ -42,7 +42,8 @@ export class FileBuilder {
       content: FileBuilder.content('document'),
       language: 'en',
       totalPages: 10,
-      fullText: {},
+      generatedToc: false,
+      fullText: async () => ({ 1: 'fullText' }),
       ...props,
     });
   }

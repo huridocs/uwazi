@@ -23,6 +23,11 @@ type Deps = {
   dispatcher: JobsDispatcher;
 };
 
+type InsertContext = {
+  tenantName: string;
+  actorId: string;
+};
+
 class EntitiesService {
   constructor(private deps: Deps) {}
 
@@ -40,18 +45,20 @@ class EntitiesService {
     });
   }
 
-  async insert(entity: Entity) {
+  async insert(entity: Entity, context: InsertContext) {
     await this.deps.entitiesDS.create(entity);
 
-    await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
-      sharedId: entity.sharedId,
-      targetLanguage: entity.languages[0],
-      templateId: entity.template.id,
-    });
+    this.deps.transactionManager.onCommitted(async () => {
+      await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
+        sharedId: entity.sharedId,
+        targetLanguage: entity.languages[0],
+        templateId: entity.template.id,
+        tenantName: context.tenantName,
+        userId: context.actorId,
+      });
 
-    this.deps.transactionManager.onCommitted(async () =>
-      this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]))
-    );
+      await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
+    });
   }
 
   private async getTemplateByIdOrDefault(templateId?: string) {

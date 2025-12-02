@@ -4,6 +4,8 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import relationships from 'api/relationships';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { RelationshipSyncJob } from '../RelationshipSyncJob';
 
 const factory = getFixturesFactory();
@@ -63,6 +65,8 @@ describe('RelationshipSyncJob', () => {
       sharedId: 'entity_1',
       targetLanguage: 'en',
       templateId: templateId.toHexString(),
+      tenantName: tenants.current().name,
+      userId: permissionsContext.getUserInContext()!._id?.toString()!,
     });
 
     const template = await testingEnvironment.db

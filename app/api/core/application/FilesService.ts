@@ -5,26 +5,33 @@ import { Document } from 'api/core/domain/files/Document';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { UwaziFile, UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseFile } from '../domain/files/BaseFile';
 import { URLAttachment } from '../domain/files/URLAttachment';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
+import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
+import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from '../infrastructure/services/PDFService';
+import { EventsBus } from '../libs/eventsbus';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { Result } from '../libs/Result';
 import { IdGenerator } from './contracts/IdGenerator';
+import { TransactionManager } from './contracts/TransactionManager';
 
-type Deps = {
+type FileServiceDependencies = {
   idGenerator: IdGenerator;
   fileStorage: FileStorage;
   filesDS: FilesDataSource;
   jobsDispatcher: JobsDispatcher;
   pdfService: PDFService;
   filesIO: FileContentsIO;
+  relV1DS: MongoRelationshipsV1DataSource;
+  transactionManager: TransactionManager;
+  eventBus: EventsBus;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -32,9 +39,9 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(protected deps: FileServiceDependencies) {}
 
-  async storeFiles(files: BaseFile[]) {
+  async storeFiles(files: UwaziFile[]) {
     await ArrayUtils.sequentialFor(
       files.filter((f): f is UwaziFileWithContents => !(f instanceof URLAttachment)),
       async file => {
@@ -65,15 +72,30 @@ class FilesService {
     }
   }
 
+  async deleteEntityFiles(entitySharedIds: string[]) {
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
+    if (isNonEmptyArray(files)) {
+      await this.delete(files);
+    }
+  }
+
   async delete(files: [UwaziFile, ...UwaziFile[]]) {
     const contentFiles = files.filter(
       (f): f is UwaziFileWithContents => !(f instanceof URLAttachment)
     );
-    const processedDocs = contentFiles.filter(f => f instanceof ProcessedDocument);
-    const thumbnails = await this.deps.filesDS.getThumbnails(processedDocs).all();
 
-    await this.deps.filesDS.delete([...files, ...thumbnails]);
+    await this.deps.filesDS.delete(files);
+    await this.deps.relV1DS.deleteByFiles(contentFiles);
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await this.deps.eventBus.emit(
+        new FilesDeletedEvent({ files: files.map(f => FileMappers.toDBO(f)) })
+      );
+    });
+
+    //this to be jobified
     await ArrayUtils.sequentialFor(contentFiles, async f => this.deps.fileStorage.removeFile(f));
+    //
   }
 
   async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {

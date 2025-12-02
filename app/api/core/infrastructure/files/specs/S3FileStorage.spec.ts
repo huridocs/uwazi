@@ -149,6 +149,7 @@ describe('S3FileStorage', () => {
           filename: 'document',
           originalname: 'original.pdf',
           fullText: {},
+          generatedToc: false,
           content: new DiskFile('fake/path').toContent(),
         }),
         expected: 'test-tenant/documents/document',
