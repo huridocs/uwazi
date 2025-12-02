@@ -4,7 +4,7 @@ import entities from 'api/entities';
 import settings from 'api/settings';
 import { dbSessionContext } from 'api/odm/sessionsContext';
 import { withConnectedData } from 'api/relationships/relationshipsHelpers';
-import relationships from 'api/relationships';
+import relationships from 'api/relationships/relationships';
 import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
