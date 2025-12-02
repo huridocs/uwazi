@@ -27,6 +27,7 @@ interface FilesDataSource {
   filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean>;
   getAll(): ResultSet<UwaziFile>;
   getSegmentations(fileId: string[]): ResultSet<Segmentation>;
+  getByEntitiesIds(entitySharedIds: string[]): ResultSet<UwaziFile>;
   getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
