@@ -224,6 +224,35 @@
   }
 }
 
+@layer base {
+  .tw-content select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: none;
+  }
+
+  .tw-content input[type='radio'] {
+    --webkit-appearance: radio;
+    appearance: radio;
+    margin: 0;
+    vertical-align: middle;
+  }
+
+
+  .tw-content input[type='radio'].w-4.h-4 {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  
+  .tw-content .dnd-child-shadow {
+    box-shadow: inset 5px 0px 0px -1px #3949AB;
+  }
+
+  .tw-content .dnd-hover-shadow {
+    box-shadow: inset 0 -4px 0px #3949AB;
+  }
+}
+
 /* Custom CSS to fix sidebar visibility */
 @media (min-width: 48rem) {
   .tw-content [class*="md:visible"] {
