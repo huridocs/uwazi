@@ -8,7 +8,7 @@ import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { EventsBus } from 'api/core/libs/eventsbus';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
@@ -20,6 +20,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { FileContentsIO } from '../../files/FileContentIO';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { MongoRelationshipsV1DataSource } from '../../mongodb/MongoRelationshipsV1DataSource';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
 
@@ -51,6 +53,9 @@ const setUpJob = (pdfService = new PDFService()) => {
           jobsDispatcher: DefaultDispatcher(tenants.current().name),
           pdfService: new PDFService(),
           filesIO: new FileContentsIO(),
+          relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+          transactionManager: transactionManager,
+          eventBus: applicationEventsBus,
         }),
       }),
       wSockets,
