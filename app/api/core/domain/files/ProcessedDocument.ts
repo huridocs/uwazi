@@ -2,14 +2,16 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { Document } from './Document';
 import { BaseDocument, BaseDocumentProps } from './BaseDocument';
 
+type fullTextProp = { [k: string]: string };
+
+type fullTextLoader = fullTextProp | (() => Promise<fullTextProp>);
+
 type Props = BaseDocumentProps & {
   entity: string;
   language: LanguageISO6391;
   totalPages: number;
   generatedToc: boolean;
-  fullText: {
-    [k: string]: string;
-  };
+  fullText: fullTextLoader;
 };
 
 export class ProcessedDocument extends BaseDocument {
@@ -19,15 +21,27 @@ export class ProcessedDocument extends BaseDocument {
 
   readonly generatedToc: boolean;
 
-  readonly fullText: { [k: string]: string };
+  public fullText?: fullTextProp;
+
+  private fullTextLoader: fullTextLoader;
 
   constructor(props: Props) {
     const { language, totalPages, fullText, generatedToc, ...baseProps } = props;
     super({ ...baseProps });
     this.language = language;
     this.totalPages = totalPages;
-    this.fullText = fullText;
+    this.fullTextLoader = fullText;
     this.generatedToc = generatedToc;
+    if (typeof fullText !== 'function') {
+      this.fullText = fullText;
+    }
+  }
+
+  async getFullText() {
+    if (typeof this.fullTextLoader === 'function' && !this.fullText) {
+      this.fullText = await this.fullTextLoader();
+    }
+    return this.fullText;
   }
 
   static fromDocument(
@@ -35,9 +49,7 @@ export class ProcessedDocument extends BaseDocument {
     pdfInfo: {
       language: LanguageISO6391;
       totalPages: number;
-      fullText: {
-        [k: string]: string;
-      };
+      fullText: fullTextProp;
     }
   ) {
     return new ProcessedDocument({ ...document, ...pdfInfo, generatedToc: false });

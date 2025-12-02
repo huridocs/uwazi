@@ -10,7 +10,6 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseFile } from '../domain/files/BaseFile';
 import { URLAttachment } from '../domain/files/URLAttachment';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
@@ -23,7 +22,7 @@ import { Result } from '../libs/Result';
 import { IdGenerator } from './contracts/IdGenerator';
 import { TransactionManager } from './contracts/TransactionManager';
 
-type Deps = {
+type FileServiceDependencies = {
   idGenerator: IdGenerator;
   fileStorage: FileStorage;
   filesDS: FilesDataSource;
@@ -40,9 +39,9 @@ function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(protected deps: FileServiceDependencies) {}
 
-  async storeFiles(files: BaseFile[]) {
+  async storeFiles(files: UwaziFile[]) {
     await ArrayUtils.sequentialFor(
       files.filter((f): f is UwaziFileWithContents => !(f instanceof URLAttachment)),
       async file => {
@@ -73,8 +72,8 @@ class FilesService {
     }
   }
 
-  async deleteEntityFiles(entityIds: string[]) {
-    const files = await this.deps.filesDS.getByEntitiesIds(entityIds).all();
+  async deleteEntityFiles(entitySharedIds: string[]) {
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
     if (isNonEmptyArray(files)) {
       await this.delete(files);
     }
