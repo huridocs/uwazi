@@ -5,13 +5,13 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
-// import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
+import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -36,7 +36,6 @@ import {
   uploadId2,
   writerUser,
 } from './fixtures';
-import { testingTenants } from 'api/utils/testingTenants';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 

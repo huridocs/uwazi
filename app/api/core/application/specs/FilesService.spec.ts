@@ -78,7 +78,7 @@ const createSut = () => {
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
     relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager: transactionManager,
+    transactionManager,
     eventBus: applicationEventsBus,
   });
   return { service };
@@ -127,6 +127,12 @@ describe('FilesService', () => {
       expect(storedFiles.attachment).toMatchObject([attachment.content]);
     });
   });
+
+  // describe('deleteEntityFiles', () => {
+  //   it('should delete all files belogning to entity ids', async () => {
+  //     expect(true).toBe(false);
+  //   });
+  // });
 
   describe('insert', () => {
     const document = new Document({

@@ -5,6 +5,9 @@ import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { AbstractUseCase } from '../libs/UseCase';
 import { FilesDataSource } from './contracts/FilesDataSource';
 import { FilesService } from './FilesService';
+import { ProcessedDocument } from '../domain/files/ProcessedDocument';
+import { UwaziFile } from '../domain/files/UwaziFile';
+import { Thumbnail } from '../domain/files/Thumbnail';
 
 type Output = Omit<fileDBO, '_id'> & { _id: string };
 
@@ -23,10 +26,15 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
   static inputSchema = fileUploadInputSchema;
 
   protected async executeAsync({ fileId }: Input): Promise<Output> {
-    const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
+    const file: UwaziFile = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
+    let thumbnails: Thumbnail[] = [];
+
+    if (file instanceof ProcessedDocument) {
+      thumbnails = await this.deps.filesDS.getThumbnails([file]).all();
+    }
 
     await this.transactionManager.run(async () => {
-      await this.deps.filesService.delete([file]);
+      await this.deps.filesService.delete([file, ...thumbnails]);
     });
 
     return FileMappers.toDTO(file);

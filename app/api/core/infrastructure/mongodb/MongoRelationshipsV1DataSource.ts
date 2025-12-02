@@ -5,6 +5,7 @@ import { Relation } from '../../../relationships/RelationsV1Collection';
 import settings from 'api/settings';
 import { dbSessionContext } from 'api/odm/sessionsContext';
 import relationships from 'api/relationships';
+import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -41,13 +42,13 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     return withConnectedData(dbRelationships, connectedDocuments) as Relation[];
   }
 
-  async deleteByFiles(files: string[]) {
+  async deleteByFiles(files: UwaziFileWithContents[]) {
     const session = this.transactionManager.getSession();
     if (session) {
       dbSessionContext.setSession(session);
     }
 
-    await relationships.delete({ file: { $in: files } }, null, false);
+    await relationships.delete({ file: { $in: files.map(f => f.id) } }, null, false);
 
     dbSessionContext.clearContext();
   }
