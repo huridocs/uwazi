@@ -4,7 +4,6 @@ import { LanguageUtils } from 'shared/language';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { FileContents, NullFileContents } from 'api/core/domain/files/FileContents';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import {
   MongoDataSource,
@@ -64,19 +63,16 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
+  private toModel<T extends UwaziFile>(dbo: fileDBO): T {
+    return FileMappers.toModel(dbo, { fileStorage: this.fileStorage });
+  }
+
   getByEntitiesIds(entitySharedIds: string[]): ResultSet<UwaziFile> {
     return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({
         entity: { $in: entitySharedIds },
       }),
-      async thumbnaildbo =>
-        FileMappers.toModel(
-          thumbnaildbo,
-          await this.fileStorage.getFile({
-            type: thumbnaildbo.type,
-            filename: thumbnaildbo.filename,
-          })
-        )
+      dbo => this.toModel(dbo)
     );
   }
 
@@ -85,14 +81,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       this.getCollection().find({
         filename: { $in: files.map(f => `${f.id}.jpg`) },
       }),
-      async thumbnaildbo =>
-        FileMappers.toModel<Thumbnail>(
-          thumbnaildbo,
-          await this.fileStorage.getFile({
-            type: thumbnaildbo.type,
-            filename: thumbnaildbo.filename,
-          })
-        )
+      dbo => this.toModel<Thumbnail>(dbo)
     );
   }
 
@@ -102,15 +91,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       status: 'processing',
     });
     if (processing) {
-      return Result.ok(
-        FileMappers.toModel(
-          processing,
-          await this.fileStorage.getFile({
-            type: 'document',
-            filename: processing.filename,
-          })
-        ) as Document
-      );
+      return Result.ok(this.toModel<Document>(processing));
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
   }
@@ -240,28 +221,14 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return new MongoResultSet<fileDBO, ProcessedDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      async dbo =>
-        FileMappers.toModel<ProcessedDocument>(
-          dbo,
-          await this.fileStorage.getFile({
-            type: dbo.type,
-            filename: dbo.filename,
-          })
-        )
+      dbo => this.toModel<ProcessedDocument>(dbo)
     );
   }
 
   getAll() {
     return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
-      async dbo =>
-        FileMappers.toModel<ProcessedDocument>(
-          dbo,
-          await this.fileStorage.getFile({
-            type: dbo.type,
-            filename: dbo.filename,
-          })
-        )
+      dbo => this.toModel(dbo)
     );
   }
 
@@ -277,47 +244,29 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   async getByFilename(filename: string, allowedTypes?: fileDBO['type'][]) {
-    const dbo = await this.getCollection().findOne({
-      filename,
-      ...(allowedTypes ? { type: { $in: allowedTypes } } : {}),
-    });
+    const dbo = await this.getCollection().findOne(
+      {
+        filename,
+        ...(allowedTypes ? { type: { $in: allowedTypes } } : {}),
+      },
+      { projection: { fullText: 0 } }
+    );
     if (!dbo) {
       return Result.fail(new FileNotFound(`file: ${filename} not found`));
     }
 
-    let contents: FileContents;
-
-    if (dbo.type === 'attachment' && dbo.url) {
-      contents = new NullFileContents();
-    } else {
-      contents = await this.fileStorage.getFile({
-        type: dbo.type,
-        filename: dbo.filename,
-      });
-    }
-
-    return Result.ok(FileMappers.toModel(dbo, contents));
+    return Result.ok(this.toModel(dbo));
   }
 
   async getById(id: string) {
-    const dbo = await this.getCollection().findOne({
-      _id: new ObjectId(id),
-    });
+    const dbo = await this.getCollection().findOne(
+      { _id: new ObjectId(id) },
+      { projection: { fullText: 0 } }
+    );
     if (!dbo) {
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
 
-    let contents: FileContents;
-
-    if (dbo.type === 'attachment' && dbo.url) {
-      contents = new NullFileContents();
-    } else {
-      contents = await this.fileStorage.getFile({
-        type: dbo.type,
-        filename: dbo.filename,
-      });
-    }
-
-    return Result.ok(FileMappers.toModel(dbo, contents));
+    return Result.ok(this.toModel(dbo));
   }
 }
