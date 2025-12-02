@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
@@ -11,6 +12,7 @@ import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { BulkDeleteEntityController } from 'api/core/infrastructure/express/entity/BulkDeleteEntityController';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -255,27 +257,30 @@ export default app => {
     }
   );
 
+  const bulkDeleteValidationSchema = validation.validateRequest({
+    type: 'object',
+    properties: {
+      body: {
+        type: 'object',
+        properties: {
+          sharedIds: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['sharedIds'],
+      },
+    },
+    required: ['body'],
+  });
+
   app.post(
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            sharedIds: { type: 'array', items: { type: 'string' } },
-          },
-          required: ['sharedIds'],
-        },
-      },
-      required: ['body'],
-    }),
-    (req, res, next) => {
-      entities
-        .deleteMultiple(req.body.sharedIds)
-        .then(() => res.json('ok'))
-        .catch(next);
-    }
+    async (req, res, next) => {
+      if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
+        return next();
+      }
+      return bulkDeleteValidationSchema(req, res, next);
+    },
+    bulkDeleteValidationSchema,
+    BulkDeleteEntityController.createHandler()
   );
 };
