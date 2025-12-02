@@ -1,4 +1,5 @@
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
@@ -38,12 +39,13 @@ describe('FileMappers', () => {
       });
     });
 
-    it('should map ProcessedDocument to FileDBOType', () => {
+    it('should map ProcessedDocument to FileDBOType (fullText loader)', () => {
       const document = FileBuilder.processedDocument(f.idString('docId'));
       const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
 
       expect(result._id.toString()).toBe(f.idString('docId'));
 
+      expect(Object.hasOwn(result, 'fullText')).toBe(false);
       expect(result).toMatchObject({
         _id: f.id('docId'),
         entity: 'entity1',
@@ -56,6 +58,21 @@ describe('FileMappers', () => {
         totalPages: 10,
         language: 'eng',
         status: 'ready',
+        generatedToc: false,
+      });
+    });
+
+    it('should map ProcessedDocument to FileDBOType (fullText value)', () => {
+      const document = FileBuilder.processedDocument(f.idString('docId'), {
+        fullText: { 1: 'text' },
+      });
+      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+
+      expect(result._id.toString()).toBe(f.idString('docId'));
+
+      expect(result).toMatchObject({
+        _id: f.id('docId'),
+        fullText: { 1: 'text' },
       });
     });
 
@@ -133,6 +150,11 @@ describe('FileMappers', () => {
   });
 
   describe('toModel', () => {
+    const fileStorage = TestUtils.mockClass<FileStorage>({
+      getFile() {
+        return FileBuilder.content('test content');
+      },
+    });
     it('should map to URLAttachment when type is attachment and url is present', () => {
       const dbo: fileDBO = {
         _id: new ObjectId(),
@@ -146,7 +168,7 @@ describe('FileMappers', () => {
         url: 'http://example.com',
       };
 
-      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
+      const result = FileMappers.toModel(dbo, { fileStorage });
 
       expect(result).toBeInstanceOf(URLAttachment);
 
@@ -174,7 +196,7 @@ describe('FileMappers', () => {
         entity: 'entity3',
       };
 
-      const result = FileMappers.toModel<Attachment>(dbo, new DiskFile('mock/path').toContent());
+      const result = FileMappers.toModel<Attachment>(dbo, { fileStorage });
 
       expect(result).toBeInstanceOf(Attachment);
 
@@ -200,7 +222,7 @@ describe('FileMappers', () => {
         type: 'custom',
       };
 
-      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
+      const result = FileMappers.toModel(dbo, { fileStorage });
 
       expect(result).toBeInstanceOf(CustomUpload);
       expect(result.id).toBe(dbo._id.toString());
@@ -224,7 +246,7 @@ describe('FileMappers', () => {
         language: 'spa',
       };
 
-      const thumbnail = FileMappers.toModel<Thumbnail>(dbo, new DiskFile('mock/path').toContent());
+      const thumbnail = FileMappers.toModel<Thumbnail>(dbo, { fileStorage });
 
       expect(thumbnail).toBeInstanceOf(Thumbnail);
 
@@ -253,7 +275,7 @@ describe('FileMappers', () => {
         status: 'processing',
       };
 
-      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
+      const result = FileMappers.toModel(dbo, { fileStorage });
 
       expect(result).toBeInstanceOf(Document);
 
@@ -286,7 +308,7 @@ describe('FileMappers', () => {
         fullText: { 1: 'text' },
       };
 
-      const result = FileMappers.toModel(dbo, new DiskFile('mock/path').toContent());
+      const result = FileMappers.toModel(dbo, { fileStorage });
 
       expect(result).toBeInstanceOf(ProcessedDocument);
       const document = result as Document;
@@ -332,14 +354,8 @@ describe('FileMappers', () => {
         status: 'failed',
       };
 
-      const documentResult = FileMappers.toModel(
-        documentDBO,
-        new DiskFile('mock/path').toContent()
-      );
-      const anotherResult = FileMappers.toModel(
-        anotherDocumentDBO,
-        new DiskFile('mock/path').toContent()
-      );
+      const documentResult = FileMappers.toModel(documentDBO, { fileStorage });
+      const anotherResult = FileMappers.toModel(anotherDocumentDBO, { fileStorage });
 
       expect(documentResult).toBeInstanceOf(ProcessedDocument);
       expect(anotherResult).toBeInstanceOf(Document);

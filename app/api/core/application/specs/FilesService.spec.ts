@@ -11,15 +11,9 @@ import { FileContents } from 'api/core/domain/files/FileContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { UwaziFile } from 'api/core/domain/files/UwaziFile';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -31,8 +25,6 @@ import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FilesService } from '../FilesService';
-import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 
 const f = getFixturesFactory();
 

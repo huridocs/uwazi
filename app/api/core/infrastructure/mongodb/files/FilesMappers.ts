@@ -1,17 +1,21 @@
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ObjectId } from 'mongodb';
 import { LanguageUtils } from 'shared/language';
 import { Attachment } from '../../../domain/files/Attachment';
 import { CustomUpload } from '../../../domain/files/CustomUpload';
 import { Document } from '../../../domain/files/Document';
+import { NullFileContents } from '../../../domain/files/FileContents';
+import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Thumbnail } from '../../../domain/files/Thumbnail';
 import { URLAttachment } from '../../../domain/files/URLAttachment';
 import { UwaziFile } from '../../../domain/files/UwaziFile';
-import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
-import { FileContents } from '../../../domain/files/FileContents';
 import { fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {
-  toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO, fileContents: FileContents): R {
+  toModel<R extends UwaziFile = UwaziFile>(
+    dbo: fileDBO,
+    { fileStorage }: { fileStorage: FileStorage }
+  ): R {
     const commonFields = {
       id: dbo._id.toString(),
       originalname: dbo.originalname,
@@ -19,12 +23,22 @@ export const FileMappers = {
       mimetype: dbo.mimetype,
       size: dbo.size,
       creationDate: dbo.creationDate,
-      content: fileContents,
+      content: new NullFileContents(),
     };
 
     if (dbo.type === 'attachment' && dbo.url) {
-      return new URLAttachment({ ...commonFields, entity: dbo.entity, url: dbo.url }) as R;
+      return new URLAttachment({
+        ...commonFields,
+        entity: dbo.entity,
+        url: dbo.url,
+      }) as R;
     }
+
+    commonFields.content = fileStorage.getFile({
+      type: dbo.type,
+      filename: dbo.filename,
+    });
+
     if (dbo.type === 'attachment') {
       return new Attachment({ ...commonFields, entity: dbo.entity }) as R;
     }
@@ -81,7 +95,7 @@ export const FileMappers = {
         totalPages: file.totalPages,
         language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
         status: 'ready',
-        fullText: file.fullText,
+        ...(file.fullText ? { fullText: file.fullText } : {}),
         generatedToc: file.generatedToc,
       };
     }

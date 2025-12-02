@@ -4,7 +4,6 @@ import { LanguageUtils } from 'shared/language';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
-import { FileContents, NullFileContents } from 'api/core/domain/files/FileContents';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import {
   MongoDataSource,
@@ -69,14 +68,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       this.getCollection().find({
         entity: { $in: entitySharedIds },
       }),
-      async thumbnaildbo =>
-        FileMappers.toModel(
-          thumbnaildbo,
-          await this.fileStorage.getFile({
-            type: thumbnaildbo.type,
-            filename: thumbnaildbo.filename,
-          })
-        )
+      async filedbo => FileMappers.toModel(filedbo, { fileStorage: this.fileStorage })
     );
   }
 
@@ -86,13 +78,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
         filename: { $in: files.map(f => `${f.id}.jpg`) },
       }),
       async thumbnaildbo =>
-        FileMappers.toModel<Thumbnail>(
-          thumbnaildbo,
-          await this.fileStorage.getFile({
-            type: thumbnaildbo.type,
-            filename: thumbnaildbo.filename,
-          })
-        )
+        FileMappers.toModel<Thumbnail>(thumbnaildbo, { fileStorage: this.fileStorage })
     );
   }
 
@@ -103,13 +89,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
     if (processing) {
       return Result.ok(
-        FileMappers.toModel(
-          processing,
-          await this.fileStorage.getFile({
-            type: 'document',
-            filename: processing.filename,
-          })
-        ) as Document
+        FileMappers.toModel(processing, { fileStorage: this.fileStorage }) as Document
       );
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
@@ -240,28 +220,14 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return new MongoResultSet<fileDBO, ProcessedDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      async dbo =>
-        FileMappers.toModel<ProcessedDocument>(
-          dbo,
-          await this.fileStorage.getFile({
-            type: dbo.type,
-            filename: dbo.filename,
-          })
-        )
+      async dbo => FileMappers.toModel<ProcessedDocument>(dbo, { fileStorage: this.fileStorage })
     );
   }
 
   getAll() {
     return new MongoResultSet<fileDBO, UwaziFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
-      async dbo =>
-        FileMappers.toModel<ProcessedDocument>(
-          dbo,
-          await this.fileStorage.getFile({
-            type: dbo.type,
-            filename: dbo.filename,
-          })
-        )
+      async dbo => FileMappers.toModel<ProcessedDocument>(dbo, { fileStorage: this.fileStorage })
     );
   }
 
@@ -285,18 +251,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file: ${filename} not found`));
     }
 
-    let contents: FileContents;
-
-    if (dbo.type === 'attachment' && dbo.url) {
-      contents = new NullFileContents();
-    } else {
-      contents = await this.fileStorage.getFile({
-        type: dbo.type,
-        filename: dbo.filename,
-      });
-    }
-
-    return Result.ok(FileMappers.toModel(dbo, contents));
+    return Result.ok(FileMappers.toModel(dbo, { fileStorage: this.fileStorage }));
   }
 
   async getById(id: string) {
@@ -307,17 +262,6 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       return Result.fail(new FileNotFound(`file with id: ${id} not found`));
     }
 
-    let contents: FileContents;
-
-    if (dbo.type === 'attachment' && dbo.url) {
-      contents = new NullFileContents();
-    } else {
-      contents = await this.fileStorage.getFile({
-        type: dbo.type,
-        filename: dbo.filename,
-      });
-    }
-
-    return Result.ok(FileMappers.toModel(dbo, contents));
+    return Result.ok(FileMappers.toModel(dbo, { fileStorage: this.fileStorage }));
   }
 }

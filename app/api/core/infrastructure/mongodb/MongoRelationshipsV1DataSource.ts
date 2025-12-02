@@ -1,11 +1,11 @@
+import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
+import { dbSessionContext } from 'api/odm/sessionsContext';
+import relationships from 'api/relationships/relationships';
+import settings from 'api/settings';
 import { withConnectedData } from '../../../relationships/relationshipsHelpers';
 import { Relation } from '../../../relationships/RelationsV1Collection';
-import settings from 'api/settings';
-import { dbSessionContext } from 'api/odm/sessionsContext';
-import relationships from 'api/relationships';
-import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
