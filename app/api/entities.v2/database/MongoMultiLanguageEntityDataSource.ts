@@ -10,6 +10,7 @@ import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { Property } from 'api/core/domain/template/Property';
 import { Result, ResultType } from 'api/core/libs/Result';
+import { Settings as SettingsType } from 'shared/types/settingsType';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -53,11 +54,22 @@ export class MongoMultiLanguageEntityDataSource
     deletedSharedIds: string[],
     propertyNames: string[]
   ): Promise<string[]> {
+    const settings = await this.getCollection<SettingsType>('settings').findOne();
+    const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
+
+    if (!defaultLanguage) {
+      throw new Error('Default language not found in settings when trying to delete references');
+    }
+
     const orConditions = propertyNames.map(propName => ({
       [`metadata.${propName}.value`]: { $in: deletedSharedIds },
     }));
 
-    return this.getCollection().distinct('sharedId', { $or: orConditions });
+    return (
+      await this.getCollection()
+        .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
+        .toArray()
+    ).map(doc => doc.sharedId);
   }
 
   private async updateMetadataReferences(
