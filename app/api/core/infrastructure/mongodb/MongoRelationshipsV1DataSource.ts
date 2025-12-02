@@ -1,10 +1,10 @@
+import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
 import settings from 'api/settings';
 import { dbSessionContext } from 'api/odm/sessionsContext';
-import relationships from 'api/relationships';
-import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import relationships from 'api/relationships';
 import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {

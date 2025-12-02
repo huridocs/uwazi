@@ -43,7 +43,7 @@ export class FileBuilder {
       language: 'en',
       totalPages: 10,
       generatedToc: false,
-      fullText: {},
+      fullText: async () => ({ 1: 'fullText' }),
       ...props,
     });
   }

@@ -1,14 +1,15 @@
 import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
+import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
+import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { EventsBus } from 'api/core/libs/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
@@ -19,6 +20,7 @@ type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
+  fileStorage: FileStorage;
 };
 
 export class PXFilesDeletedListener {
@@ -40,8 +42,9 @@ export class PXFilesDeletedListener {
 
     const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const fileStorage = FileStorageFactory.default();
 
-    this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
+    this.dependencies = { entitiesStatusDS, filesDS, settingsDS, fileStorage };
   }
 
   private async getDocumentsInInstalledLanguages(
@@ -132,7 +135,9 @@ export class PXFilesDeletedListener {
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
-        FileMappers.toModel<ProcessedDocument>(d as any, new DiskFile('mock/file').toContent())
+        FileMappers.toModel<ProcessedDocument>(d as any, {
+          fileStorage: this.dependencies.fileStorage,
+        })
       );
 
     if (!deletedDocuments.length) {
