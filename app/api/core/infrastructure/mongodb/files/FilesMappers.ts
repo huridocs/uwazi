@@ -12,85 +12,52 @@ import { fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {
   toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO, fileContents: FileContents): R {
+    const commonFields = {
+      id: dbo._id.toString(),
+      originalname: dbo.originalname,
+      filename: dbo.filename,
+      mimetype: dbo.mimetype,
+      size: dbo.size,
+      creationDate: dbo.creationDate,
+      content: fileContents,
+    };
+
     if (dbo.type === 'attachment' && dbo.url) {
-      return new URLAttachment({
-        id: dbo._id.toString(),
-        entity: dbo.entity,
-        url: dbo.url,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      return new URLAttachment({ ...commonFields, entity: dbo.entity, url: dbo.url }) as R;
     }
     if (dbo.type === 'attachment') {
-      return new Attachment({
-        id: dbo._id.toString(),
-        entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      return new Attachment({ ...commonFields, entity: dbo.entity }) as R;
     }
 
     if (dbo.type === 'custom') {
-      return new CustomUpload({
-        id: dbo._id.toString(),
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      return new CustomUpload(commonFields) as R;
     }
 
     if (dbo.type === 'thumbnail') {
       return new Thumbnail({
-        id: dbo._id.toString(),
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
+        ...commonFields,
         entity: dbo.entity,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-        content: fileContents,
       }) as R;
     }
 
     if (dbo.type === 'document' && dbo.status === 'ready') {
       return new ProcessedDocument({
+        ...commonFields,
         id: dbo._id.toString(),
         entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
         totalPages: dbo.totalPages,
         fullText: dbo.fullText || {},
-        content: fileContents,
         generatedToc: dbo.generatedToc,
       }) as R;
     }
     if (dbo.type === 'document') {
       return new Document({
+        ...commonFields,
         id: dbo._id.toString(),
         entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
         status: dbo.status,
-        content: fileContents,
       }) as R;
     }
     throw new Error('Unknown file type');
@@ -153,9 +120,6 @@ export const FileMappers = {
   },
 
   toDTO(file: UwaziFile): Omit<fileDBO, '_id'> & { _id: string } {
-    return {
-      ...this.toDBO(file),
-      _id: file.id,
-    };
+    return { ...this.toDBO(file), _id: file.id };
   },
 };
