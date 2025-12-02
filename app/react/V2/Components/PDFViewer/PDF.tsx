@@ -135,6 +135,19 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
         });
       };
 
+      const onScrollToHighlightHandler = (highlightKey?: string) => {
+        if (highlightKey) {
+          const highlightWrapper = pdfContainerRef.current?.querySelector(
+            `[data-highlight-key="${highlightKey}"]`
+          );
+
+          const highlightRectangle = highlightWrapper?.querySelector('.highlight-rectangle');
+          const elementToScroll = highlightRectangle || highlightWrapper;
+
+          elementToScroll?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      };
+
       const subscriptionGoToPage = pdfEventBus.on('goToPage', onScrollToPageHandler);
 
       const subscriptionActivateSnippet = pdfEventBus.on(
@@ -147,6 +160,11 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
         onDeactivateSnippetHandler
       );
 
+      const subscriptionScrollToHighlight = pdfEventBus.on(
+        'scrollToHighlight',
+        onScrollToHighlightHandler
+      );
+
       pdfEventBus.dispatch('pdfReady');
 
       return () => {
@@ -154,6 +172,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
         subscriptionGoToPage.unsubscribe();
         subscriptionActivateSnippet.unsubscribe();
         subscriptionDeactivateSnippet.unsubscribe();
+        subscriptionScrollToHighlight.unsubscribe();
       };
     }
 
