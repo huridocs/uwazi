@@ -1,8 +1,5 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import {
-  BulkDeleteEntityInput,
-  BulkDeleteEntityUseCase,
-} from 'api/core/application/BulkDeleteEntity';
+import { BulkDeleteEntityInput } from 'api/core/application/BulkDeleteEntity';
 import { tenants } from 'api/tenants';
 import entities from 'api/entities';
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
@@ -46,9 +43,7 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
       }
     }
 
-    await entities.deleteMultiple(
-      BulkDeleteEntityUseCase.InputSchema.parse(this.request.body).sharedIds
-    );
+    await entities.deleteMultiple(this.request.body?.sharedIds);
 
     this.response.json('ok');
   }
