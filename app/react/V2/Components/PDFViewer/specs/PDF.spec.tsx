@@ -216,25 +216,6 @@ describe('PDF', () => {
       expect(helpers.triggerScroll).toHaveBeenCalledWith({ current: page3Container }, 0);
     });
 
-    it('should unsubscribe from goToPage event on unmount', async () => {
-      const mockCallback = jest.fn();
-
-      await act(() => {
-        renderComponet();
-      });
-
-      pdfEventBus.on('goToPage', mockCallback);
-
-      cleanup();
-
-      act(() => {
-        pdfEventBus.dispatch('goToPage', 1);
-      });
-
-      expect(mockCallback).toHaveBeenCalledTimes(1);
-      expect(helpers.triggerScroll).not.toHaveBeenCalled();
-    });
-
     it('should call highlightSnippetInPage when activateSnippet event is dispatched', async () => {
       const highlightSpy = jest.spyOn(snippetFuncs, 'highlightSnippetInPage');
 
@@ -280,6 +261,37 @@ describe('PDF', () => {
 
       expect(clearSpy).toHaveBeenCalled();
       clearSpy.mockRestore();
+    });
+
+    it('should scroll to highlight when scrollToHighlight event is dispatched', async () => {
+      await act(() => {
+        renderComponet();
+      });
+
+      const { container } = renderResult;
+      const page2 = queryAllByAttribute('class', container, 'pdf-page')[1];
+
+      await act(async () => {
+        oberserverMock.enterNode(page2);
+      });
+
+      const highlightWrapper = container.querySelector('[data-highlight-key="2"]') as HTMLElement;
+
+      const highlightRectangle = highlightWrapper.querySelector(
+        '.highlight-rectangle'
+      ) as HTMLElement;
+      const scrollIntoViewMock = jest.fn();
+
+      highlightRectangle.scrollIntoView = scrollIntoViewMock;
+
+      act(() => {
+        pdfEventBus.dispatch('scrollToHighlight', '2');
+      });
+
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      });
     });
 
     it('should handle multiple PDF instances without listener accumulation', async () => {
