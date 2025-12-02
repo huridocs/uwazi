@@ -213,6 +213,7 @@ function getFixturesFactory() {
         this.file(`${id}-thumb`, {
           filename: `${idMapper(id)}.jpg`,
           type: 'thumbnail',
+          entity: extra?.entity,
         }) as ThumbnailDBO,
       ];
     },

@@ -18,7 +18,10 @@ import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1D
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 
 class FilesServiceFactory {
-  static default(transactionManager: MongoTransactionManager) {
+  static default(
+    transactionManager: MongoTransactionManager,
+    deps: Partial<ConstructorParameters<typeof FilesService>[0]> = {}
+  ) {
     let _transactionManager = transactionManager;
     if (process.env.NODE_ENV !== 'test') {
       _transactionManager = TransactionManagerFactory.default();
@@ -68,6 +71,7 @@ class FilesServiceFactory {
       relV1DS: new MongoRelationshipsV1DataSource(getConnection(), _transactionManager),
       transactionManager: _transactionManager,
       eventBus: applicationEventsBus,
+      ...deps,
     });
   }
 }
