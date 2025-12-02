@@ -59,6 +59,8 @@ import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptS
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { tenants } from 'api/tenants/tenantContext';
+import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
+import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -285,4 +287,9 @@ export function registerJobs(
     const sockets = new V1WebSocketsWrapper();
     return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
   });
+
+  register(
+    BulkCleanupEntityJob,
+    async () => new BulkCleanupEntityJob({ BulkCleanupEntityUseCaseFactory })
+  );
 }

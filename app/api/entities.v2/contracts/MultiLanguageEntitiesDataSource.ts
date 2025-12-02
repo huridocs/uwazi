@@ -1,12 +1,15 @@
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
 import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 import { Property } from 'api/core/domain/template/Property';
+import { ResultType } from 'api/core/libs/Result';
 import { Entity } from '../../core/domain/entity/Entity';
 
 export interface MultiLanguageEntityDataSource {
   bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
+  bulkDelete(sharedIds: string[]): Promise<void>;
+  deleteReferencesToSharedIds(sharedIds: string[]): Promise<void>;
 
   renameMetadataProperties(
     propertyNames: { [oldName: string]: string },
@@ -17,7 +20,7 @@ export interface MultiLanguageEntityDataSource {
   getEntitiesByTemplateId(templateId: string): Promise<ResultSet<Entity>>;
   getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<Entity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;
-
+  getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>>; // Todo: Replace by domain error
   getEntitiesByRelatedProperties(
     entities: Entity[],
     properties: V1RelationshipProperty[]
