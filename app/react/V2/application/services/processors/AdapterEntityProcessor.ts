@@ -283,7 +283,6 @@ export class AdapterEntityProcessor {
         ?.contexts.find(context => context.id === 'System');
       const createdTranslatedLabel = systemContext?.values.creationDate || 'Creation Date';
       const editTranslatedLabel = systemContext?.values.editDate || 'Edit Date';
-
       formattedEntities = entities.map(entity => ({
         _id: entity._id! as string,
         title: entity.title!,
@@ -303,6 +302,7 @@ export class AdapterEntityProcessor {
           (entity.editDate as number) || 0
         ), //TODO: editDate is not defined
         rawEntity: entity,
+        relations: entity.relations || [],
         metadata: [],
         icon: entity.icon,
       }));
