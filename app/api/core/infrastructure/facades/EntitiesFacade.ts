@@ -11,16 +11,6 @@ export class EntityFacade {
     const startTime = Date.now();
     const requestId = randomUUID();
 
-    logger.info('Entity creation started', {
-      requestId,
-      namespace: 'Entity_Creation',
-
-      templateId: dto.template,
-      hasFiles: !!inputFiles && inputFiles.length > 0,
-      fileCount: inputFiles?.length || 0,
-      propertyCount: dto.metadata ? Object.keys(dto.metadata).length : 0,
-    });
-
     try {
       const useCase = CreateEntityUseCaseFactory.default();
 
@@ -40,6 +30,8 @@ export class EntityFacade {
 
         sharedId: entity.sharedId,
         templateId: entity.template.id.toString(),
+        filesCount: inputFiles ? inputFiles.length : 0,
+        propertyCount: dto?.metadata ? Object.keys(dto.metadata).length : 0,
       });
 
       return entity;
