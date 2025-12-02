@@ -886,6 +886,19 @@ const search = {
     return elastic.bulk({ body });
   },
 
+  async bulkDeleteBySharedId(sharedIds) {
+    await elastic.deleteByQuery({
+      body: {
+        query: {
+          terms: { 'sharedId.raw': sharedIds },
+        },
+      },
+      conflicts: 'proceed',
+      wait_for_completion: true,
+      refresh: true,
+    });
+  },
+
   delete(entity) {
     const id = entity._id.toString();
     return elastic.delete({ id });

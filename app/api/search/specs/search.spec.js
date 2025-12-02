@@ -1274,4 +1274,47 @@ describe('search', () => {
     );
     expect(resultsFound.rows.length).toBe(1);
   });
+
+  describe('bulkDeleteBySharedId()', () => {
+    const getBySharedIds = sharedIds =>
+      elastic.search({
+        body: {
+          query: {
+            terms: { 'sharedId.raw': sharedIds },
+          },
+        },
+      });
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(elasticFixtures);
+    });
+
+    it('should delete all entities with the given sharedIds', async () => {
+      const sharedIds = [ids.batmanFinishes, ids.batmanBegins, 'unpublished'];
+
+      const before = await getBySharedIds(sharedIds);
+
+      expect(before.body.hits.total.value).toBe(6);
+
+      await search.bulkDeleteBySharedId([ids.batmanFinishes, ids.batmanBegins]);
+
+      const after = await getBySharedIds(sharedIds);
+      expect(after.body.hits.total.value).toBe(2);
+      expect(after.body.hits.hits.every(hit => hit._source.sharedId === 'unpublished')).toBe(true);
+    });
+
+    it('should not throw when sending empty array', async () => {
+      await search.bulkDeleteBySharedId([]);
+    });
+
+    it('should not throw when sending non-existent sharedIds', async () => {
+      const searchBefore = await elastic.search({});
+      const initialCount = searchBefore.body.hits.total.value;
+
+      await search.bulkDeleteBySharedId(['nonexistent1', 'nonexistent2']);
+
+      const searchAfter = await elastic.search({});
+      expect(searchAfter.body.hits.total.value).toBe(initialCount);
+    });
+  });
 });

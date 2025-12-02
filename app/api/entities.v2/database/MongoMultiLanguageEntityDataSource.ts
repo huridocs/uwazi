@@ -9,6 +9,8 @@ import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipP
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from 'api/core/infrastructure/mongodb/entity/MongoEntityMapper';
 import { Property } from 'api/core/domain/template/Property';
+import { Result, ResultType } from 'api/core/libs/Result';
+import { Settings as SettingsType } from 'shared/types/settingsType';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -26,6 +28,106 @@ export class MongoMultiLanguageEntityDataSource
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
+  }
+
+  private async getReferencePropertyNames(): Promise<string[]> {
+    const result = await this.getCollection('templates')
+      .aggregate([
+        { $unwind: '$properties' },
+        {
+          $match: {
+            'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
+          },
+        },
+        {
+          $group: {
+            _id: '$properties.name',
+          },
+        },
+      ])
+      .toArray();
+
+    return result.map((doc: any) => doc._id);
+  }
+
+  private async findAffectedSharedIds(
+    deletedSharedIds: string[],
+    propertyNames: string[]
+  ): Promise<string[]> {
+    const settings = await this.getCollection<SettingsType>('settings').findOne();
+    const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
+
+    if (!defaultLanguage) {
+      throw new Error('Default language not found in settings when trying to delete references');
+    }
+
+    const orConditions = propertyNames.map(propName => ({
+      [`metadata.${propName}.value`]: { $in: deletedSharedIds },
+    }));
+
+    return (
+      await this.getCollection()
+        .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
+        .toArray()
+    ).map(doc => doc.sharedId);
+  }
+
+  private async updateMetadataReferences(
+    affectedSharedIds: string[],
+    deletedSharedIds: string[]
+  ): Promise<void> {
+    await this.getCollection().updateMany({ sharedId: { $in: affectedSharedIds } }, [
+      {
+        $set: {
+          metadata: {
+            $arrayToObject: {
+              $map: {
+                input: { $objectToArray: '$metadata' },
+                as: 'prop',
+                in: {
+                  k: '$$prop.k',
+                  v: {
+                    $filter: {
+                      input: '$$prop.v',
+                      as: 'item',
+                      cond: { $not: { $in: ['$$item.value', deletedSharedIds] } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+  }
+
+  async deleteReferencesToSharedIds(deletedSharedIds: string[]): Promise<void> {
+    if (deletedSharedIds.length === 0) return;
+
+    const propertyNames = await this.getReferencePropertyNames();
+    if (propertyNames.length === 0) return;
+
+    const affectedSharedIds = await this.findAffectedSharedIds(deletedSharedIds, propertyNames);
+    if (affectedSharedIds.length === 0) return;
+
+    affectedSharedIds.forEach(id => this.modifiedSharedIds.add(id));
+
+    await this.updateMetadataReferences(affectedSharedIds, deletedSharedIds);
+  }
+
+  async bulkDelete(sharedIds: string[]): Promise<void> {
+    await this.getCollection().deleteMany({ sharedId: { $in: sharedIds } });
+  }
+
+  async getAllBySharedId(sharedIds: string[]): Promise<ResultType<Entity[], Error>> {
+    const entities = await (await this.getByQuery({ sharedId: { $in: sharedIds } })).all();
+
+    if (!entities.length) {
+      return Result.fail(new Error(`Entities with sharedIds ${sharedIds.join(', ')} not found`));
+    }
+
+    return Result.ok(entities);
   }
 
   async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
@@ -68,7 +170,6 @@ export class MongoMultiLanguageEntityDataSource
               }
               return setOperation;
             }, {});
-
             return {
               updateOne: {
                 filter: { sharedId: entity.sharedId, language },
@@ -89,7 +190,6 @@ export class MongoMultiLanguageEntityDataSource
       { $group: { _id: '$sharedId' } },
       { $count: 'count' },
     ];
-
     const result = await this.getCollection().aggregate(aggregation).toArray();
     return result.length ? result[0].count : 0;
   }
@@ -100,7 +200,6 @@ export class MongoMultiLanguageEntityDataSource
       { $group: { _id: '$sharedId' } },
       { $project: { _id: 0, sharedId: '$_id' } },
     ];
-
     const cursor = this.getCollection().aggregate(aggregation);
     return new MongoResultSet(cursor, e => e.sharedId);
   }
@@ -163,9 +262,7 @@ export class MongoMultiLanguageEntityDataSource
 
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
-
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
-
     this.modifiedSharedIds.add(entity.sharedId);
   }
 }
