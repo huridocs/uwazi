@@ -40,6 +40,8 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
             error: JSON.stringify(error),
           }
         );
+
+        throw error;
       }
     }
 
