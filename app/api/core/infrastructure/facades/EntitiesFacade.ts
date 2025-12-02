@@ -30,7 +30,7 @@ export class EntityFacade {
 
         sharedId: entity.sharedId,
         templateId: entity.template.id.toString(),
-        filesCount: inputFiles ? inputFiles.length : 0,
+        filesCount: input.inputFiles ? input.inputFiles.length : 0,
         propertyCount: dto?.metadata ? Object.keys(dto.metadata).length : 0,
       });
 
