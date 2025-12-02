@@ -1,10 +1,10 @@
 import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
-import { dbSessionContext } from 'api/odm/sessionsContext';
-import relationships from 'api/relationships/relationships';
 import settings from 'api/settings';
-import { withConnectedData } from '../../../relationships/relationshipsHelpers';
+import { dbSessionContext } from 'api/odm/sessionsContext';
+import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import relationships from 'api/relationships/relationships';
 import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
@@ -51,5 +51,9 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     await relationships.delete({ file: { $in: files.map(f => f.id) } }, null, false);
 
     dbSessionContext.clearContext();
+  }
+
+  async bulkDeleteBySharedId(sharedIds: string[]) {
+    await relationships.delete({ entity: { $in: sharedIds } }, null, false);
   }
 }
