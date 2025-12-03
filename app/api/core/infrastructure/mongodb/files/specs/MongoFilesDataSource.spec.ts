@@ -1,18 +1,19 @@
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { Document } from 'api/core/domain/files/Document';
 import { FileNotFound } from 'api/core/domain/files/errors';
+import { NullFileContents } from 'api/core/domain/files/FileContents';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
+import { URLAttachment } from 'api/core/domain/files/URLAttachment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { search } from 'api/search';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
-import { URLAttachment } from 'api/core/domain/files/URLAttachment';
-import { NullFileContents } from 'api/core/domain/files/FileContents';
 
 const f = getFixturesFactory();
 
@@ -20,6 +21,7 @@ const fixtures = {
   files: [
     ...f.processedDocument('processed1', {
       entity: 'entity1',
+      fullText: { 1: 'fullText' },
       extractedMetadata: [{ name: 'to_be_deleted' }, { name: 'property1' }],
     }),
     ...f.processedDocument('processed2', {
@@ -78,6 +80,22 @@ const createDs = () => {
 };
 
 describe('MongoFilesDataSource', () => {
+  describe('getAll', () => {
+    it('should return all files', async () => {
+      const { ds } = createDs();
+      const all = await ds.getAll().all();
+
+      expect(all.length).toBe(12);
+    });
+    it('should not return fullText', async () => {
+      const { ds } = createDs();
+      const all = await ds.getAll().all();
+
+      const processed = all.find(file => file.filename === 'processed1');
+      //@ts-ignore
+      expect(processed.fullText).toBe(undefined);
+    });
+  });
   describe('getProcessingById', () => {
     it('should get processing documents by id', async () => {
       const { ds } = createDs();
@@ -109,7 +127,34 @@ describe('MongoFilesDataSource', () => {
   });
 
   describe('update', () => {
-    it('should update and reindex related entity if file type is "processedDocument"', async () => {
+    it('should update and reindex related entity if file belongs to an entity', async () => {
+      jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+      await testingEnvironment.setUp(fixtures);
+      const { ds, transactionManager } = createDs();
+
+      await transactionManager.run(async () => {
+        await ds.update(FileBuilder.document(f.idString('doc'), { entity: 'entity1' }));
+        await ds.update(FileBuilder.attachment(f.idString('attachment'), { entity: 'entity2' }));
+      });
+
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        {
+          sharedId: { $in: ['entity1', 'entity2'] },
+        },
+        undefined
+      );
+
+      jest.mocked(search.indexEntities).mockReset();
+
+      await transactionManager.run(async () => {
+        await ds.update(FileBuilder.customUpload(f.idString('custom')));
+      });
+
+      expect(search.indexEntities).not.toHaveBeenCalled();
+    });
+
+    it('should update and reindex related entity if file type is a "FileWithContents"', async () => {
+      jest.mocked(search.indexEntities).mockRestore();
       await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       const processingDoc = (
@@ -130,25 +175,9 @@ describe('MongoFilesDataSource', () => {
         'processed document'
       );
     });
-
-    it('should update and reindex related entity if file type is "Document"', async () => {
-      await testingEnvironment.setUp(fixtures, true);
-      const { ds, transactionManager } = createDs();
-      const processingDoc = (
-        await ds.getProcessingById(f.idString('anotherProcessingDoc'))
-      ).getDataOrThrow();
-      await transactionManager.run(async () => {
-        processingDoc.failed();
-        await ds.update(processingDoc);
-      });
-
-      await elasticTesting.refresh();
-      //@ts-ignore
-      expect((await elasticTesting.getIndexedEntities())[0].documents[0].status).toBe('failed');
-    });
   });
   describe('create', () => {
-    it('should reindex related entity if file type is "processedDocument"', async () => {
+    it('should reindex related entity if file type is entity file', async () => {
       await testingEnvironment.setUp(fixtures, true);
       const { ds, transactionManager } = createDs();
       await transactionManager.run(async () => {
@@ -316,6 +345,15 @@ describe('MongoFilesDataSource', () => {
       expect(documentsForEntity.length).toBe(5);
     });
 
+    it('should not return fullText', async () => {
+      const { ds } = createDs();
+
+      const documentsForEntity = await ds.getProcessedDocsForEntity('entity1').all();
+      const processed = documentsForEntity.find(file => file.filename === 'processed1');
+      //@ts-ignore
+      expect(processed.fullText).toBe(undefined);
+    });
+
     it('should allow fetching documents only in specific languages', async () => {
       const { ds } = createDs();
 
@@ -353,6 +391,13 @@ describe('MongoFilesDataSource', () => {
       expect(doc).toBeInstanceOf(URLAttachment);
       expect(doc?.content).toBeInstanceOf(NullFileContents);
     });
+
+    it('should not load fullText by default', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getByFilename('processed1')).getData();
+      //@ts-ignore
+      expect(doc?.fullText).toBeUndefined();
+    });
   });
 
   describe('getById', () => {
@@ -360,6 +405,13 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('processed1'))).getData();
       expect(doc).toBeInstanceOf(ProcessedDocument);
+    });
+
+    it('should not load fullText by default', async () => {
+      const { ds } = createDs();
+      const doc = (await ds.getById(f.idString('processed1'))).getData();
+      //@ts-ignore
+      expect(doc?.fullText).toBeUndefined();
     });
 
     it('should return URLAttachment properly (with nullFileContents)', async () => {

@@ -7,8 +7,8 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { TableRow } from './Table';
 
-const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
-const childIndicatorClass = 'shadow-[inset_5px_0px_0px_-1px_#3949AB]';
+const dndHoverClass = 'dnd-hover-shadow';
+const childIndicatorClass = 'dnd-child-shadow';
 
 const inactiveGradientStyle: CSSProperties = {
   position: 'absolute',

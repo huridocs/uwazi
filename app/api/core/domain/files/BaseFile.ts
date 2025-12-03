@@ -9,7 +9,8 @@ type Props = {
   size: number;
   creationDate: number;
   uploaded?: boolean;
-  content: FileContents;
+  content?: FileContents;
+  entity?: string;
 };
 
 export abstract class BaseFile {
@@ -25,9 +26,11 @@ export abstract class BaseFile {
 
   readonly creationDate: number;
 
-  readonly content: FileContents;
+  readonly content?: FileContents;
 
   readonly uploaded?: boolean;
+
+  readonly entity?: string;
 
   protected abstract _type: FileTypes;
 
@@ -43,6 +46,14 @@ export abstract class BaseFile {
 
   get type() {
     return this._type;
+  }
+
+  isEntityFile(): this is this & { entity: string } {
+    return Boolean(this.entity);
+  }
+
+  hasContent(): this is this & { content: FileContents } {
+    return Boolean(this.content);
   }
 }
 

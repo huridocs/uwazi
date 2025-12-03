@@ -1,102 +1,84 @@
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
 import { ObjectId } from 'mongodb';
 import { LanguageUtils } from 'shared/language';
 import { Attachment } from '../../../domain/files/Attachment';
 import { CustomUpload } from '../../../domain/files/CustomUpload';
 import { Document } from '../../../domain/files/Document';
+import { NullFileContents } from '../../../domain/files/FileContents';
+import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Thumbnail } from '../../../domain/files/Thumbnail';
 import { URLAttachment } from '../../../domain/files/URLAttachment';
-import { UwaziFile } from '../../../domain/files/UwaziFile';
-import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
-import { FileContents } from '../../../domain/files/FileContents';
 import { fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {
-  toModel<R extends UwaziFile = UwaziFile>(dbo: fileDBO, fileContents: FileContents): R {
+  toModel(dbo: fileDBO, { fileStorage }: { fileStorage: FileStorage }) {
+    const commonFields = {
+      id: dbo._id.toString(),
+      originalname: dbo.originalname,
+      filename: dbo.filename,
+      mimetype: dbo.mimetype,
+      size: dbo.size,
+      creationDate: dbo.creationDate,
+      content: new NullFileContents(),
+    };
+
     if (dbo.type === 'attachment' && dbo.url) {
       return new URLAttachment({
-        id: dbo._id.toString(),
+        ...commonFields,
         entity: dbo.entity,
         url: dbo.url,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      });
     }
+
+    commonFields.content = fileStorage.getFile({
+      type: dbo.type,
+      filename: dbo.filename,
+    });
+
     if (dbo.type === 'attachment') {
-      return new Attachment({
-        id: dbo._id.toString(),
-        entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      return new Attachment({ ...commonFields, entity: dbo.entity });
     }
 
     if (dbo.type === 'custom') {
-      return new CustomUpload({
-        id: dbo._id.toString(),
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
-        content: fileContents,
-      }) as R;
+      return new CustomUpload(commonFields);
     }
 
     if (dbo.type === 'thumbnail') {
       return new Thumbnail({
-        id: dbo._id.toString(),
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
+        ...commonFields,
         entity: dbo.entity,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-        content: fileContents,
-      }) as R;
+      });
     }
 
     if (dbo.type === 'document' && dbo.status === 'ready') {
       return new ProcessedDocument({
+        ...commonFields,
         id: dbo._id.toString(),
         entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
         language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
         totalPages: dbo.totalPages,
-        fullText: dbo.fullText || {},
-        content: fileContents,
+        fullText:
+          dbo.fullText ||
+          (async () => {
+            throw new Error('not Implemented');
+          }),
         generatedToc: dbo.generatedToc,
-      }) as R;
+      });
     }
     if (dbo.type === 'document') {
       return new Document({
+        ...commonFields,
         id: dbo._id.toString(),
         entity: dbo.entity,
-        originalname: dbo.originalname,
-        filename: dbo.filename,
-        mimetype: dbo.mimetype,
-        size: dbo.size,
-        creationDate: dbo.creationDate,
         status: dbo.status,
-        content: fileContents,
-      }) as R;
+      });
     }
     throw new Error('Unknown file type');
   },
 
-  toDBO: (file: UwaziFile): fileDBO => {
+  toDBO: (file: BaseFile): fileDBO => {
     const baseDBO = {
       _id: new ObjectId(file.id),
       originalname: file.originalname,
@@ -114,7 +96,7 @@ export const FileMappers = {
         totalPages: file.totalPages,
         language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
         status: 'ready',
-        fullText: file.fullText,
+        ...(file.fullText ? { fullText: file.fullText } : {}),
         generatedToc: file.generatedToc,
       };
     }
@@ -152,10 +134,7 @@ export const FileMappers = {
     throw new Error('Unknown file type');
   },
 
-  toDTO(file: UwaziFile): Omit<fileDBO, '_id'> & { _id: string } {
-    return {
-      ...this.toDBO(file),
-      _id: file.id,
-    };
+  toDTO(file: BaseFile): Omit<fileDBO, '_id'> & { _id: string } {
+    return { ...this.toDBO(file), _id: file.id };
   },
 };

@@ -139,11 +139,12 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
         };
         return (
-          <Highlight
-            key={scaledHightlight.key}
-            textSelection={scaledHightlight.textSelection}
-            color={scaledHightlight.color}
-          />
+          <div key={scaledHightlight.key} data-highlight-key={scaledHightlight.key}>
+            <Highlight
+              textSelection={scaledHightlight.textSelection}
+              color={scaledHightlight.color}
+            />
+          </div>
         );
       })}
     </div>

@@ -1,11 +1,11 @@
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
-import { withConnectedData } from '../../../relationships/relationshipsHelpers';
-import { Relation } from '../../../relationships/RelationsV1Collection';
-import settings from 'api/settings';
 import { dbSessionContext } from 'api/odm/sessionsContext';
-import relationships from 'api/relationships';
-import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import relationships from 'api/relationships/relationships';
+import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import settings from 'api/settings';
+import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -42,7 +42,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     return withConnectedData(dbRelationships, connectedDocuments) as Relation[];
   }
 
-  async deleteByFiles(files: UwaziFileWithContents[]) {
+  async deleteByFiles(files: FileWithContents[]) {
     const session = this.transactionManager.getSession();
     if (session) {
       dbSessionContext.setSession(session);
@@ -51,5 +51,9 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     await relationships.delete({ file: { $in: files.map(f => f.id) } }, null, false);
 
     dbSessionContext.clearContext();
+  }
+
+  async bulkDeleteBySharedId(sharedIds: string[]) {
+    await relationships.delete({ entity: { $in: sharedIds } }, null, false);
   }
 }

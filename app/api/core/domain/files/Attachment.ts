@@ -1,7 +1,9 @@
-import { BaseFile, BaseFileProps } from './BaseFile';
+import { BaseFileProps } from './BaseFile';
+import { FileContents } from './FileContents';
+import { FileWithContents } from './FileWithContents';
 
-type Props = BaseFileProps & { entity: string };
-export class Attachment extends BaseFile {
+type Props = BaseFileProps & { entity: string; content: FileContents };
+export class Attachment extends FileWithContents {
   readonly entity: string;
 
   protected _type = 'attachment' as const;

@@ -6,22 +6,14 @@ import { readFile } from 'fs/promises';
 /* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Attachment } from 'api/core/domain/files/Attachment';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { Document } from 'api/core/domain/files/Document';
 import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -33,31 +25,20 @@ import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FilesService } from '../FilesService';
 
 const f = getFixturesFactory();
-
-const fixtures: DBFixture = {
-  settings: [
-    {
-      languages: [
-        { default: true, key: 'en', label: 'English' },
-        { key: 'pt', label: 'Portuguese' },
-      ],
-    },
-  ],
-};
-
-const fileContents = () =>
-  new DiskFile(path.join(__dirname, '../../testing/testing_files')).toContent();
 
 const storedFiles: { [k: string]: FileContents[] } = {
   document: [],
   attachment: [],
 };
+const removedFiles: FileWithContents[] = [];
 const fileStorage = TestUtils.mockClass<FileStorage>({
-  async storeFile(file: UwaziFile) {
+  async storeFile(file: FileWithContents) {
     storedFiles[file.type].push(file.content);
+  },
+  async removeFile(file) {
+    removedFiles.push(file);
   },
 });
 
@@ -68,25 +49,18 @@ const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
   },
 });
 
-const createSut = () => {
+const createService = () => {
   const transactionManager = TransactionManagerFactory.fake();
-  const service = new FilesService({
-    idGenerator: IdGeneratorFactory.default(),
+  const service = FilesServiceFactory.default(transactionManager, {
     fileStorage,
-    filesDS: FilesDataSourceFactory.default(TransactionManagerFactory.default()),
     jobsDispatcher,
-    filesIO: new FileContentsIO(),
-    pdfService: new PDFService(),
-    relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager,
-    eventBus: applicationEventsBus,
   });
   return { service };
 };
 
 describe('FilesService', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp({});
   });
 
   afterAll(async () => {
@@ -95,31 +69,10 @@ describe('FilesService', () => {
 
   describe('storeFiles', () => {
     it('should store UwaziFiles on its proper destination', async () => {
-      const { service } = createSut();
-      const document = new Document({
-        entity: 'entity',
-        id: 'document id',
-        originalname: 'test-files.txt',
-        mimetype: 'text/plain',
-        filename: 'eng.pdf',
-        uploaded: true,
-        size: 0,
-        status: 'processing',
-        creationDate: 0,
-        content: fileContents(),
-      });
+      const { service } = createService();
 
-      const attachment = new Attachment({
-        entity: 'entity',
-        id: 'document id',
-        originalname: 'test-files.txt',
-        mimetype: 'text/plain',
-        filename: 'eng.pdf',
-        uploaded: true,
-        size: 0,
-        creationDate: 0,
-        content: fileContents(),
-      });
+      const document = FileBuilder.document(f.idString('document_id'));
+      const attachment = FileBuilder.attachment(f.idString('attachment_id'));
 
       await service.storeFiles([document, attachment]);
 
@@ -128,40 +81,12 @@ describe('FilesService', () => {
     });
   });
 
-  // describe('deleteEntityFiles', () => {
-  //   it('should delete all files belogning to entity ids', async () => {
-  //     expect(true).toBe(false);
-  //   });
-  // });
-
   describe('insert', () => {
-    const document = new Document({
-      entity: 'entity',
-      id: f.idString('document_id'),
-      originalname: 'test-files.txt',
-      mimetype: 'text/plain',
-      filename: 'eng.pdf',
-      uploaded: true,
-      size: 0,
-      status: 'processing',
-      creationDate: 0,
-      content: fileContents(),
-    });
-
-    const attachment = new Attachment({
-      entity: 'entity',
-      id: f.idString('attachment_id'),
-      originalname: 'test-files.txt',
-      mimetype: 'text/plain',
-      filename: 'eng.pdf',
-      uploaded: true,
-      size: 0,
-      creationDate: 0,
-      content: fileContents(),
-    });
+    const document = FileBuilder.document(f.idString('document_id'), { filename: 'doc' });
+    const attachment = FileBuilder.attachment(f.idString('attachment_id'), { filename: 'attach' });
 
     beforeAll(async () => {
-      const { service } = createSut();
+      const { service } = createService();
       await service.insert([document, attachment]);
     });
 
@@ -169,8 +94,8 @@ describe('FilesService', () => {
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
       expect(dbFiles).toMatchObject([
-        { _id: new ObjectId(document.id) },
-        { _id: new ObjectId(attachment.id) },
+        { _id: new ObjectId(document.id), filename: 'doc' },
+        { _id: new ObjectId(attachment.id), filename: 'attach' },
       ]);
     });
 
@@ -192,7 +117,7 @@ describe('FilesService', () => {
       return hash1 === hash2;
     }
     it('should create thumbnail from a ProcessedDocument', async () => {
-      const { service } = createSut();
+      const { service } = createService();
 
       const doc = FileBuilder.processedDocument(f.idString('doc'), {
         content: new DiskFile(
@@ -227,6 +152,46 @@ describe('FilesService', () => {
           thumbnailPath
         )
       ).toBe(true);
+    });
+  });
+
+  describe('deleteEntityFiles', () => {
+    const fixtures: DBFixture = {
+      settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+      entities: [f.entity('entity 1'), f.entity('entity2'), f.entity('entity3')],
+      files: [
+        f.document('doc1', { entity: 'entity1' }),
+        ...f.processedDocument('doc2', { entity: 'entity1' }),
+        f.document('doc3', { entity: 'entity2' }),
+        ...f.processedDocument('doc4', { entity: 'entity2' }),
+        f.document('doc5', { entity: 'entity3' }),
+        ...f.processedDocument('doc6', { entity: 'entity3' }),
+      ],
+    };
+
+    it('should delete all files belogning to entity ids', async () => {
+      await testingEnvironment.setUp(fixtures);
+      const { service } = createService();
+
+      await service.deleteEntityFiles(['entity1', 'entity3']);
+
+      const dbFiles = await testingEnvironment.db.getAllFrom('files');
+
+      expect(dbFiles).toMatchObject([
+        { entity: 'entity2', type: 'document' },
+        { entity: 'entity2', type: 'document' },
+        { entity: 'entity2', type: 'thumbnail' },
+      ]);
+
+      expect(removedFiles).toMatchObject([
+        { entity: 'entity1', type: 'document' },
+        { entity: 'entity1', type: 'document' },
+        { entity: 'entity1', type: 'thumbnail' },
+
+        { entity: 'entity3', type: 'document' },
+        { entity: 'entity3', type: 'document' },
+        { entity: 'entity3', type: 'thumbnail' },
+      ]);
     });
   });
 });

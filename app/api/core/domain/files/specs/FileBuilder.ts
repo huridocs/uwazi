@@ -1,4 +1,5 @@
 import { Attachment } from '../Attachment';
+import { CustomUpload } from '../CustomUpload';
 import { Document } from '../Document';
 import { FileContents } from '../FileContents';
 import { ProcessedDocument } from '../ProcessedDocument';
@@ -43,7 +44,7 @@ export class FileBuilder {
       language: 'en',
       totalPages: 10,
       generatedToc: false,
-      fullText: {},
+      fullText: async () => ({ 1: 'fullText' }),
       ...props,
     });
   }
@@ -88,6 +89,20 @@ export class FileBuilder {
       size: 3072,
       creationDate: 1234567892,
       content: FileBuilder.content('thumbnail'),
+      ...props,
+    });
+  }
+
+  static customUpload(id: string, props?: PartialFirstConstructorArg<typeof Thumbnail>) {
+    return new CustomUpload({
+      id,
+      language: 'es',
+      originalname: 'thumb.jpg',
+      filename: 'thumb.jpg',
+      mimetype: 'image/jpeg',
+      size: 3072,
+      creationDate: 1234567892,
+      content: FileBuilder.content('customUpload'),
       ...props,
     });
   }

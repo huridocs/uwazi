@@ -4,7 +4,13 @@ interface Snippet {
   filename?: string;
 }
 
-type EventType = 'onPageChange' | 'goToPage' | 'pdfReady' | 'activateSnippet' | 'deactivateSnippet';
+type EventType =
+  | 'onPageChange'
+  | 'goToPage'
+  | 'pdfReady'
+  | 'activateSnippet'
+  | 'deactivateSnippet'
+  | 'scrollToHighlight';
 
 interface EventPayloadMap {
   onPageChange: number;
@@ -12,6 +18,7 @@ interface EventPayloadMap {
   pdfReady: void;
   activateSnippet: Snippet;
   deactivateSnippet: void;
+  scrollToHighlight: string;
 }
 
 interface Subscription {

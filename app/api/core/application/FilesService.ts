@@ -4,14 +4,13 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { Document } from 'api/core/domain/files/Document';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile, UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile } from '../domain/files/BaseFile';
-import { URLAttachment } from '../domain/files/URLAttachment';
+import { FileWithContents } from '../domain/files/FileWithContents';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
@@ -44,15 +43,15 @@ class FilesService {
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
-      files.filter((f): f is UwaziFileWithContents => !(f instanceof URLAttachment)),
+      files.filter((f): f is FileWithContents => f instanceof FileWithContents),
       async file => {
         await this.deps.fileStorage.storeFile(file);
       }
     );
   }
 
-  async insert(files: UwaziFile[]) {
-    if (isNonEmptyArray<UwaziFile>(files)) {
+  async insert(files: BaseFile[]) {
+    if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
 
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
@@ -73,17 +72,15 @@ class FilesService {
     }
   }
 
-  async deleteEntityFiles(entityIds: string[]) {
-    const files = await this.deps.filesDS.getByEntitiesIds(entityIds).all();
+  async deleteEntityFiles(entitySharedIds: string[]) {
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
     if (isNonEmptyArray(files)) {
       await this.delete(files);
     }
   }
 
-  async delete(files: [UwaziFile, ...UwaziFile[]]) {
-    const contentFiles = files.filter(
-      (f): f is UwaziFileWithContents => !(f instanceof URLAttachment)
-    );
+  async delete(files: [BaseFile, ...BaseFile[]]) {
+    const contentFiles = files.filter((f): f is FileWithContents => f instanceof FileWithContents);
 
     await this.deps.filesDS.delete(files);
     await this.deps.relV1DS.deleteByFiles(contentFiles);
