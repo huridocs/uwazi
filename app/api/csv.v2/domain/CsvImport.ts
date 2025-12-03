@@ -129,6 +129,13 @@ class CsvImportDomain {
     });
   }
 
+  withStats(stats: CsvImportStats) {
+    return this.clone({
+      stats,
+      updatedAt: Date.now(),
+    });
+  }
+
   withFailure(failure: CsvImportFailure) {
     return this.clone({
       failure,

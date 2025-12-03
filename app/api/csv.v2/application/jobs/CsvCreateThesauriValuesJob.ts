@@ -165,10 +165,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
         thesaurusValuesCreated: totals.created,
         thesauriTouched: totals.touched,
       };
-      await this.deps.csvImportsDS.update({
-        ...withStatus,
-        stats: updatedStats,
-      });
+      await this.deps.csvImportsDS.update(withStatus.withStats(updatedStats));
     });
   }
 
