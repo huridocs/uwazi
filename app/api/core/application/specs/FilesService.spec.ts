@@ -8,9 +8,9 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
@@ -32,9 +32,9 @@ const storedFiles: { [k: string]: FileContents[] } = {
   document: [],
   attachment: [],
 };
-const removedFiles: UwaziFile[] = [];
+const removedFiles: FileWithContents[] = [];
 const fileStorage = TestUtils.mockClass<FileStorage>({
-  async storeFile(file: UwaziFile) {
+  async storeFile(file: FileWithContents) {
     storedFiles[file.type].push(file.content);
   },
   async removeFile(file) {
