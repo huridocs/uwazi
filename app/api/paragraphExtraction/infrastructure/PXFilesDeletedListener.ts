@@ -135,7 +135,7 @@ export class PXFilesDeletedListener {
     const deletedDocuments = files
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
-        FileMappers.toModel<ProcessedDocument>(d as any, {
+        FileMappers.toModel(d as any, {
           fileStorage: this.dependencies.fileStorage,
         })
       );
@@ -144,7 +144,9 @@ export class PXFilesDeletedListener {
       return;
     }
 
-    await this.onDocumentsDeleted(deletedDocuments);
+    await this.onDocumentsDeleted(
+      deletedDocuments.filter((d): d is ProcessedDocument => d instanceof ProcessedDocument)
+    );
   }
 
   start() {

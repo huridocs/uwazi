@@ -4,6 +4,7 @@ import { LanguageUtils } from 'shared/language';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { ResultSet } from 'api/core/application/contracts/ResultSet';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import {
   MongoDataSource,
@@ -22,7 +23,6 @@ import { BaseDocument } from '../../../domain/files/BaseDocument';
 import { Document } from '../../../domain/files/Document';
 import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Segmentation } from '../../../domain/files/Segmentation';
-import { UwaziFile } from '../../../domain/files/UwaziFile';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
 import { FileMappers } from './FilesMappers';
 import { SegmentationMapper } from './SegmentationMapper';
@@ -63,12 +63,12 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     });
   }
 
-  private toModel<T extends UwaziFile>(dbo: fileDBO): T {
+  private toModel(dbo: fileDBO) {
     return FileMappers.toModel(dbo, { fileStorage: this.fileStorage });
   }
 
-  getByEntitiesIds(entitySharedIds: string[]): ResultSet<UwaziFile> {
-    return new MongoResultSet<fileDBO, UwaziFile>(
+  getByEntitiesIds(entitySharedIds: string[]): ResultSet<BaseFile> {
+    return new MongoResultSet<fileDBO, BaseFile>(
       this.getCollection().find({
         entity: { $in: entitySharedIds },
       }),
@@ -81,7 +81,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       this.getCollection().find({
         filename: { $in: files.map(f => `${f.id}.jpg`) },
       }),
-      dbo => this.toModel<Thumbnail>(dbo)
+      dbo => this.toModel(dbo) as Thumbnail
     );
   }
 
@@ -91,12 +91,12 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       status: 'processing',
     });
     if (processing) {
-      return Result.ok(this.toModel<Document>(processing));
+      return Result.ok(this.toModel(processing) as Document);
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
   }
 
-  async update(file: UwaziFile): Promise<void> {
+  async update(file: BaseFile): Promise<void> {
     await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(file.id) },
       { $set: FileMappers.toDBO(file) }
@@ -106,14 +106,14 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     }
   }
 
-  async create(file: UwaziFile): Promise<void> {
+  async create(file: BaseFile): Promise<void> {
     await this.getCollection().insertOne(FileMappers.toDBO(file));
     if (file instanceof BaseDocument) {
       this.entitiesToIndex.add(file.entity);
     }
   }
 
-  async delete(files: UwaziFile[]) {
+  async delete(files: BaseFile[]) {
     await this.getCollection().deleteMany({ _id: { $in: files.map(f => new ObjectId(f.id)) } });
     files
       .filter(f => f instanceof BaseDocument)
@@ -122,7 +122,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       });
   }
 
-  async bulkCreate(files: [UwaziFile, ...UwaziFile[]]): Promise<void> {
+  async bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void> {
     await this.getCollection().insertMany(files.map(FileMappers.toDBO));
 
     files.forEach(async file => {
@@ -221,12 +221,12 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
 
     return new MongoResultSet<fileDBO, ProcessedDocument>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      dbo => this.toModel<ProcessedDocument>(dbo)
+      dbo => this.toModel(dbo) as ProcessedDocument
     );
   }
 
   getAll() {
-    return new MongoResultSet<fileDBO, UwaziFile>(
+    return new MongoResultSet<fileDBO, BaseFile>(
       this.getCollection().find({}, { projection: { fullText: 0 } }),
       dbo => this.toModel(dbo)
     );

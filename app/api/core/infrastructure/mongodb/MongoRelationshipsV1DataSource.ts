@@ -1,10 +1,10 @@
-import { UwaziFileWithContents } from 'api/core/domain/files/UwaziFile';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import entities from 'api/entities';
-import settings from 'api/settings';
 import { dbSessionContext } from 'api/odm/sessionsContext';
-import { withConnectedData } from 'api/relationships/relationshipsHelpers';
 import relationships from 'api/relationships/relationships';
+import { withConnectedData } from 'api/relationships/relationshipsHelpers';
+import settings from 'api/settings';
 import { Relation } from '../../../relationships/RelationsV1Collection';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
@@ -42,7 +42,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     return withConnectedData(dbRelationships, connectedDocuments) as Relation[];
   }
 
-  async deleteByFiles(files: UwaziFileWithContents[]) {
+  async deleteByFiles(files: FileWithContents[]) {
     const session = this.transactionManager.getSession();
     if (session) {
       dbSessionContext.setSession(session);

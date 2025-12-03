@@ -2,13 +2,14 @@
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 
+import { BaseFile } from 'api/core/domain/files/BaseFile';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
 import { DiskFile } from '../../domain/files/DiskFile';
 import { FileContents, NullFileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
-import { UwaziFile, UwaziFileWithContents } from '../../domain/files/UwaziFile';
 import { PathManager } from './PathManager';
 
 export class FileSystemStorage implements FileStorage {
@@ -38,7 +39,7 @@ export class FileSystemStorage implements FileStorage {
     await pipeline(content.read(), createWriteStream(filepath));
   }
 
-  async removeFile(file: UwaziFileWithContents) {
+  async removeFile(file: FileWithContents) {
     try {
       await rm(this.pathManager.createPath(file));
     } catch (error) {
@@ -48,7 +49,7 @@ export class FileSystemStorage implements FileStorage {
     }
   }
 
-  async storeFile(file: UwaziFileWithContents) {
+  async storeFile(file: FileWithContents) {
     const filepath = this.pathManager.createPath(file);
 
     try {
@@ -66,7 +67,7 @@ export class FileSystemStorage implements FileStorage {
     return new DiskFile(this.pathManager.createPath(input)).toContent();
   }
 
-  async fileExists(file: UwaziFile) {
+  async fileExists(file: BaseFile) {
     try {
       await access(this.pathManager.createPath(file));
     } catch (e) {
@@ -87,7 +88,7 @@ export class FileSystemStorage implements FileStorage {
     throw new Error('Method not implemented.');
   }
 
-  getPath(_file: UwaziFile): string {
+  getPath(_file: BaseFile): string {
     throw new Error('Method not implemented.');
   }
 }

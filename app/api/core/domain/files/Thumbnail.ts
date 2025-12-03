@@ -1,12 +1,15 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseFile, BaseFileProps } from './BaseFile';
+import { BaseFileProps } from './BaseFile';
+import { FileContents } from './FileContents';
+import { FileWithContents } from './FileWithContents';
 
 type Props = BaseFileProps & {
   entity: string;
   language: LanguageISO6391;
+  content: FileContents;
 };
 
-export class Thumbnail extends BaseFile {
+export class Thumbnail extends FileWithContents {
   readonly entity: string;
 
   readonly language: LanguageISO6391;
