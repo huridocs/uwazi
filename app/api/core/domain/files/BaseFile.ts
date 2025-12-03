@@ -48,11 +48,11 @@ export abstract class BaseFile {
     return this._type;
   }
 
-  isEntityFile() {
+  isEntityFile(): this is this & { entity: string } {
     return Boolean(this.entity);
   }
 
-  hasContent() {
+  hasContent(): this is this & { content: FileContents } {
     return Boolean(this.content);
   }
 }
