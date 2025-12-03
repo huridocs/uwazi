@@ -128,9 +128,7 @@ describe('MongoFilesDataSource', () => {
 
   describe('update', () => {
     it('should update and reindex related entity if file belongs to an entity', async () => {
-      jest.spyOn(search, 'indexEntities').mockImplementation(() => {
-        return Promise.resolve();
-      });
+      jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
       await testingEnvironment.setUp(fixtures);
       const { ds, transactionManager } = createDs();
 
