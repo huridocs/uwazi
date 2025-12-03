@@ -10,7 +10,7 @@ import { NeedAuthorization, Truncate } from 'V2/Components/UI';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from './urlParams';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams';
 import { scrollToPage } from './functions';
 
 // eslint-disable-next-line max-statements

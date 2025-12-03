@@ -13,9 +13,9 @@ import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SnippetsSearchResponse } from 'V2/api/types';
 import { snippets as snippetsSearch } from 'V2/api/search';
 import { ClientTemplateSchema } from 'V2/shared/types';
-import { SEARCH_PARAM } from './urlParams';
+import { SEARCH_PARAM } from '../urlParams';
 import { searchHintsModalAtom } from './atoms';
-import { LoaderResponse } from './types';
+import { LoaderResponse } from '../types';
 import { scrollToSnippet } from './functions';
 import { NoSearch, NoResults } from './BlankState';
 

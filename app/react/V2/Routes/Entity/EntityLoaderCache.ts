@@ -11,18 +11,18 @@ const getCachedItem = <T>(
   cache: Map<string, CachedItem<T>>,
   key: string,
   ttl: number
-): T | null => {
+): T | undefined => {
   const cached = cache.get(key);
 
   if (!cached) {
-    return null;
+    return undefined;
   }
 
   const age = Date.now() - cached.timestamp;
 
   if (age > ttl) {
     cache.delete(key);
-    return null;
+    return undefined;
   }
 
   return cached.data;
@@ -71,9 +71,9 @@ class EntityLoaderCache {
     searchResults: 30,
   };
 
-  getEntity(sharedId: string, language: string): Entity | null {
+  getEntity(sharedId: string, language: string): Entity | undefined {
     if (this.isSSR) {
-      return null;
+      return undefined;
     }
 
     const key = `${sharedId}:${language}`;
@@ -93,9 +93,9 @@ class EntityLoaderCache {
     this.invalidateSearchResults(sharedId);
   }
 
-  getPlaintext(documentId: string, page: number): string | null {
+  getPlaintext(documentId: string, page: number): string | undefined {
     if (this.isSSR) {
-      return null;
+      return undefined;
     }
 
     const key = `${documentId}:${page}`;
@@ -113,9 +113,9 @@ class EntityLoaderCache {
     invalidateByPrefix(this.plaintextCache, `${documentId}:`);
   }
 
-  getSearchResults(sharedId: string, searchTerm: string): SnippetsSearchResponse | null {
+  getSearchResults(sharedId: string, searchTerm: string): SnippetsSearchResponse | undefined {
     if (this.isSSR) {
-      return null;
+      return undefined;
     }
 
     const key = `${sharedId}:${searchTerm.toLowerCase().trim()}`;
@@ -144,23 +144,6 @@ class EntityLoaderCache {
     if (documentId) {
       this.invalidatePlaintext(documentId);
     }
-  }
-
-  getStats() {
-    return {
-      entity: {
-        size: this.entityCache.size,
-        keys: Array.from(this.entityCache.keys()),
-      },
-      plaintext: {
-        size: this.plaintextCache.size,
-        keys: Array.from(this.plaintextCache.keys()),
-      },
-      searchResults: {
-        size: this.searchResultsCache.size,
-        keys: Array.from(this.searchResultsCache.keys()),
-      },
-    };
   }
 }
 

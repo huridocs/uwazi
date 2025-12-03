@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useMemo, useRef } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
@@ -9,12 +8,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { getPagePlaintext } from 'V2/api/files';
-import { snippets } from 'V2/api/search';
-import { SnippetsSearchResponse } from 'V2/api/types';
-import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
-import { fullDetailOptions } from 'V2/application/optionsPresets';
+
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -26,12 +20,9 @@ import {
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
   SearchResults,
-  SEARCH_PARAM,
-  LoaderResponse,
-  PAGE_PARAM,
   ToCPanel,
 } from './Components';
-import { entityLoaderCache } from './EntityLoaderCache';
+import { LoaderResponse } from './types';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -58,112 +49,10 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
-const entityLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  // eslint-disable-next-line max-statements
-  async ({ params, request }): Promise<LoaderResponse> => {
-    const entitySharedId = params.sharedId;
-    const { searchParams } = new URL(request.url);
-    const currentPage = searchParams.get(PAGE_PARAM) || '1';
-    const currentSearchTerm = searchParams.get(SEARCH_PARAM);
-
-    if (!entitySharedId) {
-      return undefined;
-    }
-
-    let entity = entityLoaderCache.getEntity(entitySharedId, 'en');
-    let pagePlaintext: string | null = '';
-    let searchResults: SnippetsSearchResponse | null;
-
-    if (!entity) {
-      const entityCompositionUseCase = await getEntityCompositionUseCase();
-
-      const composition = await entityCompositionUseCase.composeEntity(
-        entitySharedId,
-        fullDetailOptions,
-        {
-          headers,
-        }
-      );
-
-      if (!composition.success || !composition.entity) {
-        throw new Response(
-          JSON.stringify({
-            error: 'Failed to load entity',
-            message: composition.error || 'Entity not found',
-            entityId: entitySharedId,
-          }),
-          {
-            status: 404,
-            statusText: 'Entity Not Found',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      }
-
-      entity = composition.entity;
-      entityLoaderCache.setEntity(entitySharedId, 'en', entity);
-
-      if (composition.entity.mainDocument?._id) {
-        pagePlaintext = entityLoaderCache.getPlaintext(
-          composition.entity.mainDocument._id?.toString(),
-          Number(currentPage)
-        );
-
-        if (pagePlaintext) {
-          const response = await getPagePlaintext(
-            composition.entity.mainDocument?._id as string,
-            Number.parseInt(currentPage, 10)
-          );
-
-          if (response instanceof FetchResponseError) {
-            throw new Response(
-              JSON.stringify({
-                error: 'Failed to load plaintext',
-                message: response.message,
-                entityId: entitySharedId,
-              }),
-              {
-                status: 404,
-                statusText: 'Failed to load plaintext',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          } else {
-            pagePlaintext = response;
-            entityLoaderCache.setPlaintext(entitySharedId, Number(currentPage), pagePlaintext);
-          }
-        }
-      }
-    }
-
-    if (currentSearchTerm) {
-      searchResults = entityLoaderCache.getSearchResults(entitySharedId, currentSearchTerm);
-
-      if (!searchResults) {
-        searchResults = await snippets({
-          sharedId: entity.sharedId,
-          limit: 0,
-          searchString: currentSearchTerm,
-        });
-
-        entityLoaderCache.setSearchResults(entitySharedId, currentSearchTerm, searchResults);
-      }
-    }
-
-    return { entity, pagePlaintext, searchResults };
-  };
-
 const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
-
-  console.log(entityLoaderCache.getStats());
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -360,4 +249,4 @@ const Entity = () => {
   );
 };
 
-export { Entity, entityLoader };
+export { Entity };
