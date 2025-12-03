@@ -143,12 +143,12 @@ export class CsvImportRowsStager {
     this.batchSize = options?.batchSize ?? DEFAULT_ROWS_BATCH_SIZE;
   }
 
-  private async getCsvFiles(destination: string) {
-    return Promise.all([this.getExtractedCsv(destination), this.getExtractedCsv(destination)]);
+  private getCsvFiles(destination: string) {
+    return [this.getExtractedCsv(destination), this.getExtractedCsv(destination)];
   }
 
   async stage(params: StageRowsParams) {
-    const [streamFile, detectionFile] = await this.getCsvFiles(params.destination);
+    const [streamFile, detectionFile] = this.getCsvFiles(params.destination);
     const emptyRowIndexes = await CsvReader.collectEmptyRowIndexes(detectionFile);
     await params.deleteRows();
     const accumulator = createRowsAccumulator({
@@ -167,7 +167,7 @@ export class CsvImportRowsStager {
     await accumulator.finalize();
   }
 
-  private async getExtractedCsv(destination: string): Promise<FileContents> {
+  private getExtractedCsv(destination: string): FileContents {
     return this.deps.fileStorage.getFile({
       type: 'customPath',
       destination: `${destination}/extracted`,
