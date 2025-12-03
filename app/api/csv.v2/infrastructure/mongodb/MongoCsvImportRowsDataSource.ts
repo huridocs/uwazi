@@ -19,7 +19,7 @@ export class MongoCsvImportRowsDataSource
 
   async insertMany(rows: CsvImportRow[]): Promise<void> {
     if (!rows.length) return;
-    await this.getCollection().insertMany(rows.map(row => row.toPersistence()));
+    await this.getCollection().insertMany(rows.map(row => row.toObject()));
   }
 
   async countByImport(importId: string): Promise<number> {
@@ -32,7 +32,7 @@ export class MongoCsvImportRowsDataSource
     const results = await cursor.toArray();
     return results.map(doc => {
       const { _id, ...rest } = doc;
-      return CsvImportRow.fromPersistence(rest);
+      return CsvImportRow.fromObject(rest);
     });
   }
 

@@ -46,13 +46,13 @@ class CsvThesauriPendingEntry {
     return this.rootsMap.get(normalized);
   }
 
-  toPersistence() {
+  toObject() {
     return {
       propertyId: this.propertyId,
       propertyName: this.propertyName,
       thesaurusId: this.thesaurusId,
       type: this.type,
-      roots: this.roots.map(root => root.toPersistence()),
+      roots: this.roots.map(root => root.toObject()),
     };
   }
 }

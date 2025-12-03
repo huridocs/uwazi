@@ -25,11 +25,11 @@ class CsvImportRow {
     return new CsvImportRow(props);
   }
 
-  static fromPersistence(props: CsvImportRowProps) {
+  static fromObject(props: CsvImportRowProps) {
     return new CsvImportRow(props);
   }
 
-  toPersistence() {
+  toObject() {
     return {
       importId: this.importId,
       index: this.index,

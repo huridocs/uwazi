@@ -22,7 +22,7 @@ class CsvThesauriPendingChild {
     this.languages[lang] = value;
   }
 
-  toPersistence(): CsvThesauriPendingChildProps {
+  toObject(): CsvThesauriPendingChildProps {
     return {
       label: this.label,
       normalized: this.normalized,

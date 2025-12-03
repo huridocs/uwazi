@@ -40,12 +40,12 @@ class CsvThesauriPendingRoot {
     return this.childrenMap.get(normalized);
   }
 
-  toPersistence() {
+  toObject() {
     return {
       label: this.label,
       normalized: this.normalized,
       languages: { ...this.languages },
-      children: this.children.map(child => child.toPersistence()),
+      children: this.children.map(child => child.toObject()),
     };
   }
 }

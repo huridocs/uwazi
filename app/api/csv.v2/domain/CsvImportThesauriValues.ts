@@ -83,7 +83,7 @@ class CsvImportThesauriValues {
     return this.stats.valuesObserved !== summary.observedValues;
   }
 
-  toPersistence() {
+  toObject() {
     return {
       importId: this.importId,
       thesaurusId: this.thesaurusId,

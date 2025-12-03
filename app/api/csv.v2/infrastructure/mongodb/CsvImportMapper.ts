@@ -3,7 +3,7 @@ import { CsvImportDBO } from '../schemas/CsvImportTypes';
 
 const CsvImportMapper = {
   toDBO(domain: CsvImport): CsvImportDBO {
-    const { id, ...rest } = domain.toPersistence();
+    const { id, ...rest } = domain.toObject();
     return { ...rest };
   },
 

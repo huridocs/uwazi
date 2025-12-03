@@ -150,7 +150,7 @@ class CsvImportDomain {
     });
   }
 
-  toPersistence() {
+  toObject() {
     return {
       id: this.id,
       templateId: this.templateId,
@@ -168,7 +168,7 @@ class CsvImportDomain {
 
   private clone(overrides: Partial<CsvImportProps>) {
     return new CsvImportDomain({
-      ...this.toPersistence(),
+      ...this.toObject(),
       ...overrides,
     });
   }

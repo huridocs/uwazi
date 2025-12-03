@@ -21,7 +21,7 @@ export class MongoCsvImportThesauriValuesDataSource
       return;
     }
     const docs: CsvImportThesauriValuesDBO[] = pendingValues.map(pendingDoc =>
-      pendingDoc.toPersistence()
+      pendingDoc.toObject()
     );
     await this.getCollection().insertMany(docs);
   }

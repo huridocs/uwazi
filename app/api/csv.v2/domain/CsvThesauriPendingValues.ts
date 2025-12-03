@@ -29,12 +29,12 @@ class CsvThesauriPendingValues {
     return new CsvThesauriPendingValues(props);
   }
 
-  toPersistence() {
+  toObject() {
     return {
       importId: this.importId,
       createdAt: this.createdAt,
       defaultLanguage: this.defaultLanguage,
-      entries: this.entries.map(entry => entry.toPersistence()),
+      entries: this.entries.map(entry => entry.toObject()),
     };
   }
 }
