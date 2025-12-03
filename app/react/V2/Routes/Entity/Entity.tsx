@@ -293,36 +293,32 @@ const Entity = () => {
 
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
-      if (selectedMainTab !== activeMainTab) {
-        const next = new URLSearchParams(searchParams.toString());
-        next.set(MAIN_TAB_PARAM, selectedMainTab);
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(MAIN_TAB_PARAM, selectedMainTab);
 
-        const currentSideTab = next.get(SIDE_TAB_PARAM);
-        const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
-        const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
+      const currentSideTab = next.get(SIDE_TAB_PARAM);
+      const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
+      const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
 
-        if (currentSideTab && !isSideTabAvailable) {
-          next.delete(SIDE_TAB_PARAM);
-        }
-
-        setSearchParams(next, { replace: true, preventScrollReset: true });
+      if (currentSideTab && !isSideTabAvailable) {
+        next.delete(SIDE_TAB_PARAM);
       }
+
+      setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
+    [searchParams, setSearchParams, sideTabsByMain]
   );
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
-      if (selectedSideTab !== activeSideTab) {
-        const next = new URLSearchParams(searchParams.toString());
-        next.set(SIDE_TAB_PARAM, selectedSideTab);
-        if (!next.get(MAIN_TAB_PARAM)) {
-          next.set(MAIN_TAB_PARAM, activeMainTab);
-        }
-        setSearchParams(next, { replace: true, preventScrollReset: true });
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, selectedSideTab);
+      if (!next.get(MAIN_TAB_PARAM)) {
+        next.set(MAIN_TAB_PARAM, activeMainTab);
       }
+      setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, activeSideTab, searchParams, setSearchParams]
+    [activeMainTab, searchParams, setSearchParams]
   );
 
   const sideTabElements = useMemo(
