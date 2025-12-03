@@ -12,6 +12,7 @@ import {
   DocumentTextIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -35,12 +36,14 @@ import {
   LoaderResponse,
   PAGE_PARAM,
   ToCPanel,
+  FileList,
 } from './Components';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
+  FILES: 'files',
 };
 
 const SIDE_TABS = {
@@ -48,6 +51,7 @@ const SIDE_TABS = {
   TOC: 'toc',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
+  FILES: 'files',
 };
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
@@ -200,6 +204,17 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
+    if (entity?.documents?.length || entity?.attachments?.length) {
+      tabs.push(
+        <Tabs.Tab
+          id={MAIN_TABS.FILES}
+          key={MAIN_TABS.FILES}
+          label={<TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />}
+        >
+          <FileList entity={entity} />
+        </Tabs.Tab>
+      );
+    }
 
     return tabs;
   }, [entity, pagePlaintext]);
@@ -258,6 +273,13 @@ const Entity = () => {
           id: SIDE_TABS.METADATA,
           label: <TabLabel text="Metadata" icon={<Bars3CenterLeftIcon className="w-5 h-5" />} />,
           content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
+        },
+      ],
+      [MAIN_TABS.FILES]: [
+        {
+          id: SIDE_TABS.FILES,
+          label: <TabLabel text="Files" />,
+          content: entity ? <FileList entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],
     }),
@@ -342,7 +364,12 @@ const Entity = () => {
     <div className="tw-content">
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="p-2 h-full">
-          <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
+          <Tabs
+            unmountTabs={false}
+            initialTabId={activeMainTab}
+            onTabSelected={onMainTabChange}
+            tabListAriaLabel="Main content tabs"
+          >
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
@@ -352,6 +379,7 @@ const Entity = () => {
             unmountTabs={false}
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
+            tabListAriaLabel="Side panel tabs"
           >
             {sideTabElements}
           </Tabs>
