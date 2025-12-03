@@ -278,7 +278,7 @@ const Entity = () => {
       [MAIN_TABS.FILES]: [
         {
           id: SIDE_TABS.FILES,
-          label: <TabLabel text="Files" />,
+          label: <TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />,
           content: entity ? <FileList entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],

@@ -12,6 +12,22 @@ type FileListProps = {
 };
 
 const FileList = ({ entity }: FileListProps) => {
+  const thumbnailMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!entity) return map;
+
+    const allFiles = [...(entity.documents || []), ...(entity.attachments || [])];
+
+    allFiles.forEach(file => {
+      if (file.type === 'thumbnail' && file.filename) {
+        const documentId = file.filename.replace(/\.jpg$/, '');
+        map.set(documentId, `/files/thumbnails/${file.filename}`);
+      }
+    });
+
+    return map;
+  }, [entity]);
+
   const files = useMemo(() => {
     if (!entity) {
       return [];
@@ -19,14 +35,14 @@ const FileList = ({ entity }: FileListProps) => {
     const entityFiles: (FileType & { fileType: 'document' | 'attachment' })[] = [];
     if (entity.documents) {
       entity.documents.forEach(doc => {
-        if (doc.filename || doc.url) {
+        if ((doc.filename || doc.url) && doc.type !== 'thumbnail') {
           entityFiles.push({ ...doc, fileType: 'document' });
         }
       });
     }
     if (entity.attachments) {
       entity.attachments.forEach(att => {
-        if (att.filename || att.url) {
+        if ((att.filename || att.url) && att.type !== 'thumbnail') {
           entityFiles.push({ ...att, fileType: 'attachment' });
         }
       });
@@ -109,20 +125,14 @@ const FileList = ({ entity }: FileListProps) => {
                                         }`}
                 >
                   <div className="relative w-full h-48 overflow-hidden" aria-hidden="true">
-                    {file.url ? (
-                      <div className="w-full h-full bg-gray-50 flex items-center justify-center">
-                        <div className="text-gray-400 text-sm">
-                          <Translate>Link</Translate>
-                        </div>
-                      </div>
-                    ) : (
-                      <FileIcon
-                        filename={file.filename || ''}
-                        mimetype={file.mimetype || ''}
-                        altText=""
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    <FileIcon
+                      filename={file.filename || ''}
+                      mimetype={file.mimetype || ''}
+                      altText={fileName}
+                      className="w-full h-full object-cover"
+                      thumbnailUrl={file._id ? thumbnailMap.get(String(file._id)) : undefined}
+                      isLink={!!file.url}
+                    />
                     {isDefault && (
                       <div className="absolute left-4 top-4" aria-label="Default file">
                         <StarIconSolid className="w-6 h-6 text-yellow-500" aria-hidden="true" />
