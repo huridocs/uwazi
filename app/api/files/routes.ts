@@ -399,7 +399,7 @@ export default (app: Application) => {
       }
 
       if (tenants.current().featureFlags?.v2DeleteFile) {
-        const transactionManager = TransactionManagerFactory.fake();
+        const transactionManager = TransactionManagerFactory.default();
         const useCase = new FileDelete({
           filesDS: FilesDataSourceFactory.default(transactionManager),
           filesService: FilesServiceFactory.default(transactionManager),

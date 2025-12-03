@@ -23,7 +23,7 @@ class FilesServiceFactory {
     deps: Partial<ConstructorParameters<typeof FilesService>[0]> = {}
   ) {
     let _transactionManager = transactionManager;
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && !_transactionManager) {
       _transactionManager = TransactionManagerFactory.default();
     }
     const filesDS = FilesDataSourceFactory.default(_transactionManager);

@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-restricted-import
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { z } from 'zod';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
