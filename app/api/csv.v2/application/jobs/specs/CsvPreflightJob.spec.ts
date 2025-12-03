@@ -163,8 +163,8 @@ describe('CsvPreflightJob (integration)', () => {
     expect(callbacks.onStart).toHaveBeenCalledWith({ importId });
     expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
 
-    const updatedImport = await csvImportsDS.getById(importId);
-    expect(updatedImport?.status).toBe(CsvImportStatus.PreflightThesauriDone);
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriDone);
     const pendingDocs = await thesauriValuesDS.getByImport(importId);
     expect(pendingDocs).toHaveLength(1);
     expect(pendingDocs[0]).toEqual(
@@ -251,9 +251,9 @@ describe('CsvPreflightJob (integration)', () => {
       })
     );
 
-    const failedImport = await csvImportsDS.getById(importId);
-    expect(failedImport?.status).toBe(CsvImportStatus.Failed);
-    expect(failedImport?.failure).toEqual(
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
       expect.objectContaining({
         code: 'THESAURI_VALUES_INVALID',
         stage: 'preflight:preparation:thesauri',
@@ -279,9 +279,9 @@ describe('CsvPreflightJob (integration)', () => {
       'Header validation failed'
     );
 
-    const failedImport = await csvImportsDS.getById(importId);
-    expect(failedImport?.status).toBe(CsvImportStatus.Failed);
-    expect(failedImport?.failure).toEqual(
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
       expect.objectContaining({
         message: 'Header validation failed',
         retryable: false,

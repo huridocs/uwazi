@@ -140,9 +140,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     const { heartBeat, userId } = await executeJob(job, { importId: id });
     createdImportIds.push(id);
 
-    const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
-    expect(updated?.failure ?? undefined).toBeUndefined();
+    const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
+    expect(updated.failure ?? undefined).toBeUndefined();
     expect(sockets.emitToTenantAdmins).toHaveBeenCalledWith(
       tenants.current().name,
       'csvImport:extract:start',
@@ -219,9 +219,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     ).rejects.toThrow();
     createdImportIds.push(id);
 
-    const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.Failed);
-    expect(updated?.failure).toEqual(
+    const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(updated.status).toBe(CsvImportStatus.Failed);
+    expect(updated.failure).toEqual(
       expect.objectContaining({
         retryable: false,
         stage: 'extracting files',

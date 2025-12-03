@@ -130,9 +130,9 @@ describe('CsvImportEntities (integration)', () => {
     });
     createdImportIds.push(result.id);
 
-    const persisted = await csvImportsDS.getById(result.id);
-    expect(persisted?.status).toBe('queued');
-    expect(persisted?.storage?.path).toBe(`csv-imports/${result.id}/${uploadFilename}`);
+    const persisted = (await csvImportsDS.getById(result.id)).getDataOrThrow();
+    expect(persisted.status).toBe('queued');
+    expect(persisted.storage?.path).toBe(`csv-imports/${result.id}/${uploadFilename}`);
 
     // Original file exists
     const originalPath = pathManager.createPath({
@@ -194,7 +194,7 @@ describe('CsvImportEntities (integration)', () => {
       })
     );
 
-    const persisted = await csvImportsDS.getById(result.id);
+    const persisted = (await csvImportsDS.getById(result.id)).getDataOrThrow();
     expect(persisted).toBeDefined();
     expect(persisted).toEqual(
       expect.objectContaining({

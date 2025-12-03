@@ -61,12 +61,9 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   private async setStatus(importId: string, status: CsvImportStatus) {
-    const existing = await this.deps.csvImportsDS.getById(importId);
-    if (!existing) {
-      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
-    }
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
-      const updated = CsvImportDomain.withStatus(existing, status);
+      const updated = CsvImportDomain.withStatus(csvImport, status);
       await this.deps.csvImportsDS.update(updated);
     });
   }
@@ -76,10 +73,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   private async getImport(importId: string) {
-    const csvImport = await this.deps.csvImportsDS.getById(importId);
-    if (!csvImport) {
-      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
-    }
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     return csvImport;
   }
 
@@ -170,12 +164,15 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   private async persistFailure(importId: string, error: Error) {
-    const existing = await this.deps.csvImportsDS.getById(importId);
-    if (!existing) {
+    const csvImportRes = await this.deps.csvImportsDS.getById(importId);
+    if (csvImportRes.isError()) {
       return;
     }
+
+    const csvImport = csvImportRes.getData();
+
     await this.transactionManager.run(async () => {
-      const withFailure = CsvImportDomain.withFailure(existing, {
+      const withFailure = CsvImportDomain.withFailure(csvImport, {
         message: error.message,
         retryable: !(error instanceof NonRetryableJobError),
         at: Date.now(),

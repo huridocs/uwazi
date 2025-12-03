@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { Result } from 'api/core/libs/Result';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
 import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
@@ -23,7 +24,7 @@ describe('CsvCreateThesauriValuesJob', () => {
       createdBy: 'user-id',
     });
     const csvImportsDS = {
-      getById: jest.fn().mockResolvedValue(csvImport),
+      getById: jest.fn().mockResolvedValue(Result.ok(csvImport)),
       update: jest.fn().mockResolvedValue(undefined),
     };
     const entry = new CsvThesauriPendingEntry({

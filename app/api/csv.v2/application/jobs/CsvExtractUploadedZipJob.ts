@@ -56,19 +56,14 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   private async setStatus(importId: string, status: CsvImportStatus) {
-    const existing = await this.deps.csvImportsDS.getById(importId);
-    if (!existing) {
-      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
-    }
-    await this.transactionManager.run(async () => {
-      const updated = CsvImportDomain.withStatus(existing, status);
-      await this.deps.csvImportsDS.update(updated);
-    });
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
+    const updated = CsvImportDomain.withStatus(csvImport, status);
+    await this.deps.csvImportsDS.update(updated);
   }
 
   private async getImportStoragePath(importId: string) {
-    const csvImport = await this.deps.csvImportsDS.getById(importId);
-    if (!csvImport?.storage?.path) {
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
+    if (!csvImport.storage?.path) {
       throw new NonRetryableJobError(new Error('CSV import storage path not found'));
     }
     return csvImport.storage.path;
@@ -88,35 +83,26 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
 
   async handleExtractionSuccess(importId: string, context: { tenantName: string; userId: string }) {
     // success: clear any prior failure and mark files extracted
-    const existing = await this.deps.csvImportsDS.getById(importId);
-    if (existing) {
-      await this.transactionManager.run(async () => {
-        const cleared = CsvImportDomain.clearFailure(existing);
-        const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.ExtractingFilesDone);
-        await this.deps.csvImportsDS.update(updated);
-        await this.dispatchPreflight(importId, context.tenantName, context.userId);
-      });
-    } else {
-      await this.setStatus(importId, CsvImportStatus.ExtractingFilesDone);
-    }
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
+    await this.transactionManager.run(async () => {
+      const cleared = CsvImportDomain.clearFailure(csvImport);
+      const updated = CsvImportDomain.withStatus(cleared, CsvImportStatus.ExtractingFilesDone);
+      await this.deps.csvImportsDS.update(updated);
+      await this.dispatchPreflight(importId, context.tenantName, context.userId);
+    });
   }
 
   async handleError(importId: string, callbacks: Callbacks, error: Error) {
     CsvExtractUploadedZipJob.emitError(callbacks, importId, error);
-    const existing = await this.deps.csvImportsDS.getById(importId);
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     const failure = {
       message: error.message,
       retryable: !(error instanceof NonRetryableJobError),
       at: Date.now(),
       stage: 'extracting files',
     };
-    if (!existing) {
-      // Uncommon: if missing, still surface non-retriable; nothing to persist.
-      if (error instanceof NonRetryableJobError) throw error;
-      throw error;
-    }
     await this.transactionManager.run(async () => {
-      const withFailure = CsvImportDomain.withFailure(existing, failure);
+      const withFailure = CsvImportDomain.withFailure(csvImport, failure);
       const withStatus = CsvImportDomain.withStatus(
         withFailure,
         error instanceof NonRetryableJobError ? CsvImportStatus.Failed : CsvImportStatus.Retrying
