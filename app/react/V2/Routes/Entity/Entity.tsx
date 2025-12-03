@@ -1,12 +1,7 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useMemo, useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import {
-  LoaderFunction,
-  ShouldRevalidateFunctionArgs,
-  useLoaderData,
-  useSearchParams,
-} from 'react-router';
+import { LoaderFunction, useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
@@ -36,6 +31,7 @@ import {
   PAGE_PARAM,
   ToCPanel,
 } from './Components';
+import { entityLoaderCache } from './EntityLoaderCache';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -62,24 +58,6 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
 
-const shouldRevalidate = ({
-  currentParams,
-  nextParams,
-  currentUrl,
-  nextUrl,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs): boolean => {
-  if (currentParams.sharedId !== nextParams.sharedId) {
-    return true;
-  }
-
-  if (currentUrl.search === nextUrl.search) {
-    return defaultShouldRevalidate;
-  }
-
-  return false;
-};
-
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   // eslint-disable-next-line max-statements
@@ -88,81 +66,104 @@ const entityLoader =
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
-    let pagePlaintext = '';
-    let searchResults: SnippetsSearchResponse | undefined;
 
     if (!entitySharedId) {
       return undefined;
     }
 
-    const entityCompositionUseCase = await getEntityCompositionUseCase();
+    let entity = entityLoaderCache.getEntity(entitySharedId, 'en');
+    let pagePlaintext: string | null = '';
+    let searchResults: SnippetsSearchResponse | null;
 
-    const composition = await entityCompositionUseCase.composeEntity(
-      entitySharedId,
-      fullDetailOptions,
-      {
-        headers,
-      }
-    );
+    if (!entity) {
+      const entityCompositionUseCase = await getEntityCompositionUseCase();
 
-    if (!composition.success || !composition.entity) {
-      throw new Response(
-        JSON.stringify({
-          error: 'Failed to load entity',
-          message: composition.error || 'Entity not found',
-          entityId: entitySharedId,
-        }),
+      const composition = await entityCompositionUseCase.composeEntity(
+        entitySharedId,
+        fullDetailOptions,
         {
-          status: 404,
-          statusText: 'Entity Not Found',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         }
       );
-    }
 
-    if (composition.entity.mainDocument) {
-      const response = await getPagePlaintext(
-        composition.entity.mainDocument?._id as string,
-        Number.parseInt(currentPage, 10)
-      );
-
-      if (response instanceof FetchResponseError) {
+      if (!composition.success || !composition.entity) {
         throw new Response(
           JSON.stringify({
-            error: 'Failed to load plaintext',
-            message: response.message,
+            error: 'Failed to load entity',
+            message: composition.error || 'Entity not found',
             entityId: entitySharedId,
           }),
           {
             status: 404,
-            statusText: 'Failed to load plaintext',
+            statusText: 'Entity Not Found',
             headers: {
               'Content-Type': 'application/json',
             },
           }
         );
-      } else {
-        pagePlaintext = response;
+      }
+
+      entity = composition.entity;
+      entityLoaderCache.setEntity(entitySharedId, 'en', entity);
+
+      if (composition.entity.mainDocument?._id) {
+        pagePlaintext = entityLoaderCache.getPlaintext(
+          composition.entity.mainDocument._id?.toString(),
+          Number(currentPage)
+        );
+
+        if (pagePlaintext) {
+          const response = await getPagePlaintext(
+            composition.entity.mainDocument?._id as string,
+            Number.parseInt(currentPage, 10)
+          );
+
+          if (response instanceof FetchResponseError) {
+            throw new Response(
+              JSON.stringify({
+                error: 'Failed to load plaintext',
+                message: response.message,
+                entityId: entitySharedId,
+              }),
+              {
+                status: 404,
+                statusText: 'Failed to load plaintext',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          } else {
+            pagePlaintext = response;
+            entityLoaderCache.setPlaintext(entitySharedId, Number(currentPage), pagePlaintext);
+          }
+        }
       }
     }
 
     if (currentSearchTerm) {
-      searchResults = await snippets({
-        sharedId: composition.entity.sharedId,
-        limit: 0,
-        searchString: currentSearchTerm,
-      });
+      searchResults = entityLoaderCache.getSearchResults(entitySharedId, currentSearchTerm);
+
+      if (!searchResults) {
+        searchResults = await snippets({
+          sharedId: entity.sharedId,
+          limit: 0,
+          searchString: currentSearchTerm,
+        });
+
+        entityLoaderCache.setSearchResults(entitySharedId, currentSearchTerm, searchResults);
+      }
     }
 
-    return { entity: composition.entity, pagePlaintext, searchResults };
+    return { entity, pagePlaintext, searchResults };
   };
 
 const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearchResults = useRef(searchResults);
+
+  console.log(entityLoaderCache.getStats());
 
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
@@ -363,4 +364,4 @@ const Entity = () => {
   );
 };
 
-export { Entity, entityLoader, shouldRevalidate };
+export { Entity, entityLoader };
