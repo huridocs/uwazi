@@ -10,6 +10,7 @@ import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/Set
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { Result } from 'api/core/libs/Result';
+import { ThesaurusWithNameDuplicated } from 'api/core/domain/thesaurus/errors';
 import { CreateThesaurusUseCase } from '../CreateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
@@ -212,7 +213,7 @@ describe('CreateEntityUseCase', () => {
         name: 'Fruits',
         values: [{ label: 'Strawberry' }],
       })
-    ).rejects.toThrowError('Thesaurus with name "Fruits" already exists.');
+    ).rejects.toEqual(new ThesaurusWithNameDuplicated('Fruits'));
 
     const after = await testingEnvironment.db.getAllFrom('dictionaries');
 

@@ -3,9 +3,7 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 
 import { tenants } from 'api/tenants';
-import { CreateThesaurusUseCaseFactory } from 'api/core/infrastructure/factories/CreateThesaurusUseCaseFactory';
-import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
@@ -58,40 +56,8 @@ const routes = app => {
     }),
     async (req, res, next) => {
       if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req.file) {
-        const logger = LoggerFactory.default();
-        try {
-          const startTime = Date.now();
-
-          const useCase = CreateThesaurusUseCaseFactory.default();
-          const output = await useCase.execute(req.body);
-
-          logger.info('Create Thesaurus executed successfully', {
-            namespace: 'Create_Thesaurus',
-            success: true,
-
-            valuesCount: req?.body?.values?.length || 0,
-            durationMs: Date.now() - startTime,
-          });
-
-          const response = MongoThesaurusMapper.toDBO(output);
-
-          res.json(response);
-          req.sockets.emitToCurrentTenant('thesauriChange', response);
-          return;
-        } catch (error) {
-          logger.info(
-            `Create Thesaurus execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            {
-              namespace: 'Create_Thesaurus',
-              success: false,
-
-              dto: JSON.stringify(req?.body || {}),
-              error: JSON.stringify(error),
-            }
-          );
-
-          throw error;
-        }
+        await CreateThesaurusController.createHandler()(req, res);
+        return;
       }
 
       try {

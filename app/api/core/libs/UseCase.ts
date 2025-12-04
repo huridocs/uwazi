@@ -1,11 +1,8 @@
-import { ValidationError as AJVValidationError } from 'ajv';
-import { ValidationError } from 'api/core/domain/error/ValidationError';
 import { EventsBus } from 'api/core/libs/eventsbus';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { UserSchema } from 'shared/types/userType';
 import { Tenant } from 'api/tenants/tenantContext';
 import { User } from 'api/users.v2/model/User';
-import { ZodError } from 'zod';
 import { TransactionManager } from '../application/contracts/TransactionManager';
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { Logger } from './logger/contracts/Logger';
@@ -103,30 +100,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
   }
 
   async execute(input: Input, ...args: any): Promise<Output> {
-    try {
-      const output = await this.executeAsync(input, ...args);
-
-      return output;
-    } catch (e) {
-      if (e instanceof ZodError) {
-        const error = new AJVValidationError(
-          e.errors.map(issue => ({
-            instancePath: issue.path.join('.'),
-            message: issue.message,
-          }))
-        );
-
-        error.message = e.message;
-
-        throw error;
-      }
-
-      if (e instanceof ValidationError) {
-        throw new AJVValidationError([e.asAJV()]);
-      }
-
-      throw e;
-    }
+    return this.executeAsync(input, ...args);
   }
 
   protected abstract executeAsync(input: Input, ...args: any): Promise<Output>;

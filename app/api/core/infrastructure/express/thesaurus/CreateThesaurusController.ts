@@ -1,5 +1,4 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { tenants } from 'api/tenants';
 import { CreateThesaurusUseCaseInput } from 'api/core/application/CreateThesaurus';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory';
@@ -13,40 +12,38 @@ type ResponseDto = ThesaurusDBO;
 
 class CreateThesaurusController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
-      const logger = LoggerFactory.default();
-      const useCase = CreateThesaurusUseCaseFactory.default();
+    const logger = LoggerFactory.default();
+    const useCase = CreateThesaurusUseCaseFactory.default();
 
-      try {
-        const startTime = Date.now();
+    try {
+      const startTime = Date.now();
 
-        logger.info('Thesaurus Creation executed successfully', {
+      logger.info('Thesaurus Creation executed successfully', {
+        namespace: 'Thesaurus_Creation',
+        success: true,
+
+        valuesCount: this.request?.body?.values?.length || 0,
+        durationMs: Date.now() - startTime,
+      });
+
+      const output = await useCase.execute(this.request?.body);
+
+      const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
+
+      this.response.status(201).json(response);
+    } catch (error: unknown) {
+      logger.info(
+        `Thesaurus Creation execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
           namespace: 'Thesaurus_Creation',
-          success: true,
+          success: false,
 
-          valuesCount: this.request?.body?.values?.length || 0,
-          durationMs: Date.now() - startTime,
-        });
+          dto: JSON.stringify(this.request?.body || {}),
+          error: JSON.stringify(error),
+        }
+      );
 
-        const output = await useCase.execute(this.request?.body);
-
-        const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
-
-        this.response.status(201).json(response);
-      } catch (error: unknown) {
-        logger.info(
-          `Thesaurus Creation execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          {
-            namespace: 'Thesaurus_Creation',
-            success: false,
-
-            dto: JSON.stringify(this.request?.body || {}),
-            error: JSON.stringify(error),
-          }
-        );
-
-        throw error;
-      }
+      throw error;
     }
   }
 }
