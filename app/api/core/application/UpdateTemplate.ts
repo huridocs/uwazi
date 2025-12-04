@@ -33,8 +33,8 @@ type Context = {
   fullReindex: boolean;
 };
 
-class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input, { language, fullReindex }: Context): Promise<Output> {
+class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Context]> {
+  async execute(input: Input, { language, fullReindex }: Context): Promise<Output> {
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,

@@ -23,7 +23,7 @@ type Input = z.infer<typeof fileUploadInputSchema>;
 class FileDelete extends AbstractUseCase<Input, Output, Deps> {
   static inputSchema = fileUploadInputSchema;
 
-  protected async executeAsync({ fileId }: Input): Promise<Output> {
+  async execute({ fileId }: Input): Promise<Output> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
     let thumbnails: Thumbnail[] = [];
 

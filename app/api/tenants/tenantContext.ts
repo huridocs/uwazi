@@ -25,6 +25,7 @@ type Tenant = {
     v2UploadFile?: boolean;
     v2DeleteFile?: boolean;
     v2CSVImport?: boolean;
+    v2CreateThesaurus?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
