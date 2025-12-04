@@ -15,6 +15,8 @@ import { Result, ResultType } from 'api/core/libs/Result';
 import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { CacheService } from 'api/core/libs/cache/CacheService';
+import { Cached } from 'api/core/libs/cache/Decorators';
 import { Property } from '../../../domain/template/Property';
 import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
 import { Template } from '../../../domain/template/Template';
@@ -34,8 +36,16 @@ export class MongoTemplatesDataSource
 
   private templatesMutated = new Map<ObjectId, TemplateDBO>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
+  private cache?: CacheService;
+
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    options?: MongoDSOptions,
+    cache?: CacheService
+  ) {
     super(db, transactionManager, options);
+    this.cache = cache;
 
     this.transactionManager.onCommitted(async () => {
       const templates = [...this.templatesMutated.values()];
@@ -362,6 +372,15 @@ export class MongoTemplatesDataSource
       .toArray();
 
     return schemas.map(MongoTemplateMapper.toDomain);
+  }
+
+  @Cached({ key: 'GET_ALL_TEMPLATES', ttl: 300 })
+  async getAllTemplates() {
+    const schemas = await this.getCollection().find({}).toArray();
+
+    console.log('called', schemas);
+
+    return schemas;
   }
 
   async getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>> {
