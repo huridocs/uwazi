@@ -92,6 +92,7 @@ export const config = {
       v2BulkDeleteEntity: false,
       v2CSVImport: false,
       v2DeleteFile: false,
+      v2CreateThesaurus: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

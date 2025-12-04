@@ -5,6 +5,7 @@ import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDi
 import { UserSchema } from 'shared/types/userType';
 import { Tenant } from 'api/tenants/tenantContext';
 import { User } from 'api/users.v2/model/User';
+import { ZodError } from 'zod';
 import { TransactionManager } from '../application/contracts/TransactionManager';
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { Logger } from './logger/contracts/Logger';
@@ -107,6 +108,19 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
 
       return output;
     } catch (e) {
+      if (e instanceof ZodError) {
+        const error = new AJVValidationError(
+          e.errors.map(issue => ({
+            instancePath: issue.path.join('.'),
+            message: issue.message,
+          }))
+        );
+
+        error.message = e.message;
+
+        throw error;
+      }
+
       if (e instanceof ValidationError) {
         throw new AJVValidationError([e.asAJV()]);
       }
