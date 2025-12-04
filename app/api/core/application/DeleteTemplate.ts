@@ -26,7 +26,7 @@ type Deps = {
 };
 
 class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync({ templateId }: Input): Promise<Output> {
+  async execute({ templateId }: Input): Promise<Output> {
     const templateToBeDeleted = (await this.deps.templatesDS.getById(templateId)).getData();
     if (!templateToBeDeleted) {
       return { templateId };

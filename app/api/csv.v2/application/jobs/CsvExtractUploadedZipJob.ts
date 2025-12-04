@@ -182,7 +182,7 @@ class CsvExtractUploadedZipJob extends AbstractUseCase<Input, void, Deps> {
     }
   }
 
-  protected async executeAsync(input: Input): Promise<void> {
+  async execute(input: Input): Promise<void> {
     const { importId, callbacks, tenantName, userId } = input;
 
     CsvExtractUploadedZipJob.emitStart(callbacks, importId);
