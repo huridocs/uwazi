@@ -7,8 +7,8 @@ import { TransactionManager } from '../application/contracts/TransactionManager'
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { Logger } from './logger/contracts/Logger';
 
-interface UseCase<Input, Output> {
-  execute(input: Input, ...args: any): Promise<Output>;
+interface UseCase<Input, Output, Args extends any[] = []> {
+  execute(input: Input, ...args: Args): Promise<Output>;
 }
 
 type Deps<ExtendedDeps> = {
@@ -24,7 +24,9 @@ type Context = {
   tenant: Tenant; // Using legacy Tenant for now
 };
 
-abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseCase<Input, Output> {
+abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
+  implements UseCase<Input, Output, Args>
+{
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
@@ -99,11 +101,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}> implements UseC
     return this.deps.jobsDispatcher;
   }
 
-  async execute(input: Input, ...args: any): Promise<Output> {
-    return this.executeAsync(input, ...args);
-  }
-
-  protected abstract executeAsync(input: Input, ...args: any): Promise<Output>;
+  abstract execute(input: Input, ...args: Args): Promise<Output>;
 }
 
 export { AbstractUseCase };

@@ -27,8 +27,8 @@ type Deps = {
   filesService: FilesService;
 };
 
-export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync({ documentId }: Input, retriesLeft: boolean): Promise<Output> {
+export class PDFPostProcess extends AbstractUseCase<Input, Output, Deps, [boolean]> {
+  async execute({ documentId }: Input, retriesLeft: boolean): Promise<Output> {
     const document = (await this.deps.filesDS.getProcessingById(documentId)).getDataOrThrow();
     try {
       const pdfInfo = (await this.deps.pdfService.extractText(document.content)).getDataOrThrow();

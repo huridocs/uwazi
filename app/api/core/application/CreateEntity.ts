@@ -22,7 +22,7 @@ type Deps = {
 };
 
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const entity = await this.deps.entitiesService.create({
       templateId: input.templateId,
       icon: input.icon,

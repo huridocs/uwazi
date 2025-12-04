@@ -30,7 +30,7 @@ export class CsvImportEntities extends AbstractUseCase<
   RegisterCsvImportOutput,
   Deps
 > {
-  protected async executeAsync(input: RegisterCsvImportInput): Promise<RegisterCsvImportOutput> {
+  async execute(input: RegisterCsvImportInput): Promise<RegisterCsvImportOutput> {
     const { originalname: originalFilename, mimetype: mimeType, size } = input.file.metadata;
     const templateId = input.template;
 

@@ -13,7 +13,7 @@ type Deps = {
 };
 
 class CreateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const thesaurus = Thesaurus.create(input);
 
     (await this.deps.thesauriDS.exists(thesaurus.name)).getDataOrThrow();
