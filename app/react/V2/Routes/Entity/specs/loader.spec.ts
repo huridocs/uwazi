@@ -88,6 +88,16 @@ describe('Entity loader with cache integration', () => {
 
       expect(files.getPagePlaintext).toHaveBeenCalledTimes(2);
     });
+
+    it('should not fetch if the view mode is not set for plaintext', async () => {
+      await loadEntity('http://localhost/entity/shared1?page=1');
+
+      await loadEntity('http://localhost/entity/shared1?page=2');
+
+      await loadEntity('http://localhost/entity/shared1?page=1');
+
+      expect(files.getPagePlaintext).not.toHaveBeenCalled();
+    });
   });
 
   describe('Search results loading', () => {

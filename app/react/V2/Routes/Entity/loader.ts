@@ -7,7 +7,7 @@ import { SnippetsSearchResponse } from 'V2/api/types';
 import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
 import { fullDetailOptions } from 'V2/application/optionsPresets';
 import { entityLoaderCache } from './EntityLoaderCache';
-import { PAGE_PARAM, SEARCH_PARAM } from './Components';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components';
 import { LoaderResponse } from './types';
 
 const entityLoader =
@@ -19,6 +19,7 @@ const entityLoader =
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
+    const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
 
     if (!entitySharedId) {
       return undefined;
@@ -60,7 +61,7 @@ const entityLoader =
       entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
-    if (entity.mainDocument?._id) {
+    if (entity.mainDocument?._id && isRaw) {
       pagePlaintext = entityLoaderCache.getPlaintext(
         entity.mainDocument._id as string,
         Number(currentPage)
