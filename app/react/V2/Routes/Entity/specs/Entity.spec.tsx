@@ -8,7 +8,7 @@ import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V
 import { settingsAtom, userAtom } from 'V2/atoms';
 import * as files from 'V2/api/files';
 import * as PDFViewerModule from 'V2/Components/PDFViewer';
-import { Entity, shouldRevalidate } from '../Entity';
+import { Entity } from '../Entity';
 
 jest.mock('V2/Components/PDFViewer', () => ({
   ...jest.requireActual('V2/Components/PDFViewer'),
@@ -417,47 +417,6 @@ describe('Entity view', () => {
       );
 
       jest.clearAllMocks();
-    });
-  });
-
-  describe('shouldRevalidate', () => {
-    it('should revalidate when sharedId changes', () => {
-      const currentParams: any = { sharedId: 's1' };
-      const nextParams: any = { sharedId: 's2' };
-      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
-      const nextUrl: any = { pathname: '/entity/s2', search: '?m=metadata' };
-      const result = shouldRevalidate({ currentParams, nextParams, currentUrl, nextUrl } as any);
-      expect(result).toBe(true);
-    });
-
-    it('should not revalidate when switching search params', () => {
-      const currentParams: any = { sharedId: 's1' };
-      const nextParams: any = { sharedId: 's1' };
-      const currentUrl: any = { pathname: '/entity/s1', search: '?m=metadata' };
-      const nextUrl: any = { pathname: '/entity/s1', search: '?m=document' };
-      const result = shouldRevalidate({
-        currentParams,
-        nextParams,
-        currentUrl,
-        nextUrl,
-        defaultShouldRevalidate: true,
-      } as any);
-      expect(result).toBe(false);
-    });
-
-    it('should revalidate when params and sharedId are the same and defaultShouldRevalidate is true', () => {
-      const currentParams: any = { sharedId: 's1' };
-      const nextParams: any = { sharedId: 's1' };
-      const currentUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-      const nextUrl: any = { pathname: '/entity/s1', search: '?m=1' };
-      const result = shouldRevalidate({
-        currentParams,
-        nextParams,
-        currentUrl,
-        nextUrl,
-        defaultShouldRevalidate: true,
-      } as any);
-      expect(result).toBe(true);
     });
   });
 });
