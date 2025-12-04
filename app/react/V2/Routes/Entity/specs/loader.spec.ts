@@ -32,12 +32,21 @@ describe('Entity loader with cache integration', () => {
     (container.getEntityCompositionUseCase as jest.Mock).mockResolvedValue(mockCompositionUseCase);
 
     mockCompositionUseCase.composeEntity.mockResolvedValue({ success: true, entity: mockEntity });
+
+    jest.spyOn(files, 'getPagePlaintext').mockResolvedValue('plaintext content');
   });
 
-  const createRequest = (url: string) => ({ url }) as Request;
+  const loadEntity = (url: string) => {
+    const fullUrl = new URL(url);
+    const pathParts = fullUrl.pathname.split('/');
+    const sharedId = pathParts[pathParts.length - 1];
 
-  const loadEntity = (url: string) =>
-    entityLoader()({ params: { sharedId: 'shared1' }, request: createRequest(url), context: '' });
+    return entityLoader()({
+      params: { sharedId },
+      request: { url } as Request,
+      context: '',
+    });
+  };
 
   describe('Entity loading', () => {
     it('should fetch entity when not cached', async () => {
@@ -57,21 +66,27 @@ describe('Entity loader with cache integration', () => {
 
   describe('Plaintext loading', () => {
     it('should fetch plaintext when not cached', async () => {
-      jest.spyOn(files, 'getPagePlaintext');
-
-      await loadEntity('http://localhost/entity/shared1?page=1');
+      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
       expect(files.getPagePlaintext).toHaveBeenCalledWith('doc1', 1);
     });
 
     it('should use cached plaintext and not fetch again', async () => {
-      jest.spyOn(files, 'getPagePlaintext');
+      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
-      await loadEntity('http://localhost/entity/shared1?page=1');
-
-      await loadEntity('http://localhost/entity/shared1?page=1');
+      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
 
       expect(files.getPagePlaintext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should use cached plaintext and not fetch again after switching pages', async () => {
+      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
+
+      await loadEntity('http://localhost/entity/shared1?page=2&raw=true');
+
+      await loadEntity('http://localhost/entity/shared1?page=1&raw=true');
+
+      expect(files.getPagePlaintext).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -98,7 +113,7 @@ describe('Entity loader with cache integration', () => {
       expect(search.snippets).toHaveBeenCalledTimes(1);
     });
 
-    it('should fetch if the search changes', async () => {
+    it('should fetch if the search changes and cache repeated searches', async () => {
       await loadEntity('http://localhost/entity/shared1?searchTerm=query1');
 
       await loadEntity('http://localhost/entity/shared1?searchTerm=query2');

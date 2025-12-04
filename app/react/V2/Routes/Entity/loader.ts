@@ -58,45 +58,50 @@ const entityLoader =
 
       entity = composition.entity;
       entityLoaderCache.setEntity(entitySharedId, language, entity);
+    }
 
-      if (composition.entity.mainDocument?._id) {
-        pagePlaintext = entityLoaderCache.getPlaintext(
-          composition.entity.mainDocument._id?.toString(),
-          Number(currentPage)
+    if (entity.mainDocument?._id) {
+      pagePlaintext = entityLoaderCache.getPlaintext(
+        entity.mainDocument._id as string,
+        Number(currentPage)
+      );
+
+      if (!pagePlaintext) {
+        const response = await getPagePlaintext(
+          entity.mainDocument._id as string,
+          Number.parseInt(currentPage, 10)
         );
 
-        if (!pagePlaintext) {
-          const response = await getPagePlaintext(
-            composition.entity.mainDocument?._id as string,
-            Number.parseInt(currentPage, 10)
+        if (response instanceof FetchResponseError) {
+          throw new Response(
+            JSON.stringify({
+              error: 'Failed to load plaintext',
+              message: response.message,
+              entityId: entitySharedId,
+            }),
+            {
+              status: 404,
+              statusText: 'Failed to load plaintext',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
           );
-
-          if (response instanceof FetchResponseError) {
-            throw new Response(
-              JSON.stringify({
-                error: 'Failed to load plaintext',
-                message: response.message,
-                entityId: entitySharedId,
-              }),
-              {
-                status: 404,
-                statusText: 'Failed to load plaintext',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          } else {
-            pagePlaintext = response;
-            entityLoaderCache.setPlaintext(entitySharedId, Number(currentPage), pagePlaintext);
-          }
+        } else {
+          pagePlaintext = response;
+          entityLoaderCache.setPlaintext(
+            entity.mainDocument._id as string,
+            Number(currentPage),
+            pagePlaintext
+          );
         }
       }
     }
 
-    if (currentSearchTerm && entity.mainDocument?._id) {
+    if (currentSearchTerm && entity.sharedId) {
       searchResults = entityLoaderCache.getSearchResults(
-        entity.mainDocument._id as string,
+        entity.sharedId,
+        language,
         currentSearchTerm
       );
 
@@ -108,7 +113,8 @@ const entityLoader =
         });
 
         entityLoaderCache.setSearchResults(
-          entity.mainDocument._id as string,
+          entity.sharedId,
+          language,
           currentSearchTerm,
           searchResults
         );

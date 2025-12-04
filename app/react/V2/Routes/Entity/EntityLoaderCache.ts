@@ -113,24 +113,33 @@ class EntityLoaderCache {
     invalidateByPrefix(this.plaintextCache, `${documentId}:`);
   }
 
-  getSearchResults(documentId: string, searchTerm: string): SnippetsSearchResponse | undefined {
+  getSearchResults(
+    sharedId: string,
+    language: string,
+    searchTerm: string
+  ): SnippetsSearchResponse | undefined {
     if (this.isSSR) {
       return undefined;
     }
 
-    const key = `${documentId}:${searchTerm.toLowerCase().trim()}`;
+    const key = `${sharedId}:${language}:${searchTerm.toLowerCase().trim()}`;
     return getCachedItem(this.searchResultsCache, key, this.ttls.searchResults);
   }
 
-  setSearchResults(documentId: string, searchTerm: string, results: SnippetsSearchResponse): void {
+  setSearchResults(
+    sharedId: string,
+    language: string,
+    searchTerm: string,
+    results: SnippetsSearchResponse
+  ): void {
     if (!this.isSSR) {
-      const key = `${documentId}:${searchTerm.toLowerCase().trim()}`;
+      const key = `${sharedId}:${language}:${searchTerm.toLowerCase().trim()}`;
       setCachedItem(this.searchResultsCache, key, results, this.limits.searchResults);
     }
   }
 
-  invalidateSearchResults(documentId: string): void {
-    invalidateByPrefix(this.searchResultsCache, `${documentId}:`);
+  invalidateSearchResults(sharedId: string): void {
+    invalidateByPrefix(this.searchResultsCache, `${sharedId}:`);
   }
 
   invalidateAll(): void {
