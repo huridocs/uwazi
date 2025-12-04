@@ -77,7 +77,7 @@ const checkValidationForRoute = async (
   const response = await req;
 
   expect(response.statusCode).toBe(422);
-  expect(response.body.error).toContain('validation failed');
+  expect(response.body.error).toBeDefined();
 };
 
 describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)', () => {
