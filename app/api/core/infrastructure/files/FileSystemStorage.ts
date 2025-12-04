@@ -49,6 +49,17 @@ export class FileSystemStorage implements FileStorage {
     }
   }
 
+  /* eslint-disable-next-line class-methods-use-this */
+  async removeContent(filePath: string) {
+    try {
+      await rm(filePath);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+
   async storeFile(file: FileWithContents) {
     const filepath = this.pathManager.createPath(file);
 
