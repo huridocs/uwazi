@@ -29,6 +29,7 @@ import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
 import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 
 const factory = getFixturesFactory();
 
@@ -65,6 +66,7 @@ const createSut = () => {
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
   const fileService = new FilesService({
+    pathManager: new PathManager({ tenant: tenants.current() }),
     idGenerator,
     fileStorage,
     filesDS,
@@ -72,7 +74,7 @@ const createSut = () => {
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
     relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager: transactionManager,
+    transactionManager,
     eventBus: applicationEventsBus,
   });
 

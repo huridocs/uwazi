@@ -92,6 +92,17 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
+  async removeContent(filePath: string) {
+    await catchS3Errors(async () =>
+      this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucket,
+          Key: filePath,
+        })
+      )
+    );
+  }
+
   getFile(input: GetFileInput): FileContents {
     const command = new GetObjectCommand({
       Bucket: this.bucket,
