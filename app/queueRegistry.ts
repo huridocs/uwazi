@@ -61,6 +61,7 @@ import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlank
 import { tenants } from 'api/tenants/tenantContext';
 import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
 import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
+import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -291,5 +292,10 @@ export function registerJobs(
   register(
     BulkCleanupEntityJob,
     async () => new BulkCleanupEntityJob({ BulkCleanupEntityUseCaseFactory })
+  );
+
+  register(
+    DeleteFileFromStorageJobHandler,
+    async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
   );
 }
