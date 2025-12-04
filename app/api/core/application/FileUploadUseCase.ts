@@ -27,7 +27,7 @@ type Input = z.infer<typeof fileUploadInputSchema>;
 class FileUploadUseCase extends AbstractUseCase<Input, Output, Deps> {
   static inputSchema = fileUploadInputSchema;
 
-  protected async executeAsync({ entityId, uploadedFile }: Input): Promise<Output> {
+  async execute({ entityId, uploadedFile }: Input): Promise<Output> {
     const entity = await (await this.deps.entitiesDS.getEntitiesBySharedIds([entityId])).first();
     if (!entity) {
       throw new EntityNotFoundError(`Entity ${entityId}, not found`);

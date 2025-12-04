@@ -189,7 +189,7 @@ describe('templates routes', () => {
     it('should have a validation schema (_id is required)', async () => {
       const response = await request(app).get('/api/templates/count_by_thesauri');
       expect(response).toHaveStatus(422);
-      expect(response.body.error).toContain('ValidationError');
+      expect(response.body.error).toContain('You should provide an Id');
     });
   });
 
@@ -215,7 +215,7 @@ describe('templates routes', () => {
     it('should have a validation schema (_id is required)', async () => {
       const response = await request(app).post('/api/templates/setasdefault');
       expect(response).toHaveStatus(422);
-      expect(response.body.error).toContain('ValidationError');
+      expect(response.body.error).toContain('You should provide an Id');
     });
   });
 
