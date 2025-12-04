@@ -21,6 +21,8 @@ import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatch
 import { Result } from '../libs/Result';
 import { IdGenerator } from './contracts/IdGenerator';
 import { TransactionManager } from './contracts/TransactionManager';
+import { DeleteFileFromStorageJobHandler } from '../infrastructure/jobs/DeleteFileFromStorageJobHandler';
+import { PathManager } from '../infrastructure/files/PathManager';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -32,6 +34,7 @@ type Deps = {
   relV1DS: MongoRelationshipsV1DataSource;
   transactionManager: TransactionManager;
   eventBus: EventsBus;
+  pathManager: PathManager;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -89,11 +92,14 @@ class FilesService {
       await this.deps.eventBus.emit(
         new FilesDeletedEvent({ files: files.map(f => FileMappers.toDBO(f)) })
       );
+      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+        await ArrayUtils.sequentialFor(contentFiles, async file => {
+          dispatch(DeleteFileFromStorageJobHandler, {
+            filePath: this.deps.pathManager.createPath(file),
+          });
+        });
+      });
     });
-
-    //this to be jobified
-    await ArrayUtils.sequentialFor(contentFiles, async f => this.deps.fileStorage.removeFile(f));
-    //
   }
 
   async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {
