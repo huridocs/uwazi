@@ -75,7 +75,7 @@ const Schema = z
     if (duplicated.length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `Duplicated labels: ${duplicated.join(', ')}.`,
+        message: `Duplicated labels: ${duplicated.join(', ')}`,
         path: ['values'],
       });
     }
@@ -138,7 +138,7 @@ class Thesaurus {
     return new Thesaurus({
       id: this.id,
       name: props.name ?? this.name,
-      values: props.values ?? JSON.parse(JSON.stringify(this.values)),
+      values: props.values ?? structuredClone(this.values),
     });
   }
 

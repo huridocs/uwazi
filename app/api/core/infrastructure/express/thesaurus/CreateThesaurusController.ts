@@ -7,7 +7,6 @@ import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMappe
 
 type RequestDto = CreateThesaurusUseCaseInput;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ResponseDto = ThesaurusDBO;
 
 class CreateThesaurusController extends AbstractController<RequestDto> {
@@ -17,7 +16,7 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
 
     try {
       const startTime = Date.now();
-
+      const output = await useCase.execute(this.request?.body);
       logger.info('Thesaurus Creation executed successfully', {
         namespace: 'Thesaurus_Creation',
         success: true,
@@ -25,8 +24,6 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
         valuesCount: this.request?.body?.values?.length || 0,
         durationMs: Date.now() - startTime,
       });
-
-      const output = await useCase.execute(this.request?.body);
 
       const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
 

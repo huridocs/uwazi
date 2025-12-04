@@ -2,7 +2,7 @@ import { ThesauriDataSource } from 'api/core/application/contracts/ThesauriDataS
 import { Result, ResultType } from 'api/core/libs/Result';
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Db } from 'mongodb';
-import { ThesaurusWithNameDuplicated } from 'api/core/domain/thesaurus/errors';
+import { ThesaurusNameAlreadyExistsError } from 'api/core/domain/thesaurus/errors';
 import { MongoDataSource } from '../common/MongoDataSource';
 import { MongoThesaurusMapper } from './MongoThesaurusMapper';
 import { ThesaurusDBO } from './ThesaurusDBO';
@@ -28,7 +28,7 @@ class MongoThesauriDataSourceV2
     const count = await this.getCollection().countDocuments({ name }, { limit: 1 });
 
     if (count > 0) {
-      return Result.fail(new ThesaurusWithNameDuplicated(name));
+      return Result.fail(new ThesaurusNameAlreadyExistsError(name));
     }
 
     return Result.ok(false);

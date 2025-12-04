@@ -11,10 +11,10 @@ export class ThesaurusNotFoundError extends DomainError {
   }
 }
 
-export class ThesaurusWithNameDuplicated extends ValidationError {
+export class ThesaurusNameAlreadyExistsError extends ValidationError {
   constructor(name: string) {
     super(
-      `The Thesaurus with name "${name}" is duplicated`,
+      `A thesaurus with name "${name}" already exists`,
       'thesaurus.thesaurus_with_name_duplicated_error'
     );
   }

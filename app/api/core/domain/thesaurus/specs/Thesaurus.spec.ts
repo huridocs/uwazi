@@ -1,8 +1,8 @@
 import { Thesaurus } from '../Thesaurus';
 
 describe('Thesaurus', () => {
-  it('should create a new thesauri', () => {
-    const thesauri = Thesaurus.create({
+  it('should create a new thesaurus', () => {
+    const thesaurus = Thesaurus.create({
       name: 'Countries',
       values: [
         { label: 'USA' },
@@ -10,7 +10,7 @@ describe('Thesaurus', () => {
       ],
     });
 
-    expect(thesauri).toEqual({
+    expect(thesaurus).toEqual({
       id: expect.any(String),
       name: 'Countries',
       values: [
@@ -28,11 +28,11 @@ describe('Thesaurus', () => {
   });
 
   it('should set fallback for values when not provided', () => {
-    const thesauri = Thesaurus.create({
+    const thesaurus = Thesaurus.create({
       name: 'Countries',
     });
 
-    expect(thesauri).toEqual({
+    expect(thesaurus).toEqual({
       id: expect.any(String),
       name: 'Countries',
       values: [],
@@ -40,7 +40,7 @@ describe('Thesaurus', () => {
   });
 
   it('should trim labels', () => {
-    const thesauri = Thesaurus.create({
+    const thesaurus = Thesaurus.create({
       name: '  Countries  ',
       values: [
         { label: '  USA  ' },
@@ -48,7 +48,7 @@ describe('Thesaurus', () => {
       ],
     });
 
-    expect(thesauri).toEqual({
+    expect(thesaurus).toEqual({
       id: expect.any(String),
       name: 'Countries',
       values: [
@@ -162,13 +162,13 @@ describe('Thesaurus', () => {
   });
 
   describe('addValues', () => {
-    it('should add new root values to the thesauri', () => {
-      const thesauri = Thesaurus.create({
+    it('should add new root values to the thesaurus', () => {
+      const thesaurus = Thesaurus.create({
         name: 'Countries',
         values: [{ label: 'USA' }],
       });
 
-      const updated = thesauri.addValues([{ label: 'Canada' }, { label: 'Mexico' }]);
+      const updated = thesaurus.addValues([{ label: 'Canada' }, { label: 'Mexico' }]);
 
       expect(updated).toEqual({
         id: expect.any(String),
@@ -182,7 +182,7 @@ describe('Thesaurus', () => {
     });
 
     it('should add new nested values to existing groups', () => {
-      const thesauri = Thesaurus.create({
+      const thesaurus = Thesaurus.create({
         name: 'Countries',
         values: [
           { label: 'Asia', values: [{ label: 'China' }] },
@@ -192,7 +192,7 @@ describe('Thesaurus', () => {
         ],
       });
 
-      const update = thesauri.addValues([
+      const update = thesaurus.addValues([
         { label: 'Europe', values: [{ label: 'France' }] },
         { label: 'Asia', values: [{ label: 'Japan' }] },
         { label: 'Asia' }, // should be ignored
