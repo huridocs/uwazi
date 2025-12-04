@@ -183,7 +183,7 @@ describe('Templates Update', () => {
       const templateWithDeletedInheritedProp = f.template('templateA', []);
 
       await expect(async () => updateTemplate(templateWithDeletedInheritedProp)).rejects.toThrow(
-        'validation failed'
+        'Properties can not be deleted because are being inherited: [properties=text_property]'
       );
     });
   });

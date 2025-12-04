@@ -3,23 +3,27 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { elastic } from 'api/search';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
+import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { PDFService } from 'api/core/infrastructure/services/PDFService';
+import { EventsBus } from 'api/core/libs/eventsbus';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { elastic } from 'api/search';
+import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
+import { elasticTesting } from 'api/utils/elastic_testing';
+import { testingTenants } from 'api/utils/testingTenants';
 import { BulkCleanupEntityUseCase } from '../BulkCleanupEntity';
-import { FilesService } from '../FilesService';
 import { FileStorage } from '../contracts/FileStorage';
+import { FilesService } from '../FilesService';
 
 const factory = getFixturesFactory();
 
@@ -150,16 +154,23 @@ const createSut = (props?: CreateSutProps) => {
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
-  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({});
   const fileStorage = TestUtils.mockClass<FileStorage>({
     removeFile: jest.fn().mockResolvedValue(undefined),
   });
   const filesIO = TestUtils.mockClass<FileContentsIO>({});
   const pdfService = TestUtils.mockClass<PDFService>({});
 
+  const dispatchMock = jest.fn();
+  const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
+    dispatchMany: async callback => {
+      await callback(dispatchMock);
+    },
+  });
+
   const filesService =
     props?.filesService ??
     new FilesService({
+      pathManager: new PathManager({ tenant: tenants.current() }),
       filesDS,
       fileStorage,
       idGenerator,
@@ -181,7 +192,7 @@ const createSut = (props?: CreateSutProps) => {
     filesService,
   });
 
-  return { sut, eventBus, fileStorage };
+  return { sut, eventBus, dispatchMock };
 };
 
 describe('BulkCleanupEntityUseCase', () => {
@@ -191,7 +202,6 @@ describe('BulkCleanupEntityUseCase', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(fixtures);
-    await testingEnvironment.setElastic('delete_entity_use_case');
   });
 
   afterAll(async () => {
@@ -289,7 +299,11 @@ describe('BulkCleanupEntityUseCase', () => {
   });
 
   it('should delete files associated with the deleted entities', async () => {
-    const { sut, fileStorage } = createSut();
+    testingTenants.changeCurrentTenant({
+      uploadedDocuments: '/tenant/uploads',
+      attachments: '/tenant/uploads',
+    });
+    const { sut, dispatchMock } = createSut();
 
     const input = {
       sharedIds: ['sharedId1', 'sharedId2', 'sharedId3'],
@@ -303,7 +317,25 @@ describe('BulkCleanupEntityUseCase', () => {
       expect.objectContaining({ _id: factory.id('file_1_sharedId4'), entity: 'sharedId4' }),
     ]);
 
-    expect(fileStorage.removeFile).toHaveBeenCalledTimes(6);
+    expect(dispatchMock).toHaveBeenCalledTimes(6);
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_1_sharedId1',
+    });
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_2_sharedId1',
+    });
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_3_sharedId1',
+    });
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_4_sharedId1',
+    });
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_1_sharedId2',
+    });
+    expect(dispatchMock).toHaveBeenCalledWith(DeleteFileFromStorageJobHandler, {
+      filePath: '/tenant/uploads/file_2_sharedId2',
+    });
   });
 
   it('should emit EntityDeletedEvent for each sharedId', async () => {

@@ -23,7 +23,7 @@ type Deps = {
 class BulkCleanupEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const { sharedIds } = InputSchema.parse(input);
 
     await this.transactionManager.run(async () => {

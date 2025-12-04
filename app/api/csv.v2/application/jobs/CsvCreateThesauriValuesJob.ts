@@ -187,7 +187,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
   }
 
   // eslint-disable-next-line max-statements
-  protected async executeAsync(input: Input): Promise<void> {
+  async execute(input: Input): Promise<void> {
     const { importId, callbacks } = input;
 
     callbacks.onStart({ importId });

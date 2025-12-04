@@ -170,7 +170,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
   }
 
   // eslint-disable-next-line max-statements
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const { importId, callbacks, tenantName, userId } = input;
 
     callbacks.onStart({ importId });
