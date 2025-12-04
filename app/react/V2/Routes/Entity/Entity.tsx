@@ -1,12 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useCallback, useMemo, useRef } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import {
-  LoaderFunction,
-  ShouldRevalidateFunctionArgs,
-  useLoaderData,
-  useSearchParams,
-} from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
@@ -14,12 +8,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { getPagePlaintext } from 'V2/api/files';
-import { snippets } from 'V2/api/search';
-import { SnippetsSearchResponse } from 'V2/api/types';
-import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
-import { fullDetailOptions } from 'V2/application/optionsPresets';
+
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -31,11 +20,9 @@ import {
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
   SearchResults,
-  SEARCH_PARAM,
-  LoaderResponse,
-  PAGE_PARAM,
   ToCPanel,
 } from './Components';
+import { LoaderResponse } from './types';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',
@@ -61,103 +48,6 @@ const isValidMainTab = (value: string | null): value is MainTabId =>
 
 const isValidSideTab = (value: string | null): value is SideTabId =>
   typeof value === 'string' && SIDE_TAB_VALUES.has(value);
-
-const shouldRevalidate = ({
-  currentParams,
-  nextParams,
-  currentUrl,
-  nextUrl,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs): boolean => {
-  if (currentParams.sharedId !== nextParams.sharedId) {
-    return true;
-  }
-
-  if (currentUrl.search === nextUrl.search) {
-    return defaultShouldRevalidate;
-  }
-
-  return false;
-};
-
-const entityLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  // eslint-disable-next-line max-statements
-  async ({ params, request }): Promise<LoaderResponse> => {
-    const entitySharedId = params.sharedId;
-    const { searchParams } = new URL(request.url);
-    const currentPage = searchParams.get(PAGE_PARAM) || '1';
-    const currentSearchTerm = searchParams.get(SEARCH_PARAM);
-    let pagePlaintext = '';
-    let searchResults: SnippetsSearchResponse | undefined;
-
-    if (!entitySharedId) {
-      return undefined;
-    }
-
-    const entityCompositionUseCase = await getEntityCompositionUseCase();
-
-    const composition = await entityCompositionUseCase.composeEntity(
-      entitySharedId,
-      fullDetailOptions,
-      {
-        headers,
-      }
-    );
-
-    if (!composition.success || !composition.entity) {
-      throw new Response(
-        JSON.stringify({
-          error: 'Failed to load entity',
-          message: composition.error || 'Entity not found',
-          entityId: entitySharedId,
-        }),
-        {
-          status: 404,
-          statusText: 'Entity Not Found',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    }
-
-    if (composition.entity.mainDocument) {
-      const response = await getPagePlaintext(
-        composition.entity.mainDocument?._id as string,
-        Number.parseInt(currentPage, 10)
-      );
-
-      if (response instanceof FetchResponseError) {
-        throw new Response(
-          JSON.stringify({
-            error: 'Failed to load plaintext',
-            message: response.message,
-            entityId: entitySharedId,
-          }),
-          {
-            status: 404,
-            statusText: 'Failed to load plaintext',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      } else {
-        pagePlaintext = response;
-      }
-    }
-
-    if (currentSearchTerm) {
-      searchResults = await snippets({
-        sharedId: composition.entity.sharedId,
-        limit: 0,
-        searchString: currentSearchTerm,
-      });
-    }
-
-    return { entity: composition.entity, pagePlaintext, searchResults };
-  };
 
 const Entity = () => {
   const { entity, pagePlaintext, searchResults } = useLoaderData<LoaderResponse>() || {};
@@ -292,36 +182,32 @@ const Entity = () => {
 
   const onMainTabChange = useCallback(
     (selectedMainTab: string) => {
-      if (selectedMainTab !== activeMainTab) {
-        const next = new URLSearchParams(searchParams.toString());
-        next.set(MAIN_TAB_PARAM, selectedMainTab);
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(MAIN_TAB_PARAM, selectedMainTab);
 
-        const currentSideTab = next.get(SIDE_TAB_PARAM);
-        const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
-        const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
+      const currentSideTab = next.get(SIDE_TAB_PARAM);
+      const newMainTabSideTabs = sideTabsByMain[selectedMainTab];
+      const isSideTabAvailable = newMainTabSideTabs?.some(tab => tab.id === currentSideTab);
 
-        if (currentSideTab && !isSideTabAvailable) {
-          next.delete(SIDE_TAB_PARAM);
-        }
-
-        setSearchParams(next, { replace: true, preventScrollReset: true });
+      if (currentSideTab && !isSideTabAvailable) {
+        next.delete(SIDE_TAB_PARAM);
       }
+
+      setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, searchParams, setSearchParams, sideTabsByMain]
+    [searchParams, setSearchParams, sideTabsByMain]
   );
 
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
-      if (selectedSideTab !== activeSideTab) {
-        const next = new URLSearchParams(searchParams.toString());
-        next.set(SIDE_TAB_PARAM, selectedSideTab);
-        if (!next.get(MAIN_TAB_PARAM)) {
-          next.set(MAIN_TAB_PARAM, activeMainTab);
-        }
-        setSearchParams(next, { replace: true, preventScrollReset: true });
+      const next = new URLSearchParams(searchParams.toString());
+      next.set(SIDE_TAB_PARAM, selectedSideTab);
+      if (!next.get(MAIN_TAB_PARAM)) {
+        next.set(MAIN_TAB_PARAM, activeMainTab);
       }
+      setSearchParams(next, { replace: true, preventScrollReset: true });
     },
-    [activeMainTab, activeSideTab, searchParams, setSearchParams]
+    [activeMainTab, searchParams, setSearchParams]
   );
 
   const sideTabElements = useMemo(
@@ -363,4 +249,4 @@ const Entity = () => {
   );
 };
 
-export { Entity, entityLoader, shouldRevalidate };
+export { Entity };
