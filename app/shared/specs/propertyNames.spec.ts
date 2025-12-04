@@ -10,56 +10,23 @@ describe('propertyNames (shared)', () => {
     });
 
     describe('less restrictive name generation', () => {
-      it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., [, ], %, and should be lowercase', () => {
-        const results = [
-          safeName(' my prop ', true),
-          safeName('my^foreïgn$próp"', true),
-          safeName('TEST#', true),
-          safeName('test\\', true),
-          safeName('test/', true),
-          safeName('*test*', true),
-          safeName('test?', true),
-          safeName('test"', true),
-          safeName('test<', true),
-          safeName('test>', true),
-          safeName('test|', true),
-          safeName('te st ', true),
-          safeName('test: ', true),
-          safeName('te.st. ', true),
-          safeName('[brackets]', true),
-          safeName('test%', true),
-        ];
+      // prettier-ignore
+      const invalidChars = [
+        '~', '[', ']', '{', '}', ')', '(', '+',
+        '^', '&', '-', '>', '<', '!', '?', '#',
+        '\\', '/', '*', '?', '"', '<', '>', '=',
+        '|', ':', '.', '[', ']', '%',
+      ];
 
-        expect(results).toEqual([
-          'my_prop',
-          'my^foreïgn$próp_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'test_',
-          'te_st',
-          'test_',
-          'te_st_',
-          'brackets_',
-          'test_',
-        ]);
-      });
+      it.each(invalidChars)(
+        'should not contain the character %s and should be lowercase and trim whitespaces',
+        char => {
+          expect(safeName(` TE${char}ST${char}`, true)).toBe('te_st_');
+        }
+      );
 
-      it('should not start with _, -, +, $', () => {
-        const results = [
-          safeName('.test ', true),
-          safeName('_test', true),
-          safeName('+test', true),
-          safeName('$test', true),
-          safeName('-test', true),
-        ];
-
-        expect(results).toEqual(['test', 'test', 'test', 'test', 'test']);
+      it.each(['.', '_', '-', '+', '$'])('should not start with %s', char => {
+        expect(safeName(`${char}test`, true)).toBe('test');
       });
     });
   });

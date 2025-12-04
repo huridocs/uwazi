@@ -164,7 +164,7 @@ describe('csvLoader', () => {
 
     it('should only import valid metadata', async () => {
       expect(loadedEntities[0].metadata).toEqual({
-        'additional_tag(s)': [{ value: 'tag1' }],
+        additional_tag_s_: [{ value: 'tag1' }],
         auto_id: [{ value: expect.any(String) }],
         date_label: [{ value: 1641168000 }],
         geolocation_geolocation: [{ value: { label: '', lat: 1, lon: 1 } }],
@@ -245,7 +245,7 @@ describe('csvLoader', () => {
       });
 
       it('should import properties that contains parentheses in the name', () => {
-        const additionalTags = loadedEntities.map(i => i.metadata['additional_tag(s)'][0].value);
+        const additionalTags = loadedEntities.map(i => i.metadata.additional_tag_s_[0].value);
         expect(additionalTags).toEqual(['tag1', 'tag2', 'tag3', 'tag4']);
       });
 
