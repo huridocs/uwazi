@@ -6,7 +6,13 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2';
 import { ObjectId } from 'mongodb';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { Result } from 'api/core/libs/Result';
 import { CreateThesaurusUseCase } from '../CreateThesaurus';
+import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 
 const factory = getFixturesFactory();
 
@@ -35,13 +41,29 @@ const fixtures: DBFixture = {
   entities: [],
 };
 
-const createSut = () => {
+type CreateProps = {
+  thesauriDS?: ThesauriDataSource;
+  thesaurusTranslationService?: ThesaurusTranslationService;
+};
+
+const createSut = (props?: CreateProps) => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const thesauriDS = new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+  const thesauriDS =
+    props?.thesauriDS ?? new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+  const translationsDS = DefaultTranslationsDataSource(transactionManager);
+  const thesaurusTranslationService =
+    props?.thesaurusTranslationService ??
+    new ThesaurusTranslationService({
+      settingsDS,
+      translationsDS,
+    });
 
   const sut = new CreateThesaurusUseCase({
+    transactionManager,
     thesauriDS,
+    thesaurusTranslationService,
   });
 
   return { sut };
@@ -135,6 +157,49 @@ describe('CreateEntityUseCase', () => {
         context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
       },
     ]);
+  });
+
+  it('should revert when creating the thesaurus fails', async () => {
+    const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
+      create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+      exists: jest.fn().mockResolvedValue(Result.ok(false)),
+    });
+
+    const { sut } = createSut({ thesauriDS });
+
+    const before = await testingEnvironment.db.getAllFrom('translationsV2');
+
+    await expect(
+      sut.execute({
+        name: 'Animals',
+        values: [{ label: 'Dog' }, { label: 'Cat' }],
+      })
+    ).rejects.toThrowError('Creation failed');
+
+    const after = await testingEnvironment.db.getAllFrom('translationsV2');
+
+    expect(after).toEqual(before);
+  });
+
+  it('should revert when creating the translations fails', async () => {
+    const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
+      create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+    });
+
+    const { sut } = createSut({ thesaurusTranslationService });
+
+    const before = await testingEnvironment.db.getAllFrom('dictionaries');
+
+    await expect(
+      sut.execute({
+        name: 'Animals',
+        values: [{ label: 'Dog' }, { label: 'Cat' }],
+      })
+    ).rejects.toThrowError('Creation failed');
+
+    const after = await testingEnvironment.db.getAllFrom('dictionaries');
+
+    expect(after).toEqual(before);
   });
 
   it('should not allow creating a thesaurus with an existing name', async () => {

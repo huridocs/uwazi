@@ -1,8 +1,8 @@
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Translation } from 'api/i18n.v2/model/Translation';
-import { MongoThesaurusTranslationService } from '../MongoThesaurusTranslationService';
-import { MongoSettingsDataSource } from '../../MongoSettingsDataSource';
+import { MongoSettingsDataSource } from '../../../infrastructure/mongodb/MongoSettingsDataSource';
+import { ThesaurusTranslationService } from '../ThesaurusTranslationService';
 
 const createSut = () => {
   const settingsDS = TestUtils.mockClass<MongoSettingsDataSource>({
@@ -11,7 +11,7 @@ const createSut = () => {
 
   const translationsDS = TestUtils.mockClass<any>({ insert: jest.fn() });
 
-  const sut = new MongoThesaurusTranslationService({
+  const sut = new ThesaurusTranslationService({
     settingsDS,
     translationsDS,
   });
@@ -19,7 +19,7 @@ const createSut = () => {
   return { sut, settingsDS, translationsDS };
 };
 
-describe('MongoThesaurusTranslationService', () => {
+describe('ThesaurusTranslationService', () => {
   describe('Create', () => {
     it('should create translation entries for thesaurus name', async () => {
       const { sut, translationsDS } = createSut();

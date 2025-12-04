@@ -1,14 +1,14 @@
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Translation } from 'api/i18n.v2/model/Translation';
-import { MongoTranslationsDataSource } from 'api/i18n.v2/database/MongoTranslationsDataSource';
-import { MongoSettingsDataSource } from '../MongoSettingsDataSource';
+import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
+import { SettingsDataSource } from '../contracts/SettingsDataSource';
 
 type Deps = {
-  settingsDS: MongoSettingsDataSource;
-  translationsDS: MongoTranslationsDataSource;
+  settingsDS: SettingsDataSource;
+  translationsDS: TranslationsDataSource;
 };
 
-class MongoThesaurusTranslationService {
+class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
   async create(thesaurus: Thesaurus) {
@@ -42,4 +42,4 @@ class MongoThesaurusTranslationService {
   }
 }
 
-export { MongoThesaurusTranslationService };
+export { ThesaurusTranslationService };
