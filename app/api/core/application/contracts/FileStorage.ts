@@ -13,6 +13,7 @@ export type GetFileInput = {
 export interface FileStorage {
   storeFile(file: FileWithContents): Promise<void>;
   removeFile(file: FileWithContents): Promise<void>;
+  removeContent(path: string): Promise<void>;
   storeContent(content: FileContents, subpath: string): Promise<void>;
   list(): Promise<StoredFile[]>;
   getPath(file: BaseFile): string;

@@ -57,7 +57,7 @@ describe('templates utils', () => {
 
         expect(result).toEqual([
           expect.objectContaining({ name: 'my_prop' }),
-          expect.objectContaining({ name: 'my^foreïgn$próp_' }),
+          expect.objectContaining({ name: 'my_foreïgn$próp_' }),
           expect.objectContaining({ name: 'my_prop_geolocation' }),
           expect.objectContaining({ name: 'test_' }),
           expect.objectContaining({ name: 'test_' }),

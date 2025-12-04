@@ -304,6 +304,27 @@ describe('S3FileStorage', () => {
     // });
   });
 
+  describe('removeContent', () => {
+    it('should delete the file contents from s3', async () => {
+      const document = FileBuilder.document(f.idString('document'), {
+        content: FileBuilder.content('content created\n'),
+        filename: 'documento.txt',
+      });
+
+      await s3fileStorage.storeFile(document);
+      await s3fileStorage.removeContent('test-tenant/documents/documento.txt');
+
+      await expect(async () =>
+        s3Client.send(
+          new GetObjectCommand({
+            Bucket: 'uwazi-development',
+            Key: 'test-tenant/documents/documento.txt',
+          })
+        )
+      ).rejects.toBeInstanceOf(NoSuchKey);
+    });
+  });
+
   describe('removeFile', () => {
     it('should delete the file in s3', async () => {
       const document = FileBuilder.document(f.idString('document'), {
@@ -434,6 +455,17 @@ describe('S3FileStorage', () => {
       s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
       try {
         await s3fileStorage.removeFile(FileBuilder.document('docId'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
+    });
+
+    it('should wrap error with S3Error (removeContent)', async () => {
+      s3fileStorage = new S3FileStorage(mockS3Client, new FileContentsIO(), tenant);
+      try {
+        await s3fileStorage.removeContent('/fake/path');
       } catch (error) {
         expect(error).toBeInstanceOf(S3Error);
         expect(error.originalError.$metadata).toEqual(expectedMetadata);

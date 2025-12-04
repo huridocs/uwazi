@@ -24,6 +24,7 @@ import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenan
 import { MongoRelationshipsV1DataSource } from '../../mongodb/MongoRelationshipsV1DataSource';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
+import { PathManager } from '../../files/PathManager';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -47,6 +48,7 @@ const setUpJob = (pdfService = new PDFService()) => {
         idGenerator: IdGeneratorFactory.default(),
         filesIO: new FileContentsIO(),
         filesService: new FilesService({
+          pathManager: new PathManager({ tenant: tenants.current() }),
           idGenerator: IdGeneratorFactory.default(),
           fileStorage: FileStorageFactory.default(),
           filesDS: FilesDataSourceFactory.default(transactionManager),
@@ -54,7 +56,7 @@ const setUpJob = (pdfService = new PDFService()) => {
           pdfService: new PDFService(),
           filesIO: new FileContentsIO(),
           relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-          transactionManager: transactionManager,
+          transactionManager,
           eventBus: applicationEventsBus,
         }),
       }),

@@ -29,6 +29,7 @@ import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 
 const factory = getFixturesFactory();
 
@@ -215,6 +216,7 @@ const createSut = (props: CreateSutProps = {}) => {
 
   const jobsDispatcher = DefaultDispatcher(tenants.current().name);
   const fileService = new FilesService({
+    pathManager: new PathManager({ tenant: tenants.current() }),
     idGenerator,
     fileStorage,
     filesDS,
