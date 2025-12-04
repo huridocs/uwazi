@@ -15,6 +15,7 @@ const entityLoader =
   // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
+    const language = params.lang || 'en';
     const { searchParams } = new URL(request.url);
     const currentPage = searchParams.get(PAGE_PARAM) || '1';
     const currentSearchTerm = searchParams.get(SEARCH_PARAM);
@@ -23,7 +24,7 @@ const entityLoader =
       return undefined;
     }
 
-    let entity = entityLoaderCache.getEntity(entitySharedId, 'en');
+    let entity = entityLoaderCache.getEntity(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
     let searchResults: SnippetsSearchResponse | undefined;
 
@@ -56,7 +57,7 @@ const entityLoader =
       }
 
       entity = composition.entity;
-      entityLoaderCache.setEntity(entitySharedId, 'en', entity);
+      entityLoaderCache.setEntity(entitySharedId, language, entity);
 
       if (composition.entity.mainDocument?._id) {
         pagePlaintext = entityLoaderCache.getPlaintext(
@@ -64,7 +65,7 @@ const entityLoader =
           Number(currentPage)
         );
 
-        if (pagePlaintext) {
+        if (!pagePlaintext) {
           const response = await getPagePlaintext(
             composition.entity.mainDocument?._id as string,
             Number.parseInt(currentPage, 10)
@@ -93,8 +94,11 @@ const entityLoader =
       }
     }
 
-    if (currentSearchTerm) {
-      searchResults = entityLoaderCache.getSearchResults(entitySharedId, currentSearchTerm);
+    if (currentSearchTerm && entity.mainDocument?._id) {
+      searchResults = entityLoaderCache.getSearchResults(
+        entity.mainDocument._id as string,
+        currentSearchTerm
+      );
 
       if (!searchResults) {
         searchResults = await snippets({
@@ -103,7 +107,11 @@ const entityLoader =
           searchString: currentSearchTerm,
         });
 
-        entityLoaderCache.setSearchResults(entitySharedId, currentSearchTerm, searchResults);
+        entityLoaderCache.setSearchResults(
+          entity.mainDocument._id as string,
+          currentSearchTerm,
+          searchResults
+        );
       }
     }
 

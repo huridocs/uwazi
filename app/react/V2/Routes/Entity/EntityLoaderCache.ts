@@ -60,15 +60,15 @@ class EntityLoaderCache {
   private isSSR = !isClient;
 
   private ttls = {
-    entity: 5 * 60 * 1000, // 5 minutes
-    plaintext: 10 * 60 * 1000, // 10 minutes
-    searchResults: 3 * 60 * 1000, // 3 minutes
+    entity: 5 * 60 * 1000,
+    plaintext: 5 * 60 * 1000,
+    searchResults: 5 * 60 * 1000,
   };
 
   private limits = {
-    entity: 50,
-    plaintext: 100,
-    searchResults: 30,
+    entity: 20,
+    plaintext: 20,
+    searchResults: 20,
   };
 
   getEntity(sharedId: string, language: string): Entity | undefined {
@@ -113,37 +113,30 @@ class EntityLoaderCache {
     invalidateByPrefix(this.plaintextCache, `${documentId}:`);
   }
 
-  getSearchResults(sharedId: string, searchTerm: string): SnippetsSearchResponse | undefined {
+  getSearchResults(documentId: string, searchTerm: string): SnippetsSearchResponse | undefined {
     if (this.isSSR) {
       return undefined;
     }
 
-    const key = `${sharedId}:${searchTerm.toLowerCase().trim()}`;
+    const key = `${documentId}:${searchTerm.toLowerCase().trim()}`;
     return getCachedItem(this.searchResultsCache, key, this.ttls.searchResults);
   }
 
-  setSearchResults(sharedId: string, searchTerm: string, results: SnippetsSearchResponse): void {
+  setSearchResults(documentId: string, searchTerm: string, results: SnippetsSearchResponse): void {
     if (!this.isSSR) {
-      const key = `${sharedId}:${searchTerm.toLowerCase().trim()}`;
+      const key = `${documentId}:${searchTerm.toLowerCase().trim()}`;
       setCachedItem(this.searchResultsCache, key, results, this.limits.searchResults);
     }
   }
 
-  invalidateSearchResults(sharedId: string): void {
-    invalidateByPrefix(this.searchResultsCache, `${sharedId}:`);
+  invalidateSearchResults(documentId: string): void {
+    invalidateByPrefix(this.searchResultsCache, `${documentId}:`);
   }
 
   invalidateAll(): void {
     this.entityCache.clear();
     this.plaintextCache.clear();
     this.searchResultsCache.clear();
-  }
-
-  invalidateEntityComplete(sharedId: string, documentId?: string): void {
-    this.invalidateEntity(sharedId);
-    if (documentId) {
-      this.invalidatePlaintext(documentId);
-    }
   }
 }
 
