@@ -1,7 +1,11 @@
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { BulkDeleteEntityInput } from 'api/core/application/BulkDeleteEntity';
+import {
+  BulkDeleteEntityInput,
+  BulkDeleteEntityUseCase,
+} from 'api/core/application/BulkDeleteEntity';
 import { tenants } from 'api/tenants';
 import entities from 'api/entities';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 
@@ -18,8 +22,12 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
 
       try {
         const startTime = Date.now();
+        const parsed = BulkDeleteEntityUseCase.InputSchema.parse({
+          sharedIds: ArrayUtils.deduplicate(this.request?.body?.sharedIds || [], s => s),
+        });
 
-        await useCase.execute(this.request.body);
+        await useCase.execute(parsed);
+
         logger.info('Bulk delete executed successfully', {
           namespace: 'Bulk_Delete_Entity',
           success: true,
@@ -52,3 +60,4 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
 }
 
 export { BulkDeleteEntityController };
+export type { RequestDto as BulkDeleteEntityRequestDto };

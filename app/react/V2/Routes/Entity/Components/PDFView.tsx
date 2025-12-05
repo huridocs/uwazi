@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
 import { Entity } from 'V2/domain';
-import { getPagePlaintext } from 'V2/api/files';
 import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate } from 'V2/Components/UI';
@@ -11,7 +10,7 @@ import { Panel } from 'V2/Components/Layouts/Panel';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from './urlParams';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams';
 import { scrollToPage } from './functions';
 
 // eslint-disable-next-line max-statements
@@ -21,8 +20,6 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const [firstRender, setFirstRender] = useState(true);
-  const [pageText, setPageText] = useState(pagePlaintext || '');
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
@@ -55,24 +52,6 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     },
     [searchParams, setSearchParams]
   );
-
-  useEffect(() => {
-    setFirstRender(false);
-
-    return () => {
-      setFirstRender(true);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!firstRender && isRaw) {
-      if (entity.mainDocument?._id) {
-        getPagePlaintext(entity.mainDocument._id as string, pageNumber)
-          .then(text => setPageText(text as string))
-          .catch(() => setPageText(''));
-      }
-    }
-  }, [pageNumber, entity, firstRender, isRaw]);
 
   useEffect(() => {
     const handlePageChange = (p?: number) => {
@@ -126,13 +105,11 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
               <h2 className="font-bold text-gray-900 mt-2 text-lg">{originalname}</h2>
             </Truncate>
           </div>
-          <div
-            className={`flex-1 min-h-0 overflow-y-auto ${firstRender || isRaw ? 'hidden' : 'block'}`}
-          >
+          <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
             <PDF fileUrl={`/api/files/${filename}`} />
           </div>
           <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
-            <PlainText text={pageText} />
+            <PlainText text={pagePlaintext || ''} />
           </div>
         </div>
       </Panel.Body>

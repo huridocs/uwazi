@@ -3,7 +3,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { propertyTypes } from 'shared/propertyTypes';
 
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FieldIsRequiredError } from 'api/core/domain/template/errors';
+import {
+  FieldIsRequiredError,
+  TemplateWithDuplicatedPropertyError,
+} from 'api/core/domain/template/errors';
 import { TemplateFacade } from 'api/core/infrastructure/facades/TemplateFacade';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
@@ -47,9 +50,9 @@ describe('templates', () => {
         factory.property('field_label'),
       ]);
 
-      await expect(templates.save(newTemplate, 'en')).rejects.toHaveProperty('errors', [
-        expect.objectContaining({ keyword: 'uniquePropertyFields' }),
-      ]);
+      await expect(templates.save(newTemplate, 'en')).rejects.toBeInstanceOf(
+        TemplateWithDuplicatedPropertyError
+      );
     });
 
     it('should add it to translations with Entity type', async () => {

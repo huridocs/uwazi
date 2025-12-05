@@ -20,8 +20,8 @@ const buildTemplate = () =>
       }),
       new TextProperty({
         id: 'text-special-prop-id',
-        label: 'Complex + Prop',
-        name: 'complex+prop',
+        label: 'Complex@Prop',
+        name: 'complex@prop',
         template: TEMPLATE_ID,
       }),
       new NumericProperty({
@@ -94,7 +94,7 @@ describe('CsvHeaderAnalyzer', () => {
 
     it('should sanitize headers using PropertyName rules with new name generation', () => {
       const template = buildTemplate();
-      const headers = ['Complex+Prop__es', 'Complex+Prop__en'];
+      const headers = ['Complex@Prop__es', 'Complex@Prop__en'];
 
       expectAnalyzerError(
         () =>
@@ -121,7 +121,7 @@ describe('CsvHeaderAnalyzer', () => {
         newNameGeneration: true,
       });
 
-      expect(Array.from(analysis.languagesPerHeader['complex+prop'] ?? [])).toEqual(
+      expect(Array.from(analysis.languagesPerHeader['complex@prop'] ?? [])).toEqual(
         expect.arrayContaining(['en', 'es'])
       );
     });

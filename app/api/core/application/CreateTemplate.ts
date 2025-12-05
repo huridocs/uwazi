@@ -25,7 +25,7 @@ type Deps = {
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
-  protected async executeAsync(input: Input): Promise<Output> {
+  async execute(input: Input): Promise<Output> {
     const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
       ...this.deps,
       idGenerator: this.idGenerator,

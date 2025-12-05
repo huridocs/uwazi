@@ -10,13 +10,10 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from 'app/I18N';
 import { Panel } from 'V2/Components/Layouts/Panel';
 import { templatesAtom } from 'V2/atoms';
-import { handleUnexpectedError } from 'V2/shared/errorUtils';
-import { SnippetsSearchResponse } from 'V2/api/types';
-import { snippets as snippetsSearch } from 'V2/api/search';
 import { ClientTemplateSchema } from 'V2/shared/types';
-import { SEARCH_PARAM } from './urlParams';
+import { SEARCH_PARAM } from '../urlParams';
 import { searchHintsModalAtom } from './atoms';
-import { LoaderResponse } from './types';
+import { LoaderResponse } from '../types';
 import { scrollToSnippet } from './functions';
 import { NoSearch, NoResults } from './BlankState';
 
@@ -70,7 +67,6 @@ const SearchResults = () => {
   const openHints = useSetAtom(searchHintsModalAtom);
   const initial = new URLSearchParams(searchParams).get(SEARCH_PARAM) || '';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const [snippets, setSnippets] = useState<SnippetsSearchResponse | undefined>(searchResults);
   const templates = useAtomValue(templatesAtom);
 
   const template = useMemo(
@@ -93,17 +89,6 @@ const SearchResults = () => {
       params.delete(SEARCH_PARAM);
     }
     setSearchParams(params);
-
-    try {
-      const newSnippets = await snippetsSearch({
-        sharedId: entity?.sharedId!,
-        searchString: value,
-        limit: 0,
-      });
-      setSnippets(newSnippets);
-    } catch (error) {
-      handleUnexpectedError(error, 'Error searching');
-    }
   };
 
   return (
@@ -141,12 +126,12 @@ const SearchResults = () => {
             </div>
           </form>
           <div className="grow overflow-y-auto px-1">
-            {!snippets && <NoSearch />}
-            {snippets?.data && snippets.data.length < 1 ? (
+            {!searchResults && <NoSearch />}
+            {searchResults?.data && searchResults.data.length < 1 ? (
               <NoResults />
             ) : (
               <div className="flex flex-col gap-4 pt-1">
-                {snippets?.data.map((entry, i) => {
+                {searchResults?.data.map((entry, i) => {
                   const { metadata, fullText } = entry.snippets;
 
                   if (!metadata?.length && !fullText?.length) {
