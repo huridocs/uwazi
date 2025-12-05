@@ -12,10 +12,8 @@ const Settings = () => {
       className="tw-content"
       style={{
         display: 'flex',
-        width: 'calc(100% + 30px)',
+        width: '100%',
         height: '100%',
-        marginLeft: '-15px',
-        marginRight: '-15px',
       }}
     >
       <Helmet>

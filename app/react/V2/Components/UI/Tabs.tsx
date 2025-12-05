@@ -58,9 +58,9 @@ const Tabs = ({
 
   return (
     <HeadlessTab.Group selectedIndex={selectedIndex} onChange={handleChange} manual>
-      <div className={`flex flex-col h-full ${className ?? ''}`}>
+      <div className={`flex flex-col h-full gap-2 ${className ?? ''}`}>
         <HeadlessTab.List
-          className={`inline-grid grid-flow-col auto-cols-auto rounded-md shadow-md shadow-black/10 border border-gray-100 w-full ${
+          className={`inline-grid m-4 mb-2 grid-flow-col auto-cols-auto rounded-md shadow-md shadow-black/10 border border-gray-100 w-fit ${
             tabListClassName || ''
           }`}
           aria-label={tabListAriaLabel}
@@ -93,7 +93,7 @@ const Tabs = ({
                   [
                     'p-2 text-left flex items-center justify-start h-full',
                     'focus-visible:outline-none focus-visible:ring-2',
-                    'focus-visible:ring-indigo-400 focus-visible:ring-inset',
+                    'focus-visible:ring-primary-400 focus-visible:ring-inset',
 
                     shapeClass,
                     dividerClass,
@@ -106,7 +106,7 @@ const Tabs = ({
             );
           })}
         </HeadlessTab.List>
-        <HeadlessTab.Panels className="py-4 grow overflow-y-auto">
+        <HeadlessTab.Panels className="grow overflow-y-auto">
           {tabChildren.map(child => (
             <HeadlessTab.Panel
               key={child.props.id}
