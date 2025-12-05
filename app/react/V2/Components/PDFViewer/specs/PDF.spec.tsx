@@ -393,7 +393,7 @@ describe('PDF', () => {
         );
       });
 
-      const page1 = result!.container.querySelector('.pdf-page') as HTMLElement;
+      const page1 = result!.container.querySelector('[data-testid="pdf-page"]') as HTMLElement;
 
       await act(() => {
         oberserverMock.enterNode(page1);

@@ -269,7 +269,7 @@ describe('Paragraph Extraction', () => {
         .within(() => {
           cy.contains(firstEntityProcessed);
         });
-      cy.get('#pdf-container .pdf-page').should('have.length.at.least', 2);
+      cy.get('[data-testid="pdf-page"]').should('have.length.at.least', 2);
       cy.contains('aside button', 'Close').click();
     });
 
