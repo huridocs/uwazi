@@ -4,7 +4,6 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ProcessingFileFailed } from 'api/core/domain/files/errors';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
 import { EventsBus } from '../libs/eventsbus';
@@ -23,7 +22,6 @@ type Deps = {
   filesDS: FilesDataSource;
   fileStorage: FileStorage;
   pdfService: PDFService;
-  filesIO: FileContentsIO;
   filesService: FilesService;
 };
 
