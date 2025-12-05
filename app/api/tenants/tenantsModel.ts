@@ -39,6 +39,7 @@ const mongoSchema = new mongoose.Schema({
     fileCacheHeaders: Boolean,
     v2UploadFile: Boolean,
     v2DeleteFile: Boolean,
+    v2CreateThesaurus: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

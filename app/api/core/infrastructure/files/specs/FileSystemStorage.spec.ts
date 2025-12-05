@@ -156,8 +156,22 @@ describe('FileSystemStorage', () => {
     // });
   });
 
+  describe('removeContent', () => {
+    it('should delete content from disk', async () => {
+      const document = FileBuilder.document(f.idString('document'), {
+        content: FileBuilder.content('content created\n'),
+        filename: 'documento.txt',
+      });
+
+      await fileSystemStorage.storeFile(document);
+      await fileSystemStorage.removeContent(pathManager.createPath(document));
+
+      expect(await fileExistsOnPath(pathManager.createPath(document))).toBe(false);
+    });
+  });
+
   describe('removeFile', () => {
-    it('should delete the file in s3', async () => {
+    it('should delete the file on disk', async () => {
       const document = FileBuilder.document(f.idString('document'), {
         content: FileBuilder.content('content created\n'),
         filename: 'documento.txt',

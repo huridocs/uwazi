@@ -8,11 +8,12 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
-import { UwaziFile } from 'api/core/domain/files/UwaziFile';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -25,6 +26,7 @@ import { ObjectId } from 'mongodb';
 import { tmpdir } from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
+import { testingTenants } from 'api/utils/testingTenants';
 
 const f = getFixturesFactory();
 
@@ -32,17 +34,19 @@ const storedFiles: { [k: string]: FileContents[] } = {
   document: [],
   attachment: [],
 };
-const removedFiles: UwaziFile[] = [];
+const dispatchedDeletes: string[] = [];
 const fileStorage = TestUtils.mockClass<FileStorage>({
-  async storeFile(file: UwaziFile) {
+  async storeFile(file: FileWithContents) {
     storedFiles[file.type].push(file.content);
-  },
-  async removeFile(file) {
-    removedFiles.push(file);
   },
 });
 
-const dispatchMock = jest.fn();
+const dispatchMock = jest.fn().mockImplementation((job, params) => {
+  if (job === DeleteFileFromStorageJobHandler) {
+    dispatchedDeletes.push(params.filePath);
+  }
+});
+
 const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
   dispatchMany: async callback => {
     await callback(dispatchMock);
@@ -55,7 +59,7 @@ const createService = () => {
     fileStorage,
     jobsDispatcher,
   });
-  return { service };
+  return { service, transactionManager };
 };
 
 describe('FilesService', () => {
@@ -171,9 +175,14 @@ describe('FilesService', () => {
 
     it('should delete all files belogning to entity ids', async () => {
       await testingEnvironment.setUp(fixtures);
-      const { service } = createService();
+      testingTenants.changeCurrentTenant({
+        uploadedDocuments: 'tenant/uploads',
+      });
+      const { service, transactionManager } = createService();
 
-      await service.deleteEntityFiles(['entity1', 'entity3']);
+      await transactionManager.run(async () => {
+        await service.deleteEntityFiles(['entity1', 'entity3']);
+      });
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
 
@@ -183,14 +192,13 @@ describe('FilesService', () => {
         { entity: 'entity2', type: 'thumbnail' },
       ]);
 
-      expect(removedFiles).toMatchObject([
-        { entity: 'entity1', type: 'document' },
-        { entity: 'entity1', type: 'document' },
-        { entity: 'entity1', type: 'thumbnail' },
-
-        { entity: 'entity3', type: 'document' },
-        { entity: 'entity3', type: 'document' },
-        { entity: 'entity3', type: 'thumbnail' },
+      expect(dispatchedDeletes).toMatchObject([
+        'tenant/uploads/doc1',
+        'tenant/uploads/doc2',
+        expect.stringContaining('.jpg'),
+        'tenant/uploads/doc5',
+        'tenant/uploads/doc6',
+        expect.stringContaining('.jpg'),
       ]);
     });
   });

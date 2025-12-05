@@ -9,6 +9,8 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
+import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { S3Error } from 'api/files/S3Storage';
 import { Tenant } from 'api/tenants/tenantContext';
@@ -20,7 +22,6 @@ import { CustomUpload } from '../../domain/files/CustomUpload';
 import { FileContents, NullFileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { URLAttachment } from '../../domain/files/URLAttachment';
-import { UwaziFile, UwaziFileWithContents } from '../../domain/files/UwaziFile';
 import { PathManager } from './PathManager';
 
 const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
@@ -68,7 +69,7 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async storeFile(file: UwaziFileWithContents) {
+  async storeFile(file: FileWithContents) {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
@@ -80,12 +81,23 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async removeFile(file: UwaziFileWithContents) {
+  async removeFile(file: FileWithContents) {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new DeleteObjectCommand({
           Bucket: this.bucket,
           Key: this.pathManager.createPath(file),
+        })
+      )
+    );
+  }
+
+  async removeContent(filePath: string) {
+    await catchS3Errors(async () =>
+      this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucket,
+          Key: filePath,
         })
       )
     );
@@ -112,7 +124,7 @@ export class S3FileStorage implements FileStorage {
     return Promise.all(promises);
   }
 
-  async fileExists(file: UwaziFile) {
+  async fileExists(file: BaseFile) {
     try {
       await this.s3Client.send(
         new HeadObjectCommand({
@@ -129,7 +141,7 @@ export class S3FileStorage implements FileStorage {
     return true;
   }
 
-  getPath(file: UwaziFile): string {
+  getPath(file: BaseFile): string {
     if (file instanceof Attachment) {
       return path.join(this.tenant.attachments, file.filename);
     }

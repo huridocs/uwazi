@@ -1,6 +1,8 @@
 import React, { Fragment, useCallback } from 'react';
 import { Translate } from 'app/I18N';
 import { Entity, MetadataProperty } from 'V2/domain';
+import { Panel } from 'V2/Components/Layouts/Panel';
+import { Button } from 'V2/Components/UI';
 import { Date } from './Date';
 import { Geolocation } from './Geolocation';
 import { Relationship } from './Relationship';
@@ -134,42 +136,63 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   }
 
   return (
-    <dl className="flex flex-col gap-4">
-      <MetadataCard className="bg-gray-50">
-        <dt className="sr-only">
-          <Translate>Template</Translate>
-        </dt>
-        <dd>
-          <TemplateLabel
-            label={entity.template?.label || ''}
-            color={entity.template?.color}
-            templateId={templateId}
-          />
-        </dd>
-        <Title
-          label="Title"
-          title={entity.title}
-          translationContext={templateId}
-          iconId={entity.icon?._id}
-        />
-      </MetadataCard>
+    <Panel>
+      <Panel.Body>
+        <dl className="flex flex-col gap-4">
+          <MetadataCard className="bg-gray-50">
+            <dt className="sr-only">
+              <Translate>Template</Translate>
+            </dt>
+            <dd>
+              <TemplateLabel
+                label={entity.template?.label || ''}
+                color={entity.template?.color}
+                templateId={templateId}
+              />
+            </dd>
+            <Title
+              label="Title"
+              title={entity.title}
+              translationContext={templateId}
+              iconId={entity.icon?._id}
+            />
+          </MetadataCard>
 
-      {entity.creationDate && (
-        <Date
-          values={entity.creationDate.values}
-          label="Creation Date"
-          translationContext="System"
-        />
-      )}
+          {entity.creationDate && (
+            <Date
+              values={entity.creationDate.values}
+              label="Creation Date"
+              translationContext="System"
+            />
+          )}
 
-      {entity.editDate && (
-        <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
-      )}
+          {entity.editDate && (
+            <Date values={entity.editDate.values} label="Edit Date" translationContext="System" />
+          )}
 
-      {entity.metadata.map((data, index) => (
-        <Fragment key={data?.name || data?.label || index}>{renderMetadataProperty(data)}</Fragment>
-      ))}
-    </dl>
+          {entity.metadata.map((data, index) => (
+            <Fragment key={data?.name || data?.label || index}>
+              {renderMetadataProperty(data)}
+            </Fragment>
+          ))}
+        </dl>
+      </Panel.Body>
+      <Panel.Footer>
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex gap-2">
+            <Button styling="outline">
+              <Translate>Edit</Translate>
+            </Button>
+            <Button styling="outline">
+              <Translate>Share</Translate>
+            </Button>
+          </div>
+          <Button styling="solid" color="error">
+            <Translate>Delete</Translate>
+          </Button>
+        </div>
+      </Panel.Footer>
+    </Panel>
   );
 };
 

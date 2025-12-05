@@ -26,7 +26,7 @@ type Deps = {
 class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
-  protected async executeAsync({ sharedIds }: Input): Promise<Output> {
+  async execute({ sharedIds }: Input): Promise<Output> {
     const grantedSharedIds = (
       await this.deps.entityPermissionChecker.filterEntities(
         sharedIds,

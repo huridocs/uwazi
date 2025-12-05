@@ -132,7 +132,11 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   }
 
   return (
-    <div ref={pageContainerRef} className="pdf-page">
+    <div
+      ref={pageContainerRef}
+      className="relative border mb-4 border-gray-200"
+      data-testid="pdf-page"
+    >
       {highlights?.map(highlight => {
         const scaledHightlight = {
           ...highlight,

@@ -1,3 +1,5 @@
+import { inspect } from 'util';
+
 type CsvHeaderAnalyzerErrorReason =
   | 'MixedLanguageColumns'
   | 'UnsupportedLanguageColumn'
@@ -18,6 +20,7 @@ class CsvHeaderAnalyzerError extends Error {
     super('Csv header analysis failed');
     this.issues = issues;
     this.name = 'CsvHeaderAnalyzerError';
+    this.stack = `${this.name}: ${this.message}\nIssues:\n- ${issues.map(i => inspect(i)).join('\n- ')}\n\n${this.stack}`;
   }
 }
 
