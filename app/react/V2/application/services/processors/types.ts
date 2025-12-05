@@ -64,6 +64,7 @@ export interface CompositionOptions {
   formatDates?: boolean;
   includeRawEntity?: boolean;
   includeSupportingFiles?: boolean;
+  omitRelationships?: boolean;
 
   // Field selection
   includeFields?: string[];
