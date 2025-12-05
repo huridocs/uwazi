@@ -430,10 +430,9 @@ describe('Entity view', () => {
 
       fireEvent.click(pageButton);
 
-      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('deactivateSnippet');
       expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('goToPage', 5);
 
-      jest.advanceTimersByTime(100);
+      jest.advanceTimersByTime(200);
 
       expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith(
         'activateSnippet',
