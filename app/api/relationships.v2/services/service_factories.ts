@@ -63,7 +63,9 @@ const userFromRequest = () => {
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
   async () =>
-    new QueuedRelationshipPropertyUpdateStrategy(await DefaultDispatcher(tenants.current().name));
+    new QueuedRelationshipPropertyUpdateStrategy(
+      await DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default())
+    );
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
@@ -249,7 +251,7 @@ const UpdateRelationshipPropertiesJob = () => {
 const UpdateTemplateRelationshipPropertiesJob = async () =>
   new GenericUpdateTemplateRelationshipPropertiesJob(
     DefaultEntitiesDataSource(TransactionManagerFactory.default()),
-    await DefaultDispatcher(tenants.current().name)
+    await DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default())
   );
 
 export {

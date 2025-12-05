@@ -12,11 +12,8 @@ import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
 import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter';
 
-export function DefaultQueueAdapter() {
-  return new MongoQueueAdapter(
-    getSharedConnection(),
-    new MongoTransactionManager(getSharedClient(), LoggerFactory.systemLogger())
-  );
+export function DefaultQueueAdapter(transactionManager: MongoTransactionManager) {
+  return new MongoQueueAdapter(getSharedConnection(), transactionManager);
 }
 
 export function RoundRobinQueueAdapter() {
@@ -40,9 +37,19 @@ export function TestingRoundRobinQueueAdapter() {
   );
 }
 
-export function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
+export function DefaultDispatcher(
+  tenant: string,
+  transactionManager: MongoTransactionManager,
+  queueOptions?: QueueOptions
+) {
   return new JobsRouter(
-    queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter(), queueOptions)
+    queueName =>
+      new NamespacedDispatcher(
+        tenant,
+        queueName,
+        DefaultQueueAdapter(transactionManager),
+        queueOptions
+      )
   );
 }
 

@@ -87,18 +87,18 @@ class FilesService {
 
     await this.deps.filesDS.delete(files);
     await this.deps.relV1DS.deleteByFiles(contentFiles);
+    await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
+      await ArrayUtils.sequentialFor(contentFiles, async file => {
+        dispatch(DeleteFileFromStorageJobHandler, {
+          filePath: this.deps.pathManager.createPath(file),
+        });
+      });
+    });
 
     this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(
         new FilesDeletedEvent({ files: files.map(f => FileMappers.toDBO(f)) })
       );
-      await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
-        await ArrayUtils.sequentialFor(contentFiles, async file => {
-          dispatch(DeleteFileFromStorageJobHandler, {
-            filePath: this.deps.pathManager.createPath(file),
-          });
-        });
-      });
     });
   }
 

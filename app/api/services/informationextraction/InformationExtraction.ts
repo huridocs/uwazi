@@ -39,6 +39,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
 import moment from 'moment';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
@@ -851,7 +852,9 @@ class InformationExtraction {
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
-    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 20 });
+    const dispatcher = await DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+      lockWindow: 1000 * 60 * 20,
+    });
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
@@ -949,7 +952,9 @@ class InformationExtraction {
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
-    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
+    const dispatcher = await DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+      lockWindow: 1000 * 60 * 10,
+    });
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });

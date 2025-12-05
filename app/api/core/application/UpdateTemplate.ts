@@ -72,6 +72,13 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
       throw new InheritedPropertyCanNotBeDeleted(propertiesBeingInherited);
     }
 
+    const context = {
+      fullReindex,
+      language,
+      tenantName: this.tenant.name,
+      userId: this.actorId,
+    };
+
     await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
       await this.deps.translationService.updateTemplateTranslation(
@@ -80,13 +87,6 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
       );
       await this.deps.templatesDS.updateMapping(updatedTemplate, fullReindex);
     });
-
-    const context = {
-      fullReindex,
-      language,
-      tenantName: this.tenant.name,
-      userId: this.actorId,
-    };
 
     await this.eventBus.emit(
       new TemplateUpdatedEvent({
@@ -101,7 +101,6 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
       before: currentTemplate,
       context,
     });
-
     return updatedTemplate;
   }
 }

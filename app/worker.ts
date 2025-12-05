@@ -1,7 +1,9 @@
 /* eslint-disable max-statements */
 import { config } from 'api/config';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { QueueOptions } from 'api/core/libs/queue/infrastructure/NamespacedDispatcher';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { Redis } from 'api/infrastructure/Redis';
 import { DB } from 'api/odm';
@@ -42,7 +44,10 @@ DB.connect(config.DBHOST, config.DBAUTH)
     const services: Record<string, any> = {
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
-      px_paragraphs_results: new PXParagraphsResultListener(DefaultDispatcher),
+      px_paragraphs_results: new PXParagraphsResultListener(
+        (tenant: string, queueOptions?: QueueOptions) =>
+          DefaultDispatcher(tenant, TransactionManagerFactory.default(), queueOptions)
+      ),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(
