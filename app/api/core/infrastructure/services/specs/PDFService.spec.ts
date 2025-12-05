@@ -35,7 +35,9 @@ describe('PDFService', () => {
 
   describe('extractText', () => {
     it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
-      const testFile = new DiskFile(testingEnvironment.testingFilesPath('english.pdf')).toContent();
+      const testFile = new DiskFile(
+        path.join(__dirname, 'testing_files', '12345.test.pdf')
+      ).toContent();
       const conversion = (await pdf.extractText(testFile)).getDataOrThrow();
 
       expect(conversion.pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
@@ -49,7 +51,7 @@ describe('PDFService', () => {
     describe('when pdf is invalid or malformed', () => {
       it('should throw FileIsNotAPDF error', async () => {
         const invalidFile = new DiskFile(
-          testingEnvironment.testingFilesPath('1invalid.test.pdf')
+          path.join(__dirname, 'testing_files', '1invalid.test.pdf')
         ).toContent();
         pdf = new PDFService();
 
@@ -61,7 +63,7 @@ describe('PDFService', () => {
     describe('when shell throws an error', () => {
       it('should bubble up the error', async () => {
         const invalidFile = new DiskFile(
-          testingEnvironment.testingFilesPath('1invalid.test.pdf')
+          path.join(__dirname, 'testing_files', '1invalid.test.pdf')
         ).toContent();
         pdf = new PDFService(errorShell);
 
@@ -75,7 +77,9 @@ describe('PDFService', () => {
 
   describe('createThumbnail', () => {
     it('should create thumbnail', async () => {
-      const testFile = new DiskFile(testingEnvironment.testingFilesPath('english.pdf')).toContent();
+      const testFile = new DiskFile(
+        path.join(__dirname, 'testing_files', '12345.test.pdf')
+      ).toContent();
       const thumbnail = (await pdf.createThumbnail(testFile)).getDataOrThrow();
       expect(thumbnail).toBeInstanceOf(DiskFile);
 
@@ -84,7 +88,7 @@ describe('PDFService', () => {
 
       expect(
         await filesAreIdentical(
-          testingEnvironment.testingFilesPath('english.pdf.thumb.proof.jpg'),
+          path.join(__dirname, 'testing_files/12345.thumb.proof.jpg'),
           thumbnailPath
         )
       ).toBe(true);
@@ -93,7 +97,7 @@ describe('PDFService', () => {
     describe('when pdf is invalid or malformed', () => {
       it('should throw FileIsNotAPDF error', async () => {
         const invalidFile = new DiskFile(
-          testingEnvironment.testingFilesPath('1invalid.test.pdf')
+          path.join(__dirname, 'testing_files', '1invalid.test.pdf')
         ).toContent();
         pdf = new PDFService();
 
@@ -105,7 +109,7 @@ describe('PDFService', () => {
     describe('when shell throws an error', () => {
       it('should bubble up the error', async () => {
         const invalidFile = new DiskFile(
-          testingEnvironment.testingFilesPath('1invalid.test.pdf')
+          path.join(__dirname, 'testing_files', '1invalid.test.pdf')
         ).toContent();
         pdf = new PDFService(errorShell);
 

@@ -1,14 +1,15 @@
 // eslint-disable-next-line node/no-restricted-import
-import { readFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
+import { FilesService } from 'api/core/application/FilesService';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { EventsBus } from 'api/core/libs/eventsbus';
+import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { Result } from 'api/core/libs/Result';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
@@ -16,19 +17,14 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { createHash } from 'crypto';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
+import { FileContentsIO } from '../../files/FileContentIO';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { MongoRelationshipsV1DataSource } from '../../mongodb/MongoRelationshipsV1DataSource';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
 import { PDFPostProcessJob } from '../PDFPostProcessJob';
-
-async function filesAreIdentical(file1: string, file2: string) {
-  const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
-  const hash1 = createHash('sha256').update(buf1).digest('hex');
-  const hash2 = createHash('sha256').update(buf2).digest('hex');
-  return hash1 === hash2;
-}
+import { PathManager } from '../../files/PathManager';
 
 const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
@@ -50,7 +46,19 @@ const setUpJob = (pdfService = new PDFService()) => {
         fileStorage: FileStorageFactory.default(),
         pdfService,
         idGenerator: IdGeneratorFactory.default(),
-        filesService: FilesServiceFactory.default(transactionManager, { eventBus }),
+        filesIO: new FileContentsIO(),
+        filesService: new FilesService({
+          pathManager: new PathManager({ tenant: tenants.current() }),
+          idGenerator: IdGeneratorFactory.default(),
+          fileStorage: FileStorageFactory.default(),
+          filesDS: FilesDataSourceFactory.default(transactionManager),
+          jobsDispatcher: DefaultDispatcher(tenants.current().name),
+          pdfService: new PDFService(),
+          filesIO: new FileContentsIO(),
+          relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+          transactionManager,
+          eventBus: applicationEventsBus,
+        }),
       }),
       wSockets,
     }),
@@ -68,7 +76,7 @@ describe('PDFPostProcessJob', () => {
       files: [
         f.document('processing_doc', {
           status: 'processing',
-          filename: 'english.pdf',
+          filename: 'eng.pdf',
           entity: 'fileEntity',
         }),
       ],
@@ -100,30 +108,15 @@ describe('PDFPostProcessJob', () => {
     );
 
   it('should set the document status to "ready"', async () => {
-    const { job } = setUpJob();
+    const { job, wSockets } = setUpJob();
     await executeJob(job, f.idString('processing_doc'));
 
-    const [processed] = await testingEnvironment.db.getAllFrom('files');
-    expect(processed.status).toBe('ready');
-  });
-
-  it('should create a thumbnail of the document', async () => {
-    const { job } = setUpJob();
-    await executeJob(job, f.idString('processing_doc'));
-
-    const [thumbnail] = (await testingEnvironment.db.getAllFrom('files')).filter(
-      file => file.type === 'thumbnail'
+    expect(wSockets.emitToTenant).toHaveBeenCalledWith(
+      tenants.current().name,
+      'documentProcessed',
+      'fileEntity',
+      expect.objectContaining({ filename: 'eng.pdf', status: 'ready' })
     );
-    expect(thumbnail.filename).toBe(`${f.idString('processing_doc')}.jpg`);
-
-    const thumbnailPath = `${tenants.current().uploadedDocuments}/${thumbnail.filename}`;
-
-    expect(
-      await filesAreIdentical(
-        testingEnvironment.testingFilesPath('english.pdf.thumb.proof.jpg'),
-        thumbnailPath
-      )
-    ).toBe(true);
   });
 
   it('should emit FileUpdatedEvent', async () => {
@@ -132,8 +125,8 @@ describe('PDFPostProcessJob', () => {
 
     expect(eventBus.emit).toHaveBeenCalledWith(
       new FileUpdatedEvent({
-        before: expect.objectContaining({ filename: 'english.pdf', status: 'processing' }),
-        after: expect.objectContaining({ filename: 'english.pdf', status: 'ready' }),
+        before: expect.objectContaining({ filename: 'eng.pdf', status: 'processing' }),
+        after: expect.objectContaining({ filename: 'eng.pdf', status: 'ready' }),
       })
     );
   });
@@ -153,7 +146,7 @@ describe('PDFPostProcessJob', () => {
       const files = await testingEnvironment.db.getAllFrom('files');
       expect(files).toMatchObject([
         {
-          filename: 'english.pdf',
+          filename: 'eng.pdf',
           status: 'processing',
         },
       ]);
@@ -178,7 +171,7 @@ describe('PDFPostProcessJob', () => {
       ).rejects.toThrow();
 
       const files = await testingEnvironment.db.getAllFrom('files');
-      expect(files).toMatchObject([{ filename: 'english.pdf', status: 'failed' }]);
+      expect(files).toMatchObject([{ filename: 'eng.pdf', status: 'failed' }]);
     });
 
     it('should emit a "conversionFailed" event to tenant', async () => {

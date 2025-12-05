@@ -124,7 +124,13 @@ describe('FilesService', () => {
       const { service } = createService();
 
       const doc = FileBuilder.processedDocument(f.idString('doc'), {
-        content: new DiskFile(testingEnvironment.testingFilesPath('english.pdf')).toContent(),
+        content: new DiskFile(
+          path.join(
+            __dirname,
+            '../../infrastructure/services/specs/testing_files',
+            '12345.test.pdf'
+          )
+        ).toContent(),
       });
 
       const thumbnail = (await service.createThumbnail(doc, 'en')).getDataOrThrow();
@@ -143,7 +149,10 @@ describe('FilesService', () => {
 
       expect(
         await filesAreIdentical(
-          testingEnvironment.testingFilesPath('english.pdf.thumb.proof.jpg'),
+          path.join(
+            __dirname,
+            '../../infrastructure/services/specs/testing_files/12345.thumb.proof.jpg'
+          ),
           thumbnailPath
         )
       ).toBe(true);

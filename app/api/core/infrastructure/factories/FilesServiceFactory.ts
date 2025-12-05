@@ -8,16 +8,16 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
 import { tenants } from 'api/tenants';
 import { FileContentsIO } from '../files/FileContentIO';
-import { PathManager } from '../files/PathManager';
-import { DeleteFileFromStorageJobHandler } from '../jobs/DeleteFileFromStorageJobHandler';
 import { PDFPostProcessJob } from '../jobs/PDFPostProcessJob';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { PDFService } from '../services/PDFService';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
+import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { PathManager } from '../files/PathManager';
+import { DeleteFileFromStorageJobHandler } from '../jobs/DeleteFileFromStorageJobHandler';
 
 class FilesServiceFactory {
   static default(
@@ -44,6 +44,7 @@ class FilesServiceFactory {
             fileStorage,
             pdfService: new PDFService(),
             idGenerator,
+            filesIO: new FileContentsIO(),
             filesService: new FilesService({
               pathManager: new PathManager({ tenant: tenants.current() }),
               idGenerator: IdGeneratorFactory.default(),

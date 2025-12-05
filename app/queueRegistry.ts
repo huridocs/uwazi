@@ -3,7 +3,6 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
@@ -14,8 +13,6 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
-import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
@@ -26,8 +23,8 @@ import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import {
-    Dispatchable,
-    HeartbeatCallback,
+  Dispatchable,
+  HeartbeatCallback,
 } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
@@ -62,6 +59,9 @@ import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptS
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { tenants } from 'api/tenants/tenantContext';
+import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
+import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
+import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -187,6 +187,7 @@ export function registerJobs(
         fileStorage: FileStorageFactory.default(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
+        filesIO: new FileContentsIO(),
         filesService: FilesServiceFactory.default(transactionManager),
       }),
       wSockets: new V1WebSocketsWrapper(),
