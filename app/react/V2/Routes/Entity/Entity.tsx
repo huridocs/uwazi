@@ -233,7 +233,7 @@ const Entity = () => {
   }
 
   return (
-    <div className="tw-content">
+    <div className="tw-content" style={{ width: '100%', height: '100%' }}>
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>

@@ -14,11 +14,10 @@ const Panel = ({ children, className }: PanelProps) => (
     {children}
   </div>
 );
-const footerHeight = 50;
-const paddingBottom = footerHeight + 8;
+
 Panel.Body = ({ children, className }: PanelProps) => (
   <div
-    className={`${className || ''} grow overflow-y-auto min-h-0 px-4 pb-[${paddingBottom}px]`}
+    className={`${className || ''} grow overflow-y-auto min-h-0 px-4 pb-[58px]`}
     data-testid="panel-body"
   >
     {children}
@@ -27,9 +26,9 @@ Panel.Body = ({ children, className }: PanelProps) => (
 
 Panel.Footer = ({ children, className = '', highlighted = false }: PanelFooterProps) => (
   <div
-    className={`absolute bottom-0 left-0 right-0 w-full px-4 border-t border-gray-200 z-10 h-[${footerHeight}px] flex items-center ${className} ${
-      highlighted ? 'bg-indigo-50' : 'bg-white'
-    }`}
+    className={`absolute bottom-0 left-0 right-0 w-full px-6 z-10 flex items-center
+      border-t border-b border-indigo-500 min-h-[50px]
+      ${highlighted ? 'bg-indigo-50' : 'bg-white'} ${className}`}
     data-testid="panel-footer"
   >
     {children}

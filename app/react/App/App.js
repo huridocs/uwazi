@@ -56,7 +56,7 @@ const App = ({ customParams }) => {
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
   const isV2Route =
-    location.pathname.includes('/entity') || location.pathname.includes('/settings');
+    location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
 
   socket.on('updateSettings', _settings => {
     setSettings(_settings);
