@@ -106,7 +106,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
             </Truncate>
           </div>
           <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'hidden' : 'block'}`}>
-            <PDF fileUrl={`/api/files/${filename}`} />
+            <PDF fileUrl={`/api/files/${filename}`} size={{ height: '100%', width: '90%' }} />
           </div>
           <div className={`flex-1 min-h-0 overflow-y-auto ${isRaw ? 'block' : 'hidden'}`}>
             <PlainText text={pagePlaintext || ''} />

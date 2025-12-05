@@ -43,7 +43,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   const padding = 0;
   const containerStyles = {
     height: size?.height || '100%',
-    width: size?.width || '90%',
+    width: size?.width || '100%',
     overflow: size?.overflow || 'auto',
     paddingLeft: `${padding}px`,
     paddingRight: `${padding}px`,
