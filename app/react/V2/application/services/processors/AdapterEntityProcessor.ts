@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { flatMap, groupBy, map } from 'lodash';
-import { Entity, MetadataProperty } from 'app/V2/domain';
+import { Entity, EntityRelation, MetadataProperty } from 'app/V2/domain';
 import { DateMetadataProperty, EntityTemplate } from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
@@ -283,7 +283,6 @@ export class AdapterEntityProcessor {
         ?.contexts.find(context => context.id === 'System');
       const createdTranslatedLabel = systemContext?.values.creationDate || 'Creation Date';
       const editTranslatedLabel = systemContext?.values.editDate || 'Edit Date';
-
       formattedEntities = entities.map(entity => ({
         _id: entity._id! as string,
         title: entity.title!,
@@ -303,6 +302,7 @@ export class AdapterEntityProcessor {
           (entity.editDate as number) || 0
         ), //TODO: editDate is not defined
         rawEntity: entity,
+        relations: ((entity as any).relations || []) as EntityRelation[],
         metadata: [],
         icon: entity.icon,
       }));

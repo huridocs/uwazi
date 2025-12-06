@@ -478,6 +478,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
         some time to reappear in the Library, but this is temporary. Do you want to continue?"
 Maps,မြေပုံများ
 Mark as Reviewed,သုံးသပ်ပြီးဟု မှတ်ရန်
+Mark as reviewed,Mark as reviewed
 Markdown,အမှတ်အသား
 marked and labeled,marked and labeled
 marked for training,marked for training
@@ -906,6 +907,7 @@ Timelinks,Timelinks
 Timestamp,Timestamp
 Title,ခေါင်းစဉ်
 To,To
+To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",သင့်အား ပိုမိုကောင်းမွန်သော အတွေ့အကြုံ ရရှိစေရန် ဤဝက်ဘ်ဆိုက်တွင် ကွတ်ကီးများ အသုံးပြုသည်။
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
@@ -1023,7 +1025,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
-"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
+"You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
