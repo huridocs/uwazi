@@ -27,9 +27,9 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
 
 const factory = getFixturesFactory();
 
@@ -64,13 +64,14 @@ const createSut = () => {
 
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
+  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
   const fileService = new FilesService({
     pathManager: new PathManager({ tenant: tenants.current() }),
     idGenerator,
     fileStorage,
     filesDS,
-    jobsDispatcher: DefaultDispatcher(tenants.current().name),
+    jobsDispatcher,
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
     relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
@@ -78,9 +79,7 @@ const createSut = () => {
     eventBus: applicationEventsBus,
   });
 
-  const dispatcher = DefaultDispatcher(tenants.current().name);
-
-  jest.spyOn(dispatcher, 'dispatch').mockResolvedValue();
+  jest.spyOn(jobsDispatcher, 'dispatch').mockResolvedValue();
 
   const sut = new EntitiesService({
     entitiesDS,
@@ -88,10 +87,10 @@ const createSut = () => {
     settingsDS,
     templatesDS,
     transactionManager,
-    dispatcher,
+    dispatcher: jobsDispatcher,
   });
 
-  return { sut, fileService, eventBus, transactionManager, dispatcher };
+  return { sut, fileService, eventBus, transactionManager, dispatcher: jobsDispatcher };
 };
 
 const createSampleTemplate = () =>
@@ -160,23 +159,23 @@ describe('EntitiesService', () => {
     });
 
     it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
-      const { sut, eventBus } = createSut();
+      const { sut, transactionManager, eventBus } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
 
       expect(eventBus.emit).not.toHaveBeenCalled();
+
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(eventBus.emit).toHaveBeenCalled();
     });
 
-    it('should dispatch a RelationshipSyncJob only on commit handler', async () => {
-      const { sut, dispatcher, transactionManager } = createSut();
+    it('should dispatch a RelationshipSyncJob', async () => {
+      const { sut, dispatcher } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
-
-      expect(dispatcher.dispatch).not.toHaveBeenCalled();
-
-      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,

@@ -259,3 +259,28 @@ export interface EntityPermissions {
   readonly isRestricted: boolean;
   readonly currentUserAccess: 'read' | 'write' | 'admin' | 'none';
 }
+
+export type EntityRelation = {
+  entity: string;
+  entityData?: {
+    _id?: string;
+    title?: string;
+    template?: string;
+    published?: boolean;
+    metadata?: Record<string, unknown>;
+  };
+  hub?: string;
+  template?: string | null;
+  _id?: string;
+  file?: string;
+  reference?: {
+    selectionRectangles?: Array<{
+      top?: number;
+      left?: number;
+      width?: number;
+      height?: number;
+      page?: string;
+    }>;
+    text?: string;
+  };
+};
