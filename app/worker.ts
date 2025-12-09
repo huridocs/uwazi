@@ -44,7 +44,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
       px_paragraphs_results: new PXParagraphsResultListener((tenant, queueOptions) =>
-        DefaultDispatcher(tenant, TransactionManagerFactory.default(), queueOptions)
+        DefaultDispatcher(tenant, TransactionManagerFactory.createForSharedDataBase(), queueOptions)
       ),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
