@@ -159,23 +159,23 @@ describe('EntitiesService', () => {
     });
 
     it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
-      const { sut, eventBus } = createSut();
+      const { sut, transactionManager, eventBus } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
 
       expect(eventBus.emit).not.toHaveBeenCalled();
+
+      await transactionManager.executeOnCommitHandlers(undefined);
+
+      expect(eventBus.emit).toHaveBeenCalled();
     });
 
-    it('should dispatch a RelationshipSyncJob only on commit handler', async () => {
-      const { sut, dispatcher, transactionManager } = createSut();
+    it('should dispatch a RelationshipSyncJob', async () => {
+      const { sut, dispatcher } = createSut();
       const entity = createEntitySample();
 
       await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
-
-      expect(dispatcher.dispatch).not.toHaveBeenCalled();
-
-      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,
