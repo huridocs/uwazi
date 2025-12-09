@@ -90,7 +90,7 @@ const Entity = () => {
           <TabLabel text="Relationships" icon={<RelationshipPropertyIcon className="w-5 h-5" />} />
         }
       >
-        <span />
+        <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
 
@@ -126,7 +126,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <span />,
+          content: <div no-translate>This content is not yet available</div>,
         },
         {
           id: SIDE_TABS.SEARCH,
@@ -143,7 +143,7 @@ const Entity = () => {
               icon={<RelationshipPropertyIcon className="w-5 h-5" />}
             />
           ),
-          content: <span />,
+          content: <div no-translate>This content is not yet available</div>,
         },
         {
           id: SIDE_TABS.SEARCH,
