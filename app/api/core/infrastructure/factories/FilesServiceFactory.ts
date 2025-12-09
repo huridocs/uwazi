@@ -63,7 +63,7 @@ class FilesServiceFactory {
     });
 
     if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenants.current().name);
+      jobsDispatcher = DefaultDispatcher(tenants.current().name, _transactionManager);
     }
 
     return new FilesService({
