@@ -8,7 +8,7 @@ import { TestJob } from '../../app/queueRegistry';
   await DB.connect(config.DBHOST, config.DBAUTH);
   const dispatcher = DefaultDispatcher(
     process.env.TENANT || 'default',
-    TransactionManagerFactory.default()
+    TransactionManagerFactory.createForSharedDataBase()
   );
   for (let i = 0; i < 100; i += 1) {
     // eslint-disable-next-line no-await-in-loop
