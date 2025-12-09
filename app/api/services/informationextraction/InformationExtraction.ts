@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 
 import { storage } from 'api/files';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { EnforcedWithId } from 'api/odm';
@@ -851,7 +852,9 @@ class InformationExtraction {
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
-    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 20 });
+    const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+      lockWindow: 1000 * 60 * 20,
+    });
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
@@ -949,7 +952,9 @@ class InformationExtraction {
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
-    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
+    const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+      lockWindow: 1000 * 60 * 10,
+    });
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });
