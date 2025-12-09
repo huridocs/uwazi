@@ -12,10 +12,10 @@ import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
 import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter';
 
-export function DefaultQueueAdapter() {
+export function DefaultQueueAdapter(transactionManager: TransactionManager) {
   return new MongoQueueAdapter(
     getSharedConnection(),
-    new MongoTransactionManager(getSharedClient(), LoggerFactory.systemLogger())
+    transactionManager as MongoTransactionManager
   );
 }
 
@@ -26,10 +26,11 @@ export function RoundRobinQueueAdapter() {
   );
 }
 
-export function DefaultTestingQueueAdapter(transactionManager?: MongoTransactionManager) {
+export function DefaultTestingQueueAdapter(transactionManager?: TransactionManager) {
   return new MongoQueueAdapter(
     getConnection(),
-    transactionManager ?? new MongoTransactionManager(getClient(), LoggerFactory.default())
+    (transactionManager as MongoTransactionManager) ??
+      new MongoTransactionManager(getClient(), LoggerFactory.default())
   );
 }
 
@@ -40,19 +41,18 @@ export function TestingRoundRobinQueueAdapter() {
   );
 }
 
-export function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
-  return new JobsRouter(
-    queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter(), queueOptions)
-  );
-}
-
-export function TestingDispatcher(tenant: string, transactionManager: TransactionManager) {
+export function DefaultDispatcher(
+  tenant: string,
+  transactionManager: TransactionManager,
+  queueOptions?: QueueOptions
+) {
   return new JobsRouter(
     queueName =>
       new NamespacedDispatcher(
         tenant,
         queueName,
-        DefaultTestingQueueAdapter(transactionManager as MongoTransactionManager)
+        DefaultQueueAdapter(transactionManager),
+        queueOptions
       )
   );
 }

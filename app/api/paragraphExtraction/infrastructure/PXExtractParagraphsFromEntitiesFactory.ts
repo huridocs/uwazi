@@ -29,7 +29,9 @@ export class PXExtractParagraphsFromEntitiesFactory {
         mongoTransactionManager,
       });
 
-    const dispatcher = await DefaultDispatcher(props.tenantName, { lockWindow: 1000 * 60 });
+    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
+      lockWindow: 1000 * 60,
+    });
 
     return new PXExtractParagraphsFromEntities({
       entitiesStatusDS,
