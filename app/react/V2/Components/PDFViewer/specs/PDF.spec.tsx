@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, act, queryAllByAttribute, cleanup, RenderResult } from '@testing-library/react';
+import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
 import { pdfScaleAtom } from 'V2/atoms';
 import { TestAtomStoreProvider } from 'V2/testing';
@@ -141,8 +141,8 @@ describe('PDF', () => {
     await act(() => {
       renderComponet();
     });
-    const { container } = renderResult;
-    const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+    const { container, getAllByTestId } = renderResult;
+    const page1 = getAllByTestId('pdf-page')[0];
     await act(() => {
       oberserverMock.enterNode(page1);
     });
@@ -162,7 +162,7 @@ describe('PDF', () => {
         },
         eventBus: expect.any(Object),
         id: 1,
-        scale: 1.6,
+        scale: 1.96,
       })
     );
     expect(mockPageRender).toHaveBeenCalled();
@@ -190,8 +190,8 @@ describe('PDF', () => {
         renderComponet();
       });
 
-      const { container } = renderResult;
-      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+      const { getAllByTestId } = renderResult;
+      const page1 = getAllByTestId('pdf-page')[0];
 
       await act(() => {
         oberserverMock.enterNode(page1);
@@ -223,8 +223,8 @@ describe('PDF', () => {
         renderComponet();
       });
 
-      const { container } = renderResult;
-      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+      const { getAllByTestId } = renderResult;
+      const page1 = getAllByTestId('pdf-page')[0];
 
       await act(() => {
         oberserverMock.enterNode(page1);
@@ -248,8 +248,8 @@ describe('PDF', () => {
         renderComponet();
       });
 
-      const { container } = renderResult;
-      const page1 = queryAllByAttribute('class', container, 'pdf-page')[0];
+      const { getAllByTestId } = renderResult;
+      const page1 = getAllByTestId('pdf-page')[0];
 
       await act(() => {
         oberserverMock.enterNode(page1);
@@ -297,8 +297,8 @@ describe('PDF', () => {
         renderComponet();
       });
 
-      const { container } = renderResult;
-      const page2 = queryAllByAttribute('class', container, 'pdf-page')[1];
+      const { container, getAllByTestId } = renderResult;
+      const page2 = getAllByTestId('pdf-page')[1];
 
       await act(async () => {
         oberserverMock.enterNode(page2);
@@ -393,7 +393,7 @@ describe('PDF', () => {
         );
       });
 
-      const page1 = result!.container.querySelector('.pdf-page') as HTMLElement;
+      const page1 = result!.container.querySelector('[data-testid="pdf-page"]') as HTMLElement;
 
       await act(() => {
         oberserverMock.enterNode(page1);

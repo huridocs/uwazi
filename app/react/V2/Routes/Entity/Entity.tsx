@@ -4,6 +4,7 @@ import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
+  LinkIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
@@ -16,6 +17,7 @@ import { Tabs } from 'V2/Components/UI';
 import {
   TabLabel,
   PDFView,
+  ReferencesPanel,
   SearchHintsModal,
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
@@ -33,6 +35,7 @@ const MAIN_TABS = {
 const SIDE_TABS = {
   METADATA: 'metadata',
   TOC: 'toc',
+  REFERENCES: 'references',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
 };
@@ -109,6 +112,11 @@ const Entity = () => {
           id: SIDE_TABS.TOC,
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: <ToCPanel toc={entity?.mainDocument?.toc} />,
+        },
+        {
+          id: SIDE_TABS.REFERENCES,
+          label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
+          content: <ReferencesPanel relations={entity?.relations as any} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -225,14 +233,14 @@ const Entity = () => {
   }
 
   return (
-    <div className="tw-content">
+    <div className="tw-content" style={{ width: '100%', height: '100%' }}>
       <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="p-2 h-full">
+        <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="p-2 h-full">
+        <PaneLayout.Pane className="h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             unmountTabs={false}

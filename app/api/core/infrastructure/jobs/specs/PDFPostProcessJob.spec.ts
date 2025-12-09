@@ -52,7 +52,7 @@ const setUpJob = (pdfService = new PDFService()) => {
           idGenerator: IdGeneratorFactory.default(),
           fileStorage: FileStorageFactory.default(),
           filesDS: FilesDataSourceFactory.default(transactionManager),
-          jobsDispatcher: DefaultDispatcher(tenants.current().name),
+          jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
           pdfService: new PDFService(),
           filesIO: new FileContentsIO(),
           relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
