@@ -5,14 +5,17 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TestingDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants';
 import { elastic, search } from 'api/search';
-import { ObjectId } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { MongoEntityPermissionChecker } from 'api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import {
+  getConnection,
+  getSharedConnection,
+} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { UserSchema } from 'shared/types/userType';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
@@ -120,7 +123,7 @@ const createSut = (props?: CreateSutProps) => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
   const jobsDispatcher =
-    props?.jobsDispatcher ?? TestingDispatcher(tenants.current().name, transactionManager);
+    props?.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
   const searchInstance = props?.search ?? search;
   const entityPermissionChecker = new MongoEntityPermissionChecker(
     getConnection(),
@@ -162,13 +165,18 @@ const createSut = (props?: CreateSutProps) => {
 };
 
 describe('BulkDeleteEntityUseCase', () => {
+  let jobsCollection: Collection;
+
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'bulk_delete_entity_use_case');
+
+    jobsCollection = getSharedConnection().collection('jobs');
   });
 
   beforeEach(async () => {
     await testingEnvironment.setFixtures(fixtures);
     await testingEnvironment.setElastic('bulk_delete_entity_use_case');
+    await jobsCollection.deleteMany({});
   });
 
   afterAll(async () => {
@@ -187,7 +195,7 @@ describe('BulkDeleteEntityUseCase', () => {
     const elasticResult = await elastic.search({ size: 100 });
 
     const entitiesDB = await testingEnvironment.db.getAllFrom('entities');
-    const jobs = await testingEnvironment.db.getAllFrom('jobs');
+    const jobs = await jobsCollection.find().toArray();
 
     // Should delete Entities sync.
     const dbSharedIds = entitiesDB.map((entity: any) => entity.sharedId);
@@ -229,7 +237,7 @@ describe('BulkDeleteEntityUseCase', () => {
     const { sut } = createSut({ search: searchMock });
 
     const entitiesDBBefore = await testingEnvironment.db.getAllFrom('entities');
-    const jobsBefore = await testingEnvironment.db.getAllFrom('jobs');
+    const jobsBefore = await jobsCollection.find().toArray();
 
     const input: BulkDeleteEntityInput = {
       sharedIds: ['A1', 'A2', 'B1'],
@@ -238,14 +246,14 @@ describe('BulkDeleteEntityUseCase', () => {
     await expect(sut.execute(input)).rejects.toThrow('Deletion failed');
 
     const entitiesDBAfter = await testingEnvironment.db.getAllFrom('entities');
-    const jobsAfter = await testingEnvironment.db.getAllFrom('jobs');
+    const jobsAfter = await jobsCollection.find().toArray();
 
     expect(jobsBefore).toEqual(jobsAfter);
 
     expect(entitiesDBBefore).toEqual(entitiesDBAfter);
   });
 
-  it.skip('should revert when dispatching of jobs fails', async () => {
+  it('should revert when dispatching of jobs fails', async () => {
     const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatchMany: jest.fn().mockRejectedValue(new Error('Dispatch failed')),
     });
@@ -275,7 +283,7 @@ describe('BulkDeleteEntityUseCase', () => {
 
     const { sut } = createSut({ entitiesDS });
 
-    const jobsBefore = await testingEnvironment.db.getAllFrom('jobs');
+    const jobsBefore = await jobsCollection.find().toArray();
     const elasticBefore = await elastic.search({ size: 100 });
 
     const input: BulkDeleteEntityInput = {
@@ -285,7 +293,7 @@ describe('BulkDeleteEntityUseCase', () => {
     await expect(sut.execute(input)).rejects.toThrow('Fail');
 
     const elasticAfter = await elastic.search({ size: 100 });
-    const jobsAfter = await testingEnvironment.db.getAllFrom('jobs');
+    const jobsAfter = await jobsCollection.find().toArray();
 
     expect(jobsBefore).toEqual(jobsAfter);
     expect(elasticBefore.body.hits.hits).toEqual(elasticAfter.body.hits.hits);
@@ -343,7 +351,7 @@ describe('BulkDeleteEntityUseCase', () => {
     };
 
     await sut.execute(input);
-    const jobs = await testingEnvironment.db.getAllFrom('jobs');
+    const jobs = await jobsCollection.find().toArray();
 
     // Should have created jobs for deletion.
     expect(jobs.length).toBe(3);
@@ -693,7 +701,7 @@ describe('BulkDeleteEntityUseCase', () => {
 
         await sut.execute(input);
 
-        const jobs = await testingEnvironment.db.getAllFrom('jobs');
+        const jobs = await jobsCollection.find().toArray();
 
         // Should only create job for entity_with_write
         expect(jobs).toEqual([
@@ -738,7 +746,7 @@ describe('BulkDeleteEntityUseCase', () => {
           'You do not have permission to any of the requested entities: entity_with_read, entity_no_permissions, entity_published'
         );
 
-        const jobs = await testingEnvironment.db.getAllFrom('jobs');
+        const jobs = await jobsCollection.find().toArray();
 
         // Should not create any jobs
         expect(jobs.length).toBe(0);

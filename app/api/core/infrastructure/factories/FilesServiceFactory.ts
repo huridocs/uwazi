@@ -16,6 +16,8 @@ import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { PathManager } from '../files/PathManager';
+import { DeleteFileFromStorageJobHandler } from '../jobs/DeleteFileFromStorageJobHandler';
 
 class FilesServiceFactory {
   static default(
@@ -23,7 +25,7 @@ class FilesServiceFactory {
     deps: Partial<ConstructorParameters<typeof FilesService>[0]> = {}
   ) {
     let _transactionManager = transactionManager;
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' && !_transactionManager) {
       _transactionManager = TransactionManagerFactory.default();
     }
     const filesDS = FilesDataSourceFactory.default(_transactionManager);
@@ -31,6 +33,8 @@ class FilesServiceFactory {
     const fileStorage = FileStorageFactory.default();
 
     let jobsDispatcher: JobsDispatcher = new SyncDispatcherForTests({
+      DeleteFileFromStorageJobHandler: async () =>
+        new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() }),
       PDFPostProcessJob: async () =>
         new PDFPostProcessJob({
           useCase: new PDFPostProcess({
@@ -42,6 +46,7 @@ class FilesServiceFactory {
             idGenerator,
             filesIO: new FileContentsIO(),
             filesService: new FilesService({
+              pathManager: new PathManager({ tenant: tenants.current() }),
               idGenerator: IdGeneratorFactory.default(),
               fileStorage: FileStorageFactory.default(),
               filesDS: FilesDataSourceFactory.default(_transactionManager),
@@ -58,10 +63,11 @@ class FilesServiceFactory {
     });
 
     if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = DefaultDispatcher(tenants.current().name);
+      jobsDispatcher = DefaultDispatcher(tenants.current().name, _transactionManager);
     }
 
     return new FilesService({
+      pathManager: new PathManager({ tenant: tenants.current() }),
       idGenerator: IdGeneratorFactory.default(),
       fileStorage: FileStorageFactory.default(),
       filesDS: FilesDataSourceFactory.default(_transactionManager),

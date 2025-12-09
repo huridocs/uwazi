@@ -26,7 +26,7 @@ type Deps = {
 class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
-  protected async executeAsync({ sharedIds }: Input): Promise<Output> {
+  async execute({ sharedIds }: Input): Promise<Output> {
     const grantedSharedIds = (
       await this.deps.entityPermissionChecker.filterEntities(
         sharedIds,
@@ -37,19 +37,19 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
     await this.transactionManager.run(async () => {
+      await this.jobsDispatcher.dispatchMany(async dispatch =>
+        chunks.forEach(chunk =>
+          dispatch(BulkCleanupEntityJob, {
+            sharedIds: chunk,
+            userId: this.getActor()._id,
+            tenantName: this.tenant.name,
+          })
+        )
+      );
+
       await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
       await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
     });
-
-    await this.jobsDispatcher.dispatchMany(async dispatch =>
-      chunks.forEach(chunk =>
-        dispatch(BulkCleanupEntityJob, {
-          sharedIds: chunk,
-          userId: this.getActor()._id,
-          tenantName: this.tenant.name,
-        })
-      )
-    );
 
     return { sharedIds };
   }

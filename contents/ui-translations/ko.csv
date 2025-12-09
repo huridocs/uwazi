@@ -478,6 +478,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
         some time to reappear in the Library, but this is temporary. Do you want to continue?"
 Maps,지도
 Mark as Reviewed,검토 완료로 표시
+Mark as reviewed,Mark as reviewed
 Markdown,Markdown
 marked and labeled,marked and labeled
 marked for training,marked for training
@@ -906,6 +907,7 @@ Timelinks,Timelinks
 Timestamp,Timestamp
 Title,제목
 To,To
+To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
@@ -1023,7 +1025,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
-"You can start by selecting text in the document and clicking the ""Add to ToC"" button.","You can start by selecting text in the document and clicking the ""Add to ToC"" button."
+"You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

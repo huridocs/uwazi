@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import templates from 'api/core/v1_layer/templates';
 import { tenants } from 'api/tenants';
@@ -48,7 +49,7 @@ const createBlankSuggestionsForPartialExtractor = async (
     extractorTemplates.has(template.toString())
   );
 
-  const dispatcher = await DefaultDispatcher(tenants.current().name);
+  const dispatcher = DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default());
 
   await filteredTemplates.reduce(async (promise, template) => {
     await promise;
