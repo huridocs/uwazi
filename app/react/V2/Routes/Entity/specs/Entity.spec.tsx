@@ -323,7 +323,7 @@ describe('Entity view', () => {
         expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
       });
 
-      jest.clearAllMocks();
+      jest.restoreAllMocks();
     });
   });
 
@@ -439,6 +439,7 @@ describe('Entity view', () => {
         snippets.data[0].snippets.fullText[0]
       );
 
+      jest.useRealTimers();
       jest.clearAllMocks();
     });
   });
