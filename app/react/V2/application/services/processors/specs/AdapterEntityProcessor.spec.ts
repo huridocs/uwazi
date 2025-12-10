@@ -804,4 +804,45 @@ describe('Adapter Entity Processor Tests', () => {
       },
     ]);
   });
+
+  it('should include references', () => {
+    const contextWithOptions = {
+      ...processingContext,
+      includeReferences: true,
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithOptions);
+    const result = processor.processEntity(rawEntity);
+    const references = result.entity.references;
+
+    expect(references).toMatchObject([
+      {
+        _id: 'reference.document.id',
+        hub: 'reference.document.hub',
+        file: 'd1',
+        reference: {
+          selectionRectangles: [
+            {
+              top: 242.51024870695886,
+              left: 300.0269153736255,
+              width: 192.95629091616027,
+              height: 22.918518518518514,
+              page: '1',
+            },
+          ],
+          text: 'Content of the reference',
+        },
+        targetEntity: {
+          _id: 'reference.document.id',
+          title: 'Entity with reference to document',
+          sharedId: 'test-incident-001',
+          template: {
+            _id: 'template.reference',
+            name: 'Reference Template',
+            color: '#FD7E14',
+          },
+        },
+      },
+    ]);
+  });
 });
