@@ -2,6 +2,7 @@ import { Template, ClientSettings, ClientThesaurus, ClientUserSchema } from 'app
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Entity } from 'app/V2/domain';
 import {
+  EntityReference,
   EntityTemplate,
   ExtendedPropertyInfo,
   MetadataProperty,
@@ -64,6 +65,7 @@ export interface CompositionOptions {
   formatDates?: boolean;
   includeRawEntity?: boolean;
   includeSupportingFiles?: boolean;
+  includeReferences?: boolean;
   omitRelationships?: boolean;
 
   // Field selection
@@ -119,3 +121,12 @@ export type AdapterMetadataProperty = MetadataProperty & {
     translationContext?: ClientTranslationContextSchema;
   };
 };
+
+export interface AdapterReferences {
+  [entityId: string]: EntityReference[];
+}
+
+export interface ReferencesResult {
+  references: AdapterReferences;
+  templateIds: string[];
+}
