@@ -5,7 +5,7 @@ import {
   MetadataProperty,
   DateMetadataProperty,
   EntityTemplate,
-  EntityRelation,
+  EntityReference,
 } from './types';
 
 export interface Entity {
@@ -20,10 +20,8 @@ export interface Entity {
   readonly permissions?: EntityPermissions;
   metadata: MetadataProperty[];
   rawEntity?: EntityWithFilesSchema;
-  relations?: EntityRelation[];
+  references?: EntityReference[];
   mainDocument?: FileType;
   documents?: FileType[];
   attachments?: FileType[];
 }
-
-export type { EntityRelation };
