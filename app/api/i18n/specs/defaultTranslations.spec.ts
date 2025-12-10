@@ -26,6 +26,10 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
     longName: 'Arabic',
   },
   {
+    key: 'el',
+    longName: 'Greek',
+  },
+  {
     key: 'en',
     longName: 'English',
   },
@@ -56,6 +60,10 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
   {
     key: 'tr',
     longName: 'Turkish',
+  },
+  {
+    key: 'uk',
+    longName: 'Ukrainian',
   },
 ];
 const expectedFileNames = new Set(EXPECTED_DEFAULT_TRANSLATIONS.map(({ key }) => `${key}.csv`));
