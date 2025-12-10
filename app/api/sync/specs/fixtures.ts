@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UpdateLog } from 'api/updatelogs';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -39,7 +38,6 @@ const template3 = db.id();
 const template3PropertyRelationship1 = db.id();
 
 const thesauri1 = db.id();
-const thesauri1Value1 = db.id();
 const thesauri1Value2 = db.id();
 
 const thesauri2 = db.id();
