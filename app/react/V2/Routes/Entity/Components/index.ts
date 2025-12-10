@@ -6,4 +6,3 @@ export { SearchResults } from './SearchResults';
 export { SearchHintsModal } from './SearchHintsModal';
 export { ToCPanel } from './ToCPanel';
 export { FileList } from './FileList';
-
