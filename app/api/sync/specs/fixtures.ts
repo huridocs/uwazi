@@ -805,11 +805,9 @@ const host1Fixtures: DBFixture = {
       name: 'thesauri1',
       values: [
         {
-          _id: thesauri1Value1,
           label: 'th1value1',
         },
         {
-          _id: thesauri1Value2,
           label: 'th1value2',
         },
       ],
@@ -823,11 +821,9 @@ const host1Fixtures: DBFixture = {
       name: 'thesauri3',
       values: [
         {
-          _id: thesauri3Value1,
           label: 'th3value1',
         },
         {
-          _id: thesauri3Value2,
           label: 'th3value2',
         },
       ],
