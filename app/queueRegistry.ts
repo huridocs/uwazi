@@ -136,7 +136,7 @@ export function registerJobs(
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = DefaultDispatcher(namespace, {
+    const dispatcher = DefaultDispatcher(namespace, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60,
     });
 
@@ -235,7 +235,7 @@ export function registerJobs(
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage });
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,
@@ -258,7 +258,7 @@ export function registerJobs(
     const thesauriValuesDS =
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const useCase = new CsvPreflightJob({
       csvImportsDS,
       rowsDS,

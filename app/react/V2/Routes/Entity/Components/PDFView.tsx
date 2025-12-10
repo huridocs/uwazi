@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
@@ -7,6 +7,7 @@ import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate } from 'V2/Components/UI';
 import { Panel } from 'V2/Components/Layouts/Panel';
+import { isClient } from 'app/utils';
 import { settingsAtom } from 'V2/atoms';
 import { PlainText } from './PlainText';
 import { OCRButton } from './OCRButton';
@@ -16,10 +17,12 @@ import { scrollToPage } from './functions';
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const [hydrated, setHydrated] = useState(false);
+
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
-  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
 
   const getPageSearchParams = useCallback(
     (pageParam: number | string) => {
@@ -59,6 +62,8 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     };
 
     const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
+
+    setHydrated(true);
 
     return () => {
       unsubscribe();
@@ -113,7 +118,6 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
           </div>
         </div>
       </Panel.Body>
-
       <Panel.Footer>
         <div className="flex flex-row items-center w-full">
           <div className="justify-self-start grow">
