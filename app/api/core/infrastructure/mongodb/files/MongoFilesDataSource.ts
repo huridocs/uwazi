@@ -71,7 +71,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   private toModel(dbo: fileDBO) {
-    return FileMappers.toModel(dbo, { fileStorage: this.fileStorage });
+    return FileMappers.toModel(dbo, {
+      contentLoader: this.fileStorage.getFile.bind(this.fileStorage),
+    });
   }
 
   private setFilesToReindex(files: BaseFile[]) {

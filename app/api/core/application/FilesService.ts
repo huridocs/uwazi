@@ -10,7 +10,6 @@ import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile } from '../domain/files/BaseFile';
-import { FileWithContents } from '../domain/files/FileWithContents';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
 import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
@@ -46,7 +45,7 @@ class FilesService {
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
-      files.filter((f): f is FileWithContents => f instanceof FileWithContents),
+      files.filter(f => f.hasContent()),
       async file => {
         await this.deps.fileStorage.storeFile(file);
       }
@@ -83,7 +82,7 @@ class FilesService {
   }
 
   async delete(files: [BaseFile, ...BaseFile[]]) {
-    const contentFiles = files.filter((f): f is FileWithContents => f instanceof FileWithContents);
+    const contentFiles = files.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(files);
     await this.deps.relV1DS.deleteByFiles(contentFiles);

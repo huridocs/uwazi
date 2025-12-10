@@ -5,14 +5,16 @@ import { LanguageUtils } from 'shared/language';
 import { Attachment } from '../../../domain/files/Attachment';
 import { CustomUpload } from '../../../domain/files/CustomUpload';
 import { Document } from '../../../domain/files/Document';
-import { NullFileContents } from '../../../domain/files/FileContents';
+import { FileContents, NullFileContents } from '../../../domain/files/FileContents';
 import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Thumbnail } from '../../../domain/files/Thumbnail';
 import { URLAttachment } from '../../../domain/files/URLAttachment';
 import { fileDBO } from './schemas/filesTypes';
 
+type contentLoader = (options: { type: fileDBO['type']; filename: string }) => FileContents;
+
 export const FileMappers = {
-  toModel(dbo: fileDBO, { fileStorage }: { fileStorage: FileStorage }) {
+  toModel(dbo: fileDBO, { contentLoader }: { contentLoader: contentLoader }) {
     const commonFields = {
       id: dbo._id.toString(),
       originalname: dbo.originalname,
@@ -31,7 +33,7 @@ export const FileMappers = {
       });
     }
 
-    commonFields.content = fileStorage.getFile({
+    commonFields.content = contentLoader({
       type: dbo.type,
       filename: dbo.filename,
     });

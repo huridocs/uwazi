@@ -136,7 +136,7 @@ export class PXFilesDeletedListener {
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
         FileMappers.toModel(d as any, {
-          fileStorage: this.dependencies.fileStorage,
+          contentLoader: this.dependencies.fileStorage.getFile.bind(this.dependencies.fileStorage),
         })
       );
 

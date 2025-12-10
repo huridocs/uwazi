@@ -156,7 +156,8 @@ describe('FileMappers', () => {
       },
     });
 
-    const toModel = (dbo: fileDBO) => FileMappers.toModel(dbo, { fileStorage });
+    const toModel = (dbo: fileDBO) =>
+      FileMappers.toModel(dbo, { contentLoader: fileStorage.getFile.bind(fileStorage) });
 
     it('should map to URLAttachment when type is attachment and url is present', () => {
       const dbo: fileDBO = {
