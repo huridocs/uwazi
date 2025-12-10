@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
@@ -16,7 +16,7 @@ import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStora
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
 import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
-import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
@@ -177,10 +177,10 @@ export function registerJobs(
     });
   });
 
-  register(PDFPostProcessJob, async (_tenantName: string) => {
+  register(PDFPostProcessJobHandler, async (_tenantName: string) => {
     const transactionManager = TransactionManagerFactory.default();
-    return new PDFPostProcessJob({
-      useCase: new PDFPostProcess({
+    return new PDFPostProcessJobHandler({
+      useCase: new PDFPostProcessJob({
         eventBus: applicationEventsBus,
         transactionManager,
         filesDS: FilesDataSourceFactory.default(transactionManager),

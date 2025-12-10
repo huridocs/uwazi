@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
-import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
@@ -21,7 +21,7 @@ import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { FileIsNotAPDF, PDFService } from '../../services/PDFService';
-import { PDFPostProcessJob } from '../PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from '../PDFPostProcessJobHandler';
 
 async function filesAreIdentical(file1: string, file2: string) {
   const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
@@ -42,8 +42,8 @@ const setUpJob = (pdfService = new PDFService()) => {
   });
 
   return {
-    job: new PDFPostProcessJob({
-      useCase: new PDFPostProcess({
+    job: new PDFPostProcessJobHandler({
+      useCase: new PDFPostProcessJob({
         eventBus,
         transactionManager,
         filesDS: FilesDataSourceFactory.default(transactionManager),
@@ -82,7 +82,7 @@ describe('PDFPostProcessJob', () => {
   });
 
   const executeJob = async (
-    job: PDFPostProcessJob,
+    job: PDFPostProcessJobHandler,
     documentId: string,
     jobInfo: { maxRetries: number; retryCount: number } = {
       maxRetries: 5,

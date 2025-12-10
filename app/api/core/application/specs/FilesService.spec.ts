@@ -14,7 +14,7 @@ import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
-import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -105,7 +105,7 @@ describe('FilesService', () => {
 
     it('should dispatch pdf post process jobs when file is document', async () => {
       expect(dispatchMock).toHaveBeenCalledTimes(1);
-      expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJob, {
+      expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
         documentId: document.id,
         userId: permissionsContext.getUserInContext()?._id?.toString(),
         tenantName: tenants.current().name,

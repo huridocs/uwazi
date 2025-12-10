@@ -12,7 +12,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile } from '../domain/files/BaseFile';
 import { FileWithContents } from '../domain/files/FileWithContents';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
-import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from '../infrastructure/services/PDFService';
@@ -64,7 +64,7 @@ class FilesService {
             if (!userId) {
               throw new Error('PDFPostProcess needs a user Id');
             }
-            dispatch(PDFPostProcessJob, {
+            dispatch(PDFPostProcessJobHandler, {
               tenantName: tenants.current().name,
               documentId: file.id,
               userId,

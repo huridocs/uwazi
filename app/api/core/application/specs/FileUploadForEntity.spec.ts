@@ -5,39 +5,31 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { FileUploadForEntityFactory } from 'api/core/infrastructure/factories/FileUploadForEntityFactory';
 import { InputFile } from 'api/core/domain/files/InputFile';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 
 const f = getFixturesFactory();
 
 const fixtures: DBFixture = {
-  settings: [
-    {
-      languages: [
-        { default: true, key: 'en', label: 'English' },
-        { key: 'es', label: 'Spanish' },
-      ],
-    },
-  ],
-
-  entities: [f.entity('entity1')],
+  settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+  templates: [f.template('template')],
+  entities: [f.entity('entity1', 'template')],
 };
 
 const createUseCase = () => {
-  const useCase = FileUploadForEntityFactory.default();
+  const useCase = FileUploadForEntityFactory.default(TransactionManagerFactory.default());
   return { useCase };
 };
 
 describe('CreateEntityUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, true);
+    await testingEnvironment.setUp(fixtures, true);
   });
-
-  beforeEach(async () => testingEnvironment.setFixtures(fixtures));
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create an Entity', async () => {
+  it('should upload and save file in db', async () => {
     const { useCase } = createUseCase();
 
     await useCase.execute({
@@ -48,7 +40,7 @@ describe('CreateEntityUseCase', () => {
           originalname: 'english.pdf',
           encoding: 'utf-8',
           mimetype: 'application/pdf',
-          destination: '',
+          destination: testingEnvironment.testingFilesPath(''),
           filename: 'english.pdf',
           path: '',
           size: 1,

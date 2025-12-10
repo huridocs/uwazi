@@ -30,7 +30,7 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
   async execute({ entityId, uploadedFile }: Input): Promise<Output> {
     const entity = await (await this.deps.entitiesDS.getEntitiesBySharedIds([entityId])).first();
     if (!entity) {
-      throw new EntityNotFoundError(`Entity ${entityId}, not found`);
+      throw new EntityNotFoundError(entityId);
     }
 
     const document = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
