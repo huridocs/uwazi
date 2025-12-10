@@ -26,8 +26,8 @@ import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import {
-    Dispatchable,
-    HeartbeatCallback,
+  Dispatchable,
+  HeartbeatCallback,
 } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
