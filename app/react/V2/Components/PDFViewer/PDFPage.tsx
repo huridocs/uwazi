@@ -71,8 +71,6 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
                     setError(e.message);
                   });
               }
-            } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.RUNNING) {
-              pageViewer.cancelRendering();
             } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
               pageViewer.destroy();
             }

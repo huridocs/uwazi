@@ -24,7 +24,7 @@ class FilesServiceFactory {
       pathManager: new PathManager({ tenant: tenants.current() }),
       idGenerator: IdGeneratorFactory.default(),
       fileStorage: FileStorageFactory.default(),
-      jobsDispatcher: DefaultDispatcher(tenants.current().name),
+      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
       pdfService: new PDFService(),
       filesIO: new FileContentsIO(),
       eventBus: applicationEventsBus,
