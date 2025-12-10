@@ -17,7 +17,6 @@ const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
           {references.length > 0 ? (
             references.map((reference, index) => {
               const entityTitle = reference.targetEntity.title || 'Untitled';
-              const templateId = reference.targetEntity.template._id || '';
               const templateName = reference.targetEntity.template.name || '';
               const referenceText = reference.reference.text || '';
 
@@ -35,14 +34,10 @@ const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
                     <p className="text-sm text-gray-700 leading-relaxed">{referenceText}</p>
                   )}
 
-                  {templateId && (
+                  {templateName && (
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                          templateId ? 'text-purple-900 bg-purple-50' : 'text-red-900 bg-red-50'
-                        }`}
-                      >
-                        {templateId ? 'IACourt Judge' : 'Order of the judge'}
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-purple-900 bg-purple-50">
+                        {templateName}
                       </span>
                     </div>
                   )}
