@@ -1,2 +1,2 @@
 export type { MetadataProperty } from './entities/types';
-export type { Entity, EntityRelation } from './entities/Entity';
+export type { Entity } from './entities/Entity';

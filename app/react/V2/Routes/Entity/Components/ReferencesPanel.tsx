@@ -1,40 +1,25 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Panel } from 'V2/Components/Layouts/Panel';
-import { EntityRelation } from 'V2/domain';
 import { BlankState } from './BlankState';
+import { EntityReference } from 'app/V2/domain/entities/types';
 
 type ReferencesPanelProps = {
-  relations?: EntityRelation[];
+  references?: EntityReference[];
 };
 
-const ReferencesPanel = ({ relations }: ReferencesPanelProps) => {
-  const references = useMemo(() => {
-    if (!relations || !Array.isArray(relations)) {
-      return [];
-    }
-    return relations.filter(relation => relation.reference);
-  }, [relations]);
-
-  const getTemplateName = (templateId?: string | null): string => {
-    if (!templateId) {
-      return '';
-    }
-    // TODO: Get template name from templates atom or context
-    return templateId;
-  };
-
+const ReferencesPanel = ({ references = [] }: ReferencesPanelProps) => {
   return (
     <Panel className="gap-4">
       <Panel.Body className="pr-1">
         <div className="flex flex-col gap-2 h-full">
           {references.length > 0 ? (
             references.map((reference, index) => {
-              const entityTitle = reference.entityData?.title || 'Untitled';
-              const templateId = reference.entityData?.template || reference.template;
-              const templateName = getTemplateName(templateId);
-              const referenceText = reference.reference?.text || '';
+              const entityTitle = reference.targetEntity.title || 'Untitled';
+              const templateId = reference.targetEntity.template._id || '';
+              const templateName = reference.targetEntity.template.name || '';
+              const referenceText = reference.reference.text || '';
 
               return (
                 <div
