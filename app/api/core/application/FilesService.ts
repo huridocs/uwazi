@@ -1,8 +1,8 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Document } from 'api/core/domain/files/Document';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -58,7 +58,7 @@ class FilesService {
 
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
         files.forEach(file => {
-          if (file instanceof Document) {
+          if (file instanceof ProcessingPDF) {
             const userId = permissionsContext.getUserInContext()?._id?.toString();
             if (!userId) {
               throw new Error('PDFPostProcess needs a user Id');
@@ -101,7 +101,7 @@ class FilesService {
     });
   }
 
-  async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {
+  async createThumbnail(doc: ProcessedPDF, language: LanguageISO6391) {
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;

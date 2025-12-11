@@ -1,24 +1,24 @@
 import { BaseFile, FileContentLoader } from 'api/core/domain/files/BaseFile';
 import { ObjectId } from 'mongodb';
-import { Attachment } from '../../../domain/files/Attachment';
+import { FileAttachment } from '../../../domain/files/FileAttachment';
 import { CustomUpload } from '../../../domain/files/CustomUpload';
-import { Document } from '../../../domain/files/Document';
-import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
+import { ProcessingPDF } from '../../../domain/files/ProcessingPDF';
+import { ProcessedPDF } from '../../../domain/files/ProcessedPDF';
 import { Thumbnail } from '../../../domain/files/Thumbnail';
 import { URLAttachment } from '../../../domain/files/URLAttachment';
-import { AttachmentDBO, fileDBO } from './schemas/filesTypes';
+import { FileAttachmentDBO, fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {
   toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
     switch (dbo.type) {
       case 'document':
         return dbo.status === 'ready'
-          ? ProcessedDocument.fromDBO(dbo, contentLoader)
-          : Document.fromDBO(dbo, contentLoader);
+          ? ProcessedPDF.fromDBO(dbo, contentLoader)
+          : ProcessingPDF.fromDBO(dbo, contentLoader);
       case 'attachment':
         return dbo.url
           ? URLAttachment.fromDBO(dbo)
-          : Attachment.fromDBO(dbo as AttachmentDBO, contentLoader);
+          : FileAttachment.fromDBO(dbo as FileAttachmentDBO, contentLoader);
       case 'custom':
         return CustomUpload.fromDBO(dbo, contentLoader);
       case 'thumbnail':

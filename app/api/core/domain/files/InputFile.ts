@@ -6,8 +6,8 @@ import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { DiskFile } from './DiskFile';
 import { FileContents } from './FileContents';
 import date from 'api/utils/date';
-import { Attachment } from './Attachment';
-import { Document } from './Document';
+import { FileAttachment } from './FileAttachment';
+import { ProcessingPDF } from './ProcessingPDF';
 import { URLAttachment } from './URLAttachment';
 
 type FileMetadata = {
@@ -90,9 +90,9 @@ export class InputFile {
 
     switch (this.type) {
       case 'document':
-        return new Document({ ...fileProps, status: 'processing' });
+        return new ProcessingPDF({ ...fileProps, status: 'processing' });
       case 'attachment':
-        return new Attachment(fileProps);
+        return new FileAttachment(fileProps);
       case 'url_attachment':
         if (typeof fileProps.url === 'string') {
           return new URLAttachment({ ...fileProps, url: fileProps.url });

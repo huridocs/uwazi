@@ -11,9 +11,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { config } from 'api/config';
-import { Attachment } from 'api/core/domain/files/Attachment';
+import { FileAttachment } from 'api/core/domain/files/FileAttachment';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { S3Error } from 'api/files/S3Storage';
@@ -137,7 +137,7 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new ProcessedDocument({
+        file: new ProcessedPDF({
           id: 'id',
           entity: 'entity',
           language: 'ab',
@@ -154,7 +154,7 @@ describe('S3FileStorage', () => {
         expected: 'test-tenant/documents/document',
       },
       {
-        file: new Attachment({
+        file: new FileAttachment({
           id: 'id',
           entity: 'entity',
           mimetype: 'application/pdf',

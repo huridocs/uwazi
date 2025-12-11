@@ -11,7 +11,7 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { Segmentation } from 'api/core/domain/files/Segmentation';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtractionService } from '../domain/PXExtractionService';
@@ -99,7 +99,7 @@ export class PXExtractParagraphsFromEntity
     }
   }
 
-  private static getMainLanguage(documents: ProcessedDocument[], defaultLanguage: LanguageISO6391) {
+  private static getMainLanguage(documents: ProcessedPDF[], defaultLanguage: LanguageISO6391) {
     const documentsHaveDefaultLanguage = documents.some(d => d.language === defaultLanguage);
 
     const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
@@ -182,7 +182,7 @@ export class PXExtractParagraphsFromEntity
               existingDocumentCreationDate < documentCreationDate ? existingDocument : document,
           };
         },
-        {} as Record<string, ProcessedDocument>
+        {} as Record<string, ProcessedPDF>
       )
     );
 
@@ -196,7 +196,7 @@ export class PXExtractParagraphsFromEntity
     return uniqueByLanguage;
   }
 
-  private async getSegmentations(documents: ProcessedDocument[], entity: Entity) {
+  private async getSegmentations(documents: ProcessedPDF[], entity: Entity) {
     const segmentations = await this.dependencies.filesDS
       .getSegmentations(documents.map(document => document.id))
       .all();

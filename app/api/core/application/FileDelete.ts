@@ -1,6 +1,6 @@
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { z } from 'zod';
-import { ProcessedDocument } from '../domain/files/ProcessedDocument';
+import { ProcessedPDF } from '../domain/files/ProcessedPDF';
 import { Thumbnail } from '../domain/files/Thumbnail';
 import { AbstractUseCase } from '../libs/UseCase';
 import { FilesDataSource } from './contracts/FilesDataSource';
@@ -26,7 +26,7 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
     let thumbnails: Thumbnail[] = [];
 
-    if (file instanceof ProcessedDocument) {
+    if (file instanceof ProcessedPDF) {
       thumbnails = await this.deps.filesDS.getThumbnails([file]).all();
     }
 

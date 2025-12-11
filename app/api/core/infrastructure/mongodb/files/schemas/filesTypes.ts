@@ -25,11 +25,11 @@ export type BaseDocument = BaseFileDBO & {
   entity: string;
 };
 
-export type DocumentDBO = BaseDocument & {
+export type ProcessingPDFDBO = BaseDocument & {
   status: 'processing' | 'failed';
 };
 
-export type ProcessedDocumentDBO = BaseDocument & {
+export type ProcessedPDFDBO = BaseDocument & {
   totalPages: number;
   language: LanguageISO6393;
   status: 'ready';
@@ -37,7 +37,7 @@ export type ProcessedDocumentDBO = BaseDocument & {
   generatedToc: boolean;
 };
 
-export type AttachmentDBO = BaseFileDBO & {
+export type FileAttachmentDBO = BaseFileDBO & {
   type: 'attachment';
   entity: string;
   url?: never;
@@ -60,24 +60,24 @@ export type ThumbnailDBO = BaseFileDBO & {
 };
 
 export type fileDBO =
-  | DocumentDBO
-  | ProcessedDocumentDBO
-  | AttachmentDBO
+  | ProcessingPDFDBO
+  | ProcessedPDFDBO
+  | FileAttachmentDBO
   | CustomDBO
   | ThumbnailDBO
   | URLAttachmentDBO;
 
-export type DocumentDTO = ToDTO<DocumentDBO>;
-export type ProcessedDocumentDTO = ToDTO<ProcessedDocumentDBO>;
-export type AttachmentDTO = ToDTO<AttachmentDBO>;
+export type ProcessingPDFDTO = ToDTO<ProcessingPDFDBO>;
+export type ProcessedPDFDTO = ToDTO<ProcessedPDFDBO>;
+export type FileAttachmentDTO = ToDTO<FileAttachmentDBO>;
 export type URLAttachmentDTO = ToDTO<URLAttachmentDBO>;
 export type CustomDTO = ToDTO<CustomDBO>;
 export type ThumbnailDTO = ToDTO<ThumbnailDBO>;
 
 export type fileDTO =
-  | DocumentDTO
-  | ProcessedDocumentDTO
-  | AttachmentDTO
+  | ProcessingPDFDTO
+  | ProcessedPDFDTO
+  | FileAttachmentDTO
   | URLAttachmentDTO
   | CustomDTO
   | ThumbnailDTO;

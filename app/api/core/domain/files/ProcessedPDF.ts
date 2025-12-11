@@ -1,13 +1,12 @@
 import {
-  ProcessedDocumentDBO,
-  ProcessedDocumentDTO,
+  ProcessedPDFDBO,
+  ProcessedPDFDTO,
 } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { LanguageUtils } from 'shared/language';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
-import { Document } from './Document';
-import { FileWithContents } from './FileWithContents';
 import { FileContents } from './FileContents';
+import { FileWithContents } from './FileWithContents';
 
 type fullTextProp = { [k: string]: string };
 
@@ -22,7 +21,7 @@ type Props = BaseFileProps & {
   fullText: fullTextLoader;
 };
 
-export class ProcessedDocument extends FileWithContents {
+export class ProcessedPDF extends FileWithContents {
   readonly entity: string;
 
   protected _type = 'document' as const;
@@ -57,7 +56,7 @@ export class ProcessedDocument extends FileWithContents {
     return this.fullText;
   }
 
-  toDTO(): ProcessedDocumentDTO {
+  toDTO(): ProcessedPDFDTO {
     return {
       ...this.dtoBaseFields(),
       entity: this.entity,
@@ -70,8 +69,8 @@ export class ProcessedDocument extends FileWithContents {
     };
   }
 
-  static fromDBO(dbo: ProcessedDocumentDBO, contentLoader: FileContentLoader) {
-    return new ProcessedDocument({
+  static fromDBO(dbo: ProcessedPDFDBO, contentLoader: FileContentLoader) {
+    return new ProcessedPDF({
       ...BaseFile.dboCommonFields(dbo),
       content: contentLoader({ type: dbo.type, filename: dbo.filename }),
       entity: dbo.entity,
@@ -85,15 +84,6 @@ export class ProcessedDocument extends FileWithContents {
       generatedToc: dbo.generatedToc,
     });
   }
-
-  static fromDocument(
-    document: Document,
-    pdfInfo: {
-      language: LanguageISO6391;
-      totalPages: number;
-      fullText: fullTextProp;
-    }
-  ) {
-    return new ProcessedDocument({ ...document, ...pdfInfo, generatedToc: false });
-  }
 }
+
+export type { fullTextProp };

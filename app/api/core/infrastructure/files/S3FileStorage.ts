@@ -17,7 +17,7 @@ import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { Attachment } from '../../domain/files/Attachment';
+import { FileAttachment } from '../../domain/files/FileAttachment';
 import { CustomUpload } from '../../domain/files/CustomUpload';
 import { FileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
@@ -139,7 +139,7 @@ export class S3FileStorage implements FileStorage {
   }
 
   getPath(file: BaseFile): string {
-    if (file instanceof Attachment) {
+    if (file instanceof FileAttachment) {
       return path.join(this.tenant.attachments, file.filename);
     }
     if (file instanceof CustomUpload) {
