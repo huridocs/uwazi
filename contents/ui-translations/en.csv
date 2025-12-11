@@ -170,6 +170,7 @@ Connected to server,Connected to server
 Connection type,Connection type
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Contact Form
+Contact form email,Contact form email
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -210,8 +211,10 @@ Custom component error,Custom component markup error: unsupported values! Please
 Custom CSS,Custom CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
+Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Custom Uploads
+Dark,Dark
 Dashboard,Dashboard
 Date added,Date added
 Date format,Date format
@@ -468,10 +471,13 @@ low,low
 Manage site settings and configuration,Manage site settings and configuration
 Map,Map
 Map api key,Map api key
+Map API key,Map API key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map Layers,Map Layers
 Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Map view
+Mapbox,Mapbox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -555,6 +561,7 @@ No Relationships description,Relationships are bonds between entities.
 No Table of Contents,No Table of Contents
 No Table of contents,No Table of contents
 No Table of Contents description,No Table of Contents description
+No table of contents description,No table of contents description
 No text match,No text match
 No text match description,You can type something different in the search box to get some results.
 No type,No type
@@ -1014,6 +1021,7 @@ Warning: you are editing multiple entities. Fields marked with a,Warning: you ar
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,will be updated with the same value.
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1027,9 +1035,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

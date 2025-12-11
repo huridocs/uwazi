@@ -169,6 +169,7 @@ Connected to server,Συνδέθηκε στον διακομιστή
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
 Contact Form,Φόρμα επικοινωνίας
+Contact form email,Contact form email
 Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
@@ -209,8 +210,10 @@ Custom component error,Σφάλμα σήμανσης προσαρμοσμένο�
 Custom CSS,Προσαρμοσμένο CSS
 Custom Favicon,Προσαρμοσμένο Favicon
 Custom JS,Προσαρμοσμένο JS
+Custom landing page,Custom landing page
 custom page error warning,Παρουσιάστηκε απροσδόκητο σφάλμα σε αυτήν την προσαρμοσμένη σελίδα και ενδέχεται να μην λειτουργεί σωστά. Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
+Dark,Dark
 Dashboard,Πίνακας ελέγχου
 Date added,Ημερομηνία προσθήκης
 Date format,Μορφή ημερομηνίας
@@ -467,10 +470,13 @@ low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Map,Χάρτης
 Map api key,Κλειδί API χάρτη
+Map API key,Map API key
 Map api key tooltip,Για τη χρήση του Mapbox ή του Google Maps απαιτείται κλειδί API.
+Map Layers,Map Layers
 Map layers description,Περιγραφή επιπέδων χάρτη
 Map Provider,Πάροχος χάρτη
 Map view,Προβολή χάρτη
+Mapbox,Mapbox
 Mapping conflict error,"Είναι απαραίτητη η επαναευρετηριοποίηση της συλλογής σας. Ο λόγος μπορεί να ποικίλλει
          -- από συγκεκριμένες αλλαγές που έγιναν σε ιδιότητα προτύπου μέχρι νέα πεδία   
          που πρέπει να συμπληρωθούν σε όλες τις οντότητες.      
@@ -554,6 +560,7 @@ No Relationships description,Οι σχέσεις είναι δεσμοί μετ�
 No Table of Contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of Contents description,Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση.
+No table of contents description,No table of contents description
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No type,Κανένας τύπος
@@ -934,7 +941,7 @@ Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
-Two-Factor Authentication, Πιστοποίηση δύο παραγόντων
+Two-Factor Authentication,Πιστοποίηση δύο παραγόντων
 Two-factor authentication enabled,Η πιστοποίηση δύο παραγόντων ενεργοποιήθηκε
 Two-factor authentication failed.,Η πιστοποίηση δύο παραγόντων απέτυχε.
 Two-factor authentication secret,Μυστικό πιστοποίησης δύο παραγόντων
@@ -1013,6 +1020,7 @@ Warning: you are editing multiple entities. Fields marked with a,Προειδο�
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Θα επιχειρήσει να γεμίσει το περιέχον, χρησιμοποιώντας ολόκληρο το πλάτος του. Στις κάρτες, είναι πιθανό να προκύψει περικοπή."
 will be updated with the same value.,θα ενημερωθεί με την ίδια τιμή.
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.
@@ -1026,9 +1034,6 @@ You can add one or many items in this form.,Μπορείτε να προσθέσ
 "You can also embed advanced components like maps, charts and entity lists in your page.","Μπορείτε επίσης να ενσωματώσετε προηγμένα στοιχεία όπως χάρτες, διαγράμματα και λίστες οντοτήτων στη σελίδα σας."
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ 
-                  στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.
