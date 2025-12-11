@@ -92,17 +92,12 @@ const commonProperties = (
   ];
 };
 
-const thesaurusNestedValues = (
-  rootValue: string,
-  children: Array<string>,
-  idMapper: (key: string) => ObjectId
-) => {
+const thesaurusNestedValues = (rootValue: string, children: Array<string>) => {
   const nestedValues = children.map(nestedValue => ({
-    _id: idMapper(nestedValue),
     id: nestedValue,
     label: nestedValue,
   }));
-  return { _id: idMapper(rootValue), id: rootValue, label: rootValue, values: nestedValues };
+  return { id: rootValue, label: rootValue, values: nestedValues };
 };
 
 function getFixturesFactory() {
@@ -362,9 +357,7 @@ function getFixturesFactory() {
       name,
       _id: idMapper(name),
       values: values.map(value =>
-        typeof value === 'string'
-          ? { _id: idMapper(value), id: value, label: value }
-          : { _id: idMapper(value[0]), id: value[0], label: value[1] }
+        typeof value === 'string' ? { id: value, label: value } : { id: value[0], label: value[1] }
       ),
     }),
 
@@ -373,9 +366,9 @@ function getFixturesFactory() {
         (accumulator: ThesaurusValueSchema[], item: { [k: string]: Array<string> } | string) => {
           const nestedItems =
             typeof item === 'string'
-              ? [{ _id: idMapper(item), id: item, label: item }]
+              ? [{ id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                  thesaurusNestedValues(rootValue, children, idMapper)
+                  thesaurusNestedValues(rootValue, children)
                 );
           return [...accumulator, ...nestedItems];
         },
