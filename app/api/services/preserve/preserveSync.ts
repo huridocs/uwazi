@@ -57,8 +57,7 @@ const extractSource = async (
     valueId = newThesauriId();
     await dictionariesModel.db.updateOne(
       { _id: sourceProperty.content },
-      // @ts-ignore
-      { $push: { values: { label: hostname, _id: new ObjectId(), id: valueId } } }
+      { $push: { values: { label: hostname, id: valueId } } }
     );
   }
 
