@@ -1,7 +1,6 @@
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
-import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
 import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/core/domain/files/errors';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 import { FileIsNotAPDF } from '../services/PDFService';
@@ -16,11 +15,11 @@ type Params = UserAwareDispatchableParams & {
 };
 
 type JobDependencies = {
-  useCase: PDFPostProcess;
+  useCase: PDFPostProcessJob;
   wSockets: WebSockets;
 };
 
-export class PDFPostProcessJob extends UserAwareDispatchable<Params> {
+export class PDFPostProcessJobHandler extends UserAwareDispatchable<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
@@ -35,7 +34,7 @@ export class PDFPostProcessJob extends UserAwareDispatchable<Params> {
         jobInfo.namespace,
         'documentProcessed',
         processedDoc.entity,
-        FileMappers.toDTO(processedDoc)
+        processedDoc.toDTO()
       );
     } catch (e) {
       if (e instanceof ProcessingFileNotFound) {
@@ -48,7 +47,7 @@ export class PDFPostProcessJob extends UserAwareDispatchable<Params> {
             jobInfo.namespace,
             'conversionFailed',
             e.file.entity,
-            FileMappers.toDTO(e.file)
+            e.file.toDTO()
           );
         }
         if (e.cause instanceof FileIsNotAPDF) {

@@ -1,20 +1,20 @@
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
-import { Attachment } from '../../../../domain/files/Attachment';
+import { FileAttachment } from '../../../../domain/files/FileAttachment';
 import { CustomUpload } from '../../../../domain/files/CustomUpload';
-import { Document } from '../../../../domain/files/Document';
+import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF';
 import { URLAttachment } from '../../../../domain/files/URLAttachment';
 import { FileMappers } from '../FilesMappers';
 import {
-  AttachmentDBO,
-  DocumentDBO,
+  FileAttachmentDBO,
+  ProcessingPDFDBO,
   fileDBO,
-  ProcessedDocumentDBO,
+  ProcessedPDFDBO,
   ThumbnailDBO,
 } from '../schemas/filesTypes';
 
@@ -24,7 +24,7 @@ describe('FileMappers', () => {
   describe('toDBO', () => {
     it('should map Document to FileDBOType', () => {
       const document = FileBuilder.document(f.idString('docId'));
-      const result = FileMappers.toDBO(document) as DocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessingPDFDBO;
 
       expect(result).toMatchObject({
         _id: f.id('docId'),
@@ -41,7 +41,7 @@ describe('FileMappers', () => {
 
     it('should map ProcessedDocument to FileDBOType (fullText loader)', () => {
       const document = FileBuilder.processedDocument(f.idString('docId'));
-      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
 
       expect(result._id.toString()).toBe(f.idString('docId'));
 
@@ -66,7 +66,7 @@ describe('FileMappers', () => {
       const document = FileBuilder.processedDocument(f.idString('docId'), {
         fullText: { 1: 'text' },
       });
-      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
 
       expect(result._id.toString()).toBe(f.idString('docId'));
 
@@ -78,7 +78,7 @@ describe('FileMappers', () => {
 
     it('should map URLAttachment to FileDBOType', () => {
       const urlAttachment = FileBuilder.urlAttachment(f.idString('urlAttachment'));
-      const result = FileMappers.toDBO(urlAttachment) as AttachmentDBO;
+      const result = FileMappers.toDBO(urlAttachment) as FileAttachmentDBO;
 
       expect(result).toMatchObject({
         entity: 'entity2',
@@ -96,7 +96,7 @@ describe('FileMappers', () => {
       const attachment = FileBuilder.attachment(f.idString('attId'), {
         entity: 'entity3',
       });
-      const result = FileMappers.toDBO(attachment) as AttachmentDBO;
+      const result = FileMappers.toDBO(attachment) as FileAttachmentDBO;
 
       expect(result._id.toString()).toBe(f.idString('attId'));
       expect(result).toMatchObject({
@@ -127,7 +127,7 @@ describe('FileMappers', () => {
     it('should handle language conversion fallback', () => {
       const document = FileBuilder.processedDocument(f.idString('processed'));
 
-      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
 
       expect(result.language).toBe('eng');
     });
@@ -137,15 +137,9 @@ describe('FileMappers', () => {
         language: undefined,
       });
 
-      const result = FileMappers.toDBO(document) as ProcessedDocumentDBO;
+      const result = FileMappers.toDBO(document) as ProcessedPDFDBO;
 
       expect(result.language).toBe('other');
-    });
-
-    it('should throw error for unknown file type', () => {
-      const unknownFile = {} as any;
-
-      expect(() => FileMappers.toDBO(unknownFile)).toThrow('Unknown file type');
     });
   });
 
@@ -156,7 +150,8 @@ describe('FileMappers', () => {
       },
     });
 
-    const toModel = (dbo: fileDBO) => FileMappers.toModel(dbo, { fileStorage });
+    const toModel = (dbo: fileDBO) =>
+      FileMappers.toModel(dbo, { contentLoader: fileStorage.getFile.bind(fileStorage) });
 
     it('should map to URLAttachment when type is attachment and url is present', () => {
       const dbo: fileDBO = {
@@ -201,9 +196,9 @@ describe('FileMappers', () => {
 
       const result = toModel(dbo);
 
-      expect(result).toBeInstanceOf(Attachment);
+      expect(result).toBeInstanceOf(FileAttachment);
 
-      expect(result as Attachment).toMatchObject({
+      expect(result as FileAttachment).toMatchObject({
         id: dbo._id.toString(),
         entity: dbo.entity,
         originalname: dbo.originalname,
@@ -280,9 +275,9 @@ describe('FileMappers', () => {
 
       const result = toModel(dbo);
 
-      expect(result).toBeInstanceOf(Document);
+      expect(result).toBeInstanceOf(ProcessingPDF);
 
-      expect(result as Document).toMatchObject({
+      expect(result as ProcessingPDF).toMatchObject({
         id: dbo._id.toString(),
         entity: dbo.entity,
         originalname: dbo.originalname,
@@ -313,8 +308,8 @@ describe('FileMappers', () => {
 
       const result = toModel(dbo);
 
-      expect(result).toBeInstanceOf(ProcessedDocument);
-      const document = result as Document;
+      expect(result).toBeInstanceOf(ProcessedPDF);
+      const document = result as ProcessingPDF;
 
       expect(document).toMatchObject({
         id: dbo._id.toString(),
@@ -360,8 +355,8 @@ describe('FileMappers', () => {
       const documentResult = toModel(documentDBO);
       const anotherResult = toModel(anotherDocumentDBO);
 
-      expect(documentResult).toBeInstanceOf(ProcessedDocument);
-      expect(anotherResult).toBeInstanceOf(Document);
+      expect(documentResult).toBeInstanceOf(ProcessedPDF);
+      expect(anotherResult).toBeInstanceOf(ProcessingPDF);
     });
   });
 });

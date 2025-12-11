@@ -6,7 +6,7 @@ import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
 import { FileContents } from 'api/core/domain/files/FileContents';
 import franc from 'franc';
 // eslint-disable-next-line node/no-restricted-import
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from 'shared/language';

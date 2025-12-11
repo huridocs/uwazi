@@ -4,7 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { PropertyType } from 'api/core/domain/template/PropertyType';
 import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
