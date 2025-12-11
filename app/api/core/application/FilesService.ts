@@ -1,8 +1,8 @@
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { Document } from 'api/core/domain/files/Document';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -10,9 +10,8 @@ import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile } from '../domain/files/BaseFile';
-import { FileWithContents } from '../domain/files/FileWithContents';
 import { FileContentsIO } from '../infrastructure/files/FileContentIO';
-import { PDFPostProcessJob } from '../infrastructure/jobs/PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from '../infrastructure/jobs/PDFPostProcessJobHandler';
 import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { PDFService } from '../infrastructure/services/PDFService';
@@ -46,7 +45,7 @@ class FilesService {
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
-      files.filter((f): f is FileWithContents => f instanceof FileWithContents),
+      files.filter(f => f.hasContent()),
       async file => {
         await this.deps.fileStorage.storeFile(file);
       }
@@ -59,12 +58,12 @@ class FilesService {
 
       await this.deps.jobsDispatcher.dispatchMany(async dispatch => {
         files.forEach(file => {
-          if (file instanceof Document) {
+          if (file instanceof ProcessingPDF) {
             const userId = permissionsContext.getUserInContext()?._id?.toString();
             if (!userId) {
               throw new Error('PDFPostProcess needs a user Id');
             }
-            dispatch(PDFPostProcessJob, {
+            dispatch(PDFPostProcessJobHandler, {
               tenantName: tenants.current().name,
               documentId: file.id,
               userId,
@@ -83,7 +82,7 @@ class FilesService {
   }
 
   async delete(files: [BaseFile, ...BaseFile[]]) {
-    const contentFiles = files.filter((f): f is FileWithContents => f instanceof FileWithContents);
+    const contentFiles = files.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(files);
     await this.deps.relV1DS.deleteByFiles(contentFiles);
@@ -102,7 +101,7 @@ class FilesService {
     });
   }
 
-  async createThumbnail(doc: ProcessedDocument, language: LanguageISO6391) {
+  async createThumbnail(doc: ProcessedPDF, language: LanguageISO6391) {
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;

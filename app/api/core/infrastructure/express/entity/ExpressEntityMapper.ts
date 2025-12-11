@@ -1,5 +1,5 @@
 import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { CreateEntityDTO } from './Schemas';
 
 type ToEntityCreateInputProps = {
