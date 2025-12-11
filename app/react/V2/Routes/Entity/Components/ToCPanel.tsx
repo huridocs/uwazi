@@ -159,9 +159,9 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
               icon={
                 <ListBulletIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
               }
-              title=<Translate>No Table of contents</Translate>
+              title={<Translate>No Table of contents</Translate>}
               description={
-                <Translate>
+                <Translate translationKey="No table of contents description">
                   You can start by selecting text in the document and clicking the &quot;Add to
                   ToC&quot; button.
                 </Translate>
