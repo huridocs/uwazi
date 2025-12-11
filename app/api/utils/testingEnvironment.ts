@@ -30,6 +30,10 @@ const testingEnvironment = {
     await this.setElastic(elasticIndex);
   },
 
+  testingFilesPath(fileName: string) {
+    return path.join(__dirname, `../files/specs/testing_files/${fileName}`);
+  },
+
   async setupTenantTmpPaths(files: FileType[]) {
     const basePath = `/tmp/uwazi_upload_route${Date.now()}`;
     const uploadsPath = path.join(basePath, 'uploads');
@@ -51,7 +55,7 @@ const testingEnvironment = {
       if (file.filename) {
         try {
           await copyFile(
-            path.join(__dirname, `../files/specs/testing_files/${file.filename}`),
+            this.testingFilesPath(file.filename),
             path.join(file.type === 'custom' ? customUploadsPath : uploadsPath, file.filename)
           );
         } catch (e) {

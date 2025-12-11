@@ -1,4 +1,4 @@
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { ExpressEntityMapper } from '../ExpressEntityMapper';
 import { CreateEntityDTO } from '../Schemas';
 

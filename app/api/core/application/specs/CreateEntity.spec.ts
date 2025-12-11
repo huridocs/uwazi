@@ -20,7 +20,7 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';

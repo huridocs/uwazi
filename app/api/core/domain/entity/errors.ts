@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { DomainError } from '../error/DomainError';
 
 export class EntityTranslationDoesNotExistError extends DomainError {

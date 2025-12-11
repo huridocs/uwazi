@@ -3,10 +3,10 @@ import { BaseFile } from 'api/core/domain/files/BaseFile';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { ResultType } from 'api/core/libs/Result';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Document } from '../../domain/files/Document';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
 import { FileNotFound, ProcessingFileNotFound } from '../../domain/files/errors';
 import { FileType } from '../../domain/files/FileType';
-import { ProcessedDocument } from '../../domain/files/ProcessedDocument';
+import { ProcessedPDF } from '../../domain/files/ProcessedPDF';
 import { Segmentation } from '../../domain/files/Segmentation';
 
 type GetDocumentsForEntityOptions = {
@@ -18,7 +18,7 @@ interface FilesDataSource {
   bulkCreate(files: [BaseFile, ...BaseFile[]]): Promise<void>;
   update(file: BaseFile): Promise<void>;
   delete(files: BaseFile[]): Promise<void>;
-  getProcessingById(documentId: string): Promise<ResultType<Document, ProcessingFileNotFound>>;
+  getProcessingById(documentId: string): Promise<ResultType<ProcessingPDF, ProcessingFileNotFound>>;
   deleteExtractedMetadata(entityPropertyNames: string[], entitySharedIds: string[]): Promise<void>;
   renameExtractedMetadata(
     renamedPropertyNames: { [previousName: string]: string },
@@ -31,8 +31,8 @@ interface FilesDataSource {
   getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
-  ): ResultSet<ProcessedDocument>;
-  getThumbnails(files: ProcessedDocument[]): ResultSet<Thumbnail>;
+  ): ResultSet<ProcessedPDF>;
+  getThumbnails(files: ProcessedPDF[]): ResultSet<Thumbnail>;
   getByFilename(
     filename: string,
     allowedTypes?: FileType[]

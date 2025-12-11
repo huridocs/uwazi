@@ -7,8 +7,8 @@ import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { DiskFile } from '../../domain/files/DiskFile';
-import { FileContents, NullFileContents } from '../../domain/files/FileContents';
+import { DiskFile } from './DiskFile';
+import { FileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { PathManager } from './PathManager';
 
@@ -20,9 +20,6 @@ export class FileSystemStorage implements FileStorage {
   }
 
   async storeContent(content: FileContents, subpath: string): Promise<void> {
-    if (content instanceof NullFileContents) {
-      return;
-    }
     const filepath = this.pathManager.createPath({
       filename: path.basename(subpath),
       destination: path.dirname(subpath),

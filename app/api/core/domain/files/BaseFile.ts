@@ -1,3 +1,4 @@
+import { fileDBO, fileDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { FileTypes } from 'api/files/storage';
 import { FileContents } from './FileContents';
 
@@ -12,6 +13,11 @@ type Props = {
   content?: FileContents;
   entity?: string;
 };
+
+export type FileContentLoader = (options: {
+  type: fileDBO['type'];
+  filename: string;
+}) => FileContents;
 
 export abstract class BaseFile {
   readonly id: string;
@@ -55,6 +61,32 @@ export abstract class BaseFile {
   hasContent(): this is this & { content: FileContents } {
     return Boolean(this.content);
   }
+
+  protected dtoBaseFields() {
+    return {
+      _id: this.id,
+      originalname: this.originalname,
+      filename: this.filename,
+      mimetype: this.mimetype,
+      size: this.size,
+      creationDate: this.creationDate,
+    };
+  }
+
+  abstract toDTO(): fileDTO;
+
+  static dboCommonFields(dbo: fileDBO) {
+    return {
+      id: dbo._id.toString(),
+      originalname: dbo.originalname,
+      filename: dbo.filename,
+      mimetype: dbo.mimetype,
+      size: dbo.size,
+      creationDate: dbo.creationDate,
+    };
+  }
+
+  static fromDBO?(dbo: fileDBO, contentLoader: FileContentLoader): BaseFile;
 }
 
 export type { Props as BaseFileProps };

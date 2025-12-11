@@ -2,7 +2,7 @@
 import { createReadStream } from 'fs';
 
 import path from 'path';
-import { FileContents } from './FileContents';
+import { FileContents } from '../../domain/files/FileContents';
 
 export class DiskFile {
   private filepath: string;

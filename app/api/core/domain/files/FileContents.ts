@@ -15,9 +15,3 @@ export class FileContents {
     }
   }
 }
-
-export class NullFileContents extends FileContents {
-  constructor() {
-    super(async function* () {});
-  }
-}

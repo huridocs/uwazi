@@ -3,7 +3,7 @@ import multer from 'multer';
 
 import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { generateFileName } from 'api/files';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { tenants } from 'api/tenants';
 
 type multerCallback = (error: Error | null, destination: string) => void;
