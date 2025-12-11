@@ -1,4 +1,4 @@
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { randomUUID } from 'node:crypto';
 import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
 import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';

@@ -13,7 +13,7 @@ import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors'
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';

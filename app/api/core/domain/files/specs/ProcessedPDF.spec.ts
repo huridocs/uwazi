@@ -3,7 +3,7 @@ import { FileBuilder } from './FileBuilder';
 
 const f = getFixturesFactory();
 
-describe('ProcessedDocument', () => {
+describe('ProcessedPDF', () => {
   describe('getFullText', () => {
     describe('when not passing a fullText loader', () => {
       it('should return fullText', async () => {

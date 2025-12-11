@@ -27,7 +27,7 @@ import { MongoSegmentationBuilder } from 'api/core/infrastructure/mongodb/files/
 import { LanguageUtils } from 'shared/language';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import {
-  ProcessedDocumentDBO,
+  ProcessedPDFDBO,
   ThumbnailDBO,
 } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 
@@ -204,12 +204,9 @@ function getFixturesFactory() {
       return this.file(id, { ...extra, type: 'document' });
     },
 
-    processedDocument(
-      id: string,
-      extra: Partial<FileType> = {}
-    ): [ProcessedDocumentDBO, ThumbnailDBO] {
+    processedDocument(id: string, extra: Partial<FileType> = {}): [ProcessedPDFDBO, ThumbnailDBO] {
       return [
-        this.file(id, { ...extra, type: 'document', status: 'ready' }) as ProcessedDocumentDBO,
+        this.file(id, { ...extra, type: 'document', status: 'ready' }) as ProcessedPDFDBO,
         this.file(`${id}-thumb`, {
           filename: `${idMapper(id)}.jpg`,
           type: 'thumbnail',
