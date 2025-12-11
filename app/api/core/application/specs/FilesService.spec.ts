@@ -6,7 +6,7 @@ import { readFile } from 'fs/promises';
 /* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { FileContents } from 'api/core/domain/files/FileContents';
 import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';

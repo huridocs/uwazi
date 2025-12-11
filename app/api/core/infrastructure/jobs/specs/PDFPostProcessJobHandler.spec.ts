@@ -4,7 +4,7 @@ import { readFile } from 'fs/promises';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { WebSockets } from 'api/core/application/contracts/WebSockets';
 import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { ProcessingFileNotFound } from 'api/core/domain/files/errors';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';

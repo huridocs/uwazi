@@ -21,7 +21,7 @@ import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDi
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];

@@ -7,7 +7,7 @@ import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { DiskFile } from '../../domain/files/DiskFile';
+import { DiskFile } from './DiskFile';
 import { FileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { PathManager } from './PathManager';

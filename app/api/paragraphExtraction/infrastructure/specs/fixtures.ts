@@ -5,7 +5,7 @@ import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 

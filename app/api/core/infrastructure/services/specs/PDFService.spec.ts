@@ -4,7 +4,7 @@ import { createWriteStream } from 'fs';
 import { readFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { Result } from 'api/core/libs/Result';
 import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
 import { testingEnvironment } from 'api/utils/testingEnvironment';

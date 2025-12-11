@@ -1,4 +1,4 @@
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { ProcessingPDF } from 'api/core/domain/files/ProcessingPDF';
 import { FileNotFound } from 'api/core/domain/files/errors';
 import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
