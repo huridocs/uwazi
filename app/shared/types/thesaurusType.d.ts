@@ -11,11 +11,9 @@ export interface ThesaurusSchema {
 }
 
 export interface ThesaurusValueSchema {
-  _id?: ObjectIdSchema;
   id?: string;
   label: string;
   values?: {
-    _id?: ObjectIdSchema;
     id?: string;
     label: string;
     name?: string;
