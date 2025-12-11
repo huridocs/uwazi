@@ -9,20 +9,19 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { config } from 'api/config';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { Attachment } from 'api/core/domain/files/Attachment';
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { S3Error } from 'api/files/S3Storage';
 import { Tenant } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '../S3FileStorage';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { S3Error } from 'api/files/S3Storage';
-import { NullFileContents } from 'api/core/domain/files/FileContents';
 
 const f = getFixturesFactory();
 
@@ -360,12 +359,6 @@ describe('S3FileStorage', () => {
         })
       );
       expect(await toString(s3File)).toBe('content created\n');
-    });
-
-    it('should do nothing if passing a NullFileContents', async () => {
-      jest.spyOn(s3Client, 'send');
-      await s3fileStorage.storeContent(new NullFileContents(), 'custom_path/deep/documento.txt');
-      expect(s3Client.send).not.toHaveBeenCalled();
     });
   });
 

@@ -1,142 +1,38 @@
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { BaseFile } from 'api/core/domain/files/BaseFile';
+import { BaseFile, FileContentLoader } from 'api/core/domain/files/BaseFile';
 import { ObjectId } from 'mongodb';
-import { LanguageUtils } from 'shared/language';
 import { Attachment } from '../../../domain/files/Attachment';
 import { CustomUpload } from '../../../domain/files/CustomUpload';
 import { Document } from '../../../domain/files/Document';
-import { FileContents, NullFileContents } from '../../../domain/files/FileContents';
 import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
 import { Thumbnail } from '../../../domain/files/Thumbnail';
 import { URLAttachment } from '../../../domain/files/URLAttachment';
-import { fileDBO } from './schemas/filesTypes';
-
-type contentLoader = (options: { type: fileDBO['type']; filename: string }) => FileContents;
+import { AttachmentDBO, fileDBO } from './schemas/filesTypes';
 
 export const FileMappers = {
-  toModel(dbo: fileDBO, { contentLoader }: { contentLoader: contentLoader }) {
-    const commonFields = {
-      id: dbo._id.toString(),
-      originalname: dbo.originalname,
-      filename: dbo.filename,
-      mimetype: dbo.mimetype,
-      size: dbo.size,
-      creationDate: dbo.creationDate,
-      content: new NullFileContents(),
-    };
-
-    if (dbo.type === 'attachment' && dbo.url) {
-      return new URLAttachment({
-        ...commonFields,
-        entity: dbo.entity,
-        url: dbo.url,
-      });
+  toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {
+    switch (dbo.type) {
+      case 'document':
+        return dbo.status === 'ready'
+          ? ProcessedDocument.fromDBO(dbo, contentLoader)
+          : Document.fromDBO(dbo, contentLoader);
+      case 'attachment':
+        return dbo.url
+          ? URLAttachment.fromDBO(dbo)
+          : Attachment.fromDBO(dbo as AttachmentDBO, contentLoader);
+      case 'custom':
+        return CustomUpload.fromDBO(dbo, contentLoader);
+      case 'thumbnail':
+        return Thumbnail.fromDBO(dbo, contentLoader);
+      default:
+        throw new Error('Unknown file type');
     }
-
-    commonFields.content = contentLoader({
-      type: dbo.type,
-      filename: dbo.filename,
-    });
-
-    if (dbo.type === 'attachment') {
-      return new Attachment({ ...commonFields, entity: dbo.entity });
-    }
-
-    if (dbo.type === 'custom') {
-      return new CustomUpload(commonFields);
-    }
-
-    if (dbo.type === 'thumbnail') {
-      return new Thumbnail({
-        ...commonFields,
-        entity: dbo.entity,
-        language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-      });
-    }
-
-    if (dbo.type === 'document' && dbo.status === 'ready') {
-      return new ProcessedDocument({
-        ...commonFields,
-        id: dbo._id.toString(),
-        entity: dbo.entity,
-        language: LanguageUtils.fromISO639_3(dbo.language).ISO639_1,
-        totalPages: dbo.totalPages,
-        fullText:
-          dbo.fullText ||
-          (async () => {
-            throw new Error('not Implemented');
-          }),
-        generatedToc: dbo.generatedToc,
-      });
-    }
-    if (dbo.type === 'document') {
-      return new Document({
-        ...commonFields,
-        id: dbo._id.toString(),
-        entity: dbo.entity,
-        status: dbo.status,
-      });
-    }
-    throw new Error('Unknown file type');
   },
 
   toDBO: (file: BaseFile): fileDBO => {
-    const baseDBO = {
-      _id: new ObjectId(file.id),
-      originalname: file.originalname,
-      filename: file.filename,
-      mimetype: file.mimetype,
-      size: file.size,
-      creationDate: file.creationDate,
-    };
-
-    if (file instanceof ProcessedDocument) {
-      return {
-        ...baseDBO,
-        entity: file.entity,
-        type: 'document',
-        totalPages: file.totalPages,
-        language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
-        status: 'ready',
-        ...(file.fullText ? { fullText: file.fullText } : {}),
-        generatedToc: file.generatedToc,
-      };
-    }
-
-    if (file instanceof Document) {
-      return {
-        ...baseDBO,
-        entity: file.entity,
-        type: 'document',
-        status: file.status,
-      };
-    }
-
-    if (file instanceof URLAttachment) {
-      return { ...baseDBO, entity: file.entity, url: file.url, type: 'attachment' };
-    }
-
-    if (file instanceof Thumbnail) {
-      return {
-        ...baseDBO,
-        entity: file.entity,
-        language: LanguageUtils.fromISO639_1(file.language).ISO639_3,
-        type: 'thumbnail',
-      };
-    }
-
-    if (file instanceof Attachment) {
-      return { ...baseDBO, entity: file.entity, type: 'attachment' };
-    }
-
-    if (file instanceof CustomUpload) {
-      return { ...baseDBO, type: 'custom' };
+    if (file.toDTO) {
+      return { ...file.toDTO(), _id: new ObjectId(file.id) };
     }
 
     throw new Error('Unknown file type');
-  },
-
-  toDTO(file: BaseFile): Omit<fileDBO, '_id'> & { _id: string } {
-    return { ...this.toDBO(file), _id: file.id };
   },
 };

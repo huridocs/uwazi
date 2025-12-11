@@ -4,7 +4,6 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { ProcessingFileFailed } from 'api/core/domain/files/errors';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileMappers } from '../infrastructure/mongodb/files/FilesMappers';
 import { FileIsNotAPDF } from '../infrastructure/services/PDFService';
 import { EventsBus } from '../libs/eventsbus';
 import { AbstractUseCase } from '../libs/UseCase';
@@ -50,8 +49,8 @@ export class PDFPostProcessJob extends AbstractUseCase<Input, Output, Deps, [boo
 
       await this.eventBus.emit(
         new FileUpdatedEvent({
-          before: FileMappers.toDTO(document),
-          after: FileMappers.toDTO(processedDoc),
+          before: document.toDTO(),
+          after: processedDoc.toDTO(),
         })
       );
 

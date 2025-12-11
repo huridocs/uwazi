@@ -1,6 +1,5 @@
 // eslint-disable-next-line node/no-restricted-import
 import { InputFile } from 'api/core/domain/files/InputFile';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
@@ -41,7 +40,7 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.filesService.insert([document]);
     });
 
-    const dto = FileMappers.toDTO(document);
+    const dto = document.toDTO();
     await this.eventBus.emit(
       new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
     );

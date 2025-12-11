@@ -1,7 +1,6 @@
 import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { Document } from 'api/core/domain/files/Document';
 import { FileNotFound } from 'api/core/domain/files/errors';
-import { NullFileContents } from 'api/core/domain/files/FileContents';
 import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
 import { Thumbnail } from 'api/core/domain/files/Thumbnail';
@@ -389,7 +388,7 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getByFilename('url_attachment')).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
-      expect(doc?.content).toBeInstanceOf(NullFileContents);
+      expect(doc?.content).toBeUndefined();
     });
 
     it('should not load fullText by default', async () => {
@@ -418,7 +417,7 @@ describe('MongoFilesDataSource', () => {
       const { ds } = createDs();
       const doc = (await ds.getById(f.idString('url_attachment'))).getData();
       expect(doc).toBeInstanceOf(URLAttachment);
-      expect(doc?.content).toBeInstanceOf(NullFileContents);
+      expect(doc?.content).toBeUndefined();
     });
   });
 

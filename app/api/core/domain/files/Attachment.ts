@@ -1,4 +1,8 @@
-import { BaseFileProps } from './BaseFile';
+import {
+  AttachmentDBO,
+  AttachmentDTO,
+} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
 import { FileContents } from './FileContents';
 import { FileWithContents } from './FileWithContents';
 
@@ -12,5 +16,26 @@ export class Attachment extends FileWithContents {
     const { entity, ...baseProps } = props;
     super(baseProps);
     this.entity = entity;
+  }
+
+  static fromDBO(dbo: AttachmentDBO, contentLoader: FileContentLoader) {
+    return new Attachment({
+      ...BaseFile.dboCommonFields(dbo),
+      content: contentLoader({ type: dbo.type, filename: dbo.filename }),
+      entity: dbo.entity,
+    });
+  }
+
+  toDTO(): AttachmentDTO {
+    return {
+      _id: this.id,
+      originalname: this.originalname,
+      filename: this.filename,
+      mimetype: this.mimetype,
+      size: this.size,
+      creationDate: this.creationDate,
+      entity: this.entity,
+      type: 'attachment',
+    };
   }
 }
