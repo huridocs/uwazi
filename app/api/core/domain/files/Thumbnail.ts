@@ -30,13 +30,7 @@ export class Thumbnail extends FileWithContents {
 
   toDTO(): ThumbnailDTO {
     return {
-      _id: this.id,
-      originalname: this.originalname,
-      filename: this.filename,
-      mimetype: this.mimetype,
-      size: this.size,
-      creationDate: this.creationDate,
-
+      ...this.dtoBaseFields(),
       entity: this.entity,
       language: LanguageUtils.fromISO639_1(this.language).ISO639_3,
       type: 'thumbnail',

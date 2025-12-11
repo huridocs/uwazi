@@ -28,11 +28,5 @@ export const FileMappers = {
     }
   },
 
-  toDBO: (file: BaseFile): fileDBO => {
-    if (file.toDTO) {
-      return { ...file.toDTO(), _id: new ObjectId(file.id) };
-    }
-
-    throw new Error('Unknown file type');
-  },
+  toDBO: (file: BaseFile): fileDBO => ({ ...file.toDTO(), _id: new ObjectId(file.id) }),
 };

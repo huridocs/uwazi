@@ -141,12 +141,6 @@ describe('FileMappers', () => {
 
       expect(result.language).toBe('other');
     });
-
-    it('should throw error for unknown file type', () => {
-      const unknownFile = {} as any;
-
-      expect(() => FileMappers.toDBO(unknownFile)).toThrow('Unknown file type');
-    });
   });
 
   describe('toModel', () => {

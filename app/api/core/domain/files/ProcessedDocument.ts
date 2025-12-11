@@ -4,23 +4,29 @@ import {
 } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { LanguageUtils } from 'shared/language';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseDocument, BaseDocumentProps } from './BaseDocument';
-import { BaseFile, FileContentLoader } from './BaseFile';
+import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
 import { Document } from './Document';
+import { FileWithContents } from './FileWithContents';
+import { FileContents } from './FileContents';
 
 type fullTextProp = { [k: string]: string };
 
 type fullTextLoader = fullTextProp | (() => Promise<fullTextProp>);
 
-type Props = BaseDocumentProps & {
+type Props = BaseFileProps & {
   entity: string;
+  content: FileContents;
   language: LanguageISO6391;
   totalPages: number;
   generatedToc: boolean;
   fullText: fullTextLoader;
 };
 
-export class ProcessedDocument extends BaseDocument {
+export class ProcessedDocument extends FileWithContents {
+  readonly entity: string;
+
+  protected _type = 'document' as const;
+
   readonly language: LanguageISO6391;
 
   readonly totalPages: number;
@@ -32,12 +38,13 @@ export class ProcessedDocument extends BaseDocument {
   private fullTextLoader: fullTextLoader;
 
   constructor(props: Props) {
-    const { language, totalPages, fullText, generatedToc, ...baseProps } = props;
+    const { entity, language, totalPages, fullText, generatedToc, ...baseProps } = props;
     super({ ...baseProps });
     this.language = language;
     this.totalPages = totalPages;
     this.fullTextLoader = fullText;
     this.generatedToc = generatedToc;
+    this.entity = entity;
     if (typeof fullText !== 'function') {
       this.fullText = fullText;
     }
@@ -52,12 +59,7 @@ export class ProcessedDocument extends BaseDocument {
 
   toDTO(): ProcessedDocumentDTO {
     return {
-      _id: this.id,
-      originalname: this.originalname,
-      filename: this.filename,
-      mimetype: this.mimetype,
-      size: this.size,
-      creationDate: this.creationDate,
+      ...this.dtoBaseFields(),
       entity: this.entity,
       totalPages: this.totalPages,
       language: LanguageUtils.fromISO639_1(this.language).ISO639_3,

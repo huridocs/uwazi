@@ -62,6 +62,17 @@ export abstract class BaseFile {
     return Boolean(this.content);
   }
 
+  protected dtoBaseFields() {
+    return {
+      _id: this.id,
+      originalname: this.originalname,
+      filename: this.filename,
+      mimetype: this.mimetype,
+      size: this.size,
+      creationDate: this.creationDate,
+    };
+  }
+
   abstract toDTO(): fileDTO;
 
   static dboCommonFields(dbo: fileDBO) {

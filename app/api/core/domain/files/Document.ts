@@ -1,18 +1,26 @@
 import { DocumentDBO, DocumentDTO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { BaseDocument, BaseDocumentProps } from './BaseDocument';
-import { BaseFile, FileContentLoader } from './BaseFile';
+import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
+import { FileWithContents } from './FileWithContents';
+import { FileContents } from './FileContents';
 
-type Props = BaseDocumentProps & {
+type Props = BaseFileProps & {
+  entity: string;
+  content: FileContents;
   status: 'processing' | 'failed';
 };
 
-export class Document extends BaseDocument {
+export class Document extends FileWithContents {
   status: 'processing' | 'failed';
 
+  protected _type = 'document' as const;
+
+  readonly entity: string;
+
   constructor(props: Props) {
-    const { status, ...baseProps } = props;
+    const { entity, status, ...baseProps } = props;
     super(baseProps);
     this.status = status;
+    this.entity = entity;
   }
 
   failed() {
@@ -30,12 +38,7 @@ export class Document extends BaseDocument {
 
   toDTO(): DocumentDTO {
     return {
-      _id: this.id,
-      originalname: this.originalname,
-      filename: this.filename,
-      mimetype: this.mimetype,
-      size: this.size,
-      creationDate: this.creationDate,
+      ...this.dtoBaseFields(),
       entity: this.entity,
       status: this.status,
       type: 'document',

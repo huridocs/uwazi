@@ -14,12 +14,7 @@ export class CustomUpload extends FileWithContents {
 
   toDTO(): CustomDTO {
     return {
-      _id: this.id,
-      originalname: this.originalname,
-      filename: this.filename,
-      mimetype: this.mimetype,
-      size: this.size,
-      creationDate: this.creationDate,
+      ...this.dtoBaseFields(),
       type: 'custom',
     };
   }

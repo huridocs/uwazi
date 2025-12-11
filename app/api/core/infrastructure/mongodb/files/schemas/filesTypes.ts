@@ -1,6 +1,14 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6393 } from 'shared/language/languageISO639_3';
 
+/**
+ * Transforms DBO types (with ObjectId _id) to DTO types (with string _id).
+ * Uses distributive conditional type to preserve union structure.
+ *
+ * @example
+ * type DocumentDTO = ToDTO<DocumentDBO>
+ * // Result: { _id: string, ...rest of DocumentDBO fields }
+ */
 type ToDTO<T> = T extends any ? Omit<T, '_id'> & { _id: string } : never;
 
 type BaseFileDBO = {

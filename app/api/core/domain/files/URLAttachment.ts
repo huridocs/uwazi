@@ -30,12 +30,7 @@ export class URLAttachment extends BaseFile {
 
   toDTO(): URLAttachmentDTO {
     return {
-      _id: this.id,
-      originalname: this.originalname,
-      filename: this.filename,
-      mimetype: this.mimetype,
-      size: this.size,
-      creationDate: this.creationDate,
+      ...this.dtoBaseFields(),
       entity: this.entity,
       url: this.url,
       type: 'attachment',
