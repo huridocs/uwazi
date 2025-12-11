@@ -4,7 +4,7 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { FileUploadForEntityFactory } from 'api/core/infrastructure/factories/FileUploadForEntityFactory';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';

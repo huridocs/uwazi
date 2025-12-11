@@ -1,12 +1,12 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 
-import path from 'path';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { DiskFile } from '../../domain/files/DiskFile';
-import { FileContents } from '../../domain/files/FileContents';
 import date from 'api/utils/date';
+import path from 'path';
 import { FileAttachment } from '../../domain/files/FileAttachment';
+import { FileContents } from '../../domain/files/FileContents';
 import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
 import { URLAttachment } from '../../domain/files/URLAttachment';
 

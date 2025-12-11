@@ -4,9 +4,9 @@ import { createWriteStream } from 'fs';
 import { readFile } from 'fs/promises';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { Result } from 'api/core/libs/Result';
 import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createHash } from 'crypto';
 import { tmpdir } from 'os';

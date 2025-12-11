@@ -1,5 +1,5 @@
 // eslint-disable-next-line node/no-restricted-import
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
