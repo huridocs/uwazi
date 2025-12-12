@@ -52,7 +52,7 @@ const MetadataValueSchema = z.object({
 const MetadataObjectSchema = z.record(z.array(MetadataValueSchema));
 
 const EntityIconSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string().nullable().optional(),
   label: z.string().optional(),
   type: z.string().optional(),
 });
