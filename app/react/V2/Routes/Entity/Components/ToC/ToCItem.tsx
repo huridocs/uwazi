@@ -91,33 +91,28 @@ type EditControlsProps = {
   handleIncreaseIndentation: (e: React.MouseEvent) => void;
 };
 
-const renderEditControls = (props: EditControlsProps): React.ReactNode => {
-  if (!props.isEditMode) {
-    return null;
-  }
-  return (
-    <div className="flex items-center gap-0.5 flex-shrink-0">
-      <button
-        type="button"
-        onClick={props.handleDecreaseIndentation}
-        disabled={props.isFirstEntry || !props.canDecreaseIndentation}
-        className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
-        aria-label="Decrease indentation"
-      >
-        <ChevronLeftIcon className="w-4 h-4 text-gray-600" />
-      </button>
-      <button
-        type="button"
-        onClick={props.handleIncreaseIndentation}
-        disabled={props.isFirstEntry || !props.canIncreaseIndentation}
-        className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
-        aria-label="Increase indentation"
-      >
-        <ChevronRightIcon className="w-4 h-4 text-gray-600" />
-      </button>
-    </div>
-  );
-};
+const renderEditControls = (props: EditControlsProps): React.ReactNode => (
+  <div className="flex items-center gap-0.5 flex-shrink-0">
+    <button
+      type="button"
+      onClick={props.handleDecreaseIndentation}
+      disabled={props.isFirstEntry || !props.canDecreaseIndentation}
+      className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+      aria-label="Decrease indentation"
+    >
+      <ChevronLeftIcon className="w-4 h-4 text-gray-600" />
+    </button>
+    <button
+      type="button"
+      onClick={props.handleIncreaseIndentation}
+      disabled={props.isFirstEntry || !props.canIncreaseIndentation}
+      className="w-[20px] h-[20px] rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
+      aria-label="Increase indentation"
+    >
+      <ChevronRightIcon className="w-4 h-4 text-gray-600" />
+    </button>
+  </div>
+);
 
 type ExpandButtonProps = {
   hasChildren: boolean;
@@ -129,7 +124,7 @@ type ExpandButtonProps = {
 
 const renderExpandButton = (props: ExpandButtonProps): React.ReactNode => {
   if (!props.hasChildren || props.isEditMode) {
-    return <div className="w-6 flex-shrink-0" />;
+    return null;
   }
   return (
     <button
@@ -144,7 +139,7 @@ const renderExpandButton = (props: ExpandButtonProps): React.ReactNode => {
           props.toggleExpand(props.itemIndex);
         }
       }}
-      className="flex-shrink-0 p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400 transition cursor-pointer"
+      className="flex-shrink-0 p-0.5 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400 transition cursor-pointer min-w-[20px] h-[20px] items-center justify-center"
       aria-label={props.isExpanded ? 'Collapse section' : 'Expand section'}
       aria-expanded={props.isExpanded}
     >
@@ -261,18 +256,18 @@ export const ToCItem = ({
     handleDecreaseIndentation: (e: React.MouseEvent) => {
       e.stopPropagation();
       if (item.indentation > 0 && onIndentationChange) {
-        onIndentationChange(item.index, item.indentation - 1);
+        onIndentationChange(item.originalIndex, item.indentation - 1);
       }
     },
     handleIncreaseIndentation: (e: React.MouseEvent) => {
       e.stopPropagation();
       if (item.indentation < 2 && onIndentationChange) {
-        onIndentationChange(item.index, item.indentation + 1);
+        onIndentationChange(item.originalIndex, item.indentation + 1);
       }
     },
     handleDelete: () => {
       if (onDelete) {
-        onDelete(item.index);
+        onDelete(item.originalIndex);
       }
     },
   };
@@ -287,7 +282,7 @@ export const ToCItem = ({
 
   const handleLabelSave = () => {
     if (onLabelChange) {
-      onLabelChange(item.index, editedLabel.trim() || label);
+      onLabelChange(item.originalIndex, editedLabel.trim() || label);
     }
     setIsEditingLabel(false);
   };
@@ -312,21 +307,22 @@ export const ToCItem = ({
       style={{ paddingLeft, paddingRight }}
     >
       <div className="flex items-center gap-1 flex-1 min-w-0">
-        {renderEditControls({
-          isEditMode,
-          isFirstEntry: editControls.isFirstEntry,
-          canDecreaseIndentation: editControls.canDecreaseIndentation,
-          canIncreaseIndentation: editControls.canIncreaseIndentation,
-          handleDecreaseIndentation: editControls.handleDecreaseIndentation,
-          handleIncreaseIndentation: editControls.handleIncreaseIndentation,
-        })}
-        {renderExpandButton({
-          hasChildren,
-          isEditMode,
-          isExpanded,
-          toggleExpand,
-          itemIndex: item.index,
-        })}
+        {isEditMode
+          ? renderEditControls({
+              isEditMode,
+              isFirstEntry: editControls.isFirstEntry,
+              canDecreaseIndentation: editControls.canDecreaseIndentation,
+              canIncreaseIndentation: editControls.canIncreaseIndentation,
+              handleDecreaseIndentation: editControls.handleDecreaseIndentation,
+              handleIncreaseIndentation: editControls.handleIncreaseIndentation,
+            })
+          : renderExpandButton({
+              hasChildren,
+              isEditMode,
+              isExpanded,
+              toggleExpand,
+              itemIndex: item.index,
+            })}
         {isEditMode && isEditingLabel ? (
           <div className="flex-1 min-w-0 flex items-center gap-1">
             <input

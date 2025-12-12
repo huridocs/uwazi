@@ -11,14 +11,137 @@ import { TocSchema } from 'shared/types/commonTypes';
 import { ToCItem } from './ToCItem';
 import type { ProcessedTocEntry } from './types';
 
+const getPageNumber = (entry: TocSchema): number | null => {
+  const page = entry.selectionRectangles?.find(rect => rect.page)?.page;
+  if (!page) {
+    return null;
+  }
+  const parsed = Number.parseInt(page, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const getPosition = (entry: TocSchema): { top: number; left: number } | null => {
+  const rect = entry.selectionRectangles?.find(r => r.page);
+  if (!rect) {
+    return null;
+  }
+  return { top: rect.top ?? 0, left: rect.left ?? 0 };
+};
+
+// Sort ToC entries by page, then by position (top, then left)
+const sortTocEntries = (toc: TocSchema[]): TocSchema[] => {
+  const entriesWithIndex = toc.map((entry, index) => ({
+    entry,
+    originalIndex: index,
+    pageNumber: getPageNumber(entry),
+    position: getPosition(entry),
+  }));
+
+  const sortedEntries = [...entriesWithIndex].sort((a, b) => {
+    // Handle entries without page numbers - put them at the end
+    if (a.pageNumber === null && b.pageNumber === null) {
+      return a.originalIndex - b.originalIndex; // Maintain original order
+    }
+    if (a.pageNumber === null) {
+      return 1; // a goes after b
+    }
+    if (b.pageNumber === null) {
+      return -1; // a goes before b
+    }
+
+    // Compare by page number
+    if (a.pageNumber !== b.pageNumber) {
+      return a.pageNumber - b.pageNumber;
+    }
+
+    // Same page - compare by position
+    if (!a.position && !b.position) {
+      return a.originalIndex - b.originalIndex;
+    }
+    if (!a.position) {
+      return 1;
+    }
+    if (!b.position) {
+      return -1;
+    }
+
+    // Compare by top position first
+    if (a.position.top !== b.position.top) {
+      return a.position.top - b.position.top;
+    }
+
+    // Same top position - compare by left position
+    if (a.position.left !== b.position.left) {
+      return a.position.left - b.position.left;
+    }
+
+    // Same position - maintain original order
+    return a.originalIndex - b.originalIndex;
+  });
+
+  return sortedEntries.map(({ entry }) => entry);
+};
+
 const normalizeToc = (toc?: TocSchema[]): ProcessedTocEntry[] => {
   if (!toc || !toc.length) {
     return [];
   }
 
+  // Create entries with original index for reference
+  const entriesWithOriginalIndex = toc.map((entry, originalIndex) => ({
+    entry,
+    originalIndex,
+    pageNumber: getPageNumber(entry),
+    position: getPosition(entry),
+  }));
+
+  // Sort by page number first, then by position (top, then left)
+  const sortedEntries = [...entriesWithOriginalIndex].sort((a, b) => {
+    // Handle entries without page numbers - put them at the end
+    if (a.pageNumber === null && b.pageNumber === null) {
+      return a.originalIndex - b.originalIndex; // Maintain original order
+    }
+    if (a.pageNumber === null) {
+      return 1; // a goes after b
+    }
+    if (b.pageNumber === null) {
+      return -1; // a goes before b
+    }
+
+    // Compare by page number
+    if (a.pageNumber !== b.pageNumber) {
+      return a.pageNumber - b.pageNumber;
+    }
+
+    // Same page - compare by position
+    if (!a.position && !b.position) {
+      return a.originalIndex - b.originalIndex;
+    }
+    if (!a.position) {
+      return 1;
+    }
+    if (!b.position) {
+      return -1;
+    }
+
+    // Compare by top position first
+    if (a.position.top !== b.position.top) {
+      return a.position.top - b.position.top;
+    }
+
+    // Same top position - compare by left position
+    if (a.position.left !== b.position.left) {
+      return a.position.left - b.position.left;
+    }
+
+    // Same position - maintain original order
+    return a.originalIndex - b.originalIndex;
+  });
+
+  // Now process parent-child relationships based on sorted order
   let currentTopIndex = -1;
 
-  return toc.map((entry, index) => {
+  return sortedEntries.map(({ entry, originalIndex }, index) => {
     const rawIndentation = entry.indentation ?? 0;
     const isTopLevel = rawIndentation === 0;
 
@@ -29,6 +152,7 @@ const normalizeToc = (toc?: TocSchema[]): ProcessedTocEntry[] => {
     return {
       entry,
       index,
+      originalIndex,
       indentation: Math.max(rawIndentation, 0),
       topIndex: currentTopIndex,
       isTopLevel,
@@ -54,7 +178,18 @@ type ToCProps = {
 };
 
 const ToC = forwardRef<ToCRef, ToCProps>(
-  ({ toc, onClick, onStateChange, isEditMode = false, onIndentationChange, onDelete, onLabelChange }, ref) => {
+  (
+    {
+      toc,
+      onClick,
+      onStateChange,
+      isEditMode = false,
+      onIndentationChange,
+      onDelete,
+      onLabelChange,
+    },
+    ref
+  ) => {
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
     const normalizedToc = useMemo(() => normalizeToc(toc), [toc]);
 
@@ -161,6 +296,6 @@ const ToC = forwardRef<ToCRef, ToCProps>(
 
 ToC.displayName = 'ToC';
 
-export { ToC };
+export { ToC, sortTocEntries };
 export type { ToCProps, ToCRef };
 export type { ProcessedTocEntry } from './types';

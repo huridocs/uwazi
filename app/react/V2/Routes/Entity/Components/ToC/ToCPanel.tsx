@@ -10,7 +10,7 @@ import { FileType } from 'shared/types/fileType';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Button } from 'V2/Components/UI/Button';
 import { BlankState } from '../BlankState';
-import { ToC, type ProcessedTocEntry, type ToCRef } from './ToC';
+import { ToC, type ProcessedTocEntry, type ToCRef, sortTocEntries } from './ToC';
 import { scrollToPage } from '../functions';
 import { entityLoaderCache } from '../../EntityLoaderCache';
 
@@ -79,9 +79,11 @@ const ToCPanel = ({
 
     setIsSaving(true);
     try {
+      // Sort entries before saving to match display order
+      const sortedToc = sortTocEntries(editedToc);
       const updatedFile: FileType = {
         ...file,
-        toc: editedToc,
+        toc: sortedToc,
       };
       const result = await updateFile(updatedFile);
 
