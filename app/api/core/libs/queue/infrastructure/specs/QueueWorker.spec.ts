@@ -331,6 +331,39 @@ it('should double the lockWindow time on every retry', async () => {
   expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
 });
 
+it('should not update lock window when job reaches max retries', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 2;
+
+  const { adapter, worker, signals } = await setUpWorker();
+
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const updateLockWindowSpy = jest.spyOn(adapter, 'updateLockWindow');
+  const markJobAsFailedSpy = jest.spyOn(adapter, 'markJobAsFailed');
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(updateLockWindowSpy).toHaveBeenCalledWith(
+    expect.objectContaining({ retryCount: 1 }),
+    initialLockWindow * 2
+  );
+
+  expect(markJobAsFailedSpy).toHaveBeenCalledWith(expect.objectContaining({ retryCount: 2 }));
+
+  expect(updateLockWindowSpy).toHaveBeenCalledTimes(1);
+});
+
 describe('dispatchMany', () => {
   it('should process jobs dispatched in batch efficiently', async () => {
     const adapter = DefaultTestingQueueAdapter();

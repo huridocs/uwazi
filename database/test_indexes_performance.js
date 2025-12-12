@@ -9,7 +9,7 @@ const AUTH = {};
 if (process.env.DBUSER) {
   AUTH.auth = {
     user: process.env.DBUSER,
-    password: process.env.DBPASS
+    password: process.env.DBPASS,
   };
 }
 
@@ -24,15 +24,15 @@ class RoundRobinQueueAdapter {
       {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
-        namespace: { $nin: excludeTenants }
+        namespace: { $nin: excludeTenants },
       },
       [
         {
           $set: {
             lockedUntil: { $sum: [Date.now(), '$options.lockWindow'] },
-            retryCount: { $add: ['$retryCount', 1] }
-          }
-        }
+            retryCount: { $add: ['$retryCount', 1] },
+          },
+        },
       ],
       { sort: { createdAt: 1 }, returnDocument: 'after' }
     );
@@ -45,7 +45,7 @@ class RoundRobinQueueAdapter {
       const { _id, ...withoutId } = result;
       job = {
         ...withoutId,
-        id: _id.toHexString()
+        id: _id.toHexString(),
       };
     }
     if (job) {
@@ -58,17 +58,16 @@ class RoundRobinQueueAdapter {
 
 async function generateTestData(db, numJobs = 1000000, numTenants = 10) {
   console.log('Generating test data...');
-  
+
   // Generate tenant names
   const tenants = Array.from({ length: numTenants }, (_, i) => `tenant_${i}`);
-  
+
   // Generate jobs in batches to avoid memory issues
   const batchSize = 5000;
   const batches = Math.ceil(numJobs / batchSize);
-  
+
   // Clear existing data
   await db.collection('jobs').deleteMany({});
-  await db.collection('jobs_failed').deleteMany({});
   await db.collection('tenants').deleteMany({});
 
   for (let batch = 0; batch < batches; batch++) {
@@ -76,7 +75,7 @@ async function generateTestData(db, numJobs = 1000000, numTenants = 10) {
     const now = Date.now();
     const startIdx = batch * batchSize;
     const endIdx = Math.min(startIdx + batchSize, numJobs);
-    
+
     for (let i = startIdx; i < endIdx; i++) {
       jobs.push({
         queue: 'test_queue',
@@ -88,8 +87,8 @@ async function generateTestData(db, numJobs = 1000000, numTenants = 10) {
         retryCount: 0,
         options: {
           lockWindow: 30000,
-          maxRetries: 3
-        }
+          maxRetries: 3,
+        },
       });
     }
 
@@ -97,9 +96,9 @@ async function generateTestData(db, numJobs = 1000000, numTenants = 10) {
     console.log(`Inserted batch ${batch + 1}/${batches} (${jobs.length} jobs)`);
   }
 
-  await db.collection('tenants').insertMany(
-    tenants.map(name => ({ name, dbName: name, indexName: name }))
-  );
+  await db
+    .collection('tenants')
+    .insertMany(tenants.map(name => ({ name, dbName: name, indexName: name })));
 
   console.log(`Generated ${numJobs} jobs and ${numTenants} tenants`);
 }
@@ -109,7 +108,7 @@ async function testRoundRobinQuery(adapter, explain = false) {
     const query = {
       queue: 'test_queue',
       lockedUntil: { $lt: Date.now() },
-      namespace: { $nin: adapter.latestTenants }
+      namespace: { $nin: adapter.latestTenants },
     };
     const explainResult = await adapter.db.collection('jobs').find(query).explain('executionStats');
     console.log('\nQuery Explanation:');
@@ -124,45 +123,39 @@ async function testRoundRobinQuery(adapter, explain = false) {
 
 async function testWithoutIndexes(db) {
   console.log('\nTesting without indexes...');
-  
+
   // Drop indexes
   await db.collection('jobs').dropIndexes();
-  await db.collection('jobs_failed').dropIndexes();
   await db.collection('tenants').dropIndexes();
 
   const adapter = new RoundRobinQueueAdapter(db);
   const { time } = await testRoundRobinQuery(adapter);
   console.log(`Time without indexes: ${time}ms`);
-  
+
   return time;
 }
 
 async function testWithIndexes(db) {
   console.log('\nTesting with indexes...');
-  
+
   // Create indexes for jobs collection
   await db.collection('jobs').createIndex({ queue: 1, lockedUntil: 1 }, { background: true });
   await db.collection('jobs').createIndex({ namespace: 1 }, { background: true });
   await db.collection('jobs').createIndex({ createdAt: 1 }, { background: true });
-  
-  // Create indexes for jobs_failed collection
-  await db.collection('jobs_failed').createIndex({ queue: 1 }, { background: true });
-  await db.collection('jobs_failed').createIndex({ namespace: 1 }, { background: true });
-  await db.collection('jobs_failed').createIndex({ createdAt: 1 }, { background: true });
-  
+
   // Create indexes for tenants collection
   await db.collection('tenants').createIndex({ name: 1 }, { unique: true, background: true });
 
   const adapter = new RoundRobinQueueAdapter(db);
   const { time } = await testRoundRobinQuery(adapter);
   console.log(`Time with indexes: ${time}ms`);
-  
+
   return time;
 }
 
 async function runTests() {
   const client = new MongoClient(URI, AUTH);
-  
+
   try {
     await client.connect();
     const db = client.db(DB);
@@ -177,10 +170,10 @@ async function runTests() {
 
     for (let i = 0; i < iterations; i++) {
       console.log(`\nIteration ${i + 1}/${iterations}`);
-      
+
       const timeWithoutIndexes = await testWithoutIndexes(db);
       const timeWithIndexes = await testWithIndexes(db);
-      
+
       totalTimeWithoutIndexes += timeWithoutIndexes;
       totalTimeWithIndexes += timeWithIndexes;
     }
@@ -188,7 +181,8 @@ async function runTests() {
     // Calculate averages
     const avgTimeWithoutIndexes = totalTimeWithoutIndexes / iterations;
     const avgTimeWithIndexes = totalTimeWithIndexes / iterations;
-    const improvement = ((avgTimeWithoutIndexes - avgTimeWithIndexes) / avgTimeWithoutIndexes) * 100;
+    const improvement =
+      ((avgTimeWithoutIndexes - avgTimeWithIndexes) / avgTimeWithoutIndexes) * 100;
 
     console.log('\n=== Performance Test Results ===');
     console.log(`Average time without indexes: ${avgTimeWithoutIndexes.toFixed(2)}ms`);
@@ -199,7 +193,6 @@ async function runTests() {
     console.log('\nAnalyzing query with indexes...');
     const adapter = new RoundRobinQueueAdapter(db);
     await testRoundRobinQuery(adapter, true);
-
   } catch (error) {
     console.error('Error running tests:', error);
   } finally {
@@ -207,4 +200,5 @@ async function runTests() {
   }
 }
 
-runTests(); 
+runTests();
+
