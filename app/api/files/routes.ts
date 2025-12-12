@@ -11,7 +11,6 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { withTransaction } from 'api/utils/withTransaction';
 import { Application, Request, Response } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
@@ -20,7 +19,6 @@ import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
 import { createError, validation } from '../utils';
 import { files } from './files';
-import { storage } from './storage';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -271,104 +269,24 @@ export default (app: Application) => {
     }
   );
 
-  app.use('/uploaded_documents/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
-
-  app.get(
-    '/api/attachments/download',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          properties: {
-            _id: { type: 'string' },
-            file: { type: 'string' },
-          },
-          required: ['file'],
-        },
-      },
-      required: ['query'],
-    }),
-    async (req, res) => {
-      res.redirect(301, `/api/files/${req.query.file}?download=true`);
-    }
-  );
-
-  // app.use('/assets/:fileName', (req, res) => {
-  //   res.redirect(301, `/api/files/${req.params.fileName}`);
-  // });
-
   const checkFilePermissions = async (file: FileType) =>
     checkEntityPermission(file, permissionsContext.getUserInContext());
 
-  app.get(
-    '/assets/:filename',
-    DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible)
-  );
-  app.get(
-    '/files/thumbnails/:filename',
-    DownloadFileController.customHandler(
-      ['thumbnail'],
-      checkFilePermissions,
-      isFilePubliclyAccessible
-    )
-  );
-  app.get(
-    '/files/:filename',
-    DownloadFileController.customHandler(
-      ['document', 'attachment'],
-      checkFilePermissions,
-      isFilePubliclyAccessible
-    )
-  );
+  //prettier-ignore
+  app.get('/assets/:filename',            DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible));
+  //prettier-ignore
+  app.get('/files/thumbnails/:filename',  DownloadFileController.customHandler( ['thumbnail'], checkFilePermissions, isFilePubliclyAccessible));
+  //prettier-ignore
+  app.get('/files/:filename',             DownloadFileController.customHandler( ['document', 'attachment'], checkFilePermissions, isFilePubliclyAccessible));
 
-  app.get(
-    '/api/files/:filename',
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        params: {
-          type: 'object',
-          required: ['filename'],
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-        query: {
-          type: 'object',
-          properties: {
-            download: { type: 'boolean' },
-          },
-        },
-      },
-    }),
-    async (req: Request<{ filename: string }, {}, {}, { download?: boolean }>, res) => {
-      const [file] = await files.get({
-        filename: req.params.filename,
-      });
-
-      const currentUser = permissionsContext.getUserInContext();
-
-      if (
-        !file?.filename ||
-        !file?.type ||
-        !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file, currentUser))
-      ) {
-        throw createError('file not found', 404);
-      }
-
-      await addFileCacheHeaders(res, file, currentUser);
-      addContentHeaders(res, req, file.originalname || file.filename, file.mimetype);
-
-      const stream = await storage.readableFile(file.filename, file.type);
-      res.on('close', () => {
-        stream.destroy();
-      });
-      stream.pipe(res);
-    }
-  );
+  // Deprecated routes, keeping for Backwards compatibility
+  //prettier-ignore
+  app.get('/api/files/:filename',         DownloadFileController.customHandler(['custom', 'document', 'attachment', 'thumbnail'], checkFilePermissions, isFilePubliclyAccessible));
+  //prettier-ignore
+  app.use('/uploaded_documents/:fileName', (req, res) => { res.redirect(301, `/api/files/${req.params.fileName}`); });
+  //prettier-ignore
+  app.get('/api/attachments/download', async (req, res) => { res.redirect(301, `/api/files/${req.query.file}?download=true`); });
+  // Deprecated routes, keeping for Backwards compatibility
 
   app.delete(
     '/api/files',

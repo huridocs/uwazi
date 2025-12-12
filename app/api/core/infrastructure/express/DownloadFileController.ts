@@ -96,12 +96,12 @@ class DownloadFileController extends AbstractController {
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
 
     const stream = Readable.from(
-      (
-        await this.fileStorage.getFile({
+      this.fileStorage
+        .getFile({
           filename: file.filename,
           type: file.type,
         })
-      ).read()
+        .read()
     );
     this.response.on('close', () => {
       stream.destroy();
