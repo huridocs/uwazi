@@ -21,7 +21,6 @@ export interface JobDBO {
 
 export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
-  private failedJobsCollectionName = 'jobs_failed';
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
     super(db, transactionManager, { useSyncedCollection: false });
@@ -43,28 +42,17 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   protected async markExceededRetryJobsAsFailed(queueName: string): Promise<void> {
-    const exceededRetryJobs = await this.getCollection()
-      .find({
+    await this.getCollection().updateMany(
+      {
         queue: queueName,
         retryCount: { $exists: true },
         'options.maxRetries': { $exists: true },
         $expr: { $gte: ['$retryCount', '$options.maxRetries'] },
         $or: [{ failed: false }, { failed: { $exists: false } }],
-      })
-      .toArray();
-
-    if (exceededRetryJobs.length === 0) {
-      return;
-    }
-
-    if (exceededRetryJobs.length > 0) {
-      await this.getCollection(this.failedJobsCollectionName).insertMany(
-        exceededRetryJobs.map(job => ({ ...job, failed: true }))
-      );
-
-      const jobIds = exceededRetryJobs.map(job => job._id);
-      await this.getCollection().deleteMany({ _id: { $in: jobIds } });
-    }
+        lockedUntil: { $lt: Date.now() },
+      },
+      { $set: { failed: true } }
+    );
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
@@ -103,16 +91,6 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     return null;
   }
 
-  async moveToFailedJobs(job: Job) {
-    const jobToMove = await this.getCollection().findOne({ _id: new ObjectId(job.id) });
-    if (!jobToMove) {
-      throw new Error(`Job not found: ${job.id}`);
-    }
-
-    await this.getCollection(this.failedJobsCollectionName).insertOne(jobToMove);
-    await this.deleteJob(job);
-  }
-
   async markJobAsFailed(job: Job) {
     const result = await this.getCollection().findOneAndUpdate(
       {
@@ -131,7 +109,6 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       ...result,
     };
 
-    await this.moveToFailedJobs(updatedJob);
     return updatedJob;
   }
 
