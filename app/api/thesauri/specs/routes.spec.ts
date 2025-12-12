@@ -69,7 +69,7 @@ describe('Thesauri routes', () => {
       .mockResolvedValue(undefined);
     const thesauriSaveSpy = jest.spyOn(thesauri, 'save');
 
-    afterEach(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
 
