@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UpdateLog } from 'api/updatelogs';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -39,7 +38,6 @@ const template3 = db.id();
 const template3PropertyRelationship1 = db.id();
 
 const thesauri1 = db.id();
-const thesauri1Value1 = db.id();
 const thesauri1Value2 = db.id();
 
 const thesauri2 = db.id();
@@ -805,11 +803,9 @@ const host1Fixtures: DBFixture = {
       name: 'thesauri1',
       values: [
         {
-          _id: thesauri1Value1,
           label: 'th1value1',
         },
         {
-          _id: thesauri1Value2,
           label: 'th1value2',
         },
       ],
@@ -823,11 +819,9 @@ const host1Fixtures: DBFixture = {
       name: 'thesauri3',
       values: [
         {
-          _id: thesauri3Value1,
           label: 'th3value1',
         },
         {
-          _id: thesauri3Value2,
           label: 'th3value2',
         },
       ],
