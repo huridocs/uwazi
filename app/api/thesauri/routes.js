@@ -32,7 +32,6 @@ const routes = app => {
                     type: 'object',
                     properties: {
                       id: { type: 'string' },
-                      _id: { type: 'string' },
                       label: { type: 'string' },
                       values: { type: 'array', items: { type: 'object' } },
                     },

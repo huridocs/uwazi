@@ -253,7 +253,7 @@ it('should delete a job', async () => {
 });
 
 describe('Failed Jobs', () => {
-  it('should move a job to failed jobs collection when marked as failed', async () => {
+  it('should set the job as failed', async () => {
     const adapter = DefaultTestingQueueAdapter();
     const NOW_VALUE = 1;
     jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
@@ -273,11 +273,12 @@ describe('Failed Jobs', () => {
 
     await adapter.markJobAsFailed(job);
 
-    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
-    const failedJobs = await testingDB.mongodb!.collection('jobs_failed').find({}).toArray();
+    const [failedJob] = await testingDB
+      .mongodb!.collection('jobs')
+      .find({ failed: true })
+      .toArray();
 
-    expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
-    expect(failedJobs[0]).toMatchObject({
+    expect(failedJob).toMatchObject({
       ...jobData,
       lockedUntil: 0,
       retryCount: 0,
@@ -376,25 +377,18 @@ describe('Failed Jobs', () => {
     // Pick a job - this should trigger the batch check for exceeded retry jobs
     await adapter.pickJob('queue name');
 
-    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
-    const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+    const mainJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => !f.failed);
+    const failedJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => f.failed);
 
-    // All exceeded retry jobs should be moved to failed jobs collection
     expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
     expect(failedJobs!).toHaveLength(3);
 
-    // Verify all jobs are in failed collection with correct failed status
     const failedJobNames = failedJobs!.map(job => job.name).sort();
     expect(failedJobNames).toEqual([
       'exceeded retry job 1',
       'exceeded retry job 2',
       'exceeded retry job 3',
     ]);
-
-    // Verify all jobs have failed: true
-    failedJobs!.forEach(job => {
-      expect(job.failed).toBe(true);
-    });
   });
 });
 
@@ -455,13 +449,68 @@ it('should not pick jobs that have exceeded maxRetries', async () => {
     },
   });
 
-  const remainingJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
-  expect(remainingJobs!).toHaveLength(2); // OTHER_QUEUE_JOB + normalJob (updated) - exceeded job moved to failed
+  const remainingJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => !f.failed);
+  expect(remainingJobs).toHaveLength(2);
 
-  const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
-  expect(failedJobs!).toHaveLength(1); // exceeded job should be in failed collection
+  const failedJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => f.failed);
+  expect(failedJobs!).toHaveLength(1);
 
   const exceededJobAfter = failedJobs!.find(job => job.name === 'exceeded job');
-  expect(exceededJobAfter?.retryCount).toBe(3); // Should remain unchanged
-  expect(exceededJobAfter?.failed).toBe(true); // Should be marked as failed
+  expect(exceededJobAfter?.retryCount).toBe(3);
+  expect(exceededJobAfter?.failed).toBe(true);
+});
+
+it('should not mark locked jobs as failed even if they have exceeded maxRetries', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  let NOW_VALUE = 1000;
+  jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+  const job = {
+    _id: new ObjectId(),
+    queue: 'queue name',
+    name: 'job about to reach max retries',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 0,
+    createdAt: NOW_VALUE,
+    retryCount: 2,
+    failed: false,
+    options: {
+      lockWindow: 5000,
+      maxRetries: 3,
+    },
+  };
+
+  await testingDB.mongodb?.collection('jobs').insertOne(job);
+
+  const pickedJob = await adapter.pickJob('queue name');
+
+  expect(pickedJob).toMatchObject({
+    id: job._id.toHexString(),
+    retryCount: 3,
+    lockedUntil: NOW_VALUE + 5000,
+  });
+
+  NOW_VALUE = 3000;
+
+  const secondPickResult = await adapter.pickJob('queue name');
+
+  expect(secondPickResult).toBeNull();
+
+  const jobsInCollection = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+  const ourJob = jobsInCollection?.find(j => j._id.equals(job._id));
+
+  expect(ourJob?.failed).toBe(false);
+  expect(ourJob?.lockedUntil).toBe(6000);
+
+  NOW_VALUE = 7000;
+
+  const thirdPickResult = await adapter.pickJob('queue name');
+
+  expect(thirdPickResult).toBeNull();
+
+  const finalJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+  const finalJob = finalJobs?.find(j => j._id.equals(job._id));
+
+  expect(finalJob?.failed).toBe(true);
 });
