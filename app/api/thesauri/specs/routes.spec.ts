@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
@@ -8,6 +9,9 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { ensure } from 'shared/tsUtils';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
+import { tenants } from 'api/tenants';
+import { ObjectId } from 'mongodb';
 import { routes } from '../routes';
 import { thesauri } from '../thesauri';
 import { fixtures } from './fixtures';
@@ -55,6 +59,75 @@ describe('Thesauri routes', () => {
 
       await request(app).get('/api/thesauri?_id=any_id').expect(200);
       expect(thesauri.find).toHaveBeenNthCalledWith(2, { _id: 'any_id' });
+    });
+  });
+
+  describe('POST /api/thesauri', () => {
+    const controllerSpy = jest
+      .spyOn(CreateThesaurusController, 'createHandler')
+      //@ts-ignore
+      .mockResolvedValue(undefined);
+    const thesauriSaveSpy = jest.spyOn(thesauri, 'save');
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should only call CreateThesaurusController', async () => {
+      jest
+        .spyOn(tenants, 'current')
+        .mockReturnValue({ featureFlags: { v2CreateThesaurus: true } } as any);
+
+      await request(app)
+        .post('/api/thesauris')
+        .send({ name: 'New Thesaurus', values: [{ label: 'Value 1' }] });
+
+      expect(controllerSpy).toHaveBeenCalled();
+      expect(thesauriSaveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should only call thesauri.save', async () => {
+      jest
+        .spyOn(tenants, 'current')
+        .mockReturnValue({ featureFlags: { v2CreateThesaurus: false } } as any);
+
+      await request(app)
+        .post('/api/thesauris')
+        .send({ name: 'New Thesaurus', values: [{ label: 'Value 1' }] });
+
+      expect(thesauriSaveSpy).toHaveBeenCalled();
+      expect(controllerSpy).not.toHaveBeenCalled();
+
+      // V2 Create Thesaurus feature flag enabled
+      jest
+        .spyOn(tenants, 'current')
+        .mockReturnValue({ featureFlags: { v2CreateThesaurus: true } } as any);
+
+      // but a file is uploaded
+      await request(app)
+        .post('/api/thesauris')
+        .field('thesauri', JSON.stringify({ name: 'Imported', values: [{ label: 'one' }] }))
+        .attach('file', path.join(__dirname, '/uploads/import_thesauri.csv'));
+
+      expect(thesauriSaveSpy).toHaveBeenCalled();
+      expect(controllerSpy).not.toHaveBeenCalled();
+
+      // V2 Create Thesaurus feature flag enabled
+      jest
+        .spyOn(tenants, 'current')
+        .mockReturnValue({ featureFlags: { v2CreateThesaurus: true } } as any);
+
+      // but its an update
+      await request(app)
+        .post('/api/thesauris')
+        .send({
+          _id: new ObjectId().toHexString(),
+          name: 'New Thesaurus',
+          values: [{ label: 'Value 1' }],
+        });
+
+      expect(thesauriSaveSpy).toHaveBeenCalled();
+      expect(controllerSpy).not.toHaveBeenCalled();
     });
   });
 });
