@@ -6,6 +6,8 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { EntityNotFoundError } from 'api/core/application/errors';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO';
 
@@ -35,6 +37,10 @@ class RelationshipSyncJob extends UserAwareDispatchable<Params> {
       sharedId: this.params.sharedId,
       language: this.params.targetLanguage,
     });
+
+    if (!entity) {
+      throw new NonRetryableJobError(new EntityNotFoundError(this.params.sharedId));
+    }
 
     await this.deps.relationships.saveEntityBasedReferences(
       entity,
