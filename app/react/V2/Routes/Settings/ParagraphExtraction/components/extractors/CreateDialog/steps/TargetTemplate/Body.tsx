@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
 import { defaultSearch, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
@@ -13,6 +13,12 @@ const Body = () => {
     templates.filter(filterPXQualifiedTemplates)
   );
   const [options, setOptions] = useState<MultiselectListOption[]>(targetTemplateOptions);
+
+  // Update options when templates change (e.g., when a new template is created)
+  useEffect(() => {
+    setOptions(targetTemplateOptions);
+  }, [targetTemplateOptions]);
+
   return (
     <div className="h-96 pt-2">
       <MultiselectList
