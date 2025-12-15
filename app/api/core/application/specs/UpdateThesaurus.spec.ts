@@ -66,7 +66,7 @@ const createSut = (props?: CreateSutProps) => {
   return { sut };
 };
 
-describe('BulkCleanupEntityUseCase', () => {
+describe('UpdateThesaurusUseCase', () => {
   const getJobs = async () => getSharedConnection().collection('jobs').find().toArray();
   const getThesaurusById = async (_id: ObjectId) =>
     testingEnvironment.db!.getCollection('dictionaries')!.findOne({
