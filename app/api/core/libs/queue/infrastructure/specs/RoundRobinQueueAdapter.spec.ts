@@ -91,6 +91,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should automatically mark jobs that exceed maxRetries as failed when picking jobs', async () => {
+      await testingEnvironment.setUp({ jobs: [] });
       adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
 
@@ -120,11 +121,11 @@ describe('RoundRobinQueueAdapter', () => {
 
       const pickedJobs: string[] = await pickJobs(adapter);
 
-      const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+      const failedJobs = (await testingEnvironment.db.getAllFrom('jobs')).filter(f => f.failed);
 
       expect(pickedJobs).toEqual(['testTenant2', 'testTenant3', 'testTenant2']);
 
-      expect(failedJobs!).toHaveLength(1);
+      expect(failedJobs).toHaveLength(1);
       expect(failedJobs![0]).toMatchObject({
         namespace: 'testTenant1',
         retryCount: 5,
