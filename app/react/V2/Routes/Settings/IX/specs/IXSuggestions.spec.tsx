@@ -233,7 +233,7 @@ describe('IX suggestions', () => {
       render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
       const cancelTrainingButton = await screen.findByText('Cancel');
       const openModalButton = screen.queryByText('Train model');
-      expect(screen.findByText('Training model...'));
+      expect(screen.findByText('Training model'));
       expect(openModalButton).not.toBeInTheDocument();
 
       await act(async () => {
@@ -259,7 +259,7 @@ describe('IX suggestions', () => {
     it('should be disabled if the model is bussy', async () => {
       render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
       const openModalButton = (await screen.findByText('Process extractor')).parentElement;
-      expect(screen.findByText('Training model...'));
+      expect(screen.findByText('Training model'));
       expect(openModalButton).toBeDisabled();
     });
 
