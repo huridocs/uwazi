@@ -4,7 +4,9 @@ import {
 } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoQueueAdapter } from '../MongoQueueAdapter';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { JobDBO, MongoQueueAdapter } from '../MongoQueueAdapter';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 
 class TestJob implements Dispatchable {
@@ -80,5 +82,55 @@ describe('dispatchMany', () => {
     });
 
     expect(noMoreJobs).toBe(null);
+  });
+
+  describe('deleteByParams', () => {
+    const factory = getFixturesFactory();
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures({
+        jobs: [
+          {
+            _id: factory.id('job1_1'),
+            namespace: 'namespace_1',
+            queue: 'queue1',
+            name: 'SomeJob',
+            params: { a: 1 },
+          },
+          {
+            _id: factory.id('job1_3'),
+            namespace: 'namespace_1',
+            queue: 'queue1',
+            name: 'SomeJob',
+            params: { a: 1 },
+            lockedUntil: Date.now() + 10000,
+          },
+          {
+            _id: factory.id('job1_2'),
+            namespace: 'namespace_2',
+            queue: 'queue1',
+            name: 'SomeJob',
+            params: { a: 1 },
+          },
+        ] as JobDBO[],
+      });
+    });
+
+    it('should delete by params only on the specified namespace', async () => {
+      const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+
+      await dispatcher.deleteByParams({ a: 1 });
+
+      const job = await testingEnvironment.db.getAllFrom('jobs');
+
+      expect(job).toEqual(
+        TestUtils.arrayIncludesObjects([
+          { _id: factory.id('job1_2') },
+          {
+            _id: factory.id('job1_3'),
+          },
+        ])
+      );
+    });
   });
 });

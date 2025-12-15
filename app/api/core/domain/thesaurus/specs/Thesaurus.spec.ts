@@ -226,4 +226,104 @@ describe('Thesaurus', () => {
       });
     });
   });
+
+  describe('update', () => {
+    it('should update the name of the thesaurus', () => {
+      const thesaurus = Thesaurus.create({
+        name: 'Countries',
+        values: [{ label: 'USA' }],
+      });
+
+      const updated = thesaurus.update({ name: 'Updated Countries' });
+
+      expect(updated.name).toBe('Updated Countries');
+      expect(updated.values).toEqual(thesaurus.values);
+    });
+
+    it('should update the values of the thesaurus', () => {
+      const thesaurus = Thesaurus.create({
+        name: 'Countries',
+        values: [{ label: 'USA' }, { label: 'Asia', values: [{ label: 'China' }] }],
+      });
+
+      const updated1 = thesaurus.update({
+        values: [{ label: 'Canada' }, { label: 'Mexico' }],
+      });
+
+      const updated2 = thesaurus.update({
+        values: [
+          ...thesaurus.values,
+          { label: 'Canada' },
+          { label: 'Mexico' },
+          { label: 'Europe', values: [{ label: 'France' }] },
+        ],
+      });
+
+      const updated3 = thesaurus.update({
+        values: [
+          { ...thesaurus.values[1], values: [...thesaurus.values[1].values!, { label: 'France' }] },
+        ],
+      });
+
+      expect(updated1).toEqual({
+        id: thesaurus.id,
+        name: thesaurus.name,
+        values: [
+          { id: expect.any(String), label: 'Canada' },
+          { id: expect.any(String), label: 'Mexico' },
+        ],
+      });
+
+      expect(updated2).toEqual({
+        id: thesaurus.id,
+        name: thesaurus.name,
+        values: [
+          { id: thesaurus.values[0].id, label: 'USA' },
+          {
+            id: thesaurus.values[1].id,
+            label: 'Asia',
+            values: [{ id: thesaurus.values[1].values![0].id, label: 'China' }],
+          },
+          { id: expect.any(String), label: 'Canada' },
+          { id: expect.any(String), label: 'Mexico' },
+          {
+            id: expect.any(String),
+            label: 'Europe',
+            values: [{ id: expect.any(String), label: 'France' }],
+          },
+        ],
+      });
+
+      expect(updated3).toEqual({
+        id: thesaurus.id,
+        name: thesaurus.name,
+        values: [
+          {
+            id: thesaurus.values[1].id,
+            label: thesaurus.values[1].label,
+            values: [
+              { id: thesaurus.values[1].values![0].id, label: 'China' },
+              { id: expect.any(String), label: 'France' },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('should throw if updated thesaurus values id is missing', () => {
+      const thesaurus = Thesaurus.create({
+        name: 'Countries',
+        values: [{ label: 'USA' }, { label: 'Canada' }],
+      });
+
+      expect(() =>
+        thesaurus.update({
+          values: [
+            { ...thesaurus.values[0], id: 'changed' },
+            { ...thesaurus.values[1], id: 'changed' },
+          ],
+        })
+      ).toThrow();
+    });
+  });
 });

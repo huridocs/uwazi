@@ -1,4 +1,4 @@
-import { Dispatchable } from '../application/contracts/Dispatchable';
+import { Dispatchable, Params } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
 import { Job, QueueAdapter } from './QueueAdapter';
 
@@ -34,6 +34,10 @@ export class NamespacedDispatcher implements JobsDispatcher {
       ...optionsDefaults,
       ...options,
     };
+  }
+
+  async deleteByParams<JobParams extends Params>(params: Partial<JobParams>): Promise<void> {
+    await this.adapter.deleteByParams(params, this.namespace);
   }
 
   async dispatch<T extends Dispatchable>(

@@ -2,6 +2,7 @@ import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
 import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
 import { Job, QueueAdapter } from './QueueAdapter';
+import { Params } from '../application/contracts/Dispatchable';
 
 export interface JobDBO {
   _id: ObjectId;
@@ -24,6 +25,22 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
     super(db, transactionManager, { useSyncedCollection: false });
+  }
+
+  async deleteByParams(params: Partial<Params>, tenantName: string): Promise<void> {
+    if (Object.keys(params).length === 0) {
+      return;
+    }
+
+    const query = Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [`params.${key}`, value])
+    );
+
+    await this.getCollection().deleteMany({
+      ...query,
+      namespace: tenantName,
+      lockedUntil: { $lt: Date.now() },
+    });
   }
 
   async renewJobLock(job: Job) {

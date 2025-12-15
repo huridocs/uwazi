@@ -1,6 +1,7 @@
 import { Id } from 'api/core/libs/Id';
 import { z } from 'zod';
 import uuid from 'node-uuid';
+import { InvalidThesaurusValueIdsError } from './errors';
 
 type ThesaurusValue = {
   id: string;
@@ -22,6 +23,11 @@ type ThesaurusValueCreateProps = {
 type CreateProps = {
   name: string;
   values?: ThesaurusValueCreateProps[];
+};
+
+type UpdateProps = {
+  name?: string;
+  values?: (ThesaurusValueCreateProps | ThesaurusValue)[];
 };
 
 const getDuplicatedLabels = (values: { label: string }[] | undefined): string[] => {
@@ -100,13 +106,31 @@ class Thesaurus {
     return this.values.find(v => v.label === label);
   }
 
+  getValueById(id: string): ThesaurusValue | undefined {
+    for (const value of this.values) {
+      if (value.id === id) {
+        return value;
+      }
+
+      if (value.values) {
+        const found = value.values.find(v => v.id === id);
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
   addValues(props: ThesaurusValueCreateProps[]): Thesaurus {
     const thesauriValues = props.map(value => Thesaurus.createThesaurusValue(value));
     const parsed: ThesaurusValue[] = [];
 
     this.values.forEach(existingValue => {
       if (!existingValue.values) {
-        return parsed.push(existingValue);
+        parsed.push(existingValue);
+        return;
       }
 
       const existingToAdd = thesauriValues.find(v => v.label === existingValue.label);
@@ -132,6 +156,38 @@ class Thesaurus {
     return this.clone({
       values: parsed,
     });
+  }
+
+  update({ name, values }: UpdateProps): Thesaurus {
+    if (values) {
+      const ids = new Set(this.values.map(v => v.id));
+      const unknownIds = values
+        .filter(v => 'id' in v && !ids.has(v.id))
+        .map(v => (v as ThesaurusValue).id);
+
+      if (unknownIds.length > 0) {
+        throw new InvalidThesaurusValueIdsError(unknownIds);
+      }
+    }
+
+    const updated = values?.map(value => this.processValue(value));
+
+    return this.clone({ name, values: updated });
+  }
+
+  private processValue(value: ThesaurusValueCreateProps | ThesaurusValue): ThesaurusValue {
+    if ('id' in value) {
+      // Value has an ID (existing or from spread)
+      const nestedValues = value.values?.map(nestedValue => this.processValue(nestedValue));
+
+      return {
+        id: value.id,
+        label: value.label,
+        values: nestedValues,
+      };
+    }
+
+    return Thesaurus.createThesaurusValue(value);
   }
 
   private clone(props: Partial<Props>): Thesaurus {
@@ -165,4 +221,4 @@ class Thesaurus {
 }
 
 export { Thesaurus };
-export type { CreateProps as CreateThesaurusProps };
+export type { CreateProps as CreateThesaurusProps, UpdateProps as UpdateThesaurusProps };
