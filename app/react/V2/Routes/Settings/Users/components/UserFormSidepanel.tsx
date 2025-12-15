@@ -315,7 +315,7 @@ const UserFormSidepanel = ({
                   }}
                   options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
                   value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
-                  placeholder="Nothing selected"
+                  placeholder={t('System', 'Nothing selected', null, false)}
                 />
               </div>
             </div>
