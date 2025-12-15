@@ -69,7 +69,13 @@ const ToCPanel = ({ toc }: { toc?: TocSchema[] }) => {
             <p className="text-sm font-bold text-gray-900">
               <Translate>Table of contents</Translate>
             </p>
-            <Tooltip content="This table of contents was automatically created by the system.">
+            <Tooltip
+              content={
+                <Translate>
+                  This table of contents was automatically created by the system.
+                </Translate>
+              }
+            >
               <span className="text-xs font-semibold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-full tracking-wide flex items-center gap-1">
                 <Translate>auto created</Translate>
                 <InformationCircleIcon className="w-5 h-5 text-blue-900" />

@@ -911,6 +911,7 @@ This property will be shown using all the width available.,Ця властиві
 This property will be shown without the label,Ця властивість буде показана без мітки
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
 Threshold,Поріг

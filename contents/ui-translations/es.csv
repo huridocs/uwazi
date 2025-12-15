@@ -906,6 +906,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Límite
