@@ -50,11 +50,11 @@ const SUGGESTIONS_PER_PAGE = 100;
 
 const ixmessages = {
   ready: t('System', 'Find suggestions', null, false),
-  sending_labeled_data: t('System', 'Sending labeled data', null, false),
-  processing_model: t('System', 'Training model', null, false),
-  processing_suggestions: t('System', 'Finding suggestions', null, false),
-  processing_auto_accept: t('System', 'Accepting suggestions', null, false),
-  cancel: t('System', 'Canceling', null, false),
+  sending_labeled_data: `${t('System', 'Sending labeled data', null, false)}...`,
+  processing_model: `${t('System', 'Training model', null, false)}...`,
+  processing_suggestions: `${t('System', 'Finding suggestions', null, false)}...`,
+  processing_auto_accept: `${t('System', 'Accepting suggestions', null, false)}...`,
+  cancel: `${t('System', 'Canceling', null, false)}...`,
   error: t('System', 'Error', null, false),
 };
 
