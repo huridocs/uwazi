@@ -6,6 +6,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import relationships from 'api/relationships';
 import { tenants } from 'api/tenants';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { EntityNotFoundError } from 'api/core/application/errors';
 import { RelationshipSyncJob } from '../RelationshipSyncJob';
 
 const factory = getFixturesFactory();
@@ -51,7 +53,9 @@ describe('RelationshipSyncJob', () => {
     await testingEnvironment.setUp({}, true);
   });
 
-  beforeEach(async () => testingEnvironment.setFixtures(fixtures));
+  beforeAll(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+  });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
@@ -77,5 +81,23 @@ describe('RelationshipSyncJob', () => {
       ?.findOne({ sharedId: 'entity_1', language: 'en' });
 
     expect(saveEntityBasedReferencesSpy).toHaveBeenCalledWith(entity, 'en', template);
+  });
+
+  it('should throw a NonRetryableJobError when entity does not exist', async () => {
+    jest.clearAllMocks();
+    const { sut, saveEntityBasedReferencesSpy } = createSut();
+    const templateId = factory.id('Document');
+
+    await expect(
+      sut.handleDispatch(async () => Promise.resolve(), {
+        sharedId: 'non_existent_entity',
+        targetLanguage: 'en',
+        templateId: templateId.toHexString(),
+        tenantName: tenants.current().name,
+        userId: permissionsContext.getUserInContext()!._id?.toString()!,
+      })
+    ).rejects.toThrow(new NonRetryableJobError(new EntityNotFoundError('non_existent_entity')));
+
+    expect(saveEntityBasedReferencesSpy).not.toHaveBeenCalled();
   });
 });

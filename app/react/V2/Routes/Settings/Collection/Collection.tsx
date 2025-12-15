@@ -1,6 +1,4 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
-/* eslint-disable camelcase */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
@@ -115,7 +113,7 @@ const Collection = () => {
     await revalidator.revalidate();
   };
 
-  const labelWithTip = (label: string, tip: React.ReactNode) => (
+  const labelWithTip = (label: React.ReactNode, tip: React.ReactNode) => (
     <span className="flex gap-4">
       {label}
       <Tooltip
@@ -135,17 +133,17 @@ const Collection = () => {
   }));
 
   const mapLayersOptions = [
-    { label: 'Dark', value: 'Dark' },
+    { label: t('System', 'Dark', null, false), value: 'Dark' },
     {
-      label: 'Streets',
+      label: t('System', 'Streets', null, false),
       value: 'Streets',
     },
     {
-      label: 'Satellite',
+      label: t('System', 'Satellite', null, false),
       value: 'Satellite',
     },
     {
-      label: 'Hybrid',
+      label: t('System', 'Hybrid', null, false),
       value: 'Hybrid',
     },
   ];
@@ -179,9 +177,9 @@ const Collection = () => {
                     label={<Translate>Default View</Translate>}
                     id="roles"
                     options={[
-                      { label: 'Cards', value: 'cards' },
-                      { label: 'Map', value: 'map' },
-                      { label: 'Table', value: 'table' },
+                      { label: t('System', 'Cards', null, false), value: 'cards' },
+                      { label: t('System', 'Map', null, false), value: 'map' },
+                      { label: t('System', 'Table', null, false), value: 'table' },
                     ]}
                     {...register('defaultLibraryView')}
                   />
@@ -197,8 +195,11 @@ const Collection = () => {
                 <div className="sm:col-span-2">
                   <InputField
                     id="landing-page"
-                    preText="eg. https://yourdomain"
-                    label={labelWithTip('Custom landing page', tips.landingPageTip)}
+                    preText="https://yourdomain"
+                    label={labelWithTip(
+                      <Translate>Custom landing page</Translate>,
+                      tips.landingPageTip
+                    )}
                     {...register('home_page')}
                   />
                 </div>
@@ -283,21 +284,27 @@ const Collection = () => {
                 <div className="sm:col-span-1">
                   <InputField
                     id="sending-email"
-                    label={labelWithTip('Sending email', tips.emails[1])}
+                    label={labelWithTip(<Translate>Sending email</Translate>, tips.emails[1])}
                     {...register('senderEmail')}
                   />
                 </div>
                 <div className="sm:col-span-1">
                   <InputField
                     id="receiving-email"
-                    label={labelWithTip('Contact form email', tips.receivingEmail)}
+                    label={labelWithTip(
+                      <Translate>Contact form email</Translate>,
+                      tips.receivingEmail
+                    )}
                     {...register('contactEmail')}
                   />
                 </div>
                 <div className="sm:col-span-2">
                   <InputField
                     id="public-form-destination"
-                    label={labelWithTip('Public Form submit URL', tips.publicForm[1])}
+                    label={labelWithTip(
+                      <Translate>Public Form submit URL</Translate>,
+                      tips.publicForm[1]
+                    )}
                     {...register('publicFormDestination')}
                   />
                 </div>
@@ -310,7 +317,10 @@ const Collection = () => {
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect
-                    label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
+                    label={labelWithTip(
+                      <Translate>Whitelisted templates</Translate>,
+                      tips.publicForm[2]
+                    )}
                     options={templateOptions}
                     onChange={newValues => {
                       setValue('allowedPublicTemplates', newValues);
@@ -327,8 +337,8 @@ const Collection = () => {
                     label={<Translate>Map Provider</Translate>}
                     id="roles"
                     options={[
-                      { label: 'Mapbox', value: 'mapbox' },
-                      { label: 'Google', value: 'google' },
+                      { label: t('System', 'Mapbox', null, false), value: 'mapbox' },
+                      { label: t('System', 'Google', null, false), value: 'google' },
                     ]}
                     {...register('tilesProvider')}
                   />
@@ -336,13 +346,13 @@ const Collection = () => {
                 <div className="sm:col-span-1">
                   <InputField
                     id="map-key"
-                    label={labelWithTip('Map API key', tips.mapApiKey)}
+                    label={labelWithTip(<Translate>Map API key</Translate>, tips.mapApiKey)}
                     {...register('mapApiKey', { pattern: /^[a-zA-Z0-9._]+$/ })}
                   />
                 </div>
                 <div className="sm:col-span-2">
                   <MultiSelect
-                    label={labelWithTip('Map Layers', tips.mapLayers)}
+                    label={labelWithTip(<Translate>Map Layers</Translate>, tips.mapLayers)}
                     options={mapLayersOptions}
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}

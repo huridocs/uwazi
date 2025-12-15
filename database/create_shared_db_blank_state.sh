@@ -36,18 +36,10 @@ mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
     // Create jobs collection with indexes
     db.createCollection("jobs");
     
-    // Create jobs_failed collection with indexes
-    db.createCollection("jobs_failed");
-    
     // Create indexes for jobs collection
     db.jobs.createIndex({ "queue": 1, "lockedUntil": 1 });
     db.jobs.createIndex({ "namespace": 1 });
     db.jobs.createIndex({ "createdAt": 1 });
-    
-    // Create indexes for jobs_failed collection
-    db.jobs_failed.createIndex({ "queue": 1 });
-    db.jobs_failed.createIndex({ "namespace": 1 });
-    db.jobs_failed.createIndex({ "createdAt": 1 });
     
     // Create indexes for tenants collection
     db.tenants.createIndex({ "name": 1 }, { unique: true });
