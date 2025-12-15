@@ -31,7 +31,7 @@ class MongoThesauriDataSourceV2
     );
   }
 
-  async geyById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
+  async getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
     const dbo = await this.getCollection().findOne({ _id: ObjectId.createFromHexString(id) });
     if (!dbo) {
       return Result.fail(new ThesaurusNotFoundError(id));
