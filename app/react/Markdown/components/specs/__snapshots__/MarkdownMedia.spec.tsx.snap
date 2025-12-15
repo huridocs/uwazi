@@ -397,7 +397,7 @@ exports[`MarkdownMedia render uploaded files should render the edition mode 1`] 
         </div>
         <input
           class="timestamp-label"
-          placeholder="Enter title"
+          placeholder="Title"
           type="text"
           value=""
         />
