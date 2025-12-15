@@ -26,11 +26,16 @@ interface UserFormSidepanelProps {
 }
 
 const userRoles = [
-  { key: UserRole.ADMIN, value: UserRole.ADMIN },
-  { key: UserRole.EDITOR, value: UserRole.EDITOR },
+  { key: UserRole.ADMIN, value: UserRole.ADMIN, label: t('System', UserRole.ADMIN, null, false) },
+  {
+    key: UserRole.EDITOR,
+    value: UserRole.EDITOR,
+    label: t('System', UserRole.EDITOR, null, false),
+  },
   {
     key: UserRole.COLLABORATOR,
     value: UserRole.COLLABORATOR,
+    label: t('System', UserRole.COLLABORATOR, null, false),
   },
 ];
 
