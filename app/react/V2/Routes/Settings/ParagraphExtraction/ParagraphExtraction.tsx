@@ -30,7 +30,7 @@ const ParagraphExtractorDashboard = () => {
   return (
     <div className="h-full w-full overflow-y-auto" data-testid="settings-paragraph-extractor">
       <SettingsContent>
-        <SettingsContent.Header title="Paragraph extraction" />
+        <SettingsContent.Header title="Paragraph Extraction" />
         <SettingsContent.Body>
           <ExtractorsTable
             paragraphExtractorData={paragraphExtractorData}
