@@ -11,7 +11,7 @@ A target template needs to have the following properties,Цільовий шаб
 A valid email is required,Потрібна дійсна електронна адреса
 Accept,Прийняти
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
-Accepting suggestions,Accepting suggestions
+Accepting suggestions,Прийняття пропозицій
 Account,Акаунт
 Account locked,Обліковий запис заблоковано
 Account unlocked successfully,Обліковий запис успішно розблоковано
@@ -116,7 +116,7 @@ Can edit,Може редагувати
 Can see,Може бачити
 Can view,Може переглядати
 Cancel,Скасування
-Canceling,Canceling
+Canceling,Скасування
 Canceling...,Скасування...
 Cannot find extractor,Не вдається знайти екстрактор
 Captcha,Captcha
@@ -172,7 +172,7 @@ Connected to server,Підключено до сервера
 Connection type,Тип зв'язку
 Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
 Contact Form,Форма зворотнього зв'язку
-Contact form email,Contact form email
+Contact form email,Контактна форма електронної пошти
 Content translations,Переклади контенту
 Context,Контекст
 Continue,Продовжуйте
@@ -213,10 +213,10 @@ Custom component error,"Помилка розмітки кастомного к�
 Custom CSS,Персональні CSS
 Custom Favicon,Користувацька іконка
 Custom JS,Спеціальний JS
-Custom landing page,Custom landing page
+Custom landing page,Налаштована цільова сторінка
 custom page error warning,"На цій кастомній сторінці сталася несподівана помилка, вона може не працювати належним чином. Будь ласка, зв'яжіться з адміністратором для уточнення деталей."
 Custom Uploads,Персоналізовані завантаження
-Dark,Dark
+Dark,Темний
 Dashboard,Приладова панель
 Date added,Дата додавання
 Date format,Формат дати
@@ -323,8 +323,8 @@ Extension Token,Токен розширення
 Extract new paragraphs,Витягніть нові абзаци
 Extract paragraphs,Витягнути абзаци
 Extraction configuration,Конфігурація вилучення
-Extractor Name,Ім'я витягувача
-Extractor name,Extractor name
+Extractor Name,Ім'я екстрактора
+Extractor name,Ім'я екстрактора
 Extractor/s deleted,Видалено розпакувальник(и)
 Extractors,Екстрактори
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
@@ -473,10 +473,10 @@ Lost connection to the server. Your changes may be lost,Втрачено зв'я
 low,низький
 Manage site settings and configuration,Керування сайтом і конфігурація
 Map,Карта
-Map api key,Ключ map api
-Map API key,Map API key
+Map api key,Ключ API карти
+Map API key,Ключ API карти
 Map api key tooltip,Для використання Mapbox або Google Maps потрібен ключ API.
-Map Layers,Map Layers
+Map Layers,Шари карти
 Map layers description,Опис шарів карти
 Map Provider,Постачальник карт
 Map view,Перегляд карти
@@ -564,7 +564,8 @@ No Relationships description,Відносини - це зв'язки між су
 No Table of Contents,Немає змісту
 No Table of contents,Немає змісту
 No Table of Contents description,Відсутній опис змісту
-No table of contents description,No table of contents description
+No table of contents description,"Ви можете почати з виділення тексту в документі та натискання 
+                  кнопки ""Додати до Змісту""."
 No text match,"Немає тексту, що збігається"
 No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
 No type,Немає типу
@@ -785,7 +786,7 @@ Send,Відправити
 Send recovery email,Відправити лист для відновлення на електронну пошту
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
-Sending labeled data,Sending labeled data
+Sending labeled data,Відправлення маркованих даних
 Sentences above threshold,Пропозиції перевищують поріг
 Services,Послуги
 Set as default,Встановити за замовчуванням
@@ -911,7 +912,7 @@ This property will be shown using all the width available.,Ця властиві
 This property will be shown without the label,Ця властивість буде показана без мітки
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
-This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
+This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
 Threshold,Поріг
@@ -937,7 +938,7 @@ Train,Потяг
 Train model,Навчальна модель
 Train model description,"Навчання моделей машинного навчання може зайняти від кількох хвилин до кількох годин, залежно від кількості маркованих даних і складності завдання."
 Training,Навчання
-Training model,Training model
+Training model,Модель навчання
 Training sample,Навчальна вибірка
 Translate,Перекласти
 Translation,Переклад
@@ -1025,7 +1026,7 @@ Warning: you are editing multiple entities. Fields marked with a,"Поперед
 We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
-Whitelisted templates,Whitelisted templates
+Whitelisted templates,Шаблони білого списку
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Намагатиметься заповнити контейнер, використовуючи всю його ширину. У картках, ймовірно, відбудеться обрізання."
 will be updated with the same value.,оновлюватиметься з цим же значенням
 Will show the entire media inside the container.,Покаже всі носії всередині контейнера.
