@@ -11,6 +11,7 @@ A target template needs to have the following properties,Ένα πρότυπο �
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
 Accept,Αποδοχή
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
+Accepting suggestions,Accepting suggestions
 Account,Λογαριασμός
 Account locked,Λογαριασμός κλειδωμένος
 Account unlocked successfully,Ο λογαριασμός ξεκλειδώθηκε επιτυχώς
@@ -115,6 +116,7 @@ Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
 Cancel,Ακύρωση
+Canceling,Canceling
 Canceling...,Ακύρωση σε εξέλιξη...
 Cannot find extractor,Δεν βρέθηκε ο εξαγωγέας
 Captcha,CAPTCHA
@@ -321,6 +323,7 @@ Extract new paragraphs,Εξαγωγή νέων παραγράφων
 Extract paragraphs,Εξαγωγή παραγράφων
 Extraction configuration,Διαμόρφωση εξαγωγής
 Extractor Name,Όνομα εξαγωγέα
+Extractor name,Extractor name
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
@@ -781,7 +784,7 @@ Send,Αποστολή
 Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
-Sending labeled data...,Αποστολή επισημασμένων δεδομένων...
+Sending labeled data,Sending labeled data
 Sentences above threshold,Προτάσεις πάνω από το όριο
 Services,Υπηρεσίες
 Set as default,Ορισμός ως προεπιλογή
@@ -932,7 +935,7 @@ Train,Εκπαίδευση
 Train model,Εκπαίδευση μοντέλου
 Train model description,Η εκπαίδευση μοντέλων μηχανικής μάθησης μπορεί να διαρκέσει από λεπτά έως μερικές ώρες ανάλογα με την ποσότητα των επισημασμένων δεδομένων και τη δυσκολία της εργασίας.
 Training,Εκπαίδευση
-Training model...,Εκπαιδεύεται το μοντέλο...
+Training model,Training model
 Training sample,Δείγμα εκπαίδευσης
 Translate,Μετάφραση
 Translation,Μετάφραση

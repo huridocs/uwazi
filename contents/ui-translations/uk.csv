@@ -11,6 +11,7 @@ A target template needs to have the following properties,Цільовий шаб
 A valid email is required,Потрібна дійсна електронна адреса
 Accept,Прийняти
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
+Accepting suggestions,Accepting suggestions
 Account,Акаунт
 Account locked,Обліковий запис заблоковано
 Account unlocked successfully,Обліковий запис успішно розблоковано
@@ -115,6 +116,7 @@ Can edit,Може редагувати
 Can see,Може бачити
 Can view,Може переглядати
 Cancel,Скасування
+Canceling,Canceling
 Canceling...,Скасування...
 Cannot find extractor,Не вдається знайти екстрактор
 Captcha,Captcha
@@ -322,6 +324,7 @@ Extract new paragraphs,Витягніть нові абзаци
 Extract paragraphs,Витягнути абзаци
 Extraction configuration,Конфігурація вилучення
 Extractor Name,Ім'я витягувача
+Extractor name,Extractor name
 Extractor/s deleted,Видалено розпакувальник(и)
 Extractors,Екстрактори
 Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
@@ -782,7 +785,7 @@ Send,Відправити
 Send recovery email,Відправити лист для відновлення на електронну пошту
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
-Sending labeled data...,Надсилання мічених даних...
+Sending labeled data,Sending labeled data
 Sentences above threshold,Пропозиції перевищують поріг
 Services,Послуги
 Set as default,Встановити за замовчуванням
@@ -933,7 +936,7 @@ Train,Потяг
 Train model,Навчальна модель
 Train model description,"Навчання моделей машинного навчання може зайняти від кількох хвилин до кількох годин, залежно від кількості маркованих даних і складності завдання."
 Training,Навчання
-Training model...,Навчальна модель...
+Training model,Training model
 Training sample,Навчальна вибірка
 Translate,Перекласти
 Translation,Переклад

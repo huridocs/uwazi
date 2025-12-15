@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,이메일이 필요합니다.
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
+Accepting suggestions,Accepting suggestions
 Account,계정
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -115,6 +116,7 @@ Can edit,편집 가능
 Can see,열람 가능
 Can view,열람 가능
 Cancel,취소
+Canceling,Canceling
 Canceling...,Canceling...
 Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
@@ -320,6 +322,7 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -780,7 +783,7 @@ Send,전송
 Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data...,Sending labeled data...
+Sending labeled data,Sending labeled data
 Sentences above threshold,임계값 이상 문장
 Services,Services
 Set as default,기본으로 설정
@@ -931,7 +934,7 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
-Training model...,Training model...
+Training model,Training model
 Training sample,Training sample
 Translate,번역
 Translation,Translation

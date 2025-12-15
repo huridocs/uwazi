@@ -19,7 +19,7 @@ import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
 import { handleUnexpectedError } from 'V2/shared/errorUtils';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
@@ -49,13 +49,13 @@ import {
 const SUGGESTIONS_PER_PAGE = 100;
 
 const ixmessages = {
-  ready: 'Find suggestions',
-  sending_labeled_data: 'Sending labeled data...',
-  processing_model: 'Training model...',
-  processing_suggestions: 'Finding suggestions...',
-  processing_auto_accept: 'Accepting suggestions...',
-  cancel: 'Canceling...',
-  error: 'Error',
+  ready: t('System', 'Find suggestions', null, false),
+  sending_labeled_data: t('System', 'Sending labeled data', null, false),
+  processing_model: t('System', 'Training model', null, false),
+  processing_suggestions: t('System', 'Finding suggestions', null, false),
+  processing_auto_accept: t('System', 'Accepting suggestions', null, false),
+  cancel: t('System', 'Canceling', null, false),
+  error: t('System', 'Error', null, false),
 };
 
 const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
@@ -259,7 +259,7 @@ const IXSuggestions = () => {
   };
 
   useEffect(() => {
-    const template = templates.find(t => t._id === extractor.templates[0]);
+    const template = templates.find(temp => temp._id === extractor.templates[0]);
     const _property =
       extractor.property === 'title'
         ? template?.commonProperties?.find(prop => prop.name === extractor.property)
@@ -387,7 +387,7 @@ const IXSuggestions = () => {
             </Button>
             {status.status !== ixStatus.ready && (
               <div className="text-sm font-semibold text-center text-gray-900">
-                <Translate>{ixmessages[status.status]}</Translate>
+                {ixmessages[status.status]}
                 {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                 {status.data && (
                   <span className="ml-2">
@@ -495,7 +495,7 @@ const IXSuggestionsLoader =
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
 
-    const template = templates.find(t => extractors[0].templates.includes(t._id));
+    const template = templates.find(temp => extractors[0].templates.includes(temp._id));
     const property =
       extractors[0].property === 'title'
         ? template?.commonProperties?.find(prop => prop.name === extractors[0].property)

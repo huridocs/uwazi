@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
+Accepting suggestions,Accepting suggestions
 Account,Cuenta
 Account locked,Account locked
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
@@ -115,6 +116,7 @@ Can edit,Puede editar
 Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
+Canceling,Canceling
 Canceling...,Cancelando
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
@@ -318,6 +320,7 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
@@ -778,7 +781,7 @@ Send,Enviar
 Send recovery email,Enviar correo electrónico de recuperación
 Sending email,Correo electrónico de envío
 Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
-Sending labeled data...,Enviando datos etiquetados…
+Sending labeled data,Sending labeled data
 Sentences above threshold,Palabras por encima del límite
 Services,Servicios
 Set as default,Establecer como predeterminado
@@ -928,7 +931,7 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Entrenando
-Training model...,Entrenando el modelo…
+Training model,Training model
 Training sample,Training sample
 Translate,Traducir
 Translation,Translation
