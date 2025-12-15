@@ -382,11 +382,11 @@ describe('UpdateThesaurusUseCase', () => {
       getConnection(),
       TransactionManagerFactory.default()
     )
-      .geyById(factory.id('countries').toString())
+      .getById(factory.id('countries').toString())
       .then(r => r.getDataOrThrow());
 
     const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
-      geyById: jest.fn().mockResolvedValue({
+      getById: jest.fn().mockResolvedValue({
         getDataOrThrow: jest.fn().mockReturnValue(thesaurus),
       }),
       update: jest.fn().mockRejectedValue(new Error('update error')),
