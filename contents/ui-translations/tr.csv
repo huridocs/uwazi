@@ -559,10 +559,8 @@ No References,Referans Yok
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,İlişki yok
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,İçerik Tablosu yok
-No Table of contents,No Table of contents
-No Table of Contents description,İçerik Tablosu Yok Açıklama
-No table of contents description,No table of contents description
+No table of contents,İçerik Tablosu yok
+No table of contents description,İçerik Tablosu Yok Açıklama
 No text match,Metin Eşleşmesi Yok
 No text match description,You can type something different in the search box to get some results.
 No type,Tür yok
@@ -909,6 +907,7 @@ This property will be shown using all the width available.,"Bu özellik, mevcut 
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Eşik
