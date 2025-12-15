@@ -20,7 +20,7 @@ type Deps = {
 
 class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const existing = (await this.deps.thesauriDS.geyById(input.id)).getDataOrThrow();
+    const existing = (await this.deps.thesauriDS.getById(input.id)).getDataOrThrow();
 
     const updated = existing.update({
       name: input.name,
