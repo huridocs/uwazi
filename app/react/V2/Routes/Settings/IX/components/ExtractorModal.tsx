@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'V2/Components/Forms/InputField';
@@ -194,7 +194,7 @@ const ExtractorModal = ({
         <InputField
           className="mt-6"
           id="extractor-name"
-          placeholder="Extractor name"
+          placeholder={t('System', 'Extractor name', null, false)}
           hasErrors={hasNameError}
           value={name}
           onChange={event => {
