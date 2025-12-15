@@ -266,7 +266,7 @@ describe('ThesaurusTranslationService', () => {
       ]);
     });
 
-    it('should update translations updated thesaurus values', async () => {
+    it('should update translations for updated thesaurus values', async () => {
       const { sut } = createDefaultSut();
 
       const keysToBeUpdated = ['USA', 'Europe', 'France'];
