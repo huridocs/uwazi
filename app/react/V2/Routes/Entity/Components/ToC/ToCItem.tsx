@@ -46,21 +46,19 @@ const findAllAncestors = (
   return ancestors.reverse(); // Return in order from top to bottom
 };
 
-const hasDirectChildren = (item: ProcessedTocEntry, normalizedToc: ProcessedTocEntry[]): boolean =>
-  normalizedToc.some(
-    otherItem =>
-      otherItem.index > item.index &&
-      otherItem.topIndex === item.topIndex &&
-      otherItem.indentation > item.indentation &&
-      // Make sure there's no sibling between this item and the potential child
-      !normalizedToc.some(
-        betweenItem =>
-          betweenItem.index > item.index &&
-          betweenItem.index < otherItem.index &&
-          betweenItem.topIndex === item.topIndex &&
-          betweenItem.indentation <= item.indentation
-      )
+const hasDirectChildren = (
+  item: ProcessedTocEntry,
+  normalizedToc: ProcessedTocEntry[]
+): boolean => {
+  // Find the next item after this one
+  const nextItem = normalizedToc.find(otherItem => otherItem.index > item.index);
+  // It's a direct child if it has more indentation and same topIndex
+  return (
+    nextItem !== undefined &&
+    nextItem.topIndex === item.topIndex &&
+    nextItem.indentation > item.indentation
   );
+};
 
 const getInteractiveProps = (
   isInteractive: boolean,
@@ -222,7 +220,6 @@ export const ToCItem = ({
   const pageNumber = getPageNumber(item.entry);
   const label = item.entry.label?.trim() || `Section ${item.index + 1}`;
   const paddingLeft = item.isTopLevel ? 8 : item.indentation * 16 + 16;
-  const paddingRight = item.isTopLevel ? 12 : 12;
   const isInteractive = typeof pageNumber === 'number' && !isEditMode;
   const ancestors = findAllAncestors(item, normalizedToc);
   // In edit mode, always show all items regardless of expansion state
@@ -246,7 +243,7 @@ export const ToCItem = ({
   const topLevelClasses = item.isTopLevel
     ? 'bg-gray-100 shadow-sm hover:bg-gray-200'
     : 'hover:bg-gray-50';
-  const baseClasses = `flex items-center justify-between gap-4 py-1.5 transition ${
+  const baseClasses = `flex items-center justify-between gap-4 py-1.5 pr-2 transition ${
     isInteractive ? 'cursor-pointer' : ''
   } focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-inset rounded`;
 
@@ -306,7 +303,7 @@ export const ToCItem = ({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...interactiveProps}
       className={`${baseClasses} ${topLevelClasses}`}
-      style={{ paddingLeft, paddingRight }}
+      style={{ paddingLeft }}
     >
       <div className="flex items-center gap-1 flex-1 min-w-0">
         {isEditMode
@@ -334,7 +331,7 @@ export const ToCItem = ({
               onChange={e => setEditedLabel(e.target.value)}
               onKeyDown={handleLabelKeyDown}
               onClick={e => e.stopPropagation()}
-              className="flex-1 text-sm font-semibold text-gray-900 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white"
+              className="flex-1 text-sm font-semibold text-gray-900 px-2 h-5 leading-5 pt-0 pb-0 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white"
             />
             <button
               type="button"
@@ -342,7 +339,7 @@ export const ToCItem = ({
                 e.stopPropagation();
                 handleLabelSave();
               }}
-              className="p-1 rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 transition cursor-pointer flex-shrink-0"
+              className="rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 transition cursor-pointer flex-shrink-0"
               aria-label="Save label"
             >
               <CheckIcon className="w-4 h-4 text-gray-600" />
