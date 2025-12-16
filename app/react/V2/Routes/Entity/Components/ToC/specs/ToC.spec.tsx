@@ -80,14 +80,7 @@ const ToCWithState = ({
   const toggleExpand = (index: number) => {
     setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
   };
-  return (
-    <ToC
-      toc={toc}
-      expanded={expanded}
-      onToggleExpand={toggleExpand}
-      {...props}
-    />
-  );
+  return <ToC toc={toc} expanded={expanded} onToggleExpand={toggleExpand} {...props} />;
 };
 
 describe('ToC', () => {
@@ -303,7 +296,7 @@ describe('ToC', () => {
       ];
 
       const handleClick = jest.fn();
-      render(<ToC toc={tocWithoutPages} onClick={handleClick} />);
+      render(<ToCWithState toc={tocWithoutPages} onClick={handleClick} />);
 
       const entry = screen.getByText('Section without page').closest('div');
       fireEvent.click(entry!);

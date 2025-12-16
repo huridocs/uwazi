@@ -1,8 +1,9 @@
 /* eslint-disable import/no-default-export */
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { TocSchema } from 'shared/types/commonTypes';
-import { ToC, type ToCRef, type ProcessedTocEntry } from 'V2/Routes/Entity/Components/ToC/ToC';
+import { ToC, type ProcessedTocEntry } from 'V2/Routes/Entity/Components/ToC/ToC';
+import { normalizeToc, findItemsWithChildren } from 'V2/Routes/Entity/Components/ToC/utils';
 
 const meta: Meta<typeof ToC> = {
   title: 'Components/ToC',
@@ -78,7 +79,7 @@ const ToCWithControls = ({
   toc?: TocSchema[];
   onClick?: (entry: ProcessedTocEntry) => void;
 }) => {
-  const tocRef = useRef<ToCRef>(null);
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const [isAllExpanded, setIsAllExpanded] = useState(false);
   const [isAllCollapsed, setIsAllCollapsed] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -89,17 +90,31 @@ const ToCWithControls = ({
     setEditedToc(toc);
   }, [toc]);
 
-  const handleStateChange = (expanded: boolean, collapsed: boolean) => {
-    setIsAllExpanded(expanded);
+  const handleStateChange = (expandedState: boolean, collapsed: boolean) => {
+    setIsAllExpanded(expandedState);
     setIsAllCollapsed(collapsed);
   };
 
+  const handleToggleExpand = (index: number) => {
+    setExpanded(prev => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
   const handleExpandAll = () => {
-    tocRef.current?.expandAll();
+    if (!editedToc) return;
+    const normalized = normalizeToc(editedToc);
+    const itemsWithChildren = findItemsWithChildren(normalized);
+    const allExpanded: Record<number, boolean> = {};
+    itemsWithChildren.forEach(index => {
+      allExpanded[index] = true;
+    });
+    setExpanded(allExpanded);
   };
 
   const handleCollapseAll = () => {
-    tocRef.current?.collapseAll();
+    setExpanded({});
   };
 
   const handleEdit = () => {
@@ -190,8 +205,9 @@ const ToCWithControls = ({
         </div>
         <div className="flex flex-col gap-2">
           <ToC
-            ref={tocRef}
             toc={editedToc}
+            expanded={expanded}
+            onToggleExpand={handleToggleExpand}
             onClick={onClick}
             onStateChange={handleStateChange}
             isEditMode={isEditMode}
@@ -204,14 +220,28 @@ const ToCWithControls = ({
   );
 };
 
-const Primary: Story = {
-  render: args => (
+const ToCWrapper = ({ toc }: { toc?: TocSchema[] }) => {
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+  return (
     <div className="tw-content max-w-md">
       <div className="flex flex-col gap-2">
-        <ToC {...args} />
+        <ToC
+          toc={toc}
+          expanded={expanded}
+          onToggleExpand={(index: number) => {
+            setExpanded(prev => ({
+              ...prev,
+              [index]: !prev[index],
+            }));
+          }}
+        />
       </div>
     </div>
-  ),
+  );
+};
+
+const Primary: Story = {
+  render: args => <ToCWrapper toc={args.toc} />,
 };
 
 export const Simple = {
