@@ -56,7 +56,6 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 2048,
       creationDate: 1234567891,
-      content: FileBuilder.content('urlAttachment'),
       ...props,
     });
   }
