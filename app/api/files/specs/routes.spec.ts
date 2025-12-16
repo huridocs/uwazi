@@ -413,9 +413,10 @@ describe('files routes', () => {
         const file = await db.mongodb?.collection('files').findOne({
           _id: uploadId2,
         });
-        await request(app).delete('/api/files').query({
+        const response = await request(app).delete('/api/files').query({
           _id: uploadId2.toString(),
         });
+        expect(response).toHaveStatus(200);
 
         emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file!] });
         emitSpy.restore();

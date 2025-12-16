@@ -222,17 +222,20 @@ export default (app: Application) => {
       },
     }),
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (
-        !fileToDelete ||
-        !(await checkEntityPermission(fileToDelete, permissionsContext.getUserInContext(), 'write'))
-      ) {
-        throw createError('file not found', 404);
-      }
-
       if (tenants.current().featureFlags?.v2DeleteFile) {
         await FileDeleteController.createHandler()(req, res);
       } else {
+        const [fileToDelete] = await files.get({ _id: req.query._id });
+        if (
+          !fileToDelete ||
+          !(await checkEntityPermission(
+            fileToDelete,
+            permissionsContext.getUserInContext(),
+            'write'
+          ))
+        ) {
+          throw createError('file not found', 404);
+        }
         await withTransaction(async () => {
           const [deletedFile] = await files.delete({ _id: req.query._id });
           const thumbnailFileName = `${deletedFile._id}.jpg`;
