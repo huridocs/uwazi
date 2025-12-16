@@ -297,6 +297,55 @@ export const ToCItem = ({
     }
   };
 
+  const renderLabel = () => {
+    if (isEditMode && isEditingLabel) {
+      return (
+        <div className="flex-1 min-w-0 flex items-center gap-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={editedLabel}
+            onChange={e => setEditedLabel(e.target.value)}
+            onKeyDown={handleLabelKeyDown}
+            onClick={e => e.stopPropagation()}
+            className="flex-1 text-sm font-semibold text-gray-900 px-2 h-5 leading-5 pt-0 pb-0 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white"
+          />
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation();
+              handleLabelSave();
+            }}
+            className="rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 transition cursor-pointer flex-shrink-0"
+            aria-label="Save label"
+          >
+            <CheckIcon className="w-4 h-4 text-gray-600" />
+          </button>
+        </div>
+      );
+    }
+    if (isEditMode) {
+      return (
+        <div
+          className="text-sm font-semibold text-gray-900 truncate cursor-text"
+          onClick={handleLabelClick}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsEditingLabel(true);
+              setEditedLabel(item.entry.label?.trim() || '');
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          {label}
+        </div>
+      );
+    }
+    return <p className="text-sm font-semibold text-gray-900 truncate">{label}</p>;
+  };
+
   return (
     <div
       key={`toc-${item.index}`}
@@ -322,46 +371,7 @@ export const ToCItem = ({
               toggleExpand,
               itemIndex: item.index,
             })}
-        {isEditMode && isEditingLabel ? (
-          <div className="flex-1 min-w-0 flex items-center gap-1">
-            <input
-              ref={inputRef}
-              type="text"
-              value={editedLabel}
-              onChange={e => setEditedLabel(e.target.value)}
-              onKeyDown={handleLabelKeyDown}
-              onClick={e => e.stopPropagation()}
-              className="flex-1 text-sm font-semibold text-gray-900 px-2 h-5 leading-5 pt-0 pb-0 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-400 bg-white"
-            />
-            <button
-              type="button"
-              onClick={e => {
-                e.stopPropagation();
-                handleLabelSave();
-              }}
-              className="rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-400 transition cursor-pointer flex-shrink-0"
-              aria-label="Save label"
-            >
-              <CheckIcon className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-        ) : (
-          <p
-            className={`text-sm font-semibold text-gray-900 truncate ${isEditMode ? 'cursor-text' : ''}`}
-            onClick={handleLabelClick}
-            onKeyDown={e => {
-              if (isEditMode && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault();
-                setIsEditingLabel(true);
-                setEditedLabel(item.entry.label?.trim() || '');
-              }
-            }}
-            role={isEditMode ? 'button' : undefined}
-            tabIndex={isEditMode ? 0 : undefined}
-          >
-            {label}
-          </p>
-        )}
+        {renderLabel()}
       </div>
       {renderRightSideContent({ pageNumber, isEditMode, handleDelete: editControls.handleDelete })}
     </div>
