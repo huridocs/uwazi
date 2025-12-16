@@ -81,14 +81,12 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     setSelectedText(undefined);
   }, []);
 
-  const handleConnectToParagraph = useCallback((selection: TextSelection) => {
+  const handleConnectToParagraph = useCallback((_selection: TextSelection) => {
     // TODO: Implement connect to paragraph functionality
-    console.log('Connect to paragraph:', selection);
   }, []);
 
-  const handleConnectToDocument = useCallback((selection: TextSelection) => {
+  const handleConnectToDocument = useCallback((_selection: TextSelection) => {
     // TODO: Implement connect to document functionality
-    console.log('Connect to document:', selection);
   }, []);
 
   const handleAddToToC = useCallback(
@@ -99,15 +97,8 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     [addEntry]
   );
 
-  const handleAddSelection = useCallback((selection: TextSelection) => {
-    // TODO: Implement add selection functionality
-    console.log('Add Selection:', selection);
-  }, []);
-
-  const handleRemove = useCallback((selection: TextSelection) => {
+  const handleRemove = useCallback((_selection: TextSelection) => {
     // TODO: Implement remove functionality
-    console.log('Remove:', selection);
-    setSelectedText(undefined);
   }, []);
 
   const handlePageNavigation = useCallback(
@@ -203,13 +194,6 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
                 onClick={() => handleAddToToC(selectedText)}
               >
                 <Translate>Add to ToC</Translate>
-              </Button>
-              <Button
-                styling="outline"
-                color="primary"
-                onClick={() => handleAddSelection(selectedText)}
-              >
-                <Translate>Add Selection</Translate>
               </Button>
               <div className="ml-auto">
                 <Button
