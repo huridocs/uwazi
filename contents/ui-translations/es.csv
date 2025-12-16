@@ -557,10 +557,8 @@ No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
-No Table of Contents,Sin Tabla de Contenidos
-No Table of contents,No Table of contents
-No Table of Contents description,Sin descripción de Tabla de Contenidos
-No table of contents description,No table of contents description
+No table of contents,Sin Tabla de Contenidos
+No table of contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
 No type,Sin tipo
@@ -906,6 +904,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Límite

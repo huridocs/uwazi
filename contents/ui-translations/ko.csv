@@ -559,10 +559,8 @@ No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,목차 없음
-No Table of contents,No Table of contents
-No Table of Contents description,목차 설명 없음
-No table of contents description,No table of contents description
+No table of contents,목차 없음
+No table of contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
 No type,유형 없음
@@ -909,6 +907,7 @@ This property will be shown using all the width available.,디스플레이 가�
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,임계점

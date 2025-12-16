@@ -558,10 +558,8 @@ No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
-No Table of Contents,لا يوجد جدول المحتويات
-No Table of contents,No Table of contents
-No Table of Contents description,لا جدول محتويات الوصف
-No table of contents description,No table of contents description
+No table of contents,لا يوجد جدول المحتويات
+No table of contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
 No type,لا نوع
@@ -908,6 +906,7 @@ This property will be shown using all the width available.,ستظهر هذه ا�
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,حد
