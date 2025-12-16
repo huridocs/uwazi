@@ -225,7 +225,9 @@ export const ToCItem = ({
   const paddingRight = item.isTopLevel ? 12 : 12;
   const isInteractive = typeof pageNumber === 'number' && !isEditMode;
   const ancestors = findAllAncestors(item, normalizedToc);
+  // In edit mode, always show all items regardless of expansion state
   const shouldHide =
+    !isEditMode &&
     ancestors.length > 0 &&
     ancestors.some(ancestor => (expanded[ancestor.index] ?? false) === false);
   if (shouldHide) {
