@@ -3,6 +3,7 @@ import {
   Specification,
 } from 'api/core/domain/entity/EntityPermissionChecker';
 import { Result, ResultType } from 'api/core/libs/Result';
+import { User } from 'api/users.v2/model/User';
 import { MongoEntityDAO } from './MongoEntityDAO';
 
 class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermissionChecker {
@@ -64,6 +65,40 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
     }
 
     return Result.ok(grantedEntities);
+  }
+
+  async checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>> {
+    const [entity] = await this.getCollection()
+      .aggregate([
+        { $match: { sharedId } },
+        {
+          $group: {
+            _id: '$sharedId',
+            sharedId: { $first: '$sharedId' },
+            template: { $first: '$template' },
+            permissions: { $first: '$permissions' },
+            published: { $first: '$published' },
+          },
+        },
+      ])
+      .toArray();
+
+    if (!entity) {
+      return Result.fail(new Error(`Entity not found: ${sharedId}`));
+    }
+
+    if (entity.published || user?.isPrivileged()) {
+      return Result.ok(true);
+    }
+
+    if (user) {
+      const userRefIds = [user._id, ...user.groups];
+      const userRefIdsAsStrings = userRefIds.map(id => id.toString());
+      return Result.ok(
+        entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
+      );
+    }
+    return Result.ok(false);
   }
 }
 

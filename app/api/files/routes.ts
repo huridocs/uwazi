@@ -9,10 +9,9 @@ import entities from 'api/entities';
 import { convertPDF, createProcessingFile } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
 import { withTransaction } from 'api/utils/withTransaction';
-import { Application, Request, Response } from 'express';
+import { Application, Request } from 'express';
 import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
@@ -68,86 +67,6 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
 };
 
-const isFilePubliclyAccessible = async (
-  file: FileType,
-  isPrivateInstance: boolean
-): Promise<boolean> => {
-  if (isPrivateInstance) {
-    return false;
-  }
-
-  if (file.type === 'custom') {
-    return true;
-  }
-
-  if (!file.entity) {
-    return false;
-  }
-
-  const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: file.entity },
-    'published',
-    { withoutDocuments: true }
-  );
-  return relatedEntities.length > 0 && relatedEntities.every(entity => entity.published === true);
-};
-
-const getCacheControlHeader = (
-  isPubliclyAccessible: boolean,
-  isPrivateInstance: boolean
-): string => {
-  if (isPrivateInstance) {
-    return 'private, max-age=3600';
-  }
-
-  if (isPubliclyAccessible) {
-    return 'public, no-cache';
-  }
-
-  return 'private, max-age=3600';
-};
-
-const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
-
-async function addFileCacheHeaders(res: Response, file: FileType, currentUser?: UserSchema) {
-  if (tenants.current().featureFlags?.fileCacheHeaders) {
-    if (currentUser) {
-      res.setHeader('Cache-Control', 'private, max-age=3600');
-    } else {
-      const appSettings = await settings.get();
-      const isPrivateInstance = appSettings.private || false;
-
-      const isPublic = await isFilePubliclyAccessible(file, isPrivateInstance);
-
-      const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
-      res.setHeader('Cache-Control', cacheControl);
-    }
-
-    if (file.creationDate) {
-      const lastModified = timestampToHTTPDate(file.creationDate);
-      res.setHeader('Last-Modified', lastModified);
-    }
-  }
-}
-
-function addContentHeaders(
-  res: Response,
-  req: Request<{ filename: string }, {}, {}, { download?: boolean }, Record<string, any>>,
-  headerFilename: string,
-  mimetype?: string
-) {
-  res.setHeader('Content-Disposition', `filename*=UTF-8''${encodeURIComponent(headerFilename)}`);
-
-  if (req.query.download === true) {
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-    );
-  }
-  res.setHeader('Content-Type', mimetype || 'application/octet-stream');
-}
-
-// eslint-disable-next-line max-statements
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -269,23 +188,21 @@ export default (app: Application) => {
     }
   );
 
-  const checkFilePermissions = async (file: FileType) =>
-    checkEntityPermission(file, permissionsContext.getUserInContext());
-
-  //prettier-ignore
-  app.get('/assets/:filename',            DownloadFileController.customHandler(['custom'], checkFilePermissions, isFilePubliclyAccessible));
-  //prettier-ignore
-  app.get('/files/thumbnails/:filename',  DownloadFileController.customHandler( ['thumbnail'], checkFilePermissions, isFilePubliclyAccessible));
-  //prettier-ignore
-  app.get('/files/:filename',             DownloadFileController.customHandler( ['document', 'attachment'], checkFilePermissions, isFilePubliclyAccessible));
+  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
+  app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
+  app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 
   // Deprecated routes, keeping for Backwards compatibility
-  //prettier-ignore
-  app.get('/api/files/:filename',         DownloadFileController.customHandler(['custom', 'document', 'attachment', 'thumbnail'], checkFilePermissions, isFilePubliclyAccessible));
-  //prettier-ignore
-  app.use('/uploaded_documents/:fileName', (req, res) => { res.redirect(301, `/api/files/${req.params.fileName}`); });
-  //prettier-ignore
-  app.get('/api/attachments/download', async (req, res) => { res.redirect(301, `/api/files/${req.query.file}?download=true`); });
+  app.use('/uploaded_documents/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+  app.get('/api/attachments/download', async (req, res) => {
+    res.redirect(301, `/api/files/${req.query.file}?download=true`);
+  });
+  app.get(
+    '/api/files/:filename',
+    DownloadFileController.customHandler(['custom', 'document', 'attachment', 'thumbnail'])
+  );
   // Deprecated routes, keeping for Backwards compatibility
 
   app.delete(
