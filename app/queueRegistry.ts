@@ -1,8 +1,9 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { PDFPostProcess } from 'api/core/application/PDFPostProcess';
+import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
@@ -13,7 +14,9 @@ import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
+import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
+import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
@@ -59,9 +62,6 @@ import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptS
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { tenants } from 'api/tenants/tenantContext';
-import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
-import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
-import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -177,17 +177,16 @@ export function registerJobs(
     });
   });
 
-  register(PDFPostProcessJob, async (_tenantName: string) => {
+  register(PDFPostProcessJobHandler, async (_tenantName: string) => {
     const transactionManager = TransactionManagerFactory.default();
-    return new PDFPostProcessJob({
-      useCase: new PDFPostProcess({
+    return new PDFPostProcessJobHandler({
+      useCase: new PDFPostProcessJob({
         eventBus: applicationEventsBus,
         transactionManager,
         filesDS: FilesDataSourceFactory.default(transactionManager),
         fileStorage: FileStorageFactory.default(),
         pdfService: new PDFService(),
         idGenerator: IdGeneratorFactory.default(),
-        filesIO: new FileContentsIO(),
         filesService: FilesServiceFactory.default(transactionManager),
       }),
       wSockets: new V1WebSocketsWrapper(),

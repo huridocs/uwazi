@@ -7,7 +7,7 @@ import { FileType } from 'api/core/domain/files/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FileType as LegacyFileType } from 'shared/types/fileType';
 
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
@@ -116,7 +116,7 @@ export class PXEntityStatusManager {
             [file.language!]: existingDocumentDate < newDocumentDate ? existingDocument : file,
           };
         },
-        {} as Record<string, ProcessedDocument>
+        {} as Record<string, ProcessedPDF>
       );
 
       const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(

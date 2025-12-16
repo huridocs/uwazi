@@ -10,6 +10,7 @@ import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
 import { DomainError } from 'api/core/domain/error/DomainError';
 import { handleError, prettifyError } from '../handleError';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 
 const contextRequestId = '1234';
 
@@ -41,6 +42,14 @@ describe('handleError', () => {
         const error = handleError(errorInstance);
         expect(error).toMatchObject({ code: 400, logLevel: 'debug' });
         expect(legacyLogger.debug.mock.calls[0][0]).toContain('operational error');
+      });
+    });
+    describe('and is instance of NonRetryableJobError', () => {
+      it('should be a 422 debug logLevel', () => {
+        const errorInstance = new NonRetryableJobError(new Error('job error'));
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('job error');
       });
     });
     describe('and is instance of IXValidationError', () => {

@@ -2,7 +2,7 @@ import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
@@ -58,7 +58,7 @@ export class PXFilesDeletedListener {
     return documentsInInstalledLanguages.filter(d => installedLanguages.includes(d.language));
   }
 
-  private async getInitialData(deletedDocuments: ProcessedDocument[]) {
+  private async getInitialData(deletedDocuments: ProcessedPDF[]) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
@@ -80,7 +80,7 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: ProcessedDocument[]) {
+  private async onDocumentsDeleted(deletedDocuments: ProcessedPDF[]) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
       await this.getInitialData(deletedDocuments);
 
@@ -136,7 +136,7 @@ export class PXFilesDeletedListener {
       .filter(f => f.type === 'document' && f.status === 'ready')
       .map(d =>
         FileMappers.toModel(d as any, {
-          fileStorage: this.dependencies.fileStorage,
+          contentLoader: this.dependencies.fileStorage.getFile.bind(this.dependencies.fileStorage),
         })
       );
 
@@ -145,7 +145,7 @@ export class PXFilesDeletedListener {
     }
 
     await this.onDocumentsDeleted(
-      deletedDocuments.filter((d): d is ProcessedDocument => d instanceof ProcessedDocument)
+      deletedDocuments.filter((d): d is ProcessedPDF => d instanceof ProcessedPDF)
     );
   }
 

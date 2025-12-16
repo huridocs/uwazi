@@ -260,9 +260,9 @@ const fixtures: DBFixture = {
       _id: thesaurusId,
       name: 'Select with spaces',
       values: [
-        { _id: db.id(), id: 'item1', label: 'Item1' },
-        { _id: db.id(), id: 'item2', label: ' Item2 ' },
-        { _id: db.id(), id: 'normal_item', label: 'Normal Item' },
+        { id: 'item1', label: 'Item1' },
+        { id: 'item2', label: ' Item2 ' },
+        { id: 'normal_item', label: 'Normal Item' },
       ],
     },
   ],

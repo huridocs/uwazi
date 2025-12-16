@@ -19,8 +19,8 @@ import {
   FilesDataSource,
   GetDocumentsForEntityOptions,
 } from '../../../application/contracts/FilesDataSource';
-import { Document } from '../../../domain/files/Document';
-import { ProcessedDocument } from '../../../domain/files/ProcessedDocument';
+import { ProcessingPDF } from '../../../domain/files/ProcessingPDF';
+import { ProcessedPDF } from '../../../domain/files/ProcessedPDF';
 import { Segmentation } from '../../../domain/files/Segmentation';
 import { FileNotFound, ProcessingFileNotFound } from '../../../domain/files/errors';
 import { FileMappers } from './FilesMappers';
@@ -58,7 +58,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       if (this.filesToReindex.size) {
         let fullTextProjection: string | undefined;
         const files = Array.from(this.filesToReindex);
-        if (files.some(f => f instanceof ProcessedDocument)) {
+        if (files.some(f => f instanceof ProcessedPDF)) {
           fullTextProjection = '+fullText';
         }
         await search.indexEntities(
@@ -71,7 +71,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   }
 
   private toModel(dbo: fileDBO) {
-    return FileMappers.toModel(dbo, { fileStorage: this.fileStorage });
+    return FileMappers.toModel(dbo, {
+      contentLoader: this.fileStorage.getFile.bind(this.fileStorage),
+    });
   }
 
   private setFilesToReindex(files: BaseFile[]) {
@@ -91,7 +93,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
     );
   }
 
-  getThumbnails(files: ProcessedDocument[]): ResultSet<Thumbnail> {
+  getThumbnails(files: ProcessedPDF[]): ResultSet<Thumbnail> {
     return new MongoResultSet<fileDBO, Thumbnail>(
       this.getCollection().find({
         filename: { $in: files.map(f => `${f.id}.jpg`) },
@@ -106,7 +108,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       status: 'processing',
     });
     if (processing) {
-      return Result.ok(this.toModel(processing) as Document);
+      return Result.ok(this.toModel(processing) as ProcessingPDF);
     }
     return Result.fail(new ProcessingFileNotFound(fileId));
   }
@@ -200,7 +202,7 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
   getProcessedDocsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
-  ): ResultSet<ProcessedDocument> {
+  ): ResultSet<ProcessedPDF> {
     const query: GetDocumentsForEntityQuery = {
       entity: entitySharedId,
       type: 'document',
@@ -221,9 +223,9 @@ export class MongoFilesDataSource extends MongoDataSource<fileDBO> implements Fi
       }
     }
 
-    return new MongoResultSet<fileDBO, ProcessedDocument>(
+    return new MongoResultSet<fileDBO, ProcessedPDF>(
       this.getCollection().find(query, { projection: { fullText: 0 } }),
-      dbo => this.toModel(dbo) as ProcessedDocument
+      dbo => this.toModel(dbo) as ProcessedPDF
     );
   }
 

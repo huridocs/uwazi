@@ -1,5 +1,5 @@
 import { DomainError } from 'api/core/domain/error/DomainError';
-import { Document } from './Document';
+import { ProcessingPDF } from './ProcessingPDF';
 
 export class ProcessingFileNotFound extends DomainError {
   constructor(fileId: string) {
@@ -8,9 +8,9 @@ export class ProcessingFileNotFound extends DomainError {
 }
 
 export class ProcessingFileFailed extends DomainError {
-  readonly file: Document;
+  readonly file: ProcessingPDF;
 
-  constructor(file: Document, cause: Error) {
+  constructor(file: ProcessingPDF, cause: Error) {
     super(`Failed PostProcess for file with Id "${file.id}"`, 'file.post_proces_failed', cause);
     this.file = file;
   }

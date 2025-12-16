@@ -11,6 +11,7 @@ A target template needs to have the following properties,Ένα πρότυπο �
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
 Accept,Αποδοχή
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
+Accepting suggestions,Αποδοχή προτάσεων
 Account,Λογαριασμός
 Account locked,Λογαριασμός κλειδωμένος
 Account unlocked successfully,Ο λογαριασμός ξεκλειδώθηκε επιτυχώς
@@ -115,6 +116,7 @@ Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
 Cancel,Ακύρωση
+Canceling,Ακύρωση
 Canceling...,Ακύρωση σε εξέλιξη...
 Cannot find extractor,Δεν βρέθηκε ο εξαγωγέας
 Captcha,CAPTCHA
@@ -169,6 +171,7 @@ Connected to server,Συνδέθηκε στον διακομιστή
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
 Contact Form,Φόρμα επικοινωνίας
+Contact form email,Email φόρμας επικοινωνίας
 Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
@@ -209,8 +212,10 @@ Custom component error,Σφάλμα σήμανσης προσαρμοσμένο�
 Custom CSS,Προσαρμοσμένο CSS
 Custom Favicon,Προσαρμοσμένο Favicon
 Custom JS,Προσαρμοσμένο JS
+Custom landing page,Προσαρμοσμένη αρχική σελίδα
 custom page error warning,Παρουσιάστηκε απροσδόκητο σφάλμα σε αυτήν την προσαρμοσμένη σελίδα και ενδέχεται να μην λειτουργεί σωστά. Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
+Dark,Σκούρο
 Dashboard,Πίνακας ελέγχου
 Date added,Ημερομηνία προσθήκης
 Date format,Μορφή ημερομηνίας
@@ -318,6 +323,7 @@ Extract new paragraphs,Εξαγωγή νέων παραγράφων
 Extract paragraphs,Εξαγωγή παραγράφων
 Extraction configuration,Διαμόρφωση εξαγωγής
 Extractor Name,Όνομα εξαγωγέα
+Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
@@ -467,10 +473,13 @@ low,χαμηλό
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Map,Χάρτης
 Map api key,Κλειδί API χάρτη
+Map API key,Κλειδί API χάρτη
 Map api key tooltip,Για τη χρήση του Mapbox ή του Google Maps απαιτείται κλειδί API.
+Map Layers,Επίπεδα χάρτη
 Map layers description,Περιγραφή επιπέδων χάρτη
 Map Provider,Πάροχος χάρτη
 Map view,Προβολή χάρτη
+Mapbox,Mapbox
 Mapping conflict error,"Είναι απαραίτητη η επαναευρετηριοποίηση της συλλογής σας. Ο λόγος μπορεί να ποικίλλει
          -- από συγκεκριμένες αλλαγές που έγιναν σε ιδιότητα προτύπου μέχρι νέα πεδία   
          που πρέπει να συμπληρωθούν σε όλες τις οντότητες.      
@@ -551,9 +560,8 @@ No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
-No Table of Contents,Δεν υπάρχει πίνακας περιεχομένων
-No Table of contents,Δεν υπάρχει πίνακας περιεχομένων
-No Table of Contents description,Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση.
+No table of contents,Δεν υπάρχει πίνακας περιεχομένων
+No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No type,Κανένας τύπος
@@ -774,7 +782,7 @@ Send,Αποστολή
 Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
-Sending labeled data...,Αποστολή επισημασμένων δεδομένων...
+Sending labeled data,Αποστολή επισημασμένων δεδομένων
 Sentences above threshold,Προτάσεις πάνω από το όριο
 Services,Υπηρεσίες
 Set as default,Ορισμός ως προεπιλογή
@@ -900,6 +908,7 @@ This property will be shown using all the width available.,Αυτή η ιδιό�
 This property will be shown without the label,Αυτή η ιδιότητα θα εμφανίζεται χωρίς την ετικέτα
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
+This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
 Threshold,Κατώφλι
@@ -925,7 +934,7 @@ Train,Εκπαίδευση
 Train model,Εκπαίδευση μοντέλου
 Train model description,Η εκπαίδευση μοντέλων μηχανικής μάθησης μπορεί να διαρκέσει από λεπτά έως μερικές ώρες ανάλογα με την ποσότητα των επισημασμένων δεδομένων και τη δυσκολία της εργασίας.
 Training,Εκπαίδευση
-Training model...,Εκπαιδεύεται το μοντέλο...
+Training model,Εκπαίδευση μοντέλου
 Training sample,Δείγμα εκπαίδευσης
 Translate,Μετάφραση
 Translation,Μετάφραση
@@ -934,7 +943,7 @@ Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
-Two-Factor Authentication, Πιστοποίηση δύο παραγόντων
+Two-Factor Authentication,Πιστοποίηση δύο παραγόντων
 Two-factor authentication enabled,Η πιστοποίηση δύο παραγόντων ενεργοποιήθηκε
 Two-factor authentication failed.,Η πιστοποίηση δύο παραγόντων απέτυχε.
 Two-factor authentication secret,Μυστικό πιστοποίησης δύο παραγόντων
@@ -1013,6 +1022,7 @@ Warning: you are editing multiple entities. Fields marked with a,Προειδο�
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
+Whitelisted templates,Επιτρεπόμενα πρότυπα
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Θα επιχειρήσει να γεμίσει το περιέχον, χρησιμοποιώντας ολόκληρο το πλάτος του. Στις κάρτες, είναι πιθανό να προκύψει περικοπή."
 will be updated with the same value.,θα ενημερωθεί με την ίδια τιμή.
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.
@@ -1026,9 +1036,6 @@ You can add one or many items in this form.,Μπορείτε να προσθέσ
 "You can also embed advanced components like maps, charts and entity lists in your page.","Μπορείτε επίσης να ενσωματώσετε προηγμένα στοιχεία όπως χάρτες, διαγράμματα και λίστες οντοτήτων στη σελίδα σας."
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ 
-                  στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.

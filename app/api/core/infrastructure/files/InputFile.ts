@@ -1,14 +1,14 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 
-import path from 'path';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { DiskFile } from './DiskFile';
-import { FileContents } from './FileContents';
 import date from 'api/utils/date';
-import { Attachment } from './Attachment';
-import { Document } from './Document';
-import { URLAttachment } from './URLAttachment';
+import path from 'path';
+import { FileAttachment } from '../../domain/files/FileAttachment';
+import { FileContents } from '../../domain/files/FileContents';
+import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
+import { URLAttachment } from '../../domain/files/URLAttachment';
 
 type FileMetadata = {
   fieldname: string;
@@ -90,9 +90,9 @@ export class InputFile {
 
     switch (this.type) {
       case 'document':
-        return new Document({ ...fileProps, status: 'processing' });
+        return new ProcessingPDF({ ...fileProps, status: 'processing' });
       case 'attachment':
-        return new Attachment(fileProps);
+        return new FileAttachment(fileProps);
       case 'url_attachment':
         if (typeof fileProps.url === 'string') {
           return new URLAttachment({ ...fileProps, url: fileProps.url });

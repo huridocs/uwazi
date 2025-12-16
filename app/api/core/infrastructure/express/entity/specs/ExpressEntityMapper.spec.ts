@@ -1,4 +1,4 @@
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { ExpressEntityMapper } from '../ExpressEntityMapper';
 import { CreateEntityDTO } from '../Schemas';
 
@@ -34,22 +34,35 @@ describe('ExpressEntityMapper', () => {
     });
 
     it('should map icon when provided', () => {
-      const dto: CreateEntityDTO = {
-        title: 'Test Entity',
-        icon: {
-          _id: 'icon123',
-          label: 'Icon Label',
-          type: 'icon-type',
+      const result1 = ExpressEntityMapper.toEntityCreateInput({
+        dto: {
+          title: 'Test Entity',
+          icon: {
+            _id: 'icon123',
+            label: 'Icon Label',
+            type: 'icon-type',
+          },
         },
-      };
+      });
 
-      const result = ExpressEntityMapper.toEntityCreateInput({ dto });
+      const result2 = ExpressEntityMapper.toEntityCreateInput({
+        dto: {
+          title: 'Test Entity',
+          icon: {
+            _id: null,
+            label: '',
+            type: '',
+          },
+        },
+      });
 
-      expect(result.icon).toEqual({
+      expect(result1.icon).toEqual({
         id: 'icon123',
         label: 'Icon Label',
         type: 'icon-type',
       });
+
+      expect(result2.icon).toBeUndefined();
     });
 
     it('should map inputFiles when provided', () => {

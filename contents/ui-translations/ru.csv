@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,Требутся электронная почта
 Accept,Принять
 Accepted suggestion on entity,Accepted suggestion on entity
+Accepting suggestions,Accepting suggestions
 Account,Аккаунт
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -115,6 +116,7 @@ Can edit,Может редактировать
 Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
+Canceling,Canceling
 Canceling...,Canceling...
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
@@ -165,6 +167,7 @@ Connected to server,Connected to server
 Connection type,Тип связи
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Форма обратной связи
+Contact form email,Contact form email
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -205,8 +208,10 @@ Custom component error,Ошибка пользовательского комп�
 Custom CSS,Персональные CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
+Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Пользовательские загрузки
+Dark,Dark
 Dashboard,Dashboard
 Date added,Дата добавления
 Date format,Формат даты
@@ -314,6 +319,7 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -463,10 +469,13 @@ low,низкий
 Manage site settings and configuration,Управление сайтом и конфигурация
 Map,Карта
 Map api key,Map api key
+Map API key,Map API key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map Layers,Map Layers
 Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Просмотр карты
+Mapbox,Mapbox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -547,9 +556,8 @@ No References,Нет ссылок
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,Нет содержания
-No Table of contents,No Table of contents
-No Table of Contents description,Нет описания содержания
+No table of contents,Нет содержания
+No table of contents description,Нет описания содержания
 No text match,Нет совпадающего текста
 No text match description,You can type something different in the search box to get some results.
 No type,Нет типа
@@ -770,7 +778,7 @@ Send,Отправить
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data...,Sending labeled data...
+Sending labeled data,Sending labeled data
 Sentences above threshold,Предложения выше порога
 Services,Services
 Set as default,Установить по умолчанию
@@ -896,6 +904,7 @@ This property will be shown using all the width available.,Это свойств
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Порог
@@ -921,7 +930,7 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
-Training model...,Training model...
+Training model,Training model
 Training sample,Training sample
 Translate,Перевести
 Translation,Translation
@@ -1009,6 +1018,7 @@ Warning: you are editing multiple entities. Fields marked with a,"Предупр
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,будет обновляться с тем же значением
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1022,9 +1032,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
