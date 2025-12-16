@@ -1,42 +1,15 @@
 import React from 'react';
-import {
-  VideoCameraIcon,
-  DocumentIcon,
-  BookOpenIcon,
-  LinkIcon,
-  PlayIcon,
-} from '@heroicons/react/24/outline';
-import { AudioWaveformIcon } from 'V2/Components/CustomIcons';
+import { VideoCameraIcon, DocumentIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 
 type FileIconProps = {
   filename: string;
   mimetype: string;
   altText?: string;
   className?: string;
-  thumbnailUrl?: string;
-  isLink?: boolean;
 };
 
-const FileIcon = ({
-  mimetype = '',
-  filename,
-  altText,
-  className,
-  thumbnailUrl,
-  isLink,
-}: FileIconProps) => {
-  if (isLink) {
-    return (
-      <div
-        className={`w-full h-full flex items-center justify-center bg-gray-50 ${className || ''}`}
-      >
-        <LinkIcon className="w-12 h-12 text-gray-400" />
-        <span className="sr-only">{altText || filename}</span>
-      </div>
-    );
-  }
-
-  let type: 'image' | 'pdf' | 'audio' | 'video' | 'other';
+const FileIcon = ({ mimetype = '', filename, altText, className }: FileIconProps) => {
+  let type: 'image' | 'pdf' | 'media' | 'other';
 
   switch (true) {
     case /^image\//.test(mimetype):
@@ -44,11 +17,11 @@ const FileIcon = ({
       break;
 
     case /^audio\//.test(mimetype):
-      type = 'audio';
+      type = 'media';
       break;
 
     case /^video\//.test(mimetype):
-      type = 'video';
+      type = 'media';
       break;
 
     case /^application\/pdf/.test(mimetype):
@@ -72,65 +45,28 @@ const FileIcon = ({
     );
   }
 
-  if (type === 'audio') {
+  if (type === 'media') {
     return (
-      <div
-        className={`relative w-full h-full flex items-center justify-center bg-white ${className || ''}`}
-      >
-        <AudioWaveformIcon className="absolute inset-0 w-full h-full" />
-        <PlayIcon className="relative w-12 h-12 text-gray-700" />
-      </div>
-    );
-  }
-
-  if (type === 'video') {
-    if (thumbnailUrl) {
-      return (
-        <div className={className || 'w-full h-full'}>
-          <img
-            src={thumbnailUrl}
-            alt={altText || filename}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      );
-    }
-    return (
-      <div
-        className={`w-full h-full flex items-center justify-center bg-gray-50 ${className || ''}`}
-      >
-        <VideoCameraIcon className="w-12 h-12 text-gray-400" />
+      <div className={className || 'w-full h-full'}>
         <span className="sr-only">{altText || filename}</span>
+        <VideoCameraIcon />
       </div>
     );
   }
 
   if (type === 'pdf') {
-    if (thumbnailUrl) {
-      return (
-        <div className={className || 'w-full h-full'}>
-          <img
-            src={thumbnailUrl}
-            alt={altText || filename}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      );
-    }
     return (
-      <div
-        className={`w-full h-full flex items-center justify-center bg-gray-50 ${className || ''}`}
-      >
-        <BookOpenIcon className="w-12 h-12 text-gray-400" />
+      <div className={className || 'w-full h-full'}>
         <span className="sr-only">{altText || filename}</span>
+        <BookOpenIcon />
       </div>
     );
   }
 
   return (
-    <div className={`w-full h-full flex items-center justify-center bg-gray-50 ${className || ''}`}>
-      <DocumentIcon className="w-12 h-12 text-gray-400" />
+    <div className={className || 'w-full h-full'}>
       <span className="sr-only">{altText || filename}</span>
+      <DocumentIcon />
     </div>
   );
 };

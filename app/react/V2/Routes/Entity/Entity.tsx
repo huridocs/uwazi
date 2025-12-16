@@ -10,7 +10,6 @@ import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -41,7 +40,6 @@ const SIDE_TABS = {
   REFERENCES: 'references',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
-  FILES: 'files',
 };
 
 type MainTabId = (typeof MAIN_TABS)[keyof typeof MAIN_TABS];
@@ -173,13 +171,7 @@ const Entity = () => {
           content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],
-      [MAIN_TABS.FILES]: [
-        {
-          id: SIDE_TABS.FILES,
-          label: <TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />,
-          content: entity ? <FileList entity={entity} /> : <Translate>Loading</Translate>,
-        },
-      ],
+      [MAIN_TABS.FILES]: [],
     }),
     [entity]
   );
