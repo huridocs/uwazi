@@ -37,16 +37,19 @@ const FileList = ({ entity }: FileListProps) => {
           (meta.type !== 'image' && meta.type !== 'media') ||
           !meta.values ||
           meta.values.length === 0
-        ) return null;
-        if (!meta.values || meta.values.length === 0) return null;
-        const value = meta.values[0].value;
+        ) {
+          return null;
+        }
+        const firstValue = meta.values[0] as { value: unknown; alt?: string };
+        if (!firstValue || typeof firstValue.value !== 'string') return null;
+        const value = firstValue.value;
         const fileName = value.split('/').pop() || '';
         if (fileNames.includes(fileName)) return null;
         return {
           url: value,
           fileType: meta.type as 'image' | 'media',
           mimetype: getMimetypeFromUrl(value),
-          originalname: meta.values[0].alt || fileName || 'Untitled',
+          originalname: firstValue.alt || fileName || 'Untitled',
         } as EntityFile;
       })
       .filter((file): file is EntityFile => file !== null);
