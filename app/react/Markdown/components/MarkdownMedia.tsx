@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
@@ -202,7 +202,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           setNewTimeline({ ...newTimeline, label: event.target.value });
         }}
         className="timestamp-label"
-        placeholder="Enter title"
+        placeholder={t('System', 'Title', null, false)}
         value={newTimeline.label}
       />
       <button

@@ -7,6 +7,7 @@ import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
 import { TemplateLabel } from 'V2/Components/Metadata';
 import { NeedAuthorization, Truncate, Button } from 'V2/Components/UI';
 import { Panel } from 'V2/Components/Layouts/Panel';
+import { isClient } from 'app/utils';
 import { settingsAtom } from 'V2/atoms';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PlainText } from './PlainText';
@@ -18,10 +19,12 @@ import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom';
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isRaw = searchParams.get(VIEW_MODE_PARAM) === 'true';
+  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const [hydrated, setHydrated] = useState(false);
+
   const page = searchParams.get(PAGE_PARAM) || '1';
   const pageNumber = Number.parseInt(page || '1', 10);
-  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const isRaw = !isClient || !hydrated || searchParams.get(VIEW_MODE_PARAM) === 'true';
   const [selectedText, setSelectedText] = useState<TextSelection | undefined>(undefined);
   const { addEntry } = useTocActions();
 
@@ -63,6 +66,8 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
     };
 
     const { unsubscribe } = pdfEventBus.on('onPageChange', handlePageChange);
+
+    setHydrated(true);
 
     return () => {
       unsubscribe();

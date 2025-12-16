@@ -30,23 +30,6 @@ mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
     }
 '
 
-echo "Creating indexes for jobs_failed collection..."
-# Create indexes for jobs_failed collection if they don't exist
-mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
-    if (!db.jobs_failed.getIndexes().some(index => index.name === "queue_1")) {
-        db.jobs_failed.createIndex({ "queue": 1 }, { background: true });
-        print("Created index: queue_1");
-    }
-    if (!db.jobs_failed.getIndexes().some(index => index.name === "namespace_1")) {
-        db.jobs_failed.createIndex({ "namespace": 1 }, { background: true });
-        print("Created index: namespace_1");
-    }
-    if (!db.jobs_failed.getIndexes().some(index => index.name === "createdAt_1")) {
-        db.jobs_failed.createIndex({ "createdAt": 1 }, { background: true });
-        print("Created index: createdAt_1");
-    }
-'
-
 # Create indexes for tenants collection
 echo "Creating indexes for tenants collection..."
 # Create indexes for tenants collection if they don't exist

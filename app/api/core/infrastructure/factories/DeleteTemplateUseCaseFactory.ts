@@ -49,7 +49,7 @@ class DeleteTemplateUseCaseFactory {
     });
 
     if (process.env.NODE_ENV !== 'test') {
-      jobsDispatcher = await DefaultDispatcher(tenants.current().name);
+      jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
     }
 
     const useCase = new DeleteTemplateUseCase(

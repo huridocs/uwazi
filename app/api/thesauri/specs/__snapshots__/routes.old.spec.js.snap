@@ -82,9 +82,6 @@ Object {
             "values": Object {
               "items": Object {
                 "properties": Object {
-                  "_id": Object {
-                    "type": "string",
-                  },
                   "id": Object {
                     "type": "string",
                   },

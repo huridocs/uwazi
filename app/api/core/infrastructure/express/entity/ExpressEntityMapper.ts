@@ -1,5 +1,5 @@
 import { CreateEntityUseCaseInput } from 'api/core/application/CreateEntity';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { CreateEntityDTO } from './Schemas';
 
 type ToEntityCreateInputProps = {
@@ -45,11 +45,15 @@ class ExpressEntityMapper {
     }
 
     if (props.dto?.icon) {
-      input.icon = {
-        id: props.dto.icon._id!,
-        label: props.dto.icon.label!,
-        type: props.dto.icon.type!,
-      };
+      if (props.dto.icon._id === null) {
+        input.icon = undefined;
+      } else {
+        input.icon = {
+          id: props.dto.icon._id!,
+          label: props.dto.icon.label!,
+          type: props.dto.icon.type!,
+        };
+      }
     }
 
     if (props.dto.metadata) {

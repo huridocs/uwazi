@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { UserGroupSchema } from 'shared/types/userGroupType';
@@ -130,7 +130,7 @@ const GroupFormSidepanel = ({
                   users?.map(user => ({ label: user.username, value: user._id as string })) || []
                 }
                 value={selectedGroup?.members?.map(member => member.refId) || []}
-                placeholder="Nothing selected"
+                placeholder={t('System', 'Nothing selected', null, false)}
               />
             </div>
           </div>

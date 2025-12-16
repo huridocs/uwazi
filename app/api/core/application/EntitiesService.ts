@@ -48,15 +48,15 @@ class EntitiesService {
   async insert(entity: Entity, context: InsertContext) {
     await this.deps.entitiesDS.create(entity);
 
-    this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
-        sharedId: entity.sharedId,
-        targetLanguage: entity.languages[0],
-        templateId: entity.template.id,
-        tenantName: context.tenantName,
-        userId: context.actorId,
-      });
+    await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
+      sharedId: entity.sharedId,
+      targetLanguage: entity.languages[0],
+      templateId: entity.template.id,
+      tenantName: context.tenantName,
+      userId: context.actorId,
+    });
 
+    this.deps.transactionManager.onCommitted(async () => {
       await this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]));
     });
   }

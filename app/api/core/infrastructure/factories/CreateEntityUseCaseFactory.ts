@@ -19,7 +19,7 @@ class CreateEntityUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);

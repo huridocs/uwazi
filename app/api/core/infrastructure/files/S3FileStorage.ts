@@ -17,9 +17,9 @@ import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
 import { Readable } from 'stream';
 import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { Attachment } from '../../domain/files/Attachment';
+import { FileAttachment } from '../../domain/files/FileAttachment';
 import { CustomUpload } from '../../domain/files/CustomUpload';
-import { FileContents, NullFileContents } from '../../domain/files/FileContents';
+import { FileContents } from '../../domain/files/FileContents';
 import { StoredFile } from '../../domain/files/StoredFile';
 import { URLAttachment } from '../../domain/files/URLAttachment';
 import { PathManager } from './PathManager';
@@ -51,9 +51,6 @@ export class S3FileStorage implements FileStorage {
   }
 
   async storeContent(content: FileContents, subpath: string): Promise<void> {
-    if (content instanceof NullFileContents) {
-      return;
-    }
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
@@ -142,7 +139,7 @@ export class S3FileStorage implements FileStorage {
   }
 
   getPath(file: BaseFile): string {
-    if (file instanceof Attachment) {
+    if (file instanceof FileAttachment) {
       return path.join(this.tenant.attachments, file.filename);
     }
     if (file instanceof CustomUpload) {

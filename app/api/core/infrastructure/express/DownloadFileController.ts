@@ -2,9 +2,8 @@ import { createError } from 'api/utils';
 
 import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { tenants } from 'api/tenants';
 import { Request, Response } from 'express';
 import { FileType } from 'shared/types/fileType';
@@ -121,7 +120,7 @@ class DownloadFileController extends AbstractController {
     }
 
     const filev2 = fileResult.getData();
-    const file = FileMappers.toDTO(filev2);
+    const file = filev2.toDTO();
     if (!(await this.fileStorage.fileExists(filev2)) || !(await this.checkFilePermissions(file))) {
       throw createError('file not found', 404);
     }

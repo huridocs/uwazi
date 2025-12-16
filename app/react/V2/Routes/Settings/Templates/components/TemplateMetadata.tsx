@@ -3,7 +3,7 @@ import { ColorPicker } from 'app/V2/Components/Forms/ColorPicker';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { Checkbox } from 'app/V2/Components/Forms/Checkbox';
 import { Select, OptionSchema } from 'app/V2/Components/Forms/Select';
-import { Translate } from 'app/I18N/Translate';
+import { Translate, t } from 'app/I18N';
 
 const templateColors = [
   '#628ccf',
@@ -72,7 +72,7 @@ export const TemplateMetadata = ({
       <InputField
         id="template-name"
         name="template-name"
-        placeholder="Template name"
+        placeholder={t('System', 'Template name', null, false)}
         value={value.name}
         onChange={e => onChange({ ...value, name: e.target.value })}
         className="grow min-w-[120px]"

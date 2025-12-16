@@ -37,19 +37,19 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
 
     await this.transactionManager.run(async () => {
+      await this.jobsDispatcher.dispatchMany(async dispatch =>
+        chunks.forEach(chunk =>
+          dispatch(BulkCleanupEntityJob, {
+            sharedIds: chunk,
+            userId: this.getActor()._id,
+            tenantName: this.tenant.name,
+          })
+        )
+      );
+
       await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
       await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
     });
-
-    await this.jobsDispatcher.dispatchMany(async dispatch =>
-      chunks.forEach(chunk =>
-        dispatch(BulkCleanupEntityJob, {
-          sharedIds: chunk,
-          userId: this.getActor()._id,
-          tenantName: this.tenant.name,
-        })
-      )
-    );
 
     return { sharedIds };
   }

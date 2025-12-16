@@ -1,8 +1,9 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { fileExistsOnPath } from 'api/files';
 import { Tenant, tenants } from 'api/tenants/tenantContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -11,8 +12,6 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
-import { NullFileContents } from 'api/core/domain/files/FileContents';
-import { fileExistsOnPath } from 'api/files';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
@@ -197,19 +196,6 @@ describe('FileSystemStorage', () => {
         )
       );
       expect(contents).toBe('content created\n');
-    });
-
-    it('should do nothing if passing NullFileContents', async () => {
-      await fileSystemStorage.storeContent(
-        new NullFileContents(),
-        'custom_path/deep/null_contents.txt'
-      );
-
-      const exists = await fileExistsOnPath(
-        path.join(tenants.current().uploadedDocuments, 'custom_path/deep/null_contents.txt')
-      );
-
-      expect(exists).toBe(false);
     });
   });
 

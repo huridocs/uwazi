@@ -1,5 +1,5 @@
 import { ResultType } from 'api/core/libs/Result';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { FileContents } from 'api/core/domain/files/FileContents';
 import { LanguageSchema } from 'shared/types/commonTypes';
 

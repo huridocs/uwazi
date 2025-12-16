@@ -26,11 +26,16 @@ interface UserFormSidepanelProps {
 }
 
 const userRoles = [
-  { key: UserRole.ADMIN, value: UserRole.ADMIN },
-  { key: UserRole.EDITOR, value: UserRole.EDITOR },
+  { key: UserRole.ADMIN, value: UserRole.ADMIN, label: t('System', 'Admin', null, false) },
+  {
+    key: UserRole.EDITOR,
+    value: UserRole.EDITOR,
+    label: t('System', 'Editor', null, false),
+  },
   {
     key: UserRole.COLLABORATOR,
     value: UserRole.COLLABORATOR,
+    label: t('System', 'Collaborator', null, false),
   },
 ];
 
@@ -310,7 +315,7 @@ const UserFormSidepanel = ({
                   }}
                   options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
                   value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
-                  placeholder="Nothing selected"
+                  placeholder={t('System', 'Nothing selected', null, false)}
                 />
               </div>
             </div>

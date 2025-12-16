@@ -351,6 +351,40 @@ export const rawEntity: EntitySchema = {
       creationDate: 1,
     },
   ],
+  relations: [
+    {
+      entityData: {
+        _id: 'entity.reference.document',
+        title: 'Entity with reference to document',
+        template: 'template.reference',
+        type: 'document',
+        entity: 'test-incident-001',
+      },
+      _id: 'reference.document.id',
+      entity: 'test-incident-001',
+      hub: 'reference.document.hub',
+    },
+    {
+      template: null,
+      _id: '693808a792ffe9e38b072161',
+      entity: 'entity.reference.document',
+      hub: 'reference.document.hub',
+      file: 'd1',
+      reference: {
+        selectionRectangles: [
+          {
+            top: 242.51024870695886,
+            left: 300.0269153736255,
+            width: 192.95629091616027,
+            height: 22.918518518518514,
+            page: '1',
+            _id: 'rectangle.id',
+          },
+        ],
+        text: 'Content of the reference',
+      },
+    },
+  ],
   __v: 11,
 };
 
@@ -721,6 +755,13 @@ export const processingContext: ProcessingContext = {
       ],
       entityViewPage: '',
       name: 'Incident Report Template',
+    },
+    {
+      _id: 'template.reference',
+      color: '#FD7E14',
+      properties: [],
+      entityViewPage: '',
+      name: 'Reference Template',
     },
   ],
   settings: {
