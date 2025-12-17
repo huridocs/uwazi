@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,모든 언어에 추가
 Add to table of contents,목차에 추가
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,사용자 추가
 add value,add value
@@ -148,6 +149,7 @@ Close,닫기
 Collaborator,협업자
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,컬렉션
 Collection Name,Collection Name
 Common sources,Common sources
@@ -166,6 +168,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,새 비밀번호 확인
 Connect to a paragraph,단락과 연결
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,커넥션 유형
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -233,6 +237,7 @@ DELETE,삭제
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,언어 삭제
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -315,6 +320,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,탐색
 Export CSV,CSV 추출
 Exporting entities to CSV,엔티티를 CSV 로 추출
@@ -326,6 +332,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -562,6 +569,7 @@ No References description,References are parts of this document related with oth
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
 No table of contents,목차 없음
+No Table of contents,No Table of contents
 No table of contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
@@ -743,6 +751,7 @@ Save changes,변경사항 저장
 Save password,암호 저장
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,검색
 Search item,아이템 검색
 Search not found,검색 결과 없음
@@ -850,6 +859,7 @@ System translations,System translations
 Table,테이블
 Table of Contents,목차
 Table of contents,목차
+Table of contents saved successfully,Table of contents saved successfully
 Table view,테이블 뷰
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -1037,6 +1047,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

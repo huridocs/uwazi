@@ -124,7 +124,13 @@ const Entity = () => {
         {
           id: SIDE_TABS.TOC,
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
-          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
+          content: (
+            <ToCPanel
+              toc={entity?.mainDocument?.toc}
+              generatedToc={entity?.mainDocument?.generatedToc}
+              file={entity?.mainDocument}
+            />
+          ),
         },
         {
           id: SIDE_TABS.REFERENCES,

@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,เพิ่มเข้าไปในทุกภาษา
 Add to table of contents,เพิ่มลงในสารบัญ
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,เพิ่มผู้ใช้
 add value,add value
@@ -148,6 +149,7 @@ Close,ปิด
 Collaborator,ผู้ประสานงาน
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,คอลเล็คชั่น
 Collection Name,Collection Name
 Common sources,Common sources
@@ -166,6 +168,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,ยืนยันรหัสผ่านใหม่
 Connect to a paragraph,เชื่อมต่อย่อหน้า
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,ประเภทการเชื่อมต่อ
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -233,6 +237,7 @@ DELETE,ลบ
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ลบภาษา
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -315,6 +320,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,ค้นหา
 Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
@@ -326,6 +332,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -562,6 +569,7 @@ No References description,References are parts of this document related with oth
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
 No table of contents,ไม่มีสารบัญ
+No Table of contents,No Table of contents
 No table of contents description,ไม่มีคำอธิบายสารบัญ
 No text match,ไม่มีการจับคู่ข้อความ
 No text match description,You can type something different in the search box to get some results.
@@ -743,6 +751,7 @@ Save changes,บันทึกการเปลี่ยนแปลง
 Save password,บันทึกรหัสผ่าน
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,ค้นหา
 Search item,ค้นหารายการ
 Search not found,ไม่พบการค้นหา
@@ -850,6 +859,7 @@ System translations,System translations
 Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
+Table of contents saved successfully,Table of contents saved successfully
 Table view,มุมมองตาราง
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -1037,6 +1047,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
