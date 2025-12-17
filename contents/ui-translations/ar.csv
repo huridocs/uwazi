@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,إضافة مستخدم
 add value,add value
@@ -147,6 +148,7 @@ Close,غلق
 Collaborator,متعاون/ مساهم
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,المجموعة
 Collection Name,Collection Name
 Common sources,Common sources
@@ -165,6 +167,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,تأكيد كلمة المرور الجديدة
 Connect to a paragraph,الاتصال بفقرة
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,نوع الاتصال
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -232,6 +236,7 @@ DELETE,حذف
 Delete entities and documents,Delete entities and documents
 Delete file,مسح الملف
 Delete language,حذف اللغة
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -313,6 +318,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,استكشاف
 Export CSV,تصدير ملف القيم المفصولة بفواصل
 Exporting entities to CSV,تصدير كيانات (إدخالات) إلى ملف القيم المفصولة بفواصل
@@ -324,6 +330,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -559,6 +566,7 @@ No References description,المراجع هي اجزاء من الوثيقة ا�
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
 No table of contents,لا يوجد جدول المحتويات
+No Table of contents,No Table of contents
 No table of contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
@@ -740,6 +748,7 @@ Save changes,حفظ التغييرات
 Save password,حفظ كلمة المرور
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,ابحث
 Search item,البحث عن بند
 Search not found,البحث غير متوفر
@@ -847,6 +856,7 @@ System translations,System translations
 Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
+Table of contents saved successfully,Table of contents saved successfully
 Table view,معاينة الجدول
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -1034,6 +1044,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,يمكنك إنشاء قوالب البيانات الوصفية في
+"You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,يجب عليك تفعيل هذه الميزة لتحقيق تأمين أفضل للحساب
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

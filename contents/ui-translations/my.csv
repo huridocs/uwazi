@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,ဘာသာစကားအားလုံး သို့ ထည့်ရန်
 Add to table of contents,မာတိကာသို့ ထည့်ရန်
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,အသုံးပြုသူထည့်ရန်
 add value,add value
@@ -148,6 +149,7 @@ Close,ပိတ်ရန်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,စုစည်းမှု
 Collection Name,Collection Name
 Common sources,Common sources
@@ -166,6 +168,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Connect to a paragraph,စာပိုဒ်နှင့် ချိတ်ဆက်ရန်
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,ချိတ်ဆက်မှု အမျိုးအစား
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -233,6 +237,7 @@ DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ဘာသာစကား ဖျက်ရန်
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -314,6 +319,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,စူးစမ်းလေ့လာခြင်း
 Export CSV,CSV တင်ပို့ရန်
 Exporting entities to CSV,ဖြည့်သွင်းချက်များကို CSV သို့ တင်ပို့နေသည်
@@ -325,6 +331,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -560,6 +567,7 @@ No References description,References are parts of this document related with oth
 No Relationships,ဆက်နွှယ်မှု မရှိပါ
 No Relationships description,Relationships are bonds between entities.
 No table of contents,မာတိကာ မရှိပါ
+No Table of contents,No Table of contents
 No table of contents description,မာတိကာ ဖော်ပြချက် မရှိပါ
 No text match,စာသား ကိုက်ညီမှု မရှိပါ
 No text match description,You can type something different in the search box to get some results.
@@ -741,6 +749,7 @@ Save changes,အပြောင်းအလဲများကို သိမ်
 Save password,စကားဝှက် သိမ်းဆည်းရန်
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,ရှာဖွေရန်
 Search item,အိုင်တမ် ရှာရန်
 Search not found,ရှာသည့်အရာကို မတွေ့ပါ
@@ -848,6 +857,7 @@ System translations,System translations
 Table,ဇယား
 Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
+Table of contents saved successfully,Table of contents saved successfully
 Table view,ဇယားမြင်ကွင်း
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -1035,6 +1045,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
+"You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+                  ToC"" button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
