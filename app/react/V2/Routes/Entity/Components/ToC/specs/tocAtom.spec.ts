@@ -58,12 +58,7 @@ describe('tocAtom', () => {
 
   describe('tocActions.setToc', () => {
     it('should set the ToC', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      setToc(simpleToc);
+      store.set(tocActions.setToc, simpleToc);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toEqual(simpleToc);
@@ -71,13 +66,8 @@ describe('tocAtom', () => {
     });
 
     it('should set ToC to undefined', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      setToc(simpleToc);
-      setToc(undefined);
+      store.set(tocActions.setToc, simpleToc);
+      store.set(tocActions.setToc, undefined);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toBeUndefined();
@@ -86,18 +76,13 @@ describe('tocAtom', () => {
 
   describe('tocActions.addEntry', () => {
     it('should add an entry to empty ToC', () => {
-      const addEntryAction = store.get(tocActions.addEntry) as unknown as [
-        null,
-        (entry: TocSchema) => void,
-      ];
-      const addEntry = addEntryAction[1];
       const newEntry: TocSchema = {
         label: 'New Entry',
         indentation: 0,
         selectionRectangles: [{ top: 0, left: 0, width: 100, height: 20, page: '1' }],
       };
 
-      addEntry(newEntry);
+      store.set(tocActions.addEntry, newEntry);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toHaveLength(1);
@@ -106,18 +91,7 @@ describe('tocAtom', () => {
     });
 
     it('should add an entry to existing ToC', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const addEntryAction = store.get(tocActions.addEntry) as unknown as [
-        null,
-        (entry: TocSchema) => void,
-      ];
-      const addEntry = addEntryAction[1];
-
-      setToc(simpleToc);
+      store.set(tocActions.setToc, simpleToc);
 
       const newEntry: TocSchema = {
         label: 'New Entry',
@@ -125,7 +99,7 @@ describe('tocAtom', () => {
         selectionRectangles: [{ top: 0, left: 0, width: 100, height: 20, page: '3' }],
       };
 
-      addEntry(newEntry);
+      store.set(tocActions.addEntry, newEntry);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toHaveLength(3);
@@ -135,24 +109,8 @@ describe('tocAtom', () => {
     });
 
     it('should automatically set edit mode to true', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const addEntryAction = store.get(tocActions.addEntry) as unknown as [
-        null,
-        (entry: TocSchema) => void,
-      ];
-      const addEntry = addEntryAction[1];
-
-      setToc(simpleToc);
-      const setEditModeAction = store.get(tocActions.setEditMode) as unknown as [
-        null,
-        (enabled: boolean) => void,
-      ];
-      const setEditMode = setEditModeAction[1];
-      setEditMode(false);
+      store.set(tocActions.setToc, simpleToc);
+      store.set(tocActions.setEditMode, false);
 
       const newEntry: TocSchema = {
         label: 'New Entry',
@@ -160,7 +118,7 @@ describe('tocAtom', () => {
         selectionRectangles: [{ top: 0, left: 0, width: 100, height: 20, page: '3' }],
       };
 
-      addEntry(newEntry);
+      store.set(tocActions.addEntry, newEntry);
 
       const state = store.get(tocStateAtom);
       expect(state.isEditMode).toBe(true);
@@ -169,25 +127,15 @@ describe('tocAtom', () => {
 
   describe('tocActions.setEditMode', () => {
     it('should set edit mode to true', () => {
-      const setEditModeAction = store.get(tocActions.setEditMode) as unknown as [
-        null,
-        (enabled: boolean) => void,
-      ];
-      const setEditMode = setEditModeAction[1];
-      setEditMode(true);
+      store.set(tocActions.setEditMode, true);
 
       const state = store.get(tocStateAtom);
       expect(state.isEditMode).toBe(true);
     });
 
     it('should set edit mode to false', () => {
-      const setEditModeAction = store.get(tocActions.setEditMode) as unknown as [
-        null,
-        (enabled: boolean) => void,
-      ];
-      const setEditMode = setEditModeAction[1];
-      setEditMode(true);
-      setEditMode(false);
+      store.set(tocActions.setEditMode, true);
+      store.set(tocActions.setEditMode, false);
 
       const state = store.get(tocStateAtom);
       expect(state.isEditMode).toBe(false);
@@ -196,19 +144,8 @@ describe('tocAtom', () => {
 
   describe('tocActions.updateEntry', () => {
     it('should update an entry label', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const updateEntryAction = store.get(tocActions.updateEntry) as unknown as [
-        null,
-        (index: number, entry: Partial<TocSchema>) => void,
-      ];
-      const updateEntry = updateEntryAction[1];
-
-      setToc(simpleToc);
-      updateEntry(0, { label: 'Updated Introduction' });
+      store.set(tocActions.setToc, simpleToc);
+      store.set(tocActions.updateEntry, 0, { label: 'Updated Introduction' });
 
       const state = store.get(tocStateAtom);
       expect(state.toc?.[0].label).toBe('Updated Introduction');
@@ -216,33 +153,16 @@ describe('tocAtom', () => {
     });
 
     it('should update an entry indentation', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const updateEntryAction = store.get(tocActions.updateEntry) as unknown as [
-        null,
-        (index: number, entry: Partial<TocSchema>) => void,
-      ];
-      const updateEntry = updateEntryAction[1];
-
-      setToc(simpleToc);
-      updateEntry(0, { indentation: 1 });
+      store.set(tocActions.setToc, simpleToc);
+      store.set(tocActions.updateEntry, 0, { indentation: 1 });
 
       const state = store.get(tocStateAtom);
       expect(state.toc?.[0].indentation).toBe(1);
     });
 
     it('should not update if ToC is undefined', () => {
-      const updateEntryAction = store.get(tocActions.updateEntry) as unknown as [
-        null,
-        (index: number, entry: Partial<TocSchema>) => void,
-      ];
-      const updateEntry = updateEntryAction[1];
-
       // Should not throw
-      updateEntry(0, { label: 'Test' });
+      store.set(tocActions.updateEntry, 0, { label: 'Test' });
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toBeUndefined();
@@ -251,19 +171,8 @@ describe('tocAtom', () => {
 
   describe('tocActions.deleteEntry', () => {
     it('should delete an entry', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const deleteEntryAction = store.get(tocActions.deleteEntry) as unknown as [
-        null,
-        (index: number) => void,
-      ];
-      const deleteEntry = deleteEntryAction[1];
-
-      setToc(simpleToc);
-      deleteEntry(0);
+      store.set(tocActions.setToc, simpleToc);
+      store.set(tocActions.deleteEntry, 0);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toHaveLength(1);
@@ -271,14 +180,8 @@ describe('tocAtom', () => {
     });
 
     it('should not delete if ToC is undefined', () => {
-      const deleteEntryAction = store.get(tocActions.deleteEntry) as unknown as [
-        null,
-        (index: number) => void,
-      ];
-      const deleteEntry = deleteEntryAction[1];
-
       // Should not throw
-      deleteEntry(0);
+      store.set(tocActions.deleteEntry, 0);
 
       const state = store.get(tocStateAtom);
       expect(state.toc).toBeUndefined();
@@ -287,31 +190,19 @@ describe('tocAtom', () => {
 
   describe('tocActions.toggleExpand', () => {
     it('should toggle expand state for an index', () => {
-      const toggleExpandAction = store.get(tocActions.toggleExpand) as unknown as [
-        null,
-        (index: number) => void,
-      ];
-      const toggleExpand = toggleExpandAction[1];
-
-      toggleExpand(0);
+      store.set(tocActions.toggleExpand, 0);
       let state = store.get(tocStateAtom);
       expect(state.expanded[0]).toBe(true);
 
-      toggleExpand(0);
+      store.set(tocActions.toggleExpand, 0);
       state = store.get(tocStateAtom);
       expect(state.expanded[0]).toBe(false);
     });
 
     it('should handle multiple expanded items', () => {
-      const toggleExpandAction = store.get(tocActions.toggleExpand) as unknown as [
-        null,
-        (index: number) => void,
-      ];
-      const toggleExpand = toggleExpandAction[1];
-
-      toggleExpand(0);
-      toggleExpand(1);
-      toggleExpand(2);
+      store.set(tocActions.toggleExpand, 0);
+      store.set(tocActions.toggleExpand, 1);
+      store.set(tocActions.toggleExpand, 2);
 
       const state = store.get(tocStateAtom);
       expect(state.expanded[0]).toBe(true);
@@ -322,16 +213,8 @@ describe('tocAtom', () => {
 
   describe('tocActions.expandAll', () => {
     it('should expand all items with children', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const expandAllAction = store.get(tocActions.expandAll) as unknown as [null, () => void];
-      const expandAll = expandAllAction[1];
-
-      setToc(nestedToc);
-      expandAll();
+      store.set(tocActions.setToc, nestedToc);
+      store.set(tocActions.expandAll);
 
       const state = store.get(tocStateAtom);
       // Items with children should be expanded
@@ -340,10 +223,7 @@ describe('tocAtom', () => {
     });
 
     it('should not expand if ToC is undefined', () => {
-      const expandAllAction = store.get(tocActions.expandAll) as unknown as [null, () => void];
-      const expandAll = expandAllAction[1];
-
-      expandAll();
+      store.set(tocActions.expandAll);
 
       const state = store.get(tocStateAtom);
       expect(state.expanded).toEqual({});
@@ -352,19 +232,9 @@ describe('tocAtom', () => {
 
   describe('tocActions.collapseAll', () => {
     it('should collapse all items', () => {
-      const setTocAction = store.get(tocActions.setToc) as unknown as [
-        null,
-        (toc: TocSchema[] | undefined) => void,
-      ];
-      const setToc = setTocAction[1];
-      const expandAllAction = store.get(tocActions.expandAll) as unknown as [null, () => void];
-      const expandAll = expandAllAction[1];
-      const collapseAllAction = store.get(tocActions.collapseAll) as unknown as [null, () => void];
-      const collapseAll = collapseAllAction[1];
-
-      setToc(nestedToc);
-      expandAll();
-      collapseAll();
+      store.set(tocActions.setToc, nestedToc);
+      store.set(tocActions.expandAll);
+      store.set(tocActions.collapseAll);
 
       const state = store.get(tocStateAtom);
       expect(state.expanded).toEqual({});
