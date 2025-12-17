@@ -12,7 +12,7 @@ type AudioPlayerProps = {
 const AudioPlayer = ({ url, className, altText }: AudioPlayerProps) => {
   const playerRef = useRef<ReactPlayer>(null);
   const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState<number | undefined>(undefined);
+  const [, setDuration] = useState<number | undefined>(undefined);
 
   const handleDuration = (dur: number) => {
     if (dur && isFinite(dur) && dur > 0) {
