@@ -278,6 +278,7 @@ Duplicate values not allowed.,Повторювані значення не до�
 Duplicated email,Продубльована адреса електронної пошти
 Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
+Duration,Duration
 Edit,Редагувати
 Edit all documents matching this criteria,"Відредагуйте всі документи, які відповідають цим критеріям"
 Edit Extractor,Редагувати витягач
@@ -548,6 +549,7 @@ No Connections description,Зв'язки - це прямі відносини м
 No context,Без контексту
 NO DATA AVAILABLE,НЕМАЄ ДАНИХ
 NO EXTRACTORS,ЖОДНИХ ЕКСПРАКТОРІВ
+No files available,No files available
 no filters for templates,Комбінація типів сутностей не має спільних фільтрів.
 No Group,Немає групи
 No icon / flag,Немає піктограми / прапорця

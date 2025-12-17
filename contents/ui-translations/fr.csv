@@ -275,6 +275,7 @@ Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Courriel en double
 Duplicated name,Nom dupliqué
 Duplicated username,Nom d'utilisateur en double
+Duration,Durée
 Edit,Éditer
 Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
@@ -545,6 +546,7 @@ No Connections description,Connections are the direct relationships between this
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
+No files available,No files available
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,No icon / flag
