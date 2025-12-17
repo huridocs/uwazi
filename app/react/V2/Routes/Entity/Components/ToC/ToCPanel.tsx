@@ -220,8 +220,8 @@ const ToCPanel = ({
               title={<Translate>No Table of contents</Translate>}
               description={
                 <Translate>
-                  You can start by selecting text in the document and clicking the &quot;Add to
-                  ToC&quot; button.
+                  You can start by selecting text in the document and clicking the "Add to ToC"
+                  button.
                 </Translate>
               }
             />
