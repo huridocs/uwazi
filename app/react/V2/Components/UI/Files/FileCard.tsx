@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { FilePreview } from 'app/V2/Components/UI/Files/FilePreview';
 import { formatBytes, formatDuration, getMimetypeFromUrl } from 'V2/shared/formatHelpers';
 import { FileType } from 'shared/types/fileType';
@@ -26,7 +26,9 @@ const getFileTypeLabel = (file: EntityFile) => {
     const parts = mimeType.split('/');
     return parts[parts.length - 1].toUpperCase();
   }
-  return file.fileType === 'document' ? 'Document' : 'Attachment';
+  return file.fileType === 'document'
+    ? t('System', 'Document', null, false)
+    : t('System', 'Attachment', null, false);
 };
 
 const FileCard = ({ file, index, onFileSelect, translations = {} }: FileCardProps) => {
@@ -115,7 +117,7 @@ const FileCard = ({ file, index, onFileSelect, translations = {} }: FileCardProp
                   <Translate>Translations</Translate>
                 </div>
                 <div className="text-gray-800 text-sm font-medium">
-                  {Object.values(translations).filter(t => t).length}/
+                  {Object.values(translations).filter(tr => tr).length}/
                   {Object.keys(translations).length}
                 </div>
               </div>
