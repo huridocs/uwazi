@@ -21,8 +21,8 @@ export class Translation {
     if (typeof context.id !== 'string') {
       throw new Error(`context.id is of type "${typeof context.id}", should be a string`);
     }
-    if (value === null || value === undefined || value === '') {
-      throw new Error(`Translation value for key "${key}" cannot be null, undefined, or empty`);
+    if (value === null || value === undefined) {
+      throw new Error(`Translation value for key "${key}" cannot be null or undefined`);
     }
     this.key = key;
     this.value = value;
