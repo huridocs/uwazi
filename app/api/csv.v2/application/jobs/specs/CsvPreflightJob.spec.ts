@@ -10,6 +10,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 import { CsvPreflightJob } from '../CsvPreflightJob';
@@ -69,10 +70,10 @@ const buildUseCase = () => {
   const thesauriValuesDS =
     CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-  const jobsDispatcher: jest.Mocked<JobsDispatcher> = {
+  const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
-  };
+  }) as jest.Mocked<JobsDispatcher>;
   const useCase = new CsvPreflightJob({
     csvImportsDS,
     rowsDS,

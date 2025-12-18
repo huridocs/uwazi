@@ -79,32 +79,77 @@ export class MongoMultiLanguageEntityDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const templates = await this.getCollection<TemplateDBO>('templates')
-      .find({
-        'properties.type': { $in: ['select', 'multiselect', 'relationship'] },
-      })
+    const templateIds = await this.getCollection<TemplateDBO>('templates')
+      .aggregate([
+        {
+          $match: {
+            'properties.content': thesaurusId,
+          },
+        },
+        {
+          $lookup: {
+            from: 'templates',
+            let: { templateId: { $toString: '$_id' } },
+            pipeline: [
+              {
+                $match: {
+                  type: { $in: ['select', 'multiselect'] },
+                  'properties.content': '$$templateId',
+                },
+              },
+            ],
+            as: 'relatedTemplates',
+          },
+        },
+        {
+          $project: {
+            templates: {
+              $concatArrays: [[{ _id: '$_id' }], '$relatedTemplates'],
+            },
+          },
+        },
+        { $unwind: '$templates' },
+        { $replaceRoot: { newRoot: '$templates' } },
+        {
+          $group: {
+            _id: '$_id',
+          },
+        },
+      ])
       .toArray();
 
-    const templateIds = new Set<ObjectId>();
-
-    templates.forEach(template => {
-      template.properties.forEach(property => {
-        if (
-          ['select', 'multiselect'].includes(property.type) &&
-          (property as any)?.content === thesaurusId
-        ) {
-          templateIds.add(template._id);
-        } else if (property.type === 'relationship' && (property as any)?.content === thesaurusId) {
-          templateIds.add(template._id);
-        }
-      });
-    });
-
     const entities = await this.getCollection()
-      .find(
-        { language: defaultLanguage, template: { $in: Array.from(templateIds) } },
-        { projection: { sharedId: 1 } }
-      )
+      .aggregate([
+        {
+          $match: {
+            language: defaultLanguage,
+            template: { $in: templateIds.map(t => t._id) },
+          },
+        },
+        {
+          $addFields: {
+            hasNonEmptyMetadata: {
+              $anyElementTrue: {
+                $map: {
+                  input: { $objectToArray: '$metadata' },
+                  as: 'field',
+                  in: { $gt: [{ $size: '$$field.v' }, 0] },
+                },
+              },
+            },
+          },
+        },
+        {
+          $match: {
+            hasNonEmptyMetadata: true,
+          },
+        },
+        {
+          $project: {
+            sharedId: 1,
+          },
+        },
+      ])
       .toArray();
 
     return entities.map(e => e.sharedId);

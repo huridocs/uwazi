@@ -3,12 +3,11 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { PropertyNotFoundError } from 'api/core/domain/template/errors';
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
 import { SelectPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService';
 
 const factory = getFixturesFactory();
@@ -268,7 +267,7 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
   const sut = new SelectPropertyAssignmentCreatorService({

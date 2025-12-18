@@ -1,62 +1,10 @@
-/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { UserSchema } from 'shared/types/userType';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { DenormalizeThesaurusEntitiesUseCase } from '../DenormalizeThesaurusEntities';
-import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures.spec';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from 'api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory';
+import { factory, fixtures } from './DenormalizeThesaurusEntitiesFixtures';
 
-type CreateSutProps = {
-  thesauriDS?: ThesauriDataSource;
-  thesaurusTranslationService?: ThesaurusTranslationService;
-  jobsDispatcher?: JobsDispatcher;
-};
-
-const createSut = (props?: CreateSutProps) => {
-  const tenant = tenants.current();
-  const actor: UserSchema = {
-    _id: factory.id('user1'),
-    username: 'username',
-    email: 'email@email.com',
-    role: 'admin',
-  };
-
-  const transactionManager = TransactionManagerFactory.default();
-  const jobsDispatcher =
-    props?.jobsDispatcher ?? DefaultDispatcher(tenant.name, transactionManager);
-
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = new MongoThesauriDataSourceV2(getConnection(), transactionManager);
-
-  const propertyAssignmentCreatorServiceStrategy = PropertyAssignmentCreatorServiceStrategy.create({
-    entitiesDS,
-    settingsDS,
-    thesauriDS,
-    translationsDS,
-  });
-
-  const sut = new DenormalizeThesaurusEntitiesUseCase(
-    {
-      jobsDispatcher,
-      transactionManager,
-      entitiesDS,
-      propertyAssignmentCreatorServiceStrategy,
-    },
-    { tenant, actor }
-  );
+const createSut = () => {
+  const sut = DenormalizeThesaurusEntitiesUseCaseFactory.default();
 
   return { sut };
 };

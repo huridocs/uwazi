@@ -95,6 +95,7 @@ export const config = {
       v2CSVImport: false,
       v2DeleteFile: false,
       v2CreateThesaurus: false,
+      v2UpdateThesaurus: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

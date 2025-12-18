@@ -19,9 +19,9 @@ import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRo
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];
@@ -63,10 +63,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage });
-    const jobsDispatcher: jest.Mocked<JobsDispatcher> = {
+    const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
-    };
+    }) as jest.Mocked<JobsDispatcher>;
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,

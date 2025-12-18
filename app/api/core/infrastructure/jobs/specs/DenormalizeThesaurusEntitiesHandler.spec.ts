@@ -47,9 +47,10 @@ const fixtures: DBFixture = {
       }),
     ]),
     factory.template('template_3', [
-      factory.property('relationship_1', 'relationship', {
-        content: factory.id('template_1').toHexString(),
+      factory.inherit('relationship_1', 'template_1', 'select', {
+        relationType: factory.id('rel2').toHexString(),
       }),
+
       factory.property('relationship_2', 'relationship', {
         content: factory.id('template_2').toHexString(),
       }),
@@ -84,7 +85,19 @@ const fixtures: DBFixture = {
     }),
 
     // Template 3
-    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_6', 'template_3', {}),
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_6', 'template_3', {
+      relationship_1: [
+        {
+          value: 'entity_1',
+          inheritedType: 'select',
+          inheritedValue: [{ value: factory.id('countries_canada').toString() }],
+        },
+      ],
+    }),
+
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_8', 'template_3', {
+      relationship_1: [],
+    }),
 
     // Template 4
     ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_7', 'template_4', {}),
@@ -167,7 +180,7 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
         queue: 'uwazi_jobs',
         name: 'DenormalizeThesaurusEntitiesChunkHandler',
         params: {
-          sharedIds: ['entity_1', 'entity_2', 'entity_3', 'entity_6'],
+          sharedIds: ['entity_1', 'entity_2', 'entity_6'],
           tenantName: tenants.current().name,
           userId,
           thesaurusId,

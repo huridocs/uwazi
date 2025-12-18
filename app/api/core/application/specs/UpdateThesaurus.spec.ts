@@ -2,7 +2,7 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2';
+import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSourceV2';
 import {
   getConnection,
   getSharedConnection,
@@ -23,7 +23,7 @@ import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/M
 import { UpdateThesaurusUseCase } from '../UpdateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
-import { factory, fixtures } from './UpdateThesaurusFixtures.spec';
+import { factory, fixtures } from './UpdateThesaurusFixtures';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
