@@ -4,6 +4,7 @@ import { AbstractUseCase } from '../libs/UseCase';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 
 type Input = {
+  thesaurusId: string;
   sharedIds: string[];
 };
 
@@ -26,14 +27,14 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
 
     const [withRelationships, withoutRelationships] = ArrayUtils.splitInTwo(
       entities,
-      entity => entity.getPropertyAssignmentsByType(['relationship']).length > 0
+      entity => entity.getRelationshipAssignmentsInheritingFromSelect().length > 0
     );
 
     await this.transactionManager.run(async () => {
       await ArrayUtils.sequentialFor(withoutRelationships, async entity => {
         const propertyAssignments =
           await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
-            entity.getPropertyAssignmentsByType(['select', 'multiselect', 'relationship']),
+            entity.getSelectAssignmentsByThesaurusId(input.thesaurusId),
             entity.template
           );
 
@@ -45,10 +46,12 @@ class DenormalizeThesaurusEntitiesUseCase extends AbstractUseCase<Input, Output,
       await ArrayUtils.sequentialFor(withRelationships, async entity => {
         const propertyAssignments =
           await this.deps.propertyAssignmentCreatorServiceStrategy.bulkCreate(
-            entity.getPropertyAssignmentsByType(['select', 'multiselect', 'relationship']),
+            [
+              ...entity.getRelationshipAssignmentsInheritingFromSelect(),
+              ...entity.getSelectAssignmentsByThesaurusId(input.thesaurusId),
+            ],
             entity.template
           );
-
         entity.setPropertyAssignmentsInAllLanguages(propertyAssignments);
       });
 

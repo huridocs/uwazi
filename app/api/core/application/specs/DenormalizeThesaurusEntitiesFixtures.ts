@@ -31,6 +31,10 @@ export const fixtures: DBFixture = {
     factory.template('template_2', [
       factory.inherit('relationship_1', 'template_1', 'select', {
         relationType: factory.id('rel1').toHexString(),
+        inherit: {
+          type: 'select',
+          property: factory.id('select').toString(),
+        },
       }),
       factory.property('select', 'select', {
         content: factory.id('countries').toHexString(),
@@ -49,6 +53,10 @@ export const fixtures: DBFixture = {
     factory.template('template_4', [
       factory.inherit('relationship_to_t1', 'template_1', 'multiselect', {
         relationType: factory.id('rel2').toHexString(),
+        inherit: {
+          type: 'multiselect',
+          property: factory.id('multiselect').toString(),
+        },
       }),
       factory.inherit('relationship_to_t3', 'template_3', 'select', {
         relationType: factory.id('rel3').toHexString(),

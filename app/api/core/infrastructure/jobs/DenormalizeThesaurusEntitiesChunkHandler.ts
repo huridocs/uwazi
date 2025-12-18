@@ -6,6 +6,7 @@ import {
 import { DenormalizeThesaurusEntitiesUseCaseFactory } from '../factories/DenormalizeThesaurusEntitiesUseCaseFactory';
 
 type Params = {
+  thesaurusId: string;
   sharedIds: string[];
 } & UserAwareDispatchableParams;
 
@@ -21,7 +22,10 @@ class DenormalizeThesaurusEntitiesChunkHandler extends UserAwareDispatchable<Par
   protected async handle(_heartbeat: HeartbeatCallback, _jobInfo: JobInfo) {
     const useCase = this.deps.DenormalizeThesaurusEntitiesUseCaseFactory.default();
 
-    await useCase.execute({ sharedIds: this.params.sharedIds });
+    await useCase.execute({
+      sharedIds: this.params.sharedIds,
+      thesaurusId: this.params.thesaurusId,
+    });
   }
 }
 

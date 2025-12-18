@@ -26,6 +26,7 @@ describe('DenormalizeThesaurusEntities', () => {
     const { sut } = createSut();
 
     await sut.execute({
+      thesaurusId: factory.id('countries').toString(),
       sharedIds: ['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5'],
     });
 
@@ -104,16 +105,16 @@ describe('DenormalizeThesaurusEntities', () => {
         language: 'en',
         sharedId: 'entity_4',
         metadata: {
-          select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
-          multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
+          select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' }],
+          multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' }],
         },
       },
       {
         language: 'es',
         sharedId: 'entity_4',
         metadata: {
-          select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
-          multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
+          select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' }],
+          multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' }],
         },
       },
       {
@@ -133,7 +134,9 @@ describe('DenormalizeThesaurusEntities', () => {
             {
               value: 'entity_4',
               label: 'entity_4',
-              inheritedValue: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
+              inheritedValue: [
+                { value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' },
+              ],
             },
           ],
         },
@@ -155,7 +158,9 @@ describe('DenormalizeThesaurusEntities', () => {
             {
               value: 'entity_4',
               label: 'entity_4',
-              inheritedValue: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
+              inheritedValue: [
+                { value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' },
+              ],
             },
           ],
         },

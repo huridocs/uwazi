@@ -8,6 +8,7 @@ import {
   PropertyAssignment,
   PropertyValue,
   RelationshipEntry,
+  SelectionEntry,
   TextPropertyValue,
 } from 'api/core/domain/template/PropertyValue';
 import {
@@ -18,7 +19,7 @@ import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
 import { EntityTranslationDoesNotExistError } from './errors';
-import { PropertyType } from '../template/PropertyType';
+import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -130,29 +131,35 @@ class Entity {
     return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
-  /**
-   * Retrieves property assignments filtered by property type(s) for a specific language.
-   *
-   * @param type - Array of property types to filter by (e.g., ['text', 'numeric', 'relationship'])
-   * @param targetLanguage - Optional language code (ISO 639-1). If not provided, defaults to the first available language
-   * @returns Array of property assignments matching the specified type(s) in the target language
-   *
-   * @example
-   * ```typescript
-   * // Get all text and numeric properties in English
-   * const textProps = entity.getPropertyAssignmentsByType(['text', 'numeric'], 'en');
-   *
-   * // Get relationship properties in default language
-   * const relationships = entity.getPropertyAssignmentsByType(['relationship']);
-   * ```
-   */
-  getPropertyAssignmentsByType(
-    type: PropertyType[],
+  getRelationshipAssignmentsInheritingFromSelect(
     targetLanguage?: LanguageISO6391
-  ): PropertyAssignment[] {
+  ): PropertyAssignment<SelectionEntry>[] {
     const language = targetLanguage || this.languages[0];
 
-    return this.getTranslation(language).getByType(type);
+    const selectProperties = this.template.properties.filter(
+      p =>
+        p instanceof V1RelationshipProperty &&
+        ['select', 'multiselect'].includes(p.inherit?.type || '')
+    );
+
+    return selectProperties.map(property =>
+      this.getTranslation(language).getValue<SelectionEntry>(property.name)
+    );
+  }
+
+  getSelectAssignmentsByThesaurusId(
+    thesaurusId: string,
+    targetLanguage?: LanguageISO6391
+  ): PropertyAssignment<SelectionEntry>[] {
+    const language = targetLanguage || this.languages[0];
+
+    const selectProperties = this.template.properties.filter(
+      p => p instanceof AbstractSelectProperty && p.content === thesaurusId
+    );
+
+    return selectProperties.map(property =>
+      this.getTranslation(language).getValue<SelectionEntry>(property.name)
+    );
   }
 
   addGrantForCreator(creatorId: string) {
