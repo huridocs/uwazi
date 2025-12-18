@@ -53,6 +53,7 @@ Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,Añadir usuario
 add value,añadir valor
@@ -146,6 +147,7 @@ Close,Cerrar
 Collaborator,Colaboradora
 Collaborators,Collaborators
 Collapse all,Colapsar todo
+Collapse All,Collapse All
 Collection,Colección
 Collection Name,Collection Name
 Common sources,Common sources
@@ -164,6 +166,8 @@ Confirm deletion of file,Confirmar eliminación de archivo
 Confirm new password,Confirmar nueva contraseña
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Conectado al servidor
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
@@ -231,6 +235,7 @@ DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
 Delete language,Eliminar idioma
+Delete?,Delete?
 Deleted attachment,Archivo adjunto eliminado
 Deleted custom file,Archivo personalizado eliminado
 Deleted entity,Entidad eliminada
@@ -312,6 +317,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
+Expand All,Expand All
 Exploration,Exploración
 Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
@@ -323,6 +329,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
 
 1. Sube tu ícono en Subidas personalizadas.
@@ -558,6 +565,7 @@ No References description,Las referencias son partes de este documento relaciona
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No table of contents,Sin Tabla de Contenidos
+No Table of contents,No Table of contents
 No table of contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
@@ -739,6 +747,7 @@ Save changes,Guardar cambios
 Save password,Guardar contraseña
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved successfully.,Guardado exitoso.
+Saving...,Saving...
 Search,Buscar
 Search item,Buscar elemento
 Search not found,Búsqueda no encontrada
@@ -846,6 +855,7 @@ System translations,Traducciones del sistema
 Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Vista de Tabla
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -1032,6 +1042,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
