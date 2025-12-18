@@ -27,8 +27,8 @@ Panel.Body = ({ children, className }: PanelProps) => (
 Panel.Footer = ({ children, className = '', highlighted = false }: PanelFooterProps) => (
   <div
     className={`absolute bottom-0 left-0 right-0 w-full px-6 z-10 flex items-center
-      border-t border-b border-indigo-500 min-h-[50px]
-      ${highlighted ? 'bg-indigo-50' : 'bg-white'} ${className}`}
+      border-t border-b min-h-[50px]
+      ${highlighted ? 'bg-primary-50' : 'bg-white'} ${className}`}
     data-testid="panel-footer"
   >
     {children}
