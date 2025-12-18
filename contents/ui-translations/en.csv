@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,Add to all languages
 Add to table of contents,Add to table of contents
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,Add user
 add value,add value
@@ -150,6 +151,7 @@ Close,Close
 Collaborator,Collaborator
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
@@ -168,6 +170,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,Confirm new password
 Connect to a paragraph,Connect to a paragraph
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,Connection type
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -235,6 +239,7 @@ DELETE,DELETE
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,Delete language
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -316,6 +321,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,Exploration
 Export CSV,Export CSV
 Exporting entities to CSV,Exporting entities to CSV
@@ -327,6 +333,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -561,10 +568,9 @@ No References,No References
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,No Table of Contents
+No table of contents,No table of contents
 No Table of contents,No Table of contents
-No Table of Contents description,No Table of Contents description
-No table of contents description,No table of contents description
+No table of contents description,"You can start by selecting text in the document and clicking the ""Add to ToC"" button."
 No text match,No text match
 No text match description,You can type something different in the search box to get some results.
 No type,No type
@@ -745,6 +751,7 @@ Save changes,Save changes
 Save password,Save password
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,Search
 Search item,Search item
 Search not found,Search not found
@@ -852,6 +859,7 @@ System translations,System translations
 Table,Table
 Table of Contents,Table of Contents
 Table of contents,Table of contents
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Table view
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -911,6 +919,7 @@ This property will be shown using all the width available.,This property will be
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Threshold
@@ -1038,6 +1047,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,Ajouter à toutes les langues
 Add to table of contents,Ajouter à la table des matières
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,Ajouter un utilisateur
 add value,add value
@@ -147,6 +148,7 @@ Close,Fermer
 Collaborator,Collaborateur
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,Collection
 Collection Name,Collection Name
 Common sources,Common sources
@@ -165,6 +167,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,Confirmer le nouveau mot de passe
 Connect to a paragraph,Se connecter à un paragraphe
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,Type de connexion
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -232,6 +236,7 @@ DELETE,Effacer
 Delete entities and documents,Delete entities and documents
 Delete file,Supprimer le fichier
 Delete language,Supprimer la langue
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -313,6 +318,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,Exploration
 Export CSV,Exporter CSV
 Exporting entities to CSV,Exporter des entités vers CSV
@@ -324,6 +330,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -558,10 +565,9 @@ No References,Pas de références
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,Aucune table des matières
+No table of contents,Aucune table des matières
 No Table of contents,No Table of contents
-No Table of Contents description,Aucune description de Table des matières
-No table of contents description,No table of contents description
+No table of contents description,Aucune description de Table des matières
 No text match,Aucune correspondance de texte
 No text match description,You can type something different in the search box to get some results.
 No type,Sans type
@@ -742,6 +748,7 @@ Save changes,Enregistrer les modifications
 Save password,Sauvegarder le mot de passe
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,Recherche
 Search item,Recherche d'éléménts
 Search not found,Recherche non trouvée
@@ -849,6 +856,7 @@ System translations,System translations
 Table,Tableau
 Table of Contents,Table des matières
 Table of contents,Table des matières
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Vue tabulaire
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -908,6 +916,7 @@ This property will be shown using all the width available.,Cette propriété ser
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Seuil
@@ -1035,6 +1044,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

@@ -90,6 +90,72 @@ const fixtures: DBFixture = {
     {
       _id: db.id(),
       language: 'en',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'Property C',
+      value: 'Property C',
+      context: {
+        type: 'Entity',
+        label: 'Property C',
+        id: templateWithExtractedMetadata.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'es',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'pt',
+      key: 'template to be edited',
+      value: 'templateToBeDeleted',
+      context: {
+        type: 'Entity',
+        label: 'templateToBeEdited',
+        id: templateToBeEditedId.toString(),
+      },
+    },
+    {
+      _id: db.id(),
+      language: 'en',
       key: 'templateToBeDeleted',
       value: 'templateToBeDeleted',
       context: {
@@ -144,7 +210,6 @@ const fixtures: DBFixture = {
       language: 'en',
       value: 'other property',
     },
-
     {
       _id: db.id(),
       context: {

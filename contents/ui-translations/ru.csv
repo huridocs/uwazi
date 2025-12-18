@@ -53,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,Добавить пользователя
 add value,add value
@@ -145,6 +146,7 @@ Close,Закрыть
 Collaborator,Соавтор
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,Коллекция
 Collection Name,Collection Name
 Common sources,Common sources
@@ -163,6 +165,8 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,Подтвердите новый пароль
 Connect to a paragraph,Подключиться к абзацу
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,Тип связи
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -230,6 +234,7 @@ DELETE,Удалить
 Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
 Delete language,Удалить язык
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -311,6 +316,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,Изучение
 Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
@@ -322,6 +328,7 @@ Extractor Name,Extractor Name
 Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -556,10 +563,9 @@ No References,Нет ссылок
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,Нет содержания
+No table of contents,Нет содержания
 No Table of contents,No Table of contents
-No Table of Contents description,Нет описания содержания
-No table of contents description,No table of contents description
+No table of contents description,Нет описания содержания
 No text match,Нет совпадающего текста
 No text match description,You can type something different in the search box to get some results.
 No type,Нет типа
@@ -740,6 +746,7 @@ Save changes,Сохранить изменения
 Save password,Сохранить пароль
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,Искать
 Search item,Искать предмет
 Search not found,Поиск ничего не выявил
@@ -847,6 +854,7 @@ System translations,System translations
 Table,Таблица
 Table of Contents,Содержание
 Table of contents,Содержание
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Табличный вид
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -906,6 +914,7 @@ This property will be shown using all the width available.,Это свойств
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Порог
@@ -1033,6 +1042,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
