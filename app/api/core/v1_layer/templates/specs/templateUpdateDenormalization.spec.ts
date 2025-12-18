@@ -84,6 +84,19 @@ describe('Templates Update', () => {
         ],
       },
     ],
+    translationsV2: [
+      {
+        _id: f.id('translation_text_property_b'),
+        language: 'en',
+        key: 'text_property_b',
+        value: 'text_property_b',
+        context: {
+          type: 'Entity',
+          label: 'text_property_b',
+          id: f.idString('templateB'),
+        },
+      },
+    ],
     relationtypes: [f.relationType('rel1'), f.relationType('rel2'), f.relationType('rel')],
     templates: [
       f.template('templateA', [f.property('text_property')]),
@@ -691,6 +704,19 @@ describe('Templates Update', () => {
       ...fixtures,
       templates: [...fixtures.templates, f.template('templateD', [f.property('text_property_b')])],
       entities: [],
+      translationsV2: [
+        {
+          _id: f.id('translation_text_property_b'),
+          language: 'en',
+          key: 'text_property_b',
+          value: 'text_property_b',
+          context: {
+            type: 'Entity',
+            label: 'text_property_b',
+            id: f.idString('templateD'),
+          },
+        },
+      ],
     });
 
     const propertyWithNameChanged = f.property('text_property_b', 'text', {
