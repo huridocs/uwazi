@@ -3,6 +3,7 @@ import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/FileList.stories';
+import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 
 const { Empty, WithFiles } = composeStories(stories);
 
@@ -10,7 +11,7 @@ describe('FileList', () => {
   it('should be accessible', () => {
     mount(<WithFiles />);
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should render empty state when entity has no files', () => {
@@ -24,4 +25,3 @@ describe('FileList', () => {
     cy.get('[role="region"][aria-label="Files list"]').should('exist');
   });
 });
-

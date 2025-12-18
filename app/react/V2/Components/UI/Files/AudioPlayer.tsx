@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react';
-import ReactPlayer from 'react-player';
+import React, { useEffect, useRef, useState } from 'react';
 import { AudioWaveformIcon } from 'V2/Components/CustomIcons';
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/solid';
 
@@ -7,22 +6,41 @@ type AudioPlayerProps = {
   url: string;
   className?: string;
   altText?: string;
+  onDuration?: (duration: number) => void;
 };
 
-const AudioPlayer = ({ url, className, altText }: AudioPlayerProps) => {
-  const playerRef = useRef<ReactPlayer>(null);
+const AudioPlayer = ({ url, className, altText, onDuration }: AudioPlayerProps) => {
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [, setDuration] = useState<number | undefined>(undefined);
 
-  const handleDuration = (dur: number) => {
-    if (dur && isFinite(dur) && dur > 0) {
-      setDuration(dur);
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (playing) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
     }
   };
 
-  const togglePlayPause = () => {
-    setPlaying(!playing);
-  };
+  useEffect(() => {
+    if (audioRef.current && onDuration) {
+      const handleLoadedMetadata = () => {
+        if (audioRef.current?.duration && Number.isFinite(audioRef.current.duration)) {
+          onDuration(audioRef.current.duration);
+        }
+      };
+      const audio = audioRef.current;
+      if (audio.readyState >= 1 && audio.duration && Number.isFinite(audio.duration)) {
+        onDuration(audio.duration);
+      } else {
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        return () => {
+          audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        };
+      }
+    }
+  }, [onDuration, url]);
 
   return (
     <div
@@ -36,21 +54,15 @@ const AudioPlayer = ({ url, className, altText }: AudioPlayerProps) => {
           <AudioWaveformIcon className="w-full h-full" />
         </div>
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="absolute inset-0 opacity-0 pointer-events-none">
-            <ReactPlayer
-              className="w-full h-full"
-              ref={playerRef}
-              url={url || ''}
-              width="100%"
-              height="100%"
-              controls={false}
-              playing={playing}
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-              onEnded={() => setPlaying(false)}
-              onDuration={handleDuration}
-            />
-          </div>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <audio
+            ref={audioRef}
+            src={url || ''}
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onEnded={() => setPlaying(false)}
+            className="hidden"
+          />
           <button
             type="button"
             onClick={togglePlayPause}

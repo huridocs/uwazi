@@ -1,8 +1,8 @@
 import React from 'react';
 import { DocumentIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { EntityFile } from 'app/V2/Routes/Entity/Components/FileCard';
-import { MediaPlayer } from '../MediaPlayer';
+import { EntityFile } from './FileCard';
+import { VideoPlayer } from './VideoPlayer';
 import AudioPlayer from './AudioPlayer';
 
 type FileIconProps = {
@@ -52,7 +52,12 @@ const FilePreview = ({ file, className, onDuration }: FileIconProps) => {
 
   if (type === 'audio') {
     return (
-      <AudioPlayer url={url || ''} className={className || ''} altText={altText || filename} />
+      <AudioPlayer
+        url={url || ''}
+        className={className || ''}
+        altText={altText || filename}
+        onDuration={onDuration}
+      />
     );
   }
 
@@ -65,7 +70,7 @@ const FilePreview = ({ file, className, onDuration }: FileIconProps) => {
           aria-labelledby={altText}
           className="w-full h-full bg-gray-100 rounded-md overflow-hidden"
         >
-          <MediaPlayer
+          <VideoPlayer
             className="w-full h-full"
             url={url || ''}
             width="100%"

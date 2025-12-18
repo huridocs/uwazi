@@ -125,6 +125,16 @@ export default defineConfig({
     specPattern: 'app/react/**/*.cy.tsx',
     setupNodeEvents(on, config) {
       initPlugin(on, config);
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        },
+      });
     },
   },
 });

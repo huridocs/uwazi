@@ -3,10 +3,10 @@ import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Entity } from 'app/V2/domain';
 import { getMimetypeFromUrl } from 'app/V2/shared/formatHelpers';
+import { EntityFile, FileCard } from 'app/V2/Components/UI/Files/FileCard';
 import { settingsAtom } from 'app/V2/atoms';
 import { LanguageUtils } from 'shared/language';
 import { FileType } from 'shared/types/fileType';
-import { EntityFile, FileCard } from './FileCard';
 
 type FileListProps = {
   entity: Entity;
