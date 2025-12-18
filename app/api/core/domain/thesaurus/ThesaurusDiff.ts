@@ -126,12 +126,13 @@ class ThesaurusDiff {
     return this.props.after.id;
   }
 
-  asObject(): ThesaurusDiffObject {
-    return {
-      id: this.id,
-      removedValues: this.removedValues,
-      updatedValues: this.updatedValues,
-    };
+  get hasChanges() {
+    return (
+      this.addedValues.length > 0 ||
+      this.removedValues.length > 0 ||
+      this.updatedValues.length > 0 ||
+      this.updatedName !== undefined
+    );
   }
 }
 

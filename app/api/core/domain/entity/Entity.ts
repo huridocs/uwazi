@@ -18,6 +18,7 @@ import { AccessGrant, EntityPermission } from './EntityPermission';
 import { PermissionType } from './PermissionType';
 import { AccessLevel } from './AccessLevel';
 import { EntityTranslationDoesNotExistError } from './errors';
+import { PropertyType } from '../template/PropertyType';
 
 type CreateInput = {
   languages: LanguageISO6391[];
@@ -129,6 +130,31 @@ class Entity {
     return this.translationsList.map(([_language, translation]) => translation.metadata[name]);
   }
 
+  /**
+   * Retrieves property assignments filtered by property type(s) for a specific language.
+   *
+   * @param type - Array of property types to filter by (e.g., ['text', 'numeric', 'relationship'])
+   * @param targetLanguage - Optional language code (ISO 639-1). If not provided, defaults to the first available language
+   * @returns Array of property assignments matching the specified type(s) in the target language
+   *
+   * @example
+   * ```typescript
+   * // Get all text and numeric properties in English
+   * const textProps = entity.getPropertyAssignmentsByType(['text', 'numeric'], 'en');
+   *
+   * // Get relationship properties in default language
+   * const relationships = entity.getPropertyAssignmentsByType(['relationship']);
+   * ```
+   */
+  getPropertyAssignmentsByType(
+    type: PropertyType[],
+    targetLanguage?: LanguageISO6391
+  ): PropertyAssignment[] {
+    const language = targetLanguage || this.languages[0];
+
+    return this.getTranslation(language).getByType(type);
+  }
+
   addGrantForCreator(creatorId: string) {
     this.permissions = new EntityPermission([
       { refId: creatorId, type: PermissionType.User, level: AccessLevel.Write },
@@ -145,6 +171,14 @@ class Entity {
     this.validatePropertyAssignments(shouldValidateForRequired);
   }
 
+  /**
+   * Sets property assignments across all language translations of the entity.
+   *
+   * This method synchronizes the provided property assignments to all entity translations.
+   *
+   * @param propertyAssignments - Array of property assignments to set across all languages
+   * @param shouldValidateForRequired - If true, validates that required properties have values. Defaults to false
+   */
   setPropertyAssignmentsInAllLanguages(
     propertyAssignments: PropertyAssignment[],
     shouldValidateForRequired = false

@@ -29,6 +29,10 @@ class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const diff = new ThesaurusDiff({ before: existing, after: updated });
 
+    if (!diff.hasChanges) {
+      return updated;
+    }
+
     await this.transactionManager.run(async () => {
       await this.deps.thesauriDS.update(updated);
       await this.deps.thesaurusTranslationService.update(diff);

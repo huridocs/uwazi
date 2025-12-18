@@ -18,6 +18,8 @@ import { UserSchema } from 'shared/types/userType';
 import { ThesaurusNotFoundError } from 'api/core/domain/thesaurus/errors';
 import { JobDBO } from 'api/core/libs/queue/infrastructure/MongoQueueAdapter';
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { Result } from 'api/core/libs/Result';
+import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
 import { UpdateThesaurusUseCase } from '../UpdateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
@@ -498,5 +500,36 @@ describe('UpdateThesaurusUseCase', () => {
     expect(thesaurusAfter).toEqual(thesaurusBefore);
     expect(translationsAfter).toEqual(translationsBefore);
     expect(jobsAfter).toEqual(jobsBefore);
+  });
+
+  it('should do nothing when no changes are made', async () => {
+    const existing = await getThesaurusById(factory.id('countries'));
+
+    const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
+      getById: jest.fn().mockResolvedValue(Result.ok(MongoThesaurusMapper.toDomain(existing))),
+      update: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
+      update: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const jobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
+      deleteByParams: jest.fn().mockResolvedValue(undefined),
+      dispatch: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const { sut } = createSut({ thesauriDS, thesaurusTranslationService, jobsDispatcher });
+
+    await sut.execute({
+      id: existing._id.toString(),
+      name: existing.name,
+      values: existing.values,
+    });
+
+    expect(thesauriDS.update).not.toHaveBeenCalled();
+    expect(thesaurusTranslationService.update).not.toHaveBeenCalled();
+    expect(jobsDispatcher.deleteByParams).not.toHaveBeenCalled();
+    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
   });
 });

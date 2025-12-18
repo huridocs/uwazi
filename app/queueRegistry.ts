@@ -4,6 +4,7 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { BulkCleanupEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory';
+import { DenormalizeThesaurusEntitiesUseCaseFactory } from 'api/core/infrastructure/factories/DenormalizeThesaurusEntitiesUseCaseFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
@@ -16,6 +17,8 @@ import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStora
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { BulkCleanupEntityJob } from 'api/core/infrastructure/jobs/BulkCleanupEntityJob';
 import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
+import { DenormalizeThesaurusEntitiesChunkHandler } from 'api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesChunkHandler';
+import { DenormalizeThesaurusEntitiesHandler } from 'api/core/infrastructure/jobs/DenormalizeThesaurusEntitiesHandler';
 import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
@@ -297,4 +300,19 @@ export function registerJobs(
     DeleteFileFromStorageJobHandler,
     async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
   );
+
+  register(
+    DenormalizeThesaurusEntitiesChunkHandler,
+    async () =>
+      new DenormalizeThesaurusEntitiesChunkHandler({ DenormalizeThesaurusEntitiesUseCaseFactory })
+  );
+
+  register(DenormalizeThesaurusEntitiesHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+
+    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+    const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+
+    return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
+  });
 }

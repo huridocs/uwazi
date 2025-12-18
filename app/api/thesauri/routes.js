@@ -4,6 +4,7 @@ import { uploadMiddleware } from 'api/files';
 
 import { tenants } from 'api/tenants';
 import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
+import { UpdateThesaurusController } from 'api/core/infrastructure/express/thesaurus/UpdateThesaurusController';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
@@ -56,6 +57,11 @@ const routes = app => {
     async (req, res, next) => {
       if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req?.file && !req?.body?._id) {
         await CreateThesaurusController.createHandler()(req, res);
+        return;
+      }
+
+      if (tenants.current()?.featureFlags?.v2UpdateThesaurus && !!req?.body?._id) {
+        await UpdateThesaurusController.createHandler()(req, res);
         return;
       }
 

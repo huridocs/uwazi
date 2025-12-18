@@ -1,33 +1,22 @@
-import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
+import { DenormalizeThesaurusEntitiesUseCase } from 'api/core/application/DenormalizeThesaurusEntities';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { FilesServiceFactory } from './FilesServiceFactory';
 import { MongoThesauriDataSourceV2 } from '../mongodb/thesauri/MongoThesaurusDataSourceV2';
 
-class CreateEntityUseCaseFactory {
+class DenormalizeThesaurusEntitiesUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const idGenerator = IdGeneratorFactory.default();
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSourceV2(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-
-    const eventBus = applicationEventsBus;
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.create({
@@ -37,25 +26,11 @@ class CreateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = new EntitiesService({
-      entitiesDS,
-      eventBus,
-      settingsDS,
-      templatesDS,
-      transactionManager,
-      dispatcher: jobsDispatcher,
-    });
-
-    const fileService = FilesServiceFactory.default(transactionManager);
-
-    const useCase = new CreateEntityUseCase(
+    const useCase = new DenormalizeThesaurusEntitiesUseCase(
       {
-        entitiesService,
         propertyAssignmentCreatorServiceStrategy,
-        fileService,
-        idGenerator,
         transactionManager,
-        eventBus,
+        entitiesDS,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );
@@ -64,4 +39,4 @@ class CreateEntityUseCaseFactory {
   }
 }
 
-export { CreateEntityUseCaseFactory };
+export { DenormalizeThesaurusEntitiesUseCaseFactory };

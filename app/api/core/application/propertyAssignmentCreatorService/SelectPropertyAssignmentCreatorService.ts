@@ -2,13 +2,13 @@ import { PropertyAssignment, SelectionEntry } from 'api/core/domain/template/Pro
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { ThesaurusValueNotFoundError } from '../errors';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
 } from './PropertyAssignmentCreatorService';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -60,9 +60,7 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       return { key, value };
     });
 
-    const translations = await this.deps.translationsDS
-      .getByContext(thesaurus._id!.toString())
-      .all();
+    const translations = await this.deps.translationsDS.getByContext(thesaurus.id).all();
 
     const translationsByLang = new Map<LanguageISO6391, Map<string, string>>();
 

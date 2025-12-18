@@ -116,7 +116,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
           )
         );
 
-        await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, [
+        await this.dependencies.entitiesDS.bulkUpdateDeprecated(modifiedEntities, [
           ...relationshipProps,
           ...generatedIdProps,
         ]);

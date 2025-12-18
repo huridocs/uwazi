@@ -53,4 +53,21 @@ describe('ThesaurusDiff', () => {
       { id: after.values[2].values![0].id, label: 'France Updated' },
     ]);
   });
+
+  it('hasChanges should return true if there are changes', () => {
+    const before = Thesaurus.create({
+      name: 'Colors',
+      values: [{ label: 'Red' }, { label: 'Blue' }],
+    });
+
+    const after = before.update({
+      values: [{ ...before.values[0], label: 'Red Updated' }, { label: 'Green' }],
+    });
+
+    const diffWithChanges = new ThesaurusDiff({ before, after });
+    const diffWithNoChanges = new ThesaurusDiff({ before, after: before });
+
+    expect(diffWithChanges.hasChanges).toBe(true);
+    expect(diffWithNoChanges.hasChanges).toBe(false);
+  });
 });

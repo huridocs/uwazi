@@ -5,7 +5,8 @@ import { ResultType } from 'api/core/libs/Result';
 import { Entity } from '../../core/domain/entity/Entity';
 
 export interface MultiLanguageEntityDataSource {
-  bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
+  bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
+  bulkUpdate(entities: Entity[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
   bulkDelete(sharedIds: string[]): Promise<void>;
@@ -25,6 +26,7 @@ export interface MultiLanguageEntityDataSource {
     entities: Entity[],
     properties: V1RelationshipProperty[]
   ): Promise<ResultSet<Entity>>;
+  getSharedIdsUsingThesaurus(thesaurusId: string): Promise<string[]>;
 
   create(entity: Entity): Promise<void>;
 }
