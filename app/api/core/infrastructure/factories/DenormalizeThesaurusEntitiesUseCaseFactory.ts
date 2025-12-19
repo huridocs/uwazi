@@ -15,7 +15,7 @@ class DenormalizeThesaurusEntitiesUseCaseFactory {
 
     const settingsDS = SettingsDataSourceFactory.cached(transactionManager);
     const thesauriDS = ThesauriDataSourceFactory.cached(transactionManager);
-    const entitiesDS = EntitiesDataSourceFactory.cached(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const translationsDS = CachedTranslationsDataSource(transactionManager);
 
     const propertyAssignmentCreatorServiceStrategy =

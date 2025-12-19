@@ -1,9 +1,9 @@
 import { PropertyAssignment, SelectionEntry } from 'api/core/domain/template/PropertyValue';
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { ThesaurusValue } from 'api/core/domain/thesaurus/Thesaurus';
+import { TranslationCollection } from 'api/i18n.v2/model/TranslationCollection';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { ThesaurusValueNotFoundError } from '../errors';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
@@ -30,67 +30,36 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
 
     const thesaurus = (await this.deps.thesauriDS.getById(property.content)).getDataOrThrow();
 
-    const valueIdToLabel = new Map<string, string>();
-    const valueIdToParent: Map<string, { id: string; label: string }> = new Map();
+    const existingThesaurusValues: ThesaurusValue[] = [];
 
-    thesaurus?.values?.forEach(v => {
-      if (v.values && v.values.length) {
-        v.values.forEach(child => {
-          if (child.id) {
-            valueIdToLabel.set(child.id, child.label);
-            if (v.id) {
-              valueIdToParent.set(child.id, { id: v.id, label: v.label });
-            }
-          }
-        });
-      } else if (v.id) {
-        valueIdToLabel.set(v.id, v.label);
-      }
-    });
+    propertyAssignment.value.forEach(({ value }) => {
+      const thesaurusValue = thesaurus.getValueById(value);
+      if (!thesaurusValue) return;
 
-    const enrichedValues = propertyAssignment.value.map(({ value }) => {
-      if (!value.length) {
-        return { key: '', value: '' };
-      }
-
-      const key = valueIdToLabel.get(value);
-      if (!key) {
-        throw new ThesaurusValueNotFoundError(value, thesaurus.name);
-      }
-      return { key, value };
+      existingThesaurusValues.push(thesaurusValue);
     });
 
     const translations = await this.deps.translationsDS.getByContext(thesaurus.id).all();
-
-    const translationsByLang = new Map<LanguageISO6391, Map<string, string>>();
-
-    translations.forEach(t => {
-      const byKey = translationsByLang.get(t.language) || new Map<string, string>();
-      byKey.set(t.key, t.value);
-      translationsByLang.set(t.language, byKey);
-    });
+    const translationCollection = new TranslationCollection(translations);
 
     const languages = await this.deps.settingsDS.getLanguageKeys();
 
     const propertyAssignments: PropertyAssignment[] = [];
 
     languages.forEach(language => {
-      const byKey = translationsByLang.get(language) || new Map<string, string>();
+      const value: SelectionEntry[] = existingThesaurusValues.map(thesaurusValue => {
+        const label = translationCollection.getTranslation(language, thesaurusValue.label);
 
-      const value: SelectionEntry[] = enrichedValues.map(ev => {
-        const baseLabel = ev.key;
-        const label = byKey.get(baseLabel) || baseLabel;
-
-        const parentInfo = valueIdToParent.get(ev.value);
-        const parent = parentInfo
+        const group = thesaurus.getGroupById(thesaurusValue.id);
+        const parent = group
           ? {
-              value: parentInfo.id,
-              label: byKey.get(parentInfo.label) || parentInfo.label,
+              value: group.id,
+              label: translationCollection.getTranslation(language, group.label),
             }
           : undefined;
 
         return {
-          value: ev.value,
+          value: thesaurusValue.id,
           label,
           ...(parent ? { parent } : {}),
         };

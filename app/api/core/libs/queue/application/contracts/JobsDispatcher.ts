@@ -6,6 +6,7 @@ export interface DispatchableClass<T extends Dispatchable> {
 
 export interface JobsDispatcher {
   deleteByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
     params: Partial<Parameters<T['handleDispatch']>[1]>
   ): Promise<void>;
 

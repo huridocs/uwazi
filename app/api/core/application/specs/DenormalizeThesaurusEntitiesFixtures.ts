@@ -60,6 +60,10 @@ export const fixtures: DBFixture = {
       }),
       factory.inherit('relationship_to_t3', 'template_3', 'select', {
         relationType: factory.id('rel3').toHexString(),
+        inherit: {
+          type: 'select',
+          property: factory.id('select').toString(),
+        },
       }),
     ]),
   ],
@@ -148,7 +152,10 @@ export const fixtures: DBFixture = {
       'template_3',
       {
         select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' }],
-        multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' }],
+        multiselect: [
+          { value: factory.id('thesaurus_2_usa').toString(), label: 'USA V1' },
+          { value: factory.id('thesaurus_2_brazil').toString(), label: 'Brazil' },
+        ],
       },
       { language: 'en' }
     ),
@@ -157,7 +164,10 @@ export const fixtures: DBFixture = {
       'template_3',
       {
         select: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' }],
-        multiselect: [{ value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' }],
+        multiselect: [
+          { value: factory.id('thesaurus_2_usa').toString(), label: 'USA ES V1' },
+          { value: factory.id('thesaurus_2_brazil').toString(), label: 'Brazil' },
+        ],
       },
       { language: 'es' }
     ),
@@ -225,7 +235,10 @@ export const fixtures: DBFixture = {
     {
       _id: factory.id('thesaurus_2'),
       name: 'thesaurus_2',
-      values: [{ id: factory.id('thesaurus_2_usa').toString(), label: 'USA' }],
+      values: [
+        { id: factory.id('thesaurus_2_usa').toString(), label: 'USA' },
+        { id: factory.id('thesaurus_2_brazil').toString(), label: 'Brazil' },
+      ],
     },
   ],
 

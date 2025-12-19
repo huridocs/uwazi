@@ -94,12 +94,26 @@ class Thesaurus {
 
   values: ThesaurusValue[];
 
+  private hashedValues = new Map<string, ThesaurusValue>();
+
   constructor(props: Props) {
     const parsed = Schema.parse(props);
 
     this.id = parsed.id;
     this.name = parsed.name;
     this.values = parsed.values;
+
+    this.createHashValues();
+  }
+
+  private createHashValues() {
+    this.values.forEach(value => {
+      if (value.values) {
+        value.values.forEach(subValue => this.hashedValues.set(subValue.id, subValue));
+      }
+
+      this.hashedValues.set(value.id, value);
+    });
   }
 
   getValueByLabel(label: string): ThesaurusValue | undefined {
@@ -107,16 +121,13 @@ class Thesaurus {
   }
 
   getValueById(id: string): ThesaurusValue | undefined {
-    for (const value of this.values) {
-      if (value.id === id) {
-        return value;
-      }
+    return this.hashedValues.get(id);
+  }
 
-      if (value.values) {
-        const found = value.values.find(v => v.id === id);
-        if (found) {
-          return found;
-        }
+  getGroupById(id: string): ThesaurusValue | undefined {
+    for (const value of this.values) {
+      if (value.values && this.hashedValues.has(id)) {
+        return value;
       }
     }
 
@@ -160,9 +171,8 @@ class Thesaurus {
 
   update({ name, values }: UpdateProps): Thesaurus {
     if (values) {
-      const ids = new Set(this.values.map(v => v.id));
       const unknownIds = values
-        .filter(v => 'id' in v && !ids.has(v.id))
+        .filter(v => 'id' in v && !this.hashedValues.has(v.id))
         .map(v => (v as ThesaurusValue).id);
 
       if (unknownIds.length > 0) {
@@ -221,4 +231,8 @@ class Thesaurus {
 }
 
 export { Thesaurus };
-export type { CreateProps as CreateThesaurusProps, UpdateProps as UpdateThesaurusProps };
+export type {
+  CreateProps as CreateThesaurusProps,
+  UpdateProps as UpdateThesaurusProps,
+  ThesaurusValue,
+};

@@ -612,7 +612,7 @@ describe('deleteByParams', () => {
       ] as JobDBO[],
     });
 
-    await adapter.deleteByParams({ a: 1 }, 'tenant1');
+    await adapter.deleteByParams('unlocked_job', { a: 1 }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -623,13 +623,14 @@ describe('deleteByParams', () => {
   it('should delete jobs matching a single numeric param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ a: 1 }, 'tenant1');
+    await adapter.deleteByParams('job1', { a: 1 }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
-    expect(after).toHaveLength(4);
+    expect(after).toHaveLength(5);
     expect(after).toEqual(
       TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_2') },
         { _id: factory.id('job1_3') },
         { _id: factory.id('job1_4') },
         { _id: factory.id('job1_5') },
@@ -641,7 +642,7 @@ describe('deleteByParams', () => {
   it('should delete jobs matching multiple params (AND condition)', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ a: 1, b: '1' }, 'tenant1');
+    await adapter.deleteByParams('job1', { a: 1, b: '1' }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -660,7 +661,7 @@ describe('deleteByParams', () => {
   it('should delete jobs matching a string param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ b: '1' }, 'tenant1');
+    await adapter.deleteByParams('job1', { b: '1' }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -679,7 +680,7 @@ describe('deleteByParams', () => {
   it('should delete jobs matching a boolean param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ c: true }, 'tenant1');
+    await adapter.deleteByParams('job4', { c: true }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -698,7 +699,7 @@ describe('deleteByParams', () => {
   it('should delete jobs matching an array param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ e: ['item1', 'item2'] }, 'tenant1');
+    await adapter.deleteByParams('job5', { e: ['item1', 'item2'] }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -717,7 +718,7 @@ describe('deleteByParams', () => {
   it('should delete jobs matching an object param', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ f: { nested: 'object' } }, 'tenant1');
+    await adapter.deleteByParams('job5', { f: { nested: 'object' } }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -736,7 +737,7 @@ describe('deleteByParams', () => {
   it('should delete nothing when param does not match any job', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ nonExistent: 'value' }, 'tenant1');
+    await adapter.deleteByParams('job1', { nonExistent: 'value' }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -746,7 +747,7 @@ describe('deleteByParams', () => {
   it('should delete nothing when param value does not match', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({ a: 999 }, 'tenant1');
+    await adapter.deleteByParams('job1', { a: 999 }, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
@@ -756,10 +757,29 @@ describe('deleteByParams', () => {
   it('should handle empty params object by deleting nothing', async () => {
     const adapter = DefaultTestingQueueAdapter();
 
-    await adapter.deleteByParams({}, 'tenant1');
+    await adapter.deleteByParams('job1', {}, 'tenant1');
 
     const after = await testingEnvironment.db.getAllFrom('jobs');
 
     expect(after).toHaveLength(6);
+  });
+
+  it('should only delete jobs matching both job name and params', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job2', { a: 1 }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_1') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
   });
 });

@@ -432,33 +432,6 @@ describe('SelectPropertyAssignmentCreatorService', () => {
     ]);
   });
 
-  it('should throw when the provided value does not exist in the referenced thesaurus', async () => {
-    const { sut } = createSut();
-    const templateDBO = await testingEnvironment.db
-      .getCollection('templates')!
-      .findOne({ _id: factory.id('Document') });
-
-    const template = MongoTemplateMapper.toDomain(templateDBO as any);
-
-    await expect(
-      sut.create({
-        template,
-        propertyAssignment: { name: 'select', value: [{ value: 'INVALID_VALUE' }] },
-      })
-    ).rejects.toThrow(
-      'The value "INVALID_VALUE" does not exist in the referenced Thesaurus "Fruits"'
-    );
-
-    await expect(
-      sut.create({
-        template,
-        propertyAssignment: { name: 'select_grouped', value: [{ value: 'INVALID_VALUE' }] },
-      })
-    ).rejects.toThrow(
-      'The value "INVALID_VALUE" does not exist in the referenced Thesaurus "Grouped Fruits"'
-    );
-  });
-
   it('should create property assignment for a select linked to a grouped thesaurus', async () => {
     const { sut } = createSut();
 
@@ -517,5 +490,50 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'non_existent_property', value: [{ value: 'Apple' }] },
       })
     ).rejects.toThrow(PropertyNotFoundError);
+  });
+
+  it('should filter out values that do not exist in the referenced thesaurus', async () => {
+    const { sut } = createSut();
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    const assignments = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'select',
+        value: [{ value: 'apple_id' }, { value: 'INVALID_VALUE' }],
+      },
+    });
+
+    expect(assignments).toEqual([
+      {
+        name: 'select',
+        value: [{ value: 'apple_id', label: 'Apple' }],
+        type: 'select',
+        language: 'en',
+        isTranslatable: false,
+      },
+      {
+        name: 'select',
+        value: [{ value: 'apple_id', label: 'Apple in Portuguese' }],
+        type: 'select',
+        language: 'pt',
+        isTranslatable: false,
+      },
+    ]);
+
+    const assignmentsGrouped = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'select_grouped',
+        value: [{ value: 'cherry_id' }, { value: 'INVALID_VALUE' }],
+      },
+    });
+
+    expect(assignmentsGrouped[0].value).toHaveLength(1);
+    expect(assignmentsGrouped[0].value[0].value).toBe('cherry_id');
   });
 });

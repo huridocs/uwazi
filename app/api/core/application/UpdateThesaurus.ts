@@ -36,7 +36,7 @@ class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       await this.deps.thesauriDS.update(updated);
       await this.deps.thesaurusTranslationService.update(diff);
-      await this.jobsDispatcher.deleteByParams<DenormalizeThesaurusEntitiesHandler>({
+      await this.jobsDispatcher.deleteByParams(DenormalizeThesaurusEntitiesHandler, {
         thesaurusId: updated.id,
       });
       await this.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, {

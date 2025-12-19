@@ -94,32 +94,32 @@ describe('dispatchMany', () => {
             _id: factory.id('job1_1'),
             namespace: 'namespace_1',
             queue: 'queue1',
-            name: 'SomeJob',
-            params: { a: 1 },
+            name: 'TestJob',
+            params: { aNumber: 1 },
           },
           {
             _id: factory.id('job1_3'),
             namespace: 'namespace_1',
             queue: 'queue1',
-            name: 'SomeJob',
-            params: { a: 1 },
+            name: 'TestJob',
+            params: { aNumber: 1 },
             lockedUntil: Date.now() + 10000,
           },
           {
             _id: factory.id('job1_2'),
             namespace: 'namespace_2',
             queue: 'queue1',
-            name: 'SomeJob',
-            params: { a: 1 },
+            name: 'TestJob',
+            params: { aNumber: 1 },
           },
         ] as JobDBO[],
       });
     });
 
     it('should delete by params only on the specified namespace', async () => {
-      const dispatcher = new NamespacedDispatcher('namespace', 'queue name', adapter);
+      const dispatcher = new NamespacedDispatcher('namespace_1', 'queue name', adapter);
 
-      await dispatcher.deleteByParams({ a: 1 });
+      await dispatcher.deleteByParams(TestJob, { aNumber: 1 });
 
       const job = await testingEnvironment.db.getAllFrom('jobs');
 

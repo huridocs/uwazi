@@ -1,6 +1,6 @@
 import { config } from 'api/config';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { Dispatchable, Params } from '../application/contracts/Dispatchable';
+import { Dispatchable } from '../application/contracts/Dispatchable';
 import { NamespacedDispatcher } from './NamespacedDispatcher';
 
 interface DispatcherFactory {
@@ -14,10 +14,13 @@ export class JobsRouter implements JobsDispatcher {
     this.dispatcherFactory = dispatcherFactory;
   }
 
-  async deleteByParams<JobParams extends Params>(params: Partial<JobParams>): Promise<void> {
+  async deleteByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {
     const dispatcher = this.routeJob();
 
-    return dispatcher.deleteByParams(params);
+    return dispatcher.deleteByParams(dispatchable, params);
   }
 
   private routeJob() {

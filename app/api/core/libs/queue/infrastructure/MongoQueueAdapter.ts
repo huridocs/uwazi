@@ -27,7 +27,11 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     super(db, transactionManager, { useSyncedCollection: false });
   }
 
-  async deleteByParams(params: Partial<Params>, tenantName: string): Promise<void> {
+  async deleteByParams(
+    jobName: string,
+    params: Partial<Params>,
+    tenantName: string
+  ): Promise<void> {
     if (Object.keys(params).length === 0) {
       return;
     }
@@ -38,6 +42,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
 
     await this.getCollection().deleteMany({
       ...query,
+      name: jobName,
       namespace: tenantName,
       lockedUntil: { $lt: Date.now() },
     });
