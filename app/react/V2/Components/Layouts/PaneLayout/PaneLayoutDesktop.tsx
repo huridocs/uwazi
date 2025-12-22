@@ -41,7 +41,7 @@ const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: s
 const PaneLayoutDesktop = ({
   children,
   localStorageKey,
-  defaultWidthsPercents,
+  defaultRatios,
   className = '',
 }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -112,15 +112,15 @@ const PaneLayoutDesktop = ({
       } else {
         setWidths(fromStorage);
       }
-    } else if (defaultWidthsPercents?.length) {
-      setWidths(percentWidthToPixel(defaultWidthsPercents, containerWidth));
+    } else if (defaultRatios?.length) {
+      setWidths(percentWidthToPixel(defaultRatios, containerWidth));
     } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
       const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
       setWidths(initials);
     }
-  }, [children, localStorageKey, defaultWidthsPercents]);
+  }, [children, localStorageKey, defaultRatios]);
 
   useEffect(() => {
     const handleScreenResize = () => {
