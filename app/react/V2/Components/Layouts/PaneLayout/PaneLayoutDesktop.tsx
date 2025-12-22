@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
