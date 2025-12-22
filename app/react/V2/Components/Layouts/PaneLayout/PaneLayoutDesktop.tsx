@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import { isClient } from 'app/utils';
 import { PaneLayoutProps } from './types';
@@ -15,24 +15,24 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
 const percentWidthToPixel = (percentWidths: number[], containerWidth: number) =>
   percentWidths.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
 
-const getPercentagesFromLocalStorage = (localStorageKey?: string): number[] => {
+const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
     try {
       const parsed: number[] = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
       if (Array.isArray(parsed)) return parsed;
     } catch (e) {
-      captureException(new Error('getPercentagesFromLocalStorage error', { cause: e }));
+      captureException(new Error('getRatiosFromLocalStorage error', { cause: e }));
     }
   }
   return [];
 };
 
-const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: string) => {
+const setRatiosToLocalStorage = (percentages: number[], localStorageKey?: string) => {
   if (isClient && localStorageKey) {
     try {
       localStorage.setItem(localStorageKey, JSON.stringify(percentages));
     } catch (e) {
-      captureException(new Error('setPercentagesToLocalStorage error', { cause: e }));
+      captureException(new Error('setRatiosToLocalStorage error', { cause: e }));
     }
   }
 };
@@ -47,6 +47,7 @@ const PaneLayoutDesktop = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
+  const [isSSR, setIsSSR] = useState(!isClient);
   const widthsRef = useRef<number[]>([]);
 
   const handleResize = useCallback(
@@ -74,8 +75,8 @@ const PaneLayoutDesktop = ({
         currentWidths[rightIndex] = rightNew;
         setWidths(currentWidths);
 
-        const percentages = currentWidths.map(w => w / (containerRect.width || 1));
-        setPercentagesToLocalStorage(percentages, localStorageKey);
+        const ratios = currentWidths.map(w => w / (containerRect.width || 1));
+        setRatiosToLocalStorage(ratios, localStorageKey);
       }
     },
     [children.length, localStorageKey]
@@ -85,6 +86,10 @@ const PaneLayoutDesktop = ({
     widthsRef.current = widths;
   }, [widths]);
 
+  useEffect(() => {
+    setIsSSR(true);
+  }, []);
+
   // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!containerRef.current) return;
@@ -92,7 +97,7 @@ const PaneLayoutDesktop = ({
     if (
       widthsRef.current &&
       widthsRef.current.length === children.length &&
-      widthsRef.current.some(w => w > 0)
+      widthsRef.current.some(width => width > 0)
     ) {
       return;
     }
@@ -101,10 +106,10 @@ const PaneLayoutDesktop = ({
     const containerWidth = containerRect.width || 1;
     const separatorCount = children.length - 1;
 
-    const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
+    const savedRatios = getRatiosFromLocalStorage(localStorageKey);
 
-    if (savedPercentages.length === children.length) {
-      const fromStorage = percentWidthToPixel(savedPercentages, containerWidth);
+    if (savedRatios.length === children.length) {
+      const fromStorage = percentWidthToPixel(savedRatios, containerWidth);
       const total = fromStorage.reduce((a, b) => a + b, 0);
       if (total > containerWidth) {
         const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
@@ -165,7 +170,14 @@ const PaneLayoutDesktop = ({
     <div ref={containerRef} className={`flex h-full min-h-0 ${className}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
-          <section style={{ width: widths[index] }} className="h-full min-h-0">
+          <section
+            style={
+              isSSR && widths.length > 0
+                ? { width: widths[index] }
+                : { flex: defaultRatios?.[index] || 1 }
+            }
+            className="h-full min-h-0"
+          >
             <div className="h-full min-h-0 overflow-auto">{child}</div>
           </section>
 
