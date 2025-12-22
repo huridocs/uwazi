@@ -8,7 +8,7 @@ import { useIsMobile } from '../../CustomHooks/useIsMobile';
 const PaneLayout = ({
   children,
   localStorageKey,
-  defaultWidthsPercents,
+  defaultRatios,
   className = '',
 }: PaneLayoutProps) => {
   const isMobile = useIsMobile();
@@ -21,7 +21,7 @@ const PaneLayout = ({
     <PaneLayoutDesktop
       localStorageKey={localStorageKey}
       className={className}
-      defaultWidthsPercents={defaultWidthsPercents}
+      defaultRatios={defaultRatios}
     >
       {children}
     </PaneLayoutDesktop>
