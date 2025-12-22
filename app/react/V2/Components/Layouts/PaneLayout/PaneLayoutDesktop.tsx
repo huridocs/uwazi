@@ -12,8 +12,8 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
   return undefined;
 };
 
-const percentWidthToPixel = (percentWidths: number[], containerWidth: number) =>
-  percentWidths.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
+const ratiosToPixels = (ratios: number[], containerWidth: number) =>
+  ratios.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
 
 const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
@@ -47,8 +47,8 @@ const PaneLayoutDesktop = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
-  const [isSSR, setIsSSR] = useState(!isClient);
   const widthsRef = useRef<number[]>([]);
+  const initialWidths = useRef(defaultRatios?.map(ratio => `${ratio * 100}%`));
 
   const handleResize = useCallback(
     // eslint-disable-next-line max-statements
@@ -86,10 +86,6 @@ const PaneLayoutDesktop = ({
     widthsRef.current = widths;
   }, [widths]);
 
-  useEffect(() => {
-    setIsSSR(true);
-  }, []);
-
   // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!containerRef.current) return;
@@ -109,7 +105,7 @@ const PaneLayoutDesktop = ({
     const savedRatios = getRatiosFromLocalStorage(localStorageKey);
 
     if (savedRatios.length === children.length) {
-      const fromStorage = percentWidthToPixel(savedRatios, containerWidth);
+      const fromStorage = ratiosToPixels(savedRatios, containerWidth);
       const total = fromStorage.reduce((a, b) => a + b, 0);
       if (total > containerWidth) {
         const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
@@ -118,7 +114,7 @@ const PaneLayoutDesktop = ({
         setWidths(fromStorage);
       }
     } else if (defaultRatios?.length) {
-      setWidths(percentWidthToPixel(defaultRatios, containerWidth));
+      setWidths(ratiosToPixels(defaultRatios, containerWidth));
     } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
@@ -133,7 +129,7 @@ const PaneLayoutDesktop = ({
       const containerRect = containerRef.current.getBoundingClientRect();
       const containerWidth = containerRect.width || 1;
       const percentages = widthsRef.current.map(w => w / containerWidth);
-      setWidths(percentWidthToPixel(percentages, containerWidth));
+      setWidths(ratiosToPixels(percentages, containerWidth));
     };
 
     window.addEventListener('resize', handleScreenResize);
@@ -171,11 +167,7 @@ const PaneLayoutDesktop = ({
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section
-            style={
-              isSSR && widths.length > 0
-                ? { width: widths[index] }
-                : { flex: defaultRatios?.[index] || 1 }
-            }
+            style={{ width: widths.length > 0 ? widths[index] : initialWidths?.current?.[index] }}
             className="h-full min-h-0"
           >
             <div className="h-full min-h-0 overflow-auto">{child}</div>
