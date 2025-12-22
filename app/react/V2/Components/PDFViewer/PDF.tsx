@@ -38,6 +38,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const padding = 0;
   const containerStyles = {
@@ -75,14 +76,24 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
     const resizeObserver = new ResizeObserver(entries => {
       const [entry] = entries;
       if (entry && entry.contentRect) {
-        const newWidth = Math.max(0, entry.contentRect.width - padding * 2 - 2);
-        setContainerWidth(newWidth);
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+
+        resizeTimeoutRef.current = setTimeout(() => {
+          const newWidth = Math.max(0, entry.contentRect.width - padding * 2 - 2);
+          setContainerWidth(newWidth);
+        }, 150);
       }
     });
 
     resizeObserver.observe(container);
 
     return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+        resizeTimeoutRef.current = null;
+      }
       resizeObserver.disconnect();
     };
   }, []);
