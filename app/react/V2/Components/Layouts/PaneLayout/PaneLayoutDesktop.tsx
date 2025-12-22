@@ -12,6 +12,9 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
   return undefined;
 };
 
+const percentWidthToPixel = (percentWidths: number[], containerWidth: number) =>
+  percentWidths.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
+
 const getPercentagesFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
     try {
@@ -43,22 +46,8 @@ const PaneLayoutDesktop = ({
 }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
-  const ratiosRef = useRef<number[]>([]);
-
-  const [rations, setRations] = useState<number[]>(() => {
-    const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
-
-    if (savedPercentages.length === children.length) {
-      return savedPercentages;
-    }
-
-    if (defaultWidthsPercents?.length === children.length) {
-      return defaultWidthsPercents;
-    }
-
-    const ratio = 1 / children.length;
-    return Array(children.length).fill(ratio);
-  });
+  const [widths, setWidths] = useState<number[]>([]);
+  const widthsRef = useRef<number[]>([]);
 
   const handleResize = useCallback(
     // eslint-disable-next-line max-statements
@@ -66,45 +55,87 @@ const PaneLayoutDesktop = ({
       if (draggingIndex.current === null || !containerRef.current) return;
 
       const xValue = getClientXValue(event);
-
       if (xValue === undefined) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
-      const containerWidth = containerRect.width || 1;
-      const currentRatios = [...ratiosRef.current];
+      const currentWidths = [...widthsRef.current];
       const leftIndex = draggingIndex.current;
       const rightIndex = leftIndex + 1;
 
       if (leftIndex < 0 || rightIndex >= children.length) return;
 
-      // Account for separator widths
-      const separatorCount = children.length - 1;
-      const availableWidth = containerWidth - separatorCount * SEPARATOR_PX;
-      const currentWidths = currentRatios.map(ratio => ratio * availableWidth);
-      const leftStart =
-        currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0) + leftIndex * SEPARATOR_PX;
+      const leftStart = currentWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
       const currentLeft = xValue - containerRect.left - leftStart;
       const totalPair = currentWidths[leftIndex] + currentWidths[rightIndex];
       const rightNew = totalPair - currentLeft;
 
       if (currentLeft >= MIN_WIDTH && rightNew >= MIN_WIDTH) {
-        // Convert back to ratios relative to available width
-        currentRatios[leftIndex] = currentLeft / availableWidth;
-        currentRatios[rightIndex] = rightNew / availableWidth;
-        setRations(currentRatios);
-        setPercentagesToLocalStorage(currentRatios, localStorageKey);
+        currentWidths[leftIndex] = currentLeft;
+        currentWidths[rightIndex] = rightNew;
+        setWidths(currentWidths);
+
+        const percentages = currentWidths.map(w => w / (containerRect.width || 1));
+        setPercentagesToLocalStorage(percentages, localStorageKey);
       }
     },
     [children.length, localStorageKey]
   );
 
   useEffect(() => {
-    ratiosRef.current = rations;
-  }, [rations]);
+    widthsRef.current = widths;
+  }, [widths]);
+
+  // eslint-disable-next-line max-statements
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    if (
+      widthsRef.current &&
+      widthsRef.current.length === children.length &&
+      widthsRef.current.some(w => w > 0)
+    ) {
+      return;
+    }
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const containerWidth = containerRect.width || 1;
+    const separatorCount = children.length - 1;
+
+    const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
+
+    if (savedPercentages.length === children.length) {
+      const fromStorage = percentWidthToPixel(savedPercentages, containerWidth);
+      const total = fromStorage.reduce((a, b) => a + b, 0);
+      if (total > containerWidth) {
+        const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
+        setWidths(fromStorage.map(width => width * scale));
+      } else {
+        setWidths(fromStorage);
+      }
+    } else if (defaultWidthsPercents?.length) {
+      setWidths(percentWidthToPixel(defaultWidthsPercents, containerWidth));
+    } else {
+      const initialWidth =
+        (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
+      const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
+      setWidths(initials);
+    }
+  }, [children, localStorageKey, defaultWidthsPercents]);
+
+  useEffect(() => {
+    const handleScreenResize = () => {
+      if (!containerRef.current) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width || 1;
+      const percentages = widthsRef.current.map(w => w / containerWidth);
+      setWidths(percentWidthToPixel(percentages, containerWidth));
+    };
+
+    window.addEventListener('resize', handleScreenResize);
+    return () => window.removeEventListener('resize', handleScreenResize);
+  }, []);
 
   const onMouseDown = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
-    if (!containerRef.current || !isClient) return;
-
     const onMouseUp = () => {
       draggingIndex.current = null;
       document.removeEventListener('mousemove', handleResize);
@@ -118,8 +149,6 @@ const PaneLayoutDesktop = ({
   };
 
   const onTouchStart = (event: React.TouchEvent<HTMLDivElement>, index: number) => {
-    if (!containerRef.current || !isClient) return;
-
     const onTouchEnd = () => {
       draggingIndex.current = null;
       document.removeEventListener('touchmove', handleResize);
@@ -136,12 +165,7 @@ const PaneLayoutDesktop = ({
     <div ref={containerRef} className={`flex h-full min-h-0 ${className}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
-          <section
-            style={{
-              flex: rations[index] || 1,
-            }}
-            className="h-full min-h-0"
-          >
+          <section style={{ width: widths[index] }} className="h-full min-h-0">
             <div className="h-full min-h-0 overflow-auto">{child}</div>
           </section>
 
