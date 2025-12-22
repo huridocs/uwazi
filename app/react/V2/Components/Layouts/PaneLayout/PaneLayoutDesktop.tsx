@@ -27,10 +27,10 @@ const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
   return [];
 };
 
-const setRatiosToLocalStorage = (percentages: number[], localStorageKey?: string) => {
+const setRatiosToLocalStorage = (ratios: number[], localStorageKey?: string) => {
   if (isClient && localStorageKey) {
     try {
-      localStorage.setItem(localStorageKey, JSON.stringify(percentages));
+      localStorage.setItem(localStorageKey, JSON.stringify(ratios));
     } catch (e) {
       captureException(new Error('setRatiosToLocalStorage error', { cause: e }));
     }
