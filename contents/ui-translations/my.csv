@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,အီးမေးလ် လိုအပ်သည်
 Accept,လက်ခံမည်
 Accepted suggestion on entity,Accepted suggestion on entity
+Accepting suggestions,Accepting suggestions
 Account,အကောင့်
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -52,6 +53,7 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,ဘာသာစကားအားလုံး သို့ ထည့်ရန်
 Add to table of contents,မာတိကာသို့ ထည့်ရန်
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,အသုံးပြုသူထည့်ရန်
 add value,add value
@@ -115,6 +117,7 @@ Can edit,တည်းဖြတ်နိုင်သည်
 Can see,မြင်နိုင်သည်
 Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
+Canceling,Canceling
 Canceling...,Canceling...
 Cannot find extractor,Cannot find extractor
 Captcha,ကက်ပ်ချာ
@@ -146,6 +149,7 @@ Close,ပိတ်ရန်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,စုစည်းမှု
 Collection Name,Collection Name
 Common sources,Common sources
@@ -164,10 +168,13 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Connect to a paragraph,စာပိုဒ်နှင့် ချိတ်ဆက်ရန်
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,ချိတ်ဆက်မှု အမျိုးအစား
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Contact Form
+Contact form email,Contact form email
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -208,8 +215,10 @@ Custom component error,စိတ်ကြိုက် အစိတ်အပိ�
 Custom CSS,စိတ်ကြိုက် CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
+Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
+Dark,Dark
 Dashboard,Dashboard
 Date added,ဒေတာ ထည့်ပြီး
 Date format,ရက်စွဲ ဖော်မက်
@@ -228,6 +237,7 @@ DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete language,ဘာသာစကား ဖျက်ရန်
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -309,6 +319,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,စူးစမ်းလေ့လာခြင်း
 Export CSV,CSV တင်ပို့ရန်
 Exporting entities to CSV,ဖြည့်သွင်းချက်များကို CSV သို့ တင်ပို့နေသည်
@@ -317,8 +328,10 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -466,10 +479,13 @@ low,နိမ့်သော
 Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်တင်များနှင့် စနစ်တည်ဆောက်ပုံကို စီမံခန့်ခွဲရန်
 Map,မြေပုံ
 Map api key,Map api key
+Map API key,Map API key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map Layers,Map Layers
 Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,မြေပုံ မြင်ကွင်း
+Mapbox,Mapbox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -550,9 +566,9 @@ No References,ကိုးကားချက် မရှိပါ
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,ဆက်နွှယ်မှု မရှိပါ
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,မာတိကာ မရှိပါ
+No table of contents,မာတိကာ မရှိပါ
 No Table of contents,No Table of contents
-No Table of Contents description,မာတိကာ ဖော်ပြချက် မရှိပါ
+No table of contents description,မာတိကာ ဖော်ပြချက် မရှိပါ
 No text match,စာသား ကိုက်ညီမှု မရှိပါ
 No text match description,You can type something different in the search box to get some results.
 No type,အမျိုးအစား မရှိပါ
@@ -733,6 +749,7 @@ Save changes,အပြောင်းအလဲများကို သိမ်
 Save password,စကားဝှက် သိမ်းဆည်းရန်
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,ရှာဖွေရန်
 Search item,အိုင်တမ် ရှာရန်
 Search not found,ရှာသည့်အရာကို မတွေ့ပါ
@@ -773,7 +790,7 @@ Send,ပေးပို့ရန်
 Send recovery email,ပြန်လည်ရယူရန်အတွက် အီးမေးလ် ပို့ရန်
 Sending email,Sending email
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data...,Sending labeled data...
+Sending labeled data,Sending labeled data
 Sentences above threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်အထက်ရှိ ဝါကျများ
 Services,Services
 Set as default,နဂိုမူလအဖြစ် သတ်မှတ်ရန်
@@ -840,6 +857,7 @@ System translations,System translations
 Table,ဇယား
 Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
+Table of contents saved successfully,Table of contents saved successfully
 Table view,ဇယားမြင်ကွင်း
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -899,6 +917,7 @@ This property will be shown using all the width available.,ဤထူးခြာ
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်
@@ -924,7 +943,7 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
-Training model...,Training model...
+Training model,Training model
 Training sample,Training sample
 Translate,ဘာသာပြန်ရန်
 Translation,Translation
@@ -1012,6 +1031,7 @@ Warning: you are editing multiple entities. Fields marked with a,သတိပေ
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1025,9 +1045,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button."
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

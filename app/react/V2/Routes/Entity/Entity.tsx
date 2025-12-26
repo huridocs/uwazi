@@ -111,7 +111,13 @@ const Entity = () => {
         {
           id: SIDE_TABS.TOC,
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
-          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
+          content: (
+            <ToCPanel
+              toc={entity?.mainDocument?.toc}
+              generatedToc={entity?.mainDocument?.generatedToc}
+              file={entity?.mainDocument}
+            />
+          ),
         },
         {
           id: SIDE_TABS.REFERENCES,
@@ -234,7 +240,7 @@ const Entity = () => {
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%' }}>
-      <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
+      <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
         <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}

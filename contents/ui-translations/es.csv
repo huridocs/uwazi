@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
+Accepting suggestions,Accepting suggestions
 Account,Cuenta
 Account locked,Account locked
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
@@ -52,6 +53,7 @@ Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
+Add to ToC,Add to ToC
 Add to training set,Add to training set
 Add user,Añadir usuario
 add value,añadir valor
@@ -115,6 +117,7 @@ Can edit,Puede editar
 Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
+Canceling,Canceling
 Canceling...,Cancelando
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
@@ -144,6 +147,7 @@ Close,Cerrar
 Collaborator,Colaboradora
 Collaborators,Collaborators
 Collapse all,Colapsar todo
+Collapse All,Collapse All
 Collection,Colección
 Collection Name,Collection Name
 Common sources,Common sources
@@ -162,10 +166,13 @@ Confirm deletion of file,Confirmar eliminación de archivo
 Confirm new password,Confirmar nueva contraseña
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Conectado al servidor
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
 Contact Form,Formulario de contacto
+Contact form email,Contact form email
 Content translations,Traducciones de contenido
 Context,Contexto
 Continue,Continue
@@ -206,8 +213,10 @@ Custom component error,Error en el componente de marcado personalizado: valores 
 Custom CSS,CSS personalizado
 Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
+Custom landing page,Custom landing page
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom Uploads,Subidas personalizadas
+Dark,Dark
 Dashboard,Tablero
 Date added,Fecha de creación
 Date format,Formato de fecha
@@ -226,6 +235,7 @@ DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
 Delete language,Eliminar idioma
+Delete?,Delete?
 Deleted attachment,Archivo adjunto eliminado
 Deleted custom file,Archivo personalizado eliminado
 Deleted entity,Entidad eliminada
@@ -307,6 +317,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
+Expand All,Expand All
 Exploration,Exploración
 Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
@@ -315,8 +326,10 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
 
 1. Sube tu ícono en Subidas personalizadas.
@@ -464,10 +477,13 @@ low,bajo
 Manage site settings and configuration,Administrar la configuración del sitio
 Map,Mapa
 Map api key,Clave del API de Mapas
+Map API key,Map API key
 Map api key tooltip,Se requiere una clave API para usar Mapbox o Google Maps.
+Map Layers,Map Layers
 Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Vista de mapa
+Mapbox,Mapbox
 Mapping conflict error,"Es necesaria una reindexación de su colección. El motivo puede variar
          -- de ciertos cambios hechos a la propiedad de una plantilla a nuevos campos
          que deben completarse en todas las entidades.
@@ -548,9 +564,9 @@ No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
-No Table of Contents,Sin Tabla de Contenidos
+No table of contents,Sin Tabla de Contenidos
 No Table of contents,No Table of contents
-No Table of Contents description,Sin descripción de Tabla de Contenidos
+No table of contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
 No type,Sin tipo
@@ -731,6 +747,7 @@ Save changes,Guardar cambios
 Save password,Guardar contraseña
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved successfully.,Guardado exitoso.
+Saving...,Saving...
 Search,Buscar
 Search item,Buscar elemento
 Search not found,Búsqueda no encontrada
@@ -771,7 +788,7 @@ Send,Enviar
 Send recovery email,Enviar correo electrónico de recuperación
 Sending email,Correo electrónico de envío
 Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
-Sending labeled data...,Enviando datos etiquetados…
+Sending labeled data,Sending labeled data
 Sentences above threshold,Palabras por encima del límite
 Services,Servicios
 Set as default,Establecer como predeterminado
@@ -838,6 +855,7 @@ System translations,Traducciones del sistema
 Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Vista de Tabla
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -896,6 +914,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Límite
@@ -921,7 +940,7 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Entrenando
-Training model...,Entrenando el modelo…
+Training model,Training model
 Training sample,Training sample
 Translate,Traducir
 Translation,Translation
@@ -1009,6 +1028,7 @@ Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Es
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
 Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,se actualizará con el mismo valor
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1022,9 +1042,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
-"You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-                  ToC"" button."
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
