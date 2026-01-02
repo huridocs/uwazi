@@ -5,6 +5,7 @@ import { EntitiesService } from './EntitiesService';
 import { FilesService } from './FilesService';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
 import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { EntityCreatedEvent } from '../domain/entity/EntityCreatedEvent';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];
@@ -48,6 +49,15 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         actorId: this.actorId,
         tenantName: this.tenant.name,
       });
+
+      await this.eventEmitter.emit(
+        new EntityCreatedEvent({
+          sharedId: entity.sharedId,
+          tenantName: this.tenant.name,
+          userId: this.actorId,
+        })
+      );
+
       await this.deps.fileService.insert(documentsOrAttachments);
     });
 

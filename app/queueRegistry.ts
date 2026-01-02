@@ -19,6 +19,7 @@ import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/De
 import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { RelationshipSyncJob } from 'api/core/infrastructure/jobs/RelationshipSyncJob';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { LogEntityCreatedListener } from 'api/core/infrastructure/listeners/LogEntityCreatedListener';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
@@ -297,4 +298,6 @@ export function registerJobs(
     DeleteFileFromStorageJobHandler,
     async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
   );
+
+  register(LogEntityCreatedListener, async () => new LogEntityCreatedListener());
 }
