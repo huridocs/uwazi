@@ -18,7 +18,7 @@ import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
 import { maskMongoPassword } from 'api/utils/maskMongoPassword';
 import { elasticClient } from 'api/search/elastic';
-import { registerEventListenersV2 } from 'api/core/infrastructure/listeners/Listeners';
+import 'api/core/infrastructure/listeners/Listeners';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -147,7 +147,6 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
 
   app.use(errorHandlingMiddleware);
   registerEventListeners(applicationEventsBus);
-  registerEventListenersV2();
 
   if (config.externalServices) {
     // eslint-disable-next-line global-require
