@@ -61,10 +61,10 @@ describe('FileCard', () => {
   });
 
   it('should display translations count when provided', () => {
-    const translations = {
-      en: mockPdfFile,
-      es: { ...mockPdfFile, _id: 'file-es' },
-    };
+    const translations = [
+      { ...mockPdfFile, language: 'en' },
+      { ...mockPdfFile, language: 'es' },
+    ];
     mount(
       <FileCard
         file={mockPdfFile}

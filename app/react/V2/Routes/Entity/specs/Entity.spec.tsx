@@ -21,7 +21,7 @@ const sampleEntity: Partial<EntityType> = {
   sharedId: 'shared1',
   title: 'Sample Entity',
   template: { _id: 'template1', label: 'Template 1', name: 'template1' },
-  mainDocument: { filename: 'file.pdf' },
+  mainDocument: [{ filename: 'file.pdf' }],
   metadata: [],
 };
 

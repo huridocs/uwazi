@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
 import { t, Translate } from 'app/I18N';
 import { FilePreview } from 'app/V2/Components/UI/Files/FilePreview';
+import { settingsAtom } from 'app/V2/atoms';
 import { formatBytes, formatDuration, getMimetypeFromUrl } from 'V2/shared/formatHelpers';
 import { FileType } from 'shared/types/fileType';
 
@@ -14,7 +16,7 @@ type FileCardProps = {
   file: EntityFile;
   index: number;
   onFileSelect: (file: FileType) => void;
-  translations?: Record<string, FileType | undefined>;
+  translations?: FileType[];
 };
 
 const getFileTypeLabel = (file: EntityFile) => {
@@ -31,7 +33,7 @@ const getFileTypeLabel = (file: EntityFile) => {
     : t('System', 'Attachment', null, false);
 };
 
-const FileCard = ({ file, index, onFileSelect, translations = {} }: FileCardProps) => {
+const FileCard = ({ file, index, onFileSelect, translations = [] }: FileCardProps) => {
   const fileUrl = file.url || (file.filename ? `/api/files/${file.filename}` : '');
   const downloadUrl = file.filename ? `${fileUrl}?download=true` : fileUrl;
   const fileSize = file.size ? formatBytes(file.size) : 'n/a';
@@ -41,6 +43,7 @@ const FileCard = ({ file, index, onFileSelect, translations = {} }: FileCardProp
   const isMediaFile = file.fileType === 'media' || /^(audio|video)\//.test(file.mimetype || '');
   const isExternalUrl = fileUrl.startsWith('http://') || fileUrl.startsWith('https://');
   const [duration, setDuration] = useState<number | undefined>(file.duration);
+  const { languages } = useAtomValue(settingsAtom);
 
   const handleDuration = (dur: number) => {
     if (dur && Number.isFinite(dur) && dur > 0) {
@@ -111,14 +114,13 @@ const FileCard = ({ file, index, onFileSelect, translations = {} }: FileCardProp
                 <div className="text-gray-800 text-sm font-medium">{fileDuration}</div>
               </div>
             )}
-            {translations && Object.keys(translations).length > 0 && (
+            {translations && translations.length > 0 && (
               <div className="flex flex-col gap-0 items-start">
                 <div className="text-gray-500 text-xs">
                   <Translate>Translations</Translate>
                 </div>
                 <div className="text-gray-800 text-sm font-medium">
-                  {Object.values(translations).filter(tr => tr).length}/
-                  {Object.keys(translations).length}
+                  {translations.length}/{languages?.length}
                 </div>
               </div>
             )}

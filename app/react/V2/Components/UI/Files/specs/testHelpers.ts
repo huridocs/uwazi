@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import { EntityFile } from '../FileCard';
 
 export const mockImageFile: EntityFile = {

@@ -11,6 +11,7 @@ export interface FileType {
   mimetype?: string;
   size?: number;
   creationDate?: number;
+  iso639_3?: string;
   language?: string;
   type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
   url?: string;

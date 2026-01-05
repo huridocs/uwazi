@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Entity } from 'app/V2/domain';
 import { getMimetypeFromUrl } from 'app/V2/shared/formatHelpers';
 import { EntityFile, FileCard } from 'app/V2/Components/UI/Files/FileCard';
-import { settingsAtom } from 'app/V2/atoms';
-import { LanguageUtils } from 'shared/language';
 import { FileType } from 'shared/types/fileType';
 
 type FileListProps = {
@@ -13,22 +10,10 @@ type FileListProps = {
 };
 
 const FileList = ({ entity }: FileListProps) => {
-  const { languages: languageList = [] } = useAtomValue(settingsAtom);
-  const mainDocumentByLanguage: Record<string, FileType | undefined> = {};
   const files: EntityFile[] = useMemo(() => {
     if (!entity) return [];
 
-    const otherDocuments: FileType[] = [];
-    languageList.map(lang => {
-      const [main, ...other] =
-        entity.documents?.filter(
-          d => d.language === LanguageUtils.fromISO639_1(lang.key).ISO639_3
-        ) || [];
-      mainDocumentByLanguage[lang.key] = main;
-      otherDocuments.push(...other);
-    });
-
-    const fileNames = otherDocuments
+    const fileNames = (entity.documents || [])
       .map(f => f.filename)
       .concat(entity.attachments?.map(f => f.filename) || []);
     const metadataFiles: EntityFile[] = entity.metadata
@@ -55,11 +40,11 @@ const FileList = ({ entity }: FileListProps) => {
       .filter((file): file is EntityFile => file !== null);
     return [
       ...metadataFiles,
-      ...otherDocuments.map(f => ({
+      ...(entity.documents?.map(f => ({
         ...f,
         fileType: 'document' as const,
         url: `/api/files/${f.filename}`,
-      })),
+      })) || []),
       ...(entity.attachments?.map(f => ({
         ...f,
         fileType: 'attachment' as const,
@@ -83,11 +68,11 @@ const FileList = ({ entity }: FileListProps) => {
     <div className="flex flex-col h-full" role="region" aria-label="Files list">
       <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
         <div className="grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] sm:grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] lg:grid-cols-[repeat(auto-fill,_minmax(280px,_1fr))] xl:grid-cols-[repeat(auto-fill,_minmax(280px,_1fr))] gap-4 w-full">
-          {entity.mainDocument && (
+          {entity.mainDocument && entity.mainDocument.length > 0 && (
             <FileCard
-              key={`${entity.mainDocument._id || entity.mainDocument.filename || 0}`}
-              translations={mainDocumentByLanguage}
-              file={{ ...entity.mainDocument, fileType: 'mainDocument' as const }}
+              key={`${entity.mainDocument[0]._id || entity.mainDocument[0]?.filename || 0}`}
+              translations={entity.mainDocument.slice(0, 1)}
+              file={{ ...entity.mainDocument[0], fileType: 'mainDocument' as const }}
               index={0}
               onFileSelect={onFileSelect}
             />

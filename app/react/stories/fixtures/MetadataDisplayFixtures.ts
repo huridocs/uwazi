@@ -644,6 +644,7 @@ const processingContextBase: Omit<ProcessingContext, 'templates' | 'settings' | 
   language: 'en',
   translations: [],
   currentUser: undefined,
+  defaultLanguage: 'en',
 };
 
 export { rawEntity, processingContextBase, thesauri, templates, settings };

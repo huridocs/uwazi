@@ -94,7 +94,7 @@ const WithFiles: Story = {
         values: [{ value: Date.now(), label: new Date().toISOString() }],
       },
       metadata: [],
-      mainDocument: mainDoc,
+      mainDocument: [mainDoc],
       documents: [doc],
       attachments: [attachment],
     };

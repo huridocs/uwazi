@@ -62,7 +62,7 @@ const Entity = () => {
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
@@ -126,9 +126,9 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              toc={entity?.mainDocument?.toc}
-              generatedToc={entity?.mainDocument?.generatedToc}
-              file={entity?.mainDocument}
+              toc={entity?.mainDocument?.[0].toc}
+              generatedToc={entity?.mainDocument?.[0].generatedToc}
+              file={entity?.mainDocument?.[0]}
             />
           ),
         },
@@ -187,7 +187,7 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
