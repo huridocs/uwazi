@@ -10,11 +10,11 @@ class AsyncEventEmitter implements EventEmitter {
     this.events = new Map();
   }
 
-  async emit(event: Event): Promise<void> {
+  async emit(event: Event<any>): Promise<void> {
     const listeners = this.events.get(event.constructor.name);
 
     if (!listeners) {
-      return;
+      throw new Error(`There are no listeners for event ${event.constructor.name}`);
     }
 
     if (!DependenciesContext.transactionManager.isRunning()) {

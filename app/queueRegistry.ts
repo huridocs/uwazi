@@ -299,5 +299,5 @@ export function registerJobs(
     async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
   );
 
-  register(LogEntityCreatedListener, async () => new LogEntityCreatedListener());
+  register(LogEntityCreatedListener.asJob(), async () => new LogEntityCreatedListener());
 }

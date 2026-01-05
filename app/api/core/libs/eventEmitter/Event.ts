@@ -1,6 +1,6 @@
 type EventPayload<ExtendedPayload> = ExtendedPayload & { tenantName: string; userId: string };
 
-abstract class Event<ExtendedPayload = Record<string, any>> {
+abstract class Event<ExtendedPayload> {
   payload: EventPayload<ExtendedPayload>;
 
   constructor(payload: EventPayload<ExtendedPayload>) {
