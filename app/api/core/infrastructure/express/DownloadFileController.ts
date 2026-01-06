@@ -1,4 +1,4 @@
-import { createError } from 'api/utils';
+import { createError, handleError } from 'api/utils';
 
 import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
@@ -95,17 +95,30 @@ class DownloadFileController extends AbstractController {
 
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
 
-    const stream = Readable.from(
-      (
-        await this.fileStorage.getFile({
-          filename: file.filename,
-          type: file.type,
-        })
-      ).read()
-    );
+    const fileContents = this.fileStorage.getFile({
+      filename: file.filename,
+      type: file.type,
+    });
+
+    const stream = Readable.from(fileContents.read());
+
+    stream.on('error', err => {
+      handleError(err, { req: this.request });
+      fileContents.destroy();
+      if (!this.response.headersSent) {
+        this.response.status(500).json({ error: 'Failed to retrieve file' });
+      } else {
+        stream.destroy();
+        this.response.end();
+      }
+    });
+
     this.response.on('close', () => {
+      console.log('CLOSED ');
+      fileContents.destroy();
       stream.destroy();
     });
+
     stream.pipe(this.response);
   }
 
