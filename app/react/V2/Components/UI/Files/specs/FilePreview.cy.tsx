@@ -35,63 +35,79 @@ describe('FilePreview', () => {
     setupMediaIntercepts();
   });
 
+  const FilePreviewComponent = ({
+    file,
+    onDuration,
+    className,
+  }: {
+    file: EntityFile;
+    onDuration?: (duration: number) => void;
+    className?: string;
+  }) => {
+    return (
+      <div className="tw-content">
+        <FilePreview file={file} onDuration={onDuration} className={className} />
+      </div>
+    );
+  };
+
   it('should be accessible for image files', () => {
-    mount(<FilePreview file={mockImageFile} />);
+    mount(<FilePreviewComponent file={mockImageFile} />);
     cy.injectAxe();
     cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should render image for image files', () => {
-    mount(<FilePreview file={mockImageFile} />);
+    mount(<FilePreviewComponent file={mockImageFile} />);
     cy.get('img').should('exist');
-    cy.get('img').should('have.attr', 'src', '/api/files/test-image.jpg');
-    cy.get('img').should('have.attr', 'alt', 'Test Image.jpg');
+    cy.get('img').should('have.attr', 'src', '/api/files/batman.jpg');
+    cy.get('img').should('have.attr', 'alt', 'Batman.jpg');
   });
 
   it('should render audio player for audio files', () => {
-    mount(<FilePreview file={mockAudioFile} />);
+    mount(<FilePreviewComponent file={mockAudioFile} />);
     cy.get('figure').should('exist');
   });
 
   it('should render video player for video files', () => {
-    mount(<FilePreview file={mockVideoFile} />);
+    mount(<FilePreviewComponent file={mockVideoFile} />);
     cy.get('video').should('exist');
   });
 
   it('should render PDF icon for regular PDF files', () => {
-    mount(<FilePreview file={mockPdfFile} />);
+    mount(<FilePreviewComponent file={mockPdfFile} />);
     cy.get('svg').should('exist');
-    cy.contains('Test Document.pdf').should('exist');
+    cy.contains('Sample Document.pdf').should('exist');
   });
 
   it('should render star icon for main document PDF files', () => {
-    mount(<FilePreview file={mockMainDocument} />);
+    mount(<FilePreviewComponent file={mockMainDocument} />);
     cy.get('img[src*=".jpg"]').should('exist');
     cy.get('svg').should('exist');
   });
 
   it('should render document icon for other file types', () => {
-    mount(<FilePreview file={mockOtherFile} />);
+    mount(<FilePreviewComponent file={mockOtherFile} />);
     cy.get('svg').should('exist');
     cy.contains('Test File.txt').should('exist');
   });
 
   it('should call onDuration callback for audio files', () => {
     const onDuration = cy.stub().as('onDuration');
-    mount(<FilePreview file={mockAudioFile} onDuration={onDuration} />);
+    mount(<FilePreviewComponent file={mockAudioFile} onDuration={onDuration} />);
     cy.get('figure').should('exist');
   });
 
   it('should call onDuration callback for video files', () => {
     const onDuration = cy.stub().as('onDuration');
-    mount(<FilePreview file={mockVideoFile} onDuration={onDuration} />);
+    mount(<FilePreviewComponent file={mockVideoFile} onDuration={onDuration} />);
     cy.get('video').then($video => {
       setupMediaElement($video[0] as HTMLVideoElement, 180);
     });
   });
 
   it('should apply custom className', () => {
-    mount(<FilePreview file={mockImageFile} className="custom-class" />);
+    mount(<FilePreviewComponent file={mockImageFile} className="custom-class" />);
     cy.get('div').should('have.class', 'custom-class');
   });
 
@@ -99,10 +115,10 @@ describe('FilePreview', () => {
     const fileWithoutName: EntityFile = {
       ...mockImageFile,
       originalname: undefined,
-      filename: 'test.jpg',
+      filename: 'batman.jpg',
     };
-    mount(<FilePreview file={fileWithoutName} />);
-    cy.get('img').should('have.attr', 'alt', '/api/files/test-image.jpg');
+    mount(<FilePreviewComponent file={fileWithoutName} />);
+    cy.get('img').should('have.attr', 'alt', '/api/files/batman.jpg');
   });
 
   it('should handle files with URL but no filename', () => {
@@ -111,7 +127,22 @@ describe('FilePreview', () => {
       filename: undefined,
       url: 'https://example.com/image.jpg',
     };
-    mount(<FilePreview file={fileWithUrl} />);
+    mount(<FilePreviewComponent file={fileWithUrl} />);
     cy.get('img').should('have.attr', 'src', 'https://example.com/image.jpg');
+  });
+
+  it('should render image from test file (batman.jpg)', () => {
+    const batmanFile: EntityFile = {
+      _id: 'batman',
+      filename: 'batman.jpg',
+      originalname: 'Batman.jpg',
+      mimetype: 'image/jpeg',
+      size: 100000,
+      url: '/api/files/batman.jpg',
+      fileType: 'image',
+    };
+    mount(<FilePreviewComponent file={batmanFile} />);
+    cy.get('img').should('exist');
+    cy.get('img').should('have.attr', 'src', '/api/files/batman.jpg');
   });
 });

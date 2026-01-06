@@ -6,8 +6,8 @@ import { logA11yViolations } from '../../../../../../../cypress/support/helpers/
 import { setupMediaIntercepts, setupMediaElement } from './testHelpers';
 
 describe('VideoPlayer', () => {
-  const videoUrl = '/api/files/test-video.mp4';
-  const thumbnailUrl = '/api/files/test-thumbnail.jpg';
+  const videoUrl = '/api/files/short-video.mp4';
+  const thumbnailUrl = '/api/files/short-video-thumbnail.jpg';
 
   beforeEach(() => {
     setupMediaIntercepts();
