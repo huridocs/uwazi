@@ -21,7 +21,7 @@ export interface Entity {
   metadata: MetadataProperty[];
   rawEntity?: EntityWithFilesSchema;
   references?: EntityReference[];
-  mainDocument?: FileType;
+  mainDocument?: FileType[];
   documents?: FileType[];
   attachments?: FileType[];
 }

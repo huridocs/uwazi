@@ -7,6 +7,7 @@ import {
   LinkMetadataProperty,
 } from 'app/V2/domain/entities/types';
 import { DEFAULT_ENTITY_BASE_PATH } from 'V2/application/optionsPresets';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { processingContext, rawEntity } from './PropertyProcessorsFixtures';
 import { AdapterEntityProcessor } from '../AdapterEntityProcessor';
 
@@ -721,19 +722,6 @@ describe('Adapter Entity Processor Tests', () => {
 
     expect(documents).toMatchObject([
       {
-        _id: 'd1',
-        creationDate: 1,
-        entity: 'test-incident-001',
-        filename: '16116590902796ifv9bxjnvk.pdf',
-        language: 'en',
-        mimetype: 'application/pdf',
-        originalname: 'MockPDF.pdf',
-        size: 1,
-        status: 'ready',
-        totalPages: 1,
-        type: 'document',
-      },
-      {
         _id: 'd2',
         originalname: 'Another.pdf',
         mimetype: 'application/pdf',
@@ -744,6 +732,7 @@ describe('Adapter Entity Processor Tests', () => {
         status: 'ready',
         creationDate: 1,
         language: 'en',
+        iso639_3: 'eng',
         totalPages: 1,
       },
     ]);
@@ -761,12 +750,13 @@ describe('Adapter Entity Processor Tests', () => {
       },
     ]);
 
-    expect(mainDocument).toMatchObject({
+    expect(mainDocument?.[0]).toMatchObject({
       _id: 'd1',
       creationDate: 1,
       entity: 'test-incident-001',
       filename: '16116590902796ifv9bxjnvk.pdf',
       language: 'en',
+      iso639_3: 'eng',
       mimetype: 'application/pdf',
       originalname: 'MockPDF.pdf',
       size: 1,
@@ -774,6 +764,75 @@ describe('Adapter Entity Processor Tests', () => {
       totalPages: 1,
       type: 'document',
     });
+  });
+
+  it('should select mainDocument based on entity language in multi-language scenario', () => {
+    const contextWithOptions = {
+      ...processingContext,
+      includeSupportingFiles: true,
+      settings: {
+        ...processingContext.settings,
+        languages: [
+          {
+            _id: '1',
+            label: 'English',
+            key: 'en' as LanguageISO6391,
+            default: true,
+            ISO639_3: 'eng',
+          },
+          {
+            _id: '2',
+            label: 'Spanish',
+            key: 'es' as LanguageISO6391,
+            default: false,
+            ISO639_3: 'spa',
+          },
+        ],
+      },
+    };
+
+    const processor = new AdapterEntityProcessor(contextWithOptions);
+    const multiLanguageEntity = {
+      ...rawEntity,
+      language: 'es',
+      documents: [
+        {
+          _id: 'd1',
+          originalname: 'English.pdf',
+          mimetype: 'application/pdf',
+          filename: 'english.pdf',
+          size: 1,
+          entity: 'test-incident-001',
+          type: 'document',
+          status: 'ready',
+          creationDate: 1,
+          language: 'eng',
+          totalPages: 1,
+        },
+        {
+          _id: 'd2',
+          originalname: 'Spanish.pdf',
+          mimetype: 'application/pdf',
+          filename: 'spanish.pdf',
+          size: 1,
+          entity: 'test-incident-001',
+          type: 'document',
+          status: 'ready',
+          creationDate: 1,
+          language: 'spa',
+          totalPages: 1,
+        },
+      ],
+    };
+
+    const result = processor.processEntity(multiLanguageEntity);
+    const { documents, mainDocument } = result.entity;
+
+    expect(mainDocument?.[0]?._id).toBe('d2');
+    expect(mainDocument?.[0]?.language).toBe('es');
+    expect(documents).toHaveLength(0);
+    expect(mainDocument?.[1]?._id).toBe('d1');
+    expect(mainDocument?.[1]?.language).toBe('en');
   });
 
   it('should not include empty keys', () => {

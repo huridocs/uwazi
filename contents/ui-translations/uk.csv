@@ -94,6 +94,7 @@ Are you sure you want to delete this entity?,"Ви впевнені, що хоч
 Are you sure you want to delete this file?,"Ви впевнені, що хочете видалити цей файл?"
 Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
 Are you sure?,Ти впевнений?
+Attachment,Вкладення
 Attachment deleted,Вкладення видалено
 Attachment renamed,Вкладення перейменовано
 Attachment uploaded,Завантажено вкладення
@@ -283,6 +284,7 @@ Duplicate values not allowed.,Повторювані значення не до�
 Duplicated email,Продубльована адреса електронної пошти
 Duplicated name,Дубльоване ім'я
 Duplicated username,Продубльоване ім'я користувача
+Duration,Duration
 Edit,Редагувати
 Edit all documents matching this criteria,"Відредагуйте всі документи, які відповідають цим критеріям"
 Edit Extractor,Редагувати витягач
@@ -555,6 +557,7 @@ No Connections description,Зв'язки - це прямі відносини м
 No context,Без контексту
 NO DATA AVAILABLE,НЕМАЄ ДАНИХ
 NO EXTRACTORS,ЖОДНИХ ЕКСПРАКТОРІВ
+No files available,No files available
 no filters for templates,Комбінація типів сутностей не має спільних фільтрів.
 No Group,Немає групи
 No icon / flag,Немає піктограми / прапорця
