@@ -1,4 +1,5 @@
 import { EntitySchema } from 'shared/types/entityType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ProcessingContext } from '../types';
 
 export const rawEntity: EntitySchema = {
@@ -322,7 +323,7 @@ export const rawEntity: EntitySchema = {
       type: 'document',
       status: 'ready',
       creationDate: 1,
-      language: 'en',
+      language: 'eng',
       totalPages: 1,
     },
     {
@@ -335,7 +336,7 @@ export const rawEntity: EntitySchema = {
       type: 'document',
       status: 'ready',
       creationDate: 1,
-      language: 'en',
+      language: 'eng',
       totalPages: 1,
     },
   ],
@@ -397,6 +398,7 @@ export const processingContext: ProcessingContext = {
   translateLabels: true,
   includeOptions: false,
   language: 'en',
+  defaultLanguage: 'en',
   translations: [
     {
       locale: 'en',
@@ -815,5 +817,90 @@ export const processingContext: ProcessingContext = {
     email: 'admin@uwazi.com',
     role: 'admin',
     groups: [],
+  },
+};
+
+export const multiLanguageRawEntity: EntitySchema = {
+  ...rawEntity,
+  _id: 'entity.multi-language',
+  language: 'es',
+  sharedId: 'multi-language-001',
+  title: 'Multi Language Entity',
+  documents: [
+    {
+      _id: 'd1',
+      originalname: 'English.pdf',
+      mimetype: 'application/pdf',
+      filename: 'english.pdf',
+      size: 1,
+      entity: 'multi-language-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'eng',
+      totalPages: 1,
+    },
+    {
+      _id: 'd2',
+      originalname: 'Spanish.pdf',
+      mimetype: 'application/pdf',
+      filename: 'spanish.pdf',
+      size: 1,
+      entity: 'multi-language-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'spa',
+      totalPages: 1,
+    },
+    {
+      _id: 'd3',
+      originalname: 'French.pdf',
+      mimetype: 'application/pdf',
+      filename: 'french.pdf',
+      size: 1,
+      entity: 'multi-language-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'fra',
+      totalPages: 1,
+    },
+  ],
+};
+
+export const languageMismatchRawEntity: EntitySchema = {
+  ...rawEntity,
+  _id: 'entity.language-mismatch',
+  language: 'en',
+  sharedId: 'language-mismatch-001',
+  title: 'Language Mismatch Entity',
+  documents: [
+    {
+      _id: 'd1',
+      originalname: 'Spanish.pdf',
+      mimetype: 'application/pdf',
+      filename: 'spanish.pdf',
+      size: 1,
+      entity: 'language-mismatch-001',
+      type: 'document',
+      status: 'ready',
+      creationDate: 1,
+      language: 'spa',
+      totalPages: 1,
+    },
+  ],
+};
+
+export const multiLanguageProcessingContext: ProcessingContext = {
+  ...processingContext,
+  language: 'es',
+  settings: {
+    ...processingContext.settings,
+    languages: [
+      { _id: '1', label: 'English', key: 'en' as LanguageISO6391, default: true, ISO639_3: 'eng' },
+      { _id: '2', label: 'Spanish', key: 'es' as LanguageISO6391, default: false, ISO639_3: 'spa' },
+      { _id: '3', label: 'French', key: 'fr' as LanguageISO6391, default: false, ISO639_3: 'fra' },
+    ],
   },
 };

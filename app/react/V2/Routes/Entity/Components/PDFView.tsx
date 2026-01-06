@@ -111,21 +111,21 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
       const targetPage =
         direction === 'prev'
           ? Math.max(1, pageNumber - 1)
-          : Math.min(pageNumber + 1, entity?.mainDocument?.totalPages || 0);
+          : Math.min(pageNumber + 1, entity?.mainDocument?.[0]?.totalPages || 0);
       if (isRaw) {
         updatePageParam(targetPage);
       } else {
         scrollToPage(targetPage);
       }
     },
-    [isRaw, pageNumber, entity?.mainDocument?.totalPages, updatePageParam]
+    [isRaw, pageNumber, entity?.mainDocument?.[0]?.totalPages, updatePageParam]
   );
 
   if (!entity?.mainDocument) {
     return <Translate>Loading</Translate>;
   }
 
-  const { filename, originalname, totalPages } = entity.mainDocument;
+  const { filename, originalname, totalPages } = entity.mainDocument[0];
   const prevPage = Math.max(1, pageNumber - 1);
   const nextPage = Math.min(pageNumber + 1, totalPages || 0);
 
@@ -216,7 +216,7 @@ const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: st
             <div className="justify-self-start grow">
               {ocrServiceEnabled && entity.mainDocument && (
                 <NeedAuthorization roles={['admin', 'editor']}>
-                  <OCRButton file={entity.mainDocument} />
+                  <OCRButton file={entity.mainDocument?.[0]} />
                 </NeedAuthorization>
               )}
             </div>

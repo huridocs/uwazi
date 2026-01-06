@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers';
 import 'cypress-axe';
-import { logA11yViolations } from '../helpers/a11y';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 const labelEntityTitle = (
   entityPos: number,
