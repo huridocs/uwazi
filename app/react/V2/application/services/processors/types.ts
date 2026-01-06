@@ -18,6 +18,7 @@ export interface ProcessingContext extends CompositionOptions {
   readonly settings: ClientSettings;
   readonly thesauri: ClientThesaurus[];
   readonly currentUser: ClientUserSchema | undefined;
+  readonly defaultLanguage: string;
 }
 
 export interface EntityPermissions {

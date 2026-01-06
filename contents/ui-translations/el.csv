@@ -94,6 +94,7 @@ Are you sure you want to delete this entity?,Θέλετε σίγουρα να δ
 Are you sure you want to delete this file?,Θέλετε σίγουρα να διαγράψετε αυτό το αρχείο;
 Are you sure you want to delete this item?,Θέλετε σίγουρα να διαγράψετε αυτό το στοιχείο;
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
+Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
 Attachment renamed,Το συνημμένο μετονομάστηκε
 Attachment uploaded,Το συνημμένο αρχείο μεταφορτώθηκε
@@ -282,6 +283,7 @@ Duplicate values not allowed.,Δεν επιτρέπονται διπλότυπε
 Duplicated email,Διπλότυπο email
 Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
+Duration,Duration
 Edit,Επεξεργασία
 Edit all documents matching this criteria,Επεξεργασία όλων των εγγράφων που ανταποκρίνονται σε αυτά τα κριτήρια
 Edit Extractor,Επεξεργασία εξαγωγέα
@@ -554,6 +556,7 @@ No Connections description,Οι συνδέσεις είναι οι άμεσες 
 No context,Δεν υπάρχει πλαίσιο
 NO DATA AVAILABLE,ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΑ ΔΕΔΟΜΕΝΑ
 NO EXTRACTORS,ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΞΑΓΩΓΕΙΣ
+No files available,No files available
 no filters for templates,Ο συνδυασμός τύπων οντοτήτων δεν έχει κοινά φίλτρα.
 No Group,Δεν υπάρχει ομάδα
 No icon / flag,Χωρίς εικονίδιο/σημαία

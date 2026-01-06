@@ -1,6 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
-import { logA11yViolations } from '../helpers/a11y';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('customization', () => {
   before(() => {
