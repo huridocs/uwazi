@@ -77,7 +77,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: '',
           }}
         >
@@ -101,7 +101,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: '',
           }}
         >
@@ -279,7 +279,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: pageText,
           }}
         >
@@ -309,7 +309,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: pageText,
           }}
         >
