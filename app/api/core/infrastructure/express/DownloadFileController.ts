@@ -114,7 +114,6 @@ class DownloadFileController extends AbstractController {
     });
 
     this.response.on('close', () => {
-      console.log('CLOSED ');
       fileContents.destroy();
       stream.destroy();
     });
