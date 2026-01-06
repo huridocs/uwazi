@@ -3,7 +3,6 @@ import { Translate } from 'app/I18N';
 import { Entity } from 'app/V2/domain';
 import { getMimetypeFromUrl } from 'app/V2/shared/formatHelpers';
 import { EntityFile, FileCard } from 'app/V2/Components/UI/Files/FileCard';
-import { FileType } from 'shared/types/fileType';
 
 type FileListProps = {
   entity: Entity;
@@ -16,6 +15,7 @@ const FileList = ({ entity }: FileListProps) => {
     const fileNames = (entity.documents || [])
       .map(f => f.filename)
       .concat(entity.attachments?.map(f => f.filename) || []);
+
     const metadataFiles: EntityFile[] = entity.metadata
       .map(meta => {
         if (
@@ -53,7 +53,7 @@ const FileList = ({ entity }: FileListProps) => {
     ];
   }, [entity]);
 
-  if (files.length === 0) {
+  if (entity.mainDocument?.length === 0 && files.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <Translate>No files available</Translate>
@@ -61,9 +61,6 @@ const FileList = ({ entity }: FileListProps) => {
     );
   }
 
-  const onFileSelect = (file: FileType) => {
-    console.log('file', file);
-  };
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Files list">
       <div className="flex-1 overflow-y-auto p-4" role="list" aria-label="Available files">
@@ -74,17 +71,11 @@ const FileList = ({ entity }: FileListProps) => {
               translations={entity.mainDocument.slice(0, 1)}
               file={{ ...entity.mainDocument[0], fileType: 'mainDocument' as const }}
               index={0}
-              onFileSelect={onFileSelect}
             />
           )}
           {files.map((file, index) => {
             return (
-              <FileCard
-                key={`${file._id || file.filename || index}`}
-                file={file}
-                index={index}
-                onFileSelect={onFileSelect}
-              />
+              <FileCard key={`${file._id || file.filename || index}`} file={file} index={index} />
             );
           })}
         </div>
