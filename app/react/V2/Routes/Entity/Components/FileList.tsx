@@ -53,7 +53,7 @@ const FileList = ({ entity }: FileListProps) => {
     ];
   }, [entity]);
 
-  if (entity.mainDocument?.length === 0 && files.length === 0) {
+  if ((entity.mainDocument?.length ?? 0) === 0 && files.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <Translate>No files available</Translate>
