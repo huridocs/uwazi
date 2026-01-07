@@ -15,7 +15,7 @@ type EntityFile = Partial<FileType> & {
 type FileCardProps = {
   file: EntityFile;
   index: number;
-  onFileSelect: (file: FileType) => void;
+  onFileSelect?: (file: FileType) => void;
   translations?: FileType[];
 };
 
@@ -33,7 +33,7 @@ const getFileTypeLabel = (file: EntityFile) => {
     : t('System', 'Attachment', null, false);
 };
 
-const FileCard = ({ file, index, onFileSelect, translations = [] }: FileCardProps) => {
+const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: FileCardProps) => {
   const fileUrl = file.url || (file.filename ? `/api/files/${file.filename}` : '');
   const downloadUrl = file.filename ? `${fileUrl}?download=true` : fileUrl;
   const fileSize = file.size ? formatBytes(file.size) : 'n/a';
