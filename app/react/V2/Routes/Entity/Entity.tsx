@@ -7,9 +7,9 @@ import {
   LinkIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -23,6 +23,7 @@ import {
   SIDE_TAB_PARAM,
   SearchResults,
   ToCPanel,
+  FileList,
 } from './Components';
 import { LoaderResponse } from './types';
 
@@ -30,6 +31,7 @@ const MAIN_TABS = {
   DOCUMENT: 'document',
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
+  FILES: 'files',
 };
 
 const SIDE_TABS = {
@@ -60,7 +62,7 @@ const Entity = () => {
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
@@ -93,6 +95,17 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
+    if (entity?.documents?.length || entity?.attachments?.length) {
+      tabs.push(
+        <Tabs.Tab
+          id={MAIN_TABS.FILES}
+          key={MAIN_TABS.FILES}
+          label={<TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />}
+        >
+          <FileList entity={entity} />
+        </Tabs.Tab>
+      );
+    }
 
     return tabs;
   }, [entity, pagePlaintext]);
@@ -113,9 +126,9 @@ const Entity = () => {
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
           content: (
             <ToCPanel
-              toc={entity?.mainDocument?.toc}
-              generatedToc={entity?.mainDocument?.generatedToc}
-              file={entity?.mainDocument}
+              toc={entity?.mainDocument?.[0].toc}
+              generatedToc={entity?.mainDocument?.[0].generatedToc}
+              file={entity?.mainDocument?.[0]}
             />
           ),
         },
@@ -164,6 +177,7 @@ const Entity = () => {
           content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],
+      [MAIN_TABS.FILES]: [],
     }),
     [entity]
   );
@@ -173,7 +187,7 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
@@ -252,6 +266,7 @@ const Entity = () => {
             unmountTabs={false}
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
+            tabListAriaLabel="Side panel tabs"
           >
             {sideTabElements}
           </Tabs>
