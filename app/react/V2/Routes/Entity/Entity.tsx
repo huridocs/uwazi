@@ -95,7 +95,7 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
-    if (entity?.documents?.length || entity?.attachments?.length) {
+    if (entity?.mainDocument?.length || entity?.documents?.length || entity?.attachments?.length) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.FILES}
