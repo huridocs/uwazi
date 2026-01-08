@@ -85,7 +85,7 @@ describe('AsyncEventEmitter', () => {
     jobsCollection = getSharedConnection().collection('jobs');
   });
 
-  afterEach(async () => {
+  beforeEach(async () => {
     await testingEnvironment.setFixtures({});
     await jobsCollection.deleteMany({});
   });
