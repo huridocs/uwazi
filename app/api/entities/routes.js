@@ -20,7 +20,6 @@ import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
 
-// eslint-disable-next-line import/exports-last
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
   const templateTransformed = await thesauri.templateToThesauri(
