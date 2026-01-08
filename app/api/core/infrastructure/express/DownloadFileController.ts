@@ -1,4 +1,4 @@
-import { createError, handleError } from 'api/utils';
+import { createError } from 'api/utils';
 
 import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
@@ -7,8 +7,8 @@ import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesType
 import { tenants } from 'api/tenants';
 import { Request, Response } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { Readable } from 'stream';
 import { z } from 'zod';
+import { pipeline } from 'stream/promises';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
 import { SettingsDataSourceFactory } from '../factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
@@ -100,25 +100,13 @@ class DownloadFileController extends AbstractController {
       type: file.type,
     });
 
-    const stream = Readable.from(fileContents.read());
-
-    stream.on('error', err => {
-      handleError(err, { req: this.request });
-      fileContents.destroy();
-      if (!this.response.headersSent) {
-        this.response.status(500).json({ error: 'Failed to retrieve file' });
-      } else {
-        stream.destroy();
-        this.response.end();
-      }
-    });
+    const readable = await fileContents.getReadableAsync();
 
     this.response.on('close', () => {
-      fileContents.destroy();
-      stream.destroy();
+      readable.destroy();
     });
 
-    stream.pipe(this.response);
+    await pipeline(readable, this.response);
   }
 
   private async getFile(filename: string) {

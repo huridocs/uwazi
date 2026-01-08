@@ -1,5 +1,5 @@
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream, ReadStream } from 'fs';
+import { createReadStream } from 'fs';
 
 import path from 'path';
 import { FileContents } from '../../domain/files/FileContents';
@@ -21,21 +21,13 @@ export class DiskFile {
 
   toContent() {
     const filepath = this.path;
-    let fileStream: ReadStream | undefined;
+    const fileContents = new FileContents(async function* streamCallback() {
+      const stream = createReadStream(filepath);
+      for await (const chunk of stream) yield chunk;
+    });
 
-    const cleanup = () => {
-      if (fileStream && !fileStream.destroyed) {
-        fileStream.destroy();
-      }
-    };
+    fileContents.setGetReadable(async () => createReadStream(filepath));
 
-    return new FileContents(async function* streamCallback() {
-      try {
-        fileStream = createReadStream(filepath);
-        for await (const chunk of fileStream) yield chunk;
-      } finally {
-        cleanup();
-      }
-    }, cleanup);
+    return fileContents;
   }
 }

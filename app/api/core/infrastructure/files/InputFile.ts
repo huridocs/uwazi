@@ -1,5 +1,5 @@
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream, ReadStream } from 'fs';
+import { createReadStream } from 'fs';
 
 import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
@@ -66,22 +66,10 @@ export class InputFile {
 
   get content() {
     const { filepath } = this;
-    let fileStream: ReadStream | undefined;
-
-    const cleanup = () => {
-      if (fileStream && !fileStream.destroyed) {
-        fileStream.destroy();
-      }
-    };
-
     return new FileContents(async function* streamCallback() {
-      try {
-        fileStream = createReadStream(filepath);
-        for await (const chunk of fileStream) yield chunk;
-      } finally {
-        cleanup();
-      }
-    }, cleanup);
+      const stream = createReadStream(filepath);
+      for await (const chunk of stream) yield chunk;
+    });
   }
 
   get metadata() {
