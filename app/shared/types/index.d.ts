@@ -4,6 +4,7 @@ import { ClientFeatureFlags } from 'app/V2/shared/types';
 import { RequestError } from 'app/V2/shared/errorUtils';
 import { IStore } from 'app/istore';
 import { updatePageDatasets } from 'app/Pages/utils/updatePageDatasets';
+import { openEntitySidePanel } from 'app/Pages/utils/openEntitySidePanel';
 
 declare global {
   namespace jest {
@@ -22,6 +23,7 @@ declare global {
     __reduxData__: any;
     store: Store<IStore>;
     updatePageDatasets: typeof updatePageDatasets;
+    openEntitySidePanel: typeof openEntitySidePanel;
     _paq?: [string[]]; //matomo
   }
 }
