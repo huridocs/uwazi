@@ -115,7 +115,7 @@ export class S3FileStorage implements FileStorage {
       }
     });
 
-    fileContents.setGetReadable(
+    fileContents.setReadable(
       async () => (await catchS3Errors(async () => client.send(command))).Body as Readable
     );
 

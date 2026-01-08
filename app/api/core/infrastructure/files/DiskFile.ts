@@ -26,7 +26,7 @@ export class DiskFile {
       for await (const chunk of stream) yield chunk;
     });
 
-    fileContents.setGetReadable(async () => createReadStream(filepath));
+    fileContents.setReadable(async () => createReadStream(filepath));
 
     return fileContents;
   }

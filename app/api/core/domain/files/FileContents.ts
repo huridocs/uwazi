@@ -11,11 +11,11 @@ export class FileContents {
     this.streamCallback = streamCallback;
   }
 
-  setGetReadable(getReadable: () => Promise<Readable>) {
+  setReadable(getReadable: () => Promise<Readable>) {
     this._getReadable = getReadable;
   }
 
-  async getReadableAsync(): Promise<Readable> {
+  async getReadable(): Promise<Readable> {
     if (!this?._getReadable) {
       throw new Error('Readable stream callback not defined');
     }
