@@ -1,7 +1,7 @@
 import 'cypress-axe';
 import { SinonSpy } from 'cypress/types/sinon';
 import { clearCookiesAndLogin } from '../helpers/login';
-import { logA11yViolations } from '../helpers/a11y';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 let spy: Cypress.Agent<SinonSpy<any[], any>>;
 Cypress.on('window:before:load', win => {

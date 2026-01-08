@@ -53,6 +53,7 @@ Add thesaurus value,Προσθήκη τιμής θησαυρού
 Add timelink,Προσθήκη χρονοσυνδέσμου
 Add to all languages,Προσθήκη σε όλες τις γλώσσες
 Add to table of contents,Προσθήκη στον πίνακα περιεχομένων
+Add to ToC,Add to ToC
 Add to training set,Προσθήκη στο σύνολο εκπαίδευσης
 Add user,Προσθήκη χρήστη
 add value,προσθήκη τιμής
@@ -93,6 +94,7 @@ Are you sure you want to delete this entity?,Θέλετε σίγουρα να δ
 Are you sure you want to delete this file?,Θέλετε σίγουρα να διαγράψετε αυτό το αρχείο;
 Are you sure you want to delete this item?,Θέλετε σίγουρα να διαγράψετε αυτό το στοιχείο;
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
+Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
 Attachment renamed,Το συνημμένο μετονομάστηκε
 Attachment uploaded,Το συνημμένο αρχείο μεταφορτώθηκε
@@ -149,6 +151,7 @@ Close,Κλείσιμο
 Collaborator,Συνεργάτης
 Collaborators,Συνεργάτες
 Collapse all,Σύμπτυξη όλων
+Collapse All,Collapse All
 Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Common sources,Κοινές πηγές
@@ -167,6 +170,8 @@ Confirm deletion of file,Επιβεβαίωση διαγραφής αρχείο�
 Confirm new password,Επιβεβαίωση νέου κωδικού πρόσβασης
 Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Συνδέθηκε στον διακομιστή
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
@@ -234,6 +239,7 @@ DELETE,ΔΙΑΓΡΑΦΗ
 Delete entities and documents,Διαγραφή οντοτήτων και εγγράφων
 Delete file,Διαγραφή αρχείου
 Delete language,Διαγραφή γλώσσας
+Delete?,Delete?
 Deleted attachment,Διαγράφηκε συνημμένο αρχείο
 Deleted custom file,Διαγράφηκε προσαρμοσμένο αρχείο
 Deleted entity,Διαγράφηκε οντότητα
@@ -277,6 +283,7 @@ Duplicate values not allowed.,Δεν επιτρέπονται διπλότυπε
 Duplicated email,Διπλότυπο email
 Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
+Duration,Duration
 Edit,Επεξεργασία
 Edit all documents matching this criteria,Επεξεργασία όλων των εγγράφων που ανταποκρίνονται σε αυτά τα κριτήρια
 Edit Extractor,Επεξεργασία εξαγωγέα
@@ -315,6 +322,7 @@ Error saving template.,Σφάλμα αποθήκευσης προτύπου.
 Error setting default template,Σφάλμα ρύθμισης προεπιλεγμένου προτύπου
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
 Expand all,Ανάπτυξη όλων
+Expand All,Expand All
 Exploration,Εξερεύνηση
 Export CSV,Εξαγωγή CSV
 Exporting entities to CSV,Εξαγωγή οντοτήτων σε CSV
@@ -326,6 +334,7 @@ Extractor Name,Όνομα εξαγωγέα
 Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
 
 1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"".
@@ -547,6 +556,7 @@ No Connections description,Οι συνδέσεις είναι οι άμεσες 
 No context,Δεν υπάρχει πλαίσιο
 NO DATA AVAILABLE,ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΑ ΔΕΔΟΜΕΝΑ
 NO EXTRACTORS,ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΞΑΓΩΓΕΙΣ
+No files available,No files available
 no filters for templates,Ο συνδυασμός τύπων οντοτήτων δεν έχει κοινά φίλτρα.
 No Group,Δεν υπάρχει ομάδα
 No icon / flag,Χωρίς εικονίδιο/σημαία
@@ -561,6 +571,7 @@ No References description,Οι αναφορές είναι τμήματα αυτ
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
+No Table of contents,No Table of contents
 No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
@@ -742,6 +753,7 @@ Save changes,Αποθήκευση αλλαγών
 Save password,Αποθήκευση κωδικού πρόσβασης
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
+Saving...,Saving...
 Search,Αναζήτηση
 Search item,Αναζήτηση στοιχείου
 Search not found,Δεν βρέθηκε τίποτα
@@ -849,6 +861,7 @@ System translations,Μεταφράσεις συστήματος
 Table,Πίνακας
 Table of Contents,Πίνακας περιεχομένων
 Table of contents,Πίνακας περιεχομένων
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Προβολή πίνακα
 Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου
@@ -1036,6 +1049,9 @@ You can add one or many items in this form.,Μπορείτε να προσθέσ
 "You can also embed advanced components like maps, charts and entity lists in your page.","Μπορείτε επίσης να ενσωματώσετε προηγμένα στοιχεία όπως χάρτες, διαγράμματα και λίστες οντοτήτων στη σελίδα σας."
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.

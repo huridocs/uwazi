@@ -8,6 +8,7 @@ import { actions } from 'app/BasicReducer';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { PageViewer } from 'app/Pages/components/PageViewer';
+import * as sidePanelUtils from 'app/Pages/utils/openEntitySidePanel';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
@@ -108,6 +109,12 @@ describe('PageView', () => {
   describe('dataset functions', () => {
     it('should expose a function to update page datasets', () => {
       expect(window.updatePageDatasets).not.toBeUndefined();
+    });
+
+    it('should expose a function to open entity side panel', () => {
+      spyOn(sidePanelUtils, 'openEntitySidePanel');
+      instance.componentDidMount();
+      expect(window.openEntitySidePanel).toBe(sidePanelUtils.openEntitySidePanel);
     });
   });
 });

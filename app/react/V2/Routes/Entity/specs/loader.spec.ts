@@ -25,7 +25,7 @@ describe('Entity loader with cache integration', () => {
       sharedId: 'shared1',
       title: 'Test Entity',
       language: 'en',
-      mainDocument: { _id: 'doc1', filename: 'test.pdf' },
+      mainDocument: [{ _id: 'doc1', filename: 'test.pdf' }],
     };
 
     mockCompositionUseCase = { composeEntity: jest.fn() };
