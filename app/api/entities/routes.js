@@ -9,7 +9,10 @@ import { withTransaction } from 'api/utils/withTransaction';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { BulkDeleteEntityController } from 'api/core/infrastructure/express/entity/BulkDeleteEntityController';
-import { CreateEntityController } from 'api/core/infrastructure/express/entity/CreateEntityController';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { MongoEntityDAO } from 'api/core/infrastructure/mongodb/entity/MongoEntityDAO';
+import { EntityFacade } from 'api/core/infrastructure/facades/EntitiesFacade';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
@@ -18,7 +21,7 @@ import date from '../utils/date';
 import entities from './entities';
 
 // eslint-disable-next-line import/exports-last
-export async function updateThesauriWithEntity(entity, req) {
+async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
   const templateTransformed = await thesauri.templateToThesauri(
     template,
@@ -99,7 +102,22 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
-        return CreateEntityController.createHandler()(req, res);
+        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const result = await EntityFacade.create(entityToSave, req.inputFiles);
+        const entityInTargetLanguage = await entityDAO
+          .getWithFile({ language: req.language, sharedId: result.sharedId })
+          .next();
+
+        await updateThesauriWithEntity(entityInTargetLanguage, req);
+
+        // Return in the same format as V1 for client compatibility
+        const response = req.body.entity
+          ? { entity: entityInTargetLanguage, errors: [] }
+          : entityInTargetLanguage;
+
+        res.json(response);
+
+        return;
       }
 
       try {

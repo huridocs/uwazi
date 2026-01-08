@@ -6,11 +6,6 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { tenants } from 'api/tenants';
 import { User } from 'api/users/usersModel';
 import { ValidationError } from 'api/core/domain/error/ValidationError';
-import { DependenciesContext } from 'api/core/libs/DependenciesContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { EventEmitterFactory } from 'api/core/libs/eventEmitter/EventEmitterFactory';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -53,23 +48,10 @@ export abstract class AbstractController<RequestBody = any> {
    * class that is calling this method (e.g., TemplateMutationController).
    */
   static createHandler() {
-    return async (request: Request, response: Response) => {
-      /* @ts-ignore - 'this' is a constructor, so 'new' is valid*/
-      const controller = new this({ request, response }) as AbstractController;
-
-      const tenant = tenants.current().name;
-
-      const transactionManager = TransactionManagerFactory.default();
-      const idGenerator = IdGeneratorFactory.default();
-      const eventEmitter = EventEmitterFactory.default();
-
-      const jobsDispatcher = DefaultDispatcher(tenant, transactionManager);
-
-      return DependenciesContext.run(
-        { jobsDispatcher, transactionManager, idGenerator, eventEmitter },
-        controller.handleAsync.bind(controller)
-      );
-    };
+    // 'this' is the ControllerClass constructor
+    return async (request: Request, response: Response) =>
+      // @ts-ignore - 'this' is a constructor, so 'new' is valid
+      new this({ request, response }).handleAsync();
   }
 
   protected get request() {

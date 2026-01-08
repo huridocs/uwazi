@@ -8,18 +8,21 @@ import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/Mon
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
-import { DependenciesContext } from 'api/core/libs/DependenciesContext';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { FilesServiceFactory } from './FilesServiceFactory';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
+import { TransactionManagerFactory } from './TransactionManagerFactory';
+import { IdGeneratorFactory } from './IdGeneratorFactory';
 
 class CreateEntityUseCaseFactory {
   static default() {
-    const transactionManager = DependenciesContext.transactionManager as MongoTransactionManager;
-    const { jobsDispatcher, idGenerator, eventEmitter } = DependenciesContext;
-
     const tenant = tenants.current();
+
+    const transactionManager = TransactionManagerFactory.default();
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const idGenerator = IdGeneratorFactory.default();
+
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
@@ -55,7 +58,6 @@ class CreateEntityUseCaseFactory {
         idGenerator,
         transactionManager,
         eventBus,
-        eventEmitter,
       },
       { actor: permissionsContext.getUserInContext()!, tenant }
     );
