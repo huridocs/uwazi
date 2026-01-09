@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
@@ -18,6 +19,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
+import { pipeline } from 'stream/promises';
 import { createError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
@@ -363,10 +365,12 @@ export default (app: Application) => {
       addContentHeaders(res, req, file.originalname || file.filename, file.mimetype);
 
       const stream = await storage.readableFile(file.filename, file.type);
+
       res.on('close', () => {
         stream.destroy();
       });
-      stream.pipe(res);
+
+      await pipeline(stream, res);
     }
   );
 

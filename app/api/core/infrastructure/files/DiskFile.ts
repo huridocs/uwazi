@@ -21,9 +21,13 @@ export class DiskFile {
 
   toContent() {
     const filepath = this.path;
-    return new FileContents(async function* streamCallback() {
+
+    const fileContents = new FileContents(async function* streamCallback() {
       const stream = createReadStream(filepath);
-      for await (const chunk of stream) yield chunk;
+
+      yield* stream;
     });
+
+    return fileContents;
   }
 }

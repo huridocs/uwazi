@@ -9,9 +9,7 @@ export class FileContents {
 
   async *read(): AsyncIterable<Uint8Array> {
     if (this.streamCallback) {
-      for await (const chunk of this.streamCallback()) {
-        yield chunk;
-      }
+      yield* this.streamCallback();
     }
   }
 }
