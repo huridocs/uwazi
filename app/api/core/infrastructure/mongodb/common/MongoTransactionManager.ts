@@ -93,6 +93,10 @@ export class MongoTransactionManager implements TransactionManager {
     this.finished = true;
   }
 
+  isRunning(): boolean {
+    return !!this.session?.inTransaction();
+  }
+
   async run<T>(callback: () => Promise<T>) {
     this.validateState();
 
