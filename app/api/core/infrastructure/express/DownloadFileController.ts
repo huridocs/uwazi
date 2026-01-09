@@ -100,13 +100,7 @@ class DownloadFileController extends AbstractController {
       type: file.type,
     });
 
-    const readable = await fileContents.getReadable();
-
-    this.response.on('close', () => {
-      readable.destroy();
-    });
-
-    await pipeline(readable, this.response);
+    await pipeline(fileContents.read(), this.response);
   }
 
   private async getFile(filename: string) {

@@ -110,14 +110,9 @@ export class S3FileStorage implements FileStorage {
 
     const fileContents = new FileContents(async function* streamCallback() {
       const stream = (await catchS3Errors(async () => client.send(command))).Body as Readable;
-      for await (const chunk of stream) {
-        yield chunk;
-      }
-    });
 
-    fileContents.setReadable(
-      async () => (await catchS3Errors(async () => client.send(command))).Body as Readable
-    );
+      yield* stream;
+    });
 
     return fileContents;
   }
