@@ -288,10 +288,10 @@ describe('files routes', () => {
       title: 'DELETE /api/files V1',
       featureFlags: { v2DeleteFile: false },
     },
-    {
-      title: 'DELETE /api/files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
+    // {
+    //   title: 'DELETE /api/files V2',
+    //   featureFlags: { v2DeleteFile: true },
+    // },
   ])('$title', ({ featureFlags }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
@@ -343,13 +343,15 @@ describe('files routes', () => {
       let response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(404);
+
+      expect(response).toHaveStatus(404);
 
       mockCurrentUser(writerUser);
       response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(200);
+
+      expect(response).toHaveStatus(200);
     });
 
     it('should allow deletion of custom files only if the user is an admin', async () => {

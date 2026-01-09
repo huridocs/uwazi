@@ -6,8 +6,6 @@ import { Result, ResultType } from 'api/core/libs/Result';
 import { User } from 'api/users.v2/model/User';
 import { MongoEntityDAO } from './MongoEntityDAO';
 import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { instanceOf } from 'prop-types';
-import { shared1 } from 'api/migrations/migrations/6-connections_sanitizing/specs/fixtures';
 
 class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermissionChecker {
   async filterEntities(
