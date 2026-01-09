@@ -6,10 +6,10 @@ import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
 
 export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 
-export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispatchableParams>
-  implements Dispatchable
-{
-  protected params!: CustomParams;
+export type Params<ExtendedParams> = ExtendedParams & { tenantName: string; userId: string };
+
+export abstract class UserAwareDispatchable<ExtendedParams> implements Dispatchable {
+  protected params!: Params<ExtendedParams>;
 
   protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
@@ -36,7 +36,7 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
 
   async handleDispatch(
     heartBeatCallBack: HeartbeatCallback,
-    params: CustomParams,
+    params: Params<ExtendedParams>,
     jobInfo?: JobInfo
   ): Promise<void> {
     this.params = params;
