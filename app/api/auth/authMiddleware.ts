@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from 'api/users/usersModel';
+import { UserSchema } from 'shared/types/userType';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     export interface Request {
-      user: User;
+      user: User & { groups?: UserSchema['groups'] };
     }
   }
 }

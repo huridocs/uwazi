@@ -51,7 +51,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
     return User.createFrom({
       id: this.context?.actor?._id?.toString(),
       role: this.context?.actor?.role,
-      groups: this.context?.actor?.groups?.map(g => g._id.toString()),
+      groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
     });
   }
 
