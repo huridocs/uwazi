@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';

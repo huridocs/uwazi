@@ -8,8 +8,8 @@ import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesType
 import { tenants } from 'api/tenants';
 import { User } from 'api/users.v2/model/User';
 import { Request, Response } from 'express';
-import { Readable } from 'stream';
 import { z } from 'zod';
+import { pipeline } from 'stream/promises';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
@@ -65,18 +65,12 @@ class DownloadFileController extends AbstractController {
 
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
 
-    const stream = Readable.from(
-      this.fileStorage
-        .getFile({
-          filename: file.filename,
-          type: file.type,
-        })
-        .read()
-    );
-    this.response.on('close', () => {
-      stream.destroy();
+    const fileContents = this.fileStorage.getFile({
+      filename: file.filename,
+      type: file.type,
     });
-    stream.pipe(this.response);
+
+    await pipeline(fileContents.read(), this.response);
   }
 
   private async getFile(filename: string) {
