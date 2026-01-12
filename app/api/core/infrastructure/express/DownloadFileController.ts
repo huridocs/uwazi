@@ -14,6 +14,7 @@ import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
@@ -70,7 +71,14 @@ class DownloadFileController extends AbstractController {
       type: file.type,
     });
 
-    await pipeline(fileContents.read(), this.response);
+    try {
+      await pipeline(fileContents.read(), this.response);
+    } catch (e) {
+      if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
+        throw new OperationalError('Client aborted the request', { cause: e });
+      }
+      throw e;
+    }
   }
 
   private async getFile(filename: string) {
