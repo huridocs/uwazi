@@ -2,17 +2,13 @@ import { z } from 'zod';
 
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
-type CreateFromProps = {
-  id: string;
-  role: UserRole;
-  groups: string[];
-};
-
 const Schema = z.object({
   id: z.string().min(1),
   role: z.enum(['admin', 'editor', 'collaborator']),
   groups: z.array(z.string().min(1)),
 });
+
+type CreateFromProps = z.infer<typeof Schema>;
 
 class User {
   readonly _id: string;

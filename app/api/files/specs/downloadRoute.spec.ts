@@ -10,11 +10,13 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import uploadRoutes from '../routes';
 import {
   adminUser,
+  collabInGroupUser,
   collabUser,
   customPdfFileName,
   downloadFixtures,
   fileOnPublicEntity,
   fixtures,
+  fixturesFactory,
   mainDocument1,
   restrictedFileName,
   writerUser,
@@ -164,6 +166,19 @@ describe('files routes download', () => {
     describe('when the related entity is restricted by permissions', () => {
       it('should return the file if the user has permission', async () => {
         app = setAppWithUser(uploadRoutes, writerUser);
+        const response: SuperTestResponse = await request(app).get(
+          path.join(endpoint, file.filename)
+        );
+
+        expect(response).toHaveStatus(200);
+        expect(response.body instanceof Buffer).toBe(true);
+      });
+
+      it('should return the file if the user belongs to a group with permissions', async () => {
+        app = setAppWithUser(uploadRoutes, {
+          ...collabInGroupUser,
+          groups: [{ _id: fixturesFactory.id('group 1') }],
+        });
         const response: SuperTestResponse = await request(app).get(
           path.join(endpoint, file.filename)
         );

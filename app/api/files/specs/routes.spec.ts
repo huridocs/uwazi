@@ -343,13 +343,15 @@ describe('files routes', () => {
       let response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(404);
+
+      expect(response).toHaveStatus(404);
 
       mockCurrentUser(writerUser);
       response = await request(app)
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() });
-      expect(response.status).toBe(200);
+
+      expect(response).toHaveStatus(200);
     });
 
     it('should allow deletion of custom files only if the user is an admin', async () => {
@@ -413,9 +415,10 @@ describe('files routes', () => {
         const file = await db.mongodb?.collection('files').findOne({
           _id: uploadId2,
         });
-        await request(app).delete('/api/files').query({
+        const response = await request(app).delete('/api/files').query({
           _id: uploadId2.toString(),
         });
+        expect(response).toHaveStatus(200);
 
         emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file!] });
         emitSpy.restore();
