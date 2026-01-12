@@ -288,10 +288,10 @@ describe('files routes', () => {
       title: 'DELETE /api/files V1',
       featureFlags: { v2DeleteFile: false },
     },
-    // {
-    //   title: 'DELETE /api/files V2',
-    //   featureFlags: { v2DeleteFile: true },
-    // },
+    {
+      title: 'DELETE /api/files V2',
+      featureFlags: { v2DeleteFile: true },
+    },
   ])('$title', ({ featureFlags }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);

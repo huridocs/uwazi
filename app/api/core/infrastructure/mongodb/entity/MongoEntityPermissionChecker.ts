@@ -103,9 +103,13 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
   }
 
   async checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>> {
-    if (!user || !user.isPrivileged()) {
+    if (!user) {
       return Result.ok(false);
     }
+    if (user.isPrivileged()) {
+      return Result.ok(true);
+    }
+
     if (file.isEntityFile()) {
       const [entity] = await this.getCollection()
         .aggregate([
@@ -121,7 +125,14 @@ class MongoEntityPermissionChecker extends MongoEntityDAO implements EntityPermi
           },
         ])
         .toArray();
-      return Result.ok(true);
+
+      // groups not tested
+      const userRefIds = [user._id, ...user.groups];
+      //
+      const userRefIdsAsStrings = userRefIds.map(id => id.toString());
+      return Result.ok(
+        entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
+      );
     }
     return Result.ok(true);
   }
