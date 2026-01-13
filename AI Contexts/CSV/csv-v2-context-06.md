@@ -89,6 +89,7 @@
 ### 8) Next actions (execution order)
 
 1. ✅ DONE — `appliedValues` enrichment (existing + new IDs) and targeted tests; persistence occurs even when only existing IDs are added.
-2. Confirm status/event naming mapping so entities-import uses it consistently.
-3. Design and implement **Entities Import job** with relationships ignored.
-4. Later: build **relationships preflight** and then wire relationships into entities import.
+2. TODO — Replace Legacy thesaurus/translation wrappers with the Thesaurus V2 data sources in `CsvCreateThesauriValuesJob` / `PendingThesauriValuesApplier`.
+3. Confirm status/event naming mapping so entities-import uses it consistently.
+4. Design and implement **Entities Import job** with relationships ignored.
+5. Later: build **relationships preflight** and then wire relationships into entities import.
