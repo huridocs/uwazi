@@ -20,29 +20,25 @@ export class MongoCsvImportThesauriValuesDataSource
     if (!pendingValues.length) {
       return;
     }
-    const docs: CsvImportThesauriValuesDBO[] = pendingValues.map(pendingDoc => ({
-      importId: pendingDoc.importId,
-      thesaurusId: pendingDoc.thesaurusId,
-      createdAt: pendingDoc.createdAt,
-      entries: pendingDoc.entries,
-      appliedAt: pendingDoc.appliedAt,
-      appliedValues: pendingDoc.appliedValues,
-      stats: pendingDoc.stats,
-    }));
+    const docs: CsvImportThesauriValuesDBO[] = pendingValues.map(pendingDoc =>
+      pendingDoc.toObject()
+    );
     await this.getCollection().insertMany(docs);
   }
 
   async getByImport(importId: string): Promise<CsvImportThesauriValues[]> {
     const docs = await this.getCollection().find({ importId }).toArray();
-    return docs.map(doc => ({
-      importId: doc.importId,
-      thesaurusId: doc.thesaurusId,
-      createdAt: doc.createdAt,
-      entries: doc.entries,
-      appliedAt: doc.appliedAt,
-      appliedValues: doc.appliedValues,
-      stats: doc.stats,
-    }));
+    return docs.map(doc =>
+      CsvImportThesauriValues.create({
+        importId: doc.importId,
+        thesaurusId: doc.thesaurusId,
+        createdAt: doc.createdAt,
+        entries: doc.entries,
+        appliedAt: doc.appliedAt,
+        appliedValues: doc.appliedValues,
+        stats: doc.stats,
+      })
+    );
   }
 
   async deleteByImport(importId: string): Promise<void> {

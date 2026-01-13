@@ -1,4 +1,4 @@
-export enum CsvImportStatus {
+enum CsvImportStatus {
   Queued = 'queued',
   Validating = 'validating',
   ExtractingFiles = 'extracting files',
@@ -14,20 +14,20 @@ export enum CsvImportStatus {
   Cancelled = 'cancelled',
 }
 
-export type CsvImportStorage = {
+type CsvImportStorage = {
   path: string;
   provider?: string;
   etag?: string;
   checksum?: string;
 };
 
-export type CsvImportFile = {
+type CsvImportFile = {
   originalName: string;
   mimeType: string;
   size: number;
 };
 
-export type CsvImportToCreate = {
+type CsvImportToCreate = {
   templateId: string;
   file: CsvImportFile;
   status: CsvImportStatus;
@@ -36,90 +36,173 @@ export type CsvImportToCreate = {
   updatedAt: number;
 };
 
-export type CsvImportFailureIssue = {
+type CsvImportFailureIssue = {
   reason: string;
   message: string;
   property?: string;
   columns?: string[];
 };
 
-export type CsvImportStats = {
+type CsvImportStats = {
   thesaurusValuesObserved?: number;
   thesaurusValuesCreated?: number;
   thesauriTouched?: number;
 };
 
-export type CsvImport = CsvImportToCreate & {
-  id: string;
-  storage?: CsvImportStorage;
-  rowErrors?: any; // intentionally flexible for MVP
-  stats?: CsvImportStats;
-  failure?: {
-    message: string;
-    retryable: boolean;
-    at: number;
-    stage: string;
-    code?: string;
-    issues?: CsvImportFailureIssue[];
-  };
+type CsvImportFailure = {
+  message: string;
+  retryable: boolean;
+  at: number;
+  stage: string;
+  code?: string;
+  issues?: CsvImportFailureIssue[];
 };
 
-export class CsvImportDomain {
-  static create(input: {
-    id: string;
-    templateId: string;
-    file: CsvImportFile;
-    createdBy: string;
-  }): CsvImport {
-    const now = Date.now();
-    const { id, templateId, file, createdBy } = input;
+type CsvImportProps = CsvImportToCreate & {
+  id: string;
+  storage?: CsvImportStorage;
+  rowErrors?: any;
+  stats?: CsvImportStats;
+  failure?: CsvImportFailure;
+};
 
-    if (!templateId) throw new Error('templateId is required');
-    if (!file?.originalName || !file?.mimeType || !Number.isFinite(file?.size)) {
+class CsvImportDomain {
+  readonly id!: string;
+
+  readonly templateId!: string;
+
+  readonly file!: CsvImportFile;
+
+  readonly status!: CsvImportStatus;
+
+  readonly createdBy!: string;
+
+  readonly createdAt!: number;
+
+  readonly updatedAt!: number;
+
+  readonly storage?: CsvImportStorage;
+
+  readonly rowErrors?: any;
+
+  readonly stats?: CsvImportStats;
+
+  readonly failure?: CsvImportFailure;
+
+  private constructor(props: CsvImportProps) {
+    Object.assign(this, props);
+  }
+
+  static create(input: { id: string; templateId: string; file: CsvImportFile; createdBy: string }) {
+    const now = Date.now();
+
+    if (!input.templateId) {
+      throw new Error('templateId is required');
+    }
+    if (!input.file?.originalName || !input.file?.mimeType || !Number.isFinite(input.file?.size)) {
       throw new Error('file metadata is invalid');
     }
 
-    return {
-      id,
-      templateId,
-      file,
+    return new CsvImportDomain({
+      ...input,
       status: CsvImportStatus.Queued,
-      createdBy,
       createdAt: now,
       updatedAt: now,
-    };
+    });
   }
 
-  static withStorage(csvImport: CsvImport, path: string): CsvImport {
-    return {
-      ...csvImport,
+  static from(existing: CsvImportProps) {
+    return new CsvImportDomain(existing);
+  }
+
+  withStorage(path: string) {
+    return this.clone({
       storage: { path },
       updatedAt: Date.now(),
-    };
+    });
   }
 
-  static withStatus(csvImport: CsvImport, status: CsvImportStatus): CsvImport {
-    return {
-      ...csvImport,
+  withStatus(status: CsvImportStatus) {
+    return this.clone({
       status,
       updatedAt: Date.now(),
-    };
+    });
   }
 
-  static withFailure(csvImport: CsvImport, failure: NonNullable<CsvImport['failure']>): CsvImport {
-    return {
-      ...csvImport,
+  withStats(stats: CsvImportStats) {
+    return this.clone({
+      stats,
+      updatedAt: Date.now(),
+    });
+  }
+
+  withFailure(failure: CsvImportFailure) {
+    return this.clone({
       failure,
       updatedAt: Date.now(),
+    });
+  }
+
+  clearFailure() {
+    return this.clone({
+      failure: undefined,
+      updatedAt: Date.now(),
+    });
+  }
+
+  toObject() {
+    return {
+      id: this.id,
+      templateId: this.templateId,
+      file: this.file,
+      status: this.status,
+      createdBy: this.createdBy,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      storage: this.storage,
+      rowErrors: this.rowErrors,
+      stats: this.stats,
+      failure: this.failure,
     };
   }
 
-  static clearFailure(csvImport: CsvImport): CsvImport {
-    const { failure: _omit, ...rest } = csvImport as any;
-    return {
-      ...(rest as CsvImport),
-      updatedAt: Date.now(),
-      failure: undefined,
-    };
+  private clone(overrides: Partial<CsvImportProps>) {
+    return new CsvImportDomain({
+      ...this.toObject(),
+      ...overrides,
+    });
+  }
+
+  static withStorage(csvImport: CsvImport | CsvImportDomain, path: string) {
+    return CsvImportDomain.toDomain(csvImport).withStorage(path);
+  }
+
+  static withStatus(csvImport: CsvImport | CsvImportDomain, status: CsvImportStatus) {
+    return CsvImportDomain.toDomain(csvImport).withStatus(status);
+  }
+
+  static withFailure(csvImport: CsvImport | CsvImportDomain, failure: CsvImportFailure) {
+    return CsvImportDomain.toDomain(csvImport).withFailure(failure);
+  }
+
+  static clearFailure(csvImport: CsvImport | CsvImportDomain) {
+    return CsvImportDomain.toDomain(csvImport).clearFailure();
+  }
+
+  private static toDomain(csvImport: CsvImport | CsvImportDomain) {
+    return csvImport instanceof CsvImportDomain ? csvImport : CsvImportDomain.from(csvImport);
   }
 }
+
+type CsvImport = CsvImportDomain;
+
+export { CsvImportStatus, CsvImportDomain };
+export type {
+  CsvImport,
+  CsvImportStorage,
+  CsvImportFile,
+  CsvImportToCreate,
+  CsvImportFailureIssue,
+  CsvImportStats,
+  CsvImportFailure,
+};

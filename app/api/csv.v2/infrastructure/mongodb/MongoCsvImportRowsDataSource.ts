@@ -19,7 +19,7 @@ export class MongoCsvImportRowsDataSource
 
   async insertMany(rows: CsvImportRow[]): Promise<void> {
     if (!rows.length) return;
-    await this.getCollection().insertMany(rows.map(r => ({ ...r })));
+    await this.getCollection().insertMany(rows.map(row => row.toObject()));
   }
 
   async countByImport(importId: string): Promise<number> {
@@ -30,7 +30,10 @@ export class MongoCsvImportRowsDataSource
     const cursor = this.getCollection().find({ importId }).sort({ index: 1 }).skip(offset);
     if (limit > 0) cursor.limit(limit);
     const results = await cursor.toArray();
-    return results.map(({ _id, ...rest }) => rest as CsvImportRow);
+    return results.map(doc => {
+      const { _id, ...rest } = doc;
+      return CsvImportRow.fromObject(rest);
+    });
   }
 
   async deleteByImport(importId: string): Promise<void> {
