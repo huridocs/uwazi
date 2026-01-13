@@ -1,5 +1,5 @@
 import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { AbstractUseCase } from '../libs/UseCase';
 import { EntitiesService } from './EntitiesService';
 import { FilesService } from './FilesService';
@@ -48,6 +48,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         actorId: this.actorId,
         tenantName: this.tenant.name,
       });
+
       await this.deps.fileService.insert(documentsOrAttachments);
     });
 

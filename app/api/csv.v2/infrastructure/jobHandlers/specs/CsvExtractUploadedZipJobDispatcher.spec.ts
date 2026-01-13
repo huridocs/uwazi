@@ -8,7 +8,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
 import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
 import { createTestingZip } from 'api/csv/specs/helpers';
 import { TestUtils } from 'api/common.v2/utils/Test';
@@ -22,6 +21,7 @@ import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDi
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler';
 import { CSVImportEntitiesFactories } from '../../factories/CSVImportEntitiesFactories';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];

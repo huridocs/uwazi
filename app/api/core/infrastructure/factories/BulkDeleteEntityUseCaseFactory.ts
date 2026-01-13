@@ -11,7 +11,7 @@ import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermi
 class BulkDeleteEntityUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
-    const jobsDispatcher = DefaultDispatcher(tenants.current().name);
+    const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
     const entityPermissionChecker = new MongoEntityPermissionChecker(
       getConnection(),
       transactionManager

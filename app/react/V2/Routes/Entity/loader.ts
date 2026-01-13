@@ -1,6 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { LoaderFunction } from 'react-router';
+import { isClient } from 'app/utils';
 import { getPagePlaintext } from 'V2/api/files';
 import { snippets } from 'V2/api/search';
 import { SnippetsSearchResponse } from 'V2/api/types';
@@ -61,15 +62,15 @@ const entityLoader =
       entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
-    if (entity.mainDocument?._id && isRaw) {
+    if (entity.mainDocument?.[0]._id && (isRaw || !isClient)) {
       pagePlaintext = entityLoaderCache.getPlaintext(
-        entity.mainDocument._id as string,
+        entity.mainDocument[0]._id as string,
         Number(currentPage)
       );
 
       if (!pagePlaintext) {
         const response = await getPagePlaintext(
-          entity.mainDocument._id as string,
+          entity.mainDocument[0]._id as string,
           Number.parseInt(currentPage, 10)
         );
 
@@ -91,7 +92,7 @@ const entityLoader =
         } else {
           pagePlaintext = response;
           entityLoaderCache.setPlaintext(
-            entity.mainDocument._id as string,
+            entity.mainDocument[0]._id as string,
             Number(currentPage),
             pagePlaintext
           );

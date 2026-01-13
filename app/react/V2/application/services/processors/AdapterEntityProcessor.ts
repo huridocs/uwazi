@@ -1,13 +1,18 @@
 /* eslint-disable max-lines */
 import { flatMap, groupBy, map } from 'lodash';
 import { Entity, MetadataProperty } from 'app/V2/domain';
-import { DateMetadataProperty, EntityTemplate } from 'app/V2/domain/entities/types';
+import {
+  DateMetadataProperty,
+  EntityReference,
+  EntityTemplate,
+} from 'app/V2/domain/entities/types';
 import { EntitySchema } from 'shared/types/entityType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import {
   AdapterEntity,
   AdapterEntityTemplate,
   AdapterMetadataProperty,
+  AdapterReferences,
   BatchCompositionResult,
   ProcessingContext,
   ProcessingError,
@@ -24,6 +29,7 @@ import { DefaultPropertyProcessor } from './DefaultPropertyProcessor';
 import { LinkPropertyProcessor } from './LinkPropertyProcessor';
 import { PreviewPropertyProcessor } from './PreviewPropertyProcessor';
 import { SupportingFilesProcessor } from './SupportingFilesProcessor';
+import { ReferencesProcessor } from './ReferencesProcessor';
 
 export class AdapterEntityProcessor {
   private readonly context: ProcessingContext;
@@ -34,10 +40,13 @@ export class AdapterEntityProcessor {
 
   private readonly supportingFilesProcessor: SupportingFilesProcessor;
 
+  private readonly referencesProcessor: ReferencesProcessor;
+
   constructor(context: ProcessingContext) {
     this.context = context;
     this.templateProcessor = new AdapterTemplateProcessor(context);
-    this.supportingFilesProcessor = new SupportingFilesProcessor();
+    this.supportingFilesProcessor = new SupportingFilesProcessor(context);
+    this.referencesProcessor = new ReferencesProcessor();
 
     this.initializeProcessors();
   }
@@ -270,9 +279,16 @@ export class AdapterEntityProcessor {
   processAllEntities(entities: EntitySchema[]): BatchCompositionResult {
     const allErrors: ProcessingError[] = [];
     let formattedEntities: AdapterEntity[] = [];
+    let references: AdapterReferences = {};
 
     try {
       const templateIds = entities.map(entity => entity.template as string);
+      if (this.context.includeReferences) {
+        const referencesResult = this.referencesProcessor.extractReferences(entities);
+        references = referencesResult.references;
+        templateIds.push(...referencesResult.templateIds);
+      }
+
       const templatesData = this.templateProcessor.formatTemplateData(templateIds);
       const templatesById = new Map(
         templatesData.map(template => [template._id, template as AdapterEntityTemplate])
@@ -304,6 +320,10 @@ export class AdapterEntityProcessor {
         ), //TODO: editDate is not defined
         rawEntity: entity,
         metadata: [],
+        references: this.setReferenceTemplate(
+          references?.[entity._id as string] || [],
+          templatesById
+        ),
         icon: entity.icon,
       }));
 
@@ -396,5 +416,24 @@ export class AdapterEntityProcessor {
       ...(this.context.includeTemplate ? { template: template as EntityTemplate } : {}),
       ...(this.context.includeRawEntity ? { rawEntity } : {}),
     };
+  }
+
+  private setReferenceTemplate(
+    references: EntityReference[],
+    templatesById: Map<string, AdapterEntityTemplate>
+  ): EntityReference[] {
+    return references.map(reference =>
+      reference.targetEntity?.template?._id
+        ? {
+            ...reference,
+            targetEntity: {
+              ...reference.targetEntity,
+              template:
+                templatesById.get(reference.targetEntity.template._id) ??
+                reference.targetEntity.template,
+            },
+          }
+        : reference
+    );
   }
 }

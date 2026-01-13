@@ -4,7 +4,7 @@ import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
 import * as thesauriAPI from 'V2/api/thesauri';
 import { notificationAtom } from 'app/V2/atoms';
@@ -87,7 +87,7 @@ const ThesaurusForm = ({
             <InputField
               clearFieldAction={() => {}}
               id="thesauri-name"
-              placeholder="Thesauri name"
+              placeholder={t('System', 'Thesauri name', null, false)}
               hasErrors={!!errors.name}
               className="grow"
               {...register('name', { required: true })}

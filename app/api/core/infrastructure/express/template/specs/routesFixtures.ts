@@ -46,7 +46,6 @@ const fixtures: DBFixture = {
       _id: fixtureFactory.id('123456789'),
       values: [
         {
-          _id: 'abc',
           id: 'A',
           label: 'A',
         },

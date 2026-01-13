@@ -10,14 +10,12 @@ const { Basic } = composeStories(stories);
 describe('PaneLayout', () => {
   const render = ({
     localStorageKey,
-    defaultWidthsPercents,
+    defaultRatios,
   }: {
     localStorageKey?: string;
-    defaultWidthsPercents?: number[];
+    defaultRatios?: number[];
   } = {}) => {
-    mount(
-      <Basic localStorageKey={localStorageKey} defaultWidthsPercents={defaultWidthsPercents} />
-    );
+    mount(<Basic localStorageKey={localStorageKey} defaultRatios={defaultRatios} />);
   };
 
   describe('Desktop', () => {
@@ -73,7 +71,7 @@ describe('PaneLayout', () => {
     });
 
     it('should allow passing default widths for panes', () => {
-      render({ defaultWidthsPercents: [0.2, 0.2, 0.6] });
+      render({ defaultRatios: [0.2, 0.2, 0.6] });
       cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
       cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
@@ -87,7 +85,7 @@ describe('PaneLayout', () => {
             <button type="button" id="replace" onClick={() => setV(x => !x)}>
               replace
             </button>
-            <PaneLayout defaultWidthsPercents={[0.4, 0.6]}>
+            <PaneLayout defaultRatios={[0.4, 0.6]}>
               <PaneLayout.Pane key={`p1-${v ? 'b' : 'a'}`}>
                 <div>{v ? 'A2' : 'A1'}</div>
               </PaneLayout.Pane>

@@ -19,6 +19,8 @@ export const fullDetailOptions: CompositionOptions = {
   includePropertyMetadata: true,
   translateLabels: true,
   includeSupportingFiles: true,
+  omitRelationships: false,
+  includeReferences: true,
 };
 
 export const editionModeOptions: CompositionOptions = {

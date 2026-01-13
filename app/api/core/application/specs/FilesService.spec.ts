@@ -6,7 +6,7 @@ import { readFile } from 'fs/promises';
 /* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { FileContents } from 'api/core/domain/files/FileContents';
 import { FileWithContents } from 'api/core/domain/files/FileWithContents';
 import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
@@ -14,7 +14,7 @@ import { Thumbnail } from 'api/core/domain/files/Thumbnail';
 import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { DeleteFileFromStorageJobHandler } from 'api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler';
-import { PDFPostProcessJob } from 'api/core/infrastructure/jobs/PDFPostProcessJob';
+import { PDFPostProcessJobHandler } from 'api/core/infrastructure/jobs/PDFPostProcessJobHandler';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
@@ -105,7 +105,7 @@ describe('FilesService', () => {
 
     it('should dispatch pdf post process jobs when file is document', async () => {
       expect(dispatchMock).toHaveBeenCalledTimes(1);
-      expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJob, {
+      expect(dispatchMock).toHaveBeenCalledWith(PDFPostProcessJobHandler, {
         documentId: document.id,
         userId: permissionsContext.getUserInContext()?._id?.toString(),
         tenantName: tenants.current().name,
@@ -124,13 +124,7 @@ describe('FilesService', () => {
       const { service } = createService();
 
       const doc = FileBuilder.processedDocument(f.idString('doc'), {
-        content: new DiskFile(
-          path.join(
-            __dirname,
-            '../../infrastructure/services/specs/testing_files',
-            '12345.test.pdf'
-          )
-        ).toContent(),
+        content: new DiskFile(testingEnvironment.testingFilesPath('english.pdf')).toContent(),
       });
 
       const thumbnail = (await service.createThumbnail(doc, 'en')).getDataOrThrow();
@@ -149,10 +143,7 @@ describe('FilesService', () => {
 
       expect(
         await filesAreIdentical(
-          path.join(
-            __dirname,
-            '../../infrastructure/services/specs/testing_files/12345.thumb.proof.jpg'
-          ),
+          testingEnvironment.testingFilesPath('english.pdf.thumb.proof.jpg'),
           thumbnailPath
         )
       ).toBe(true);

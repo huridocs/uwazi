@@ -1,0 +1,1064 @@
+Key,Ukrainian
+% of sentences above threshold,"% пропозицій, що перевищують поріг"
+*please keep this key secret and don't share it.,"*будь ласка, зберігайте цей ключ у таємниці та не передавайте його нікому."
++ click to select multiple cards.,"(+) натисніть, щоб вибрати декілька карток"
+2FA,2FA
+2FA Enabled,2FA Увімкнено
+A default template cannot be deleted.,Шаблон за замовчуванням не можна видалити.
+A generated ID will be the default title.,Згенерований ідентифікатор буде призначено заголовком за замовчуванням
+A source template must,Вихідний шаблон повинен
+A target template needs to have the following properties,Цільовий шаблон повинен мати такі властивості
+A valid email is required,Потрібна дійсна електронна адреса
+Accept,Прийняти
+Accepted suggestion on entity,Прийнято пропозицію щодо організації
+Accepting suggestions,Прийняття пропозицій
+Account,Акаунт
+Account locked,Обліковий запис заблоковано
+Account unlocked successfully,Обліковий запис успішно розблоковано
+Account updated,Обліковий запис оновлено
+Accuracy,Точність
+Accuracy tooltip,"Точність визначається кількістю збігів та розбіжностей для мічених зразків, які були оброблені."
+Action,Дія
+Activate,Активувати
+Activated,Активовано
+Active languages,Активні мови
+Activity,Діяльність
+Activity log,Журнал активності
+Activity Log,Журнал активності
+Add,Додати
+Add / remove favorite,Додати/видалити обране
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,"Додайте обліковий запис до додатку, відсканувавши наданий QR-код своїм мобільним пристроєм або вставивши наданий ключ."
+Add date,Додати дату
+Add entities / documents,Додати об'єкти/документи
+Add entity type,Додати тип сутності
+Add Extractor,Додати екстрактор
+Add extractor,Додати екстрактор
+Add file,Додати файл
+Add from URL,Додати з URL
+Add from web,Додати з інтернету
+Add group,Додати групу
+add icon,додати піктограму
+Add item,Додати елемент
+Add language,Додати мову
+Add link,Додати посилання
+Add page,Додати сторінку
+Add PDF,Додати PDF
+Add people or groups,Додати людей або групи
+Add property,Додати властивість
+Add relationship,Додати стосунки
+Add relationship type,Додати тип зв'язку
+Add template,Додати шаблон
+Add thesaurus,Додати предметний покажчик
+Add thesaurus value,Додати значення тезауруса
+Add timelink,Додати посилання на час
+Add to all languages,Додати до всіх мов
+Add to table of contents,Додати в зміст
+Add to ToC,Add to ToC
+Add to training set,Додати до тренувального набору
+Add user,Додати користувача
+add value,додавати цінність
+Add/delete users and assign roles,Додати/видалити користувачів та призначити ролі
+Add/edit translations,Додати/редагувати переклади
+Added language,Додано мову
+Added new user,Додано нового користувача
+added to hub with the following errors:,додано до хабу з наступними помилками:
+added to hub.,додано до хабу.
+Adding a group and its items.,Додавання групи та її елементів.
+Adding items to the thesauri,Додавання елементів до тезаурусів
+Admin,Адмін
+Administrators and Editors,Адміністратори та Редактори
+Admins,Адміни
+ALL,ВСІ
+All,ВСІ
+"All changes will be lost, are you sure you want to proceed?","Усі зміни будуть втрачені, ви впевнені, що хочете продовжити?"
+All data,Всі дані
+All editing options will be disabled.,Всі опції редагування будуть вимкнені.
+All of the paragraphs will be deleted,Всі абзаци будуть видалені
+All of the previously created paragraphs will be deleted and recreated after the process.,Всі раніше створені абзаци будуть видалені і створені заново після завершення процесу.
+Allow captcha bypass,Дозволити обхід капчі
+Already exists,Вже існує
+Amount,Сума
+An error has occured while deleting a language:,Виникла помилка при видаленні мови:
+An error has occured while installing languages:,Виникла помилка під час встановлення мов:
+An error has occurred,Виникла помилка
+An error has occurred during data export,Під час експорту даних сталася помилка
+An error occurred,Виникла помилка
+Analytics,Аналітика
+Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
+Any entity,Будь-який суб'єкт
+Apply,Подати заявку
+Are you sure you want to continue?,"Ви впевнені, що хочете продовжувати?"
+Are you sure you want to delete this attachment?,"Ви впевнені, що хочете видалити цей вкладення?"
+Are you sure you want to delete this connection?,"Ви впевнені, що хочете видалити це з'єднання?"
+Are you sure you want to delete this entity?,"Ви впевнені, що хочете видалити цю сутність?"
+Are you sure you want to delete this file?,"Ви впевнені, що хочете видалити цей файл?"
+Are you sure you want to delete this item?,"Ви впевнені, що хочете видалити цей елемент?"
+Are you sure?,Ти впевнений?
+Attachment,Вкладення
+Attachment deleted,Вкладення видалено
+Attachment renamed,Вкладення перейменовано
+Attachment uploaded,Завантажено вкладення
+Attachments,Вкладення
+Authentication code,Код автентифікації
+auto created,автоматично створено
+Auto-accept suggestions,Автоматичне прийняття пропозицій
+auto-created,автоматично створено
+Automatic Table of Contents,Автоматичний зміст
+Automatically generated,Генерується автоматично
+Available default translation,Доступний переклад за замовчуванням
+Back,Назад
+Back to,Назад до
+Back to search,Назад до пошуку
+Bad Request,Поганий запит
+Basic,Базовий
+Body,Основна частина
+Browse files to upload,Перегляньте файли для завантаження
+"by ids, methods, keywords, etc.","за ідентифікаторами, методами, ключовими словами тощо."
+Can edit,Може редагувати
+Can see,Може бачити
+Can view,Може переглядати
+Cancel,Скасування
+Canceling,Скасування
+Canceling...,Скасування...
+Cannot find extractor,Не вдається знайти екстрактор
+Captcha,Captcha
+Captcha bypass,"Увімкнувши цю опцію, ви можете дозволити користувачам надсилати заявки до ваших шаблонів з білого списку без необхідності заповнювати CAPTCHA.
+Форма все одно показуватиме капчу кінцевим користувачам, але кінцевий пункт API дозволить надсилати заявки без перевірки CAPTCHA, якщо буде надіслано заголовок
+заголовок ""Bypass-Captcha: true"". Ця опція є небезпечною і може бути використана для заповнення вашого екземпляра спамом або шкідливим контентом.
+шкідливим контентом."
+Cards,Картки
+Cards view,Вид карток
+Change password,Змінити пароль
+Change Password,Змінити пароль
+Changes in the thesaurus will impact all the entities using these values.,"Зміни в тезаурусі вплинуть на всіх суб'єктів, які використовують ці значення."
+Changing the type will erase all relationships to this entity.,Зміна типу призведе до видалення всіх зв'язків з цією сутністю.
+Character support description,"Цей параметр покращує підтримку нелатинських мов як мов за замовчуванням у вашій колекції.
+Вибравши цей параметр, ви автоматично оновите всі властивості шаблону. Цей процес може тривати кілька хвилин. Вибір цього пункту може змінити URL-адреси фільтрів бібліотеки. Як наслідок, якщо у вас є меню або посилання, що використовують такі URL-адреси, вони, ймовірно, перестануть працювати.
+Вам потрібно буде оновити їх вручну. Після вибору цієї опції ви не зможете повернутися до використання старих імен властивостей. Якщо у вас немає проблем з назвами властивостей шаблону, ми рекомендуємо не позначати цю опцію."
+Character support process warning,"Цей процес може зайняти кілька хвилин і, ймовірно, змінить URL-адреси на фільтри бібліотек. Якщо у вас є меню або посилання, що використовують такі URL-адреси, вони, ймовірно, перестануть працювати після оновлення. Вам потрібно буде оновити їх вручну."
+Character support revert warning,"Вибравши цю опцію, ви не зможете повернутися до використання старих імен властивостей. Якщо у вас немає проблем з іменами властивостей шаблону, ми рекомендуємо не позначати цю опцію."
+Check to make this instance public (non-logged in users can see public documents and entities),"Установіть прапорець, щоб зробити цей екземпляр загальнодоступним (неавторизовані користувачі можуть бачити загальнодоступні документи та сутності)"
+Choose which data to use for training,"Виберіть, які дані використовувати для навчання"
+Clear,Чисто
+Clear all,Зачистити все.
+Clear All,Очистити все.
+Clear coordinates,Очистити координати
+Clear Filters,Очистити фільтри
+Clear PDF selection,Очистити вибір PDF
+Click,Клац!
+Click here,Натисніть сюди
+Click to fill,"Натисніть, щоб заповнити"
+Close,Закрити
+Collaborator,Співкористувач
+Collaborators,Співробітники
+Collapse all,Згорнути все
+Collapse All,Collapse All
+Collection,Колекція
+Collection Name,Назва колекції
+Common sources,Загальні джерела
+Configuration,Конфігурація
+Configure filters,Налаштувати фільтри
+Configure templates,Налаштування шаблонів
+Confirm,Підтвердити
+CONFIRM,ПІДТВЕРДИТИ
+Confirm action,Підтвердити дію
+Confirm delete connection,Підтвердити видалення з'єднання
+Confirm delete multiple items,"Ви впевнені, що хочете видалити всі вибрані елементи?"
+Confirm deletion,Підтвердити видалення
+Confirm deletion of,Підтвердити видалення
+Confirm deletion of entity,Підтвердити видалення сутності
+Confirm deletion of file,Підтвердити видалення файлу
+Confirm new password,Підтвердьте новий пароль
+Connect to a paragraph,З'єднати з абзацом
+Connect to an entity,Підключіться до організації
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
+Connected to server,Підключено до сервера
+Connection type,Тип зв'язку
+Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
+Contact Form,Форма зворотнього зв'язку
+Contact form email,Контактна форма електронної пошти
+Content translations,Переклади контенту
+Context,Контекст
+Continue,Продовжуйте
+Conversion failed,Помилка перетворення
+Copied to clipboard,Скопійовано в буфер обміну
+Copy From,Копіювати з
+Copy Highlighted,Копію виділено
+Copy link,Скопіювати посилання
+Copy properties to this entity from,Скопіювати властивості до цього об'єкта з
+Copy to clipboard,Скопіювати в буфер обміну
+Could not be processed,Не вдалось обробити
+Could not detect the area for the selected text,"Не вдалося виявити область для виділеного тексту, спробуйте виділити ще раз."
+Could not reach server. Please try again later.,"Не вдалося зв'язатися з сервером. Будь ласка, спробуйте ще раз пізніше."
+Create,Створити
+CREATE,СТВОРИТИ
+Create and edit thesauri,Створення та редагування тезаурусів
+Create Connection,Створити з'єднання
+Create dictionaries,Створення словників
+Create entity,Створити об'єкт
+Create Entity,Створити об'єкт
+Create Extractor,Створити витягач
+Create group,Створити групу
+Create new entities and upload documents,Створюйте нові організації та завантажуйте документи
+Create Reference,Створити посилання
+Create relationship types,Створення типів зв'язків
+Create relationships and references,Створюйте зв'язки та посилання
+Create table of contents,Створити зміст
+Created entity,Створена сутність
+Created entity coming from a public form,Створений суб'єкт з публічної форми
+Created page,Створена сторінка
+Created relation type,Створений тип відношення
+Created relationship,Створені стосунки
+Created template,Створений шаблон
+Created thesaurus,Створено тезаурус
+Created user group,Створена група користувачів
+Current Value/Suggestion,Поточне значення/пропозиція
+Custom component error,"Помилка розмітки кастомного компонента: непідтримувані значення! Будь ласка, перевірте свою конфігурацію"
+Custom CSS,Персональні CSS
+Custom Favicon,Користувацька іконка
+Custom JS,Спеціальний JS
+Custom landing page,Налаштована цільова сторінка
+custom page error warning,"На цій кастомній сторінці сталася несподівана помилка, вона може не працювати належним чином. Будь ласка, зв'яжіться з адміністратором для уточнення деталей."
+Custom Uploads,Персоналізовані завантаження
+Dark,Темний
+Dashboard,Приладова панель
+Date added,Дата додавання
+Date format,Формат дати
+Date modified,Дату змінено
+Day,День
+Default,За замовчуванням
+Default date format,Формат дати за замовчуванням
+Default filter,Фільтр за замовчуванням
+Default language,Мова за замовчуванням
+Default language change success,Зміна мови за замовчуванням пройшла успішно
+Default template,Мова за замовчуванням
+Default template set successfully.,Шаблон за замовчуванням встановлено успішно.
+Default View,Вигляд за замовчуванням
+Delete,Видалити
+DELETE,Видалити
+Delete entities and documents,Видалити документи та об'єкти
+Delete file,Видалити файл
+Delete language,Видалити мову
+Delete?,Delete?
+Deleted attachment,Видалено вкладення
+Deleted custom file,Видалено користувацький файл
+Deleted entity,Видалена сутність
+Deleted file,Видалений файл
+Deleted multiple entities,Видалено кілька сутностей
+Deleted page,Видалена сторінка
+Deleted relation type,Видалений тип відношення
+Deleted relationship,Видалений зв'язок
+Deleted successfully.,Видалено успішно.
+Deleted template,Видалений шаблон
+Deleted thesaurus,Видалено тезаурус
+Deleted user,Видалений користувач
+Deleted user group,Видалена група користувачів
+Deletion success,Успішність видалення
+Description,Опис
+Disable,Вимкнути
+Disable highlights,Вимкнути підсвічування
+Disabled 2FA,Відключений 2FA
+Discard changes,Відмінити зміни
+Discard changes?,Відкинути зміни?
+Dismiss,Звільнити.
+Display entity view from page,"Показувати об'єкт, який переглядають зі сторінки"
+Do you want disable 2FA for the following users?,Ви хочете вимкнути 2FA для наступних користувачів?
+Do you want reset the password for the following users?,Ви хочете скинути пароль для наступних користувачів?
+Do you want to delete the following items?,Ви хочете видалити наступні елементи?
+Document,Документ
+Document and entity types,Типи документів та об'єктів
+Document contents,Зміст документа
+Document OCR trigger,Тригер розпізнавання документів
+Document Title,Назва документа
+Documentation,Документація
+documents,документи
+Documents,Документи
+documents.,документи.
+Download,Завантажити
+Download a third-party authenticator app from your mobile store.,Завантажте сторонній додаток-автентифікатор з вашого мобільного магазину.
+Drag and drop file in this window to upload,"Перетягніть й опустіть файл у вікно, щоб завантажити"
+Drag row,Перетягування рядка
+Drop your files here to upload or,"Опустіть свої файли сюди, щоб завантажити або"
+Duplicate values not allowed.,Повторювані значення не допускаються.
+Duplicated email,Продубльована адреса електронної пошти
+Duplicated name,Дубльоване ім'я
+Duplicated username,Продубльоване ім'я користувача
+Duration,Duration
+Edit,Редагувати
+Edit all documents matching this criteria,"Відредагуйте всі документи, які відповідають цим критеріям"
+Edit Extractor,Редагувати витягач
+Edit File,Редагувати файл
+Edit group,Група редагування
+Edit item,Редагувати елемент
+Edit metadata of entities,Редагування метаданих сутностей
+Edit user,Редагувати користувача
+Editor,Редактор
+editor,Редактор
+Editors,Редактори
+Email,Електронна пошта
+Email address,Адреса електронної пошти
+Email updated,Електронну пошту оновлено
+Empty,Порожній
+Empty group. Drop here to add,"Порожня група. Натисніть тут, щоб додати"
+empty property tip,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
+Enable,Увімкнути
+Enable this page to be used as an entity view page:,Зробіть цю сторінку доступною для використання в якості сторінки для перегляду об'єкта:
+Enter the 6-digit verification code generated by your Authenticator app,"Введіть 6-значний код підтвердження, згенерований вашим додатком Authenticator"
+Enter your current password to confirm,Введіть ваш поточний пароль для підтвердження
+Entities,Об'єкти
+entities,Об'єкти
+Entities across all languages,Сутності всіма мовами
+Entity,Об'єкт
+Entity deleted,Сутність видалено
+Entity Page,Сторінка сутності
+Entity saved,Об'єкт збережено
+Entity types,Типи об'єктів
+Entity updated,Сутність оновлено
+Error,Помилка
+Error adding thesauri.,Помилка додавання тезаурусів.
+Error deleting template(s),Помилка видалення шаблону(ів)
+Error loading your image,Помилка завантаження зображення
+Error saving template.,Шаблон збереження помилок.
+Error setting default template,Помилка встановлення шаблону за замовчуванням
+Error updating thesauri.,Помилка оновлення тезаурусів.
+Expand all,Розгорнути все
+Expand All,Expand All
+Exploration,Вивчення
+Export CSV,Експортувати CSV
+Exporting entities to CSV,Експортувати об'єкти до CSV
+Extension Token,Токен розширення
+Extract new paragraphs,Витягніть нові абзаци
+Extract paragraphs,Витягнути абзаци
+Extraction configuration,Конфігурація вилучення
+Extractor Name,Ім'я екстрактора
+Extractor name,Ім'я екстрактора
+Extractor/s deleted,Видалено розпакувальник(и)
+Extractors,Екстрактори
+Failed to save table of contents,Failed to save table of contents
+Favicon description,"Іконка - це невелика піктограма, яка представляє вашу колекцію у вкладках та закладках браузера. За замовчуванням це логотип Uwazi. Ви можете використовувати свій власний:
+
+1. Завантажте свою іконку в Користувацькі завантаження.
+2. Скопіюйте її URL-адресу.
+3. Виберіть ""Користувацька іконка"" і вставте URL-адресу у вказане поле.
+4. Перезавантажте сторінку, щоб побачити вашу іконку в дії."
+FEATURED,ОБРАНІ
+File,Файл
+File deleted,Файл видалено
+File name,Ім'я файлу
+File updated,Файл оновлено
+Files,Файли
+Files and database usage,Використання файлів і баз даних
+Fill,Заповнити
+Filters,Фільтри
+Filters AND operator,І
+Filters configuration,Фільтри
+Filters configuration description,"За замовчуванням користувачі можуть фільтрувати сутності в бібліотеці на основі визначених вами типів. Проте, ви можете налаштувати спосіб відображення цих типів сутностей:"
+Filters configuration example,"виберіть ""Додати групу"" нижче, щоб згрупувати фільтри за міткою, наприклад (""Документи"" або ""Люди"")"
+Filters OR operator,АБО
+Filters saved,Фільтри збережено
+Find,Знайти
+Find suggestions,Знайти пропозиції
+Find suggestions after training,Знайдіть пропозиції після тренінгу
+Find suggestions for,Знайдіть пропозиції для
+Find suggestions for selected,Знайдіть пропозиції для обраних
+Finding suggestions,Пошук пропозицій
+Fine tune,Тонке налаштування
+Fit,Пристосувати
+Flag,Прапорець
+for,за
+For all entities,Для всіх суб'єктів господарювання
+For entities with blank values,Для сутностей з порожніми значеннями
+Forgot Password?,Забули пароль?
+Forms and email configuration,Налаштування форм та електронної пошти
+From,Від
+From all suggestions,З усіх пропозицій
+From previous step,З попереднього кроку
+Full width,Повна ширина
+General,Загальний
+General Information,Загальна інформація
+Generated ID,Згенерований ідентифікатор
+Global CSS,Глобальні CSS
+Global CSS & JS,Глобальний CSS та JS
+Google,Google
+Google Analytics,Google Аналітики
+Google Analytics ID,ID Google Аналітики
+Google Maps,Карти Google
+Group,Групи
+Group Options,Параметри групи
+Group saved,Групу збережено
+Group updated,Групу оновлено
+Groups,Групи
+help,допомога
+here,тут.
+Hide actions,Приховати дії
+Hide label,Приховати мітку
+Hide toolbar,Приховати панель інструментів
+https://yourdomain,https://вашдомен
+hubs,хаби
+Hybrid,Гібридний
+Icon,Символ
+ID,ІДЕНТИФІКАТОР
+ID:,ПОСВІДЧЕННЯ ОСОБИ:
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Якщо це зовнішній URL, використовуйте повністю сформований URL. Тобто http://www.uwazi.io."
+"If you want to continue, please type","Якщо ви хочете продовжити, будь ласка, введіть"
+Import,Імпортувати
+Import asset,Імпортний актив
+Import completed,Імпорт завершено. Кількість створених сутностей:
+Import CSV,Імпортувати CSV
+Import instructions,Інструкції з імпортування
+Imported entities from file,Імпортовані сутності з файлу
+Imported translations from file,Імпортовані переклади з файлу
+Importing data in progress,Імпортування даних під час виконання
+in,в
+"In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
+In OCR queue,У черзі на оптичне розпізнавання символів
+Indexing entities may take a few minutes,Індексація об'єктів може тривати декілька хвилин
+Info,Інформація
+Information extraction training,Тренінг з вилучення інформації
+Inherit,Успадковувати
+Inherit property,Запозичити властивість
+Inherit type,Тип успадкування
+Input,Вхідні дані
+Install,Встановити
+Install Language(s),Мову(и) інсталяції
+Install the browser extension.,Встановіть розширення для браузера.
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Інструкції про те, як цього досягти, залежать від програми, яку ви використовуєте, будь ласка, зверніться до документації програми."
+Instructions to reset password,"Якщо вказана адреса електронної пошти правильна, ми надішлемо інструкції щодо зміни пароля."
+Instructions to reset the password were sent to the user,Користувачеві надіслано інструкцію зі скидання пароля
+Invalid captcha,Невірна captcha
+Invalid csv: all the values for a row must be either nested or non-nested,"Неправильний csv: всі значення рядка повинні бути або вкладеними, або невкладеними"
+Invalid csv: nested value need to be under a non-nested value,Неправильний csv: вкладені значення мають бути під невкладеними значеннями
+Invalid form,"Запис є обов'язковим або має невірне значення. Будь ласка, виправте і спробуйте ще раз."
+It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Це також ненароком може порушити роботу додатка. Введіть код лише у випадку, якщо ви точно знаєте, що робите."
+it has been logged with request id #,його було зареєстровано з ідентифікатором запиту #
+Item,Пункт
+Items:,Елементи:
+Javascript,Javascript
+key,ключ
+Label,Мітка
+"Label date ""From""",з
+"Label date ""to""",до
+Labeled,З позначкою
+Landing page,Головна сторінка
+Landing page description,"Цільова сторінка - це перша сторінка, яку бачать відвідувачі, коли потрапляють до вашої колекції. За замовчуванням цільовою сторінкою є бібліотека вашої колекції. Ви можете встановити іншу цільову сторінку, додавши тут її відносну URL-адресу. Наприклад:
+      
+Сторінка: */page/dicxg0oagy3xgr7ixef80k9*
+Відфільтрований вигляд в Uwazi: */library/?searchTerm=test*.
+Сутність: */entity/9htbkgpkyy7j5rk9*
+Документ: */document/4y9i99fadjp833di*
+      
+Важливо: Ви повинні використовувати відносні URL-адреси. Вони починаються з прямої похилої риски і не містять доменного імені. Наприклад: В адресі *https://yoursite.com/landingpage* відносною URL-адресою буде /landingpage"
+Language,Мова
+Language Code,Код мови
+Language deleted,Мову видалено
+Language Install Start Message,"Розпочато процес інсталяції мови. Це може зайняти кілька хвилин, залежно від розміру колекції. Будь ласка, зачекайте, поки процес інсталяції завершиться."
+Language reset success,Успішне перезавантаження мови
+Language Uninstall Start Message,"Розпочато процес видалення мови. Залежно від розміру колекції це може зайняти кілька хвилин.  Будь ласка, дочекайтеся завершення процесу видалення."
+Language uninstalled successfully,Мову успішно видалено
+Language(s),Мова(и)
+Language:,Мова:
+Languages,Мови
+Languages installed successfully,Мови встановлено успішно
+Last updated,Останнє оновлення
+Latitude,Широта
+Learn more,Дізнатися більше
+Legend,Підпис
+Lengthy reindex process,Тривалий процес реіндексації
+Library,Бібліотека
+library list view,перегляд бібліотеки у вигляді списку
+library map view,перегляд бібліотеки у вигляді карти
+library table view,перегляд бібліотеки у табличному вигляді
+Link,Посилання
+linked,пов'язаний
+Live translate,Прямий переклад
+Loading,Завантаження
+Login,Увійти
+Login button,Кнопка входу
+Login failed,Помилка авторизації
+Logout,Вийти
+Longitude,Довгота
+Lost connection to the server. Your changes may be lost,Втрачено зв'язок з сервером. Ваші зміни можуть бути втрачені
+low,низький
+Manage site settings and configuration,Керування сайтом і конфігурація
+Map,Карта
+Map api key,Ключ API карти
+Map API key,Ключ API карти
+Map api key tooltip,Для використання Mapbox або Google Maps потрібен ключ API.
+Map Layers,Шари карти
+Map layers description,Опис шарів карти
+Map Provider,Постачальник карт
+Map view,Перегляд карти
+Mapbox,Mapbox
+Mapping conflict error,"Необхідно провести реіндексацію вашої колекції. Причина може бути різною
+        -- від певних змін у властивостях шаблону до нових полів
+        які потрібно заповнити в різних сутностях.
+        Цей процес не матиме негативного впливу на дані у вашій колекції.
+        Він може тривати кілька хвилин, і деяким частинам вашої колекції може знадобитися
+        деякий час, щоб знову з'явитися в Бібліотеці, але це тимчасово. Ви хочете продовжити?"
+Maps,Карти
+Mark as Reviewed,Позначити як Переглянуто
+Mark as reviewed,Позначити як переглянуто
+Markdown,Markdown
+marked and labeled,марковані та етикетовані
+marked for training,позначені для навчання
+Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
+Marked for training only,Позначено тільки для навчання
+Match,Матч
+Matching,Відповідність
+matching,відповідність
+Matomo,Матомо.
+Members,Учасники
+Menu,Меню
+Message,Повідомлення
+Message sent,Повідомлення надіслано
+Metadata,Метадані
+Metadata Extraction,Видобування метаданих
+MIGRATE,МІГРУВАТИ
+Minimum,Мінімум
+Mismatch,Невідповідність
+mismatched passwords,Паролі не збігаються
+mismatching,невідповідність
+Mixed access,Доступ змішаного типу
+ML TOC,Зміст для машинного навчання
+Month,Місяць
+Months,Місяці
+more options.,більше опцій.
+Multiple date,Кілька дат
+Multiple date range,Діапазон кількох дат
+Multiple inherited properties warning ([property 1] affects [property 2]),впливає
+Multiple relationships edit description,"Внесення змін до цієї властивості вплине на інші властивості цього шаблону, оскільки всі вони мають спільні зв'язки з тією самою конфігурацією."
+Multiple select,Вибрати з кількох варіантів
+Name,Ім’я
+Name is required,Потрібне ім'я
+Name is too long,Ім'я занадто довге
+Name is too short,Ім'я занадто коротке
+Narrow down your searches,Звузьте область свого пошуку
+Narrow your search,Обмежити свій пошук
+Navigate back,Повернутися назад
+Navigation menu tool tip part 1,"Якщо це внутрішня URL-адреса на цьому веб-сайті, обов'язково видаліть першу частину"
+Navigation menu tool tip part 2,"залишивши лише відносну URL-адресу, що починається з косої риски. Тобто. /деяка_адреса."
+New,Новий
+New entity,Новий об'єкт
+New group,Нова група
+New language added,Додано нову мову
+New page,Нова сторінка
+New password,Новий пароль
+New relationship type,Новий тип відносин
+New relationships group,Група нових взаємозв'язків
+New Relationships Migration,Нові стосунки Міграція Міграція
+New user,Новий користувач
+Next,Наступний
+No,Ні
+No attachments,Немає вкладень
+No common filters,Немає спільних фільтрів
+No Connections,Немає зв'язків
+No Connections description,Зв'язки - це прямі відносини між цим документом та іншими документами і сутностями.
+No context,Без контексту
+NO DATA AVAILABLE,НЕМАЄ ДАНИХ
+NO EXTRACTORS,ЖОДНИХ ЕКСПРАКТОРІВ
+No files available,No files available
+no filters for templates,Комбінація типів сутностей не має спільних фільтрів.
+No Group,Немає групи
+No icon / flag,Немає піктограми / прапорця
+No items available,Немає товарів у наявності
+No Label,Немає мітки
+No label,Без етикетки
+No options,Без варіантів
+No options found,Варіантів не знайдено
+No property,Товар не має цієї властивості
+No References,Немає посилань
+No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
+No Relationships,Немає взаємозв'язків
+No Relationships description,Відносини - це зв'язки між суб'єктами.
+No table of contents,Немає змісту
+No Table of contents,No Table of contents
+No table of contents description,Ви можете почати з виділення тексту в документі та натискання кнопки Додати до змісту.
+No text match,"Немає тексту, що збігається"
+No text match description,"Ви можете ввести щось інше в поле пошуку, щоб отримати деякі результати."
+No type,Немає типу
+No valid target template available,Відсутній правильний шаблон цілі
+No value,Немає значення
+No Value,Немає значення
+"No, cancel","Ні, скасуй."
+Non processed,Не оброблений
+Non-labeled,Без маркування
+Normal view,Нормальний вигляд
+Not already been use as source template in another extractor,Не використовувався як вихідний шаблон в іншому екстракторі
+Not already been use as target template,Ще не використовувався як цільовий шаблон
+Not Found,Не знайдено
+Nothing selected,Нічого не вибрано
+Number of sentences above threshold,Кількість пропозицій перевищує поріг
+Obsolete,Застарілий
+obsolete,застарілий
+OCR,Оптичне розпізнавання символів
+OCR button tip,"Це запустить обробку документа, щоб розпізнати текст. Вихідний файл буде доданий в якості супровідного файлу."
+OCR completed,Оптичне розпізнавання символів завершено
+OCR description tip 1,"Це активує функцію оптичного розпізнавання символів (OCR) для документів PDF. Цей сервіс розпізнає текст усередині таких зображень, як відскановані документи та фотографії, а потім перетворює текст на машиночитані текстові дані."
+OCR description tip 2,під час активації це дозволить користувачам-адміністраторам і користувачам-редакторам надсилати документи PDF до служби оптичного розпізнавання символів.
+OCR error,Помилка оптичного розпізнавання символів
+OCR error tip,модуль оптичного розпізнавання символів не зміг прочитати документ через неправильно сформований формат. Останнє оновлення
+OCR PDF,Оптичне розпізнавання символів PDF
+of,з
+Ok,Гаразд
+OK,ГАРАЗД.
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Доступні лише шаблони, які не використовуються як джерело в інших екстракторах і не
+                вибрані як ціль у цьому екстракторі, доступні для вибору."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Доступні лише шаблони з принаймні однією властивістю розширеного тексту та однією числовою властивістю
+                доступні для вибору."
+"Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
+Open,Відкрито
+Open group,Відкрита група
+Open PDF,Відкрити PDF
+Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
+Options,Параметри
+or,або
+or drop your files here.,або опустіть свої файли сюди.
+Order,Порядок
+Other,Інший
+other,Інший
+Other users will be affected by this action!,Ця дія вплине на інших користувачів!
+Others,Інші
+out of,з
+Page,Сторінка
+Page not found,Сторінку не знайдено
+Pages,Сторінки
+Paragrap number extraction property (numeric),Властивість вилучення номера абзацу (числова)
+Paragraph,Абзац
+Paragraph Extraction,Вилучення абзацу
+Paragraph Extractor added,Додано екстрактор абзаців
+Paragraph text extraction property (rich text),Властивість вилучення тексту абзацу (розширений текст)
+Paragraphs,Абзаци
+Paragraphs deleted,Абзаци вилучено
+Password,Пароль
+Password + 2fa,Пароль + 2fa
+Password changed success,Успішно змінено пароль
+Password Error,Помилка при введенні пароля!  Обидва поля є обов'язковими і повинні співпадати
+Password is too long,Пароль занадто довгий
+Password updated,Пароль оновлено
+Passwords do not match,Паролі не збігаються
+Paste URL here,Вставте URL-адресу сюди
+PDF,PDF
+Pending,На розгляді
+per page,на сторінку
+Permission,Дозвіл
+Permission on entities explicitly shared with the user,"Дозвіл на об'єкти, якими поділилися з користувачем"
+Permissions,Дозволи
+Plain text,Звичайний текст
+Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
+Please type in,"Будь ласка, введіть"
+Please type in letters and numbers from the image to start the export.,"Будь ласка, введіть літери та цифри з зображення, щоб розпочати експорт."
+Precision,Точність
+Preserve,Заповідник
+Preserve Extension,Зберегти розширення
+Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
+Press enter to add,"Натисніть Enter, щоб додати"
+Preview,Попередній перегляд
+Previous,Попередній
+Primary Documents,Основні документи
+Priority sorting,Пріоритетне сортування
+Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
+Private entities description,Увага: вибрані сутності будуть **приватними**. Лише дозволені користувачі зможуть їх бачити.
+Private instance,Приватна база даних
+Process,Процес
+Process extractor,Технологічний екстрактор
+Process selected,Вибрано процес
+Processed,Оброблено
+Processing,Обробка
+Properties,Властивості
+Properties from other templates in the collection using the same label,"Властивості з інших шаблонів у колекціях, які використовують цю ж мітку"
+Properties from other templates in the collection using the same label.,"Властивості з інших шаблонів у колекції, що використовують ту саму мітку."
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
+Property,Власність
+Property as filter description,"Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
+property date,Дата
+property daterange,Діапазон дат
+property generatedid,Згенерований ідентифікатор
+property geolocation,Геолокація
+property image,Зображення
+property link,Посилання
+property markdown,Розширений текст
+property media,Медіа
+property multidate,Кілька дат
+property multidaterange,Кілька діапазонів дат
+property multiselect,Багаторазовий вибір
+property numeric,Числовий
+property preview,Попередній перегляд
+property relationship,Відносини
+property select,Виберіть
+property text,Текст
+Property type,Тип нерухомості
+Protection,Захист
+ProTip!,Професійна підказка!
+Public entities description,Увага: вибрані організації будуть **публічними**. Їх зможе побачити будь-хто.
+Public form settings description,Тут ви можете налаштувати призначення публічної форми та шаблони білого списку
+Public Form submit URL,Публічна форма надсилання URL-адреси
+Public form URL description,"Якщо ви налаштували публічну форму і хочете, щоб інша колекція Uwazi отримувала заявки, введіть URL-адресу цієї колекції тут."
+Public form whitelist description,"Якщо ви хочете включити публічні форми на свої сторінки, ви повинні додати ідентифікатори шаблонів, для яких очікуються публічні форми, до білого списку."
+Publish,Опублікувати
+Published,У відкритому доступі
+QR Code,QR-код
+Query,Запит
+RAW,RAW
+Re-uploaded document,Перезавантажений документ
+Receiving email,Електронна пошта одержувача
+Receiving email description,"Якщо у вас є контактна форма, це адреса електронної пошти, на яку ви будете отримувати відповіді."
+Reference,Посилання
+References,Посилання
+Reject,Відхилити
+Relation type,Тип відношення
+Relationship,Взаємозв'язок
+Relationship Type,Тип взаємозв'язків
+Relationship type,Тип зв'язку
+Relationship type created successfully.,Тип зв'язку створено успішно.
+Relationship type name,Назва типу відношення
+Relationship type name already exists,Назва типу зв'язку вже існує
+Relationship types,Тип взаємозв'язку
+relationships,Взаємозв'язки
+Relationships,Взаємозв'язки
+Relationships saved,Відносини збережені
+RelationType saved,Тип взаємозв'язку збережено
+remaining files,решта файлів
+Remote Server Unreachable,Віддалений сервер недоступний
+Remove,Видалити
+Remove from training set,Видалити з тренувального набору
+remove icon,видалити піктограму
+Removed language,Вилучена мова
+Rename,Перейменувати
+Renamed attachment,Перейменовано вкладення
+Repeat Password,Повторіть пароль
+Request id #,Запит ID #
+Request token,Токен запиту
+Required,Потрібно
+Required property,Необхідна властивість
+Reset,Скидання
+Reset 2FA,Скинути 2FA
+Reset default translation,Скинути переклад за замовчуванням
+Reset language,Скинути мову
+Reset Password,Скинути пароль
+Reset passwords,Скидання паролів
+Restricted,Для обмеженого кола осіб
+Return to login,Повернутись до авторизації
+Review,Огляд
+Reviewed,Переглянуто
+Role,Роль
+Route,Маршрут
+Row,Гребіть!
+Sample,Зразок
+Satellite,Супутник
+Save,Зберегти
+Save & Preview,Зберегти та переглянути
+Save changes,Зберегти зміни
+Save password,Зберегти пароль
+Save your work to make change permanent,"Збережіть свою роботу, щоб зробити зміни постійними"
+Saved successfully.,Врятовано успішно.
+Saving...,Saving...
+Search,Шукати
+Search item,Шукати предмет
+Search not found,Пошук нічого не виявив
+Search related entities or documents,Шукати взаємопов'язані об'єкти та документи
+Search relevance,Релевантність пошуку
+Search text,Пошук за текстом
+Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
+Search Tips,Пошук порад
+Search Tips: boolean,"AND, OR і NOT для логічного пошуку. Тобто ""статус І жінки НЕ Нікарагуа"" знайде все, що містить обидва слова ""статус"" і ""жінки"", і обов'язково не містить слова ""Нікарагуа""."
+Search Tips: exact term,"Точна відповідність терміну, взявши рядок пошуку в лапки. Наприклад, ""Коста-Ріка"" дасть інші результати, ніж ""Коста-Ріка без лапок""."
+Search Tips: one char wildcard,"? для одного символу підстановки. Тобто: ""198?"" буде відповідати 1980-1989 рокам, а також 198a, 198b і т.д."
+Search Tips: proximity,"~ для близького пошуку. Тобто: ""статус""~5 знайде все, що має ""статус"" і ""статус"" на відстані 5 слів, наприклад, ""процесуальний статус"", ""особливий правовий статус""."
+Search Tips: wildcard,"Використовуйте * для пошуку за шаблоном. Наприклад: ""juris*"" буде відповідати таким словам, як юрисдикція, юрисдикційний, юристи, юриспруденція тощо."
+Secret keys,Секретні ключі
+Security,Безпека
+Select,Виберіть
+Select & Search,Вибір та пошук
+Select all,Вибрати все
+Select files on your device,Вибрати файли на вашому пристрої
+Select from computer,Виберіть з комп'ютера
+Select relationship type,Виберіть тип взаємозв'язків
+Select target paragraph,Виберіть цільовий абзац
+Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
+Select the template with the source documents.,Виберіть шаблон з вихідними документами.
+Select...,Вибрати...
+Selected,Вибране
+selected,вибраний
+selected of,вибраний із
+Selected or suggested,Вибрані або запропоновані
+Selected templates,Вибрані шаблони
+Semantic search,Семантичний пошук
+Semantic Search,Семантичний пошук
+Semantic search minimum sentences help,"Семантичний пошук застосовується до кожного речення в документі. Відфільтруйте документи за мінімальною кількістю речень, що перевищують поріг."
+Semantic search overview,"Семантичний пошук - це метод отримання контекстних результатів. Його здатність фіксувати концепції та асоціації слів у людській мові дозволяє знаходити пов'язану інформацію, таку як синоніми, пов'язані категорії або сутності тощо."
+Semantic search results,Результати семантичного пошуку
+Semantic search threshold help,"Поріг визначає, наскільки близько результати відповідають концепції пошуку. Перемістіть повзунок вправо, щоб звузити концепцію пошукового запиту. Отримані результати будуть більш точними. Перемістіть повзунок вліво, щоб розширити концепцію і дослідити пов'язаний контент."
+Send,Відправити
+Send recovery email,Відправити лист для відновлення на електронну пошту
+Sending email,Електронна пошта відправника
+Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
+Sending labeled data,Відправлення маркованих даних
+Sentences above threshold,Пропозиції перевищують поріг
+Services,Послуги
+Set as default,Встановити за замовчуванням
+Set default language,Встановити мову за замовчуванням
+Set default template,Встановити шаблон за замовчуванням
+Set the default starting point for your geolocation properties.,Встановити відправну точку за замовчуванням для своїх властивостей геолокації.
+Settings,Налаштування
+settings,налаштування
+Settings updated,Налаштування оновлено
+Share,Поширити
+Share edit access with other users,Діліться доступом до редагування з іншими користувачами
+Share entities with the public,Діліться організаціями з громадськістю
+Share with people and groups,Поділитися з людьми та групами
+Shared as editor,Поширено для редагування
+Shared as viewer,Поширено для перегляду
+Show actions,Показати дії
+Show cookie policy,Показати політику cookie
+Show filters,Показати фільтри
+Show in cards,Показати в картках
+Show more,Показати більше
+Show toolbar,Показати панель інструментів
+Showing,Показати
+shown of,показано від
+Sign in,Увійти
+Single relationships must have a hub,Одинокі стосунки повинні мати центр
+Size,Розмір
+Skip to main content,Перейти до основного змісту
+Something went wrong,Щось пішло не так
+Sort,Сортувати
+Sort ascending,Сортування за зростанням
+Sort by,Сортувати за
+Sort descending,Сортування за спаданням
+sorted by,відсортовано за
+Source,Джерело
+Source relationship type,Тип вихідного відношення
+Source template,Вихідний шаблон
+Source Template,Вихідний шаблон
+Source's role in the relationship Source-Target.,Роль джерела у відносинах Джерело-Ціль.
+State,Держава
+Statistics,Статистика
+Stats & Filters,Статистика та фільтри
+Status,Статус
+Storage,Зберігання
+Streets,Вулиці
+Strict mode,Суворий режим
+Style,Стиль
+Submit,Відправити
+Submitted entity to a remote instance,Відправлено сутність до віддаленого екземпляра
+Submitting,Відправляється
+Success,Успіх
+"Success, Upload another?","Успішно, завантажити ще?"
+Suggestion,Пропозиція
+Suggestion:,Пропозиція:
+Suggestions,Запропоновані варіанти
+suggestions,пропозиції
+Suggestions have been updated,Пропозиції були оновлені
+Suggestions sent,Пропозиції надіслані
+Supporting files,Супровідні файли
+Synced template,Синхронізований шаблон
+Synced Template,Синхронізований шаблон
+Synced templates cannot be deleted.,Синхронізовані шаблони не можна видалити.
+syntax to create page content,синтаксис для створення вмісту сторінки
+System translations,Системні переклади
+Table,Таблиця
+Table of Contents,Зміст
+Table of contents,Зміст
+Table of contents saved successfully,Table of contents saved successfully
+Table view,Табличний вигляд
+Target relationship type,Тип цільового зв'язку
+Target Template,Шаблон цілі
+Target template,Шаблон цілі
+Target's role in the relationship Source-Target.,Роль мішені у відносинах Джерело-Ціль.
+Template,Шаблон
+Template changes are being applied to all related entities.,Зміни шаблону застосовуються до всіх пов'язаних сутностей.
+Template conflict,Конфлікт шаблонів
+Template name,Назва шаблону
+Template name already exists,Ім'я шаблону вже існує
+Template processing completed.,Обробка шаблону завершена.
+Template saved successfully.,Шаблон успішно збережено.
+Template with a long number of entities,"Шаблон змінився, і пов'язані з ним сутності будуть переіндексовані,
+       цей процес може зайняти кілька хвилин, ви хочете продовжити?"
+Template(s),Шаблон(и)
+Template(s) deleted successfully.,Шаблон(и) успішно видалено.
+Templates,Шаблони
+Templates:,Шаблони:
+Text,Текст
+Text references limit warning,Кількість текстових посилань тимчасово обмежена до 300. Наразі ми працюємо над виправленням цієї проблеми.
+The import process threw an error:,Процес імпортування видав помилку:
+The import process threw some warnings:,Під час імпорту з'явилося кілька попереджень:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","Процес вилучення абзаців успішно розпочато. Перевірте стовпчик Статус
+              для отримання інформації про хід процесу."
+The request could not be processed.,Запит не вдалося обробити.
+The source of this template is a sync.,Джерелом цього шаблону є синхронізація.
+The token does not validate against the secret key,Токен не перевіряється за допомогою секретного ключа
+The token does not validate against the secret key!,Токен не перевіряється за допомогою секретного ключа!
+There are no pages enabled for entity view,"Немає сторінок з можливостями, які надаються для перегляду об'єкта"
+There are no untranslated terms,Немає неперекладених термінів
+Thesauri,Предметний покажчик
+Thesauri added.,Тезауруси додали.
+Thesauri deleted,Тезауруси видалено
+Thesauri name,Назва тезаурусу
+thesauri new group desc,тезауруси нова група спуск
+thesauri new item desc,тезауруси новий елемент desc
+Thesauri updated.,Оновлені тезауруси.
+Thesaurus,Тезаурус
+Thesaurus created successfully.,Тезаурус створено успішно.
+Thesaurus name,Назва тезауруса
+Thesaurus name already exists,Ім'я в тезаурусі вже існує
+Thesaurus saved,Предметний покажчик збережено
+This action may take some time while we add the extra language to the entire collection.,"Ця дія може зайняти деякий час, поки ми додамо додаткову мову до всієї колекції."
+This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Ця область дозволяє додати власний JavaScript на сторінку. Це відкриє більшу сферу нових можливостей.
+This content is automatically generated,Цей контент генерується автоматично
+"This entity has no document, you probably want to see the metadata","Цей об'єкт не має документів, ви, певно, хочете переглянути метадані"
+This entity is restricted from public view.,Цей об'єкт обмежений для загальнодоступного перегляду.
+This field is required,Це поле обов'язкове для заповнення
+This file type is not supported on media fields,Цей тип файлів не підтримується на медіа-полях
+This group is empty,Ця група порожня
+This label already exists in this template,Ця мітка вже існує в цьому шаблоні
+This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
+This property can not be deleted,Цю властивість не можна видалити
+This property will appear in the library cards as part of the basic info.,Цей об'єкт з'явиться в картках бібліотеки у складі основної інформації.
+This property will be shown using all the width available.,Ця властивість буде відображатися за допомогою всієї доступної ширини.
+This property will be shown without the label,Ця властивість буде показана без мітки
+This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
+This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
+this template,цей шаблон
+This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
+Threshold,Поріг
+Time,Час
+Timelinks,Тимчасові посилання
+Timestamp,Відмітка часу
+Title,Заголовок
+To,До
+To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
+"To bring you a better experience, this site uses cookies.",Цей сайт використовує файли cookie для покращення вашого досвіду взаємодії з сайтом.
+"To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
+to learn how to add and configure a contact form on a webpage.,"дізнатися, як додати та налаштувати контактну форму на веб-сторінці."
+to learn more about the components.,"для того, щоб дізнатися більше про компоненти."
+to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
+Today,Сьогодні
+Tools,Інструменти
+total entities,всього суб'єктів господарювання
+Total files,Всього файлів
+total files,всього файлів
+"Total files from main documents, supporting files and uploads","Загальна кількість файлів з основних документів, супровідних файлів та завантажень"
+total users,всього користувачів
+Train,Потяг
+Train model,Навчальна модель
+Train model description,"Навчання моделей машинного навчання може зайняти від кількох хвилин до кількох годин, залежно від кількості маркованих даних і складності завдання."
+Training,Навчання
+Training model,Модель навчання
+Training sample,Навчальна вибірка
+Translate,Перекласти
+Translation,Переклад
+Translations,Переклади
+Translations imported.,Переклади імпортовані.
+Translations reset successfully,Переклади успішно скинуто
+Translations saved,Переклади збережено
+Turn off inline translation,Вимкнути вбудований переклад
+Two-Factor Authentication,Двофакторна автентифікація
+Two-factor authentication enabled,Увімкнено двофакторну автентифікацію
+Two-factor authentication failed.,Двофакторна автентифікація не пройшла.
+Two-factor authentication secret,Секрет двофакторної автентифікації
+Two-factor verification failed,Двохетапна перевірка не вдалася.
+Two-step verification,Двохетапна перевірка
+Two-step verification token required,Потрібен токен з двоетапною верифікацією
+Type,Тип
+"Unable to save, failed response","Не вдалося врятувати, не вдалося відповісти"
+Unauthorized,Несанкціонований
+Unexpected error,Неочікувана помилка
+Uninstall,Видалити
+Uninstall language,Видалити мову
+Unlink,Роз'єднати зв'язок.
+Unlock account,Розблокувати обліковий запис
+Unsupported OCR language,Непідтримувана мова оптичного розпізнавання символів
+Untranslated Terms,Неперекладені терміни
+Update,Оновити
+UPDATE,Оновити
+Update success,Успіх оновлення
+Updated,Оновлено
+Updated file,Оновлений файл
+Updated multiple entities,Оновлено кілька сутностей
+Updated permissions on entity,Оновлені дозволи на сутність
+Updated relationships,Оновлені відносини
+Updated settings,Оновлені налаштування
+Updated translations,Оновлені переклади
+Updated user,Оновлений користувач
+Updating template properties across,Оновлення властивостей шаблону в усіх
+Upload a ZIP or CSV file.,Завантажити ZIP або CSV файл.
+Upload and select file,Завантажити й вибрати файл
+Upload from computer,Завантажити з комп'ютера
+Upload PDF,Завантажити PDF
+Upload PDF(s) to create,"Завантажити PDF, щоб створити"
+Uploaded attachment,Завантажено вкладення
+Uploaded custom file,Завантажено користувацький файл
+Uploaded document,Завантажений документ
+Uploaded file,Завантажений файл
+Uploading,Виконується завантаження
+Uploading ...,Завантаження...
+Uploading file,Завантаження файлу
+Uploads,Завантаження
+URL,URL
+Use,Використати
+Use as filter,Використовувати як фільтр
+Use for training,Використання для навчання
+User,Користувач
+User Action,Дія користувача
+User Role,Роль користувача
+User updated,Користувача оновлено
+Username,Ім’я користувача
+Username is required,Потрібне ім'я користувача
+Username is too long,Ім'я користувача занадто довге
+Username is too short,Ім'я користувача занадто коротке
+Usernames cannot have spaces,В іменах користувачів не може бути пробілів
+Users,Користувачі
+Users & Groups,Користувачі та групи
+Using Authenticator,Використання автентифікатора
+Using URLs,Використання URL-адрес
+Uwazi is developed by,Uwazi розроблений
+Uwazi UI,Uwazi UI
+Value,Значення
+Value cannot be transformed to the correct type,Значення не може бути перетворено до правильного типу
+values,значення
+Verify,Верифікувати
+Verifying...,Верифікування...
+View,Переглянути
+view,переглянути
+View entities,Перегляд сутностей
+View entity,Переглянути сутність
+View in library,Переглянути в бібліотеці
+View less,Переглянути менше
+View more,Переглянути більше
+View page,Переглянути сторінку
+WARNING,ПОПЕРЕДЖЕННЯ
+Warning: you are editing multiple entities. Fields marked with a,"Попередження: ви редагуєте декілька об'єктів. Поля, позначені"
+We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
+Welcome to Uwazi,Ласкаво просимо до Uwazi
+"Well, this is awkward...","Що ж, це незручно..."
+Whitelisted templates,Шаблони білого списку
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Намагатиметься заповнити контейнер, використовуючи всю його ширину. У картках, ймовірно, відбудеться обрізання."
+will be updated with the same value.,оновлюватиметься з цим же значенням
+Will show the entire media inside the container.,Покаже всі носії всередині контейнера.
+with,з
+With great power comes great responsibility!,З великою силою приходить велика відповідальність!
+x less,менше
+x more,більше
+Year,Рік
+Yes,Так.
+You can add one or many items in this form.,Ви можете додати один або декілька елементів у цій формі.
+"You can also embed advanced components like maps, charts and entity lists in your page.","Ви також можете додати на свою сторінку такі корисні компоненти, як карти, графіки та списки об'єктів."
+You can also enter this secret key into your Authenticator app.,Ви також можете ввести цей секретний ключ у вашому додатку Authenticator.
+You can create metadata templates in,Ви можете створювати шаблони метаданих у
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
+You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
+You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
+You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.
+You won't be able to save an entity if this property is empty.,"Ви не зможете зберегти сутність, якщо ця властивість порожня."
+Your account's security is enhanced with two-factor authentication.,Безпека вашого облікового запису посилюється завдяки двофакторній автентифікації.
+Zoom in,Збільшити масштаб
+Zoom in library view,Збільшити масштаб перегляду бібліотеки
+Zoom out,Зменшити масштаб
+Zoom out library view,Зменшити масштаб перегляду бібліотеки

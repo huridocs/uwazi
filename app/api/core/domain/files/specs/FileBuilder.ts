@@ -1,8 +1,8 @@
-import { Attachment } from '../Attachment';
+import { FileAttachment } from '../FileAttachment';
 import { CustomUpload } from '../CustomUpload';
-import { Document } from '../Document';
+import { ProcessingPDF } from '../ProcessingPDF';
 import { FileContents } from '../FileContents';
-import { ProcessedDocument } from '../ProcessedDocument';
+import { ProcessedPDF } from '../ProcessedPDF';
 import { Thumbnail } from '../Thumbnail';
 import { URLAttachment } from '../URLAttachment';
 
@@ -13,8 +13,8 @@ type PartialFirstConstructorArg<T> = T extends new (arg: infer A, ...args: any[]
   : never;
 
 export class FileBuilder {
-  static document(id: string, props?: PartialFirstConstructorArg<typeof Document>) {
-    return new Document({
+  static document(id: string, props?: PartialFirstConstructorArg<typeof ProcessingPDF>) {
+    return new ProcessingPDF({
       id,
       entity: 'entity1',
       originalname: 'doc.pdf',
@@ -28,11 +28,8 @@ export class FileBuilder {
     });
   }
 
-  static processedDocument(
-    id: string,
-    props?: PartialFirstConstructorArg<typeof ProcessedDocument>
-  ) {
-    return new ProcessedDocument({
+  static processedDocument(id: string, props?: PartialFirstConstructorArg<typeof ProcessedPDF>) {
+    return new ProcessedPDF({
       id,
       entity: 'entity1',
       originalname: 'doc.pdf',
@@ -59,13 +56,12 @@ export class FileBuilder {
       mimetype: 'application/pdf',
       size: 2048,
       creationDate: 1234567891,
-      content: FileBuilder.content('urlAttachment'),
       ...props,
     });
   }
 
-  static attachment(id: string, props?: PartialFirstConstructorArg<typeof Attachment>) {
-    return new Attachment({
+  static attachment(id: string, props?: PartialFirstConstructorArg<typeof FileAttachment>) {
+    return new FileAttachment({
       id,
       entity: 'entity2',
       originalname: 'file.pdf',

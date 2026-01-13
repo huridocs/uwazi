@@ -1,27 +1,29 @@
 import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
 import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
 import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { FilesServiceFactory } from './FilesServiceFactory';
+import { TransactionManagerFactory } from './TransactionManagerFactory';
+import { IdGeneratorFactory } from './IdGeneratorFactory';
 
 class CreateEntityUseCaseFactory {
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
-    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+
+    const transactionManager = TransactionManagerFactory.default();
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const idGenerator = IdGeneratorFactory.default();
+
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);

@@ -4,11 +4,12 @@ import { useLoaderData, useSearchParams } from 'react-router';
 import {
   Bars3CenterLeftIcon,
   DocumentTextIcon,
+  LinkIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-
 import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
 import { MetadataDisplay } from 'V2/Components/Metadata';
 import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
@@ -16,11 +17,13 @@ import { Tabs } from 'V2/Components/UI';
 import {
   TabLabel,
   PDFView,
+  ReferencesPanel,
   SearchHintsModal,
   MAIN_TAB_PARAM,
   SIDE_TAB_PARAM,
   SearchResults,
   ToCPanel,
+  FileList,
 } from './Components';
 import { LoaderResponse } from './types';
 
@@ -28,11 +31,13 @@ const MAIN_TABS = {
   DOCUMENT: 'document',
   METADATA: 'metadata',
   RELATIONSHIPS: 'relationships',
+  FILES: 'files',
 };
 
 const SIDE_TABS = {
   METADATA: 'metadata',
   TOC: 'toc',
+  REFERENCES: 'references',
   RELATIONSHIPS: 'relationships',
   SEARCH: 'search',
 };
@@ -57,7 +62,7 @@ const Entity = () => {
   const mainTabElements = useMemo(() => {
     const tabs: React.ReactElement[] = [];
 
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       tabs.push(
         <Tabs.Tab
           id={MAIN_TABS.DOCUMENT}
@@ -90,6 +95,17 @@ const Entity = () => {
         <span no-translate>Relationships</span>
       </Tabs.Tab>
     );
+    if (entity?.mainDocument?.length || entity?.documents?.length || entity?.attachments?.length) {
+      tabs.push(
+        <Tabs.Tab
+          id={MAIN_TABS.FILES}
+          key={MAIN_TABS.FILES}
+          label={<TabLabel text="Files" icon={<PaperClipIcon className="w-5 h-5" />} />}
+        >
+          <FileList entity={entity} />
+        </Tabs.Tab>
+      );
+    }
 
     return tabs;
   }, [entity, pagePlaintext]);
@@ -108,7 +124,18 @@ const Entity = () => {
         {
           id: SIDE_TABS.TOC,
           label: <TabLabel text="ToC" icon={<ListBulletIcon className="w-5 h-5" />} />,
-          content: <ToCPanel toc={entity?.mainDocument?.toc} />,
+          content: (
+            <ToCPanel
+              toc={entity?.mainDocument?.[0].toc}
+              generatedToc={entity?.mainDocument?.[0].generatedToc}
+              file={entity?.mainDocument?.[0]}
+            />
+          ),
+        },
+        {
+          id: SIDE_TABS.REFERENCES,
+          label: <TabLabel text="References" icon={<LinkIcon className="w-5 h-5" />} />,
+          content: <ReferencesPanel references={entity?.references} />,
         },
         {
           id: SIDE_TABS.RELATIONSHIPS,
@@ -150,6 +177,7 @@ const Entity = () => {
           content: entity ? <MetadataDisplay entity={entity} /> : <Translate>Loading</Translate>,
         },
       ],
+      [MAIN_TABS.FILES]: [],
     }),
     [entity]
   );
@@ -159,7 +187,7 @@ const Entity = () => {
     if (isValidMainTab(mainTab)) {
       return mainTab;
     }
-    if (entity?.mainDocument?.filename) {
+    if (entity?.mainDocument?.[0]?.filename) {
       return MAIN_TABS.DOCUMENT;
     }
     return MAIN_TABS.METADATA;
@@ -225,19 +253,20 @@ const Entity = () => {
   }
 
   return (
-    <div className="tw-content">
-      <PaneLayout defaultWidthsPercents={[0.65, 0.35]} className="bg-white">
-        <PaneLayout.Pane className="p-2 h-full">
+    <div className="tw-content" style={{ width: '100%', height: '100%' }}>
+      <PaneLayout defaultRatios={[0.65, 0.35]} className="bg-white">
+        <PaneLayout.Pane className="h-full">
           <Tabs unmountTabs={false} initialTabId={activeMainTab} onTabSelected={onMainTabChange}>
             {mainTabElements}
           </Tabs>
         </PaneLayout.Pane>
-        <PaneLayout.Pane className="p-2 h-full">
+        <PaneLayout.Pane className="h-full">
           <Tabs
             className="min-w-[300px] overflow-x-auto"
             unmountTabs={false}
             initialTabId={activeSideTab}
             onTabSelected={onSideTabChange}
+            tabListAriaLabel="Side panel tabs"
           >
             {sideTabElements}
           </Tabs>

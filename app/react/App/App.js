@@ -55,6 +55,9 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
+  const isV2Route =
+    location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
+
   socket.on('updateSettings', _settings => {
     setSettings(_settings);
   });
@@ -71,7 +74,7 @@ const App = ({ customParams }) => {
         ) : (
           <LegacyHeader />
         )}
-        <main id="main" className="app-content container-fluid">
+        <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
           <AppMainContext.Provider value={appContext}>
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Confirm {...confirmOptions} />

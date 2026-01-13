@@ -40,7 +40,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
   const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const padding = 10;
+  const padding = 0;
   const containerStyles = {
     height: size?.height || '100%',
     width: size?.width || '100%',
@@ -68,7 +68,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
 
     const initialWidth = Math.max(
       0,
-      (container.clientWidth || container.offsetWidth) - padding * 2
+      (container.clientWidth || container.offsetWidth) - padding * 2 - 2
     );
 
     setContainerWidth(initialWidth);
@@ -81,7 +81,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
         }
 
         resizeTimeoutRef.current = setTimeout(() => {
-          const newWidth = Math.max(0, entry.contentRect.width - padding * 2);
+          const newWidth = Math.max(0, entry.contentRect.width - padding * 2 - 2);
           setContainerWidth(newWidth);
         }, 150);
       }

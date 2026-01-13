@@ -50,7 +50,6 @@ const mainDoc = {
 
 const customPDF = {
   _id: db.id(),
-  entity: 'restrictedSharedId',
   creationDate: 1,
   originalname: 'customPdf',
   filename: customPdfFileName,
@@ -93,6 +92,13 @@ const downloadFixtures = {
   mainDoc,
   publicEntityFile,
   restrictedThumbnail,
+};
+
+const collabInGroupUser = {
+  _id: db.id(),
+  username: 'collab_in_group',
+  role: UserRole.COLLABORATOR,
+  email: 'collab_in_group@tenant.xy',
 };
 
 const collabUser = {
@@ -205,6 +211,7 @@ const fixtures: DBFixture = {
       language: 'en',
       title: 'Gadgets 01 EN',
       metadata: {},
+      published: true,
     },
     {
       _id: restrictedEntityId,
@@ -217,6 +224,11 @@ const fixtures: DBFixture = {
         {
           refId: writerUserId.toString(),
           type: 'user',
+          level: 'write',
+        },
+        {
+          refId: fixturesFactory.id('group 1'),
+          type: 'group',
           level: 'write',
         },
       ],
@@ -260,9 +272,9 @@ const fixtures: DBFixture = {
       _id: thesaurusId,
       name: 'Select with spaces',
       values: [
-        { _id: db.id(), id: 'item1', label: 'Item1' },
-        { _id: db.id(), id: 'item2', label: ' Item2 ' },
-        { _id: db.id(), id: 'normal_item', label: 'Normal Item' },
+        { id: 'item1', label: 'Item1' },
+        { id: 'item2', label: ' Item2 ' },
+        { id: 'normal_item', label: 'Normal Item' },
       ],
     },
   ],
@@ -275,7 +287,14 @@ const fixtures: DBFixture = {
       openPublicEndpoint: true,
     },
   ],
-  users: [collabUser, writerUser, adminUser],
+  users: [collabInGroupUser, collabUser, writerUser, adminUser],
+  groups: [
+    {
+      id: fixturesFactory.id('group 1'),
+      name: 'group 1',
+      members: [{ refId: collabInGroupUser._id.toString() }],
+    },
+  ],
   ixextractors: [
     fixturesFactory.ixExtractor('property_1_extractor', 'property 1', ['template']),
     fixturesFactory.ixExtractor('property_2_extractor', 'property 2', ['template']),
@@ -333,10 +352,12 @@ const fixtures: DBFixture = {
 };
 
 export {
+  fixturesFactory,
   adminUser,
   allowedPublicTemplate,
   allowedPublicTemplate as templateId,
   collabUser,
+  collabInGroupUser,
   customFileId,
   customPdfFileName,
   downloadFixtures,

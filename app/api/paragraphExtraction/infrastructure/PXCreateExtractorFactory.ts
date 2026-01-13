@@ -17,7 +17,7 @@ export class PXCreateExtractorFactory {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const dispatcher = await DefaultDispatcher(props.tenantName, {
+    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
 

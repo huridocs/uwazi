@@ -32,7 +32,6 @@ const routes = app => {
                     type: 'object',
                     properties: {
                       id: { type: 'string' },
-                      _id: { type: 'string' },
                       label: { type: 'string' },
                       values: { type: 'array', items: { type: 'object' } },
                     },
@@ -55,7 +54,7 @@ const routes = app => {
       required: ['body'],
     }),
     async (req, res, next) => {
-      if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req.file) {
+      if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req?.file && !req?.body?._id) {
         await CreateThesaurusController.createHandler()(req, res);
         return;
       }

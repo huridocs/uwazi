@@ -20,16 +20,16 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { UseCaseContext } from 'api/core/libs/UseCase';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { InputFile } from 'api/core/domain/files/InputFile';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
+import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
+import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { CreateEntityUseCase } from '../CreateEntity';
 import { EntitiesService } from '../EntitiesService';
 import { FilesService } from '../FilesService';
 import { PropertyAssignmentCreatorServiceStrategy } from '../propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
-import { MongoRelationshipsV1DataSource } from 'api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
 
 const factory = getFixturesFactory();
 
@@ -214,7 +214,7 @@ const createSut = (props: CreateSutProps = {}) => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
-  const jobsDispatcher = DefaultDispatcher(tenants.current().name);
+  const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
   const fileService = new FilesService({
     pathManager: new PathManager({ tenant: tenants.current() }),
     idGenerator,
@@ -224,7 +224,7 @@ const createSut = (props: CreateSutProps = {}) => {
     filesIO: new FileContentsIO(),
     pdfService: new PDFService(),
     relV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-    transactionManager: transactionManager,
+    transactionManager,
     eventBus: applicationEventsBus,
   });
 

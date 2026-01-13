@@ -62,8 +62,12 @@ const userFromRequest = () => {
 };
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
-  async () =>
-    new QueuedRelationshipPropertyUpdateStrategy(await DefaultDispatcher(tenants.current().name));
+  async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    return new QueuedRelationshipPropertyUpdateStrategy(
+      DefaultDispatcher(tenants.current().name, transactionManager)
+    );
+  };
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
@@ -246,11 +250,13 @@ const UpdateRelationshipPropertiesJob = () => {
   return new GenericUpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
 };
 
-const UpdateTemplateRelationshipPropertiesJob = async () =>
-  new GenericUpdateTemplateRelationshipPropertiesJob(
-    DefaultEntitiesDataSource(TransactionManagerFactory.default()),
-    await DefaultDispatcher(tenants.current().name)
+const UpdateTemplateRelationshipPropertiesJob = async () => {
+  const transactionManager = TransactionManagerFactory.default();
+  return new GenericUpdateTemplateRelationshipPropertiesJob(
+    DefaultEntitiesDataSource(transactionManager),
+    await DefaultDispatcher(tenants.current().name, transactionManager)
   );
+};
 
 export {
   CreateRelationshipMigrationFieldService,

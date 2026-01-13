@@ -5,8 +5,8 @@ import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { ObjectId } from 'mongodb';
 
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { DiskFile } from 'api/core/domain/files/DiskFile';
-import { ProcessedDocument } from 'api/core/domain/files/ProcessedDocument';
+import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
@@ -61,7 +61,7 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
   ],
 };
 
-const document = new ProcessedDocument({
+const document = new ProcessedPDF({
   id: 'any_id',
   entity: 'any_entity',
   language: 'pt',
@@ -76,7 +76,7 @@ const document = new ProcessedDocument({
   content: new DiskFile('fake/path').toContent(),
 });
 
-const document2 = new ProcessedDocument({
+const document2 = new ProcessedPDF({
   id: 'any_id2',
   entity: 'any_entity2',
   language: 'es',

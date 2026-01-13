@@ -6,6 +6,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { Entity as EntityType } from 'V2/domain/entities/Entity';
 import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from 'V2/testing';
 import { settingsAtom, userAtom } from 'V2/atoms';
+import * as utils from 'app/utils';
 import * as files from 'V2/api/files';
 import * as PDFViewerModule from 'V2/Components/PDFViewer';
 import { Entity } from '../Entity';
@@ -20,7 +21,7 @@ const sampleEntity: Partial<EntityType> = {
   sharedId: 'shared1',
   title: 'Sample Entity',
   template: { _id: 'template1', label: 'Template 1', name: 'template1' },
-  mainDocument: { filename: 'file.pdf' },
+  mainDocument: [{ filename: 'file.pdf' }],
   metadata: [],
 };
 
@@ -76,7 +77,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: '',
           }}
         >
@@ -100,7 +101,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: '',
           }}
         >
@@ -278,7 +279,7 @@ describe('Entity view', () => {
       render(
         <TestRouterContext
           loaderData={{
-            entity: { ...sampleEntity, mainDocument: mainDocumentFile },
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
             pagePlaintext: pageText,
           }}
         >
@@ -300,6 +301,29 @@ describe('Entity view', () => {
       await waitFor(() => {
         expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
       });
+    });
+
+    it('should render the plain text view on SSR', async () => {
+      jest.replaceProperty(utils, 'isClient', false);
+
+      render(
+        <TestRouterContext
+          loaderData={{
+            entity: { ...sampleEntity, mainDocument: [mainDocumentFile] },
+            pagePlaintext: pageText,
+          }}
+        >
+          <Entity />
+        </TestRouterContext>
+      );
+
+      await checkEntityRendered();
+
+      await waitFor(() => {
+        expect(screen.getByText(pageText).parentElement?.classList).toContain('block');
+      });
+
+      jest.restoreAllMocks();
     });
   });
 
@@ -406,16 +430,16 @@ describe('Entity view', () => {
 
       fireEvent.click(pageButton);
 
-      expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('deactivateSnippet');
       expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith('goToPage', 5);
 
-      jest.advanceTimersByTime(100);
+      jest.advanceTimersByTime(200);
 
       expect(PDFViewerModule.pdfEventBus.dispatch).toHaveBeenCalledWith(
         'activateSnippet',
         snippets.data[0].snippets.fullText[0]
       );
 
+      jest.useRealTimers();
       jest.clearAllMocks();
     });
   });

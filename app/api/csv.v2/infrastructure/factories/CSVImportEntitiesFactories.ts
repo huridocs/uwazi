@@ -37,7 +37,7 @@ export class CSVImportEntitiesFactories {
     const tenant = tenants.current();
     const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
     const idGenerator = IdGeneratorFactory.default();
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     return new CsvImportEntities({
       csvImportsDS,
       fileStorage,
@@ -54,7 +54,7 @@ export class CSVImportEntitiesFactories {
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name);
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     return new CsvPreflightJob({
       csvImportsDS,
       rowsDS: this.CSVImportRowsDSDefault(transactionManager),

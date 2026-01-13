@@ -2,17 +2,19 @@ import { createError } from 'api/utils';
 
 import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileMappers } from 'api/core/infrastructure/mongodb/files/FilesMappers';
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { BaseFile } from 'api/core/domain/files/BaseFile';
 import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { tenants } from 'api/tenants';
+import { User } from 'api/users.v2/model/User';
 import { Request, Response } from 'express';
-import { FileType } from 'shared/types/fileType';
-import { Readable } from 'stream';
 import { z } from 'zod';
+import { pipeline } from 'stream/promises';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
-import { SettingsDataSourceFactory } from '../factories/SettingsDataSourceFactory';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
+import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
+import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 
@@ -25,60 +27,28 @@ const requestSchema = z.object({
   }),
 });
 
-const getCacheControlHeader = (
-  isPubliclyAccessible: boolean,
-  isPrivateInstance: boolean
-): string => {
-  if (isPrivateInstance) {
-    return 'private, max-age=3600';
-  }
-
-  if (isPubliclyAccessible) {
-    return 'public, no-cache';
-  }
-
-  return 'private, max-age=3600';
-};
-
 type Deps = Dependencies & {
   typesAllowed: fileDBO['type'][];
-  checkFilePermissions: (file: FileType) => Promise<boolean>;
-  isFilePubliclyAccessible: (file: FileType, isPrivateInstance: boolean) => Promise<boolean>;
 };
 
 class DownloadFileController extends AbstractController {
   private typesAllowed: fileDBO['type'][];
 
-  private checkFilePermissions: (file: FileType) => Promise<boolean>;
-
   private fileStorage: FileStorage;
 
-  private isFilePubliclyAccessible: (
-    file: FileType,
-    isPrivateInstance: boolean
-  ) => Promise<boolean>;
-
   constructor(dependencies: Deps) {
-    const { typesAllowed, checkFilePermissions, isFilePubliclyAccessible, ...rest } = dependencies;
+    const { typesAllowed, ...rest } = dependencies;
     super(rest);
     this.typesAllowed = typesAllowed;
-    this.checkFilePermissions = checkFilePermissions;
-    this.isFilePubliclyAccessible = isFilePubliclyAccessible;
     this.fileStorage = FileStorageFactory.default();
   }
 
-  static customHandler(
-    typesAllowed: fileDBO['type'][],
-    checkFilePermissions: (file: FileType) => Promise<boolean>,
-    isFilePubliclyAccessible: (file: FileType, isPrivateInstance: boolean) => Promise<boolean>
-  ) {
+  static customHandler(typesAllowed: fileDBO['type'][]) {
     return async (request: Request, response: Response) =>
       new DownloadFileController({
         request,
         response,
         typesAllowed,
-        checkFilePermissions,
-        isFilePubliclyAccessible,
       }).handleAsync();
   }
 
@@ -96,18 +66,19 @@ class DownloadFileController extends AbstractController {
 
     this.addContentHeaders(file.originalname || file.filename, query, file.mimetype);
 
-    const stream = Readable.from(
-      (
-        await this.fileStorage.getFile({
-          filename: file.filename,
-          type: file.type,
-        })
-      ).read()
-    );
-    this.response.on('close', () => {
-      stream.destroy();
+    const fileContents = this.fileStorage.getFile({
+      filename: file.filename,
+      type: file.type,
     });
-    stream.pipe(this.response);
+
+    try {
+      await pipeline(fileContents.read(), this.response);
+    } catch (e) {
+      if (e.code === 'ERR_STREAM_PREMATURE_CLOSE' && this.request.aborted) {
+        throw new OperationalError('Client aborted the request', { cause: e });
+      }
+      throw e;
+    }
   }
 
   private async getFile(filename: string) {
@@ -121,24 +92,20 @@ class DownloadFileController extends AbstractController {
     }
 
     const filev2 = fileResult.getData();
-    const file = FileMappers.toDTO(filev2);
-    if (!(await this.fileStorage.fileExists(filev2)) || !(await this.checkFilePermissions(file))) {
+    if (
+      !(await this.fileStorage.fileExists(filev2)) ||
+      !(await this.checkFileReadPermissions(filev2))
+    ) {
       throw createError('file not found', 404);
     }
-    return file;
+    return filev2;
   }
 
-  private async addFileCacheHeaders(file: FileType) {
+  private async addFileCacheHeaders(file: BaseFile) {
     if (this.request.user) {
       this.response.setHeader('Cache-Control', 'private, max-age=3600');
     } else {
-      const settingsDS = SettingsDataSourceFactory.default(TransactionManagerFactory.default());
-      const isPrivateInstance = (await settingsDS.get()).private || false;
-
-      const isPublic = await this.isFilePubliclyAccessible(file, isPrivateInstance);
-
-      const cacheControl = getCacheControlHeader(isPublic, isPrivateInstance);
-      this.response.setHeader('Cache-Control', cacheControl);
+      this.response.setHeader('Cache-Control', 'public, no-cache');
     }
 
     if (file.creationDate) {
@@ -164,6 +131,30 @@ class DownloadFileController extends AbstractController {
       );
     }
     this.response.setHeader('Content-Type', mimetype || 'application/octet-stream');
+  }
+
+  private async checkFileReadPermissions(file: BaseFile): Promise<boolean> {
+    if (!file.isEntityFile()) {
+      return true;
+    }
+
+    const entityPermissionChecker = new MongoEntityPermissionChecker(
+      getConnection(),
+      TransactionManagerFactory.default()
+    );
+
+    return (
+      await entityPermissionChecker.checkReadPermission(
+        file.entity,
+        this.request.user
+          ? User.createFrom({
+              id: this.request.user._id.toString(),
+              role: this.request.user.role,
+              groups: (this.request.user.groups || []).map(g => g._id.toString()),
+            })
+          : undefined
+      )
+    ).getDataOrThrow();
   }
 }
 

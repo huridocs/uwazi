@@ -338,10 +338,7 @@ describe('syncWorker', () => {
       expect(await thesauri.get()).toMatchObject([
         {
           name: 'thesauri1',
-          values: [
-            { _id: expect.anything(), label: 'th1value1' },
-            { _id: expect.anything(), label: 'th1value2' },
-          ],
+          values: [{ label: 'th1value1' }, { label: 'th1value2' }],
         },
       ]);
     }, 'target1');

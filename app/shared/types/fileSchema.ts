@@ -31,6 +31,7 @@ const fileSchema = {
     size: { type: 'number' },
     creationDate: { type: 'number' },
     language: { type: 'string', minLength: 1 },
+    iso639_3: { type: 'string' },
     type: { type: 'string', enum: Object.values(TypeOfFile) },
     url: { type: 'string', pattern: '^https://' },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },

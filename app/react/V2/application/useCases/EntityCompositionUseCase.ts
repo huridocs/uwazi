@@ -28,6 +28,8 @@ export class EntityCompositionUseCase {
       settings: this.atomStore.get(settingsAtom) || {},
       thesauri: this.atomStore.get(thesauriAtom) || {},
       currentUser: this.atomStore.get(userAtom) || undefined,
+      defaultLanguage:
+        this.atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key || 'en',
     };
   }
 
@@ -68,6 +70,7 @@ export class EntityCompositionUseCase {
         {
           sharedId: entityId,
           language: this.atomStore.get(localeAtom) || 'en',
+          omitRelationships: options.omitRelationships ?? false,
         },
         context.headers || {}
       );

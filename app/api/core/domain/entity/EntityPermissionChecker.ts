@@ -3,6 +3,7 @@ import { User } from 'api/users.v2/model/User';
 import { ResultType } from 'api/core/libs/Result';
 import { AccessLevel } from './AccessLevel';
 import { PermissionType } from './PermissionType';
+import { BaseFile } from '../files/BaseFile';
 
 type SpecificationProps = {
   type: PermissionType;
@@ -45,6 +46,8 @@ interface EntityPermissionChecker {
     sharedIds: string[],
     specification: Specification
   ): Promise<ResultType<string[], Error>>;
+  checkReadPermission(sharedId: string, user?: User): Promise<ResultType<boolean, Error>>;
+  checkWritePermission(file: BaseFile, user?: User): Promise<ResultType<boolean, Error>>;
 }
 
 export { Specification };
