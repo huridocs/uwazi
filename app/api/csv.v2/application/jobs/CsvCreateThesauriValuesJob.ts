@@ -120,7 +120,7 @@ class CsvCreateThesauriValuesJob extends AbstractUseCase<Input, void, Deps> {
     };
 
     let updatedDoc = pendingDoc;
-    if (updatedDoc.shouldPersist(summary)) {
+    if (updatedDoc.shouldPersist(summary, appliedValues)) {
       updatedDoc = await this.persistPendingValuesApplication({
         pendingDoc: updatedDoc,
         summary,
