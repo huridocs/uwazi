@@ -1,5 +1,8 @@
 /* eslint-disable max-statements */
+import { Result } from 'api/core/libs/Result';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvThesauriPendingEntry } from '../../../domain/CsvThesauriPendingValues';
+import { CsvImportThesauriValues } from '../../../domain/CsvImportThesauriValues';
 import { CsvCreateThesauriValuesJob } from '../CsvCreateThesauriValuesJob';
 
 const createTransactionManager = () =>
@@ -21,37 +24,33 @@ describe('CsvCreateThesauriValuesJob', () => {
       createdBy: 'user-id',
     });
     const csvImportsDS = {
-      getById: jest.fn().mockResolvedValue(csvImport),
+      getById: jest.fn().mockResolvedValue(Result.ok(csvImport)),
       update: jest.fn().mockResolvedValue(undefined),
     };
+    const entry = new CsvThesauriPendingEntry({
+      propertyId: 'prop',
+      propertyName: 'Property',
+      thesaurusId: 'thes',
+      type: 'select',
+    });
+    const root = entry.ensureRoot({
+      label: 'Country',
+      normalized: 'country',
+      languages: { en: 'Country', es: 'País' },
+    });
+    root.ensureChild({
+      label: 'Country::City',
+      normalized: 'country::city',
+      languages: { en: 'City', es: 'Ciudad' },
+    });
+
     const pendingDocs = [
-      {
+      CsvImportThesauriValues.create({
         importId: 'import-id',
         thesaurusId: 'thes',
         createdAt: Date.now(),
-        entries: [
-          {
-            propertyId: 'prop',
-            propertyName: 'Property',
-            thesaurusId: 'thes',
-            type: 'select',
-            roots: [
-              {
-                label: 'Country',
-                normalized: 'country',
-                languages: { en: 'Country', es: 'País' },
-                children: [
-                  {
-                    label: 'Country::City',
-                    normalized: 'country::city',
-                    languages: { en: 'City', es: 'Ciudad' },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+        entries: [entry],
+      }),
     ];
     const thesauriValuesDS = {
       getByImport: jest.fn().mockResolvedValue(pendingDocs),

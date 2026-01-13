@@ -352,3 +352,115 @@ Keep this document synchronized with the code. Any change to the job behavior, d
   - Stage CSV rows by calling the real `CsvImportRowsDataSource.insertMany` (via helpers) and persist imports through `CsvImportsDataSource.insert`; never short-circuit those writes.
   - Lifecycle: `beforeAll` seeds fixtures once, `afterEach` resets to the canonical fixtures via `testingEnvironment.setFixtures(fixtures)` and deletes only the stage-specific collections (`csv_imports`, `csv_import_rows`, `csv_import_thesauri_values`), `afterAll` tears everything down.
   - Always run `npx jest`, `npx eslint <touched files>`, and `npx tsc --noEmit` locally before handing off—even test-only changes must remain type/lint clean to honor the “non-negotiable” gate above.
+
+### 16. Code review follow-up
+
+- The recent review of `CsvExtractUploadedZipJob` uncovered concerns about optional guards around `storage.path` and `existing` import documents. The reasoning, failure scenarios, and suggested tightening strategies (dispatcher-level assertions, payloading the storage path, domain helpers) live in `csv-v2-context-05-codeReview.md` so future contributors can see the thought process and follow-up plan.
+
+### 17. Domain modeling convention
+
+- Follow the `Template` domain pattern (`app/api/core/domain/template/Template.ts`) for every CSV V2 domain:
+  - Define each persisted field (e.g., `importId`, `thesaurusId`, `entries`, `createdAt`, optional `appliedAt`, etc.) as `readonly` class properties.
+  - Add getters that expose derived data instead of leaking raw shapes.
+  - Encapsulate mutations (status/failure updates, applied-value merges, stats increments) via domain methods that return new instances.
+  - Provide a `toPersistence()` helper so DS adapters always persist the canonical shape.
+- Apply this consistently to:
+  - `CsvImport` / `CsvImportRow`
+  - `CsvThesauriPendingValues` / `CsvImportThesauriValues`
+  - Any future domain objects (relationships, stats, etc.)
+- Sketch (to be codified later):
+
+```ts
+class CsvImportThesauriValues {
+  readonly importId: string;
+  readonly thesaurusId: string;
+  readonly entries: CsvThesauriPendingEntry[];
+  readonly createdAt: number;
+  readonly appliedAt?: number;
+  readonly appliedValues?: CsvImportThesauriAppliedValue[];
+  readonly stats?: CsvImportThesauriStats;
+
+  private constructor(history: {
+    importId: string;
+    thesaurusId: string;
+    entries: CsvThesauriPendingEntry[];
+    createdAt: number;
+    appliedAt?: number;
+    appliedValues?: CsvImportThesauriAppliedValue[];
+    stats?: CsvImportThesauriStats;
+  }) {
+    Object.assign(this, history);
+  }
+
+  static create(props: {
+    importId: string;
+    thesaurusId: string;
+    entries: CsvThesauriPendingEntry[];
+    createdAt: number;
+    appliedAt?: number;
+    appliedValues?: CsvImportThesauriAppliedValue[];
+    stats?: CsvImportThesauriStats;
+  }) {
+    return new CsvImportThesauriValues(props);
+  }
+
+  withAppliedValues(
+    summary: Pick<PendingValuesDiffSummary, 'observedValues' | 'createdCount'>,
+    incoming: CsvImportThesauriAppliedValue[]
+  ) {
+    const appliedValues = this.mergeAppliedValues(incoming);
+    const stats = this.combineStats(summary);
+    return new CsvImportThesauriValues({
+      importId: this.importId,
+      thesaurusId: this.thesaurusId,
+      entries: this.entries,
+      createdAt: this.createdAt,
+      appliedAt: Date.now(),
+      appliedValues,
+      stats,
+    });
+  }
+
+  private mergeAppliedValues(incoming: CsvImportThesauriAppliedValue[]) {
+    const seen = new Set(
+      (this.appliedValues ?? []).map(
+        value => `${value.parentLabel || ''}::${value.label}::${value.valueId}`
+      )
+    );
+    const additions = incoming.filter(value => {
+      const key = `${value.parentLabel || ''}::${value.label}::${value.valueId}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+    return [...(this.appliedValues ?? []), ...additions];
+  }
+
+  private combineStats(summary: Pick<PendingValuesDiffSummary, 'observedValues' | 'createdCount'>) {
+    const previous: CsvImportThesauriStats = this.stats ?? {
+      valuesObserved: summary.observedValues,
+      valuesCreated: this.appliedValues?.length ?? 0,
+    };
+    return {
+      valuesObserved: summary.observedValues,
+      valuesCreated: previous.valuesCreated + summary.createdCount,
+    };
+  }
+
+  toPersistence() {
+    return {
+      importId: this.importId,
+      thesaurusId: this.thesaurusId,
+      entries: this.entries,
+      createdAt: this.createdAt,
+      appliedAt: this.appliedAt,
+      appliedValues: this.appliedValues,
+      stats: this.stats,
+    };
+  }
+}
+```
+
+- Document similar sketches in the relevant context files so every domain designer follows the same blueprint before implementation. Let me know when you want me to formalize each class.

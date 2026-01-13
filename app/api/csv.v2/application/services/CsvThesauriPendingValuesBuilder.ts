@@ -9,8 +9,6 @@ import {
   CsvThesauriPendingValues,
   CsvThesauriPendingEntry,
   CsvThesauriPendingIssue,
-  CsvThesauriPendingRoot,
-  CsvThesauriPendingChild,
 } from '../../domain/CsvThesauriPendingValues';
 
 type BuildParams = {
@@ -38,16 +36,6 @@ type ParsedLabel = {
     label: string;
     normalized: string;
   };
-};
-
-type PendingEntryInternal = {
-  entry: CsvThesauriPendingEntry;
-  roots: Map<string, PendingRootInternal>;
-};
-
-type PendingRootInternal = {
-  data: CsvThesauriPendingRoot;
-  children: Map<string, CsvThesauriPendingChild>;
 };
 
 const MULTIVALUE_SEPARATOR = '|';
@@ -143,96 +131,37 @@ const parseValues = (rawValue: string, property: SelectLikeProperty) => {
 
 const ensurePendingEntry = (
   property: SelectLikeProperty,
-  entries: Map<string, PendingEntryInternal>
-): PendingEntryInternal => {
+  entries: Map<string, CsvThesauriPendingEntry>
+) => {
   const existing = entries.get(property.id);
   if (existing) {
     return existing;
   }
-
-  const entry: CsvThesauriPendingEntry = {
+  const entry = new CsvThesauriPendingEntry({
     propertyId: property.id,
     propertyName: property.name,
-    thesaurusId: (property as SelectLikeProperty).content || '',
+    thesaurusId: property.content || '',
     type: property.type === 'multiselect' ? 'multiselect' : 'select',
-    roots: [],
-  };
-  const internal: PendingEntryInternal = {
-    entry,
-    roots: new Map(),
-  };
-  entries.set(property.id, internal);
-  return internal;
-};
-
-const ensureRoot = (
-  parent: PendingEntryInternal,
-  label: string,
-  normalized: string,
-  defaultLanguage: string
-): PendingRootInternal => {
-  const existing = parent.roots.get(normalized);
-  if (existing) {
-    if (!existing.data.languages[defaultLanguage]) {
-      existing.data.languages[defaultLanguage] = label;
-    }
-    return existing;
-  }
-
-  const root: CsvThesauriPendingRoot = {
-    label,
-    normalized,
-    languages: { [defaultLanguage]: label },
-    children: [],
-  };
-  const internal: PendingRootInternal = {
-    data: root,
-    children: new Map(),
-  };
-  parent.roots.set(normalized, internal);
-  parent.entry.roots.push(root);
-  return internal;
-};
-
-const ensureChild = (
-  parent: PendingRootInternal,
-  label: string,
-  normalized: string,
-  defaultLanguage: string
-) => {
-  const existing = parent.children.get(normalized);
-  if (existing) {
-    if (!existing.languages[defaultLanguage]) {
-      existing.languages[defaultLanguage] = label;
-    }
-    return existing;
-  }
-
-  const child: CsvThesauriPendingChild = {
-    label,
-    normalized,
-    languages: { [defaultLanguage]: label },
-  };
-  parent.children.set(normalized, child);
-  parent.data.children.push(child);
-  return child;
+  });
+  entries.set(property.id, entry);
+  return entry;
 };
 
 export class CsvThesauriPendingValuesBuilder {
   static build(params: BuildParams): BuildResult {
     const { importId, rows, template, headerAnalysis, defaultLanguage, newNameGeneration } = params;
-    const pendingEntries = new Map<string, PendingEntryInternal>();
+    const pendingEntries = new Map<string, CsvThesauriPendingEntry>();
     const issues: CsvThesauriPendingIssue[] = [];
 
     const properties = template.properties.filter(isSelectLikeProperty) as SelectLikeProperty[];
     if (!properties.length) {
       return {
-        pendingValues: {
+        pendingValues: CsvThesauriPendingValues.create({
           importId,
           createdAt: Date.now(),
           defaultLanguage,
           entries: [],
-        },
+        }),
         issues: [],
       };
     }
@@ -269,14 +198,17 @@ export class CsvThesauriPendingValuesBuilder {
 
         const entry = ensurePendingEntry(property, pendingEntries);
         labels.forEach(labelInfo => {
-          const root = ensureRoot(
-            entry,
-            labelInfo.root.label,
-            labelInfo.root.normalized,
-            defaultLanguage
-          );
+          const root = entry.ensureRoot({
+            label: labelInfo.root.label,
+            normalized: labelInfo.root.normalized,
+            languages: { [defaultLanguage]: labelInfo.root.label },
+          });
           if (labelInfo.child) {
-            ensureChild(root, labelInfo.child.label, labelInfo.child.normalized, defaultLanguage);
+            root.ensureChild({
+              label: labelInfo.child.label,
+              normalized: labelInfo.child.normalized,
+              languages: { [defaultLanguage]: labelInfo.child.label },
+            });
           }
         });
 
@@ -316,17 +248,17 @@ export class CsvThesauriPendingValuesBuilder {
                 return;
               }
               const entryRef = pendingEntries.get(property.id);
-              const root = entryRef?.roots.get(target.root.normalized);
+              const root = entryRef?.getRoot(target.root.normalized);
               if (!root) {
                 return;
               }
               if (labelInfo.child && target.child) {
-                const child = root.children.get(target.child.normalized);
+                const child = root.getChild(target.child.normalized);
                 if (child) {
-                  child.languages[lang] = labelInfo.child.label;
+                  child.addLanguage(lang, labelInfo.child.label);
                 }
               } else if (!labelInfo.child && !target.child) {
-                root.data.languages[lang] = labelInfo.root.label;
+                root.addLanguage(lang, labelInfo.root.label);
               }
             });
             if (parsed.labels.length < labels.length) {
@@ -343,12 +275,12 @@ export class CsvThesauriPendingValuesBuilder {
       });
     });
 
-    const pendingValues: CsvThesauriPendingValues = {
+    const pendingValues = CsvThesauriPendingValues.create({
       importId,
       createdAt: Date.now(),
       defaultLanguage,
-      entries: Array.from(pendingEntries.values()).map(entry => entry.entry),
-    };
+      entries: Array.from(pendingEntries.values()),
+    });
 
     return { pendingValues, issues };
   }
