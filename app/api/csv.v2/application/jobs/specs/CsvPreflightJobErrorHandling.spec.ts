@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { Result } from 'api/core/libs/Result';
 import { CsvPreflightJob } from '../CsvPreflightJob';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
 
@@ -39,7 +40,7 @@ describe('CsvPreflightJob error handling', () => {
     );
 
     const csvImportsDS = {
-      getById: jest.fn().mockResolvedValue(csvImport),
+      getById: jest.fn().mockResolvedValue(Result.ok(csvImport)),
       update: jest.fn().mockResolvedValue(undefined),
     };
     const rowsDS = {

@@ -32,18 +32,17 @@ export class CsvImportFileNormalizer {
   }
 
   private async copyCsv(destination: string, filename: string) {
-    const source = await this.deps.fileStorage.getFile({
+    const source = this.deps.fileStorage.getFile({
       type: 'customPath',
       destination,
       filename,
     });
-    const file = new FileContents(() => source.read());
-    await this.deps.fileStorage.storeContent(file, `${destination}/extracted/import.csv`);
+    await this.deps.fileStorage.storeContent(source, `${destination}/extracted/import.csv`);
   }
 
   private async extractZip(params: NormalizeParams) {
     const { importId, destination, filename, onFileProgress } = params;
-    const zipFileContents = await this.deps.fileStorage.getFile({
+    const zipFileContents = this.deps.fileStorage.getFile({
       type: 'customPath',
       destination,
       filename,
