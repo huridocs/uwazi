@@ -1,13 +1,12 @@
-import express, { Request, Response, NextFunction, Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 
 import requestAPI from 'supertest';
 import path from 'path';
 
 import {
-  setupTestUploadedPaths,
-  uploadsPath,
   customUploadsPath,
   deleteFile,
+  setupTestUploadedPaths,
   storage,
 } from '#api/files/index.js';
 

@@ -163,6 +163,10 @@ export function publicSubmit(data, remote = false) {
     });
 }
 
+export function updateMainDocument(docId, file) {
+  return async dispatch => dispatch({ type: types.UPDATE_MAIN_DOC, doc: docId, file });
+}
+
 export function uploadDocument(docId, file) {
   return async dispatch => upload(docId, file)(dispatch);
 }

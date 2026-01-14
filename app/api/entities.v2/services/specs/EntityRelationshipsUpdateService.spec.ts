@@ -144,7 +144,7 @@ afterAll(async () => {
 });
 
 function buildService() {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(getConnection(), transactionManager);
   const templateDataSource = new MongoTemplatesDataSource(getConnection(), transactionManager);
   const entityDataSource = new MongoEntitiesDataSource(

@@ -117,11 +117,11 @@ class PXCreateExtractor implements UseCase<Input, Output> {
 
     await this.dependencies.transactionManager.run(async () => {
       await this.dependencies.extractorDS.create(extractor);
-    });
 
-    await this.dependencies.dispatcher.dispatch(CreateParagraphExtractionEntityStatusesJob, {
-      extractorId: extractor.id,
-      sourceTemplateId: extractor.sourceTemplate.id,
+      await this.dependencies.dispatcher.dispatch(CreateParagraphExtractionEntityStatusesJob, {
+        extractorId: extractor.id,
+        sourceTemplateId: extractor.sourceTemplate.id,
+      });
     });
 
     return extractor;

@@ -11,14 +11,57 @@ let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
 const testingEnvironment = {
+  elasticIndex: '',
+  uploadSubPath: '',
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string) {
+  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
+    if (!elasticIndex) {
+      this.elasticIndex = '';
+    }
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+  },
+
+  testingFilesPath(fileName: string) {
+    return path.join(__dirname, `../files/specs/testing_files/${fileName}`);
+  },
+
+  async setupTenantTmpPaths(files: FileType[]) {
+    const basePath = `/tmp/uwazi_upload_route${Date.now()}`;
+    const uploadsPath = path.join(basePath, 'uploads');
+    const customUploadsPath = path.join(basePath, 'customUploads');
+    const segmentation = path.join(uploadsPath, 'segmentation');
+    await createDirIfNotExists(uploadsPath);
+    await createDirIfNotExists(segmentation);
+    await createDirIfNotExists(customUploadsPath);
+
+    const paths = {
+      uploadedDocuments: uploadsPath,
+      attachments: uploadsPath,
+      customUploads: customUploadsPath,
+      activityLogs: uploadsPath,
+    };
+
+    await files.reduce(async (prev, file) => {
+      await prev;
+      if (file.filename) {
+        try {
+          await copyFile(
+            this.testingFilesPath(file.filename),
+            path.join(file.type === 'custom' ? customUploadsPath : uploadsPath, file.filename)
+          );
+        } catch (e) {
+          if (!e.message.match(/ENOENT/)) {
+            throw e;
+          }
+        }
+      }
+    }, Promise.resolve());
+    testingTenants.changeCurrentTenant(paths);
   },
 
   async setTenant(name?: string, subPath = '') {
@@ -28,6 +71,11 @@ const testingEnvironment = {
       indexName: 'index',
     });
     await setupTestUploadedPaths(subPath);
+    this.uploadSubPath = subPath;
+  },
+
+  async cleanupUploadPaths() {
+    await cleanupTestUploadedPaths(this.uploadSubPath);
   },
 
   setFakeContext() {
@@ -63,9 +111,15 @@ const testingEnvironment = {
     }
   },
 
-  async setElastic(elasticIndex?: string) {
-    if (elasticIndex) {
-      testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+  async setElastic(elasticIndex?: string | boolean) {
+    if (elasticIndex && !this.elasticIndex) {
+      this.elasticIndex =
+        elasticIndex === true
+          ? `elasticsearch_test_index${process.pid}_${Date.now()}`
+          : elasticIndex;
+    }
+    if (this.elasticIndex) {
+      testingTenants.changeCurrentTenant({ indexName: this.elasticIndex });
       await elasticTesting.reindex();
     }
   },
@@ -89,12 +143,23 @@ const testingEnvironment = {
   },
 
   async tearDown() {
+    if (this.elasticIndex) {
+      try {
+        await elasticTesting.deleteIndex(this.elasticIndex);
+        this.elasticIndex = '';
+      } catch (error) {
+        console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
+      }
+    }
     await testingDB.disconnect();
   },
 
   db: {
     async getAllFrom(collectionName: string) {
-      return testingDB.mongodb?.collection(collectionName).find().toArray();
+      if (!testingDB.mongodb) {
+        throw new Error('Testing mongodb not connected');
+      }
+      return testingDB.mongodb.collection(collectionName).find().toArray();
     },
 
     getCollection(collectionName: string) {

@@ -1,8 +1,7 @@
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-
-import { QueueOptions } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
+import { QueueOptions } from 'api/core/libs/queue/infrastructure/NamespacedDispatcher';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXCreateParagraphsJob } from './PXCreateParagraphsJob';
 
@@ -25,11 +24,9 @@ export class PXParagraphsResultListener {
 
   private taskManager: TaskManager;
 
-  private buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => Promise<JobsDispatcher>;
+  private buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => JobsDispatcher;
 
-  constructor(
-    buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => Promise<JobsDispatcher>
-  ) {
+  constructor(buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => JobsDispatcher) {
     this.buildDispatcher = buildDispatcher;
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
@@ -40,7 +37,7 @@ export class PXParagraphsResultListener {
   private async processResults(results: ResultMessage) {
     const extractionKey = new PXExtractionKey(results.key);
 
-    const dispatcher = await this.buildDispatcher(extractionKey.tenantName, {
+    const dispatcher = this.buildDispatcher(extractionKey.tenantName, {
       lockWindow: 1000 * 60,
     });
 

@@ -62,7 +62,7 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         {children.map((child, index) => (
           <div
             key={child.key ?? index}
-            className="flex-shrink-0 w-full h-full overflow-auto min-h-0"
+            className="shrink-0 w-full h-full overflow-auto min-h-0"
             style={{ background: child.props.background || 'white' }}
           >
             {child}

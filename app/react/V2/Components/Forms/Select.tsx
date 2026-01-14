@@ -1,4 +1,5 @@
-import React, { ChangeEventHandler, Ref } from 'react';
+import React, { ChangeEventHandler } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Label } from './Label';
 
 type OptionSchema = { key?: string; value: string; label?: string | React.ReactNode };
@@ -16,7 +17,7 @@ interface SelectProps {
   onBlur?: ChangeEventHandler<HTMLSelectElement>;
 }
 
-const Select = React.forwardRef(
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       id,
@@ -30,8 +31,8 @@ const Select = React.forwardRef(
       name = '',
       onChange = () => {},
       onBlur = () => {},
-    }: SelectProps,
-    ref: Ref<any>
+    },
+    ref
   ) => {
     const fieldStyles = hasErrors
       ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900'
@@ -44,7 +45,7 @@ const Select = React.forwardRef(
             {label}
           </Label>
           <select
-            className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
+            className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block w-full text-sm p-2.5 pr-10 appearance-none`}
             id={id}
             disabled={disabled}
             ref={ref}
@@ -59,6 +60,9 @@ const Select = React.forwardRef(
               </option>
             ))}
           </select>
+          <div className="pointer-events-none absolute bottom-1 right-3 transform -translate-y-2 flex items-center">
+            <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+          </div>
         </div>
       </div>
     );

@@ -5,27 +5,37 @@ import mongodb from 'mongodb';
 import { resolve } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { promises } from 'fs';
+import {
+  comparableString,
+  checkContentBasedMatch,
+  checkStringLiteralMatch,
+} from './translationUtils.mjs';
 
 async function getFiles(dir) {
-  const dirents = await promises.readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(
-    dirents.map(dirent => {
-      const res = resolve(dir, dirent.name);
-      return dirent.isDirectory() ? getFiles(res) : res;
-    })
-  );
-  return Array.prototype
-    .concat(...files)
-    .filter(
-      file =>
-        !file.match('.spec') &&
-        !file.match('.stories') &&
-        !file.match('.cy') &&
-        (file.endsWith('.js') ||
-          file.endsWith('.ts') ||
-          file.endsWith('.tsx') ||
-          file.endsWith('.jsx'))
+  try {
+    const dirents = await promises.readdir(dir, { withFileTypes: true });
+    const files = await Promise.all(
+      dirents.map(dirent => {
+        const res = resolve(dir, dirent.name);
+        return dirent.isDirectory() ? getFiles(res) : res;
+      })
     );
+    return Array.prototype
+      .concat(...files)
+      .filter(
+        file =>
+          !file.includes('.spec') &&
+          !file.includes('stories') &&
+          !file.includes('.cy') &&
+          (file.endsWith('.js') ||
+            file.endsWith('.ts') ||
+            file.endsWith('.tsx') ||
+            file.endsWith('.jsx'))
+      );
+  } catch (error) {
+    process.stderr.write(`ERROR in getFiles('${dir}'): ${error.message}\n`);
+    return [];
+  }
 }
 
 const parserOptions = {
@@ -67,52 +77,83 @@ const processTFunction = (path, file) => {
   return { text: text || key, container: 't', file: shortName, key };
 };
 
-const comparableString = text => text.replaceAll(/['\s;]|&(#39|#x27|quot|rsquo|apos);/g, '');
 
 async function parseFile(file, translations) {
   const result = [];
   const fileContents = await promises.readFile(file, 'utf8');
+  const isReactFile = file.includes('app/react');
+  const isMigrationFile = file.includes('/migrations/');
 
-  if (!file.includes('/migrations/')) {
-    const comparableContent = comparableString(fileContents);
-
-    translations
-      .filter(translation => !translation.used)
-      .forEach(translation => {
-        if (
-          comparableContent.includes(translation.plainValue) ||
-          comparableContent.includes(translation.plainKey)
-        ) {
-          // eslint-disable-next-line no-param-reassign
-          translation.used = true;
-        }
-      });
+  if (isReactFile && !isMigrationFile) {
+    checkContentBasedMatch(fileContents, translations);
   }
 
-  if (file.includes('app/react')) {
-    const ast = parser.parse(fileContents, parserOptions);
-    traverse.default(ast, {
-      enter(path) {
-        if (
-          path.isCallExpression() &&
-          path.node.callee.name === 't' &&
-          path.node.arguments[0].value === 'System'
-        ) {
-          result.push(processTFunction(path, file));
-        }
-        if (path.isJSXElement()) {
-          const noTranslate = path.node.openingElement.attributes.find(
-            a => a.name?.name === 'no-translate'
-          );
-          if (noTranslate) {
-            path.skip();
+  // Use AST parsing for all files (both React and backend) to find explicit translation usage
+  // This catches t() calls, Translate components, and string literals
+  if (!isMigrationFile) {
+    try {
+      const ast = parser.parse(fileContents, parserOptions);
+
+      traverse.default(ast, {
+        enter(path) {
+          if (
+            path.isCallExpression() &&
+            path.node.callee.name === 't' &&
+            path.node.arguments[0].value === 'System'
+          ) {
+            const tFunctionResult = processTFunction(path, file);
+            if (tFunctionResult) {
+              result.push(tFunctionResult);
+              // Mark translation as used when found via t() function
+              if (tFunctionResult.key) {
+                const translation = translations.find(t => t.key === tFunctionResult.key);
+                if (translation) {
+                  // eslint-disable-next-line no-param-reassign
+                  translation.used = true;
+                }
+              }
+            }
           }
-        }
-        if (path.isJSXText()) {
-          result.push(processTextNode(path, file));
-        }
-      },
-    });
+          if (path.isJSXElement()) {
+            const noTranslate = path.node.openingElement.attributes.find(
+              a => a.name?.name === 'no-translate'
+            );
+            if (noTranslate) {
+              path.skip();
+            }
+          }
+          if (path.isJSXText()) {
+            const textNode = processTextNode(path, file);
+            if (textNode) {
+              result.push(textNode);
+              // Mark translation as used if found in Translate component with translationKey
+              if (textNode.key) {
+                const translation = translations.find(t => t.key === textNode.key);
+                if (translation) {
+                  // eslint-disable-next-line no-param-reassign
+                  translation.used = true;
+                }
+              } else if (textNode.container === 'Translate') {
+                // For Translate components without translationKey, check if text matches a translation key
+                const normalizedText = comparableString(textNode.text);
+                const translation = translations.find(
+                  t => comparableString(t.key) === normalizedText || comparableString(t.value) === normalizedText
+                );
+                if (translation) {
+                  // eslint-disable-next-line no-param-reassign
+                  translation.used = true;
+                }
+              }
+            }
+          }
+          if (path.isStringLiteral()) {
+            checkStringLiteralMatch(path.node.value, translations);
+          }
+        },
+      });
+    } catch (error) {
+      // Skip files that can't be parsed (e.g., non-JS/TS files that passed the filter)
+    }
     return result.filter(t => t);
   }
   return [];

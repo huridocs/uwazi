@@ -49,7 +49,7 @@ const createBlankSuggestionsForPartialExtractor = async (
     extractorTemplates.has(template.toString())
   );
 
-  const dispatcher = await DefaultDispatcher(tenants.current().name);
+  const dispatcher = DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default());
 
   await filteredTemplates.reduce(async (promise, template) => {
     await promise;

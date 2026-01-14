@@ -1,4 +1,4 @@
-@import "../../../App/scss/config/colors.scss";
+@use "../../../App/scss/config/colors.scss" as *;
 
 .cs-loader-container {
   position: relative;

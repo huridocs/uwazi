@@ -50,7 +50,7 @@ export const files = {
       );
     } else {
       if (!savedFile.url && !savedFile.filename) {
-        DefaultLogger().error([
+        LoggerFactory.default().error([
           inspect(new Error('[Files] a file was created without url or filename')),
           inspect(savedFile),
         ]);

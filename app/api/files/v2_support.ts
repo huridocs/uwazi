@@ -5,9 +5,11 @@ import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source
 
 export const V2 = {
   async deleteTextReferencesToFiles(_ids: string[]) {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
 
-    if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+    if (
+      !(await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed())
+    ) {
       return;
     }
 

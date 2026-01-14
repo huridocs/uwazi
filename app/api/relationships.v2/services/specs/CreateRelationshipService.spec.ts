@@ -32,6 +32,7 @@ import { ObjectId } from 'mongodb';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
 
 const factory = getFixturesFactory();
 
@@ -54,7 +55,7 @@ const denormalizationServiceMock = partialImplementation<DenormalizationService>
 
 const createService = () => {
   const connection = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
 
   validateAccessMock.mockReset();
@@ -69,7 +70,7 @@ const createService = () => {
       SettingsDataSource,
       transactionManager
     ),
-    new MongoFilesDataSource(connection, transactionManager),
+    new MongoFilesDataSource(connection, transactionManager, FileStorageFactory.default()),
     transactionManager,
     MongoIdHandler,
     authServiceMock,
@@ -127,7 +128,7 @@ const fixtures: DBFixture = {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {
@@ -232,7 +233,12 @@ describe('create()', () => {
     it('should persist new connections', async () => {
       await execute();
 
-      const relationshipsInDb = await collectionInDb().find({}).sort({ from: 1 }).toArray();
+      const relationshipsInDb = await collectionInDb()
+        .find({})
+        .sort({
+          from: 1,
+        })
+        .toArray();
 
       expect(relationshipsInDb).toEqual([
         {

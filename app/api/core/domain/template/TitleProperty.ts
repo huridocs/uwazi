@@ -2,8 +2,9 @@ import { CommonProperty, CommonPropertyProps } from '#api/templates.v2/model/Com
 
 import { Context, PropertyTypes } from '#api/templates.v2/model/Property.js';
 import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from './errors';
+import { PropertyType } from './PropertyType';
 
-type Props = { prioritySorting?: boolean; generatedId?: boolean; type?: PropertyTypes } & Omit<
+type Props = { prioritySorting?: boolean; generatedId?: boolean; type?: PropertyType } & Omit<
   CommonPropertyProps,
   'type'
 >;
@@ -29,6 +30,10 @@ class TitleProperty extends CommonProperty {
     if (this.name !== 'title') {
       throw new TitlePropertyInvalidNameError(this.name);
     }
+  }
+
+  get isTranslatable(): boolean {
+    return true;
   }
 }
 

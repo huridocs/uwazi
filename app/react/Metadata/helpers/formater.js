@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 import Immutable from 'immutable';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
@@ -58,7 +58,10 @@ const formatMetadataSortedProperties = (metadata, sortedProperties) =>
 
 const addCreationDate = (result, doc) =>
   result.push({
-    value: moment(doc.creationDate).format('ll'),
+    value:
+      doc.creationDate != null
+        ? DateTime.fromMillis(doc.creationDate).toLocaleString(DateTime.DATE_MED)
+        : '',
     label: 'Date added',
     name: 'creationDate',
     translateContext: 'System',
@@ -67,7 +70,10 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: moment(doc.editDate).format('ll'),
+    value:
+      doc.editDate != null
+        ? DateTime.fromMillis(doc.editDate).toLocaleString(DateTime.DATE_MED)
+        : '',
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',
@@ -119,7 +125,10 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperties) => {
 };
 
 const propertyValueFormatter = {
-  date: timestamp => moment.utc(timestamp, 'X').format('ll'),
+  date: timestamp => {
+    if (timestamp == null) return '';
+    return DateTime.fromSeconds(timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED);
+  },
 };
 
 //relationship v2
@@ -139,10 +148,14 @@ export default {
     let from = '';
     let to = '';
     if (daterange.value.from) {
-      from = moment.utc(daterange.value.from, 'X').format('ll');
+      from = DateTime.fromSeconds(daterange.value.from, { zone: 'utc' }).toLocaleString(
+        DateTime.DATE_MED
+      );
     }
     if (daterange.value.to) {
-      to = moment.utc(daterange.value.to, 'X').format('ll');
+      to = DateTime.fromSeconds(daterange.value.to, { zone: 'utc' }).toLocaleString(
+        DateTime.DATE_MED
+      );
     }
     return `${from} ~ ${to}`;
   },
@@ -211,7 +224,10 @@ export default {
   multidate(property, timestamps = []) {
     const value = timestamps.map(timestamp => ({
       timestamp: timestamp.value,
-      value: moment.utc(timestamp.value, 'X').format('ll'),
+      value:
+        timestamp.value != null
+          ? DateTime.fromSeconds(timestamp.value, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)
+          : '',
     }));
     return { label: property.get('label'), name: property.get('name'), value };
   },
@@ -238,11 +254,14 @@ export default {
 
   preview(property, _value, _thesauri, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
-    return this.multimedia(
-      property,
-      [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
-      'image'
-    );
+    return {
+      ...this.multimedia(
+        property,
+        [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+        'image'
+      ),
+      ...(defaultDoc?.status ? { status: defaultDoc.status } : {}),
+    };
   },
 
   media(property, value) {
@@ -501,7 +520,7 @@ export default {
     const options = { sortedProperties: [], ..._options };
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
-    if (!template || !thesauri.size) {
+    if (!template) {
       return { ...doc, metadata: [], documentType: '' };
     }
 

@@ -26,7 +26,7 @@ const IndeterminateCheckboxRow = <
     <input
       type="checkbox"
       ref={ref}
-      className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      className="bg-gray-50 rounded-sm border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
       disabled={disabled}
       onChange={onChange}
       key={row.id}
@@ -71,7 +71,7 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
       <input
         type="checkbox"
         ref={ref}
-        className="bg-gray-50 rounded border-gray-300 cursor-pointer"
+        className="bg-gray-50 rounded-sm border-gray-300 cursor-pointer"
         onChange={onChange}
         key="checkbox-header"
         id="checkbox-header"

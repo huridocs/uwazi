@@ -1,16 +1,13 @@
 import { Buffer } from 'buffer';
-import multer from 'multer';
 import express from 'express';
 import { Server } from 'http';
+import multer from 'multer';
 
-import { HttpClientFactory } from '../common.v2/infrastructure/HttpClientFactory.js';
+import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
-import { FileBuilder } from '../files.v2/model/specs/utils/FileBuilder.js';
-
-import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
-
-import { GetParagraphsResultOutput } from '../paragraphExtraction/domain/PXExtractionService.js';
-
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
@@ -66,15 +63,28 @@ describe('ExternalExtractionService', () => {
         entityStatusId: 'any_extraction_id',
       });
 
+      async function* streamCallback() {
+        yield Buffer.from('default content');
+      }
+
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
         mainLanguage: 'pt',
         extractionKey,
         files: [
-          FileBuilder.create().withFilename('file1.txt').build(),
-          FileBuilder.create().withFilename('file2.txt').build(),
-          FileBuilder.create().withFilename('file3.txt').build(),
+          {
+            filename: 'file1.txt',
+            contents: new FileContents(streamCallback),
+          },
+          {
+            filename: 'file2.txt',
+            contents: new FileContents(streamCallback),
+          },
+          {
+            filename: 'file3.txt',
+            contents: new FileContents(streamCallback),
+          },
         ],
       });
 

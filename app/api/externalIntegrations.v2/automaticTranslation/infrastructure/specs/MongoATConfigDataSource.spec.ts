@@ -8,7 +8,7 @@ import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/Automa
 const fixtures = getFixturesFactory();
 
 const createDS = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   return AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager);
 };
 

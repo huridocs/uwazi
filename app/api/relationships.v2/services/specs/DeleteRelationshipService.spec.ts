@@ -73,7 +73,7 @@ const fixtures = {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {
@@ -90,7 +90,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
@@ -120,7 +120,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
@@ -166,7 +166,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,

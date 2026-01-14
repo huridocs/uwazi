@@ -9,7 +9,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 export class PXCreateParagraphsFactory {
   static createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,

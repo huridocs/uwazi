@@ -2,9 +2,13 @@ const { USE_ELASTIC_ICU } = process.env;
 // eslint-disable-next-line import/no-mutable-exports
 let textSortField = {};
 if (USE_ELASTIC_ICU === 'true') {
-  textSortField = { type: 'icu_collation_keyword', numeric: true };
+  textSortField = { type: 'icu_collation_keyword', numeric: true, ignore_above: 1024 };
 } else {
-  textSortField = { type: 'text', fielddata: true, analyzer: 'string_sorter' };
+  textSortField = {
+    type: 'keyword',
+    ignore_above: 1024,
+    normalizer: 'string_sorter_normalized',
+  };
 }
 
 const text = {
@@ -50,7 +54,7 @@ const textType = () => ({
 });
 
 const markdownType = () => ({
-  value: noSorttext,
+  value: text,
 });
 
 const dateType = () => ({

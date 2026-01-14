@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy } from 'pdfjs-dist';
+import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
 import { pdfScaleAtom } from '#app/V2/atoms/index.js';
@@ -21,6 +21,8 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useAtom(pdfScaleAtom);
   const pageContainerRef = useRef<HTMLDivElement>(null);
+  const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
+  const pdfPageRef = useRef<PDFPageProxy | null>(null);
 
   useEffect(() => {
     const currentContainer = pageContainerRef.current;
@@ -30,6 +32,8 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
       .getPage(page)
       .then(pdfPage => {
         if (currentContainer && pdfPage) {
+          pdfPageRef.current = pdfPage;
+
           const originalViewport = pdfPage.getViewport({ scale: 1 });
           const scale = calculateScaling(
             originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
@@ -49,22 +53,25 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
           });
 
           pageViewer.setPdfPage(pdfPage);
+          pageViewerRef.current = pageViewer;
 
           const handleIntersection: IntersectionObserverCallback = (entries: any) => {
             const [entry] = entries;
             if (entry.isIntersecting) {
-              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
-                pageViewer.draw().catch(e => {
-                  setError(e.message);
-                });
+              pageViewer.update({ scale: pageViewer.scale });
+
+              if (pageViewer.renderingState !== PDFJSViewer.RenderingStates.RUNNING) {
+                pageViewer
+                  .draw()
+                  .then(() => {
+                    pdfEventBus.dispatch('onPageChange', pdfPage.pageNumber);
+                  })
+                  .catch(e => {
+                    setError(e.message);
+                  });
               }
-            } else {
-              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
-                pageViewer.cancelRendering();
-              }
-              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
-                pageViewer.destroy();
-              }
+            } else if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+              pageViewer.destroy();
             }
           };
 
@@ -81,33 +88,68 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
       });
 
     return () => {
-      if (currentContainer) observer.unobserve(currentContainer);
+      if (currentContainer && observer) {
+        observer.unobserve(currentContainer);
+      }
+
+      if (pageViewerRef.current) {
+        pageViewerRef.current.destroy();
+      }
     };
-    //pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
+    // pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const pageViewer = pageViewerRef.current;
+    const pdfPage = pdfPageRef.current;
+
+    if (pageViewer && pdfPage && containerWidth) {
+      const originalViewport = pdfPage.getViewport({ scale: 1 });
+      const newScale = calculateScaling(
+        originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
+        containerWidth
+      );
+
+      if (Math.abs(pageViewer.scale - newScale) > 0.01) {
+        setPdfScale(newScale);
+        pageViewer.update({ scale: newScale });
+
+        if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+          pageViewer.draw().catch((e: Error) => {
+            setError(e.message);
+          });
+        }
+      }
+    }
+  }, [containerWidth, setPdfScale]);
 
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div ref={pageContainerRef} className="pdf-page">
+    <div
+      ref={pageContainerRef}
+      className="relative border mb-4 border-gray-200"
+      data-testid="pdf-page"
+    >
       {highlights?.map(highlight => {
         const scaledHightlight = {
           ...highlight,
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
         };
         return (
-          <Highlight
-            key={scaledHightlight.key}
-            textSelection={scaledHightlight.textSelection}
-            color={scaledHightlight.color}
-          />
+          <div key={scaledHightlight.key} data-highlight-key={scaledHightlight.key}>
+            <Highlight
+              textSelection={scaledHightlight.textSelection}
+              color={scaledHightlight.color}
+            />
+          </div>
         );
       })}
     </div>
   );
 };
 
-export default PDFPage;
+export { PDFPage };

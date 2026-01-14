@@ -21,15 +21,16 @@ type Props = {
 export class PXExtractorsStatusesFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
-    const transactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
+    const transactionManager =
+      props?.mongoTransactionManager || TransactionManagerFactory.default();
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection: db,
       transactionManager,
     });
 
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
-    const filesDS = DefaultFilesDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const filesDS = FilesDataSourceFactory.default(transactionManager);
 
     return new PXGetExtractorStatuses({ extractorsQueryService, settingsDS, filesDS });
   }

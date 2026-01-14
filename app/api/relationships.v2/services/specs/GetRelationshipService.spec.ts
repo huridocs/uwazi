@@ -61,7 +61,7 @@ const fixtures: DBFixture = {
 const createService = (_user?: User) => {
   const user = _user || new User(fixtureFactory.id('user').toString(), 'admin', []);
   const connection = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
   const relationshipTypesDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
@@ -86,7 +86,7 @@ const createService = (_user?: User) => {
 };
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 });
 
 afterAll(async () => {

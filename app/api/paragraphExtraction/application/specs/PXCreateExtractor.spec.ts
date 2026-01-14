@@ -33,8 +33,8 @@ const f = getFixturesFactory();
 
 const setUpUseCase = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(mongoTransactionManager);
+  const mongoTransactionManager = TransactionManagerFactory.default();
+  const templatesDS = TemplatesDataSourceFactory.default(mongoTransactionManager);
   const extractorDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,
@@ -42,6 +42,7 @@ const setUpUseCase = () => {
 
   const mockDispatcher: jest.Mocked<JobsDispatcher> = {
     dispatch: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest.fn().mockResolvedValue(undefined),
   };
 
   const createExtractor = new PXCreateExtractor({

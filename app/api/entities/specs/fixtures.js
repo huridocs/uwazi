@@ -9,8 +9,8 @@ const fixtureFactory = getFixturesFactory();
 const batmanFinishesId = db.id();
 const batmanStillNotDoneId = db.id();
 const syncPropertiesEntityId = db.id();
-const templateId = db.id();
-const templateChangingNames = db.id();
+const templateId = fixtureFactory.id('template_test');
+const templateChangingNames = fixtureFactory.id('template_changing_names');
 const referenceId = db.id();
 const templateWithEntityAsThesauri = db.id();
 const templateWithEntityAsThesauri2 = db.id();
@@ -564,42 +564,38 @@ export default {
     },
   ],
   templates: [
-    {
-      _id: templateId,
-      name: 'template_test',
-      properties: [
-        { _id: db.id(), type: 'text', name: 'text' },
-        { _id: inheritedProperty, type: 'text', name: 'property1' },
-        { _id: db.id(), type: 'text', name: 'property2' },
-        { _id: db.id(), type: 'text', name: 'description' },
-        { _id: db.id(), type: 'select', name: 'select', content: dictionary },
-        { _id: db.id(), type: 'multiselect', name: 'multiselect', content: dictionary },
-        { _id: db.id(), type: 'date', name: 'date' },
-        { _id: db.id(), type: 'multidate', name: 'multidate' },
-        { _id: db.id(), type: 'multidaterange', name: 'multidaterange' },
-        { _id: db.id(), type: 'daterange', name: 'daterange' },
-        {
-          _id: db.id(),
-          type: 'relationship',
-          name: 'friends',
-          relationType: relationType1,
-          content: '',
+    fixtureFactory.template('template_test', [
+      { _id: db.id(), type: 'text', name: 'text' },
+      { _id: inheritedProperty, type: 'text', name: 'property1' },
+      { _id: db.id(), type: 'text', name: 'property2' },
+      { _id: db.id(), type: 'text', name: 'description' },
+      { _id: db.id(), type: 'select', name: 'select', content: dictionary },
+      { _id: db.id(), type: 'multiselect', name: 'multiselect', content: dictionary },
+      { _id: db.id(), type: 'date', name: 'date' },
+      { _id: db.id(), type: 'multidate', name: 'multidate' },
+      { _id: db.id(), type: 'multidaterange', name: 'multidaterange' },
+      { _id: db.id(), type: 'daterange', name: 'daterange' },
+      {
+        _id: db.id(),
+        type: 'relationship',
+        name: 'friends',
+        relationType: relationType1,
+        content: '',
+      },
+      {
+        _id: db.id(),
+        type: 'relationship',
+        name: 'enemies',
+        relationType: relationType4,
+        content: templateId.toString(),
+        inherit: {
+          property: inheritedProperty,
+          type: 'text',
         },
-        {
-          _id: db.id(),
-          type: 'relationship',
-          name: 'enemies',
-          relationType: relationType4,
-          content: templateId.toString(),
-          inherit: {
-            property: inheritedProperty,
-            type: 'text',
-          },
-        },
-        { _id: db.id(), type: 'nested', name: 'field_nested' },
-        { _id: db.id(), type: 'numeric', name: 'numeric' },
-      ],
-    },
+      },
+      { _id: db.id(), type: 'nested', name: 'field_nested' },
+      { _id: db.id(), type: 'numeric', name: 'numeric' },
+    ]),
     {
       _id: templateWithOnlyMultiselect,
       name: 'templateWithOnlyMultiSelectSelect',
@@ -651,16 +647,17 @@ export default {
         },
       ],
     },
-    {
-      _id: templateChangingNames,
-      name: 'template_changing_names',
-      default: true,
-      properties: [
+
+    fixtureFactory.template(
+      'template_changing_names',
+      [
         { _id: templateChangingNamesProps.prop1id, type: 'text', name: 'property1' },
         { _id: templateChangingNamesProps.prop2id, type: 'text', name: 'property2' },
         { _id: templateChangingNamesProps.prop3id, type: 'text', name: 'property3' },
       ],
-    },
+      { default: true }
+    ),
+
     {
       _id: entityGetTestTemplateId,
       name: 'entityGetTestTemplate',

@@ -33,7 +33,7 @@ const replaceTenantWithJobNamespace =
     );
   };
 
-const logger = SystemLogger(
+const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
 );
 
@@ -57,7 +57,7 @@ function register<T extends Dispatchable>(
 
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
-  logger[prettyError.logLevel](prettyError.message, { job: context?.job });
+  logger[prettyError.logLevel](inspect(error), { job: context?.job });
   if (prettyError.logLevel === 'error') {
     Sentry.withScope(scope => {
       if (context?.job) {

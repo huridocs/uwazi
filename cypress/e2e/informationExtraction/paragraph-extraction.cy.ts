@@ -22,6 +22,12 @@ describe('Paragraph Extraction', () => {
   });
 
   describe('Extractor Dashboard', () => {
+    it('should verify PX dummy service is reachable', () => {
+      const pxUrl = Cypress.env('PARAGRAPH_EXTRACTION_URL') || 'http://127.0.0.1:5051';
+      cy.log(`Checking PX service at ${pxUrl}`);
+      cy.request({ url: pxUrl, failOnStatusCode: false }).its('status').should('be.gte', 100);
+    });
+
     it('should navigate to the PX dashboard', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Paragraph Extraction').click();
@@ -263,7 +269,7 @@ describe('Paragraph Extraction', () => {
         .within(() => {
           cy.contains(firstEntityProcessed);
         });
-      cy.get('#pdf-container .pdf-page').should('have.length.at.least', 2);
+      cy.get('[data-testid="pdf-page"]').should('have.length.at.least', 2);
       cy.contains('aside button', 'Close').click();
     });
 

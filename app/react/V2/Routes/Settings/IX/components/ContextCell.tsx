@@ -296,7 +296,7 @@ const ContextCell = ({ text }: { text: string }) => {
       <Truncate
         maxLength={100}
         ellipsisPosition="center"
-        tooltipClassname="text-xs text-gray-700 inline-block md:min-w-[500px] max-w-5xl"
+        tooltipClassname="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal"
       >
         {text}
       </Truncate>
@@ -306,12 +306,16 @@ const ContextCell = ({ text }: { text: string }) => {
   if (isHTML) {
     return (
       <Tooltip
-        content={fullHTML}
+        content={
+          <div className="text-xs text-gray-700 inline-block w-[40vw] max-w-[500px] min-w-32 whitespace-normal">
+            {fullHTML}
+          </div>
+        }
         arrow
         animation="duration-100"
         // eslint-disable-next-line react/style-prop-object
         style="light"
-        className="shadow-xl"
+        className="shadow-xl z-[9999]"
       >
         <div className="pointer-events-auto cursor-pointer">{truncatedHTML}</div>
       </Tooltip>

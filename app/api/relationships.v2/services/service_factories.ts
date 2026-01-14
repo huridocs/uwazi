@@ -44,19 +44,17 @@ import {
   DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
 } from '../database/data_source_defaults';
-
 import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from './CreateRelationshipMigrationFieldService';
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
+import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { GetMigrationHubRecordsService as GenericGetMigrationHubRecordsService } from './GetMigrationHubRecordsService';
 import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from './GetRelationshipMigrationFieldService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
-import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { MigrationService as GenericMigrationService } from './MigrationService';
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
-import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
 
@@ -82,14 +80,18 @@ const userFromRequest = () => {
 };
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
-  async () =>
-    new QueuedRelationshipPropertyUpdateStrategy(await DefaultDispatcher(tenants.current().name));
+  async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    return new QueuedRelationshipPropertyUpdateStrategy(
+      DefaultDispatcher(tenants.current().name, transactionManager)
+    );
+  };
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
   updater: GenericEntityRelationshipsUpdateService
 ) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   switch (strategyKey) {
     case QueuedRelationshipPropertyUpdateStrategy.name:
@@ -110,8 +112,8 @@ const createUpdateStrategy = async (
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 
@@ -132,11 +134,11 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
 };
 
 const GetRelationshipService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
@@ -153,13 +155,13 @@ const GetRelationshipService = () => {
 };
 
 const CreateRelationshipService = async () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const idGenerator = DefaultIdGenerator;
+  const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
-  const filesDS = DefaultFilesDataSource(transactionManager);
+  const filesDS = FilesDataSourceFactory.default(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
   const denormalizationService = await DenormalizationService(transactionManager);
@@ -179,7 +181,7 @@ const CreateRelationshipService = async () => {
 };
 
 const DeleteRelationshipService = async () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
@@ -197,11 +199,11 @@ const DeleteRelationshipService = async () => {
 };
 
 const MigrationService = () => {
-  const logger = DefaultLogger();
-  const transactionManager = DefaultTransactionManager();
+  const logger = LoggerFactory.default();
+  const transactionManager = TransactionManagerFactory.default();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericMigrationService(
@@ -217,16 +219,16 @@ const MigrationService = () => {
 };
 
 const DeleteRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericDeleteRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetRelationshipMigrationFieldsService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
   const service = new GenericGetRelationshipMigrationFieldsService(
     transactionManager,
     fieldDS,
@@ -236,21 +238,21 @@ const GetRelationshipMigrationFieldsService = () => {
 };
 
 const CreateRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericCreateRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const UpsertRelationshipMigrationFieldService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetMigrationHubRecordsService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericGetMigrationHubRecordsService(hubRecordDS);
   return service;
@@ -258,7 +260,7 @@ const GetMigrationHubRecordsService = () => {
 
 const UpdateRelationshipPropertiesJob = () => {
   const tenant = tenants.current().name;
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const updater = EntityRelationshipsUpdateService(transactionManager);
   const indexEntity = async (sharedIds: string[]) =>
     tenants.run(async () => search.indexEntities({ sharedId: { $in: sharedIds } }), tenant);
@@ -266,23 +268,25 @@ const UpdateRelationshipPropertiesJob = () => {
   return new GenericUpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
 };
 
-const UpdateTemplateRelationshipPropertiesJob = async () =>
-  new GenericUpdateTemplateRelationshipPropertiesJob(
-    DefaultEntitiesDataSource(DefaultTransactionManager()),
-    await DefaultDispatcher(tenants.current().name)
+const UpdateTemplateRelationshipPropertiesJob = async () => {
+  const transactionManager = TransactionManagerFactory.default();
+  return new GenericUpdateTemplateRelationshipPropertiesJob(
+    DefaultEntitiesDataSource(transactionManager),
+    await DefaultDispatcher(tenants.current().name, transactionManager)
   );
+};
 
 export {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
-  GetMigrationHubRecordsService,
-  GetRelationshipService,
-  GetRelationshipMigrationFieldsService,
   DenormalizationService,
+  GetMigrationHubRecordsService,
+  GetRelationshipMigrationFieldsService,
+  GetRelationshipService,
   MigrationService,
-  UpsertRelationshipMigrationFieldService,
   UpdateRelationshipPropertiesJob,
   UpdateTemplateRelationshipPropertiesJob,
+  UpsertRelationshipMigrationFieldService,
 };

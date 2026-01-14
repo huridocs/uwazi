@@ -21,42 +21,30 @@ type Deps = {
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
-  idGenerator: IdGenerator;
-  transactionManager: TransactionManager;
   pageService: PageService;
 };
 
-class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, Deps> {
-  private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
+class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
+  async execute(input: Input): Promise<Output> {
+    const propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create({
+      ...this.deps,
+      idGenerator: this.idGenerator,
+    });
 
-  constructor(deps: Deps) {
-    super(deps);
-
-    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
-  }
-
-  // eslint-disable-next-line max-statements
-  protected async executeAsync(input: CreateTemplateDTO): Promise<Output> {
     const { newNameGeneration } = await this.deps.settingsDS.get();
-    const templateId = this.deps.idGenerator.generate();
+    const templateId = this.idGenerator.generate();
 
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create(
-        { ...p, id: this.deps.idGenerator.generate(), template: 'id' },
+        { ...p, id: this.idGenerator.generate(), template: templateId },
         { newNameGeneration }
       )
     );
 
-    const properties = await Promise.all(
-      input?.properties?.map(async p =>
-        this.propertyCreatorServiceStrategy
-          .getStrategy(p.type)
-          .create(
-            { ...p, id: this.deps.idGenerator.generate(), template: templateId },
-            { newNameGeneration }
-          )
-      ) || []
-    );
+    const properties = await propertyCreatorServiceStrategy.bulkCreate(input.properties, {
+      newNameGeneration,
+      template: templateId,
+    });
 
     const template = new Template(
       templateId,
@@ -75,7 +63,7 @@ class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, D
 
     await this.deps.pageService.ensurePageIsValid(template);
 
-    await this.deps.transactionManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await this.deps.templatesDS.create(template);
       await this.deps.translationService.createTemplateTranslation(template);
     });
@@ -85,3 +73,4 @@ class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output, D
 }
 
 export { CreateTemplateUseCase };
+export type { Input as CreateTemplateUseCaseInput };

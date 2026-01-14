@@ -64,7 +64,11 @@ const updateTranslation = (currentTemplate, template) => {
   context[template.name] = template.name;
 
   return translations.updateContext(
-    { id: currentTemplate._id.toString(), label: template.name, type: 'Connection' },
+    {
+      id: currentTemplate._id.toString(),
+      label: template.name,
+      type: ContextType.relationshipType,
+    },
     updatedLabels,
     deletedPropertiesByLabel,
     context

@@ -12,3 +12,5 @@ export { GeolocationPropertyIcon } from './GeolocationPropertyIcon';
 export { DatePropertyIcon } from './DatePropertyIcon';
 export { GrabDoubleIcon } from './GrabDoubleIcon';
 export { CustomPropertyIcon } from './CustomPropertyIcon';
+export { CountryFlag } from './CoutryFlags';
+export { AudioWaveformIcon } from './AudioWaveformIcon';

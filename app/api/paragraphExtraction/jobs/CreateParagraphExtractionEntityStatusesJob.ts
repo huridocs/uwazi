@@ -2,11 +2,11 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from '../queue.v2/application/contracts/Dispatchable.js';
+} from 'api/core/libs/queue/application/contracts/Dispatchable';
 import {
   JobsDispatcher,
   DispatchableClass,
-} from '../queue.v2/application/contracts/JobsDispatcher.js';
+} from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses';
 
 interface SpecificJobParams {

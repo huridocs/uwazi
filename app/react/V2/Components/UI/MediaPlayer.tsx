@@ -13,6 +13,8 @@ interface MediaPlayerProps extends ReactPlayerProps {
     url?: string;
     fileName?: string;
   };
+  playerRef?: React.RefObject<ReactPlayer>;
+  className?: string;
 }
 
 const verifyUrl = (url: string): MediaType => {
@@ -41,7 +43,7 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   return (
     <div className="relative w-full h-full" style={overlayBackgroundStyle}>
       <p
-        className={`overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
+        className={`overflow-hidden p-4 font-normal text-left text-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
       >
         {thumbnail?.fileName}
       </p>
@@ -49,7 +51,15 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   );
 };
 
-const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
+const MediaPlayer = ({
+  url,
+  width,
+  height,
+  thumbnail,
+  playerRef,
+  className,
+  ...props
+}: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const [playerHeight, setPlayerHeight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,11 +82,11 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   return (
     <div
       style={{ width: width || '100%', height: height || '100%' }}
-      className="relative"
+      className={`relative ${className ?? ''}`}
       ref={containerRef}
     >
       {mediaType === 'invalid' && (
-        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded-sm border">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>
@@ -85,6 +95,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
 
       {mediaType !== 'invalid' && playerHeight ? (
         <ReactPlayer
+          ref={playerRef}
           className="absolute top-0 left-0"
           width="100%"
           height="100%"
@@ -93,16 +104,14 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           playing={playing}
           light={renderThumbnail}
           config={{
-            facebook: {
-              attributes: {
-                'data-height': playerHeight,
-              },
-            },
+            facebook: { attributes: { 'data-height': playerHeight } },
           }}
           playIcon={
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }
           onClickPreview={() => !playing && setPlaying(true)}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...props}
         />
       ) : (
         <div />

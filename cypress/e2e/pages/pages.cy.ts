@@ -1,6 +1,7 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
 import { contents, script } from '../helpers/entityViewPageFixtures';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Pages', () => {
   before(() => {
@@ -14,9 +15,9 @@ describe('Pages', () => {
   describe('accessibility', () => {
     it('should check for accessibility violations', () => {
       cy.contains('a', 'Pages').click();
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
       cy.contains('a', 'Add page').click();
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
   });
 

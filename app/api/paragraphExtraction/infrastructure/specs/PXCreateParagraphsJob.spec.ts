@@ -72,7 +72,7 @@ describe('ExtractionUseCase', () => {
     });
 
     const connection = getConnection();
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
       transactionManager,
@@ -83,7 +83,7 @@ describe('ExtractionUseCase', () => {
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         connection,
         transactionManager,
-        DefaultSettingsDataSource(transactionManager),
+        SettingsDataSourceFactory.default(transactionManager),
         extractorsQueryService
       ),
     });

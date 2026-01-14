@@ -1,7 +1,9 @@
 const selectPublishedEntities = () => {
-  cy.contains('Published', { timeout: 100 });
+  cy.contains('Published', { timeout: 5000 });
   cy.intercept('GET', '/api/search*').as('librarySearch');
-  cy.get('aside.library-filters').should('be.visible').as('sidePanel');
+  cy.get('aside.library-filters').should('be.visible', { timeout: 5000 }).as('sidePanel');
+
+  // Always ensure we're in the correct state and wait for API completion
   cy.get('#publishedStatuspublished')
     .invoke('is', ':checked')
     .then(checked => {
@@ -18,12 +20,17 @@ const selectPublishedEntities = () => {
         cy.wait('@librarySearch');
       }
     });
+
+  // Always wait for the search results to be rendered, regardless of filter changes
+  cy.get('.item-document', { timeout: 10000 }).should('be.visible');
   cy.get('.library-viewer').scrollTo('top');
 };
 
 const selectRestrictedEntities = () => {
   cy.intercept('GET', '/api/search*').as('librarySearch');
-  cy.get('aside.library-filters').should('be.visible', { setTimeout: 100 }).as('sidePanel');
+  cy.get('aside.library-filters').should('be.visible', { timeout: 5000 }).as('sidePanel');
+
+  // Always ensure we're in the correct state and wait for API completion
   cy.get('#publishedStatuspublished')
     .invoke('is', ':checked')
     .then(checked => {
@@ -40,6 +47,9 @@ const selectRestrictedEntities = () => {
         cy.wait('@librarySearch');
       }
     });
+
+  cy.get('.item', { timeout: 10000 }).should('have.length.greaterThan', 0);
+  cy.get('.item').first().should('be.visible');
 };
 
 export { selectPublishedEntities, selectRestrictedEntities };

@@ -47,7 +47,7 @@ const ActionCell = ({ cell }: CellContext<CustomUpload, any>) => {
       <Button
         styling="outline"
         color="error"
-        className="leading-3"
+        className="leading-3 text-error-900"
         onClick={() => actions.delete(cell.row.original)}
       >
         <Translate>Delete</Translate>

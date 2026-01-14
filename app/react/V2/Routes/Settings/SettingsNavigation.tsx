@@ -18,7 +18,7 @@ const SettingsNavigation = () => {
     <I18NLink
       to={to}
       activeClassname="bg-primary-100 text-primary-800 focus:bg-primary-100"
-      className="block p-2 rounded hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm"
+      className="block p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm"
     >
       <span className="whitespace-nowrap flex items-center gap-1">{children}</span>
     </I18NLink>
@@ -132,7 +132,7 @@ const SettingsNavigation = () => {
               href="https://uwazi.io/page/9852italrtk/support"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 p-2 rounded hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm whitespace-nowrap"
+              className="flex items-center gap-1 p-2 rounded-sm hover:bg-gray-100 focus:bg-gray-100 font-medium text-sm whitespace-nowrap"
             >
               <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
             </a>

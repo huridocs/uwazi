@@ -24,6 +24,13 @@ const elasticTesting = {
     await elastic.indices.refresh();
   },
 
+  async deleteIndex(indexName: string) {
+    await (elastic.indices as any).delete({
+      index: indexName,
+      ignore_unavailable: true,
+    });
+  },
+
   async getIndexedEntities(sort = 'title.sort') {
     return (await elastic.search({ sort: [sort], size: 1000 })).body.hits.hits.map(i => i._source);
   },

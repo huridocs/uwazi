@@ -55,7 +55,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
         <Translate>Navigate back</Translate>
       </span>
     </I18NLink>
-    <Breadcrumb className="!relative p-1 flex right-0 !bg-transparent m-0 !w-full flex-wrap align-middle">
+    <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} className="max-w-xs">
           <I18NLink to={value} activeClassname="font-medium text-gray-700 hover:text-gray-900">
@@ -76,7 +76,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex-grow px-4`} data-testid="settings-content-body">
+  <div className={`${className || ''} grow px-4`} data-testid="settings-content-body">
     {children}
   </div>
 );
@@ -88,7 +88,7 @@ SettingsContent.Footer = ({
 }: SettingsContentFooterProps) => (
   <div
     className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${
-      highlighted ? 'bg-indigo-50' : 'bg-white'
+      highlighted ? 'bg-primary-50' : 'bg-white'
     }`}
     data-testid="settings-content-footer"
   >

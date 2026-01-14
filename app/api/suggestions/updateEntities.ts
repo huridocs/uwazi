@@ -367,7 +367,7 @@ const updateEntitiesWithSuggestion = async (
         '+permissions'
       )) as EntitySchema[];
       if (!current) {
-        DefaultLogger().info('IX accept: entity not found for update', {
+        LoggerFactory.default().info('IX accept: entity not found for update', {
           entityId: as.entityId,
           sharedId: as.sharedId,
         });
@@ -400,7 +400,7 @@ const updateEntitiesWithSuggestion = async (
       if (e instanceof SuggestionAcceptanceError) {
         throw e; // bubble validation errors (e.g., invalid select IDs)
       }
-      DefaultLogger().error('IX accept: failed to save entity during updateEntities', {
+      LoggerFactory.default().error('IX accept: failed to save entity during updateEntities', {
         tenant: tenants.current()?.name,
         entityId: as.entityId,
         sharedId: as.sharedId,

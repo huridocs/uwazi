@@ -8,26 +8,66 @@ import {
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
+import { PropertyTypeEnum } from './PropertyType';
+import { GeolocationEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.Geolocation;
 } & Omit<PropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.object({
+    lat: z.number({ required_error: 'Geolocation Property latitude must be provided.' }),
+    lon: z.number({ required_error: 'Geolocation Property longitude must be provided.' }),
+    label: z.string().optional(),
+  }),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z.array(EntrySchema).min(isRequired ? 1 : 0, 'Geolocation Property is required');
 
 class GeolocationProperty extends Property {
   constructor(props: Props, context?: Context) {
     const name =
       props.name ||
-      PropertyName.fromLabel(`${props.label}_${propertyTypes.geolocation}`, context).value;
+      PropertyName.fromLabel(`${props.label}_${PropertyTypeEnum.Geolocation}`, context).value;
 
-    super({ ...props, type: props.type || 'geolocation', name }, context);
+    super({ ...props, type: props.type || PropertyTypeEnum.Geolocation, name }, context);
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'geolocation') {
+    if (this.type !== PropertyTypeEnum.Geolocation) {
       throw new PropertyTypeInvalidTypeError(this.type, 'GeolocationProperty');
     }
+  }
+
+  get isTranslatable(): boolean {
+    return false;
+  }
+
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<GeolocationEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<GeolocationEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.lat?.toString()?.length && v?.value?.lon?.toString()?.length)
+    );
+
+    return {
+      name: this.name,
+      value: parsed,
+      type: this.type,
+      isTranslatable: this.isTranslatable,
+    };
+  }
+
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<GeolocationEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

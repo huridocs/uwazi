@@ -113,6 +113,7 @@ const Notification = ({
   dismissAction,
 }: NotificationProps) => {
   const [viewMore, setViewMore] = useState(false);
+  const [isDismissHovering, setIsDismissHovering] = useState(false);
 
   let containerClass: string;
   let dismissClass: string;
@@ -125,33 +126,33 @@ const Notification = ({
 
   switch (type) {
     case 'info':
-      containerClass = 'text-primary-700 border-primary-300 bg-primary-100 bg-white';
+      containerClass = 'text-primary-900 border-primary-300 bg-white';
       dismissClass =
         'text-primary-800 border-primary-800 hover:bg-primary-900 focus:ring-primary-200';
-      viewMoreClass = 'bg-primary-700 hover:bg-primary-800';
+      viewMoreClass = 'bg-primary-900 hover:bg-primary-950 focus:ring-primary-200';
       iconContainer = 'bg-transparent';
       break;
 
     case 'error':
-      containerClass = 'text-error-700 border-error-300 bg-white';
+      containerClass = 'text-error-900 border-error-300 bg-white';
       dismissClass = 'text-error-800 border-error-800 hover:bg-error-900 focus:ring-error-200';
-      viewMoreClass = 'bg-error-700 hover:bg-error-800';
+      viewMoreClass = 'bg-error-900 hover:bg-error-950 focus:ring-error-200';
       iconContainer = 'bg-error-100';
       break;
 
     case 'warning':
-      containerClass = 'text-warning-700 border-warning-300 bg-white';
+      containerClass = 'text-warning-900 border-warning-300 bg-white';
       dismissClass =
         'text-warning-800 border-warning-800 hover:bg-warning-900 focus:ring-warning-200';
-      viewMoreClass = 'bg-warning-700 hover:bg-warning-800';
+      viewMoreClass = 'bg-warning-900 hover:bg-warning-950 focus:ring-warning-200';
       iconContainer = 'bg-warning-100';
       break;
 
     default:
-      containerClass = 'text-success-700 border-success-300 bg-white';
+      containerClass = 'text-success-900 border-success-300 bg-white';
       dismissClass =
         'text-success-800 border-success-800 hover:bg-success-900 focus:ring-success-200';
-      viewMoreClass = 'bg-success-700 hover:bg-success-800';
+      viewMoreClass = 'bg-success-900 hover:bg-success-950 focus:ring-success-200';
       iconContainer = 'bg-success-100';
       break;
   }
@@ -172,7 +173,7 @@ const Notification = ({
         <div className="mt-2 mb-4 text-sm">{text}</div>
       ) : (
         <div className="flex mb-4">
-          <span className={`p-1 mr-2 align-top rounded border-0 ${iconContainer} w-fit h-fit`}>
+          <span className={`p-1 mr-2 align-top rounded-sm border-0 ${iconContainer} w-fit h-fit`}>
             {getIcon('large', type)}
           </span>
           <div className="text-sm">{text}</div>
@@ -182,19 +183,23 @@ const Notification = ({
       <div className="flex">
         <button
           type="button"
-          className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-none 
+          className={`${dismissClass} bg-transparent border focus:ring-4 focus:outline-hidden 
           font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Dismiss notification"
+          onMouseEnter={() => setIsDismissHovering(true)}
+          onMouseLeave={() => setIsDismissHovering(false)}
           onClick={dismissAction}
         >
-          <Translate>Dismiss</Translate>
+          <span className={isDismissHovering ? 'text-white' : ''}>
+            <Translate>Dismiss</Translate>
+          </span>
         </button>
         {details && (
           <button
             type="button"
             onClick={onClick}
-            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-none focus:ring-gray-300 
+            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-hidden 
             font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
           >
             {viewMore ? viewMoreIcons.less : viewMoreIcons.more}

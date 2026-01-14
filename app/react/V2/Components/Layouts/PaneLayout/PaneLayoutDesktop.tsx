@@ -12,27 +12,27 @@ const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undef
   return undefined;
 };
 
-const percentWidthToPixel = (percentWidths: number[], containerWidth: number) =>
-  percentWidths.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
+const ratiosToPixels = (ratios: number[], containerWidth: number) =>
+  ratios.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
 
-const getPercentagesFromLocalStorage = (localStorageKey?: string): number[] => {
+const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
   if (isClient && localStorageKey) {
     try {
       const parsed: number[] = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
       if (Array.isArray(parsed)) return parsed;
     } catch (e) {
-      captureException(new Error('getPercentagesFromLocalStorage error', { cause: e }));
+      captureException(new Error('getRatiosFromLocalStorage error', { cause: e }));
     }
   }
   return [];
 };
 
-const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: string) => {
+const setRatiosToLocalStorage = (ratios: number[], localStorageKey?: string) => {
   if (isClient && localStorageKey) {
     try {
-      localStorage.setItem(localStorageKey, JSON.stringify(percentages));
+      localStorage.setItem(localStorageKey, JSON.stringify(ratios));
     } catch (e) {
-      captureException(new Error('setPercentagesToLocalStorage error', { cause: e }));
+      captureException(new Error('setRatiosToLocalStorage error', { cause: e }));
     }
   }
 };
@@ -41,13 +41,14 @@ const setPercentagesToLocalStorage = (percentages: number[], localStorageKey?: s
 const PaneLayoutDesktop = ({
   children,
   localStorageKey,
-  defaultWidthsPercents,
+  defaultRatios,
   className = '',
 }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
   const widthsRef = useRef<number[]>([]);
+  const initialWidths = useRef(defaultRatios?.map(ratio => `${ratio * 100}%`));
 
   const handleResize = useCallback(
     // eslint-disable-next-line max-statements
@@ -74,8 +75,8 @@ const PaneLayoutDesktop = ({
         currentWidths[rightIndex] = rightNew;
         setWidths(currentWidths);
 
-        const percentages = currentWidths.map(w => w / (containerRect.width || 1));
-        setPercentagesToLocalStorage(percentages, localStorageKey);
+        const ratios = currentWidths.map(w => w / (containerRect.width || 1));
+        setRatiosToLocalStorage(ratios, localStorageKey);
       }
     },
     [children.length, localStorageKey]
@@ -89,14 +90,22 @@ const PaneLayoutDesktop = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    if (
+      widthsRef.current &&
+      widthsRef.current.length === children.length &&
+      widthsRef.current.some(width => width > 0)
+    ) {
+      return;
+    }
+
     const containerRect = containerRef.current.getBoundingClientRect();
     const containerWidth = containerRect.width || 1;
     const separatorCount = children.length - 1;
 
-    const savedPercentages = getPercentagesFromLocalStorage(localStorageKey);
+    const savedRatios = getRatiosFromLocalStorage(localStorageKey);
 
-    if (savedPercentages.length === children.length) {
-      const fromStorage = percentWidthToPixel(savedPercentages, containerWidth);
+    if (savedRatios.length === children.length) {
+      const fromStorage = ratiosToPixels(savedRatios, containerWidth);
       const total = fromStorage.reduce((a, b) => a + b, 0);
       if (total > containerWidth) {
         const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
@@ -104,15 +113,15 @@ const PaneLayoutDesktop = ({
       } else {
         setWidths(fromStorage);
       }
-    } else if (defaultWidthsPercents?.length) {
-      setWidths(percentWidthToPixel(defaultWidthsPercents, containerWidth));
+    } else if (defaultRatios?.length) {
+      setWidths(ratiosToPixels(defaultRatios, containerWidth));
     } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
       const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
       setWidths(initials);
     }
-  }, [children, localStorageKey, defaultWidthsPercents]);
+  }, [children, localStorageKey, defaultRatios]);
 
   useEffect(() => {
     const handleScreenResize = () => {
@@ -120,7 +129,7 @@ const PaneLayoutDesktop = ({
       const containerRect = containerRef.current.getBoundingClientRect();
       const containerWidth = containerRect.width || 1;
       const percentages = widthsRef.current.map(w => w / containerWidth);
-      setWidths(percentWidthToPixel(percentages, containerWidth));
+      setWidths(ratiosToPixels(percentages, containerWidth));
     };
 
     window.addEventListener('resize', handleScreenResize);
@@ -157,7 +166,10 @@ const PaneLayoutDesktop = ({
     <div ref={containerRef} className={`flex h-full min-h-0 ${className}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
-          <section style={{ width: widths[index] }} className="h-full min-h-0">
+          <section
+            style={{ width: widths.length > 0 ? widths[index] : initialWidths?.current?.[index] }}
+            className="h-full min-h-0"
+          >
             <div className="h-full min-h-0 overflow-auto">{child}</div>
           </section>
 
@@ -167,9 +179,14 @@ const PaneLayoutDesktop = ({
               role="separator"
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="cursor-col-resize flex-shrink-0 bg-gray-200"
+              className="cursor-col-resize shrink-0 group"
               style={{ width: SEPARATOR_PX }}
-            />
+            >
+              <div
+                className="h-full border-r border-gray-300 group-hover:border-gray-400"
+                style={{ width: SEPARATOR_PX / 2 }}
+              />
+            </div>
           )}
         </Fragment>
       ))}

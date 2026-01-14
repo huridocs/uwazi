@@ -130,7 +130,7 @@ const FiltersSidepanel = ({
       <Sidepanel.Footer className="px-4 py-3">
         <div className="flex gap-2">
           <Button
-            className="flex-grow"
+            className="grow"
             type="button"
             styling="outline"
             onClick={() => {
@@ -139,7 +139,7 @@ const FiltersSidepanel = ({
           >
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="flex-grow" type="submit" form="group-edit-form">
+          <Button className="grow" type="submit" form="group-edit-form">
             {filter?.id ? <Translate>Update</Translate> : <Translate>Add</Translate>}
           </Button>
         </div>

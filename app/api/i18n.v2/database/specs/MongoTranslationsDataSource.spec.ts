@@ -58,7 +58,7 @@ describe('MongoTranslationsDataSource', () => {
             }),
           ],
         });
-        const transactionManager = DefaultTransactionManager();
+        const transactionManager = TransactionManagerFactory.default();
 
         await expect(
           new MongoTranslationsDataSource(getConnection(), transactionManager).insert([
@@ -72,7 +72,7 @@ describe('MongoTranslationsDataSource', () => {
       });
 
       it('should not fail on an empty input', async () => {
-        const transactionManager = DefaultTransactionManager();
+        const transactionManager = TransactionManagerFactory.default();
         await expect(
           new MongoTranslationsDataSource(getConnection(), transactionManager).insert([])
         ).resolves.toEqual([]);
@@ -81,7 +81,7 @@ describe('MongoTranslationsDataSource', () => {
 
     describe('when any other error happens', () => {
       it('should bubble up the error', async () => {
-        const transactionManager = DefaultTransactionManager();
+        const transactionManager = TransactionManagerFactory.default();
         const db = testingDB.mongodb!;
         jest.spyOn(db, 'collection').mockImplementation(() => {
           throw new Error('db error');

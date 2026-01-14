@@ -33,7 +33,7 @@ export const ATSolveVersionConflict = async (
   _newEntity: EntitySchema
 ) => {
   const ATConfig = await AutomaticTranslationFactory.defaultATConfigDataSource(
-    DefaultTransactionManager()
+    TransactionManagerFactory.default()
   ).get();
 
   if (!ATConfig.active) {
@@ -51,7 +51,7 @@ export const ATSolveVersionConflict = async (
       newValue.startsWith(RequestEntityTranslation.AITranslationPendingText) &&
       currentValue.startsWith(SaveEntityTranslations.AITranslatedText)
     ) {
-      DefaultLogger().info(
+      LoggerFactory.default().info(
         inspect(
           new Error(`[AT] property ${p.name} conflict when trying to save entity ${newEntity._id}`)
         )

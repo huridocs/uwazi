@@ -16,7 +16,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="bg-gray-50 rounded-sm border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             id="thesaurus3"
             type="checkbox"
           />
@@ -34,7 +34,7 @@ HTMLCollection [
             Animals
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
@@ -56,7 +56,7 @@ HTMLCollection [
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 "
           type="button"
         >
           <span
@@ -80,7 +80,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="bg-gray-50 rounded-sm border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             id="thesaurus1"
             type="checkbox"
           />
@@ -98,7 +98,7 @@ HTMLCollection [
             Colors
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
@@ -120,7 +120,7 @@ HTMLCollection [
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 "
           type="button"
         >
           <span
@@ -144,7 +144,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            class="bg-gray-50 rounded-sm border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             disabled=""
             id="thesaurus2"
             type="checkbox"
@@ -163,7 +163,7 @@ HTMLCollection [
             Names
           </span>
           <div
-            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-gray-400 border-solid rounded-lg border-l-2 border-r-2 border-t-0 border-b-0"
           >
             <span
               class="translation "
@@ -198,7 +198,7 @@ HTMLCollection [
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 "
           type="button"
         >
           <span
@@ -215,15 +215,15 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 bg-indigo-50 bg-indigo-50"
+  class="bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 bg-primary-50 bg-primary-50"
   data-testid="settings-content-footer"
 >
   <div
     class="flex items-center gap-2"
   >
     <button
-      class=" text-white bg-error-600 border-error-700  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-700 enabled:hover:border-error-700 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      class=" text-white bg-error-900 border-error-900  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-950 enabled:hover:border-error-950 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 "
       data-testid="thesaurus-delete-link"
       type="button"
     >

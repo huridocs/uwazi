@@ -1,4 +1,4 @@
-@use "../config/materials";
+@use '../config/materials';
 
 body {
   direction: ltr;
@@ -32,6 +32,7 @@ body {
 
 .app-content {
   overflow: hidden;
+  height: 100%;
 }
 
 .app-content > div {

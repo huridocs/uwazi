@@ -51,7 +51,7 @@ const SuggestionsTitle = ({
   return (
     <div className="flex gap-4">
       <div className="flex flex-wrap gap-2 items-center text-gray-900 grow">
-        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
+        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-primary-200 rounded-full">
           {propGraphics}
         </span>
         <span className="text-base font-semibold">

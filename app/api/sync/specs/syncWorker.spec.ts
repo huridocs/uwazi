@@ -370,10 +370,7 @@ describe('syncWorker', () => {
       expect(await thesauri.get()).toMatchObject([
         {
           name: 'thesauri1',
-          values: [
-            { _id: expect.anything(), label: 'th1value1' },
-            { _id: expect.anything(), label: 'th1value2' },
-          ],
+          values: [{ label: 'th1value1' }, { label: 'th1value2' }],
         },
       ]);
     }, 'target1');
@@ -401,12 +398,12 @@ describe('syncWorker', () => {
     });
 
     await tenants.run(async () => {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       await new CreateTranslationsService(
         DefaultTranslationsDataSource(transactionManager),
         new ValidateTranslationsService(
           DefaultTranslationsDataSource(transactionManager),
-          DefaultSettingsDataSource(transactionManager)
+          SettingsDataSourceFactory.default(transactionManager)
         ),
         transactionManager
       ).create([
@@ -533,8 +530,9 @@ describe('syncWorker', () => {
   describe('when a template that is whitelisted has been deleted', () => {
     it('should not throw an error', async () => {
       await tenants.run(async () => {
+        await elasticTesting.reindex();
+        permissionsContext.setCommandContext();
         await entitiesModel.delete({ template: template1 });
-        //@ts-ignore
         await templates.delete({ _id: template1 });
       }, 'host1');
 

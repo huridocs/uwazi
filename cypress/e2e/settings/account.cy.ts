@@ -1,6 +1,7 @@
 import { authenticator } from 'otplib';
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Account', () => {
   before(() => {
@@ -22,7 +23,7 @@ describe('Account', () => {
 
   it('should have no detectable accessibility violations on load', () => {
     cy.contains('Account');
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   describe('Update user', () => {
@@ -101,7 +102,7 @@ describe('Account', () => {
         cy.contains('button', 'Enable').click({ force: true });
       });
       cy.contains('Using Authenticator');
-      cy.checkA11y();
+      cy.checkA11y(undefined, undefined, logA11yViolations);
     });
 
     it('should enable 2FA', () => {

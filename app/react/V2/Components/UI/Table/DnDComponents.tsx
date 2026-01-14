@@ -8,8 +8,8 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 import { TableRow } from './Table';
 
-const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
-const childIndicatorClass = 'shadow-[inset_5px_0px_0px_-1px_#3949AB]';
+const dndHoverClass = 'dnd-hover-shadow';
+const childIndicatorClass = 'dnd-child-shadow';
 
 const inactiveGradientStyle: CSSProperties = {
   position: 'absolute',
@@ -28,7 +28,7 @@ const activeGradientStyle: CSSProperties = {
 
 const getSytles = (expanded: boolean, isOver: boolean, isDndDisable: boolean) => {
   const expandedGroupStyles = expanded
-    ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
+    ? 'bg-primary-100 border-indigo-100 hover:bg-primary-200 hover:border-indigo-200'
     : '';
   const dndHoverStyles = isOver && !isDndDisable ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;

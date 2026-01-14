@@ -1,5 +1,4 @@
-import util from 'util';
-import { ValidationError } from 'ajv';
+import { ValidationError as AJVValidationError } from 'ajv';
 import { ZodError } from 'zod';
 import { Request, Response } from 'express';
 
@@ -22,16 +21,20 @@ export abstract class AbstractController<RequestBody = any> {
       await this.handle();
     } catch (e) {
       if (e instanceof ZodError) {
-        const error = new ValidationError(
+        const error = new AJVValidationError(
           e.errors.map(issue => ({
             instancePath: issue.path.join('.'),
             message: issue.message,
           }))
         );
 
-        error.message = util.inspect(error, false, null);
+        error.message = e.message;
 
         throw error;
+      }
+
+      if (e instanceof ValidationError) {
+        throw new AJVValidationError([e.asAJV()]);
       }
 
       throw e;

@@ -111,7 +111,7 @@ export class AcceptSuggestionsUseCase {
       const acceptedQuery = { _id: { $in: acceptedIds } };
       await updateStates(acceptedQuery);
     } catch (e) {
-      DefaultLogger().info('IX accept: state recompute failed', {
+      LoggerFactory.default().info('IX accept: state recompute failed', {
         acceptedIdsCount: acceptedIds.length,
         error: (e as Error)?.message,
       });

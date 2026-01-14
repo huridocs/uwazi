@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,Требутся электронная почта
 Accept,Принять
 Accepted suggestion on entity,Accepted suggestion on entity
+Accepting suggestions,Accepting suggestions
 Account,Аккаунт
 Account locked,Account locked
 Account unlocked successfully,Account unlocked successfully
@@ -52,6 +53,8 @@ Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
+Add to ToC,Add to ToC
+Add to training set,Add to training set
 Add user,Добавить пользователя
 add value,add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
@@ -77,6 +80,7 @@ Already exists,Already exists
 Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred,An error has occurred
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics,Analytics
@@ -90,11 +94,13 @@ Are you sure you want to delete this entity?,Are you sure you want to delete thi
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
 Are you sure?,Are you sure?
+Attachment,Attachment
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Вложения
 Authentication code,Код аутентификации
+auto created,auto created
 Auto-accept suggestions,Auto-accept suggestions
 auto-created,автоматически созданный
 Automatic Table of Contents,Автоматическое оглавление
@@ -112,6 +118,7 @@ Can edit,Может редактировать
 Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
+Canceling,Canceling
 Canceling...,Canceling...
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
@@ -126,6 +133,7 @@ Character support description,This option enhances support for non-Latin languag
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Choose which data to use for training,Choose which data to use for training
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
@@ -139,6 +147,7 @@ Close,Закрыть
 Collaborator,Соавтор
 Collaborators,Collaborators
 Collapse all,Collapse all
+Collapse All,Collapse All
 Collection,Коллекция
 Collection Name,Collection Name
 Common sources,Common sources
@@ -157,10 +166,13 @@ Confirm deletion of file,Confirm deletion of file
 Confirm new password,Подтвердите новый пароль
 Connect to a paragraph,Подключиться к абзацу
 Connect to an entity,Connect to an entity
+Connect to document,Connect to document
+Connect to paragraph,Connect to paragraph
 Connected to server,Connected to server
 Connection type,Тип связи
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Форма обратной связи
+Contact form email,Contact form email
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -201,8 +213,10 @@ Custom component error,Ошибка пользовательского комп�
 Custom CSS,Персональные CSS
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
+Custom landing page,Custom landing page
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Пользовательские загрузки
+Dark,Dark
 Dashboard,Dashboard
 Date added,Дата добавления
 Date format,Формат даты
@@ -221,7 +235,7 @@ DELETE,Удалить
 Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
 Delete language,Удалить язык
-Delete Property,Удалить свойство
+Delete?,Delete?
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
 Deleted entity,Deleted entity
@@ -263,9 +277,9 @@ Drag row,Drag row
 Drop your files here to upload or,"Опустите свои файлы сюда, чтобы загрузить или"
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Продублированный адрес электронной почты
-Duplicated label,Продублированная метка
 Duplicated name,Дублированное имя
 Duplicated username,Продублированное имя пользователя
+Duration,Duration
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
@@ -304,6 +318,7 @@ Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
+Expand All,Expand All
 Exploration,Изучение
 Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
@@ -312,8 +327,10 @@ Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
 Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
+Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
+Failed to save table of contents,Failed to save table of contents
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -409,6 +426,7 @@ Invalid csv: all the values for a row must be either nested or non-nested,Invali
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
+it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Элементы
 Javascript,Javascript
@@ -460,10 +478,13 @@ low,низкий
 Manage site settings and configuration,Управление сайтом и конфигурация
 Map,Карта
 Map api key,Map api key
+Map API key,Map API key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map Layers,Map Layers
 Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Просмотр карты
+Mapbox,Mapbox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -472,7 +493,12 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
         some time to reappear in the Library, but this is temporary. Do you want to continue?"
 Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
+Mark as reviewed,Mark as reviewed
 Markdown,Markdown
+marked and labeled,marked and labeled
+marked for training,marked for training
+Marked for training + all labeled entries,Marked for training + all labeled entries
+Marked for training only,Marked for training only
 Match,Match
 Matching,Matching
 matching,matching
@@ -526,6 +552,7 @@ No Connections description,Connections are the direct relationships between this
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
+No files available,No files available
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,Нет иконки/флажка
@@ -539,8 +566,9 @@ No References,Нет ссылок
 No References description,References are parts of this document related with other documents and entities.
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
-No Table of Contents,Нет содержания
-No Table of Contents description,Нет описания содержания
+No table of contents,Нет содержания
+No Table of contents,No Table of contents
+No table of contents description,Нет описания содержания
 No text match,Нет совпадающего текста
 No text match description,You can type something different in the search box to get some results.
 No type,Нет типа
@@ -690,6 +718,7 @@ RelationType saved,Тип взаимосвязи сохранен
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
+Remove from training set,Remove from training set
 remove icon,удалить иконку
 Removed language,Removed language
 Rename,Переименовать
@@ -720,6 +749,7 @@ Save changes,Сохранить изменения
 Save password,Сохранить пароль
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
+Saving...,Saving...
 Search,Искать
 Search item,Искать предмет
 Search not found,Поиск ничего не выявил
@@ -760,7 +790,7 @@ Send,Отправить
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data...,Sending labeled data...
+Sending labeled data,Sending labeled data
 Sentences above threshold,Предложения выше порога
 Services,Services
 Set as default,Установить по умолчанию
@@ -787,6 +817,7 @@ shown of,показано от
 Sign in,Войти
 Single relationships must have a hub,Single relationships must have a hub
 Size,Размер
+Skip to main content,Skip to main content
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
 Sort ascending,Sort ascending
@@ -826,6 +857,7 @@ System translations,System translations
 Table,Таблица
 Table of Contents,Содержание
 Table of contents,Содержание
+Table of contents saved successfully,Table of contents saved successfully
 Table view,Табличный вид
 Target relationship type,Target relationship type
 Target Template,Target Template
@@ -885,6 +917,7 @@ This property will be shown using all the width available.,Это свойств
 This property will be shown without the label,This property will be shown without the label
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 Threshold,Порог
@@ -893,6 +926,7 @@ Timelinks,Timelinks
 Timestamp,Timestamp
 Title,Заголовок
 To,To
+To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
@@ -909,7 +943,8 @@ Train,Train
 Train model,Train model
 Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
-Training model...,Training model...
+Training model,Training model
+Training sample,Training sample
 Translate,Перевести
 Translation,Translation
 Translations,Переводы
@@ -926,6 +961,7 @@ Two-step verification,Двухфакторная верификация
 Two-step verification token required,Two-step verification token required
 Type,Тип
 "Unable to save, failed response","Unable to save, failed response"
+Unauthorized,Не авторизован
 Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
@@ -961,6 +997,7 @@ Uploads,Загрузки
 URL,URL
 Use,Использовать
 Use as filter,Use as filter
+Use for training,Use for training
 User,Пользователь
 User Action,User Action
 User Role,User Role
@@ -994,6 +1031,7 @@ Warning: you are editing multiple entities. Fields marked with a,"Предупр
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
+Whitelisted templates,Whitelisted templates
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,будет обновляться с тем же значением
 Will show the entire media inside the container.,Will show the entire media inside the container.
@@ -1007,6 +1045,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
+"You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
+                  button."
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

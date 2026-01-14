@@ -1,14 +1,14 @@
-import { getConnection } from '../../app/api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoSettingsDataSource } from '../../app/api/settings.v2/database/MongoSettingsDataSource.js';
-import { RelationshipPropertyMappingFactory } from '../../app/api/templates.v2/database/mappings/RelationshipPropertyMappingFactory.js';
-import { MongoTemplatesDataSource } from '../../app/api/templates.v2/database/MongoTemplatesDataSource.js';
-import { TemplateSchema } from '../../app/shared/types/templateType.js';
-import { DefaultTransactionManager } from '../../app/api/common.v2/database/data_source_defaults.js';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
+import { RelationshipPropertyMappingFactory } from 'api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory';
+import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
+import { TemplateSchema } from 'shared/types/templateType';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { propertyMappings } from './mappings';
 
 const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
@@ -45,6 +45,11 @@ export default {
               return;
             }
 
+            // Skip unknown property types to avoid calling undefined mappings
+            if (property.type !== 'newRelationship' && !propertyMappings[property.type]) {
+              return;
+            }
+
             baseMappingObject.properties.metadata.properties[property.name] = {
               properties:
                 newRelationshipMappingFactory && property.type === 'newRelationship'
@@ -52,11 +57,13 @@ export default {
                   : propertyMappings[property.type](),
             };
             if (property.inherit?.type && property.inherit.type !== 'preview') {
-              baseMappingObject.properties.metadata.properties[
-                property.name
-              ].properties.inheritedValue = {
-                properties: propertyMappings[property.inherit.type](),
-              };
+              if (propertyMappings[property.inherit.type]) {
+                baseMappingObject.properties.metadata.properties[
+                  property.name
+                ].properties.inheritedValue = {
+                  properties: propertyMappings[property.inherit.type](),
+                };
+              }
             }
           })
         )

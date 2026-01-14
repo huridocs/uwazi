@@ -8,17 +8,14 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import * as formatter from './formatter';
 
-type EntityApiParams = {
-  omitRelationships?: boolean;
-};
-
 const getById = async ({
   _id,
   language,
   omitRelationships = true,
-}: EntityApiParams & {
+}: {
   _id: string;
   language: string;
+  omitRelationships?: boolean;
 }): Promise<EntitySchema[]> => {
   try {
     const requestParams = new RequestParams({
@@ -42,10 +39,7 @@ const getBySharedId = async (
     sharedId,
     language,
     omitRelationships = true,
-  }: EntityApiParams & {
-    sharedId: string;
-    language: string;
-  },
+  }: { sharedId: string; language: string; omitRelationships?: boolean },
   headers?: IncomingHttpHeaders
 ): Promise<EntitySchema[]> => {
   try {

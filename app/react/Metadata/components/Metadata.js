@@ -65,14 +65,23 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
       result = renderLink(prop, compact);
       break;
     case 'image':
-      result = prop.value && (
-        <ImageViewer
-          key={prop.value}
-          className={`multimedia-img ${prop.style}`}
-          src={prop.value}
-          alt={prop.label}
-        />
-      );
+      if (prop.status === 'processing') {
+        result = (
+          <div className="processing-placeholder">
+            <ClockIcon />
+            <Translate>Processing</Translate>
+          </div>
+        );
+      } else if (prop.value) {
+        result = (
+          <ImageViewer
+            key={prop.value}
+            className={`multimedia-img ${prop.style}`}
+            src={prop.value}
+            alt={prop.label}
+          />
+        );
+      }
       break;
     case 'media': {
       if (useV2Player && prop.value) {

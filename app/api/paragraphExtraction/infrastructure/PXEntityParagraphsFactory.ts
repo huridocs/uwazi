@@ -20,14 +20,15 @@ type Props = {
 export class PXEntityParagraphsFactory {
   static createDefault(props?: Props) {
     const connection = props?.connection || getConnection();
-    const mongoTransactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
+    const mongoTransactionManager =
+      props?.mongoTransactionManager || TransactionManagerFactory.default();
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
       transactionManager: mongoTransactionManager,
     });
 
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,

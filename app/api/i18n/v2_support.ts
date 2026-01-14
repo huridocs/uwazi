@@ -19,7 +19,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexedContextValues } from './translations.js';
 
 models.translationsV2 = () =>
-  new MongoTranslationsSyncDataSource(getConnection(), DefaultTransactionManager());
+  new MongoTranslationsSyncDataSource(getConnection(), TransactionManagerFactory.default());
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -44,8 +44,8 @@ export const resultsToV1TranslationType = async (
   tranlationsResult: ResultSet<Translation>,
   onlyLanguage?: LanguageISO6391
 ) => {
-  const transactionManager = DefaultTransactionManager();
-  const settings = DefaultSettingsDataSource(transactionManager);
+  const transactionManager = TransactionManagerFactory.default();
+  const settings = SettingsDataSourceFactory.default(transactionManager);
   let languageKeys = await settings.getLanguageKeys();
   if (onlyLanguage) {
     languageKeys = [onlyLanguage];
@@ -99,25 +99,25 @@ export const resultsToV1TranslationType = async (
 };
 
 export const createTranslationsV2 = async (translation: TranslationType) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   await new CreateTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      SettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).create(flattenTranslations(translation));
 };
 
 export const upsertTranslationEntries = async (translations: CreateTranslationsData[]) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    DefaultSettingsDataSource(transactionManager),
+    SettingsDataSourceFactory.default(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      SettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).upsert(translations);
@@ -132,7 +132,7 @@ export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   await new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     transactionManager
@@ -140,7 +140,7 @@ export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   return new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     transactionManager
@@ -150,20 +150,22 @@ export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) 
 export const getTranslationsV2ByContext = async (context: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      DefaultTranslationsDataSource(DefaultTransactionManager())
+      DefaultTranslationsDataSource(TransactionManagerFactory.default())
     ).getByContext(context)
   );
 
 export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      DefaultTranslationsDataSource(DefaultTransactionManager())
+      DefaultTranslationsDataSource(TransactionManagerFactory.default())
     ).getByLanguage(language),
     language
   );
 
 export const getTranslationsEntriesV2 = async () =>
-  new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll();
+  new GetTranslationsService(
+    DefaultTranslationsDataSource(TransactionManagerFactory.default())
+  ).getAll();
 
 export const getTranslationsV2 = async () =>
   resultsToV1TranslationType(await getTranslationsEntriesV2());
@@ -174,13 +176,13 @@ export const updateContextV2 = async (
   keysToDelete: string[],
   valueChanges: IndexedContextValues
 ) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
-    DefaultSettingsDataSource(transactionManager),
+    SettingsDataSourceFactory.default(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      SettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);

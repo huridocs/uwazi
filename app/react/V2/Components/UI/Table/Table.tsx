@@ -54,6 +54,7 @@ type TableProps<T extends TableRow<T>> = {
   footer?: React.ReactNode;
   noDataMessage?: string | React.ReactNode;
   className?: string;
+  containerClassName?: string;
   groupColumnPosition?: number;
   manualSorting?: boolean;
 };
@@ -70,6 +71,7 @@ const Table = <T extends TableRow<T>>({
   actions,
   footer,
   className,
+  containerClassName,
   noDataMessage = <DefaultNoDataMessage />,
   groupColumnPosition = 0,
   initialSelection = [],
@@ -225,9 +227,11 @@ const Table = <T extends TableRow<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="w-full overflow-auto rounded-md shadow">
+      <div
+        className={`w-full overflow-auto rounded-md shadow-sm flex flex-col ${containerClassName || ''}`}
+      >
         <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
-          {header && <div className="flex-grow">{header}</div>}
+          {header && <div className="grow">{header}</div>}
           <div className="flex gap-2">
             {hasGroups && (
               <>
@@ -288,8 +292,10 @@ const Table = <T extends TableRow<T>>({
             )}
           </tbody>
         </table>
-        {footer && dataState.length > 0 && <div className="p-4">{footer}</div>}
       </div>
+      {footer && dataState.length > 0 && (
+        <div className="p-4 border-t border-gray-100">{footer}</div>
+      )}
     </DndContext>
   );
 };

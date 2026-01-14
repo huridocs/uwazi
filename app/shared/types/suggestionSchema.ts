@@ -164,6 +164,7 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
     trainingSample: { type: 'boolean' },
+    useForTraining: { type: 'boolean' },
     entityTitle: { type: 'string' },
     currentValue: {
       anyOf: [
@@ -261,6 +262,7 @@ export const SuggestionCustomFilterSchema = {
     error: { type: 'boolean' },
     noContext: { type: 'boolean' },
     nonProcessed: { type: 'boolean' },
+    useForTraining: { type: 'boolean' },
   },
   required: [
     'labeled',
@@ -271,6 +273,7 @@ export const SuggestionCustomFilterSchema = {
     'error',
     'noContext',
     'nonProcessed',
+    'useForTraining',
   ],
 };
 
@@ -351,5 +354,6 @@ export const IXSuggestionAggregationSchema = {
     error: { type: 'number' },
     noContext: { type: 'number' },
     nonProcessed: { type: 'number' },
+    useForTraining: { type: 'number' },
   },
 };

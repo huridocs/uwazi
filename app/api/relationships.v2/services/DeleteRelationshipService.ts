@@ -1,6 +1,5 @@
-import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
-
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MissingRelationshipError } from '../errors/relationshipErrors';
 import { DenormalizationService } from './DenormalizationService';

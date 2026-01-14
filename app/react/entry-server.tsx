@@ -39,6 +39,7 @@ import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
 import { ProtectedRoute } from './ProtectedRoute';
+import { isMobileDevice } from '../shared/detectDevice';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -140,13 +141,21 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     tenant: req.get('tenant'),
   };
 
+  const userAgent = req.get('user-agent') || '';
+
   const requestParams = new RequestParams({}, headers);
 
   const translations = await translationsApi.get();
 
   const [
     userApiResponse = { json: {} },
-    settingsApiResponse = { json: { languages: [], private: settings.private } },
+    settingsApiResponse = {
+      json: {
+        languages: settings.languages,
+        private: settings.private,
+        site_name: settings.site_name,
+      },
+    },
     templatesApiResponse = { json: { rows: [] } },
     thesaurisApiResponse = { json: { rows: [] } },
     relationTypesApiResponse = { json: { rows: [] } },
@@ -189,6 +198,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       user: userApiResponse.json,
       translations: translationsApiResponse.json.rows,
       relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+      isMobile: isMobileDevice(userAgent),
     },
   };
 };
@@ -288,13 +298,20 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { connection, ...headers } = req.headers;
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
+
+  if (matched === null) {
+    res.redirect('/404');
+    return;
+  }
+
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
   const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
   const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+
   if (isProtectedRoute) {
     const userId = req.user?._id;
     const userRole = req.user?.role || '';
-    const allowedRoles = lastRouteElement.props.allowedRoles;
+    const { allowedRoles } = lastRouteElement.props;
     if (!userId || (allowedRoles && !allowedRoles.includes(userRole))) {
       res.redirect('/login');
       return;

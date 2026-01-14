@@ -1,22 +1,69 @@
 import { Context, PropertyTypes } from '#api/templates.v2/model/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
+import { PropertyTypeEnum } from './PropertyType';
+import { MediaEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.Media;
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
+const EntrySchema = z.object({
+  value: z.string().trim().min(1, 'Media Property value must be a non-empty string.'),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z
+    .array(EntrySchema)
+    .min(isRequired ? 1 : 0, 'Media Property is required')
+    .max(1, 'Media Property only accepts a single value.');
+
 class MediaProperty extends AbstractImageProperty {
+  private FILE_PATH = '/api/files/';
+
   constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'media' }, context);
+    super({ ...props, type: props.type || PropertyTypeEnum.Media }, context);
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'media') {
+    if (this.type !== PropertyTypeEnum.Media) {
       throw new PropertyTypeInvalidTypeError(this.type, 'MediaProperty');
     }
+  }
+
+  get isTranslatable(): boolean {
+    return true;
+  }
+
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<MediaEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<MediaEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.length)
+    );
+
+    return {
+      name: this.name,
+      value: parsed,
+      type: this.type,
+      isTranslatable: this.isTranslatable,
+    };
+  }
+
+  assignFilePath(filename: string, timeLinks?: string) {
+    const path = `${this.FILE_PATH}${filename}`;
+
+    return timeLinks?.length ? `(${path}, ${timeLinks})` : path;
+  }
+
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<MediaEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

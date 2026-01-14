@@ -13,7 +13,16 @@ const otherLanguageSchema: LanguageSchema = {
   translationAvailable: false,
 };
 
-const availableLanguages: LanguageSchema[] = [
+type Language = LanguageSchema & {
+  label: string;
+  key: LanguageISO6391;
+  ISO639_3: LanguageISO6393;
+  ISO639_1: LanguageISO6391;
+  localized_label: string;
+  translationAvailable: boolean;
+};
+
+const availableLanguages: Language[] = [
   {
     label: 'Abkhazian',
     key: 'ab',
@@ -1551,6 +1560,6 @@ const availableLanguages: LanguageSchema[] = [
   },
 ];
 
-export type { LanguageCode };
+export type { LanguageCode, Language };
 
 export { otherLanguageSchema, availableLanguages };

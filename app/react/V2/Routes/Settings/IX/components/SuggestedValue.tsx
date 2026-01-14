@@ -26,17 +26,15 @@ const SuggestedValue = ({
   const locale = useParams().lang;
   const thesauris = useAtomValue(thesauriAtom);
 
-  let colorClass = '';
-  if (!suggestion || suggestion.suggestedValue === '') {
-    colorClass = 'text-orange-600';
-  }
+  const mismatchColor = 'text-alert-800';
+  const matchColor = 'text-success-600';
+
+  let colorClass = mismatchColor;
   if (
     value === suggestion.suggestedValue ||
     (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'))
   ) {
-    colorClass = 'text-green-600';
-  } else {
-    colorClass = 'text-orange-600';
+    colorClass = matchColor;
   }
 
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);

@@ -1,4 +1,4 @@
-type Callback<Item> = (item: Item, index: number, array: Item[]) => Promise<void>;
+type Callback<Item, Result = void> = (item: Item, index: number, array: Item[]) => Promise<Result>;
 
 type RunInBatchesInput<Item> = {
   array: Item[];
@@ -16,19 +16,32 @@ export class ArrayUtils {
   /**
    * Executes promises in sequence.
    */
-  static async sequentialFor<Item>(array: Item[], callback: Callback<Item>): Promise<void> {
+  static async sequentialFor<Item, Result>(
+    array: Item[],
+    callback: Callback<Item, Result>
+  ): Promise<Result[]> {
+    const results: Result[] = [];
+
     await array.reduce(async (promise, item, index) => {
       await promise;
 
-      return callback(item, index, array);
+      const result = await callback(item, index, array);
+      results.push(result);
+
+      return Promise.resolve();
     }, Promise.resolve());
+
+    return results;
   }
 
   /**
    * Executes promises in parallel.
    */
-  static async parallelFor<Item>(array: Item[], callback: Callback<Item>): Promise<void> {
-    await Promise.all(array.map(async (item, index) => callback(item, index, array)));
+  static async parallelFor<Item, Result>(
+    array: Item[],
+    callback: Callback<Item, Result>
+  ): Promise<Result[]> {
+    return Promise.all(array.map(async (item, index) => callback(item, index, array)));
   }
 
   static splitInChunks<T>(array: T[], size: number): T[][] {
@@ -53,8 +66,24 @@ export class ArrayUtils {
 
     const batches = this.splitInChunks(array, _batchSize);
 
-    await ArrayUtils.sequentialFor(batches, async batch =>
-      ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches))
-    );
+    await ArrayUtils.sequentialFor(batches, async batch => {
+      await ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches));
+    });
+  }
+
+  static deduplicate<T>(array: T[], checker: (item: T) => string | number | undefined | null): T[] {
+    const seen = new Set();
+    const result: T[] = [];
+
+    array.forEach(item => {
+      const key = checker(item);
+
+      if (Boolean(key) && !seen.has(key)) {
+        seen.add(key);
+        result.push(item);
+      }
+    });
+
+    return result;
   }
 }

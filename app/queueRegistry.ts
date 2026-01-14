@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */ /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
@@ -47,7 +48,12 @@ export class TestJob implements Dispatchable {
         () => {
           if (Math.floor(Math.random() * 5) === 0) {
             reject(
-              new ValidationError([{ path: '/', message: 'Random validation error occurred' }])
+              new ValidationError([
+                {
+                  path: '/',
+                  message: 'Random validation error occurred',
+                },
+              ])
             );
           }
           if (Math.floor(Math.random() * 5) === 0) {
@@ -61,6 +67,7 @@ export class TestJob implements Dispatchable {
   }
 }
 
+// eslint-disable-next-line max-statements
 export function registerJobs(
   register: <T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
@@ -74,13 +81,13 @@ export function registerJobs(
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
   register(PXCreateParagraphsJob, async () => {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const connection = getConnection();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
       transactionManager,
     });
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
@@ -96,8 +103,12 @@ export function registerJobs(
 
   register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
     const batchSize = 50;
-    const useCase = PXCreateEntityStatusesFactory.createDefault({ batchSize });
-    const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
+    const useCase = PXCreateEntityStatusesFactory.createDefault({
+      batchSize,
+    });
+    const dispatcher = DefaultDispatcher(namespace, TransactionManagerFactory.default(), {
+      lockWindow: 1000 * 60,
+    });
 
     return new CreateParagraphExtractionEntityStatusesJob(
       {
@@ -123,31 +134,137 @@ export function registerJobs(
 
     return new IXTrainModelJob({
       tenantName,
-      trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
-      trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
+      trainModelForPDF: new TrainModelForPDF({
+        tenantName,
+        serviceUrl,
+        iXTaskService,
+      }),
+      trainModelForText: new TrainModelForText({
+        iXTaskService,
+        tenantName,
+        serviceUrl,
+      }),
+    });
+  });
+
+  register(PDFPostProcessJobHandler, async (_tenantName: string) => {
+    const transactionManager = TransactionManagerFactory.default();
+    return new PDFPostProcessJobHandler({
+      useCase: new PDFPostProcessJob({
+        eventBus: applicationEventsBus,
+        transactionManager,
+        filesDS: FilesDataSourceFactory.default(transactionManager),
+        fileStorage: FileStorageFactory.default(),
+        pdfService: new PDFService(),
+        idGenerator: IdGeneratorFactory.default(),
+        filesService: FilesServiceFactory.default(transactionManager),
+      }),
+      wSockets: new V1WebSocketsWrapper(),
     });
   });
 
   register(AcceptSuggestionsJob, async (tenantName: string) => {
-    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName });
+    const { job } = await AcceptSuggestionsFactory.createDefault({
+      tenantName,
+    });
     return job;
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: DefaultTemplatesDataSource(transactionManager),
+      templatesDS: TemplatesDataSourceFactory.default(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: new MongoMultiLanguageEntityDataSource(
-          getConnection(),
-          transactionManager,
-          DefaultTemplatesDataSource(transactionManager)
-        ),
+        entitiesDS: new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager),
+        filesDS: FilesDataSourceFactory.default(transactionManager),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
-        templatesDS: DefaultTemplatesDataSource(transactionManager),
+        templatesDS: TemplatesDataSourceFactory.default(transactionManager),
         transactionManager,
       }),
     });
   });
+
+  register(
+    RelationshipSyncJob,
+    async () =>
+      new RelationshipSyncJob({
+        relationships,
+      })
+  );
+
+  register(CsvExtractUploadedZipJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const fileStorage = new FileSystemStorage(new PathManager({ tenant }));
+    const fileNormalizer = new CsvImportFileNormalizer({
+      fileStorage,
+      filesIO: new FileContentsIO(),
+    });
+    const rowsStager = new CsvImportRowsStager({ fileStorage });
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const useCase = new CsvExtractUploadedZipJob({
+      csvImportsDS,
+      fileNormalizer,
+      rowsStager,
+      rowsDS,
+      transactionManager,
+      jobsDispatcher,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvExtractUploadedZipJobHandler({ useCase, sockets });
+  });
+
+  register(CsvPreflightJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const useCase = new CsvPreflightJob({
+      csvImportsDS,
+      rowsDS,
+      templatesDS,
+      settingsDS,
+      thesauriDS,
+      thesauriValuesDS,
+      jobsDispatcher,
+      transactionManager,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvPreflightJobHandler({ useCase, sockets });
+  });
+
+  register(CsvCreateThesauriValuesJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const thesauriValuesDS =
+      CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const useCase = new CsvCreateThesauriValuesJob({
+      csvImportsDS,
+      thesauriValuesDS,
+      thesauriRepo: new LegacyThesauriRepository(),
+      translationsRepo: new LegacyTranslationsRepository(),
+      transactionManager,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
+  });
+
+  register(
+    BulkCleanupEntityJob,
+    async () => new BulkCleanupEntityJob({ BulkCleanupEntityUseCaseFactory })
+  );
+
+  register(
+    DeleteFileFromStorageJobHandler,
+    async () => new DeleteFileFromStorageJobHandler({ fileStorage: FileStorageFactory.default() })
+  );
 }

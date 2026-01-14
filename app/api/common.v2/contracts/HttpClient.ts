@@ -1,10 +1,10 @@
-import { File } from '../../files.v2/model/File.js';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { HttpField } from './HttpField';
 
 type PostFormDataInput = {
   url: string;
   fields: Record<string, HttpField>;
-  files: Record<string, File[]>;
+  files: Record<string, { filename: string; contents: FileContents }[]>;
 };
 
 type GetInput = {
@@ -16,4 +16,4 @@ interface HttpClient {
   get<Response>(input: GetInput): Promise<Response>;
 }
 
-export type { PostFormDataInput, HttpClient, GetInput };
+export type { GetInput, HttpClient, PostFormDataInput };

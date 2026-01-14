@@ -20,9 +20,9 @@ interface PXCreateExtractorFactoryProps {
 export class PXCreateExtractorFactory {
   static async createDefault(props: PXCreateExtractorFactoryProps) {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const dispatcher = await DefaultDispatcher(props.tenantName, {
+    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
 
@@ -33,7 +33,7 @@ export class PXCreateExtractorFactory {
         mongoTransactionManager,
       }),
       idGenerator: MongoIdHandler,
-      templatesDS: DefaultTemplatesDataSource(mongoTransactionManager),
+      templatesDS: TemplatesDataSourceFactory.default(mongoTransactionManager),
       transactionManager: mongoTransactionManager,
       dispatcher,
     });

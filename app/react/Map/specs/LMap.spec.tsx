@@ -3,7 +3,6 @@
  */
 /* eslint-disable max-statements */
 import React from 'react';
-import Immutable from 'immutable';
 import { createStore, Provider } from 'jotai';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
 
@@ -24,23 +23,19 @@ jest.mock('react-router', () => ({
 describe('Map', () => {
   let renderResult: RenderResult;
   const testStore = createStore();
-  const storeState = {
-    templates: Immutable.fromJS([{ _id: 't1', name: 'template1', color: 'blue' }]),
-    translations: Immutable.fromJS([
-      {
-        locale: 'en',
-        contexts: [{ id: 't1', values: { Title: 'Title translated' } }],
-      },
-    ]),
-    settings: {
-      collection: Immutable.fromJS({
-        mapStartingPoint: [{ lat: 40, lon: 15 }],
-        tilesProvider: 'mapbox',
-        mapApiKey: 'abd',
-      }),
+  testStore.set(templatesAtom, [{ _id: 't1', name: 'template1', color: 'blue' }]);
+  testStore.set(translationsAtom, [
+    {
+      locale: 'en',
+      contexts: [{ id: 't1', values: { Title: 'Title translated' } }],
     },
-    locale: 'en',
-  };
+  ]);
+  testStore.set(settingsAtom, {
+    mapStartingPoint: [{ lat: 40, lon: 15 }],
+    tilesProvider: 'mapbox',
+    mapApiKey: 'abd',
+  });
+  testStore.set(localeAtom, 'en');
 
   const clickOnCluster = jest.fn();
   const onClick = jest.fn();
@@ -80,7 +75,7 @@ describe('Map', () => {
     renderPopupInfo?: boolean,
     showControls = true
   ) => {
-    ({ renderResult } = renderConnectedContainer(
+    renderResult = renderComponent(
       <Provider store={testStore}>
         <Map
           markers={markers}
@@ -89,9 +84,8 @@ describe('Map', () => {
           renderPopupInfo={renderPopupInfo}
           showControls={showControls}
         />
-      </Provider>,
-      () => storeState
-    ));
+      </Provider>
+    );
   };
 
   describe('default values map library', () => {

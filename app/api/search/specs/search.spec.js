@@ -1008,14 +1008,17 @@ describe('search', () => {
         'en'
       ),
     ]);
-    expect(asc.rows[0].title).toBe('metadata1');
-    expect(asc.rows[1].title).toBe('Metadata2');
-    expect(asc.rows[2].title).toBe('metádata3');
-    expect(asc.rows[3].title).toBe(' Metadáta4');
+    expect(asc.rows[0].title).toBe(' Metadáta4');
+    expect(asc.rows[1].title).toBe('metadata1');
+    expect(asc.rows[2].title).toBe('Metadata2');
+    expect(asc.rows[3].title).toBe('metádata3');
+    expect(asc.rows[4].title).toBe('metadata5');
+
     expect(desc.rows[0].title).toBe('metadata5');
-    expect(desc.rows[1].title).toBe(' Metadáta4');
-    expect(desc.rows[2].title).toBe('metádata3');
-    expect(desc.rows[3].title).toBe('Metadata2');
+    expect(desc.rows[1].title).toBe('metádata3');
+    expect(desc.rows[2].title).toBe('Metadata2');
+    expect(desc.rows[3].title).toBe('metadata1');
+    expect(desc.rows[4].title).toBe(' Metadáta4');
   });
 
   it('should throw a validation error if order is not asc or desc', async () => {
@@ -1270,5 +1273,48 @@ describe('search', () => {
       'en'
     );
     expect(resultsFound.rows.length).toBe(1);
+  });
+
+  describe('bulkDeleteBySharedId()', () => {
+    const getBySharedIds = sharedIds =>
+      elastic.search({
+        body: {
+          query: {
+            terms: { 'sharedId.raw': sharedIds },
+          },
+        },
+      });
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(elasticFixtures);
+    });
+
+    it('should delete all entities with the given sharedIds', async () => {
+      const sharedIds = [ids.batmanFinishes, ids.batmanBegins, 'unpublished'];
+
+      const before = await getBySharedIds(sharedIds);
+
+      expect(before.body.hits.total.value).toBe(6);
+
+      await search.bulkDeleteBySharedId([ids.batmanFinishes, ids.batmanBegins]);
+
+      const after = await getBySharedIds(sharedIds);
+      expect(after.body.hits.total.value).toBe(2);
+      expect(after.body.hits.hits.every(hit => hit._source.sharedId === 'unpublished')).toBe(true);
+    });
+
+    it('should not throw when sending empty array', async () => {
+      await search.bulkDeleteBySharedId([]);
+    });
+
+    it('should not throw when sending non-existent sharedIds', async () => {
+      const searchBefore = await elastic.search({});
+      const initialCount = searchBefore.body.hits.total.value;
+
+      await search.bulkDeleteBySharedId(['nonexistent1', 'nonexistent2']);
+
+      const searchAfter = await elastic.search({});
+      expect(searchAfter.body.hits.total.value).toBe(initialCount);
+    });
   });
 });

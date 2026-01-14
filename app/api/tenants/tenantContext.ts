@@ -19,10 +19,13 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    deactivateUpdateLogs?: boolean;
-    v2CreateTemplateUseCase?: boolean;
-    v2SetTemplateAsDefaultUseCase?: boolean;
-    v2UpdateTemplateUseCase?: boolean;
+    v2CreateEntity?: boolean;
+    v2BulkDeleteEntity?: boolean;
+    fileCacheHeaders?: boolean;
+    v2UploadFile?: boolean;
+    v2DeleteFile?: boolean;
+    v2CSVImport?: boolean;
+    v2CreateThesaurus?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
@@ -42,13 +45,16 @@ class Tenants {
     };
   }
 
-  async setupTenants() {
-    const model = await tenantsModel();
+  async setupTenants(_model?: TenantsModel) {
+    let model = _model;
+    if (!model) {
+      model = await tenantsModel();
+    }
     this.model = model;
-    model.on('change', () => {
+    this.model.on('change', () => {
       this.updateTenants(model).catch(handleError);
     });
-    await this.updateTenants(model);
+    await this.updateTenants(this.model);
   }
 
   async tearDownTenants() {

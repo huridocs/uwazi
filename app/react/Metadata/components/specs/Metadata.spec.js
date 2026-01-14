@@ -80,6 +80,22 @@ describe('Metadata', () => {
     ]);
   });
 
+  describe('when status "processing"', () => {
+    it('image field should render a loading icon', () => {
+      testMetadata([
+        {
+          translateContext: 'oneTranslateContext',
+          name: 'image_label',
+          label: 'Image Label',
+          value: 'http://some.url.com/image.jpg',
+          type: 'image',
+          style: 'cover',
+          status: 'processing',
+        },
+      ]);
+    });
+  });
+
   it('should render a link', () => {
     testMetadata([
       {

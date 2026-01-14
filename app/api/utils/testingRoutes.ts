@@ -1,5 +1,4 @@
-import bodyParser from 'body-parser';
-import express, { Application, Request, Response, NextFunction, RequestHandler } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
@@ -7,6 +6,7 @@ import languageMiddleware from '#api/utils/languageMiddleware.js';
 import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { extendSupertest } from './supertestExtensions';
 import { appContext } from './AppContext';
+import { extendSupertest } from './supertestExtensions';
 
 extendSupertest();
 
@@ -21,9 +21,13 @@ const setUpApp = (
   route: Function,
   ...customMiddleware: ((req: Request, _es: Response, next: NextFunction) => void)[]
 ): Application => {
+  jest
+    .spyOn(setupSockets, 'emitToTenant')
+    .mockImplementation((_tenant: string, event: string, ...args: any[]) => {
+      iosocket.emit(event, TestEmitSources.currentTenant, ...args);
+    });
   const app: Application = express();
   routesErrorHandler(app);
-  app.use(bodyParser.json() as RequestHandler);
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) =>
       iosocket.emit(event, TestEmitSources.session, ...args);
@@ -73,4 +77,4 @@ const socketEmit = async (eventName: string, performRequest: requestCb) => {
   return res;
 };
 
-export { setUpApp, socketEmit, iosocket, TestEmitSources };
+export { iosocket, setUpApp, socketEmit, TestEmitSources };

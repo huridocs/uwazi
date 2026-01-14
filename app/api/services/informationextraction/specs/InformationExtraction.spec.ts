@@ -57,11 +57,11 @@ import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../i
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
-jest.mock('api/queue.v2/configuration/factories', () => ({
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
     } = require('api/services/informationextraction/InformationExtraction');
@@ -332,6 +332,7 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         label_text: '1088985600',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: false,
       });
     });
 
@@ -397,6 +398,7 @@ describe('InformationExtraction', () => {
             label: 'A',
           },
         ],
+        useForTraining: false,
       });
     });
 
@@ -439,6 +441,7 @@ describe('InformationExtraction', () => {
             label: 'P3',
           },
         ],
+        useForTraining: false,
       });
     });
 
@@ -455,6 +458,7 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         label_text: '2011-03-04',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: false,
       });
     });
 
@@ -462,6 +466,15 @@ describe('InformationExtraction', () => {
       const extractorId = factory.id('extractor_target_rich_text_source_pdf');
       const xml1 = 'extractor_target_rich_text_source_pdf_entity_1_f1_en.xml';
       const xml2 = 'extractor_target_rich_text_source_pdf_entity_1_f1_es.xml';
+
+      // Mark the Spanish file as curated for training (Stage A)
+      await IXSuggestionsModel.updateMany(
+        {
+          extractorId,
+          fileId: factory.id('extractor_target_rich_text_source_pdf_entity_1_f1_es'),
+        },
+        { $set: { useForTraining: true } }
+      );
 
       await informationExtraction.trainModel(extractorId);
 
@@ -491,6 +504,7 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         label_text: 'any_rich_text_value_english',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: false,
       });
 
       expect(suggestion2).toEqual({
@@ -503,6 +517,7 @@ describe('InformationExtraction', () => {
         language_iso: 'es',
         label_text: 'any_rich_text_value_spanish',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        useForTraining: true,
       });
     });
 

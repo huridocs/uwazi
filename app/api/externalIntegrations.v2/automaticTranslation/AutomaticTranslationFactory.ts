@@ -37,34 +37,34 @@ const AutomaticTranslationFactory = {
     return new MongoATConfigDataSource(
       db,
       transactionManager,
-      DefaultSettingsDataSource(transactionManager),
-      DefaultTemplatesDataSource(transactionManager),
+      SettingsDataSourceFactory.default(transactionManager),
+      TemplatesDataSourceFactory.default(transactionManager),
       new ATExternalAPI()
     );
   },
 
   defaultGenerateATConfig() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const db = getConnection();
     return new GenerateAutomaticTranslationsCofig(
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      new MongoTemplatesDataSource(db, DefaultTransactionManager()),
+      new MongoTemplatesDataSource(db, TransactionManagerFactory.default()),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   },
 
   defaultSaveEntityTranslations() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     return new SaveEntityTranslations(
-      DefaultTemplatesDataSource(transactionManager),
+      TemplatesDataSourceFactory.default(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<TranslationResult>(translationResultSchema),
-      DefaultLogger()
+      LoggerFactory.default()
     );
   },
 
   defaultRequestEntityTranslation() {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,
@@ -72,7 +72,7 @@ const AutomaticTranslationFactory = {
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
       new Validator<EntityInputModel>(entityInputDataSchema),
-      DefaultLogger()
+      LoggerFactory.default()
     );
   },
 

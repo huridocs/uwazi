@@ -30,6 +30,18 @@ export const manageAttachmentsReducer =
     }
 
     if (
+      action.type === uploadTypes.UPDATE_MAIN_DOC &&
+      getSharedId(state, setInArray) === action.doc
+    ) {
+      const documents = getDocuments(state, setInArray);
+      const index = documents.findIndex(item => item.get('_id') === action.file._id);
+      return state.setIn(
+        setInArray.concat(['documents']),
+        documents.set(index, Immutable(action.file))
+      );
+    }
+
+    if (
       action.type === attachmentsTypes.ATTACHMENT_COMPLETE &&
       getSharedId(state, setInArray) === action.entity
     ) {

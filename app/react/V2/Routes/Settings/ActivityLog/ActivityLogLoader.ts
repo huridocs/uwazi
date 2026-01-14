@@ -37,9 +37,10 @@ interface ActivityLogSearchParams {
   limit?: number;
 }
 
-const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
-  const fromDate = from && moment(from, dateFormat).toDate().getTime();
-  const toDate = to && moment(to, dateFormat).toDate().getTime();
+const timeFilter = (from?: string | number, to?: string | number) => {
+  // Expect timestamps (numbers) or string representations of timestamps
+  const fromDate = from ? Number(from) : undefined;
+  const toDate = to ? Number(to) : undefined;
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 
@@ -48,10 +49,7 @@ const sortParam = (sort = '', order = '') =>
 
 const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {});
 
-const getQueryParamsBySearchParams = (
-  searchParams: ActivityLogSearchParams,
-  dateFormat = 'YYYY-MM-DD'
-) => {
+const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
   const {
     username,
     search,
@@ -63,7 +61,7 @@ const getQueryParamsBySearchParams = (
     page = 1,
     limit = ITEMS_PER_PAGE,
   } = searchParams;
-  const time = timeFilter(from, to, dateFormat.toUpperCase());
+  const time = timeFilter(from, to);
   const sortOptions = sortParam(sort, order);
   const methodList = isArray(method) ? method : [method];
   const params = {
@@ -85,16 +83,25 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
       ? { ...appliedFilters, method: [appliedFilters.method] }
       : appliedFilters;
   const { from, to, ...rest } = appliedFilters;
-  return { ...rest, ...((from || to) && { dateRange: { from, to } }) };
+
+  // Convert string timestamps from URL to numbers for DateRangePicker
+  const dateRange = {
+    from: from ? Number(from) : null,
+    to: to ? Number(to) : null,
+  };
+
+  return { ...rest, ...((from || to) && { dateRange }) };
 };
 
 const activityLogLoader =
-  (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
+  (
+    headers?: IncomingHttpHeaders,
+    _handlerContext?: { settings?: ClientSettings }
+  ): LoaderFunction =>
   async ({ request }) => {
-    const { settings } = handlerContext || { dateFormat: 'YYYY-MM-DD' };
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams, settings?.dateFormat);
+    const params = getQueryParamsBySearchParams(searchParams);
     const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
     if (activityLogList.message !== undefined) {
       return {
@@ -115,13 +122,14 @@ const activityLogLoader =
     };
   };
 
-interface ActivityLogSearch {
+export interface ActivityLogSearch {
   username?: string;
   search?: string;
+  method?: string[];
   page?: number;
   dateRange?: {
-    from?: string;
-    to?: string;
+    from: number | null;
+    to: number | null;
   };
   sort?: string;
   order?: string;
@@ -202,7 +210,7 @@ const buildPageURL = (appliedFilters: any, pageTo: string | number, location: Lo
   return `${location.pathname}?${createSearchParams(newParams)}`;
 };
 
-export type { LoaderData, ActivityLogSearch, LogEntry };
+export type { LoaderData, LogEntry };
 export {
   activityLogLoader,
   getAppliedFilters,

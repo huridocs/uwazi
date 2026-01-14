@@ -140,7 +140,7 @@ const FiltersTable = () => {
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>
-          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
+          <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-md bg-primary-100 text-primary-700">
             <div className="flex gap-2 items-center w-full text-base font-semibold">
               <div className="w-5 h-5">
                 <CheckCircleIcon />

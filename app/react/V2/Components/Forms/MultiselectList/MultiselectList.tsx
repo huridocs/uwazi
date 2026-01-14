@@ -334,7 +334,7 @@ const MultiselectList = ({
                 },
               ]}
               onChange={e => setShowAll(e.currentTarget.value === 'true')}
-              className="flex-grow"
+              className="grow"
             />
             {allowSelelectAll && (
               <button

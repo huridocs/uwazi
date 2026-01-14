@@ -11,7 +11,9 @@ const {
   DBHOST,
   ELASTICSEARCH_URL,
   ENVIRONMENT,
+  FEATURE_FLAG_FILE_CACHE_HEADERS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
+  DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
   MONGO_CONNECTION_POOL_SIZE,
@@ -31,6 +33,28 @@ const filesRootPath = FILES_ROOT_PATH || rootPath;
 const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 
 const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://127.0.0.1/');
+
+const defaultTenantS3Storage = false;
+const defaultTenantName = 'default';
+
+const getDefaultTenantPaths = () => {
+  if (defaultTenantS3Storage) {
+    return {
+      uploadedDocuments: `${defaultTenantName}/uploaded_documents/`,
+      attachments: `${defaultTenantName}/uploaded_documents/`,
+      customUploads: `${defaultTenantName}/custom_uploads/`,
+      activityLogs: `${defaultTenantName}/log/`,
+    };
+  }
+  return {
+    uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
+    activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
+  };
+};
+
+const defaultTenantPaths = getDefaultTenantPaths();
 
 export const config = {
   VERSION: ENVIRONMENT ? version : `development-${version}`,
@@ -69,26 +93,33 @@ export const config = {
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
   defaultTenant: <Tenant>{
-    name: 'default',
+    name: defaultTenantName,
     dbName:
       process.env.DATABASE_NAME ||
       (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
     indexName:
       process.env.INDEX_NAME ||
       (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
-    uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
-    attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
-    customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
-    activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
+    uploadedDocuments: defaultTenantPaths.uploadedDocuments,
+    attachments: defaultTenantPaths.attachments,
+    customUploads: defaultTenantPaths.customUploads,
+    activityLogs: defaultTenantPaths.activityLogs,
     featureFlags: {
-      s3Storage: false,
+      s3Storage: defaultTenantS3Storage,
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
-      v2UpdateTemplateUseCase: false,
+      fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
+      testing: DEV_FLAG_TESTING === 'true' || false,
+      v2UploadFile: false,
+      v2CreateEntity: false,
+      v2BulkDeleteEntity: false,
+      v2CSVImport: false,
+      v2DeleteFile: false,
+      v2CreateThesaurus: false,
     },
   },
-  externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
+  externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
   },
@@ -104,11 +135,11 @@ export const config = {
     tracesSampleRate: 0.1,
   },
   s3: {
-    endpoint: process.env.S3_ENDPOINT || '',
-    bucket: process.env.S3_BUCKET || '',
+    endpoint: process.env.S3_ENDPOINT || 'http://127.0.0.1:9000',
+    bucket: process.env.S3_BUCKET || 'uwazi-development',
     credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || 'minioadmin',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || 'minioadmin',
     },
     batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },

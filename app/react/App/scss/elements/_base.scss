@@ -1,16 +1,16 @@
-@use "../config/breakpoints";
-@use "../config/colors";
-@use "../config/typography";
+@use '../config/breakpoints';
+@use '../config/colors';
+@use '../config/typography';
 
 body {
-	background-color: colors.$c-background;
-	color: colors.$c-black;
-	font-family: typography.$f-regular;
-	font-size: 13px;
-	overflow: hidden;
-	@include breakpoints.big {
-		font-size: 15px;
-	}
+  background-color: colors.$c-background;
+  color: colors.$c-black;
+  font-family: typography.$f-regular;
+  font-size: 13px;
+  overflow: hidden;
+  @include breakpoints.big {
+    font-size: 15px;
+  }
 }
 
 a {
@@ -29,15 +29,21 @@ img {
 
 label {
   margin: 0;
-	font-weight: normal;
+  font-weight: normal;
 }
 
 dt {
   font-weight: normal;
-	font-style: italic;
+  font-style: italic;
   color: colors.$c-grey-dark;
 }
 
-input[type="radio"], input[type="checkbox"] {
+.tw-content dt {
+  font-style: normal;
+  color: inherit;
+}
+
+input[type='radio'],
+input[type='checkbox'] {
   cursor: pointer;
 }

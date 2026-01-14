@@ -10,7 +10,6 @@ export const thesaurusValueSchema = {
   required: ['label'],
   additionalProperties: false,
   properties: {
-    _id: objectIdSchema,
     id: {
       type: 'string',
       minLength: 1,
@@ -26,7 +25,6 @@ export const thesaurusValueSchema = {
         required: ['label'],
         additionalProperties: false,
         properties: {
-          _id: objectIdSchema,
           id: {
             type: 'string',
             minLength: 1,
@@ -51,7 +49,6 @@ export const thesaurusSchema = {
   uniqueLabels: true,
   properties: {
     _id: objectIdSchema,
-    type: { type: 'string', enum: ['thesauri', 'template'] },
     name: {
       type: 'string',
       minLength: 1,

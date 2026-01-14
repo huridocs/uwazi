@@ -5,18 +5,18 @@ import { CreateTemplateService } from '#api/templates.v2/services/service_factor
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 const getNewRelationshipCount = async (id: ObjectId) => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const newRelationshipsAllowed =
-    await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
+    await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
   const relationshipsDataSource = DefaultRelationshipDataSource(transactionManager);
 
   return newRelationshipsAllowed ? relationshipsDataSource.countByType(id.toString()) : 0;
 };
 
 const relationTypeIsUsedInQueries = async (id: ObjectId): Promise<boolean> => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const newRelationshipsAllowed =
-    await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
+    await SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
   if (!newRelationshipsAllowed) return false;
 
   const createTemplateService = await CreateTemplateService();

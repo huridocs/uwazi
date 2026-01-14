@@ -66,7 +66,7 @@ const MultiSelect = ({
   }, [value]);
 
   return (
-    <div data-testid="multiselect" className="rounded-lg shadow-sm">
+    <div data-testid="multiselect" className="rounded-lg shadow-md">
       <div
         className={`flex items-center px-4 h-12 rounded-t-lg ${
           hasErrors ? 'bg-error-50' : 'bg-gray-50'
@@ -97,7 +97,7 @@ const MultiSelect = ({
             className="z-10"
           >
             <ul
-              className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow max-h-56 w-fit min-w-56"
+              className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow-sm max-h-56 w-fit min-w-56"
               data-testid="multiselect-popover"
             >
               {options.map((option: Option) => (
@@ -132,7 +132,7 @@ const MultiSelect = ({
               if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span className="text-gray-600">{option.label}</span>
+                  <span className="text-gray-600">{renderChild(option.label)}</span>
                   <button
                     type="button"
                     className={`content-center justify-center text-xs font-bold ${

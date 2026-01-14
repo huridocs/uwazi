@@ -12,6 +12,7 @@ export interface FileType {
   size?: number;
   creationDate?: number;
   language?: string;
+  iso639_3?: string;
   type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
   url?: string;
   status?: 'processing' | 'failed' | 'ready';

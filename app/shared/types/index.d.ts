@@ -21,6 +21,7 @@ declare global {
     __reduxData__: any;
     store: Store<IStore>;
     updatePageDatasets: typeof updatePageDatasets;
+    openEntitySidePanel: typeof openEntitySidePanel;
     _paq?: [string[]]; //matomo
   }
 }

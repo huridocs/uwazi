@@ -28,11 +28,11 @@ const Primary: Story = {
         </Truncate>
 
         <Truncate maxLength={args.maxLength} ellipsisPosition="center">
-          <div className="px-1 bg-orange-400 text-white">{args.children}</div>
+          <div className="px-1 bg-alert-400 text-white">{args.children}</div>
         </Truncate>
 
         <Truncate maxLength={args.maxLength}>
-          <div className="px-1 bg-orange-400 text-white">
+          <div className="px-1 bg-alert-400 text-white">
             The following text is a nested tag -&gt; {args.children}
           </div>
         </Truncate>

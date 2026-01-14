@@ -99,7 +99,7 @@ const InputField = React.forwardRef(
               disabled={disabled}
               data-testid="clear-field-button"
               className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-none`}
+             focus:outline-hidden`}
             >
               <XMarkIcon className="w-5" />
               <Translate className="sr-only">Clear</Translate>

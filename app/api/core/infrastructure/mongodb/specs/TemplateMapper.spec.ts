@@ -30,7 +30,7 @@ import { DateProperty } from '#api/core/domain/template/DateProperty.js';
 
 import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
 import { ObjectId } from 'mongodb';
-import { TemplateMapper } from '../template/Mapper';
+import { MongoTemplateMapper } from '../template/MongoTemplateMapper';
 
 const IDS = {
   TEMPLATE: new ObjectId(),
@@ -104,7 +104,7 @@ describe('TemplateMapper', () => {
       true
     );
 
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
 
     expect(schema).toEqual({
       _id: IDS.TEMPLATE,

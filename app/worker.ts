@@ -24,7 +24,7 @@ import { tocService } from '#api/toc_generation/tocService.js';
 import { sleep } from '#shared/tsUtils.js';
 import { handleError } from '#api/utils/handleError.js';
 
-const systemLogger = SystemLogger();
+const systemLogger = LoggerFactory.systemLogger();
 
 const uncaughtError = (error: Error) => {
   handleError(error, { uncaught: true });
@@ -45,7 +45,9 @@ DB.connect(config.DBHOST, config.DBAUTH)
     const services: Record<string, any> = {
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
-      px_paragraphs_results: new PXParagraphsResultListener(DefaultDispatcher),
+      px_paragraphs_results: new PXParagraphsResultListener((tenant, queueOptions) =>
+        DefaultDispatcher(tenant, TransactionManagerFactory.createForSharedDataBase(), queueOptions)
+      ),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(

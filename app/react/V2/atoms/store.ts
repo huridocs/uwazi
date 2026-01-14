@@ -31,6 +31,7 @@ type AtomStoreData = {
   ciMatomoActive?: boolean;
   translations: ClientTranslationSchema[];
   acceptedSuggestions?: Set<string>;
+  isMobile?: boolean;
 };
 
 const atomStore = createStore();
@@ -42,6 +43,7 @@ const hydrateAtomStore = (data: AtomStoreData) => {
   if (data.thesauri) atomStore.set(thesauriAtom, data.thesauri);
   if (data.templates) atomStore.set(templatesAtom, data.templates);
   if (data.relationTypes) atomStore.set(relationshipTypesAtom, data.relationTypes);
+  if (data.isMobile !== undefined) atomStore.set(serverIsMobileAtom, data.isMobile);
   atomStore.set(userAtom, data.user);
   atomStore.set(translationsAtom, data.translations);
   atomStore.set(localeAtom, data.locale || 'en');

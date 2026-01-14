@@ -10,7 +10,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 import { GetTranslationsService } from '../GetTranslationsService';
 
 const createService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   return new GetTranslationsService(DefaultTranslationsDataSource(transactionManager));
 };
 

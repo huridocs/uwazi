@@ -12,7 +12,7 @@ type Story = StoryObj<typeof MediaPlayer>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <div className="p-4 rounded border">
+      <div className="p-4 rounded-sm border">
         <MediaPlayer
           url={args.url}
           width={args.width}

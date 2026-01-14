@@ -69,19 +69,40 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('document'),
+    async (req, res, next) => {
+      if (tenants.current().featureFlags?.v2UploadFile) {
+        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
+          req,
+          res,
+          next
+        );
+      } else {
+        await uploadMiddleware('document')(req, res, next);
+      }
+    },
     async (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-      try {
-        req.emitToSessionSocket('conversionStart', req.body.entity);
-        const savedFile = await processDocument(req.body.entity, req.file);
+      req.emitToSessionSocket('conversionStart', req.body.entity);
+      if (tenants.current().featureFlags?.v2UploadFile) {
+        await DocumentUploadController.createHandler()(req, res);
+      } else {
+        if (!req.file) {
+          throw new Error('File is not available on request object');
+        }
+        const savedFile = await createProcessingFile(req.body.entity, req.file);
         res.json(savedFile);
-        req.emitToSessionSocket('documentProcessed', req.body.entity);
-      } catch (err) {
-        handleError(err);
-        const [file] = await files.get({ filename: req.file.filename });
-        res.json(file);
-        req.emitToSessionSocket('conversionFailed', req.body.entity);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        convertPDF(
+          savedFile,
+          req.body.entity,
+          req.file,
+          true,
+          processedFile => {
+            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
+          },
+          (_e, failedFile) => {
+            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
+          }
+        );
       }
     },
     activitylogMiddleware
@@ -165,97 +186,26 @@ export default (app: Application) => {
     }
   );
 
-  app.use('/assets/:fileName', (req, res) => {
-    res.redirect(301, `/api/files/${req.params.fileName}`);
-  });
+  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
+  app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
+  app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 
+  // Deprecated routes, keeping for Backwards compatibility
   app.use('/uploaded_documents/:fileName', (req, res) => {
     res.redirect(301, `/api/files/${req.params.fileName}`);
   });
-
-  app.get(
-    '/api/attachments/download',
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          properties: {
-            _id: { type: 'string' },
-            file: { type: 'string' },
-          },
-          required: ['file'],
-        },
-      },
-      required: ['query'],
-    }),
-
-    async (req, res) => {
-      res.redirect(301, `/api/files/${req.query.file}?download=true`);
-    }
-  );
-
+  app.get('/api/attachments/download', async (req, res) => {
+    res.redirect(301, `/api/files/${req.query.file}?download=true`);
+  });
   app.get(
     '/api/files/:filename',
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        params: {
-          type: 'object',
-          required: ['filename'],
-          properties: {
-            filename: { type: 'string' },
-          },
-        },
-        query: {
-          type: 'object',
-          properties: {
-            download: { type: 'boolean' },
-          },
-        },
-      },
-    }),
-
-    async (req: Request<{ filename: string }, {}, {}, { download?: boolean }>, res) => {
-      const [file] = await files.get({
-        filename: req.params.filename,
-      });
-
-      if (
-        !file?.filename ||
-        !file?.type ||
-        !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
-      ) {
-        throw createError('file not found', 404);
-      }
-
-      const headerFilename = file.originalname || file.filename;
-      res.setHeader(
-        'Content-Disposition',
-        `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-      );
-
-      if (req.query.download === true) {
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
-        );
-      }
-
-      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
-      const stream = await storage.readableFile(file.filename, file.type);
-      res.on('close', () => {
-        stream.destroy();
-      });
-      stream.pipe(res);
-    }
+    DownloadFileController.customHandler(['custom', 'document', 'attachment', 'thumbnail'])
   );
+  // Deprecated routes, keeping for Backwards compatibility
 
   app.delete(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -269,9 +219,10 @@ export default (app: Application) => {
         },
       },
     }),
-
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      await withTransaction(async () => {
+      if (tenants.current().featureFlags?.v2DeleteFile) {
+        await FileDeleteController.createHandler()(req, res);
+      } else {
         const [fileToDelete] = await files.get({ _id: req.query._id });
         if (
           !fileToDelete ||
@@ -283,12 +234,13 @@ export default (app: Application) => {
         ) {
           throw createError('file not found', 404);
         }
-
-        const [deletedFile] = await files.delete({ _id: req.query._id });
-        const thumbnailFileName = `${deletedFile._id}.jpg`;
-        await files.delete({ filename: thumbnailFileName });
-        res.json([deletedFile]);
-      }, 'DELETE /api/files');
+        await withTransaction(async () => {
+          const [deletedFile] = await files.delete({ _id: req.query._id });
+          const thumbnailFileName = `${deletedFile._id}.jpg`;
+          await files.delete({ filename: thumbnailFileName });
+          res.json([deletedFile]);
+        }, 'DELETE /api/files');
+      }
     }
   );
 
@@ -310,60 +262,6 @@ export default (app: Application) => {
     }),
     async (req, res) => {
       res.json(await filterByEntityPermissions(await files.get(req.query)));
-    }
-  );
-
-  app.post(
-    '/api/import',
-
-    needsAuthorization(['admin']),
-
-    uploadMiddleware(),
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          required: ['template'],
-          properties: {
-            template: { type: 'string' },
-          },
-        },
-      },
-    }),
-
-    (req, res) => {
-      if (!req.file) throw new Error('File is not available on request object');
-
-      const loader = new CSVLoader();
-      let loaded = 0;
-
-      loader.on('entityLoaded', () => {
-        loaded += 1;
-        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
-      });
-
-      loader.on('rowExceptions', exceptions => {
-        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
-      });
-
-      loader.on('loadError', error => {
-        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
-      });
-
-      req.emitToSessionSocket('IMPORT_CSV_START');
-
-      loader
-        .load(req.file.path, req.body.template, { language: req.language, user: req.user })
-        .then(() => {
-          req.emitToSessionSocket('IMPORT_CSV_END');
-        })
-        .catch((e: Error) => {
-          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
-        });
-
-      res.json('ok');
     }
   );
 };

@@ -185,11 +185,10 @@ describe('thesauri', () => {
     });
 
     it('should create a thesauri', async () => {
-      const _id = testingDB.id();
-      const data = { name: 'Batman wish list', values: [{ _id, id: '1', label: 'Joker BFF' }] };
+      const data = { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] };
 
       const response = await thesauri.save(data);
-      expect(response.values).toEqual([{ _id, id: '1', label: 'Joker BFF' }]);
+      expect(response.values).toEqual([{ id: '1', label: 'Joker BFF' }]);
     });
 
     it('should create a translation context', async () => {

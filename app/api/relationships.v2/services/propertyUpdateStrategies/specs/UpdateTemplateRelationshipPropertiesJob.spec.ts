@@ -43,7 +43,7 @@ describe('when handled', () => {
   beforeEach(async () => {
     adapter = DefaultTestingQueueAdapter();
 
-    const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+    const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
     const dispatcher = new NamespacedDispatcher(tenants.current().name, 'test queue', adapter);
 
     const job = new UpdateTemplateRelationshipPropertiesJob(entitiesDataSource, dispatcher);

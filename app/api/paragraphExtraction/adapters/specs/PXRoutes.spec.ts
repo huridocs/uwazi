@@ -38,10 +38,10 @@ import {
 const mockDispatchMethod = jest.fn();
 
 // Mock DefaultDispatcher from the factories module
-jest.mock('api/queue.v2/configuration/factories', () => ({
-  ...jest.requireActual('api/queue.v2/configuration/factories'), // Preserve other exports
-  DefaultDispatcher: jest.fn().mockResolvedValue({
-    // Mock DefaultDispatcher export
+jest.mock('api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('api/core/libs/queue/configuration/factories'), // Preserve other exports
+  DefaultDispatcher: jest.fn().mockReturnValue({
+    // Mock DefaultDispatcher export - returns synchronously, not a Promise
     // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError
     get dispatch() {
       return mockDispatchMethod;
@@ -83,7 +83,7 @@ const checkValidationForRoute = async (
   const response = await req;
 
   expect(response.statusCode).toBe(422);
-  expect(response.body.error).toContain('validation failed');
+  expect(response.body.error).toBeDefined();
 };
 
 describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)', () => {

@@ -5,7 +5,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 
 const DefaultPermissionsDataSource = (_transactionManager?: MongoTransactionManager) => {
   const connection = getConnection();
-  const transactionManager = _transactionManager || DefaultTransactionManager();
+  const transactionManager = _transactionManager || TransactionManagerFactory.default();
   return new MongoPermissionsDataSource(connection, transactionManager);
 };
 

@@ -65,26 +65,20 @@ export const Preserve = {
     return resp.json.data.token;
   },
 
-  async createTemplate(language: string) {
+  async createTemplate(_language: string) {
     const fetchedThesauri = await Preserve.createEmptyThesauri();
-    const toSave: TemplateSchema = {
+
+    return TemplateFacade.createWithDefaultValues({
       name: 'Preserve',
-      commonProperties: [
-        { label: 'Title', name: 'title', type: 'text' },
-        { name: 'creationDate', label: 'Date added', type: 'date' },
-        { name: 'editDate', label: 'Date modified', type: 'date' },
-      ],
       properties: [
-        { type: 'link', name: 'url', label: 'Url' },
+        { type: PropertyTypeEnum.Link, label: 'Url' },
         {
-          type: 'select',
-          name: 'source',
+          type: PropertyTypeEnum.Select,
           label: 'Source',
           content: fetchedThesauri._id.toString(),
         },
       ],
-    };
-    return templates.save(toSave, language);
+    });
   },
 
   async createEmptyThesauri(name?: string): Promise<WithId<ThesaurusSchema>> {

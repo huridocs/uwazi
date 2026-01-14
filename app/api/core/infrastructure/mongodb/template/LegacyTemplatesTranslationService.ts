@@ -8,7 +8,7 @@ import { TemplateMapper } from './Mapper.js';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {
-    const schema = TemplateMapper.toSchema(template);
+    const schema = MongoTemplateMapper.toSchema(template);
 
     await translations.addContext(
       schema._id.toString(),
@@ -41,7 +41,7 @@ class LegacyTemplatesTranslationService implements TranslationService {
       deletedLabels.concat(
         currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label)
       ),
-      this.createTranslationContext(TemplateMapper.toSchema(updatedTemplate))
+      this.createTranslationContext(MongoTemplateMapper.toSchema(updatedTemplate))
     );
   }
 

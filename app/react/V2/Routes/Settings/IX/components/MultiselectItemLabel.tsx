@@ -16,7 +16,7 @@ const MultiselectItemLabel = ({
   isSelected?: boolean;
 }) => {
   const matchingStyles = 'bg-success-50 text-success-800';
-  const nonMatchingStyles = 'bg-orange-50 text-orange-800';
+  const nonMatchingStyles = 'bg-alert-50 text-alert-800';
 
   let styles = '';
 

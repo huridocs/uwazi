@@ -14,6 +14,7 @@ export const filterFragments = {
   // All data
   labeled: { 'state.labeled': true },
   nonLabeled: { 'state.labeled': false },
+  useForTraining: { useForTraining: true },
   // Status
   nonProcessed: { date: null },
   obsolete: {
@@ -45,10 +46,12 @@ export const filterFragments = {
   },
 };
 
+// eslint-disable-next-line max-statements
 export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   const orFilters = [];
   if (customFilter.labeled) orFilters.push(filterFragments.labeled);
   if (customFilter.nonLabeled) orFilters.push(filterFragments.nonLabeled);
+  if (customFilter.useForTraining) orFilters.push(filterFragments.useForTraining);
   if (customFilter.match) orFilters.push(filterFragments.match);
   if (customFilter.mismatch) orFilters.push(filterFragments.mismatch);
   if (customFilter.obsolete) orFilters.push(filterFragments.obsolete);

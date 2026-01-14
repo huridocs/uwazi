@@ -95,7 +95,7 @@ const GroupFormSidepanel = ({
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
         <Sidepanel.Body>
-          <div className="flex flex-col flex-grow gap-4">
+          <div className="flex flex-col grow gap-4">
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField
@@ -114,7 +114,7 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
+            <div className="mb-5 rounded-md border border-gray-50 shadow-md">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
@@ -132,17 +132,17 @@ const GroupFormSidepanel = ({
                   users?.map(user => ({ label: user.username, value: user._id as string })) || []
                 }
                 value={selectedGroup?.members?.map(member => member.refId) || []}
-                placeholder="Nothing selected"
+                placeholder={t('System', 'Nothing selected', null, false)}
               />
             </div>
           </div>
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Save</Translate>
             </Button>
           </div>

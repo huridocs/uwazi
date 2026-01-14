@@ -89,7 +89,7 @@ beforeEach(async () => {
   });
   jest.spyOn(taskManager, 'startTask').mockImplementation(async () => '');
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   requestEntityTranslation = new RequestEntityTranslation(
     taskManager,

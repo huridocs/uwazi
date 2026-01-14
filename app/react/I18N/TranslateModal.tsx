@@ -81,7 +81,7 @@ const TranslateModal = () => {
   return (
     inlineEditState.context && (
       <div className="tw-content">
-        <div className="z-[10000] relative">
+        <div className="z-10000 relative">
           <Modal size="xxxl" id="translationsFormModal">
             <form onSubmit={handleSubmit(submit)}>
               <Modal.Header>

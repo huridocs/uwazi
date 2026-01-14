@@ -102,7 +102,7 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
         <button
           type="button"
           onClick={() => setUpdatedCode(editorInstance.current?.getValue())}
-          className="p-2 text-white rounded border bg-primary-700"
+          className="p-2 text-white rounded-sm border bg-primary-700"
         >
           Save
         </button>

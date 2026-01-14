@@ -144,8 +144,8 @@ export class MongoPXExtractorsDataSource
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
     return new PXExtractor({
       id: dbo._id.toString(),
-      sourceTemplate: TemplateMappers.toApp(dbo.sourceTemplate),
-      targetTemplate: TemplateMappers.toApp(dbo.targetTemplate),
+      sourceTemplate: MongoTemplateMapper.toDomain(dbo.sourceTemplate),
+      targetTemplate: MongoTemplateMapper.toDomain(dbo.targetTemplate),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
       sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),

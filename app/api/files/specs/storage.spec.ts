@@ -13,10 +13,12 @@ import { config } from '../config.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
-import { rmdir } from 'fs/promises';
+import { copyFile, rmdir } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+import path from 'path';
 import { Readable } from 'stream';
+import { FileNotFound } from '../FileNotFound';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -25,11 +27,12 @@ import {
   setupTestUploadedPaths,
   streamToString,
   uploadsPath,
-} from '../filesystem.js';
-import { storage } from '../storage.js';
-import { FileNotFound } from '../FileNotFound.js';
+} from '../filesystem';
+import { storage } from '../storage';
 
 let s3: S3Client;
+
+const testingFilesPath = (filename: string) => path.join(__dirname, 'testing_files', filename);
 
 describe('storage', () => {
   beforeAll(async () => {
@@ -121,6 +124,11 @@ describe('storage', () => {
             s3Storage: false,
           },
         });
+
+        await copyFile(
+          path.join(__dirname, 'testing_files/test_s3_file.txt'),
+          path.join(__dirname, 'uploads/test_s3_file.txt')
+        );
 
         await expect(
           (await storage.fileContents('test_s3_file.txt', 'document')).toString()
@@ -220,7 +228,7 @@ describe('storage', () => {
       it('should store it on s3 bucket', async () => {
         await storage.storeFile(
           'file_created.txt',
-          createReadStream(uploadsPath('documento.txt')),
+          createReadStream(testingFilesPath('documento.txt')),
           'document'
         );
 
@@ -240,7 +248,7 @@ describe('storage', () => {
         testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
         await storage.storeFile(
           'file_created.txt',
-          createReadStream(uploadsPath('documento.txt')),
+          createReadStream(testingFilesPath('documento.txt')),
           'segmentation'
         );
 
@@ -293,7 +301,7 @@ describe('storage', () => {
         });
         await storage.storeFile(
           'file_created.txt',
-          createReadStream(uploadsPath('documento.txt')),
+          createReadStream(testingFilesPath('documento.txt')),
           'document'
         );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
@@ -313,7 +321,7 @@ describe('storage', () => {
         });
         await storage.storeFile(
           'file_created.txt',
-          createReadStream(uploadsPath('documento.txt')),
+          createReadStream(testingFilesPath('documento.txt')),
           'document'
         );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
@@ -335,7 +343,7 @@ describe('storage', () => {
         });
         await storage.storeFile(
           'file_created1.txt',
-          createReadStream(uploadsPath('documento.txt')),
+          createReadStream(testingFilesPath('documento.txt')),
           'custom'
         );
         const listedFiles = await storage.listFiles();

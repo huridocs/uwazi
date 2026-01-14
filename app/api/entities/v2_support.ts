@@ -1,4 +1,14 @@
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
+import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 import {
+  DenormalizationService as CreateDenormalizationService,
   CreateRelationshipService,
   DeleteRelationshipService,
   DenormalizationService as CreateDenormalizationService,
@@ -18,13 +28,13 @@ import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDif
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
 const newRelationshipsEnabled = async () => {
-  const transactionManager = DefaultTransactionManager();
-  return DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
+  const transactionManager = TransactionManagerFactory.default();
+  return SettingsDataSourceFactory.default(transactionManager).readNewRelationshipsAllowed();
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
   if (await newRelationshipsEnabled()) {
-    const datasource = DefaultRelationshipDataSource(DefaultTransactionManager());
+    const datasource = DefaultRelationshipDataSource(TransactionManagerFactory.default());
     await datasource.deleteByEntities([sharedId]);
   }
 };
@@ -33,7 +43,7 @@ const withDenormalizationService = async (
   cb: (service: DenormalizationService) => Promise<void>
 ) => {
   if (await newRelationshipsEnabled()) {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const denormalizationService = await CreateDenormalizationService(transactionManager);
     await cb(denormalizationService);
     await transactionManager.executeOnCommitHandlers(undefined);
@@ -98,9 +108,9 @@ const ignoreNewRelationshipsMetadata = async (
 ): Promise<DefinitionsToUpdate> => {
   const newRelationships: RelationshipDefinition[] = [];
   const removedRelationships: RelationshipDefinition[] = [];
-  const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+  const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
   if (await newRelationshipsEnabled()) {
-    const templateModel = TemplateMappers.toApp(template as TemplateDBO);
+    const templateModel = MongoTemplateMapper.toDomain(template as TemplateDBO);
     await Promise.all(
       templateModel.properties.map(async property => {
         if (property instanceof RelationshipProperty) {
@@ -157,7 +167,7 @@ const deleteRemovedRelationships = async (
   relationships: { type: string; to: string; from: string }[]
 ) => {
   if (relationships.length) {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const dataSource = DefaultRelationshipDataSource(transactionManager);
     const service = await DeleteRelationshipService();
     const toDelete: string[] = [];
@@ -179,8 +189,8 @@ const updateNewRelationships = async (updates: DefinitionsToUpdate) => {
 
 export {
   deleteRelatedNewRelationships,
-  ignoreNewRelationshipsMetadata,
-  updateNewRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
+  ignoreNewRelationshipsMetadata,
+  updateNewRelationships,
 };

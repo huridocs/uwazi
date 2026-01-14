@@ -48,5 +48,3 @@ export class TemplatePostProcessEntitiesJob extends UserAwareDispatchable<Params
     });
   }
 }
-
-export { PXCreateParagraphsJob };

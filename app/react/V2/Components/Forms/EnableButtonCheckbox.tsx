@@ -61,7 +61,7 @@ const EnableButtonCheckbox = React.forwardRef(
 
       default:
         styles =
-          'text-primary-700 border-primary-700 bg-white hover:cursor-pointer hover:bg-success-700 hover:border-success-700 hover:text-white';
+          'text-primary-700 border-primary-700 bg-white hover:cursor-pointer hover:bg-success-700 hover:border-success-700';
         break;
     }
 
@@ -95,7 +95,9 @@ const EnableButtonCheckbox = React.forwardRef(
         <div
           className={`px-1 py-2 w-24 text-sm font-medium text-center truncate rounded-lg border ${styles}`}
         >
-          <Text checked={isChecked} hovering={hovering} disabled={disabled} />
+          <span className={!isChecked && !disabled && hovering ? 'text-white' : ''}>
+            <Text checked={isChecked} hovering={hovering} disabled={disabled} />
+          </span>
         </div>
       </label>
     );

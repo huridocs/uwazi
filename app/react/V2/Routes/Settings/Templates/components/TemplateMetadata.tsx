@@ -77,10 +77,10 @@ export const TemplateMetadata = ({
       <InputField
         id="template-name"
         name="template-name"
-        placeholder="Template name"
+        placeholder={t('System', 'Template name', null, false)}
         value={value.name}
         onChange={e => onChange({ ...value, name: e.target.value })}
-        className="flex-grow min-w-[120px]"
+        className="grow min-w-[120px]"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
         hasErrors={!!nameError}
         errorMessage={

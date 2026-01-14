@@ -62,7 +62,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const connection = getConnection();
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
     connection,

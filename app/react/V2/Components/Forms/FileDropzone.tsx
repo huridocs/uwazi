@@ -47,7 +47,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
     <Dropzone onDrop={handleOnDrop}>
       {({ getRootProps, getInputProps }) => (
         <section
-          className={`p-4 bg-gray-50 rounded border border-gray-300 border-dashed ${className}`}
+          className={`p-4 bg-gray-50 rounded-sm border border-gray-300 border-dashed ${className}`}
         >
           <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -68,7 +68,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
               <div
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${file.name}-${index}`}
-                className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
+                className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded-sm flex flex-nowrap gap-1 align-middle"
               >
                 <span className="truncate max-w-32">{file.name}</span>
                 <span>-</span>

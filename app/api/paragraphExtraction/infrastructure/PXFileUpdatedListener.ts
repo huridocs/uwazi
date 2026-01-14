@@ -20,7 +20,7 @@ export class PXFileUpdatedListener {
 
   private static async afterFileUpdated(data: FileUpdatedEvent['data']) {
     const useCase = PXEntityStatusManagerFactory.createDefault();
-    const logger = DefaultLogger();
+    const logger = LoggerFactory.default();
 
     try {
       await useCase.execute({

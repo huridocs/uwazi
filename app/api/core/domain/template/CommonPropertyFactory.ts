@@ -6,6 +6,7 @@ import { SystemLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 import { CreationDateProperty } from './CreationDateProperty';
 import { ModifiedDateProperty } from './ModifiedDateProperty';
+import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 
 type CreateInput = TitlePropertyProps;
 
@@ -18,7 +19,7 @@ class CommonPropertyFactory {
       if (input.name === 'editDate') return new ModifiedDateProperty(input, context);
     }
 
-    SystemLogger().warning(
+    LoggerFactory.systemLogger().warning(
       `The following CommonProperty was not properly handled. ${JSON.stringify(input, null, 2)}`
     );
 

@@ -46,6 +46,7 @@ describe('Public Form', () => {
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
+      cy.get('[data-testid=modal]').should('not.exist');
       cy.contains('Basic').click();
 
       //wait for /pages GET request
@@ -61,6 +62,7 @@ describe('Public Form', () => {
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
         cy.contains('Dismiss').click();
+        cy.get('[data-testid=modal]').should('not.exist');
         cy.wait('@fetchLinks');
       });
     });
@@ -106,6 +108,7 @@ describe('Public Form', () => {
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
+      cy.get('[data-testid=modal]').should('not.exist');
       cy.wait('@fetchPage');
     });
 
@@ -187,7 +190,8 @@ describe('Public Form', () => {
       //wait for .multimedia-img to be visible
       cy.get('.multimedia-img').should('be.visible');
 
-      cy.wait('@waitForImages');
+      // Wait for attachment files to be present instead of network requests (caching compatible)
+      cy.get('.attachment-name span:first-of-type').should('have.length', 3);
 
       //cy.get('.attachments-list-parent').eq(0).scrollIntoView();
       //cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();

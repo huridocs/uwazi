@@ -50,5 +50,5 @@ const handleUnexpectedError = (error: Error | RequestError, key: string) => {
   }));
 };
 
-export { handledErrors, handleUnexpectedError };
+export { handledErrors, handleUnexpectedError, reportErrorToSentry };
 export type { RequestError };

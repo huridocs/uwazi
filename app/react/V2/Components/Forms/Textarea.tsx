@@ -76,7 +76,7 @@ const Textarea = ({
           ref={ref}
           disabled={disabled}
           value={value}
-          className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm rounded`}
+          className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm rounded-sm`}
           rows={rows}
           placeholder={placeholder}
           style={{ resize }}
@@ -88,7 +88,7 @@ const Textarea = ({
             disabled={disabled}
             data-testid="clear-field-button"
             className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-none`}
+             focus:outline-hidden`}
           >
             <XMarkIcon className="w-5" />
             <Translate className="sr-only">Clear</Translate>

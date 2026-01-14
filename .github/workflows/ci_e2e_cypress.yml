@@ -3,9 +3,16 @@ name: E2E Cypress Tests
 on:
   workflow_call:
 
+env:
+  REGISTRY: ghcr.io
+  CYPRESS_IMAGE_NAME: ${{ github.repository }}-cypress-e2e
+
 jobs:
   e2e-cypress:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}-cypress-e2e:latest
+      options: --ipc=host
     name: ${{ matrix.name }}
     strategy:
       fail-fast: false
@@ -16,8 +23,18 @@ jobs:
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
+          - name: entities
+            spec: 'cypress/e2e/entities/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
           - name: information-extraction
-            spec: 'cypress/e2e/informationExtraction/*.cy.ts'
+            spec: 'cypress/e2e/informationExtraction/information-extraction.cy.ts'
+            needs_setup: true
+            needs_ix_config: true
+            needs_external_services: true
+          - name: paragraph-extraction
+            spec: 'cypress/e2e/informationExtraction/paragraph-extraction.cy.ts'
             needs_setup: true
             needs_ix_config: true
             needs_external_services: true
@@ -26,8 +43,13 @@ jobs:
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
-          - name: settings
-            spec: 'cypress/e2e/settings/*.cy.ts'
+          - name: settings-1
+            spec: 'cypress/e2e/settings/thesauri.cy.ts,cypress/e2e/settings/languages.cy.ts,cypress/e2e/settings/translations.cy.ts,cypress/e2e/settings/account.cy.ts,cypress/e2e/settings/collection.cy.ts,cypress/e2e/settings/customization.cy.ts,cypress/e2e/settings/mobile-settings-menu.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+          - name: settings-2
+            spec: 'cypress/e2e/settings/users.cy.ts,cypress/e2e/settings/activitylog.cy.ts,cypress/e2e/settings/filters.cy.ts,cypress/e2e/settings/groups.cy.ts,cypress/e2e/settings/menu.cy.ts,cypress/e2e/settings/relationship-types.cy.ts,cypress/e2e/settings/custom-uploads.cy.ts'
             needs_setup: false
             needs_ix_config: false
             needs_external_services: false
@@ -38,111 +60,46 @@ jobs:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
       redis:
-        image: redis:5.0.14
+        image: redis:6.0-alpine
         ports:
           - 6379:6379
 
     steps:
-      - name: Cache MongoDB tools
-        id: cache-mongodb
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/bin
-          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-6.0
-
-      - name: Install MongoDB tools if not cached
-        run: |
-          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
-            echo "MongoDB tools found in cache"
-            export PATH="$HOME/.local/bin:$PATH"
-          else
-            echo "Installing MongoDB tools..."
-            # Add MongoDB repo if not already present
-            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
-              sudo apt-get update -qq
-              sudo apt-get install -y wget gnupg
-              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-            fi
-
-            # Install MongoDB tools
-            sudo apt-get update -qq
-            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
-            
-            # Copy to cache location for next run
-            mkdir -p ~/.local/bin
-            sudo cp /usr/bin/mongosh ~/.local/bin/
-            sudo cp /usr/bin/mongorestore ~/.local/bin/
-            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
-          fi
-
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: 6.0
-          mongodb-replica-set: test-rs
-
       - uses: actions/checkout@v4
-      - name: Setup Nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
+      
+      - name: Start MongoDB replica set
+        run: /usr/local/bin/setup-mongo-replica.sh
+
       - name: Cache node modules
         uses: actions/cache@v4
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - name: Get Cypress version
-        id: cypress-version
-        run: |
-          echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Get Cypress from cache
-        id: cypress-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
-      - name: Install Cypress
-        if: steps.cypress-cache.outputs.cache-hit != 'true'
-        run: npx cypress install
-
-      - name: Install poppler-utils
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y poppler-utils
-
-      - name: Set PATH for poppler-utils
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Verify poppler-utils installation
-        run: |
-          pdftotext -v
-          pdftoppm -v
-          pdfinfo -v
-      - name: Download production build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: prod
-          path: ./prod
-      - name: Set up Python 3.11
-        if: matrix.needs_setup
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
+      
       - name: Clone dummy services
         if: matrix.needs_setup
         uses: actions/checkout@v4
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
+
       - name: Setup dummy services
         if: matrix.needs_setup
         run: |
-          python3 -m venv .venv
+          python3.11 -m venv .venv
           make install_venv
           make start > logs.log &
           sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
@@ -150,40 +107,180 @@ jobs:
       - name: Log dummy services on failure
         if: matrix.needs_setup && failure()
         run: cat dummy_extractor_services/logs.log
+
+      - name: Cache Cypress binary
+        id: cypress-cache
+        uses: actions/cache@v4
+        with:
+          path: /github/home/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+      
+      - name: Install Cypress binary if not cached
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
+        run: npx cypress install
+
+      - name: Forward ports for container networking
+        run: |
+            echo "Setting up port forwarding for container networking..."
+            
+            # Check if socat is available
+            if ! command -v socat >/dev/null 2>&1; then
+              echo "ERROR: socat is not installed. Cannot set up port forwarding."
+              echo "Installing socat now..."
+              apt-get update -qq && apt-get install -y socat
+            fi
+            
+            # Try to find the actual IP addresses of the services
+            echo "Finding service IP addresses..."
+            REDIS_IP=""
+            ELASTICSEARCH_IP=""
+            
+            # Scan for Redis IP
+            for ip in $(seq 1 10); do
+              test_ip="172.18.0.$ip"
+              if [ "$test_ip" != "172.18.0.2" ]; then
+                if nc -z $test_ip 6379 2>/dev/null; then
+                  REDIS_IP="$test_ip"
+                  echo "Found Redis at $REDIS_IP:6379"
+                  break
+                fi
+              fi
+            done
+            
+            # Scan for Elasticsearch IP
+            for ip in $(seq 1 10); do
+              test_ip="172.18.0.$ip"
+              if [ "$test_ip" != "172.18.0.2" ]; then
+                if nc -z $test_ip 9200 2>/dev/null; then
+                  ELASTICSEARCH_IP="$test_ip"
+                  echo "Found Elasticsearch at $ELASTICSEARCH_IP:9200"
+                  break
+                fi
+              fi
+            done
+            
+            # Set up port forwarding with IP addresses if found, otherwise use hostnames
+            if [ -n "$REDIS_IP" ]; then
+              echo "Forwarding localhost:6379 to $REDIS_IP:6379"
+              nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:$REDIS_IP:6379 > socat-redis.log 2>&1 &
+              echo "Redis socat command started with PID: $!"
+            else
+              echo "Using hostname for Redis forwarding: localhost:6379 to redis:6379"
+              nohup socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 > socat-redis.log 2>&1 &
+              echo "Redis socat command started with PID: $!"
+            fi
+            
+            if [ -n "$ELASTICSEARCH_IP" ]; then
+              echo "Forwarding localhost:9200 to $ELASTICSEARCH_IP:9200"
+              nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:$ELASTICSEARCH_IP:9200 > socat-elasticsearch.log 2>&1 &
+              echo "Elasticsearch socat command started with PID: $!"
+            else
+              echo "Using hostname for Elasticsearch forwarding: localhost:9200 to elasticsearch:9200"
+              nohup socat TCP-LISTEN:9200,fork,reuseaddr TCP:elasticsearch:9200 > socat-elasticsearch.log 2>&1 &
+              echo "Elasticsearch socat command started with PID: $!"
+            fi
+            
+            sleep 2
+            echo "Port forwarding setup complete"
+            echo ""
+            echo "=== VERIFYING PORT FORWARDING ==="
+            echo "Checking socat processes:"
+            ps aux | grep socat | grep -v grep || echo "No socat processes found"
+            echo ""
+            echo "Testing forwarded ports:"
+            echo "  localhost:6379 (should forward to redis:6379):"
+            nc -z localhost 6379 && echo "  ✅ localhost:6379 is now open" || echo "  ❌ localhost:6379 still closed"
+            echo "  localhost:9200 (should forward to elasticsearch:9200):"
+            curl -s --connect-timeout 5 http://localhost:9200/_cluster/health && echo "  ✅ localhost:9200 is now accessible" || echo "  ❌ localhost:9200 still not accessible"
+            echo ""
+            echo "Testing socat connectivity:"
+            echo "  Testing if socat can reach redis:6379:"
+            nc -z redis 6379 && echo "  ✅ redis:6379 reachable from socat" || echo "  ❌ redis:6379 not reachable from socat"
+            echo "  Testing if socat can reach elasticsearch:9200:"
+            nc -z elasticsearch 9200 && echo "  ✅ elasticsearch:9200 reachable from socat" || echo "  ❌ elasticsearch:9200 not reachable from socat"
+            echo ""
+            echo "Checking socat logs for errors:"
+            if [ -f socat-redis.log ]; then
+              echo "Redis socat log:"
+              cat socat-redis.log
+            fi
+            if [ -f socat-elasticsearch.log ]; then
+              echo "Elasticsearch socat log:"
+              cat socat-elasticsearch.log
+            fi  
+
+      - name: Wait For and Download Artifact
+        run: |
+          apt-get update && apt-get install -y jq unzip
+
+          i=1
+          while [ $i -le 60 ]; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+
+            if [ -n "$ARTIFACT_URL" ]; then
+              echo "Artifact found. Downloading with curl..."
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+
+            echo "Artifact not yet found. Waiting 20 seconds..."
+            sleep 20
+            i=$(expr $i + 1)
+          done
+
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 6
+      
       - name: Configure IX settings
         if: matrix.needs_ix_config
         run: yarn ix-config
         env:
           DBHOST: localhost:27017
           DATABASE_NAME: uwazi_e2e
+
       - run: yarn blank-state
         id: blank-state-attempt1
         continue-on-error: true
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+
       - run: yarn blank-state --force
         id: blank-state-attempt2
         if: steps.blank-state-attempt1.outcome == 'failure'
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://elasticsearch:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+
       - name: start Uwazi
         env:
           NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-          DATABASE_NAME: uwazi_e2e
-          INDEX_NAME: uwazi_e2e
+          ELASTICSEARCH_URL: http://localhost:9200
           EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
         run: .github/scripts/start-uwazi.sh
+          
       - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
@@ -191,11 +288,28 @@ jobs:
           component: false
           config-file: cypress.config.ts
           spec: ${{ matrix.spec }}
+          install: false
+          # node_modules already installed, binary is cached
+          record: false
+          parallel: false
+          config: |
+            {
+              "defaultCommandTimeout": 15000,
+              "requestTimeout": 30000,
+              "responseTimeout": 30000,
+              "pageLoadTimeout": 30000,
+              "video": true,
+              "screenshotOnRunFailure": true,
+              "trashAssetsBeforeRuns": false,
+              "failFast": false
+            }
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
+          CYPRESS_FAIL_FAST_ENABLED: false
+          
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
@@ -206,11 +320,13 @@ jobs:
         with:
           name: video-${{ matrix.name }}
           path: cypress/videos/
-      - name: Print server output
-        run: |
-          echo "📁 Startup logs:"
-          cat .github/logs/start-uwazi-logs.txt || echo "Startup log file not found"
-          echo
-          echo "📁 Health-check logs:"
-          cat .github/logs/health-check-logs.txt || echo "Health-check log file not found"
-        if: failure()
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: debug-info-${{ matrix.name }}
+          path: .github/debug/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: logs-${{ matrix.name }}
+          path: .github/logs/

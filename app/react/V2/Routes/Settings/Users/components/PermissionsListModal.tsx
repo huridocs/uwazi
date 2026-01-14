@@ -154,7 +154,7 @@ const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
           // eslint-disable-next-line react/style-prop-object
           style="light"
         >
-          <UserPlusIcon className="w-6 text-orange-400" />
+          <UserPlusIcon className="w-6 text-alert-400" />
         </Tooltip>
       );
 

@@ -275,6 +275,7 @@ const Suggestions = {
                 ],
               },
             },
+            useForTraining: { $sum: { $cond: ['$useForTraining', 1, 0] } },
             // Status
             nonProcessed: {
               $sum: {

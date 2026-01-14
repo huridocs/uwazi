@@ -1,6 +1,6 @@
 /** @format */
 
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 export default {
   performantDocToJSWithoutRelations(doc) {
@@ -31,7 +31,8 @@ export default {
       }
 
       if (property.type === 'date' && value) {
-        value = moment(value, 'X').format('MMM DD, YYYY');
+        const numericValue = typeof value === 'string' ? Number(value) : value;
+        value = DateTime.fromSeconds(numericValue).toFormat('MMM dd, yyyy');
       }
 
       return { label: property.label, value };

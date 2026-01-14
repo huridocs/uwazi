@@ -12,8 +12,8 @@ export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
   return (
     <div className="tw-content">
       <section className="h-full bg-white">
-        <div className="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 lg:px-6">
-          <div className="max-w-screen-sm mx-auto text-center">
+        <div className="max-w-(--breakpoint-xl) px-4 py-8 mx-auto lg:py-16 lg:px-6">
+          <div className="max-w-(--breakpoint-sm) mx-auto text-center">
             {currentError.status && (
               <h1 className="mb-4 font-extrabold tracking-tight text-gray-500 text-7xl lg:text-9xl ">
                 {currentError.status}

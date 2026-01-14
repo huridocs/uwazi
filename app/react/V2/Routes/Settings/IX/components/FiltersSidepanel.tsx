@@ -15,6 +15,7 @@ type Aggregations = {
   total: number;
   labeled: number;
   nonLabeled: number;
+  useForTraining: number;
   nonProcessed: number;
   obsolete: number;
   error: number;
@@ -33,6 +34,7 @@ interface FiltersSidepanelProps {
 const defaultFilter: IXFilters = {
   labeled: false,
   nonLabeled: false,
+  useForTraining: false,
   match: false,
   mismatch: false,
   obsolete: false,
@@ -96,12 +98,12 @@ const FiltersSidepanel = ({
       }
     >
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
-        <Sidepanel.Body className="flex flex-col flex-grow gap-4">
+        <Sidepanel.Body className="flex flex-col grow gap-4">
           <Card>
             <div className="text-sm font-semibold text-gray-700 mb-2">
               <Translate>All data</Translate>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Labeled</Translate>}
                 {...register('labeled')}
@@ -112,7 +114,7 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.labeled}</div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Non-labeled</Translate>}
                 {...register('nonLabeled')}
@@ -123,13 +125,24 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.nonLabeled}</div>
             </div>
+            <div className="flex items-center gap-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Use for training</Translate>}
+                {...register('useForTraining')}
+                onChange={e => {
+                  checkOption(e, 'useForTraining');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.useForTraining}</div>
+            </div>
           </Card>
 
           <Card>
             <div className="text-sm font-semibold text-gray-700 mb-2">
               <Translate>Status</Translate>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Non processed</Translate>}
                 {...register('nonProcessed')}
@@ -140,7 +153,7 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.nonProcessed}</div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Obsolete</Translate>}
                 {...register('obsolete')}
@@ -151,7 +164,7 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.obsolete}</div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Error</Translate>}
                 {...register('error')}
@@ -168,7 +181,7 @@ const FiltersSidepanel = ({
             <div className="text-sm text-gray-700 mb-2">
               <Translate className="font-semibold">Processed</Translate>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Match</Translate>}
                 {...register('match')}
@@ -179,7 +192,7 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.match}</div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Mismatch</Translate>}
                 {...register('mismatch')}
@@ -190,7 +203,7 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.mismatch}</div>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-x-1">
               <Checkbox
                 label={<Translate className="font-normal">No context</Translate>}
                 {...register('noContext')}
@@ -207,7 +220,7 @@ const FiltersSidepanel = ({
             <div className="text-sm font-semibold text-gray-700 mb-2">
               <Translate>Statistics</Translate>
             </div>
-            <dl className="flex items-center space-x-1" role="list">
+            <dl className="flex items-center gap-x-1" role="list">
               <div className="flex gap-2 items-center">
                 <StatsTooltip content="accuracy" />
                 <dt className="font-normal not-italic text-gray-900">
@@ -221,10 +234,10 @@ const FiltersSidepanel = ({
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
-            <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
+            <Button className="grow" type="button" styling="outline" onClick={clearFilters}>
               <Translate>Clear all</Translate>
             </Button>
-            <Button className="flex-grow" type="submit">
+            <Button className="grow" type="submit">
               <Translate>Apply</Translate>
             </Button>
           </div>

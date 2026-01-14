@@ -2,10 +2,8 @@ import { Extractors } from '../services/informationextraction/ixextractors.js';
 
 import { IXSuggestionsQuery, SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 import { ObjectId } from 'mongodb';
-
-import templates from '../templates/index.js';
-
-import { propertyTypeIsMultiValued } from '../services/informationextraction/ixMaterials.js';
+import templates from 'api/core/v1_layer/templates';
+import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import { getMatchStage } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { PipelineBuilder } from '../queryBuilder';
@@ -107,6 +105,7 @@ export class GetSuggestionsForTableQuery {
         error: 1,
         fileId: 1,
         status: 1,
+        useForTraining: { $ifNull: ['$useForTraining', false] },
       },
     });
   }

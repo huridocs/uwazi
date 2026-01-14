@@ -36,7 +36,7 @@ const TEST_SPECIFIC_BATCH_SIZE = 2;
 
 const setUpJob = (mockDispatcher: JobsDispatcher) => {
   const connection = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   const createEntityStatusesUseCase = PXCreateEntityStatusesFactory.createDefault({
     connection,
@@ -63,6 +63,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     await testingEnvironment.setUp(createBaseFixtures());
     mockDispatcher = {
       dispatch: jest.fn().mockResolvedValue(undefined),
+      dispatchMany: jest.fn().mockResolvedValue(undefined),
     };
   });
 

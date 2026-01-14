@@ -42,7 +42,7 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
         <Translate>Paragraph</Translate>: {paragraphData.paragraphNumber}
       </div>
-      <div className="flex-grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
+      <div className="grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
         <div className="leading-tight text-sm font-bold">
           <Translate>Text</Translate>
         </div>

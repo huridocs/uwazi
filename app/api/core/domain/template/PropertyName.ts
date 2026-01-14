@@ -8,23 +8,8 @@ class PropertyName {
   }
 
   static fromLabel(label: string, context?: Context) {
-    return new PropertyName(
-      context?.newNameGeneration ? this.newNameGeneration(label) : this.oldNameGeneration(label)
-    );
+    return new PropertyName(safeName(label, context?.newNameGeneration));
   }
-
-  private static newNameGeneration = (label: string) =>
-    label
-      .trim()
-      .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.|[|\]|%]/gi, '_')
-      .replace(/^[_|\-|+|$]/, '')
-      .toLowerCase();
-
-  private static oldNameGeneration = (label: string) =>
-    label
-      .trim()
-      .replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase();
 }
 
 export { PropertyName };

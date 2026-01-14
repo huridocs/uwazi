@@ -158,20 +158,13 @@ export default {
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
-      await (
-        await templates.get()
-      ).reduce<Promise<TemplateSchema>>(
-        async (lastSave, template) => {
-          await lastSave;
-          return templates.save(
-            template,
-            ensure<LanguageSchema>(
-              ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
-            ).key
-          );
-        },
-        Promise.resolve({} as TemplateSchema)
-      );
+      const db = getConnection();
+      const templatesCol = db.collection<TemplateDBO>('templates');
+      const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
+
+      await ArrayUtils.sequentialFor(await templatesCol.find().toArray(), async template => {
+        await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
+      });
     }
 
     return result;

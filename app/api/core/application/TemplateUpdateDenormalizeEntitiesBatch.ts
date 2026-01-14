@@ -89,8 +89,8 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         if (generatedIdProps.length) {
           modifiedEntities.forEach(entity => {
             generatedIdProps.forEach(prop => {
-              entity.translations.setValueInAllLanguages(prop.name, [
-                { value: generateID(3, 4, 4), label: '' },
+              entity.setPropertyAssignmentsInAllLanguages([
+                prop.createPropertyAssignment({ value: [] }),
               ]);
             });
           });
@@ -99,8 +99,8 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         await ArrayUtils.sequentialFor(entities, async (entity, i) =>
           applicationEventsBus.emit(
             new EntityUpdatedEvent({
-              before: entity.getEntitiesAsLegacySchemaArray(),
-              after: modifiedEntities[i].getEntitiesAsLegacySchemaArray(),
+              before: MongoEntityMapper.toDBO(entity) as any as EntitySchema[],
+              after: MongoEntityMapper.toDBO(modifiedEntities[i]) as any as EntitySchema[],
               targetLanguageKey: language,
             })
           )

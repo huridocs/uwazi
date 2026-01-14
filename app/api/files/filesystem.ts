@@ -11,6 +11,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { FileType } from '#shared/types/fileType';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
+import { FileType } from '../../shared/types/fileType';
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -45,7 +46,7 @@ async function deleteFiles(files: FilePath[]) {
 
 const createDirIfNotExists = async (dirPath: string) => {
   try {
-    await fs.mkdir(dirPath);
+    await fs.mkdir(dirPath, { recursive: true });
   } catch (e) {
     if (!e.message.match(/file already exists/)) {
       throw e;
@@ -72,6 +73,35 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
+const cleanupTestUploadedPaths = async (subPath: string = '') => {
+  const base = `${__dirname}/specs`;
+  const dirs = [
+    path.join(base, 'uploads', subPath),
+    path.join(base, 'customUploads', subPath),
+    path.join(base, 'uploads', 'segmentation', subPath),
+  ];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const dir of dirs) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const items = await fs.readdir(dir);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        // eslint-disable-next-line no-await-in-loop
+        const stat = await fs.stat(itemPath);
+        if (stat.isFile() && !item.match('index.html')) {
+          // eslint-disable-next-line no-await-in-loop
+          await fs.unlink(itemPath);
+        }
+        // skip directories
+      }
+    } catch (e) {
+      // ignore if dir not exists
+    }
+  }
+};
+
 const getExtension = (mimetype = '') => {
   const result = mimetypes.extension(mimetype);
 
@@ -84,7 +114,9 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
   const fileName = `${Date.now()}${ID()}`;
 
   const extensionFromOriginalName = getExtension(getMimetypeFromOriginalName(originalname) || '');
-  if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
+  if (extensionFromOriginalName) {
+    return `${fileName}.${extensionFromOriginalName}`;
+  }
 
   const extensionFromMime = getExtension(mimetype);
   if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
@@ -97,7 +129,6 @@ const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
  * @param destination by default this will be uploadsPaths,
  * if you want another one you can pass filesystem destinatations
  * e.g. attachmentsPath()
- *
  */
 const fileFromReadStream = async (
   fileName: FilePath,
@@ -136,21 +167,22 @@ const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
 };
 
 export {
-  setupTestUploadedPaths,
-  createDirIfNotExists,
-  deleteFiles,
-  deleteFile,
-  generateFileName,
-  fileFromReadStream,
-  streamToString,
-  customUploadsPath,
-  uploadsPath,
-  temporalFilesPath,
-  attachmentsPath,
   activityLogPath,
-  testingUploadPaths,
+  attachmentsPath,
+  cleanupTestUploadedPaths,
+  createDirIfNotExists,
+  customUploadsPath,
+  deleteFile,
+  deleteFiles,
   fileExistsOnPath,
+  fileFromReadStream,
+  generateFileName,
   getMimetypeFromOriginalName,
+  setupTestUploadedPaths,
+  streamToString,
+  temporalFilesPath,
+  testingUploadPaths,
+  uploadsPath,
 };
 
 export type { FilePath, pathFunction };

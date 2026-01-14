@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
+import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('customization', () => {
   before(() => {
@@ -27,12 +28,12 @@ describe('customization', () => {
         force: true,
       }
     );
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.contains('button', 'Add').click();
   });
 
   it('should check the uploaded files', () => {
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
     cy.get('tbody').within(() => {
       cy.contains('batman.jpg');
       cy.contains('sample.pdf');
@@ -58,8 +59,8 @@ describe('customization', () => {
   it('should rename a file', () => {
     cy.contains('td', 'batman.jpg').parent().contains('button', 'Edit').click();
     cy.contains('Edit File');
-    cy.checkA11y();
-    cy.get('aside').within(() => {
+    cy.checkA11y(undefined, undefined, logA11yViolations);
+    cy.get('[role="dialog"]').within(() => {
       cy.get('#filename').clear();
       cy.get('#filename').type('Batman - superhero pic', { delay: 0 });
       cy.contains('button', 'Save').click();

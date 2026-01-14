@@ -17,7 +17,7 @@ type StoryProps = {
 };
 
 const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
-  <div className="text-white bg-orange-500">{cell.renderValue()}</div>
+  <div className="text-white bg-alert-500">{cell.renderValue()}</div>
 );
 
 const ActionHeader = () => <span className="sr-only">Actions</span>;

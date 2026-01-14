@@ -28,8 +28,8 @@ const featureIsEnabled = async () => {
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
-    logger: DefaultLogger(),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
+    logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
     processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
   })).start();
@@ -68,9 +68,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
-    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    settingsDS: SettingsDataSourceFactory.default(TransactionManagerFactory.default()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
-    logger: DefaultLogger(),
+    logger: LoggerFactory.default(),
   })).start();
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {

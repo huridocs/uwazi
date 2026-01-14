@@ -62,7 +62,7 @@ const entityStatus3: MongoPXEntityStatusDBO = {
   extractorId: extractor2._id,
 };
 
-const document1En = factory.document('document_1_En', {
+const document1En = factory.processedDocument('document_1_En', {
   entity: entity1[0].sharedId,
   language: 'en',
 });
@@ -106,7 +106,7 @@ describe('PXEntityUpdatedListener', () => {
     it('should do nothing if feature flag not enabled', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       tenants.current().featureFlags!.paragraphExtraction = false;
@@ -131,7 +131,7 @@ describe('PXEntityUpdatedListener', () => {
     it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();
@@ -186,7 +186,7 @@ describe('PXEntityUpdatedListener', () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
         [mongoPXEntitiesStatusCollection]: [entityStatus1, entityStatus2, entityStatus3],
-        files: [document1En],
+        files: [...document1En],
       });
 
       const { eventsBus } = createSut();

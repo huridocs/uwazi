@@ -5,18 +5,15 @@ import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 export interface ThesaurusSchema {
   _id?: ObjectIdSchema;
-  type?: 'thesauri' | 'template';
   name: string;
   values?: ThesaurusValueSchema[];
   [k: string]: unknown | undefined;
 }
 
 export interface ThesaurusValueSchema {
-  _id?: ObjectIdSchema;
   id?: string;
   label: string;
   values?: {
-    _id?: ObjectIdSchema;
     id?: string;
     label: string;
     name?: string;

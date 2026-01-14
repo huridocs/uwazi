@@ -39,20 +39,20 @@ const Button = ({
   let bgHover;
   switch (color) {
     case 'error':
-      bgColor = 'bg-error-600';
-      bgHover = 'enabled:hover:bg-error-700';
+      bgColor = 'bg-error-900';
+      bgHover = 'enabled:hover:bg-error-950';
       bgDisabled = ' disabled:bg-error-400';
-      border = 'border-error-700';
-      borderHover = 'enabled:hover:border-error-700';
+      border = 'border-error-900';
+      borderHover = 'enabled:hover:border-error-950';
       borderDisabled = 'disabled:border-error-400';
-      text = 'text-error-600';
+      text = 'text-error-900';
       textDisabled = 'disabled:text-error-400';
-      textHover = 'enabled:hover:text-error-600';
+      textHover = 'enabled:hover:text-error-900';
       break;
 
     case 'success':
       bgColor = 'bg-success-700';
-      bgHover = 'enabled:hover:bg-success-700';
+      bgHover = 'enabled:hover:bg-success-800';
       bgDisabled = ' disabled:bg-success-300';
       border = 'border-success-700';
       borderHover = 'enabled:hover:border-success-800';
@@ -70,14 +70,26 @@ const Button = ({
       borderHover = 'enabled:hover:border-primary-800';
       borderDisabled = 'disabled:border-primary-300';
       text = 'text-primary-700';
-      bgDisabled = 'disabled:text-primary-300';
+      textDisabled = 'disabled:text-primary-300';
       textHover = 'enabled:hover:text-primary-700';
       break;
   }
 
   switch (styling) {
     case 'outline':
-      classNames = `bg-white enabled:hover:text-white ${text} ${border} ${textDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
+      {
+        const outlineHoverBg = (() => {
+          switch (color) {
+            case 'error':
+              return 'enabled:hover:bg-error-50';
+            case 'success':
+              return 'enabled:hover:bg-success-50';
+            default:
+              return 'enabled:hover:bg-primary-50';
+          }
+        })();
+        classNames = `bg-white ${outlineHoverBg} ${text} ${border} ${textDisabled} ${borderDisabled} ${borderHover}`;
+      }
       break;
     case 'light':
       classNames = `bg-white text-gray-700 disabled:text-gray-300 border-gray-200 ${textHover} enabled:hover:bg-primary-50 ${borderHover}`;
@@ -93,7 +105,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${className} ${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
+      border focus:outline-hidden focus:ring-4 focus:ring-indigo-200 `}
       form={form}
       data-testid={dataTestid}
     >

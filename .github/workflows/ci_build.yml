@@ -2,38 +2,59 @@ name: Build production artifact
 
 on:
   workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+
       - name: Cache node modules
         uses: actions/cache@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Cache Webpack
         uses: actions/cache@v4
         with:
           path: node_modules/.cache
-          key: ${{ runner.os }}-webpack-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-webpack-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-webpack-${{ github.base_ref }}-
+            ${{ runner.os }}-webpack-
 
       - name: Cache Yarn
         uses: actions/cache@v4
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+      
+      # ===== BUILD PROCESS =====
+      
+      - name: Create cache directory
+        run: mkdir -p node_modules/.cache
 
-      - name: install dependencies
+      - name: Install dependencies
         run: yarn install
-      - name: build production
+
+      - name: Build production (chunked)
         run: yarn production-build
+
       - name: Upload production build artifact
         uses: actions/upload-artifact@v4
         with:

@@ -7,7 +7,7 @@ exports[`PDF should render the pdf file 1`] = `
   >
     <div
       id="pdf-container"
-      style="height: 100%; width: 100%; overflow: auto; padding-left: 10px; padding-right: 10px;"
+      style="height: 100%; width: 100%; overflow: auto; padding-left: 0px; padding-right: 0px;"
     >
       <div
         id="page-1-container"
@@ -16,7 +16,8 @@ exports[`PDF should render the pdf file 1`] = `
           data-region-selector-id="1"
         >
           <div
-            class="pdf-page"
+            class="relative border mb-4 border-gray-200"
+            data-testid="pdf-page"
           />
         </div>
       </div>
@@ -27,12 +28,17 @@ exports[`PDF should render the pdf file 1`] = `
           data-region-selector-id="2"
         >
           <div
-            class="pdf-page"
+            class="relative border mb-4 border-gray-200"
+            data-testid="pdf-page"
           >
             <div
-              class="highlight-rectangle"
-              style="top: 32px; left: 0px; width: 160px; height: 48px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: red; z-index: 1;"
-            />
+              data-highlight-key="2"
+            >
+              <div
+                class="highlight-rectangle"
+                style="top: 39.2px; left: 0px; width: 196px; height: 58.8px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: red; z-index: 1;"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -43,7 +49,8 @@ exports[`PDF should render the pdf file 1`] = `
           data-region-selector-id="3"
         >
           <div
-            class="pdf-page"
+            class="relative border mb-4 border-gray-200"
+            data-testid="pdf-page"
           />
         </div>
       </div>
@@ -54,7 +61,8 @@ exports[`PDF should render the pdf file 1`] = `
           data-region-selector-id="4"
         >
           <div
-            class="pdf-page"
+            class="relative border mb-4 border-gray-200"
+            data-testid="pdf-page"
           />
         </div>
       </div>
@@ -65,7 +73,8 @@ exports[`PDF should render the pdf file 1`] = `
           data-region-selector-id="5"
         >
           <div
-            class="pdf-page"
+            class="relative border mb-4 border-gray-200"
+            data-testid="pdf-page"
           />
         </div>
       </div>

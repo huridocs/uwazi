@@ -223,7 +223,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       <FormProvider {...form}>
         <form onSubmit={handleSubmit(submitForm)} className="flex flex-col h-full">
           <Sidepanel.Body>
-            <div className="space-y-6">
+            <div className="flex flex-col gap-y-6">
               <div className="flex flex-col gap-4">
                 {propertyToEdit ? (
                   <div className="flex flex-col gap-2">

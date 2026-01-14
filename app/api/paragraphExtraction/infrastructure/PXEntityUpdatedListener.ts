@@ -46,7 +46,7 @@ export class PXEntityUpdatedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,
@@ -58,9 +58,9 @@ export class PXEntityUpdatedListener {
       mongoTransactionManager,
     });
 
-    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
 
     this.dependencies = {
       entitiesStatusDS,
@@ -82,7 +82,7 @@ export class PXEntityUpdatedListener {
     );
 
     const documentsInInstalledLanguage = await this.dependencies.filesDS
-      .getDocumentsForEntity(newEntity.sharedId!, { languages })
+      .getProcessedDocsForEntity(newEntity.sharedId!, { languages })
       .all();
 
     if (!extractor || !documentsInInstalledLanguage.length) {

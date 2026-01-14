@@ -3,7 +3,8 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    target-branch: production
     ignore:
       - dependency-name: '@types/*'
       - dependency-name: '@sentry/node' #6880
@@ -76,3 +77,11 @@ updates:
         update-types: [major]
         patterns:
           - '*'
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: production
+    labels:
+      - dependencies
+    rebase-strategy: disabled

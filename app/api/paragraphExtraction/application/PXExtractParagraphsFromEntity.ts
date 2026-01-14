@@ -22,11 +22,14 @@ import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 
 import { Logger } from '#api/log.v2/contracts/Logger.js';
 
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { PXExtractionKey } from '../domain/PXExtractionKey';
+import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { FileContents } from 'api/core/domain/files/FileContents';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -64,7 +67,7 @@ export class PXExtractParagraphsFromEntity
 
       const segmentations = await this.getSegmentations(documents, entity);
 
-      const files = await this.getSegmentationFiles(segmentations, entity);
+      const files = await this.getSegmentationFiles(segmentations);
 
       const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
@@ -107,7 +110,7 @@ export class PXExtractParagraphsFromEntity
     }
   }
 
-  private static getMainLanguage(documents: Document[], defaultLanguage: LanguageISO6391) {
+  private static getMainLanguage(documents: ProcessedPDF[], defaultLanguage: LanguageISO6391) {
     const documentsHaveDefaultLanguage = documents.some(d => d.language === defaultLanguage);
 
     const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
@@ -149,26 +152,25 @@ export class PXExtractParagraphsFromEntity
     return { extractor, entity, installedLanguages };
   }
 
-  private async getSegmentationFiles(segmentations: Segmentation[], entity: Entity) {
-    const files = await this.dependencies.fileStorage.getFiles(
-      segmentations.map(segmentation => ({
+  private async getSegmentationFiles(segmentations: Segmentation[]) {
+    const files: { filename: string; contents: FileContents }[] = await ArrayUtils.parallelFor(
+      segmentations,
+      async segmentation => ({
         filename: segmentation.xmlname!,
-        type: 'segmentation',
-      }))
+        contents: await this.dependencies.fileStorage.getFile({
+          filename: segmentation.xmlname!,
+          type: 'segmentation',
+        }),
+      })
     );
-
-    if (!files.length) {
-      throw new PXValidationError(
-        PXErrorCode.SEGMENTATION_FILES_NOT_FOUND,
-        `There are no Segmentations Files for the Entity "${entity.title}"`
-      );
-    }
 
     return files;
   }
 
   private async getDocuments(entity: Entity, installedLanguages: LanguagesListSchema) {
-    const documents = await this.dependencies.filesDS.getDocumentsForEntity(entity.sharedId).all();
+    const documents = await this.dependencies.filesDS
+      .getProcessedDocsForEntity(entity.sharedId)
+      .all();
 
     const filteredDocuments = documents.filter(document =>
       installedLanguages.some(language => language.key === document.language)
@@ -191,7 +193,7 @@ export class PXExtractParagraphsFromEntity
               existingDocumentCreationDate < documentCreationDate ? existingDocument : document,
           };
         },
-        {} as Record<string, Document>
+        {} as Record<string, ProcessedPDF>
       )
     );
 
@@ -205,7 +207,7 @@ export class PXExtractParagraphsFromEntity
     return uniqueByLanguage;
   }
 
-  private async getSegmentations(documents: Document[], entity: Entity) {
+  private async getSegmentations(documents: ProcessedPDF[], entity: Entity) {
     const segmentations = await this.dependencies.filesDS
       .getSegmentations(documents.map(document => document.id))
       .all();

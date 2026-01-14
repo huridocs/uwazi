@@ -122,7 +122,7 @@ describe('Activity log', () => {
     cy.contains('Updated user');
     cy.get('tr:nth-child(1) td:nth-child(5)').contains('View').click({ force: true });
     cy.contains('Query', { timeout: 200 });
-    cy.get('aside.ease-in').toMatchSnapshot();
+    cy.get('aside.h-full').toMatchSnapshot();
     cy.get('[data-testid=close-sidepanel]').click();
   });
 

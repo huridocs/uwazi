@@ -38,7 +38,7 @@ const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
 const setUpSut = () => {
   const db = getConnection();
-  const transaction = DefaultTransactionManager();
+  const transaction = TransactionManagerFactory.default();
 
   const extractorsQueryService = new MongoPXExtractorsQueryService(db, transaction);
 

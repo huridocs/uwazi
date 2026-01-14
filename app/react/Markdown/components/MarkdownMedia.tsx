@@ -202,7 +202,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           setNewTimeline({ ...newTimeline, label: event.target.value });
         }}
         className="timestamp-label"
-        placeholder="Enter title"
+        placeholder={t('System', 'Title', null, false)}
         value={newTimeline.label}
       />
       <button

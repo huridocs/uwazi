@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { useId } from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
@@ -17,9 +17,15 @@ interface SidePanelProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
+const sidepanelHeader = (
+  closeSidepanelFunction: () => any,
+  title?: React.ReactNode,
+  titleId?: string
+) => (
   <div className="flex p-4 mb-2 text-gray-500">
-    <h1 className="text-base font-bold grow">{title}</h1>
+    <h1 className="text-base font-bold grow" id={titleId}>
+      {title}
+    </h1>
     <button
       type="button"
       className="justify-end"
@@ -44,6 +50,7 @@ const Sidepanel = ({
   size = 'medium',
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
+  const titleId = useId();
 
   let transitionRight = '-translate-x-[500px]';
   let transitionLeft = '-translate-x-[-500px]';
@@ -70,27 +77,34 @@ const Sidepanel = ({
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
   const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
+  const panelContent = (
+    <div className={contentClasses}>
+      {sidepanelHeader(closeSidepanelFunction, title, titleId)}
+      {children}
+    </div>
+  );
+
   if (withOverlay) {
     return (
       <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
         <Transition.Child
-          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
+          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
           onClick={closeSidepanelFunction}
         />
         <Transition.Child
-          as="aside"
+          as="div"
           className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
         >
-          <div className={contentClasses}>
-            {sidepanelHeader(closeSidepanelFunction, title)}
-            {children}
-          </div>
+          <aside className="h-full">{panelContent}</aside>
         </Transition.Child>
       </Transition>
     );
@@ -99,16 +113,13 @@ const Sidepanel = ({
   return (
     <Transition
       show={isOpen}
-      as="aside"
+      as="div"
       className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
     >
-      <div className={contentClasses}>
-        {sidepanelHeader(closeSidepanelFunction, title)}
-        {children}
-      </div>
+      <aside className="h-full">{panelContent}</aside>
     </Transition>
   );
 };
@@ -119,7 +130,7 @@ Sidepanel.Body = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`flex-grow p-4 ${className}`}>{children}</div>;
+}) => <div className={`grow p-4 ${className}`}>{children}</div>;
 
 Sidepanel.Footer = ({
   children,

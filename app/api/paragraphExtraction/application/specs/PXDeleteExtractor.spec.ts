@@ -76,7 +76,7 @@ const createFixtures = (): DBFixture => ({
 
 const setUpUseCase = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

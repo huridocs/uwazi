@@ -18,7 +18,8 @@ type Props = {
 export class PXExtractorsDataSourceFactory {
   static createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager = props.mongoTransactionManager ?? DefaultTransactionManager();
+    const mongoTransactionManager =
+      props.mongoTransactionManager ?? TransactionManagerFactory.default();
 
     const extractorsQueryService =
       props.extractorsQueryService ??

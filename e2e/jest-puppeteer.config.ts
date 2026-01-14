@@ -11,6 +11,8 @@ module.exports = {
     args: [
       '--disable-infobars',
       '--disable-gpu',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
       `--window-size=${config.BROWSER_WINDOW_SIZE.width},${config.BROWSER_WINDOW_SIZE.height}`,
     ],
   },

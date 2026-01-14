@@ -24,7 +24,7 @@ export const LabelField = ({
         <span>*</span>
       </div>
     }
-    placeholder="Text"
+    placeholder={t('System', 'Text', null, false)}
     hasErrors={!!errors.label || !!errors.duplicateLabel}
     disabled={propertyToEdit?.isCommonProperty && propertyToEdit.type === 'date'}
     errorMessage={

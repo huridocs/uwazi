@@ -13,12 +13,18 @@ import { IXValidationError } from '#api/services/informationextraction/IXValidat
 import { appContext } from '#api/utils/AppContext.js';
 import { createError } from './index.js';
 import util from 'node:util';
+import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
+import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
   if (error.validations && error.validations.length) {
     error.validations.forEach(oneError => {
-      errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
+      if (oneError.instancePath) {
+        errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
+      } else {
+        errorMessage.push(oneError.message);
+      }
     });
   }
   return errorMessage.join('\n');
@@ -78,7 +84,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
   }
 
-  if (error instanceof PXValidationError || error instanceof IXValidationError) {
+  if (
+    error instanceof PXValidationError ||
+    error instanceof IXValidationError ||
+    error instanceof NonRetryableJobError
+  ) {
     result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 
@@ -111,7 +121,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 401, message: error.message, logLevel: 'debug' };
   }
 
-  if (error instanceof FileNotFound) {
+  if (error instanceof FileNotFound || error instanceof FileNotFoundV2) {
     result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 

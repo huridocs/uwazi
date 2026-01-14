@@ -1,6 +1,8 @@
 import { CSVLoader } from '../csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
 
+import { tenants } from 'api/tenants';
+import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
@@ -29,7 +31,6 @@ const routes = app => {
                     type: 'object',
                     properties: {
                       id: { type: 'string' },
-                      _id: { type: 'string' },
                       label: { type: 'string' },
                       values: { type: 'array', items: { type: 'object' } },
                     },
@@ -52,6 +53,11 @@ const routes = app => {
       required: ['body'],
     }),
     async (req, res, next) => {
+      if (tenants.current()?.featureFlags?.v2CreateThesaurus && !req?.file && !req?.body?._id) {
+        await CreateThesaurusController.createHandler()(req, res);
+        return;
+      }
+
       try {
         const data = req.file ? JSON.parse(req.body.thesauri) : req.body;
         let response = await thesauri.save(data);

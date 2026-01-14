@@ -21,12 +21,12 @@ const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   return new CreateTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager)
+      SettingsDataSourceFactory.default(transactionManager)
     ),
     transactionManager
   );

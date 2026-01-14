@@ -80,7 +80,7 @@ afterAll(async () => {
 describe('MongoTranslationsSyncDataSource', () => {
   describe('save()', () => {
     it('should create a translations when does not exists', async () => {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).save(
         translationWithStringId('value', 'value')
@@ -90,7 +90,7 @@ describe('MongoTranslationsSyncDataSource', () => {
     });
 
     it('should update translation when it does exists', async () => {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).save(
         translationWithStringId('value', 'value')
@@ -106,7 +106,7 @@ describe('MongoTranslationsSyncDataSource', () => {
 
   describe('saveMultiple()', () => {
     it('should create a translations when does not exists', async () => {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).saveMultiple([
         translationWithStringId('value', 'value'),
@@ -120,7 +120,7 @@ describe('MongoTranslationsSyncDataSource', () => {
     });
 
     it('should update translation when it does exists', async () => {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).saveMultiple([
         translationWithStringId('value', 'value'),
@@ -145,7 +145,7 @@ describe('MongoTranslationsSyncDataSource', () => {
         translationsV2: [translation('value', 'value')],
       });
 
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       const result = await new MongoTranslationsSyncDataSource(
         getConnection(),
@@ -163,7 +163,7 @@ describe('MongoTranslationsSyncDataSource', () => {
         translationsV2: [translation('value', 'value')],
       });
 
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).delete({
         _id: id('value').toString(),

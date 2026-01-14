@@ -21,7 +21,7 @@ export class ATEntityCreationListener {
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
       const { active } = await this.ATFactory.defaultATConfigDataSource(
-        DefaultTransactionManager()
+        TransactionManagerFactory.default()
       ).get();
 
       if (active) {

@@ -29,7 +29,7 @@ const TypeCell =
     const value = cell.getValue() as keyof typeof translationsKeys;
     const isMismatch = value !== currentType;
     return (
-      <span className={`flex items-center gap-2 ${isMismatch ? 'text-red-600' : ''}`}>
+      <span className={`flex items-center gap-2 ${isMismatch ? 'text-error-600' : ''}`}>
         {propertyIconsSmall[value]}
         {t('System', translationsKeys[value] || value, null, false)}
       </span>
@@ -69,8 +69,8 @@ const ThesauriCellComponent: React.FC<ThesauriCellProps> = ({
 }) => {
   const matches = value === (currentContent || '');
   const thesaurus = thesauri.find(thesaurusItem => thesaurusItem._id === value);
-  const displayName = thesaurus ? thesaurus.name : value || '-';
-  return <span className={matches ? '' : 'text-red-600'}>{displayName}</span>;
+  const displayName = thesaurus ? thesaurus.name : value || <Translate>No type</Translate>;
+  return <span className={matches ? '' : 'text-error-600'}>{displayName}</span>;
 };
 
 function thesauriCellRenderer(
@@ -94,7 +94,7 @@ function entitiesCellRenderer(content: string | undefined, templates: ClientTemp
     ) : (
       <Translate>Any entity</Translate>
     );
-    return <span className={matches ? '' : 'text-red-600'}>{displayValue}</span>;
+    return <span className={matches ? '' : 'text-error-600'}>{displayValue}</span>;
   };
 }
 
@@ -106,8 +106,8 @@ function relationTypeCellRenderer(
     const value = cell.getValue();
     const matches = value === (relationType || '');
     const relationshipType = relationshipTypes.find(rt => rt._id === value);
-    const displayValue = relationshipType ? relationshipType.name : '-';
-    return <span className={matches ? '' : 'text-red-600'}>{displayValue}</span>;
+    const displayValue = relationshipType ? relationshipType.name : <Translate>No type</Translate>;
+    return <span className={matches ? '' : 'text-error-600'}>{displayValue}</span>;
   };
 }
 
@@ -116,9 +116,13 @@ function inheritTypeCellRenderer(inheritType: string | undefined) {
     const value = cell.getValue()?.type as keyof typeof translationsKeys;
     const matches = value === inheritType || (!inheritType && !value);
     return (
-      <span className={`flex items-center gap-2 ${matches ? '' : 'text-red-600'}`}>
+      <span className={`flex items-center gap-2 ${matches ? '' : 'text-error-600'}`}>
         {propertyIconsSmall[value]}
-        {value ? t('System', translationsKeys[value] || value, null, false) : '-'}
+        {value ? (
+          t('System', translationsKeys[value] || value, null, false)
+        ) : (
+          <Translate>No type</Translate>
+        )}
       </span>
     );
   };

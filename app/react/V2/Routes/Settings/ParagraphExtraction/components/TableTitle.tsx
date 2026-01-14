@@ -11,7 +11,7 @@ const TableTitle = ({
 }) => (
   <div className="flex items-center justify-between gap-2">
     <div className="flex items-center gap-2">
-      <div className="bg-indigo-200 size-[28px] justify-center items-center rounded-full flex">
+      <div className="bg-primary-200 size-[28px] justify-center items-center rounded-full flex">
         <DocumentTextIcon className="w-5" />
       </div>
       <div>

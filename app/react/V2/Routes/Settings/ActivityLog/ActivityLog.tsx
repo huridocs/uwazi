@@ -43,7 +43,6 @@ const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
@@ -74,7 +73,7 @@ const ActivityLog = () => {
     setShowFilters(false);
   };
 
-  const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
+  const columns = getActivityLogColumns(setSelectedEntry);
 
   return (
     <div
@@ -84,7 +83,7 @@ const ActivityLog = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
-        <SettingsContent.Body className="space-y-3">
+        <SettingsContent.Body className="gap-y-3">
           <div className="flex justify-end">
             <Button
               type="button"

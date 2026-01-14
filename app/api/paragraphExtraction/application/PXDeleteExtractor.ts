@@ -1,6 +1,5 @@
-import { UseCase } from '../common.v2/contracts/UseCase.js';
-
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { UseCase } from 'api/core/libs/UseCase';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 
 type Input = {

@@ -1,12 +1,13 @@
 import yargs from 'yargs';
 import { S3Client } from '@aws-sdk/client-s3';
-import { DefaultTransactionManager } from '../../app/api/common.v2/database/data_source_defaults.js';
-import { config } from '../../app/api/config.js';
-import { DefaultFilesDataSource } from '../../app/api/files.v2/database/data_source_defaults.js';
-import { FilesHealthCheck } from '../../app/api/files.v2/FilesHealthCheck.js';
-import { S3FileStorage } from '../../app/api/files.v2/infrastructure/S3FileStorage.js';
-import { DB } from '../../app/api/odm/index.js';
-import { tenants } from '../../app/api/tenants/index.js';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { config } from 'api/config';
+import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
+import { FilesHealthCheck } from 'api/core/application/FilesHealthCheck';
+import { S3FileStorage } from 'api/core/infrastructure/files/S3FileStorage';
+import { DB } from 'api/odm';
+import { tenants } from 'api/tenants';
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 
 const { tenant, allTenants } = await yargs
   .option('tenant', {
@@ -36,10 +37,10 @@ async function handleTenant(tenantName: string) {
       ...config.s3,
     });
 
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = TransactionManagerFactory.default();
     const filesHealthCheck = new FilesHealthCheck(
-      new S3FileStorage(s3Client, tenants.current()),
-      DefaultFilesDataSource(transactionManager)
+      new S3FileStorage(s3Client, new FileContentsIO(), tenants.current()),
+      FilesDataSourceFactory.default(transactionManager)
     );
 
     filesHealthCheck.onMissingInDB(file => {

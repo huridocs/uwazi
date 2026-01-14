@@ -78,7 +78,7 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-sm transition hover:border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-md transition hover:border-gray-300 bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
             >
               <div
                 data-testid="colorpicker-button"
@@ -100,7 +100,7 @@ const ColorPicker = ({
                   <li key={color}>
                     <button
                       type="button"
-                      className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-8 h-8 rounded-md flex items-center justify-center focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                       onClick={() => {
                         changeColor(color);
                         close();

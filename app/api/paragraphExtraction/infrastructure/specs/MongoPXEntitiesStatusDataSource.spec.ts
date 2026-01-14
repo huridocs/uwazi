@@ -21,9 +21,9 @@ import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 
 const createSut = () => {
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
 
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,
     transactionManager: mongoTransactionManager,

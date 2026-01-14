@@ -9,10 +9,10 @@ import { PXExtractionKey } from './PXExtractionKey';
 
 type ExtractParagraphInput = {
   segmentations: Segmentation[];
-  documents: Document[];
+  documents: ProcessedPDF[];
   mainLanguage: LanguageISO6391;
   extractionKey: PXExtractionKey;
-  files: File[];
+  files: { filename: string; contents: FileContents }[];
 };
 
 type TranslationOutput = {
@@ -41,8 +41,8 @@ interface PXExtractionService {
 
 export type {
   ExtractParagraphInput,
-  PXExtractionService,
   GetParagraphsResultOutput,
   ParagraphOutput,
+  PXExtractionService,
   TranslationOutput,
 };

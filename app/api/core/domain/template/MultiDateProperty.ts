@@ -1,22 +1,59 @@
 import { Context, PropertyTypes } from '#api/templates.v2/model/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { PropertyTypeEnum } from './PropertyType';
+import { DateEntry, PropertyAssignment } from './PropertyValue';
 
 type Props = {
-  type?: PropertyTypes;
+  type?: PropertyTypeEnum.MultiDate;
 } & Omit<FilterablePropertyProps, 'type'>;
+
+const EntrySchema = z.object({
+  value: z.number({ required_error: 'Multi Date Property value is required' }),
+});
+
+const createSchema = (isRequired: boolean) =>
+  z.array(EntrySchema).min(isRequired ? 1 : 0, 'Multi Date Property is required');
 
 class MultiDateProperty extends FilterableProperty {
   constructor(props: Props, context?: Context) {
-    super({ ...props, type: props.type || 'multidate' }, context);
+    super({ ...props, type: props.type || PropertyTypeEnum.MultiDate }, context);
+    this.compatibleTypes = ['date'];
 
     this.validate();
   }
 
   protected validate() {
-    if (this.type !== 'multidate') {
+    if (this.type !== PropertyTypeEnum.MultiDate) {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiDateProperty');
     }
+  }
+
+  get isTranslatable(): boolean {
+    return false;
+  }
+
+  createPropertyAssignment(
+    { value }: CreatePropertyAssignmentInput<DateEntry>,
+    shouldValidateForRequired = false
+  ): PropertyAssignment<DateEntry> {
+    const parsed = createSchema(shouldValidateForRequired ? this.required : false).parse(
+      value.filter(v => v?.value?.toString()?.length)
+    );
+
+    return {
+      name: this.name,
+      value: parsed,
+      type: this.type,
+      isTranslatable: this.isTranslatable,
+    };
+  }
+
+  validatePropertyAssignment(
+    { value }: PropertyAssignment<DateEntry>,
+    shouldValidateForRequired = false
+  ): void {
+    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
   }
 }
 

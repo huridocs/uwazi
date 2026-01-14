@@ -166,7 +166,7 @@ const MenuForm = ({ closePanel, submit, linkToEdit, links = [] }: MenuFormProps)
 
   return (
     <div className="relative h-full">
-      <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
+      <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-md bg-primary-100 text-primary-700">
         <div className="flex gap-1 items-center w-full text-base font-semibold">
           <div className="w-5 h-5 text-sm">
             <CheckCircleIcon />

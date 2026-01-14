@@ -22,7 +22,8 @@ type Props = {
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
-    const mongoTransactionManager = props.mongoTransactionManager ?? DefaultTransactionManager();
+    const mongoTransactionManager =
+      props.mongoTransactionManager ?? TransactionManagerFactory.default();
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??
@@ -31,7 +32,9 @@ export class PXExtractParagraphsFromEntitiesFactory {
         mongoTransactionManager,
       });
 
-    const dispatcher = await DefaultDispatcher(props.tenantName, { lockWindow: 1000 * 60 });
+    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
+      lockWindow: 1000 * 60,
+    });
 
     return new PXExtractParagraphsFromEntities({
       entitiesStatusDS,

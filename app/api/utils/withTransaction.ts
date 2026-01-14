@@ -43,11 +43,11 @@ const withTransaction = async <T>(
   operation: (context: TransactionOperation) => Promise<T>,
   namespace?: string
 ): Promise<T> => {
-  const logger = DefaultLogger();
+  const logger = LoggerFactory.default();
   const startTime = performance.now();
   const logNamespace = namespace ? `(${namespace})` : '';
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
 
   let wasManuallyAborted = false;
   try {

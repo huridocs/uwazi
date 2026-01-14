@@ -37,7 +37,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
 
   constructor(private dependencies: Dependencies) {
     this.createParagraph = new PXCreateParagraph({
-      logger: DefaultLogger(),
+      logger: LoggerFactory.default(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
       relationshipsDS,
     });

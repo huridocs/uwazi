@@ -617,3 +617,32 @@ exports[`Metadata when passing inheritted relationships should show parent value
   </dd>
 </dl>
 `;
+
+exports[`Metadata when status "processing" image field should render a loading icon 1`] = `
+<dl
+  className="metadata-type-multimedia metadata-name-image_label  "
+  key="image_label_0"
+>
+  <dt
+    className=""
+  >
+    <Translate
+      context="oneTranslateContext"
+    >
+      Image Label
+    </Translate>
+  </dt>
+  <dd
+    className=""
+  >
+    <div
+      className="processing-placeholder"
+    >
+      <ForwardRef(ClockIcon) />
+      <Translate>
+        Processing
+      </Translate>
+    </div>
+  </dd>
+</dl>
+`;

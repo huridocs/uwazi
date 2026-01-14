@@ -14,10 +14,11 @@ import { Document } from '../files.v2/model/Document.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
+import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -105,7 +106,7 @@ export class PXEntityStatusManager {
     if (entityStatus) {
       const documentsInInstalledLanguages = (
         await this.dependencies.filesDS
-          .getDocumentsForEntity(entity.sharedId!, { languages: installedLanguages })
+          .getProcessedDocsForEntity(entity.sharedId!, { languages: installedLanguages })
           .all()
       ).reduce(
         (acc, file) => {
@@ -122,7 +123,7 @@ export class PXEntityStatusManager {
             [file.language!]: existingDocumentDate < newDocumentDate ? existingDocument : file,
           };
         },
-        {} as Record<string, Document>
+        {} as Record<string, ProcessedPDF>
       );
 
       const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(

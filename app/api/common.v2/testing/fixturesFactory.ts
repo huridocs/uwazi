@@ -40,7 +40,7 @@ const nestedTranslationContextDBO =
 
 const getV2FixturesFactoryElements = (idMapper: idMapperFunction) => ({
   application: {
-    property: (name: string, type: PropertyTypes, template: string): Property =>
+    property: (name: string, type: PropertyType, template: string): Property =>
       new Property({
         id: idMapper(name).toString(),
         type,

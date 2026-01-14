@@ -21,9 +21,9 @@ type Props = {
 class PXCreateEntityStatusesFactory {
   static createDefault(props: Props) {
     const connection = props.connection || getConnection();
-    const transactionManager = props.transactionManager || DefaultTransactionManager();
+    const transactionManager = props.transactionManager || TransactionManagerFactory.default();
 
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
     const pxEntityStatusesQueryService = PXEntityStatusesQueryServiceFactory.createDefault({
       connection,

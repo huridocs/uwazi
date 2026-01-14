@@ -5,7 +5,7 @@ import { User } from '#api/users/usersModel.js';
 declare global {
   namespace Express {
     export interface Request {
-      user: User;
+      user: User & { groups?: UserSchema['groups'] };
     }
   }
 }

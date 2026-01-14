@@ -107,25 +107,8 @@ describe('sidepanelFunctions', () => {
       jest.clearAllMocks();
     });
 
-    it('should return undefined when field has not changed', async () => {
-      const result = await handleEntitySave(
-        mockEntity,
-        mockTextProperty,
-        'new value',
-        mockTemplate,
-        false
-      );
-      expect(result).toBeUndefined();
-    });
-
     it('should return undefined when entity is not provided', async () => {
-      const result = await handleEntitySave(
-        undefined,
-        mockTextProperty,
-        'new value',
-        mockTemplate,
-        true
-      );
+      const result = await handleEntitySave(undefined, mockTextProperty, 'new value', mockTemplate);
       expect(result).toBeUndefined();
     });
 
@@ -135,8 +118,7 @@ describe('sidepanelFunctions', () => {
         mockEntity,
         propertyWithoutName,
         'new value',
-        mockTemplate,
-        true
+        mockTemplate
       );
       expect(result).toBeUndefined();
     });
@@ -144,7 +126,7 @@ describe('sidepanelFunctions', () => {
     it('should handle title property updates', async () => {
       const { formatter, save } = jest.requireMock('V2/api/entities');
 
-      await handleEntitySave(mockEntity, mockTextProperty, 'New Title', mockTemplate, true);
+      await handleEntitySave(mockEntity, mockTextProperty, 'New Title', mockTemplate);
 
       expect(formatter.update).toHaveBeenCalledWith(mockEntity, { title: 'New Title' });
       expect(save).toHaveBeenCalled();
@@ -154,7 +136,7 @@ describe('sidepanelFunctions', () => {
       const regularProperty = { ...mockTextProperty, name: 'description' };
       const { formatter, save } = jest.requireMock('V2/api/entities');
 
-      await handleEntitySave(mockEntity, regularProperty, 'New Description', mockTemplate, true);
+      await handleEntitySave(mockEntity, regularProperty, 'New Description', mockTemplate);
 
       expect(formatter.update).toHaveBeenCalledWith(mockEntity, {
         properties: [{ description: 'New Description' }],
@@ -169,8 +151,7 @@ describe('sidepanelFunctions', () => {
         mockEntity,
         mockRelationshipProperty,
         ['entity1', 'entity2'],
-        mockTemplate,
-        true
+        mockTemplate
       );
 
       expect(save).toHaveBeenCalledWith({

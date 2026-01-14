@@ -86,11 +86,11 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
   beforeEach(() => {
     automaticTranslationConfigDS = AutomaticTranslationFactory.defaultATConfigDataSource(
-      DefaultTransactionManager()
+      TransactionManagerFactory.default()
     );
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
       automaticTranslationConfigDS,
-      new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager()),
+      new MongoTemplatesDataSource(getConnection(), TransactionManagerFactory.default()),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );
   });

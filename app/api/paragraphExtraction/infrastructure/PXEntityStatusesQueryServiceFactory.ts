@@ -15,7 +15,7 @@ type Props = {
 class PXEntityStatusesQueryServiceFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
-    const transactionManager = props?.transactionManager || DefaultTransactionManager();
+    const transactionManager = props?.transactionManager || TransactionManagerFactory.default();
     return new MongoPXEntityStatusesQueryService(db, transactionManager);
   }
 }

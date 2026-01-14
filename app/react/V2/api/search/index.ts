@@ -36,7 +36,7 @@ const lookup = async (
     limit?: number;
   },
   headers?: IncomingHttpHeaders
-): Promise<Response> => {
+): Promise<EntityResponse> => {
   try {
     const searchQuery: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
@@ -53,7 +53,7 @@ const lookup = async (
       api.locale(headers['Content-Language']);
     }
 
-    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    const response: { json: EntitySearchResponse } = await api.get('v2/search', requestParams);
     return { rows: response.json.data, count: response.json.data.length };
   } catch (e) {
     return e;
@@ -67,7 +67,7 @@ const search = async (
     limit = 10,
   }: { filters: SearchQuery['filter']; fields: SearchQuery['fields']; limit?: number },
   headers?: IncomingHttpHeaders
-) => {
+): Promise<EntityResponse> => {
   try {
     const searchQuery: SearchQuery = {
       fields,
@@ -80,11 +80,42 @@ const search = async (
       api.locale(headers['Content-Language']);
     }
 
-    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    const response: { json: EntitySearchResponse } = await api.get('v2/search', requestParams);
     return { rows: response.json.data, count: response.json.data.length };
   } catch (e) {
     return e;
   }
 };
 
-export { lookup, search };
+const snippets = async (
+  {
+    sharedId,
+    searchString,
+    limit = 10,
+  }: { sharedId: string; searchString: string; limit?: number },
+  headers?: IncomingHttpHeaders
+): Promise<SnippetsSearchResponse> => {
+  try {
+    const searchQuery: SearchQuery = {
+      fields: ['snippets'],
+      filter: {
+        ...(sharedId && { sharedId }),
+        ...(searchString && { searchString }),
+      },
+      page: { limit },
+    };
+
+    const requestParams = new RequestParams(qs.stringify(searchQuery), headers);
+
+    if (headers && headers['Content-Language']) {
+      api.locale(headers['Content-Language']);
+    }
+
+    const response: { json: SnippetsSearchResponse } = await api.get('v2/search', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { lookup, search, snippets };

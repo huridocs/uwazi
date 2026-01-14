@@ -7,6 +7,13 @@ interface EntityCreatedData {
   targetLanguageKey: string;
 }
 
-class EntityCreatedEvent extends AbstractEvent<EntityCreatedData> {}
+class EntityCreatedEvent extends AbstractEvent<EntityCreatedData> {
+  static fromEntity(entity: Entity, targetLanguage: LanguageISO6391) {
+    return new EntityCreatedEvent({
+      entities: MongoEntityMapper.toDBO(entity) as any,
+      targetLanguageKey: targetLanguage,
+    });
+  }
+}
 
 export { EntityCreatedEvent };

@@ -99,6 +99,7 @@ describe('PXEntityStatusManager', () => {
       _id: new ObjectId(),
       language: 'en',
       entity: entity.sharedId!,
+      status: 'ready',
     });
 
     await testingEnvironment.setFixtures({
@@ -150,6 +151,7 @@ describe('PXEntityStatusManager', () => {
       _id: new ObjectId(),
       language: 'en',
       entity: entity.sharedId!,
+      status: 'ready',
     });
 
     await testingEnvironment.setFixtures({

@@ -29,11 +29,16 @@ interface UserFormSidepanelProps {
 }
 
 const userRoles = [
-  { key: UserRole.ADMIN, value: UserRole.ADMIN },
-  { key: UserRole.EDITOR, value: UserRole.EDITOR },
+  { key: UserRole.ADMIN, value: UserRole.ADMIN, label: t('System', 'Admin', null, false) },
+  {
+    key: UserRole.EDITOR,
+    value: UserRole.EDITOR,
+    label: t('System', 'Editor', null, false),
+  },
   {
     key: UserRole.COLLABORATOR,
     value: UserRole.COLLABORATOR,
+    label: t('System', 'Collaborator', null, false),
   },
 ];
 
@@ -179,7 +184,7 @@ const UserFormSidepanel = ({
           autoComplete="off"
         >
           <Sidepanel.Body>
-            <div className="flex flex-col flex-grow gap-4">
+            <div className="flex flex-col grow gap-4">
               <Card title={<Translate>General Information</Translate>}>
                 <div className="mb-4">
                   <InputField
@@ -297,7 +302,7 @@ const UserFormSidepanel = ({
                 </div>
               </Card>
 
-              <div className="rounded-md border border-gray-50 shadow-sm">
+              <div className="rounded-md border border-gray-50 shadow-md">
                 <MultiSelect
                   label={
                     <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
@@ -310,23 +315,18 @@ const UserFormSidepanel = ({
                   }}
                   options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
                   value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
-                  placeholder="Nothing selected"
+                  placeholder={t('System', 'Nothing selected', null, false)}
                 />
               </div>
             </div>
           </Sidepanel.Body>
           <Sidepanel.Footer className="px-4 py-3">
             <div className="flex gap-2">
-              <Button
-                className="flex-grow"
-                type="button"
-                styling="outline"
-                onClick={closeSidepanel}
-              >
+              <Button className="grow" type="button" styling="outline" onClick={closeSidepanel}>
                 <Translate>Cancel</Translate>
               </Button>
               <Button
-                className="flex-grow"
+                className="grow"
                 type="button"
                 onClick={async () => {
                   const valid = await trigger();

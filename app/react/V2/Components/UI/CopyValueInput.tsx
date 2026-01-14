@@ -49,7 +49,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
             onClick={copyToClipboard}
             data-testid="copy-value-button"
             className="hover:text-primary-700 text-gray-900 p-2.5 text-sm font-medium rounded-r-lg
-             focus:outline-none"
+             focus:outline-hidden"
           >
             {copied ? (
               <CheckIcon className="w-5 text-success-600" />
@@ -62,7 +62,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           {copied && (
             <div
               role="tooltip"
-              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-sm -top-11 w-max border-gray-50"
+              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-md -top-11 w-max border-gray-50"
             >
               <Translate>Copied to clipboard</Translate>
             </div>

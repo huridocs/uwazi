@@ -35,6 +35,26 @@ describe('manageAttachmentsReducer', () => {
       state = Immutable.fromJS({ sharedId: 'eId' });
     });
 
+    describe('UPDATE_MAIN_DOC', () => {
+      it('should update the document on the array of documents in the entity', () => {
+        action.type = 'UPDATE_MAIN_DOC';
+        action.file = { _id: 'file1', status: 'ready' };
+        state = Immutable.fromJS({
+          _id: 'eId',
+          documents: [
+            { _id: 'file2', status: 'ready' },
+            { _id: 'file1', status: 'processing' },
+          ],
+        });
+        const mainDocs = manageAttachmentsReducer()(state, action).get('documents').toJS();
+
+        expect(mainDocs).toMatchObject([
+          { _id: 'file2', status: 'ready' },
+          { _id: 'file1', status: 'ready' },
+        ]);
+      });
+    });
+
     describe('When ATTACHMENT_COMPLETE', () => {
       it('should append the action file to attachments', () => {
         action.type = 'ATTACHMENT_COMPLETE';

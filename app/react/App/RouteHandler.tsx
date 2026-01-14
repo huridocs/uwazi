@@ -11,7 +11,7 @@ import React, { Component } from 'react';
 const getLocale = ({ store }) => store.getState().locale;
 
 const setLocale = locale => {
-  moment.locale(locale);
+  Settings.defaultLocale = locale;
   api.locale(locale);
   I18NUtils.saveLocale(locale);
 };

@@ -11,14 +11,27 @@ jobs:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
+        options: >-
+          --memory=2g
+          --memory-swap=2g
+          --memory-swappiness=0
+          -e="discovery.type=single-node"
+          -e="xpack.security.enabled=false"
+          -e="ES_JAVA_OPTS=-Xms1g -Xmx1g"
+          -e="cluster.routing.allocation.disk.threshold_enabled=false"
+          -e="logger.level=WARN"
+          -e="ingest.geoip.downloader.enabled=false"
+          --health-cmd="curl -f http://localhost:9200"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=10
     steps:
       - name: Cache MongoDB tools
         id: cache-mongodb
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
-          key: ${{ runner.os }}-mongodb-tools-6.0
+          key: ${{ runner.os }}-mongodb-tools-7.0
 
       - name: Install MongoDB tools if not cached
         run: |
@@ -28,11 +41,11 @@ jobs:
           else
             echo "Installing MongoDB tools..."
             # Add MongoDB repo if not already present
-            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-7.0.list ]; then
               sudo apt-get update -qq
               sudo apt-get install -y wget gnupg
-              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+              wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
             fi
 
             # Install MongoDB tools
@@ -49,7 +62,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 6.0
+          mongodb-version: 7.0
           mongodb-replica-set: test-rs
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -75,11 +88,38 @@ jobs:
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - name: Download production build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: prod
-          path: ./prod
+      - name: Wait For and Download Artifact
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y jq unzip
+
+          i=1
+          while [ $i -le 60 ]; do
+            echo "Attempt $i: Checking for artifact..."
+            ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              | jq -r '.artifacts[] | select(.name=="prod") | .archive_download_url')
+
+            if [ -n "$ARTIFACT_URL" ]; then
+              echo "Artifact found. Downloading with curl..."
+              mkdir -p ./prod
+              curl -s -L -o artifact.zip \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$ARTIFACT_URL"
+              unzip -q artifact.zip -d ./prod
+              echo "Artifact downloaded and unzipped successfully."
+              exit 0
+            fi
+
+            echo "Artifact not yet found. Waiting 20 seconds..."
+            sleep 20
+            i=$(expr $i + 1)
+          done
+
+          echo "Timed out waiting for artifact."
+          exit 1
+        timeout-minutes: 6
       - run: cd prod; yarn update-translations-db
         env:
           NODE_ENV: production

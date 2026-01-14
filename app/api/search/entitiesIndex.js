@@ -18,14 +18,17 @@ class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const db = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
     return entitiesToIndex;
   }
 
-  const templateDS = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
+  const templateDS = new MongoTemplatesDataSource(
+    getConnection(),
+    TransactionManagerFactory.default()
+  );
   const transformer = new ElasticEntityMapper(templateDS);
   return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };

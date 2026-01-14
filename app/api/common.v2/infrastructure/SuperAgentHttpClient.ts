@@ -1,6 +1,6 @@
+import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import superagent from 'superagent';
-
-import { File } from '../../files.v2/model/File.js';
 import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
 import { HttpField } from '../contracts/HttpField';
 
@@ -24,10 +24,14 @@ export class SuperAgentHttpClient implements HttpClient {
     return response.body as T;
   }
 
-  private static async attachFiles(request: superagent.Request, files: Record<string, File[]>) {
+  private static async attachFiles(
+    request: superagent.Request,
+    files: Record<string, { filename: string; contents: FileContents }[]>
+  ) {
+    const filesIO = new FileContentsIO();
     const promises = Object.entries(files).flatMap(([key, _files]) =>
       _files.map(async file => {
-        const buffer = await file.toBuffer();
+        const buffer = (await filesIO.toBuffer(file.contents)).getDataOrThrow();
 
         // This is necessary because when we actually 'await' for 'request.[attach/field]' the 'superagent' library kicks off the request
         // This is not what we want here.

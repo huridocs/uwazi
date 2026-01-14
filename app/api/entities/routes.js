@@ -4,7 +4,7 @@ import { uploadMiddleware } from '#api/files/index.js';
 import { search } from '#api/search.js';
 import { withTransaction } from '#api/utils/withTransaction.js';
 import needsAuthorization from '../auth/authMiddleware';
-import templates from '../templates/templates';
+import templates from '../core/v1_layer/templates/templates';
 import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '#api/utils/date';
@@ -77,12 +77,40 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware.multiple(),
+    (req, res, next) => {
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+
+      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+        return new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next);
+      }
+
+      return uploadMiddleware.multiple()(req, res, next);
+    },
     activitylogMiddleware,
     async (req, res, next) => {
+      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+
+      if (tenants.current()?.featureFlags?.v2CreateEntity && !entityToSave?.sharedId) {
+        const entityDAO = new MongoEntityDAO(getConnection(), TransactionManagerFactory.default());
+        const result = await EntityFacade.create(entityToSave, req.inputFiles);
+        const entityInTargetLanguage = await entityDAO
+          .getWithFile({ language: req.language, sharedId: result.sharedId })
+          .next();
+
+        await updateThesauriWithEntity(entityInTargetLanguage, req);
+
+        // Return in the same format as V1 for client compatibility
+        const response = req.body.entity
+          ? { entity: entityInTargetLanguage, errors: [] }
+          : entityInTargetLanguage;
+
+        res.json(response);
+
+        return;
+      }
+
       try {
         const result = await withTransaction(async ({ abort }) => {
-          const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
           const saveResult = await saveEntity(entityToSave, {
             user: req.user,
             language: req.language,
@@ -220,27 +248,30 @@ export default app => {
     }
   );
 
+  const bulkDeleteValidationSchema = validation.validateRequest({
+    type: 'object',
+    properties: {
+      body: {
+        type: 'object',
+        properties: {
+          sharedIds: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['sharedIds'],
+      },
+    },
+    required: ['body'],
+  });
+
   app.post(
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            sharedIds: { type: 'array', items: { type: 'string' } },
-          },
-          required: ['sharedIds'],
-        },
-      },
-      required: ['body'],
-    }),
-    (req, res, next) => {
-      entities
-        .deleteMultiple(req.body.sharedIds)
-        .then(() => res.json('ok'))
-        .catch(next);
-    }
+    async (req, res, next) => {
+      if (tenants.current()?.featureFlags?.v2BulkDeleteEntity) {
+        return next();
+      }
+      return bulkDeleteValidationSchema(req, res, next);
+    },
+    bulkDeleteValidationSchema,
+    BulkDeleteEntityController.createHandler()
   );
 };

@@ -64,8 +64,35 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
   ],
 };
 
-const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
-const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
+const document = new ProcessedPDF({
+  id: 'any_id',
+  entity: 'any_entity',
+  language: 'pt',
+  mimetype: 'application/pdf',
+  generatedToc: false,
+  totalPages: 1,
+  creationDate: 1,
+  size: 1,
+  filename: 'any_file_name',
+  originalname: 'original.pdf',
+  fullText: {},
+  content: new DiskFile('fake/path').toContent(),
+});
+
+const document2 = new ProcessedPDF({
+  id: 'any_id2',
+  entity: 'any_entity2',
+  language: 'es',
+  mimetype: 'application/pdf',
+  generatedToc: false,
+  totalPages: 1,
+  creationDate: 1,
+  size: 1,
+  filename: 'any_file_name2',
+  originalname: 'original.pdf',
+  fullText: {},
+  content: new DiskFile('fake/path').toContent(),
+});
 
 const sourceTemplate = TemplateBuilder.aTemplate({
   id: 'sourceTemplate',

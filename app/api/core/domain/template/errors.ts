@@ -7,10 +7,10 @@ import { Template } from '#api/templates.v2/model/Template.js';
 import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
-import { AbstractSelectProperty } from './AbstractSelectProperty';
+import { AbstractSelectProperty } from './select/AbstractSelectProperty';
 import { NestedPropertyProps } from './NestedProperty';
 
-class PropertyTypeInvalidTypeError extends DomainError {
+export class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
     super(
       `The following type is not valid for ${propertyName}. Type = ${type}`,
@@ -19,7 +19,16 @@ class PropertyTypeInvalidTypeError extends DomainError {
   }
 }
 
-class TitlePropertyInvalidNameError extends DomainError {
+export class PropertyNotFoundError extends DomainError {
+  constructor(propertyName: string) {
+    super(
+      `The following Property was not found. PropertyName = ${propertyName}`,
+      'template.property.title_property_not_found_error'
+    );
+  }
+}
+
+export class TitlePropertyInvalidNameError extends DomainError {
   constructor(name: string) {
     super(
       `The following PropertyName is not valid for TitleProperty. PropertyName = ${name}`,
@@ -28,7 +37,7 @@ class TitlePropertyInvalidNameError extends DomainError {
   }
 }
 
-class CreationDatePropertyInvalidTypeError extends DomainError {
+export class CreationDatePropertyInvalidTypeError extends DomainError {
   constructor(type: string) {
     super(
       `The following type is not valid for CreationDateProperty. Type = ${type}`,
@@ -37,7 +46,7 @@ class CreationDatePropertyInvalidTypeError extends DomainError {
   }
 }
 
-class CreationDatePropertyInvalidNameError extends DomainError {
+export class CreationDatePropertyInvalidNameError extends DomainError {
   constructor(name: string) {
     super(
       `The following PropertyName is not valid for CreationDateProperty. PropertyName = ${name}`,
@@ -46,7 +55,7 @@ class CreationDatePropertyInvalidNameError extends DomainError {
   }
 }
 
-class ModifiedDatePropertyInvalidTypeError extends DomainError {
+export class ModifiedDatePropertyInvalidTypeError extends DomainError {
   constructor(type: string) {
     super(
       `The following type is not valid for ModifiedDateProperty. Type = ${type}`,
@@ -55,7 +64,7 @@ class ModifiedDatePropertyInvalidTypeError extends DomainError {
   }
 }
 
-class ModifiedDatePropertyInvalidNameError extends DomainError {
+export class ModifiedDatePropertyInvalidNameError extends DomainError {
   constructor(name: string) {
     super(
       `The following PropertyName is not valid for CreationDateProperty. PropertyName = ${name}`,
@@ -64,7 +73,7 @@ class ModifiedDatePropertyInvalidNameError extends DomainError {
   }
 }
 
-class CommonPropertyInvalidError extends DomainError {
+export class CommonPropertyInvalidError extends DomainError {
   constructor() {
     super(
       'You have tried to create a CommonProperty with wrong properties. isCommonProperty = false',
@@ -73,7 +82,7 @@ class CommonPropertyInvalidError extends DomainError {
   }
 }
 
-class InvalidStyleTypeError extends DomainError {
+export class InvalidStyleTypeError extends DomainError {
   constructor(type: string) {
     super(
       `The following style type is not valid for Image Property. Type = ${type}`,
@@ -82,7 +91,7 @@ class InvalidStyleTypeError extends DomainError {
   }
 }
 
-class TemplateWithDuplicatedPropertyError extends ValidationError {
+export class TemplateWithDuplicatedPropertyError extends ValidationError {
   constructor(property: Property) {
     super(
       `Template contains duplicate property: [name=${property.name}, type=${property.type}]`,
@@ -98,7 +107,23 @@ class TemplateWithDuplicatedPropertyError extends ValidationError {
   }
 }
 
-class PropertyTypeMismatchError extends DomainError {
+export class InheritedPropertyCanNotBeDeleted extends ValidationError {
+  constructor(properties: Property[]) {
+    super(
+      `Properties can not be deleted because are being inherited: [properties=${properties.map(p => p.name).join(',')}]`,
+      'template.property.delete.being_inherited'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return {
+      message: this.message,
+      keyword: 'noDeleteInheritedProperty',
+    };
+  }
+}
+
+export class PropertyTypeMismatchError extends DomainError {
   constructor(existing: Property, attempted: Property) {
     super(
       `Property with the name "${existing.name}" must have type "${existing.type}", but type "${attempted.type}" was provided.`,
@@ -107,7 +132,7 @@ class PropertyTypeMismatchError extends DomainError {
   }
 }
 
-class PropertyThesaurusMismatchError extends DomainError {
+export class PropertyThesaurusMismatchError extends DomainError {
   constructor(existing: AbstractSelectProperty, attempted: AbstractSelectProperty) {
     super(
       // eslint-disable-next-line max-len
@@ -117,18 +142,7 @@ class PropertyThesaurusMismatchError extends DomainError {
   }
 }
 
-class PropertyRelationTypeMismatchError extends DomainError {
-  constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
-    // eslint-disable-next-line max-len
-    const message = `Property with the name "${existing.name}" must define a relationship type to "${existing.relationType}", but a relationship to "${attempted.relationType}" was provided.`;
-
-    const code = 'template.property.relation_type_mismatch_error';
-
-    super(message, code);
-  }
-}
-
-class PropertyInheritedTypeMismatchError extends DomainError {
+export class PropertyInheritedTypeMismatchError extends DomainError {
   constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
     const formatInheritance = (property: V1RelationshipProperty) =>
       property.inherit?.type
@@ -147,7 +161,7 @@ class PropertyInheritedTypeMismatchError extends DomainError {
   }
 }
 
-class TemplateWithDuplicatedNameOnTheSystemError extends DomainError {
+export class TemplateWithDuplicatedNameOnTheSystemError extends DomainError {
   constructor(template: Template) {
     super(
       `The following Template has a used Name on the system. Name = ${template.name}`,
@@ -156,7 +170,7 @@ class TemplateWithDuplicatedNameOnTheSystemError extends DomainError {
   }
 }
 
-class TemplateWithMissingCommonProperty extends DomainError {
+export class TemplateWithMissingCommonProperty extends DomainError {
   constructor(type: string) {
     super(
       `Template has the missing Property. Type = ${type}`,
@@ -165,7 +179,7 @@ class TemplateWithMissingCommonProperty extends DomainError {
   }
 }
 
-class FieldIsRequiredError extends DomainError {
+export class FieldIsRequiredError extends DomainError {
   constructor(fieldName: string) {
     super(
       `The following field is required. Field = ${fieldName}`,
@@ -174,7 +188,7 @@ class FieldIsRequiredError extends DomainError {
   }
 }
 
-class SelectPropertyWithInvalidThesaurusError extends DomainError {
+export class SelectPropertyWithInvalidThesaurusError extends DomainError {
   constructor(thesaurusId: string) {
     super(
       `The following Thesaurus does not exist. Thesaurus Id = ${thesaurusId}`,
@@ -183,7 +197,7 @@ class SelectPropertyWithInvalidThesaurusError extends DomainError {
   }
 }
 
-class RelationshipTypeDoesNotExistError extends DomainError {
+export class RelationshipTypeDoesNotExistError extends DomainError {
   constructor(relationType: string) {
     super(
       `The Relationship Type with Id "${relationType}" was not found.`,
@@ -192,7 +206,7 @@ class RelationshipTypeDoesNotExistError extends DomainError {
   }
 }
 
-class TemplateDoesNotExistError extends DomainError {
+export class TemplateDoesNotExistError extends DomainError {
   constructor(templateId: string) {
     super(
       `The Template with Id "${templateId}" was not found.`,
@@ -200,7 +214,7 @@ class TemplateDoesNotExistError extends DomainError {
     );
   }
 }
-class DefaultTemplateNotFoundError extends DomainError {
+export class DefaultTemplateNotFoundError extends DomainError {
   constructor() {
     super(
       'A default template is required, but none is configured in the system.',
@@ -209,7 +223,7 @@ class DefaultTemplateNotFoundError extends DomainError {
   }
 }
 
-class RelationshipTargetPropertyNotFoundError extends DomainError {
+export class RelationshipTargetPropertyNotFoundError extends DomainError {
   constructor(propertyId: string, templateId: string) {
     super(
       `The provided Target Property with id "${propertyId}" was not found on Template with id "${templateId}"`,
@@ -218,7 +232,7 @@ class RelationshipTargetPropertyNotFoundError extends DomainError {
   }
 }
 
-class RelationshipTargetTypeMismatchError extends DomainError {
+export class RelationshipTargetTypeMismatchError extends DomainError {
   constructor(providedType: string, existingType: string) {
     super(
       `The provided Target Property type "${providedType}" does not match with the Target Template type "${existingType}"`,
@@ -227,7 +241,7 @@ class RelationshipTargetTypeMismatchError extends DomainError {
   }
 }
 
-class NestedPropertyNotAvailableError extends DomainError {
+export class NestedPropertyNotAvailableError extends DomainError {
   constructor(props: NestedPropertyProps) {
     super(
       `The nested Property type is not available for your organization ${JSON.stringify(props)}`,
@@ -242,28 +256,59 @@ export class DefaultTemplateConflictError extends DomainError {
   }
 }
 
-export {
-  CreationDatePropertyInvalidNameError,
-  CreationDatePropertyInvalidTypeError,
-  ModifiedDatePropertyInvalidTypeError,
-  ModifiedDatePropertyInvalidNameError,
-  TitlePropertyInvalidNameError,
-  PropertyTypeInvalidTypeError,
-  InvalidStyleTypeError,
-  CommonPropertyInvalidError,
-  TemplateWithDuplicatedPropertyError,
-  TemplateWithMissingCommonProperty,
-  PropertyTypeMismatchError,
-  TemplateWithDuplicatedNameOnTheSystemError,
-  FieldIsRequiredError,
-  SelectPropertyWithInvalidThesaurusError,
-  RelationshipTypeDoesNotExistError,
-  TemplateDoesNotExistError,
-  RelationshipTargetPropertyNotFoundError,
-  RelationshipTargetTypeMismatchError,
-  PropertyThesaurusMismatchError,
-  PropertyRelationTypeMismatchError,
-  PropertyInheritedTypeMismatchError,
-  NestedPropertyNotAvailableError,
-  DefaultTemplateNotFoundError,
-};
+export class DefaultTemplateDeletionError extends DomainError {
+  constructor() {
+    const message =
+      'The default template cannot be deleted. Please set a different template as the default before deleting this one.';
+    const code = 'template.cannot_delete_default';
+    super(message, code);
+  }
+}
+
+export class TemplateInUseError extends DomainError {
+  constructor() {
+    const message =
+      'Cannot delete a template that has existing entities. Please remove the related entities first.';
+    const code = 'template.in_use';
+    super(message, code);
+  }
+}
+
+export class PropertyComparisonError extends DomainError {
+  constructor() {
+    super('Trying to compare different properties.', 'template.property.property_comparison_error');
+  }
+}
+
+export class PropertyTypeChangeError extends DomainError {
+  constructor() {
+    super("Can't change property types.", 'template.property.property_type_change_error');
+  }
+}
+
+export class UnhandledPropertyTypeError extends DomainError {
+  constructor(type: string) {
+    super(
+      `The following type was not handled. Type = ${type}`,
+      'template.template.unhandled_property_type_error'
+    );
+  }
+}
+
+export class PropertyNotFoundInTemplateError extends DomainError {
+  constructor(propertyName: string, templateInfo: string) {
+    super(
+      `Property with name ${propertyName} not found in template ${templateInfo}`,
+      'template.template.property_not_found_in_template_error'
+    );
+  }
+}
+
+export class InvalidPropertyComparisonTypeError extends DomainError {
+  constructor(expectedType: string) {
+    super(
+      `Can only compare with another ${expectedType}`,
+      'template.property.invalid_property_comparison_type_error'
+    );
+  }
+}

@@ -1,4 +1,4 @@
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from 'api/core/libs/UseCase';
 import { Suggestions } from '../suggestions';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
 import { SuggestionFactory } from '../suggestionFactory';

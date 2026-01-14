@@ -1,8 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
-import { calculateOptimalProportions } from '../helpers/contextHelpers';
-
+import React, { useCallback, useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
 import { get } from 'lodash';
@@ -22,11 +20,12 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '../types.js';
-import { Dot } from './Dot.js';
-import { SuggestedValue } from './SuggestedValue.js';
-import { acceptedSuggestions } from './atoms/index.js';
-import { ContextCell } from './ContextCell.js';
+} from '../types';
+import { Dot } from './Dot';
+import { SuggestedValue } from './SuggestedValue';
+import { acceptedSuggestions } from './atoms';
+import { ContextCell } from './ContextCell';
+import { calculateOptimalProportions } from '../helpers/contextHelpers';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -65,7 +64,7 @@ const getIcon = (color: Color) => {
   switch (color) {
     case 'orange':
     case 'green':
-      return <CheckCircleIcon />;
+      return <CheckCircleIcon className="text-green-500" />;
     case 'red':
       return <Dot color={color} />;
     default:
@@ -80,6 +79,9 @@ const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Name</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
+);
+const UsedForTrainingHeader = () => (
+  <Translate className="whitespace-nowrap">Use for training</Translate>
 );
 const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
@@ -131,7 +133,7 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
         <>
           <span>|</span>
           <span>
-            <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
+            <span className="text-alert-500">{amountOfMissmatches}</span>{' '}
             <Translate>mismatching</Translate>
           </span>
         </>
@@ -270,12 +272,60 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
   }
   if (segment === '') {
     return (
-      <span className="text-xs font-normal text-orange-600">
+      <span className="text-xs font-normal text-alert-800">
         <Translate>No context</Translate>
       </span>
     );
   }
   return <ContextCell text={segment} />;
+};
+
+const UsedForTrainingCell = ({
+  cell,
+  row,
+  action,
+}: {
+  cell: Cell<TableSuggestion, boolean | undefined>;
+  row: Row<TableSuggestion>;
+  action: (suggestions: string[], use: boolean) => Promise<void>;
+}) => {
+  const { state } = useRevalidator();
+  const usedForTraining = cell.getValue();
+  const [disabled, setDisabled] = useState(state === 'loading');
+
+  const handleClick = useCallback(async () => {
+    setDisabled(true);
+    await action([cell.row.original._id], !usedForTraining);
+  }, [action, cell.row.original._id, usedForTraining]);
+
+  if (row.depth > 0) {
+    return undefined;
+  }
+
+  return (
+    <button
+      className="w-full flex justify-center disabled:cursor-not-allowed"
+      disabled={disabled}
+      type="button"
+      onClick={handleClick}
+    >
+      {usedForTraining ? (
+        <>
+          <CheckCircleIcon
+            className={`w-6 h-6 ${disabled ? 'text-green-300' : 'text-green-500'}`}
+          />
+          <Translate className="sr-only">Remove from training set</Translate>
+        </>
+      ) : (
+        <>
+          <PlusCircleIcon
+            className={`w-6 h-6 ${disabled ? 'text-primary-300' : 'text-primary-900'}`}
+          />
+          <Translate className="sr-only">Add to training set</Translate>
+        </>
+      )}
+    </button>
+  );
 };
 
 const extractorsTableColumns = [
@@ -308,12 +358,19 @@ const extractorsTableColumns = [
 
 type Color = 'red' | 'green' | 'orange';
 
-const suggestionsTableColumnsBuilder = (
-  templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
-  openPdfSidepanel: (suggestion: TableSuggestion) => void,
-  suggestions?: TableSuggestion[]
-) => {
+const suggestionsTableColumnsBuilder = ({
+  templates,
+  acceptSuggestions,
+  openPdfSidepanel,
+  markForTraining,
+  suggestions,
+}: {
+  templates: ClientTemplateSchema[];
+  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>;
+  openPdfSidepanel: (suggestion: TableSuggestion) => void;
+  markForTraining: (suggestions: string[], use: boolean) => Promise<void>;
+  suggestions: TableSuggestion[];
+}) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
     ...(templates[0].properties || []),
@@ -336,6 +393,14 @@ const suggestionsTableColumnsBuilder = (
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: valueWidth },
+    }),
+    suggestionColumnHelper.accessor('useForTraining', {
+      header: UsedForTrainingHeader,
+      cell: ({ cell, row }) => (
+        <UsedForTrainingCell cell={cell} row={row} action={markForTraining} />
+      ),
+      meta: { headerClassName: 'w-0' },
+      enableSorting: false,
     }),
     suggestionColumnHelper.display({
       id: 'accept-actions',

@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 
@@ -71,7 +71,7 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
         }
       >
         {semanticData.action !== 'RAW' && (
-          <div className="space-x-2">
+          <div className="gap-x-2">
             {semanticData.description && (
               <>
                 <Translate className="font-semibold">{semanticData.description}</Translate>&#58;
@@ -82,7 +82,7 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
           </div>
         )}
         {semanticData.action === 'RAW' && (
-          <div className="space-x-2">
+          <div className="gap-x-2">
             <Translate className="font-semibold">{cell.row.original.method}</Translate>
             <Translate>{cell.row.original.url}</Translate>
           </div>
@@ -93,13 +93,16 @@ const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType
 };
 
 const TimeCell =
-  (dateFormat: string) =>
+  () =>
   ({ cell }: CellContext<LogEntry, number>) => {
-    const date = moment(cell.getValue());
+    const date = DateTime.fromMillis(cell.getValue());
+    // Use locale user format for date
+    const daysFormat = date.toLocaleString(DateTime.DATE_MED);
+    const timeFormat = date.toLocaleString(DateTime.TIME_24_SIMPLE);
     return (
       <>
-        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
-        <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
+        <span className="font-semibold">{daysFormat}</span>
+        <span className="font-medium">&nbsp;-&nbsp;{timeFormat}</span>
       </>
     );
   };
@@ -114,7 +117,7 @@ const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   </Button>
 );
 
-const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
+const getActivityLogColumns = (setSelectedEntry: any) => [
   columnHelper.accessor('method', {
     header: ActionHeader,
     cell: ActionCell,
@@ -133,7 +136,7 @@ const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
   }),
   columnHelper.accessor('time', {
     header: TimeHeader,
-    cell: TimeCell(dateFormat),
+    cell: TimeCell(),
     meta: { headerClassName: 'text-center w-2/12' },
   }),
   columnHelper.accessor('_id', {

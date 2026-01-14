@@ -226,4 +226,15 @@ export class MongoEntitiesDataSource
       obsoleteMetadata: result.obsoleteMetadata ?? [],
     }));
   }
+
+  async anyExistsForTemplate(templateId: string): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        template: ObjectId.createFromHexString(templateId),
+      },
+      { limit: 1 }
+    );
+
+    return count > 0;
+  }
 }

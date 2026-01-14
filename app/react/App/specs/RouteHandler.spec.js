@@ -91,7 +91,7 @@ describe('RouteHandler', () => {
     });
 
     it('should set the locales of the different stores and services', () => {
-      expect(moment.locale()).toBe('de');
+      expect(Settings.defaultLocale).toBe('de');
       expect(api.locale).toHaveBeenCalledWith('de');
       expect(I18NUtils.saveLocale).toHaveBeenCalledWith('de');
     });

@@ -13,23 +13,23 @@ const Modal = ({ children, size, id }: ModalProps) => {
   const sizes = {
     sm: 'max-w-sm',
     md: 'max-w-md min-w-[24rem]',
-    lg: 'max-w-lg min-w-[28rem]',
-    xl: 'max-w-xl min-w-[32rem]',
-    xxl: 'max-w-2xl min-w-[36rem]',
-    xxxl: 'max-w-3xl min-w-[40rem]',
+    lg: 'max-w-lg min-w-md',
+    xl: 'max-w-xl min-w-lg',
+    xxl: 'max-w-2xl min-w-xl',
+    xxxl: 'max-w-3xl min-w-160',
   };
 
   return (
     <div
       aria-hidden="false"
-      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900 bg-opacity-50"
+      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900/50"
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
       id={id}
     >
       <div className={`max-h-screen ${sizes[size]}`}>
-        <div className="bg-white rounded-lg shadow">{children}</div>
+        <div className="bg-white rounded-lg shadow-sm">{children}</div>
       </div>
     </div>
   );
@@ -60,7 +60,7 @@ Modal.Body = ({ children, className }: ModalChildrenProps) => (
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+  <div className="flex justify-center p-6 gap-x-2 border-t border-gray-200 rounded-b">
     {children}
   </div>
 );

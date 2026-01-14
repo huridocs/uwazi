@@ -48,7 +48,7 @@ describe('ConfirmationModal', () => {
     cy.contains('a', 'Middle Path').invoke('attr', 'href').should('include', '#bottom');
     cy.contains('a', 'Leaf').invoke('attr', 'href').should('include', '#footer');
     cy.contains('Current page').should('not.have.attr', 'href');
-    cy.get('[data-testid="settings-content-body"]').should('have.class', 'flex-grow');
+    cy.get('[data-testid="settings-content-body"]').should('have.class', 'grow');
   });
 
   it('should have an arrow to return to settings menu for mobile', () => {

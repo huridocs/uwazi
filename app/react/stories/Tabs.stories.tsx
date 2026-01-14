@@ -1,3 +1,4 @@
+/* eslint-disable import/no-default-export */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Tabs } from '#app/V2/Components/UI/Tabs.js';
@@ -12,7 +13,12 @@ type Story = StoryObj<typeof Tabs>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Tabs unmountTabs={args.unmountTabs} onTabSelected={args.onTabSelected}>
+      <Tabs
+        unmountTabs={args.unmountTabs}
+        onTabSelected={args.onTabSelected}
+        tabListClassName="md:w-2/3 w-full"
+        tabListAriaLabel={args.tabListAriaLabel}
+      >
         <Tabs.Tab id="tab1" label="Tab 1">
           <div className="py-4">
             <h2 className="mb-2 text-lg font-medium">Tab 1 Content</h2>
@@ -35,14 +41,13 @@ const Primary: Story = {
     </div>
   ),
 };
-const Basic = {
+export const Basic = {
   ...Primary,
   args: {
-    onTabSelected: () => {},
+    onTabSelected: undefined,
     unmountTabs: undefined,
+    tabListAriaLabel: 'Entity detail sections',
   },
 };
-
-export { Basic };
 
 export default meta;

@@ -109,5 +109,11 @@ describe('PageView', () => {
     it('should expose a function to update page datasets', () => {
       expect(window.updatePageDatasets).not.toBeUndefined();
     });
+
+    it('should expose a function to open entity side panel', () => {
+      spyOn(sidePanelUtils, 'openEntitySidePanel');
+      instance.componentDidMount();
+      expect(window.openEntitySidePanel).toBe(sidePanelUtils.openEntitySidePanel);
+    });
   });
 });

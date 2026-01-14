@@ -23,7 +23,7 @@ const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
     defaultATConfigDataSource() {
-      const transactionManager = DefaultTransactionManager();
+      const transactionManager = TransactionManagerFactory.default();
       return AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager);
     },
     defaultRequestEntityTranslation() {

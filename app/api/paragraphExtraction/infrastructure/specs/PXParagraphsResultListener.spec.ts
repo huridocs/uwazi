@@ -3,7 +3,7 @@ import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.j
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 
@@ -26,9 +26,10 @@ const resultMessage: ResultMessage = {
 const createSut = () => {
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
+    dispatchMany: jest.fn(),
   };
 
-  const listener = new PXParagraphsResultListener(async () => dispatcher);
+  const listener = new PXParagraphsResultListener(() => dispatcher);
 
   return {
     listener,

@@ -17,6 +17,7 @@ import translations from '#app/I18N/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
+import * as setupSockets from 'api/socketio/setupSockets';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';
 import fixtures from './fixtures';
@@ -27,6 +28,8 @@ jest.mock(
     next();
   }
 );
+
+jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 
 describe('Settings routes', () => {
   const getApp = (userRole?: string) =>

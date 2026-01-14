@@ -28,7 +28,7 @@ const EmbededButton = ({
 
   switch (color) {
     case 'orange':
-      buttonColor = 'text-orange-600 bg-orange-50';
+      buttonColor = 'text-alert-800 bg-alert-50';
       break;
     case 'green':
       buttonColor =
@@ -40,7 +40,7 @@ const EmbededButton = ({
       break;
     case 'indigo':
       buttonColor =
-        'text-indigo-800 bg-indigo-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-indigo-50 disabled:border-indigo-200';
+        'text-indigo-800 bg-primary-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-primary-50 disabled:border-indigo-200';
       break;
     case 'white':
       buttonColor = 'bg-white border-gray-200 disabled:text-gray-300 disabled:bg-gray-50';
@@ -58,7 +58,7 @@ const EmbededButton = ({
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-[2px] text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-none`}
+      className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-[2px] text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-hidden`}
       form={form}
     >
       <div className="flex flex-row gap-1 justify-center items-center">

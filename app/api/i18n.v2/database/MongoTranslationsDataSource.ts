@@ -107,6 +107,14 @@ export class MongoTranslationsDataSource
     return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
   }
 
+  async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
+    await this.getCollection().bulkWrite(
+      props.map(({ contextId, keysToDelete }) => ({
+        deleteMany: { filter: { 'context.id': contextId, key: { $in: keysToDelete } } },
+      }))
+    );
+  }
+
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
     const context = await this.getCollection().findOne({ 'context.id': contextId });
     if (!context) {

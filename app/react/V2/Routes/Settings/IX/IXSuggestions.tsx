@@ -34,14 +34,13 @@ import {
   ixStatus,
   IXSuggestionsLoaderResponse,
   EntitySuggestion,
-} from './types.js';
-import { useEventHandler } from './hooks/useEventHandler.js';
-import { acceptedSuggestions } from './components/atoms/index.js';
-import { PDFSidepanel } from './components/PDFSidepanel.js';
-import { PropertySidepanel } from './components/PropertySidepanel.js';
-
-import { TrainModelModal } from './components/TrainModelModal.js';
-import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
+} from './types';
+import { useEventHandler } from './hooks/useEventHandler';
+import { acceptedSuggestions } from './components/atoms';
+import { PDFSidepanel } from './components/sidepanel/PDFSidepanel';
+import { PropertySidepanel } from './components/sidepanel/PropertySidepanel';
+import { TrainModelModal } from './components/TrainModelModal';
+import { ProcessExtractorModal } from './components/ProcessExtractorModal';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -51,13 +50,13 @@ import {
 const SUGGESTIONS_PER_PAGE = 100;
 
 const ixmessages = {
-  ready: 'Find suggestions',
-  sending_labeled_data: 'Sending labeled data...',
-  processing_model: 'Training model...',
-  processing_suggestions: 'Finding suggestions...',
-  processing_auto_accept: 'Accepting suggestions...',
-  cancel: 'Canceling...',
-  error: 'Error',
+  ready: t('System', 'Find suggestions', null, false),
+  sending_labeled_data: `${t('System', 'Sending labeled data', null, false)}...`,
+  processing_model: `${t('System', 'Training model', null, false)}...`,
+  processing_suggestions: `${t('System', 'Finding suggestions', null, false)}...`,
+  processing_auto_accept: `${t('System', 'Accepting suggestions', null, false)}...`,
+  cancel: `${t('System', 'Canceling', null, false)}...`,
+  error: t('System', 'Error', null, false),
 };
 
 const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
@@ -102,8 +101,20 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const onEntitySave = async () => {
-    await revalidate();
+  const markForTraining = async (suggestionIds: string[], use: boolean) => {
+    if (extractor._id) {
+      try {
+        await suggestionsAPI.setForTraining({
+          extractorId: extractor._id,
+          suggestionIds,
+          useForTraining: use,
+        });
+      } catch (e) {
+        handleUnexpectedError(e, 'An error has ocurred');
+      } finally {
+        await revalidate();
+      }
+    }
   };
 
   const acceptSuggestions = async (suggestionsToAccept: TableSuggestion[]) => {
@@ -117,7 +128,6 @@ const IXSuggestions = () => {
         newAcceptedIds.forEach(id => newSet.add(id));
         return newSet;
       });
-
       setSelected([]);
       setNotifications({
         type: 'info',
@@ -132,13 +142,17 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModel = async (findAmount: number) => {
+  const trainModel = async (
+    findAmount: number,
+    samplePolicy: 'only_marked' | 'marked_plus_labeled'
+  ) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
         try {
           await suggestionsAPI.findSuggestions({
             extractorId: extractor._id,
             suggestionsToFind: findAmount,
+            samplePolicy,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
         } catch (error) {}
@@ -205,6 +219,15 @@ const IXSuggestions = () => {
     }
   };
 
+  const onEntitySave = async (suggestionIds: string[], inTrainingSet: boolean) => {
+    const suggestion = suggestions.find(sugg => sugg._id === suggestionIds[0]);
+    if (suggestion?.useForTraining !== inTrainingSet) {
+      await markForTraining(suggestionIds, inTrainingSet);
+    } else {
+      await revalidate();
+    }
+  };
+
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
@@ -241,10 +264,11 @@ const IXSuggestions = () => {
   };
 
   useEffect(() => {
-    const template = templates.find(t => t._id === extractor.templates[0]);
-    const _property = extractor.property === 'title';
-    template?.commonProperties?.find(prop => prop.name === extractor.property);
-    template?.properties?.find(prop => prop.name === extractor.property);
+    const template = templates.find(temp => temp._id === extractor.templates[0]);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties?.find(prop => prop.name === extractor.property);
     setProperty(_property);
   }, [templates, extractor]);
 
@@ -274,16 +298,17 @@ const IXSuggestions = () => {
           path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}
           title={extractor.name}
         />
-        <SettingsContent.Body>
+        <SettingsContent.Body className="flex flex-col flex-1 overflow-hidden min-h-0">
           <Table
             data={currentSuggestions}
             enableSelections
-            columns={suggestionsTableColumnsBuilder(
-              filteredTemplates(),
+            columns={suggestionsTableColumnsBuilder({
+              templates: filteredTemplates(),
               acceptSuggestions,
-              openSidepanel,
-              suggestions
-            )}
+              openPdfSidepanel: openSidepanel,
+              markForTraining,
+              suggestions,
+            })}
             onSelect={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)
@@ -336,7 +361,7 @@ const IXSuggestions = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
-          <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center gap-x-4">
             {status.status === ixStatus.ready ? (
               <Button
                 size="small"
@@ -367,7 +392,7 @@ const IXSuggestions = () => {
             </Button>
             {status.status !== ixStatus.ready && (
               <div className="text-sm font-semibold text-center text-gray-900">
-                <Translate>{ixmessages[status.status]}</Translate>
+                {ixmessages[status.status]}
                 {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                 {status.data && (
                   <span className="ml-2">
@@ -475,10 +500,11 @@ const IXSuggestionsLoader =
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
 
-    const template = templates.find(t => extractors[0].templates.includes(t._id));
-    const property = extractors[0].property === 'title';
-    template?.commonProperties?.find(prop => prop.name === extractors[0].property);
-    template?.properties?.find(prop => prop.name === extractors[0].property);
+    const template = templates.find(temp => extractors[0].templates.includes(temp._id));
+    const property =
+      extractors[0].property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractors[0].property)
+        : template?.properties?.find(prop => prop.name === extractors[0].property);
 
     let suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,

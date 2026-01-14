@@ -42,7 +42,7 @@ const EntityFilter = ({ filters, setFilters }: EntityFilterProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="p-4 rounded-lg  shadow-sm">
+      <div className="p-4 rounded-lg shadow-md">
         <h2 className="text-sm font-semibold font-roboto text-gray-900 mb-3">
           <Translate>Status</Translate>
         </h2>
@@ -53,13 +53,13 @@ const EntityFilter = ({ filters, setFilters }: EntityFilterProps) => {
                 type="checkbox"
                 checked={status || false}
                 onChange={e => handleCheckboxChange(key, count, Boolean(e.currentTarget.checked))}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               <span className="ml-3 flex flex-1 justify-between items-center text-sm text-gray-600">
                 <span className="text-xs font-roboto">
                   <Translate>{statusKeys[key as EntityStatus]}</Translate>
                 </span>
-                <div className="border-b border-dashed border-gray-[#E8E7EC] mx-2 flex-grow" />
+                <div className="border-b border-dashed border-gray-[#E8E7EC] mx-2 grow" />
                 <span className="text-xs font-roboto font-bold">{count}</span>
               </span>
             </label>

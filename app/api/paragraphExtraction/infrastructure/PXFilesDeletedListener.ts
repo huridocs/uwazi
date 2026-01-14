@@ -30,6 +30,7 @@ type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
+  fileStorage: FileStorage;
 };
 
 export class PXFilesDeletedListener {
@@ -43,16 +44,17 @@ export class PXFilesDeletedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,
     });
 
-    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
-    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const fileStorage = FileStorageFactory.default();
 
-    this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
+    this.dependencies = { entitiesStatusDS, filesDS, settingsDS, fileStorage };
   }
 
   private async getDocumentsInInstalledLanguages(
@@ -60,13 +62,13 @@ export class PXFilesDeletedListener {
     installedLanguages: LanguageISO6391[]
   ) {
     const documentsInInstalledLanguages = await this.dependencies.filesDS
-      .getDocumentsForEntity(sharedId)
+      .getProcessedDocsForEntity(sharedId)
       .all();
 
     return documentsInInstalledLanguages.filter(d => installedLanguages.includes(d.language));
   }
 
-  private async getInitialData(deletedDocuments: Document[]) {
+  private async getInitialData(deletedDocuments: ProcessedPDF[]) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
       entitySharedId: deletedDocuments[0].entity,
     });
@@ -88,7 +90,7 @@ export class PXFilesDeletedListener {
   }
 
   // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: Document[]) {
+  private async onDocumentsDeleted(deletedDocuments: ProcessedPDF[]) {
     const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
       await this.getInitialData(deletedDocuments);
 
@@ -141,14 +143,20 @@ export class PXFilesDeletedListener {
     this.setupDependencies();
 
     const deletedDocuments = files
-      .filter(f => f.type === 'document')
-      .map(d => FileMappers.toDocumentModel(d as any));
+      .filter(f => f.type === 'document' && f.status === 'ready')
+      .map(d =>
+        FileMappers.toModel(d as any, {
+          contentLoader: this.dependencies.fileStorage.getFile.bind(this.dependencies.fileStorage),
+        })
+      );
 
     if (!deletedDocuments.length) {
       return;
     }
 
-    await this.onDocumentsDeleted(deletedDocuments);
+    await this.onDocumentsDeleted(
+      deletedDocuments.filter((d): d is ProcessedPDF => d instanceof ProcessedPDF)
+    );
   }
 
   start() {

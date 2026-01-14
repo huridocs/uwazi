@@ -7,7 +7,7 @@ export interface User {
   username?: string;
   password?: string;
   email?: string;
-  role?: string;
+  role?: 'admin' | 'editor' | 'collaborator';
   failedLogins?: number;
   accountLocked?: boolean;
   accountUnlockCode?: string;

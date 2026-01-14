@@ -22,7 +22,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
     const connection = getConnection();
-    const mongoTransactionManager = DefaultTransactionManager();
+    const mongoTransactionManager = TransactionManagerFactory.default();
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
       entityDS: DefaultEntitiesDataSource(mongoTransactionManager),
@@ -35,11 +35,11 @@ export class PXExtractParagraphsFromEntityFactory {
         connection,
         mongoTransactionManager,
       }),
-      filesDS: DefaultFilesDataSource(mongoTransactionManager),
-      fileStorage: FileStorageStrategyFactory.createDefault(),
+      filesDS: FilesDataSourceFactory.default(mongoTransactionManager),
+      fileStorage: FileStorageFactory.default(),
       idGenerator: MongoIdHandler,
-      settingsDS: DefaultSettingsDataSource(mongoTransactionManager),
-      logger: DefaultLogger(),
+      settingsDS: SettingsDataSourceFactory.default(mongoTransactionManager),
+      logger: LoggerFactory.default(),
       tenantName,
     });
 

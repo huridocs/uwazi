@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
 import { ApiResponse } from '@elastic/elasticsearch';
+import { ObjectId } from 'mongodb';
 
 import { search } from '#api/search.js';
 
@@ -36,41 +36,42 @@ import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infras
 
 import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
-  extractor,
-  sourceTemplate,
-  targetTemplate,
   defaultTemplate,
   entity1,
-  invalidEntity,
-  segmentation,
-  segmentation2,
+  entity2,
+  entity3,
+  entityStatus1,
+  extractor,
   failedSegmentation,
-  processingSegmentation,
   file,
   file2,
-  files,
   fileWithLanguageNotInstalled,
-  userId,
-  entityStatus1,
+  invalidEntity,
   paragraph1,
   paragraph2,
   paragraph3,
-  relationshipE1Hub1,
-  relationshipP1Hub1,
-  relationshipP2Hub1,
-  relationshipP3Hub3,
-  entity2,
   paragraph4,
   paragraph5,
+  processingSegmentation,
+  relationshipE1Hub1,
+  relationshipE1Hub3,
   relationshipE2Hub1,
+  relationshipE2Hub2,
+  relationshipP1Hub1,
+  relationshipP1Hub1Repeated,
+  relationshipP2Hub1,
+  relationshipP3Hub3,
   relationshipP4Hub1,
   relationshipP5Hub2,
-  entity3,
-  relationshipE1Hub3,
-  relationshipE2Hub2,
-  relationshipP1Hub1Repeated,
+  segmentation,
+  segmentation2,
+  sourceTemplate,
+  targetTemplate,
+  userId,
 } from './fixtures';
 
 const createFixtures = (): DBFixture => ({
@@ -96,18 +97,15 @@ const setUpUseCase = () => {
     getParagraphsResult: jest.fn(),
   };
 
-  const fileStorage = {
-    getFiles: jest.fn().mockResolvedValue(files),
+  const fileStorage = TestUtils.mockClass<FileStorage>({
     getFile: jest.fn(),
-    getPath: jest.fn(),
-    list: jest.fn(),
-  };
+  });
 
   const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
-  const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+  const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+  const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
   const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
@@ -444,23 +442,6 @@ describe('PXExtractParagraphsFromEntity', () => {
 
     await expect(promise).rejects.toMatchObject({
       code: PXErrorCode.DOCUMENTS_NOT_FOUND,
-    });
-  });
-
-  it('should throw if there is no Segmentation Files to send', async () => {
-    const { extractParagraphs, fileStorage } = setUpUseCase();
-
-    fileStorage.getFiles = jest.fn().mockResolvedValue(() => []);
-
-    const promise = extractParagraphs.execute({
-      entitySharedId: entity1.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: new ObjectId().toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
-
-    await expect(promise).rejects.toMatchObject({
-      code: PXErrorCode.SEGMENTATION_FILES_NOT_FOUND,
     });
   });
 });

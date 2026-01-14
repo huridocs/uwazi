@@ -35,6 +35,7 @@ class PageViewComponent extends RouteHandler {
     this.closeSidePanel();
     if (isClient) {
       window.updatePageDatasets = updatePageDatasets;
+      window.openEntitySidePanel = openEntitySidePanel;
     }
   }
 

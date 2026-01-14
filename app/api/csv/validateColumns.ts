@@ -1,4 +1,4 @@
-import { templateUtils } from '../templates/index.js';
+import { templateUtils } from 'api/core/v1_layer/templates';
 import _ from 'lodash';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypes } from '#shared/propertyTypes.js';

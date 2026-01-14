@@ -18,7 +18,9 @@ class TemplateBuilder {
 
   private _color: string = '#FFFFFF';
 
-  private _isDefault: boolean = false;
+  private _isDefault?: boolean;
+
+  private _entityViewPage: string = '';
 
   private constructor() {}
 
@@ -31,6 +33,7 @@ class TemplateBuilder {
     if (props.commonProperties) builder.withCommonProperties(props.commonProperties);
     if (props.color) builder.withColor(props.color);
     if (props.isDefault) builder.withDefault(props.isDefault);
+    if (props.entityViewPage) builder.withEntityViewPage(props.entityViewPage);
 
     return builder;
   }
@@ -75,8 +78,13 @@ class TemplateBuilder {
     return this;
   }
 
-  withDefault(isDefault: boolean): this {
+  withDefault(isDefault?: boolean): this {
     this._isDefault = isDefault;
+    return this;
+  }
+
+  withEntityViewPage(entityViewPage: string): this {
+    this._entityViewPage = entityViewPage;
     return this;
   }
 
@@ -105,7 +113,8 @@ class TemplateBuilder {
       this._properties,
       commonProperties,
       this._color,
-      this._isDefault
+      this._isDefault,
+      this._entityViewPage
     );
   }
 }

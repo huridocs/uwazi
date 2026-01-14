@@ -1,11 +1,15 @@
-import { config } from '../../app/api/config.js';
-import { DB } from '../../app/api/odm/index.js';
-import { DefaultDispatcher } from '../../app/api/queue.v2/configuration/factories.js';
+import { config } from 'api/config';
+import { DB } from 'api/odm';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { TestJob } from '../../app/queueRegistry';
 
 (async () => {
   await DB.connect(config.DBHOST, config.DBAUTH);
-  const dispatcher = await DefaultDispatcher(process.env.TENANT || 'default');
+  const dispatcher = DefaultDispatcher(
+    process.env.TENANT || 'default',
+    TransactionManagerFactory.createForSharedDataBase()
+  );
   for (let i = 0; i < 100; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     await dispatcher.dispatch(TestJob, undefined);

@@ -49,7 +49,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
+  const mongoTransactionManager = TransactionManagerFactory.default();
   const connection = getConnection();
 
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
@@ -58,6 +58,7 @@ const setUpUseCase = () => {
   });
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
+    dispatchMany: jest.fn(),
   };
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({

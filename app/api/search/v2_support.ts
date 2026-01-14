@@ -8,7 +8,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 async function checkFeatureEnabled() {
   const db = getConnection();
 
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   return settingsDataSource.readNewRelationshipsAllowed();
@@ -45,7 +45,7 @@ async function createObsoleteMetadataResponseProcessor(
     return () => undefined;
   }
 
-  const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+  const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
 
   const obsoleteMetadataByEntity = await entitiesDataSource
     .getObsoleteMetadata(

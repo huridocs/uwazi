@@ -5,11 +5,9 @@ import {
   ModifiedDatePropertyInvalidNameError,
   ModifiedDatePropertyInvalidTypeError,
 } from './errors';
+import { PropertyType } from './PropertyType';
 
-type Props = { prioritySorting?: boolean; type?: PropertyTypes } & Omit<
-  CommonPropertyProps,
-  'type'
->;
+type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPropertyProps, 'type'>;
 
 class ModifiedDateProperty extends CommonProperty {
   prioritySorting: boolean;

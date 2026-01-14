@@ -3,6 +3,13 @@ const settings = {
   'index.number_of_replicas': 0,
   'index.number_of_shards': 1,
   analysis: {
+    normalizer: {
+      string_sorter_normalized: {
+        type: 'custom',
+        char_filter: [],
+        filter: ['lowercase', 'asciifolding'],
+      },
+    },
     char_filter: {
       remove_annotation: {
         type: 'pattern_replace',

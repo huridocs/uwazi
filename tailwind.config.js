@@ -2,6 +2,7 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
+  darkMode: 'class',
   content: [
     './app/react/**/*.{js,jsx,ts,tsx}',
     './app/react/stories/**/*.{js,jsx,ts,tsx}',
@@ -15,9 +16,7 @@ module.exports = {
         'ui-sans-serif',
         'system-ui',
         '-apple-system',
-        'system-ui',
         'Segoe UI',
-        'Roboto',
         'Helvetica Neue',
         'Arial',
         'Noto Sans',
@@ -32,9 +31,7 @@ module.exports = {
         'ui-sans-serif',
         'system-ui',
         '-apple-system',
-        'system-ui',
         'Segoe UI',
-        'Roboto',
         'Helvetica Neue',
         'Arial',
         'Noto Sans',
@@ -56,6 +53,7 @@ module.exports = {
       ],
     },
     colors: {
+      ...colors,
       primary: colors.indigo,
       success: colors.green,
       error: colors.pink,
@@ -65,19 +63,32 @@ module.exports = {
     extend: {
       colors: {
         blue: colors.indigo,
+        alert: {
+          50: 'var(--color-alert-50)',
+          100: 'var(--color-alert-100)',
+          200: 'var(--color-alert-200)',
+          300: 'var(--color-alert-300)',
+          400: 'var(--color-alert-400)',
+          500: 'var(--color-alert-500)',
+          600: 'var(--color-alert-600)',
+          700: 'var(--color-alert-700)',
+          800: 'var(--color-alert-800)',
+          900: 'var(--color-alert-900)',
+        },
       },
       minWidth: {
         56: '14rem',
       },
     },
   },
+  corePlugins: {
+    preflight: true,
+  },
   plugins: [
-    {
-      preflight: false,
-    },
     // eslint-disable-next-line global-require
     require('flowbite/plugin'),
     // eslint-disable-next-line global-require
     require('flowbite-typography'),
   ],
 };
+

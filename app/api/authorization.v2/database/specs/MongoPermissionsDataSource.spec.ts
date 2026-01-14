@@ -84,7 +84,7 @@ describe('MongoPermissionsDataSource', () => {
   ])(
     'should return the permissions for entities with the given sharedIds',
     async ({ sharedIds, expected }) => {
-      const dataSource = new MongoPermissionsDataSource(db!, DefaultTransactionManager());
+      const dataSource = new MongoPermissionsDataSource(db!, TransactionManagerFactory.default());
       const resultSet = dataSource.getByEntities(sharedIds);
       expect(resultSet).toBeInstanceOf(MongoResultSet);
       const result = await resultSet.all();

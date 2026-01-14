@@ -336,18 +336,17 @@ let service: DenormalizationService;
 let indexMock: jest.Mock;
 let updateMock: jest.Mock;
 let updateByTemplateMock: jest.Mock;
-
 let triggerCommit: () => Promise<unknown>;
 
 beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setUp(fixtures, true);
 
   indexMock = jest.fn();
   updateMock = jest.fn();
   updateByTemplateMock = jest.fn();
 
   db = getConnection();
-  const transactionManager = DefaultTransactionManager();
+  const transactionManager = TransactionManagerFactory.default();
   triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
