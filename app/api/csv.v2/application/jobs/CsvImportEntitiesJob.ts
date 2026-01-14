@@ -54,6 +54,33 @@ type ImportContext = {
   sanitizedHeaders: string[];
   headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
 };
+
+const buildEntityFromRow = (context: ImportContext, rowValues: string[]) => {
+  const { template, languages, thesaurusIndex, sanitizedHeaders, headerAnalysis, csvImport } =
+    context;
+
+  const assignments = CsvEntitiesImportMapper.buildPropertyAssignments({
+    template,
+    headerAnalysis,
+    sanitizedHeaders,
+    rowValues,
+    thesaurusIndex,
+    languages,
+  });
+
+  const entity = Entity.create({
+    languages,
+    template,
+    userId: csvImport.createdBy,
+  });
+
+  assignments.forEach((assignment: MappedAssignment) => {
+    entity.setPropertyAssignments([assignment.value], assignment.language, false);
+  });
+
+  return entity;
+};
+
 class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
   private async setStatus(importId: string, status: CsvImportStatus) {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
@@ -131,37 +158,8 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
     };
   }
 
-  private async processRow(params: {
-    context: ImportContext;
-    rowValues: string[];
-  }): Promise<Entity> {
-    const { context, rowValues } = params;
-    const { template, languages, thesaurusIndex, sanitizedHeaders, headerAnalysis, csvImport } =
-      context;
-
-      const assignments = CsvEntitiesImportMapper.buildPropertyAssignments({
-      template,
-      headerAnalysis,
-      sanitizedHeaders,
-      rowValues,
-      thesaurusIndex,
-      languages,
-    });
-
-    const entity = Entity.create({
-      languages,
-      template,
-      userId: csvImport.createdBy,
-    });
-    assignments.forEach((assignment: MappedAssignment) => {
-      entity.setPropertyAssignments([assignment.value], assignment.language, false);
-    });
-
-    return entity;
-  }
-
   private async processAndPersistRow(context: ImportContext, rowValues: string[]) {
-    const entity = await this.processRow({ context, rowValues });
+    const entity = buildEntityFromRow(context, rowValues);
     await this.deps.entitiesDS.create(entity);
   }
 
