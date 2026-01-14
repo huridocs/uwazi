@@ -1,13 +1,13 @@
 import { availableLanguages } from '#shared/language/index.js';
-import { typeParsers } from '../activitylog/migrationsParser.js';
-import templates from '../templates/templates.js';
+import { typeParsers } from '#api/activitylog/migrationsParser.js';
+import templates from '#api/templates/templates.js';
 import entities from '#api/entities/entities.js';
-import users from '../users/users.js';
-import userGroups from '../usergroups/userGroups.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
 import { files } from '#api/files/index.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
-import { Suggestions } from '../suggestions/suggestions.js';
-import { Extractors } from '../services/informationextraction/ixextractors.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
 const formatLanguage = langKey => {
   const lang = availableLanguages.find(({ key }) => key === langKey);
