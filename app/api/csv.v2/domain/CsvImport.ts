@@ -7,6 +7,8 @@ enum CsvImportStatus {
   PreflightThesauriDone = 'preflight:thesauri:done',
   PreflightThesauriCreate = 'preflight:thesauri:create',
   PreflightThesauriCreateDone = 'preflight:thesauri:create:done',
+  ImportEntities = 'import:entities',
+  ImportEntitiesDone = 'import:entities:done',
   Retrying = 'retrying',
   Processing = 'processing',
   Completed = 'completed',
@@ -47,6 +49,7 @@ type CsvImportStats = {
   thesaurusValuesObserved?: number;
   thesaurusValuesCreated?: number;
   thesauriTouched?: number;
+  entitiesCreated?: number;
 };
 
 type CsvImportFailure = {

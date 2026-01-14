@@ -33,6 +33,7 @@
 - `PendingThesauriValuesApplier` now builds a normalized thesaurus index and collects `appliedValues` for every pending label, covering both existing and newly appended roots/children (including standalone roots).
 - `CsvImportThesauriValues.shouldPersist` accepts the incoming `appliedValues` and persists even when no appends occur but new applied mappings are found.
 - Specs cover existing-only, new-only, and mixed existing + new (nested and standalone) cases.
+- `CsvImportStatus` now uses colon-based values that match the emitted socket events (`preflight:thesauri`, `preflight:thesauri:create`, etc.), so downstream jobs can reuse the same naming without extra mapping.
 
 **Plan (code targets):**
 
@@ -90,6 +91,6 @@
 
 1. ✅ DONE — `appliedValues` enrichment (existing + new IDs) and targeted tests; persistence occurs even when only existing IDs are added.
 2. TODO — Replace Legacy thesaurus/translation wrappers with the Thesaurus V2 data sources in `CsvCreateThesauriValuesJob` / `PendingThesauriValuesApplier`.
-3. Confirm status/event naming mapping so entities-import uses it consistently.
-4. Design and implement **Entities Import job** with relationships ignored.
+3. ✅ DONE — Status/event naming aligned: `CsvImportStatus` values are colon-based and match emitted `csvImport:*` events.
+4. ✅ DONE — Entities Import job implemented with V2 domains, ignoring relationships (statuses, progress/events, appliedValues lookup for select/multiselect, entities.v2 creation, stats update). ⚠️ Tests are not yet written for this stage.
 5. Later: build **relationships preflight** and then wire relationships into entities import.
