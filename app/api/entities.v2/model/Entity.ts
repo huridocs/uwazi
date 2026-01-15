@@ -67,7 +67,8 @@ export class Entity {
       inputModel.language,
       inputModel.title,
       inputModel.template,
-      inputModel.metadata as Metadata
+      inputModel.metadata as Metadata,
+      inputModel.icon as Icon
     );
   }
 
