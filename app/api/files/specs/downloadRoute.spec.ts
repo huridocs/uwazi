@@ -338,6 +338,8 @@ describe('files routes download', () => {
           expect(secondResponse).toHaveStatus(304);
           expect(secondResponse.body).toEqual({});
           expect(secondResponse.get('Last-Modified')).toBe(lastModified);
+          expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('short');
         }
       );
 
@@ -364,6 +366,8 @@ describe('files routes download', () => {
 
           expect(secondResponse).toHaveStatus(304);
           expect(secondResponse.body).toEqual({});
+          expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('short');
         }
       );
 
