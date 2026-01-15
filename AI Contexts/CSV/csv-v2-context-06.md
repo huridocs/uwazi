@@ -92,5 +92,9 @@
 1. ✅ DONE — `appliedValues` enrichment (existing + new IDs) and targeted tests; persistence occurs even when only existing IDs are added.
 2. TODO — Replace Legacy thesaurus/translation wrappers with the Thesaurus V2 data sources in `CsvCreateThesauriValuesJob` / `PendingThesauriValuesApplier`.
 3. ✅ DONE — Status/event naming aligned: `CsvImportStatus` values are colon-based and match emitted `csvImport:*` events.
-4. ✅ DONE — Entities Import job implemented with V2 domains, ignoring relationships (statuses, progress/events, appliedValues lookup for select/multiselect, entities.v2 creation, stats update). ⚠️ Tests are not yet written for this stage.
+4. ✅ DONE — Entities Import job implemented with V2 domains, ignoring relationships (statuses, progress/events, appliedValues lookup for select/multiselect, entities.v2 creation, stats update). ⚠️ Tests are not yet written for this stage. ⚠️ Open design follow-ups (agreed plan = Option A, inline batching):
+   - Paging/batching: process staged rows in bounded pages (configurable `batchSize`, e.g. 1k) instead of loading all rows. Persist progress (`lastProcessedRow` / `processedRows`) on the import; emit per-batch progress + heartbeat.
+   - Idempotency: upsert entities by deterministic key (`importId + rowIndex`) so retries/batch replays do not duplicate rows; resume from checkpoint on retry.
+   - Error reporting: continue processing; accumulate failed rows (row index + reason); emit/record summary at end and produce a downloadable CSV containing only failed rows. Keep job success/failure semantics: non-retriable policy errors still fail the job, but row-level parse/validation errors should collect and report without stopping the batch.
+   - Horizontal scale: deferred. Option B (chunk jobs) acknowledged but not chosen now to avoid race/aggregation complexity; stick to single-job paged processing for MVP.
 5. Later: build **relationships preflight** and then wire relationships into entities import.
