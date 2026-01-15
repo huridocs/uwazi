@@ -107,13 +107,23 @@ export class UpsertTranslationsService {
     );
 
     if (missingKeysInDB.length) {
+      const keysChangedForward = Object.entries(keysChangedReversed).reduce<{
+        [oldKey: string]: string;
+      }>((keys, [newKey, oldKey]) => {
+        // eslint-disable-next-line no-param-reassign
+        keys[oldKey] = newKey;
+        return keys;
+      }, {});
+
       await this.translationsDS.insert(
         (await this.settingsDS.getLanguageKeys()).reduce<Translation[]>(
           (memo, languageKey) =>
             memo.concat(
-              missingKeysInDB.map(
-                key => new Translation(key, valueChanges[key], languageKey, context)
-              )
+              missingKeysInDB.map(key => {
+                const newKey = keysChangedForward[key];
+                const value = newKey ? valueChanges[newKey] : valueChanges[key];
+                return new Translation(key, value, languageKey, context);
+              })
             ),
           []
         )
