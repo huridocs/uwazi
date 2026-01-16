@@ -1,16 +1,20 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/core/libs/UseCase';
-import { EntitySchema } from 'shared/types/entityType';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { EntitiesService } from 'api/core/application/EntitiesService';
+import { PropertyAssignmentInput } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import entities from 'api/entities';
+import { UseCase } from 'api/core/libs/UseCase';
 import relationshipsDS from 'api/relationships';
+import { tenants } from 'api/tenants/tenantContext';
+import { EntitySchema } from 'shared/types/entityType';
 
-import { PXExtractor } from '../domain/PXExtractor';
-import { ParagraphOutput } from '../domain/PXExtractionService';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
+import { ParagraphOutput } from '../domain/PXExtractionService';
+import { PXExtractor } from '../domain/PXExtractor';
 
 type PXCreateParagraphInput = {
   sourceEntities: EntitySchema[];
@@ -20,8 +24,6 @@ type PXCreateParagraphInput = {
   entityStatus: PXEntityStatusModel;
 };
 
-type LegacyEntitiesDS = typeof entities;
-
 type LegacyRelationshipsDS = typeof relationshipsDS;
 
 type Output = any;
@@ -29,15 +31,17 @@ type Output = any;
 type Dependencies = {
   logger: Logger;
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  entitiesDS?: LegacyEntitiesDS;
   relationshipsDS: LegacyRelationshipsDS;
+  entitiesService: EntitiesService;
+  propertyAssignmentStrategy: PropertyAssignmentCreatorServiceStrategy;
+  transactionManager: TransactionManager;
 };
 
 class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
-  private dependencies: Required<Dependencies>;
+  private dependencies: Dependencies;
 
   constructor(dependencies: Dependencies) {
-    this.dependencies = { ...dependencies, entitiesDS: dependencies?.entitiesDS ?? entities };
+    this.dependencies = dependencies;
   }
 
   async execute({
@@ -48,10 +52,48 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
   }: PXCreateParagraphInput): Promise<Output> {
     const [mainParagraph, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
 
-    const mainParagraphCreated = await this.dependencies.entitiesDS.save(mainParagraph, {
-      language: mainParagraph.language,
-      user,
+    const entity = await this.dependencies.entitiesService.create({
+      templateId: extractor.targetTemplate.id,
+      userId: user._id.toString(),
     });
+
+    const validParagraphs = [mainParagraph, ...paragraphs].filter(p =>
+      entity.languages.includes(p.language as any)
+    );
+
+    await ArrayUtils.sequentialFor(validParagraphs, async paragraphData => {
+      const propertyAssignments: PropertyAssignmentInput[] = [
+        { name: 'title', value: [{ value: paragraphData.title! }] },
+      ];
+
+      if (paragraphData.metadata) {
+        Object.entries(paragraphData.metadata).forEach(([name, value]) => {
+          if (value) {
+            propertyAssignments.push({ name, value: value as any });
+          }
+        });
+      }
+
+      const processedAssignments = await this.dependencies.propertyAssignmentStrategy.bulkCreate(
+        propertyAssignments,
+        entity.template,
+        []
+      );
+
+      entity.setPropertyAssignments(processedAssignments, paragraphData.language as any, true);
+    });
+
+    await this.dependencies.transactionManager.run(async () => {
+      await this.dependencies.entitiesService.insert(entity, {
+        tenantName: tenants.current().name,
+        actorId: user._id.toString(),
+      });
+    });
+
+    const mainParagraphCreated: EntitySchema = {
+      ...mainParagraph,
+      sharedId: entity.sharedId,
+    };
 
     await this.dependencies.relationshipsDS.save(
       [
@@ -67,39 +109,6 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       mainParagraphCreated.language
     );
 
-    await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
-      const existingTranslation = await this.dependencies.entitiesDS.getById(
-        mainParagraphCreated.sharedId,
-        paragraphTranslation.language
-      );
-
-      if (
-        existingTranslation?.title === paragraphTranslation.title &&
-        existingTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value ===
-          paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value
-      ) {
-        return;
-      }
-
-      await this.dependencies.entitiesDS.save(
-        {
-          ...existingTranslation,
-          title: paragraphTranslation.title,
-          metadata: {
-            ...existingTranslation?.metadata,
-            [extractor.paragraphProperty.name]:
-              paragraphTranslation.metadata![extractor.paragraphProperty.name],
-            [extractor.paragraphNumberProperty.name]:
-              paragraphTranslation.metadata![extractor.paragraphNumberProperty.name],
-          },
-        },
-        {
-          language: paragraphTranslation.language,
-          user,
-        }
-      );
-    });
-
     this.dependencies.logger.info(
       `[PX] - Paragraph Created - ${JSON.stringify({
         entitySharedId: mainParagraphCreated.sharedId,
@@ -111,4 +120,4 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
 
 export { PXCreateParagraph };
 
-export type { PXCreateParagraphInput, LegacyEntitiesDS };
+export type { PXCreateParagraphInput };
