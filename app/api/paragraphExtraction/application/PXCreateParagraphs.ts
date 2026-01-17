@@ -1,17 +1,20 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/core/libs/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import entities from 'api/entities';
+import { EntitiesService } from 'api/core/application/EntitiesService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { UseCase } from 'api/core/libs/UseCase';
+import entities from 'api/entities';
 import relationshipsDS from 'api/relationships';
 
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXCreateParagraph } from './PXCreateParagraph';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 type PXCreateParagraphsInput = {
   userId: string;
@@ -25,6 +28,9 @@ type Output = any;
 type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
   entitiesStatusDS: PXEntitiesStatusDataSource;
+  entitiesService: EntitiesService;
+  propertyAssignmentStrategy: PropertyAssignmentCreatorServiceStrategy;
+  transactionManager: TransactionManager;
 };
 
 export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
@@ -35,6 +41,9 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       logger: LoggerFactory.default(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
       relationshipsDS,
+      entitiesService: this.dependencies.entitiesService,
+      propertyAssignmentStrategy: this.dependencies.propertyAssignmentStrategy,
+      transactionManager: this.dependencies.transactionManager,
     });
   }
 
