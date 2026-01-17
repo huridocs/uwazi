@@ -11,7 +11,7 @@ import { toUrlParams } from '#shared/JSONRequest.js';
 import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { leaveEditMode } from '#app/Viewer/actions/documentActions.js';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
 import { scrollToPage, activateReference } from './actions/uiActions.js';
 import { requestViewerState } from './actions/routeActions.js';
 

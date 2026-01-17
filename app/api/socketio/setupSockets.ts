@@ -7,10 +7,11 @@ import * as cookie from 'cookie';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import session, { type SessionData, type Store as SessionStore } from 'express-session';
-import { DB } from 'api/odm';
+import MongoStore from 'connect-mongo';
+import { DB } from '#api/odm/index.js';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
-import users from 'api/users/users';
+import users from '#api/users/users.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {

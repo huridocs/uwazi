@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 import { Field, Control } from 'react-redux-form';
 import { t } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { MultiSelect } from './MultiSelect';
-import { store } from '#app/store.js';
+import { store } from '#app/store.ts';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {

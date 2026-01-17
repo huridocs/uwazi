@@ -4,7 +4,7 @@ import { UseCase } from '../common.v2/contracts/UseCase.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 

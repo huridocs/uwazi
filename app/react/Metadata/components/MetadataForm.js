@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';

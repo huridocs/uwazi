@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
 
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import * as activityLogAPI from '#app/V2/api/activityLog/index.js';

@@ -5,7 +5,7 @@ import { Modal, Button } from '#app/V2/Components/UI/index.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { save as saveThesauri } from '#app/thesauri/index.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, thesauriAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, thesauriAtom } from '#app/V2/atoms/index.ts';
 
 import { sanitizeThesaurusName } from '#shared/sanitizationUtils.js';
 

@@ -6,7 +6,7 @@ import { FileType } from '../files.v2/model/FileType.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 

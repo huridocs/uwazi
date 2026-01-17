@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { IStore } from '#app/istore';
 import { ensure } from '#shared/tsUtils';
 import { Pill } from './Pill';
-import * as actions from '#app/Relationships/actions/actions';
+import * as actions from '#app/Relationships/actions/actions.js';
 
 interface GeolocationMarker {
   lat: string;

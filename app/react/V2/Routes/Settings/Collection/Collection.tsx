@@ -11,13 +11,13 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as SettingsAPI from '#app/V2/api/settings/index.js';
 import * as TemplatesAPI from '#app/V2/api/templates/index.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 
 import { InputField, Select, MultiSelect, Geolocation } from '#app/V2/Components/Forms/index.js';
 
 import { Button, Card } from '#app/V2/Components/UI/index.js';
 
-import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
+import { settingsAtom } from '#app/V2/atoms/settingsAtom.ts';
 
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 

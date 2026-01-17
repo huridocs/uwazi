@@ -18,7 +18,7 @@ import * as suggestionsAPI from '#app/V2/api/ix/suggestions.js';
 import * as templatesAPI from '#app/V2/api/templates/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '#app/V2/Components/UI/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 
 import { Translate } from '#app/I18N/index.js';
 

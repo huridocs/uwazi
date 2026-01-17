@@ -10,7 +10,7 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { SelectionRectanglesSchema } from '#shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 import { IStore } from '#app/istore.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 type OwnPropTypes = {
   fieldName: string;

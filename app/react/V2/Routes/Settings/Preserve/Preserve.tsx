@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { useAtomValue } from 'jotai';
-import { settingsAtom, userAtom } from '#app/V2/atoms/index.js';
+import { settingsAtom, userAtom } from '#app/V2/atoms/index.ts';
 
 import { Button, Card, CopyValueInput } from '#app/V2/Components/UI/index.js';
 

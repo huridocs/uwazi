@@ -1,4 +1,4 @@
-import { Context } from '#api/templates.v2/model/Property.js';
+import { Context } from '#api/core/domain/template/Property.js';
 import { FieldIsRequiredError, PropertyThesaurusMismatchError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 

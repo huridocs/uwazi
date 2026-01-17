@@ -16,13 +16,13 @@ import { processFilters, encodeSearch } from '#app/Library/actions/libraryAction
 import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
 
 import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
-import { Icon } from '#app/UI/index.js';
+import { libraryViewInfo } from '#app/App/libraryViewInfo.ts';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {

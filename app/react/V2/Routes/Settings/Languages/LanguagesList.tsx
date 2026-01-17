@@ -10,7 +10,7 @@ import { Translate, I18NApi, t } from '#app/I18N/index.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { settingsAtom } from '#app/V2/atoms/settingsAtom.js';
+import { settingsAtom } from '#app/V2/atoms/settingsAtom.ts';
 import { Button, Table, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { useApiCaller } from '#app/V2/CustomHooks/useApiCaller.js';
 

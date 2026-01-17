@@ -1,6 +1,6 @@
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 
-import { JobsDispatcher } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ObjectId } from 'mongodb';
 
 import ixmodels from '#api/services/informationextraction/ixmodels.js';

@@ -29,7 +29,7 @@ import {
 import { CodeEditor } from '#app/V2/Components/CodeEditor/index.js';
 
 import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable.js';

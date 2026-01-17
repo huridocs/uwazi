@@ -17,7 +17,7 @@ import {
   Textarea,
 } from '#app/V2/Components/Forms/index.js';
 import { Button } from '#app/V2/Components/UI/index.js';
-import { thesauriAtom } from '#app/V2/atoms/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.ts';
 import { selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
 import { SuggestionValue, TableSuggestion } from '../types.js';
 import { MultiselectItemLabel } from './MultiselectItemLabel.js';

@@ -11,7 +11,7 @@ import { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';

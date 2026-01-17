@@ -2,9 +2,9 @@ import { TransactionManager } from '../common.v2/contracts/TransactionManager.js
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
 

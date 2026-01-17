@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,

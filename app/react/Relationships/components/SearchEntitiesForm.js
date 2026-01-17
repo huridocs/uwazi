@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import SearchInput from '#app/Layout/SearchInput.js';
 
-import { search } from '../actions/actions';
+import { search } from '../actions/actions.js';
 
 export class SearchEntitiesForm extends Component {
   constructor(props) {

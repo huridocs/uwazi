@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useResetAtom } from 'jotai/utils';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { Notification } from './Notification.js';
 
 const NotificationsContainer = () => {

@@ -1,5 +1,5 @@
-import { IdGenerator } from '#api/common.v2/contracts/IdGenerator.js';
-import { TransactionManager } from '#api/common.v2/contracts/TransactionManager.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { AbstractUseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
@@ -7,10 +7,10 @@ import { applicationEventsBus } from '#api/eventsbus/index.js';
 import { permissionsContext } from '../../permissions/permissionsContext.js';
 import { JobsDispatcher } from '../../queue.v2/application/contracts/JobsDispatcher.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
-import { Template } from '#api/templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { TemplateUpdatedEvent } from '../../templates/events/TemplateUpdatedEvent.js';
 import { tenants } from '#api/tenants/index.js';
 

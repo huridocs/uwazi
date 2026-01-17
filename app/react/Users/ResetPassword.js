@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import RouteHandler from '#app/App/RouteHandler.js';
 import qs from 'qs';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 

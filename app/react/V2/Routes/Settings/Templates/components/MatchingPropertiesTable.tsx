@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '#app/V2/atoms/index.ts';
 import { Table } from '#app/V2/Components/UI/index.js';
 import { propertyIconsSmall } from '#app/V2/Components/UI/Icons.js';
 

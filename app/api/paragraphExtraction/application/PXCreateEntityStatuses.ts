@@ -1,4 +1,4 @@
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 

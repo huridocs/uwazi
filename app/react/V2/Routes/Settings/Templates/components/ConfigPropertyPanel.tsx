@@ -9,7 +9,7 @@ import { Button } from '#app/V2/Components/UI/Button.js';
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import {
   PropertyTypeField,
   LabelField,

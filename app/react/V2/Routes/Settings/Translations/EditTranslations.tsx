@@ -28,7 +28,7 @@ import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 import * as translationsAPI from '#app/V2/api/translations/index.js';
 import * as settingsAPI from '#app/V2/api/settings/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 
 import { availableLanguages } from '#shared/language/index.js';
 

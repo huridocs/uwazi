@@ -5,7 +5,7 @@ import { useRevalidator } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 import { TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import * as entitiesAPI from '#app/V2/api/paragraphExtractor/entities.js';
 
 const DeleteDialog = ({

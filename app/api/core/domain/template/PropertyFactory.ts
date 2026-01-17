@@ -1,8 +1,8 @@
-import { Context, Property } from '#api/templates.v2/model/Property.js';
+import { Context, Property } from '#api/core/domain/template/Property.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from '#api/templates.v2/model/V1RelationshipProperty.js';
+} from '#api/core/domain/template/V1RelationshipProperty.js';
 import { TextProperty, TextPropertyProps } from './TextProperty';
 import { NumericProperty, NumericPropertyProps } from './NumericProperty';
 import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty';

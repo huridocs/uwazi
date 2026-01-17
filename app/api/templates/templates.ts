@@ -20,7 +20,7 @@ import { ensure } from '#shared/tsUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { validateTemplate } from '#shared/types/templateSchema.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { tenants } from '#api/tenants/index.js';
 import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
 import {
@@ -41,7 +41,7 @@ import {
 import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
-import { JobsDispatcher } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';

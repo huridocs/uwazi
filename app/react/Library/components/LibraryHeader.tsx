@@ -6,7 +6,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { SortDropdown } from '#app/Library/components/SortDropdown.js';

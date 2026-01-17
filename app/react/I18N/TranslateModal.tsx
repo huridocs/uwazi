@@ -9,7 +9,7 @@ import {
   translationsAtom,
   inlineEditAtom,
   notificationAtom,
-} from '#app/V2/atoms/index.js';
+} from '#app/V2/atoms/index.ts';
 
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { Button } from '#app/V2/Components/UI/Button.js';

@@ -7,7 +7,7 @@ import RouteHandler from '#app/App/RouteHandler.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { trackPage } from '#app/App/GoogleAnalytics.tsx';
 import { ErrorBoundary } from '#app/V2/Components/ErrorHandling/ErrorBoundary.js';
 import { PageViewer } from './components/PageViewer.js';
 import { getPageAssets } from './utils/getPageAssets.js';

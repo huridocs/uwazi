@@ -13,7 +13,7 @@ import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
 
 import { ThesauriTable } from './components/ThesauriTable';
 import type { ThesauriRow } from './components/ThesauriTable';
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 
 const thesauriLoader =

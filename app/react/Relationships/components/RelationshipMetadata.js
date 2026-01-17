@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from '#app/Metadata/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
@@ -22,7 +22,7 @@ import {
   addEntity,
   setAddToData,
   reloadRelationships,
-} from '../actions/actions';
+} from '../actions/actions.js';
 
 class RelationshipMetadata extends Component {
   constructor(props) {

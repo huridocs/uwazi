@@ -8,7 +8,7 @@ import { ClientTemplateSchema } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
 import { secondsToDate } from '#app/V2/shared/dateHelpers.js';
 import { Truncate } from '#app/V2/Components/UI/index.js';
-import { thesauriAtom } from '#app/V2/atoms/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.ts';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
 import { EntitySuggestion } from '../types.js';

@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { reconnectSocket } from '#app/socket.js';
 import RouteHandler from '#app/App/RouteHandler.js';

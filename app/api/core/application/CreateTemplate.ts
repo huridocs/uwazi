@@ -1,10 +1,10 @@
 import { AbstractUseCase } from '#api/common.v2/contracts/UseCase.js';
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
-import { Template } from '#api/templates.v2/model/Template.js';
-import { IdGenerator } from '#api/common.v2/contracts/IdGenerator.js';
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { TransactionManager } from '#api/common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';

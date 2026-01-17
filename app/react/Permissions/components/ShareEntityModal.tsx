@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import Modal from '#app/Layout/Modal.js';
 import React, { useState, useEffect } from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';

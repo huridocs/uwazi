@@ -12,7 +12,7 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import { getFileNameAndExtension } from '#shared/formatHelpers.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { update } from '#app/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 

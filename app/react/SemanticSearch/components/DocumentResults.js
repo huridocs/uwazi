@@ -10,7 +10,7 @@ import SnippetList from '#app/Documents/components/SnippetList.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
-import { Icon } from '#app/Layout/Icon.js';
+import { Icon } from '#app/Layout/Icon.jsx';
 import { TemplateLabel, DocumentLanguage } from '#app/Layout/index.js';
 
 const findResultsAboveThreshold = (results, threshold) => {

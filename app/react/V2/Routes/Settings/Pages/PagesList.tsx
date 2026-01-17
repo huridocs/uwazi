@@ -14,7 +14,7 @@ import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 
 import { Page } from '#app/istore.js';
 
-import { notificationAtom, notificationAtomType } from '#app/V2/atoms/index.js';
+import { notificationAtom, notificationAtomType } from '#app/V2/atoms/index.ts';
 
 import {
   EntityViewHeader,

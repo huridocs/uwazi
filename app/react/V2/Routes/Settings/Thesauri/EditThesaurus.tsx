@@ -12,7 +12,7 @@ import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {

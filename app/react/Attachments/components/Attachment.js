@@ -3,16 +3,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { withContext } from '#app/componentWrappers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 import { Translate, t } from '#app/I18N/index.js';
 import AttachmentForm from '#app/Attachments/components/AttachmentForm.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
-import { store } from '#app/store.js';
-import { getFileExtension } from '#app/utils/getFileExtension.js';
+import { store } from '#app/store.ts';
+import { getFileExtension } from '#app/utils/getFileExtension.ts';
 
 import {
   deleteAttachment,
@@ -20,7 +20,7 @@ import {
   loadForm,
   submitForm,
   resetForm,
-} from '../actions/actions';
+} from '../actions/actions.js';
 
 const getItemOptions = (filename, url) => {
   const options = {};

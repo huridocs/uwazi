@@ -5,7 +5,7 @@ import {
   UserAwareDispatchableParams,
 } from '../../../queue.v2/application/contracts/UserAwareDispatchable.js';
 import { emitToTenant } from '../../../socketio/setupSockets.js';
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 type Params = UserAwareDispatchableParams & {
   entitiesIds: string[];

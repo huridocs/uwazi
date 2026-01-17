@@ -17,7 +17,7 @@ import {
   Dispatchable,
   HeartbeatCallback,
 } from '#api/queue.v2/application/contracts/Dispatchable.js';
-import { DispatchableClass } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { IXTaskService } from '#api/services/informationextraction/TaskService.js';

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
@@ -15,7 +15,7 @@ import {
 } from '#app/Uploads/actions/uploadsActions.js';
 import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
 import { ClientEntitySchema } from '#app/istore.js';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import { ClientTemplateSchema } from '#app/V2/shared/types.js';
 
 const extractTitle = (file: File) => {

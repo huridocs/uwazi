@@ -6,7 +6,7 @@ import type {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from '#shared/ParagraphExtractionTypes.js';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import { ParagraphsTable } from './components/paragraphs/Table.js';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel.js';
 import { PDFSidepanel } from './components/paragraphs/PDFSidepanel.js';

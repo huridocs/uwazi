@@ -7,11 +7,11 @@ import Immuable from 'immutable';
 import SidePanel from '#app/Layout/SidePanel.js';
 import SearchResults from '#app/Connections/components/SearchResults.js';
 import { loadInReduxForm } from '#app/Metadata/actions/actions.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { closePanel } from '../actions/uiActions';
 import SearchForm from './SearchEntitiesForm';
-import * as actions from '../actions/actions';
+import * as actions from '../actions/actions.js';
 
 class AddEntities extends Component {
   constructor(props) {

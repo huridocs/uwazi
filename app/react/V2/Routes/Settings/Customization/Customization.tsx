@@ -16,7 +16,7 @@ import { Button, Tabs } from '#app/V2/Components/UI/index.js';
 import { CodeEditor } from '#app/V2/Components/CodeEditor.js';
 import { ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =

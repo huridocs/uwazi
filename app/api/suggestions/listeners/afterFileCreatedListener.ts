@@ -4,7 +4,7 @@ import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { inspect } from 'util';
 
 import { Logger } from '#api/log.v2/contracts/Logger.js';

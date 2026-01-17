@@ -5,8 +5,8 @@ import { bindActionCreators } from 'redux';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
-import ShowIf from '#app/App/ShowIf.js';
-import { Icon } from '#app/UI/index.js';
+import ShowIf from '#app/App/ShowIf.jsx';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { addToToc } from '../actions/documentActions';

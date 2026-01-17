@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
 import { Link } from 'react-router';
 import rison from '@huridocs/rison';
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 import { withRouter } from '#app/componentWrappers.js';
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
 import { t, Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
 

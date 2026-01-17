@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from '#app/V2/atoms/index.js';
+import { globalMatomoAtom, settingsAtom } from '#app/V2/atoms/index.ts';
 
 import { isClient } from '#app/utils/index.js';
 

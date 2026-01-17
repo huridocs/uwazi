@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from 'shared/types/fileType';
 import { AdapterEntity, ProcessingContext } from './types';
 

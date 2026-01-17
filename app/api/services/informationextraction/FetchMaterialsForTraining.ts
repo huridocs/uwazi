@@ -9,7 +9,7 @@ import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationMode
 import { ensure } from 'shared/tsUtils';
 import { ObjectId } from 'mongodb';
 import { EntitySchema } from 'shared/types/entityType';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '#shared/language/index.js';
 import {
   getEntitiesForTraining,
   getFilesForTraining,

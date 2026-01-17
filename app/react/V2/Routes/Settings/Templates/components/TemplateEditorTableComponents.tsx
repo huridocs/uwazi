@@ -10,7 +10,7 @@ import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
 import { Pill } from '#app/V2/Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
-import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.ts';
 import { translationsKeys } from '../helpers.js';
 
 type PropertyRow = PropertySchema & {

@@ -21,7 +21,7 @@ import {
   VerticalDrawer,
 } from '#app/V2/Components/UI/index.js';
 import { PDF, selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
-import { notificationAtom, pdfScaleAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, pdfScaleAtom } from '#app/V2/atoms/index.ts';
 import { secondsToISODate } from '#app/V2/shared/dateHelpers.js';
 import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 import { TableSuggestion } from '../types.js';

@@ -27,7 +27,7 @@ import {
   ITEMS_PER_PAGE,
   buildPageURL,
 } from './ActivityLogLoader';
-import { settingsAtom } from '#app/V2/atoms/index.js';
+import { settingsAtom } from '#app/V2/atoms/index.ts';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

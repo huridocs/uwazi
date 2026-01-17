@@ -18,6 +18,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "#api/*": ["./app/api/*"],
       "#app/*": ["./app/react/*"],

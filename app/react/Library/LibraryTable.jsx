@@ -5,7 +5,7 @@ import LibraryLayout from '#app/Library/LibraryLayout.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 import { requestState } from '#app/Library/helpers/requestState.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { trackPage } from '#app/App/GoogleAnalytics.tsx';
 
 class LibraryTableComponent extends LibraryRootComponent {
   static async requestState(requestParams, globalResources) {

@@ -4,7 +4,7 @@ import { Select } from '#app/V2/Components/Forms/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { settingsAtom } from '#app/V2/atoms/index.js';
+import { settingsAtom } from '#app/V2/atoms/index.ts';
 
 interface PropertyTypeFieldProps {
   control: any;

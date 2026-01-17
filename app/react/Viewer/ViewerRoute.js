@@ -6,7 +6,7 @@ import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
-import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { trackPage } from '#app/App/GoogleAnalytics.tsx';
 import { ErrorBoundary } from '#app/V2/Components/ErrorHandling/ErrorBoundary.js';
 import { PDFViewComponent } from './PDFView';
 import EntityView from './EntityView';

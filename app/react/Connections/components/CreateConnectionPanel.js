@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import SidePanel from '#app/Layout/SidePanel.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { closePanel } from '../actions/uiActions';
-import { setRelationType, setTargetDocument } from '../actions/actions';
+import { setRelationType, setTargetDocument } from '../actions/actions.js';
 import ActionButton from './ActionButton';
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';

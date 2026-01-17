@@ -1,6 +1,6 @@
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { Logger } from '#api/log.v2/contracts/Logger.js';
 

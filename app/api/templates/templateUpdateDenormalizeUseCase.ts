@@ -9,8 +9,8 @@ import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
 import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
-import { Template } from '#api/templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { tenants } from '../tenants/index.js';
 
 export const denormalizeTemplateEntities = async (

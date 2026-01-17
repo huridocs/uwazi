@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 import Modal from '#app/Layout/Modal.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { saveRelationType } from '../actions/relationTypeActions';
 
 type FormInputs = {

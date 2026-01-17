@@ -3,7 +3,7 @@ import { Db, MongoServerError, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 

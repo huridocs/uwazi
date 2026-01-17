@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TableViewColumn } from '#app/istore.js';

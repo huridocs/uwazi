@@ -1,4 +1,4 @@
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import React, { ReactElement, useEffect, useState } from 'react';
 
 interface CollapsibleProps {

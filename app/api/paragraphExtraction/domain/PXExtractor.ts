@@ -2,11 +2,11 @@ import { ObjectId } from 'mongodb';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
-import { Template } from '#api/templates.v2/model/Template.js';
+import { Template } from '#api/core/domain/template/Template.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { Property } from '#api/templates.v2/model/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 

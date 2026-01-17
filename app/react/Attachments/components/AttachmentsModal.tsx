@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {

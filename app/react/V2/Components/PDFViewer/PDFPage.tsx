@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
-import { pdfScaleAtom } from '#app/V2/atoms/index.js';
+import { pdfScaleAtom } from '#app/V2/atoms/index.ts';
 import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
 import { TextHighlight } from './types.js';
 import { calculateScaling } from './functions/calculateScaling.js';

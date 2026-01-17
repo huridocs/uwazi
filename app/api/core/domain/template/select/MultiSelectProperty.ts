@@ -1,4 +1,4 @@
-import { Context } from '#api/templates.v2/model/Property.js';
+import { Context } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty';
 import { PropertyTypeEnum } from '../PropertyType';

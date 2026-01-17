@@ -3,7 +3,7 @@ import {
   PropertyTypes,
   PropertyProps,
   Context,
-} from '#api/templates.v2/model/Property.js';
+} from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { PropertyTypeEnum } from './PropertyType';
 import { LinkEntry, PropertyAssignment } from './PropertyValue';

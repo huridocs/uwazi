@@ -5,7 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 import { OptionSchema, Select } from '#app/V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
 
-import { relationshipTypesAtom, templatesAtom } from '#app/V2/atoms/index.js';
+import { relationshipTypesAtom, templatesAtom } from '#app/V2/atoms/index.ts';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { useCreateExtractorContext } from '#app/V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext';
 

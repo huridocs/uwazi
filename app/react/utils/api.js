@@ -1,7 +1,7 @@
 import { redirect } from 'react-router';
 import { isClient } from '#app/utils/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
-import { store } from '#app/store.js';
+import { store } from '#app/store.ts';
 import loadingBar from '#app/App/LoadingProgressBar.js';
 import { t } from '#app/I18N/index.js';
 

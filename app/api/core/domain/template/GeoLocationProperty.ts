@@ -3,7 +3,7 @@ import {
   Property,
   PropertyProps,
   PropertyTypes,
-} from '#api/templates.v2/model/Property.js';
+} from '#api/core/domain/template/Property.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertyName } from './PropertyName';

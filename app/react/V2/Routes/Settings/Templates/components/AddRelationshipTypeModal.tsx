@@ -5,7 +5,7 @@ import { Modal, Button } from '#app/V2/Components/UI/index.js';
 import { InputField } from '#app/V2/Components/Forms/index.js';
 import * as relationshipTypesAPI from '#app/V2/api/relationshiptypes/index.js';
 import { useSetAtom, useAtom } from 'jotai';
-import { notificationAtom, relationshipTypesAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, relationshipTypesAtom } from '#app/V2/atoms/index.ts';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;

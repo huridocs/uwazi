@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import { useAtomValue } from 'jotai';
 
 import { MultiselectListOption } from '#app/V2/Components/Forms/index.js';

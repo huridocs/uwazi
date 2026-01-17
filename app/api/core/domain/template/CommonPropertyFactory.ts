@@ -1,6 +1,6 @@
 import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
 
-import { Context } from '#api/templates.v2/model/Property.js';
+import { Context } from '#api/core/domain/template/Property.js';
 
 import { SystemLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 import { TitleProperty, TitlePropertyProps } from './TitleProperty';

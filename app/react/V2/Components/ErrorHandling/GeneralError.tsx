@@ -5,7 +5,7 @@ import { has } from 'lodash';
 
 import Footer from '#app/App/Footer.js';
 
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
 
 import { t } from '#app/I18N/index.js';
 import { handledErrors } from '#shared/errorUtils.js';

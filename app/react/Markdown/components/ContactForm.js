@@ -4,7 +4,7 @@ import { actions, Field } from 'react-redux-form';
 import { FormGroup } from '#app/ReactReduxForms/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import api from '#app/utils/api.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';

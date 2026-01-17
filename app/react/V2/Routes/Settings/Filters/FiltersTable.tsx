@@ -9,7 +9,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { notificationAtom, settingsAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom, settingsAtom } from '#app/V2/atoms/index.ts';
 import * as settingsAPI from '#app/V2/api/settings/index.js';
 import * as templatesAPI from '#app/V2/api/templates/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';

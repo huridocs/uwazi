@@ -1,8 +1,8 @@
 import { inspect } from 'util';
 
-import { TemplateProperty } from '#api/templates.v2/model/Template.js';
+import { TemplateProperty } from '#api/core/domain/template/Template.js';
 
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 

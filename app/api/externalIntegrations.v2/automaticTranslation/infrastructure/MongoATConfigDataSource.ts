@@ -2,13 +2,13 @@ import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
 
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
 
-import { Property } from '#api/templates.v2/model/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
 import { Db } from 'mongodb';
 
 import { Settings as SettingsType } from '#shared/types/settingsType.js';

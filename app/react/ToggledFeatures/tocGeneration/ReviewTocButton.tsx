@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';

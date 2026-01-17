@@ -7,7 +7,7 @@ import { GeolocationSchema } from '#shared/types/commonTypes.js';
 import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { deletedEntityAtom } from '#app/V2/atoms/index.js';
+import { deletedEntityAtom } from '#app/V2/atoms/index.ts';
 import {
   DataMarker,
   getClusterMarker,

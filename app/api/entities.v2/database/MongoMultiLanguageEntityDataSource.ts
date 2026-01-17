@@ -2,9 +2,9 @@ import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDa
 import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
-import { TemplateProperty } from '#api/templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { TemplateProperty } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';

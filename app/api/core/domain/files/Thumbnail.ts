@@ -2,7 +2,7 @@ import {
   ThumbnailDBO,
   ThumbnailDTO,
 } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
 import { FileContents } from './FileContents';

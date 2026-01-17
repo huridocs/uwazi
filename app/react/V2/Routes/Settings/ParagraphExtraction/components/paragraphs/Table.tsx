@@ -10,7 +10,7 @@ import {
 } from '#shared/ParagraphExtractionTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { templatesAtom } from '#app/V2/atoms/index.js';
+import { templatesAtom } from '#app/V2/atoms/index.ts';
 import { TableTitle } from '../TableTitle.js';
 import { PXTableFooter } from '../PXTableFooter.js';
 import { tableBuilder } from './TableElements/index.js';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { atomStore, translationsAtom, localeAtom } from '#app/V2/atoms/index.js';
+import { atomStore, translationsAtom, localeAtom } from '#app/V2/atoms/index.ts';
 import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
 import { Translate } from './Translate.js';
 

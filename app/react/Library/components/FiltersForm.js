@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable, { is, fromJS } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { debounce } from '#app/utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';

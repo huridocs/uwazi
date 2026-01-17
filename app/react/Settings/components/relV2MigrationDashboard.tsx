@@ -14,7 +14,7 @@ import {
   deleteRelationshipMigrationField,
 } from '#app/Entities/actions/V2NewRelationshipsActions.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {

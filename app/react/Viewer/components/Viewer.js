@@ -16,7 +16,7 @@ import ContextMenu from '#app/ContextMenu/index.js';
 import Footer from '#app/App/Footer.js';
 import Marker from '#app/Viewer/utils/Marker.js';
 import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.js';

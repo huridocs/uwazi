@@ -17,7 +17,7 @@ import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 import { validImageFile, validMediaFile } from '../helpers/validator';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { ClientFile, IStore } from '#app/istore.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 enum MediaModalType {
   Image,

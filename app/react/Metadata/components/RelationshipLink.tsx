@@ -5,7 +5,7 @@ import { I18NLink } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 
 import { Icon } from '#app/Layout/index.js';
-import * as actions from '#app/Relationships/actions/actions';
+import * as actions from '#app/Relationships/actions/actions.js';
 
 interface RelationshipLinkProps {
   propValue: any;

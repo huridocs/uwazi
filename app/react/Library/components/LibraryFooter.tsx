@@ -2,7 +2,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {

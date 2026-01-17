@@ -10,7 +10,7 @@ import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from '#shared/filterUnique.js';
 
 import { SelectionRectangleSchema } from '#shared/types/commonTypes.js';
-import { pdfScaleAtom } from '#app/V2/atoms/index.js';
+import { pdfScaleAtom } from '#app/V2/atoms/index.ts';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
 
 type ReferenceGroup = {

@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 import { setTargetDocument } from '#app/Connections/actions/actions.js';
 import SearchForm from '#app/Connections/components/SearchForm.js';
 import SearchResults from '#app/Connections/components/SearchResults.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import {
   deleteRelationships,

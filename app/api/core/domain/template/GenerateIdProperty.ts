@@ -1,4 +1,4 @@
-import { Context, PropertyTypes } from '#api/templates.v2/model/Property.js';
+import { Context, PropertyTypes } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 import { PropertyTypeEnum } from './PropertyType';

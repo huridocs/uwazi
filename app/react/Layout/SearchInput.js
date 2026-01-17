@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { t } from '#app/I18N/index.js';
 import ModalTips from '#app/App/ModalTips.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';

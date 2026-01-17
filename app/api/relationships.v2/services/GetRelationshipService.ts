@@ -8,9 +8,9 @@ import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts
 
 import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
-import { Template } from '#api/templates.v2/model/Template.js';
+import { Template } from '#api/core/domain/template/Template.js';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';

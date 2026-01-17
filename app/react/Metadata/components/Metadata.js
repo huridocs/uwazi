@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { flattenDeep } from 'lodash';
 import { t } from '#app/I18N/index.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import MarkdownViewer from '#app/Markdown/index.js';
 import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.js';
 import { MediaPlayer } from '#app/V2/Components/UI/index.js';

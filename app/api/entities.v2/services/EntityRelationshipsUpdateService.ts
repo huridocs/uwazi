@@ -1,12 +1,12 @@
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 
-import { Template } from '#api/templates.v2/model/Template.js';
+import { Template } from '#api/core/domain/template/Template.js';
 
 import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
 
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Entity, EntityMetadata } from '../model/Entity';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 

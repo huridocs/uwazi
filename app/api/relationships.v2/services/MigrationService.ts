@@ -7,7 +7,7 @@ import { SaveStream } from '../common.v2/contracts/SaveStream.js';
 
 import { Logger } from '#api/log.v2/contracts/Logger.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { objectIndexToArrays, objectIndexToSets } from '#shared/data_utils/objectIndex.js';
 

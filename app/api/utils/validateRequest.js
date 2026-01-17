@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { wrapValidator } from '#shared/tsUtils.ts';
+import { wrapValidator } from '#shared/tsUtils.js';
 import addFormats from 'ajv-formats';
 import createError from './Error.js';
 

@@ -8,7 +8,7 @@ import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
 import { sortBy } from 'lodash';
 import PropTypes from 'prop-types';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { withContext, withRouter } from '#app/componentWrappers.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from '#app/ConnectionsList/index.js';
@@ -20,7 +20,7 @@ import { connectionsChanged, deleteConnection } from '#app/ConnectionsList/actio
 import { t, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import AddEntitiesPanel from '#app/Relationships/components/AddEntities.js';
 import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 import SidePanel from '#app/Layout/SidePanel.js';
 import ContextMenu from '#app/ContextMenu/index.js';
 import { FileList } from '#app/Attachments/components/FileList.js';
@@ -28,7 +28,7 @@ import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { PageViewer } from '#app/Pages/components/PageViewer.js';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import V2NewRelationshipsBoard from './V2NewRelationshipsBoard';
-import { deleteEntity } from '../actions/actions';
+import { deleteEntity } from '../actions/actions.js';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 

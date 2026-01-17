@@ -9,7 +9,7 @@ import { PDF } from '#app/Viewer/PDF.js';
 import Immutable from 'immutable';
 import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
-import { atomStore, pdfScaleAtom } from '#app/V2/atoms/index.js';
+import { atomStore, pdfScaleAtom } from '#app/V2/atoms/index.ts';
 
 import determineDirection from '#app/utils/determineDirection.js';
 

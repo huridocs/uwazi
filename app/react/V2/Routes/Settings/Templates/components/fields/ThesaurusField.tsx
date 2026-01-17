@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { Select } from '#app/V2/Components/Forms/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { thesauriAtom } from '#app/V2/atoms/index.js';
+import { thesauriAtom } from '#app/V2/atoms/index.ts';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { orderBy } from 'lodash';

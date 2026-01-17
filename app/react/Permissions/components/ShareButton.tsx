@@ -1,6 +1,6 @@
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import React, { useState } from 'react';
 import { ShareEntityModal } from './ShareEntityModal';
 

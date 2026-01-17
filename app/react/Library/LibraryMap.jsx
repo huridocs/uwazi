@@ -5,7 +5,7 @@ import { MapView } from '#app/Library/components/MapView.js';
 import { LibraryRootComponent } from '#app/Library/Library.js';
 import LibraryLayout from '#app/Library/LibraryLayout.js';
 import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
-import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { trackPage } from '#app/App/GoogleAnalytics.tsx';
 
 class LibraryMapComponent extends LibraryRootComponent {
   static async requestState(requestParams, globalResources) {

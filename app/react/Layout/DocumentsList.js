@@ -12,7 +12,7 @@ import Footer from '#app/App/Footer.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { withRouter } from '#app/componentWrappers.js';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';

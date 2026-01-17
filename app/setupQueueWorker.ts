@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import { registerEventListeners } from '#api/eventListeners.js';
-import { applicationEventsBus } from '#api/eventsbus/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { Redis } from '#api/infrastructure/Redis.js';
-import { LogEntry } from '#api/log.v2/infrastructure/LogEntry.js';
-import { LogWriter } from '#api/log.v2/infrastructure/LogWriter.js';
-import { SystemLogger, withFeature } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { StandardJSONWriter } from '#api/log.v2/infrastructure/writers/StandardJSONWriter.js';
-import { Dispatchable } from '#api/queue.v2/application/contracts/Dispatchable.js';
-import { DispatchableClass } from '#api/queue.v2/application/contracts/JobsDispatcher.js';
-import { RoundRobinQueueAdapter } from '#api/queue.v2/configuration/factories.js';
-import { QueueWorker, QueueWorkerErrorHandler } from '#api/queue.v2/infrastructure/QueueWorker.js';
+import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { SystemLogger, withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { QueueWorker, QueueWorkerErrorHandler } from '#api/core/libs/queue/infrastructure/QueueWorker.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
@@ -32,6 +32,8 @@ const replaceTenantWithJobNamespace =
       })
     );
   };
+
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const logger = LoggerFactory.systemLogger(
   replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))

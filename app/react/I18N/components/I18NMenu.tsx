@@ -8,7 +8,7 @@ import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
 import { NeedAuthorization } from '#app/V2/Components/UI/index.js';
-import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#app/V2/atoms/index.js';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#app/V2/atoms/index.ts';
 
 const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');

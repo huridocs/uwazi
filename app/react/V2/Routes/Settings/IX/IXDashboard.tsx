@@ -12,7 +12,7 @@ import { ClientTemplateSchema } from '#app/istore.js';
 import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
 
 import { Translate, t } from '#app/I18N/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 import { ExtractorModal } from './components/ExtractorModal.js';
 import { extractorsTableColumns } from './components/TableElements.js';

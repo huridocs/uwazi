@@ -9,7 +9,7 @@ import { DB } from '../odm/index.ts';
 import { config } from '../config.ts';
 import cors from 'cors';
 import request from '#shared/JSONRequest.js';
-import { randomSleep } from '#shared/tsUtils.ts';
+import { randomSleep } from '#shared/tsUtils.js';
 import { CaptchaModel } from './CaptchaModel.ts';
 
 import { validation } from '#api/utils/index.js';

@@ -14,7 +14,7 @@ import {
   TablePXEntityParagraphRow,
 } from '#app/V2/shared/ParagraphExtractionTypes.js';
 
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
 import { ClientEntitySchema } from '#app/istore.js';
 
 const PAGE_SIZE = 30;

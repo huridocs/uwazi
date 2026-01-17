@@ -3,7 +3,7 @@ import { LibraryRootComponent } from '#app/Library/Library.js';
 import LibraryLayout from '#app/Library/LibraryLayout.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 import { withRouter } from '#app/componentWrappers.js';
-import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { trackPage } from '#app/App/GoogleAnalytics.tsx';
 import { requestState } from '#app/Library/helpers/requestState.js';
 
 class LibraryCardsComponent extends LibraryRootComponent {

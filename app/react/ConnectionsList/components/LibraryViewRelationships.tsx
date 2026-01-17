@@ -3,13 +3,13 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
-import { Collapsible } from '#app/App/Collapsible.js';
-import { StickyHeader } from '#app/App/StickyHeader.js';
+import { Collapsible } from '#app/App/Collapsible.jsx';
+import { StickyHeader } from '#app/App/StickyHeader.jsx';
 import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
-import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.js';
-import * as actions from '#app/Relationships/actions/actions';
+import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.jsx';
+import * as actions from '#app/Relationships/actions/actions.js';
 import { IStore } from '#app/istore.js';
 import Item from '#app/Layout/Item.js';
 

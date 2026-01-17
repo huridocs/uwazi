@@ -8,7 +8,7 @@ import formatter from '#app/Metadata/helpers/formater.js';
 import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { deletedEntityAtom } from '#app/V2/atoms/index.js';
+import { deletedEntityAtom } from '#app/V2/atoms/index.ts';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 

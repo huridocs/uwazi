@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { t } from 'app/I18N';
 import { I18NLink } from 'app/I18N/I18NLinkV2';
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
-import { availableLanguages } from 'shared/language';
+import { availableLanguages } from '#shared/language/index.js';
 import { localeAtom, settingsAtom } from '../../../atoms';
 import { BaseDropdown } from './BaseDropdown';
 

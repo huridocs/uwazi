@@ -4,7 +4,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { updateFile, deleteFile } from '#app/Attachments/actions/actions.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';

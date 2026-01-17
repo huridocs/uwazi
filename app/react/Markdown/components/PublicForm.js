@@ -12,7 +12,7 @@ import { MetadataFormFields, validator, prepareMetadataAndFiles } from '#app/Met
 import { Translate } from '#app/I18N/index.js';
 import { publicSubmit } from '#app/Uploads/actions/uploadsActions.js';
 import { FormGroup } from '#app/Forms/index.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import './scss/public-form.scss';
 import { generateID } from '#shared/IDGenerator.js';

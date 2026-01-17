@@ -11,7 +11,7 @@ import { useAtomValue } from 'jotai';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 
-import { settingsAtom, localeAtom } from '#app/V2/atoms/index.js';
+import { settingsAtom, localeAtom } from '#app/V2/atoms/index.ts';
 interface ActivityLogSearch {
   username: string;
   search: string;

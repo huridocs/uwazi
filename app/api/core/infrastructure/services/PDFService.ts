@@ -9,7 +9,7 @@ import franc from 'franc';
 import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import * as os from 'os';
 import path from 'path';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
 import { FileContentsIO } from '../files/FileContentIO';
 

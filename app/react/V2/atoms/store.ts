@@ -2,7 +2,7 @@ import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
 
 import { isClient } from '#app/utils/index.js';
-import { store } from '#app/store.js';
+import { store } from '#app/store.ts';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
 import { globalMatomoAtom } from './globalMatomoAtom.js';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';

@@ -14,7 +14,7 @@ import { Document } from '#api/files.v2/model/Document.js';
 
 import { FileMappers } from '#api/files.v2/database/FilesMappers.js';
 
-import { SettingsDataSource } from '#api/settings.v2/contracts/SettingsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 

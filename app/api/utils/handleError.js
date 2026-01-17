@@ -14,7 +14,7 @@ import { appContext } from '#api/utils/AppContext.js';
 import { createError } from './index.js';
 import util from 'node:util';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];

@@ -50,7 +50,7 @@ module.exports = production => {
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
     resolve: {
-      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.jsx', '.tsx', '.ts'],
       alias: {
         'api': path.join(rootPath, 'app/api'),
         'app': path.join(rootPath, 'app/react'),
@@ -211,16 +211,38 @@ module.exports = production => {
             nmf.hooks.beforeResolve.tap('HashPrefixPlugin', (resolveData) => {
               if (resolveData.request && resolveData.request.startsWith('#')) {
                 const request = resolveData.request;
+                let newRequest = request;
                 if (request.startsWith('#app/')) {
-                  resolveData.request = request.replace('#app/', path.join(rootPath, 'app/react/'));
+                  newRequest = request.replace('#app/', path.join(rootPath, 'app/react/'));
                 } else if (request.startsWith('#api/')) {
-                  resolveData.request = request.replace('#api/', path.join(rootPath, 'app/api/'));
+                  newRequest = request.replace('#api/', path.join(rootPath, 'app/api/'));
                 } else if (request.startsWith('#shared/')) {
-                  resolveData.request = request.replace('#shared/', path.join(rootPath, 'app/shared/'));
+                  newRequest = request.replace('#shared/', path.join(rootPath, 'app/shared/'));
                 } else if (request.startsWith('#UI/')) {
-                  resolveData.request = request.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
+                  newRequest = request.replace('#UI/', path.join(rootPath, 'app/react/UI/'));
                 } else if (request.startsWith('#V2/')) {
-                  resolveData.request = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
+                  newRequest = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
+                }
+                if (newRequest !== request) {
+                  const fs = require('fs');
+                  const ext = path.extname(newRequest);
+                  if (ext === '.js' || ext === '.jsx') {
+                    const basePath = newRequest.slice(0, -ext.length);
+                    const tsPath = basePath + '.ts';
+                    const tsxPath = basePath + '.tsx';
+                    const jsxPath = basePath + '.jsx';
+                    if (fs.existsSync(tsPath)) {
+                      resolveData.request = tsPath;
+                    } else if (fs.existsSync(tsxPath)) {
+                      resolveData.request = tsxPath;
+                    } else if (ext === '.js' && fs.existsSync(jsxPath)) {
+                      resolveData.request = jsxPath;
+                    } else {
+                      resolveData.request = newRequest;
+                    }
+                  } else {
+                    resolveData.request = newRequest;
+                  }
                 }
               }
             });

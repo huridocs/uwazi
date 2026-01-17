@@ -6,7 +6,7 @@ import { useSetAtom } from 'jotai';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { Button, Card, CopyValueInput, Sidepanel } from '#app/V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';

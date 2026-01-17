@@ -8,7 +8,7 @@ import { t } from '#app/I18N/index.js';
 import FormGroup from '#app/DocumentForm/components/FormGroup.js';
 import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.js';
 import { selectTemplates } from '#app/utils/coreSelectors.js';
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
 
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';

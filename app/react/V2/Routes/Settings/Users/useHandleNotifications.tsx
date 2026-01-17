@@ -7,7 +7,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { FormIntent } from './types';
 
 const useHandleNotifications = () => {

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { translationsAtom, inlineEditAtom, localeAtom } from '#app/V2/atoms/index.js';
+import { translationsAtom, inlineEditAtom, localeAtom } from '#app/V2/atoms/index.ts';
 import { Truncate } from '#app/V2/Components/UI/Truncate.js';
 
 const parseMarkdownMarker = (

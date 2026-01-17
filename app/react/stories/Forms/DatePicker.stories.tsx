@@ -4,7 +4,7 @@ import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 import { DatePicker } from '#app/V2/Components/Forms/index.js';
 import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import { settingsAtom } from '#app/V2/atoms/index.js';
+import { settingsAtom } from '#app/V2/atoms/index.ts';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',

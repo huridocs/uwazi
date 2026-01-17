@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '#shared/language/index.js';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { ResultSet } from 'api/core/application/contracts/ResultSet';

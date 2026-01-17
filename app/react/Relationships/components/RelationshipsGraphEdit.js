@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map, List } from 'immutable';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
-import * as actions from '../actions/actions';
+import * as actions from '../actions/actions.js';
 
 import LeftRelationship from './LeftRelationship';
 import RightRelationship from './RightRelationship';

@@ -1,13 +1,13 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
-import ShowIf from '#app/App/ShowIf.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 
 import { filterOptions } from '#shared/optionsUtils.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { TriStateSelectValue } from '#app/istore.js';
-import { Icon as CustomIcon } from '#app/Layout/Icon.js';
+import { Icon as CustomIcon } from '#app/Layout/Icon.jsx';
 import React, { Component, createRef, RefObject } from 'react';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: any };
 enum SelectStates {

@@ -18,7 +18,7 @@ import {
   VerticalDrawer,
   Truncate,
 } from '#app/V2/Components/UI/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import { secondsToISODate } from '#shared/dateHelpers.js';
 import { ClientIXExtractorType } from '#shared/types.js';
 import { TableSuggestion } from '../types.js';

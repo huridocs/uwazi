@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 

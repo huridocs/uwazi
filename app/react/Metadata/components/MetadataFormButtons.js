@@ -6,10 +6,10 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
 import { ShareButton } from '#app/Permissions/components/ShareButton.js';
-import * as actions from '../actions/actions';
+import * as actions from '../actions/actions.js';
 
 class MetadataFormButtons extends Component {
   render() {

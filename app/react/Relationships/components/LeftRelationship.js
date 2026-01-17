@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import Doc from '#app/Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
-import * as actions from '../actions/actions';
+import * as actions from '../actions/actions.js';
 import HubRelationshipMetadata from './HubRelationshipMetadata';
 
 class LeftRelationship extends Component {

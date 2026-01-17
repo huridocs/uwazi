@@ -5,10 +5,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.js';
-import { Icon } from '#app/UI/index.js';
+import ShowIf from '#app/App/ShowIf.jsx';
+import { Icon } from '#app/V2/Components/UI/index.js';
 
-import { setFilter } from '../actions/actions';
+import { setFilter } from '../actions/actions.js';
 
 class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {

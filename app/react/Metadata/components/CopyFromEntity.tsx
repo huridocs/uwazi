@@ -5,11 +5,11 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import comonProperties from '#shared/commonProperties.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { actions, ShowMetadata, wrapEntityMetadata } from '#app/Metadata/index.js';
-import { store } from '#app/store.js';
+import { store } from '#app/store.ts';
 
 import { SearchEntities } from './SearchEntities';
 import { ClientEntitySchema } from '#app/istore.js';

@@ -19,7 +19,7 @@ import {
   ConfirmNavigationModal,
 } from '#app/V2/Components/UI/index.js';
 import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { notificationAtom } from '#app/V2/atoms/index.js';
+import { notificationAtom } from '#app/V2/atoms/index.ts';
 import {
   createColumns,
   FileList,

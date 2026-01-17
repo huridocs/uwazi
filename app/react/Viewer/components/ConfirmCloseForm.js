@@ -7,7 +7,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { hideModal } from '#app/Modals/actions/modalActions.js';
 import Modal from '#app/Layout/Modal.js';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import { closePanel } from '../actions/uiActions';
 
 export class ConfirmCloseForm extends Component {

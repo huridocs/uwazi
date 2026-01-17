@@ -8,7 +8,7 @@ import {
   templatesAtom,
   thesauriAtom,
   translationsAtom,
-} from '#app/V2/atoms/index.js';
+} from '#app/V2/atoms/index.ts';
 import { store } from '../store.js';
 import { socket, reconnectSocket } from '../socket.js';
 

@@ -12,7 +12,7 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 
 import { registerEventListeners } from '#api/eventListeners.js';
-import { applicationEventsBus } from '#api/eventsbus/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
 import { Redis } from '#api/infrastructure/Redis.js';

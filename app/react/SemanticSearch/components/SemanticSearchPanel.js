@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
 import { socket } from '#app/socket.js';
-import { Icon } from '#app/UI/index.js';
-import ShowIf from '#app/App/ShowIf.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
+import ShowIf from '#app/App/ShowIf.jsx';
 
 import SidePanel from '#app/Layout/SidePanel.js';
 import {
@@ -14,7 +14,7 @@ import {
   registerForUpdates,
   updateSearch,
   hideSemanticSearch,
-} from '../actions/actions';
+} from '../actions/actions.js';
 
 import SearchList from './SearchList';
 

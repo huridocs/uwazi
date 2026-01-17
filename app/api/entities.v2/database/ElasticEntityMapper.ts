@@ -1,4 +1,4 @@
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
 

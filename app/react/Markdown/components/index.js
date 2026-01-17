@@ -1,7 +1,7 @@
 import loadable from '@loadable/component';
 
 import { Link } from 'react-router';
-import { Icon } from '#app/UI/index.js';
+import { Icon } from '#app/V2/Components/UI/index.js';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
 import { EntityData } from './EntityData';
