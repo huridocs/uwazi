@@ -1,8 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
@@ -15,10 +13,9 @@ import { EntitySchema } from 'shared/types/entityType';
 
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
+import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
 
-import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
+import { PXCreateParagraphsInput } from '../PXCreateParagraphs';
 
 const factory = getFixturesFactory();
 
@@ -126,21 +123,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const connection = getConnection();
-  const mongoTransactionManager = TransactionManagerFactory.default();
-  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-
-  const createParagraphs = new PXCreateParagraphs({
-    extractorsDS,
-    entitiesStatusDS,
-  });
+  const createParagraphs = PXCreateParagraphsFactory.createDefault();
   (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
 
   return { createParagraphs };
@@ -176,7 +159,7 @@ const createExpectedParagraph = (
 
 describe('PXCreateParagraphs', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setUp(createFixtures(), true);
   });
 
   afterAll(async () => {
