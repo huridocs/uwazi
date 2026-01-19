@@ -1,8 +1,12 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { createTestJob } from './fixtures';
+import { JobDBO } from '../MongoQueueAdapter';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),
@@ -513,4 +517,269 @@ it('should not mark locked jobs as failed even if they have exceeded maxRetries'
   const finalJob = finalJobs?.find(j => j._id.equals(job._id));
 
   expect(finalJob?.failed).toBe(true);
+});
+
+describe('deleteByParams', () => {
+  const factory = getFixturesFactory();
+
+  beforeEach(async () => {
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('job1_1'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'job1',
+          params: { a: 1, b: '1' },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job1_2'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'job2',
+          params: { a: 1 },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+
+        {
+          _id: factory.id('job1_3'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'job3',
+          params: { a: 2 },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job1_4'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'job4',
+          params: { c: true, d: null },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job1_5'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'job5',
+          params: { e: ['item1', 'item2'], f: { nested: 'object' } },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('job1_6'),
+          namespace: 'tenant2',
+          queue: 'queue1',
+          name: 'job2',
+          params: { a: 1 },
+          lockedUntil: 0,
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+  });
+
+  it('should not delete jobs that are currently running (locked)', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1000;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    await testingEnvironment.setFixtures({
+      jobs: [
+        {
+          _id: factory.id('locked_job'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'locked_job',
+          params: { a: 1 },
+          lockedUntil: NOW_VALUE + 5000, // Locked for 5 more seconds
+          retryCount: 0,
+        },
+        {
+          _id: factory.id('unlocked_job'),
+          namespace: 'tenant1',
+          queue: 'queue1',
+          name: 'unlocked_job',
+          params: { a: 1 },
+          lockedUntil: NOW_VALUE - 100, // Lock expired
+          retryCount: 0,
+        },
+      ] as JobDBO[],
+    });
+
+    await adapter.deleteByParams('unlocked_job', { a: 1 }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(1);
+    expect(after).toEqual(TestUtils.arrayIncludesObjects([{ _id: factory.id('locked_job') }]));
+  });
+
+  it('should delete jobs matching a single numeric param', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', { a: 1 }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete jobs matching multiple params (AND condition)', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', { a: 1, b: '1' }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete jobs matching a string param', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', { b: '1' }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete jobs matching a boolean param', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job4', { c: true }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_1') },
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete jobs matching an array param', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job5', { e: ['item1', 'item2'] }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_1') },
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete jobs matching an object param', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job5', { f: { nested: 'object' } }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_1') },
+        { _id: factory.id('job1_2') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
+
+  it('should delete nothing when param does not match any job', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', { nonExistent: 'value' }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(6);
+  });
+
+  it('should delete nothing when param value does not match', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', { a: 999 }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(6);
+  });
+
+  it('should handle empty params object by deleting nothing', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job1', {}, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(6);
+  });
+
+  it('should only delete jobs matching both job name and params', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+
+    await adapter.deleteByParams('job2', { a: 1 }, 'tenant1');
+
+    const after = await testingEnvironment.db.getAllFrom('jobs');
+
+    expect(after).toHaveLength(5);
+    expect(after).toEqual(
+      TestUtils.arrayIncludesObjects([
+        { _id: factory.id('job1_1') },
+        { _id: factory.id('job1_3') },
+        { _id: factory.id('job1_4') },
+        { _id: factory.id('job1_5') },
+        { _id: factory.id('job1_6') },
+      ])
+    );
+  });
 });

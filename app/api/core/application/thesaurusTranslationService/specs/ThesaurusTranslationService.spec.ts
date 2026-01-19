@@ -1,15 +1,34 @@
+/* eslint-disable max-statements */
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Translation } from 'api/i18n.v2/model/Translation';
-import { MongoSettingsDataSource } from '../../../infrastructure/mongodb/MongoSettingsDataSource';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
+import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { ObjectId } from 'mongodb';
+import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
+import { ThesaurusDBO } from 'api/core/infrastructure/mongodb/thesauri/ThesaurusDBO';
+import { ThesaurusDiff } from 'api/core/domain/thesaurus/ThesaurusDiff';
 import { ThesaurusTranslationService } from '../ThesaurusTranslationService';
+import { SettingsDataSource } from '../../contracts/SettingsDataSource';
+import { factory, fixtures } from './ThesaurusTranslationServiceFixtures';
 
-const createSut = () => {
-  const settingsDS = TestUtils.mockClass<MongoSettingsDataSource>({
-    getInstalledLanguages: jest.fn().mockResolvedValue([{ key: 'en' }, { key: 'es' }]),
-  });
+type Props = {
+  settingsDS?: SettingsDataSource;
+  translationsDS?: TranslationsDataSource;
+};
 
-  const translationsDS = TestUtils.mockClass<any>({ insert: jest.fn() });
+const createSut = (props?: Props) => {
+  const settingsDS =
+    props?.settingsDS ??
+    TestUtils.mockClass<SettingsDataSource>({
+      getInstalledLanguages: jest.fn().mockResolvedValue([{ key: 'en' }, { key: 'es' }]),
+    });
+
+  const translationsDS =
+    props?.translationsDS ?? TestUtils.mockClass<TranslationsDataSource>({ insert: jest.fn() });
 
   const sut = new ThesaurusTranslationService({
     settingsDS,
@@ -67,7 +86,8 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = translationsDS.insert.mock.calls[0][0] as Translation[];
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
+        .calls[0][0] as Translation[];
 
       expect(insertedTranslations).toEqual(
         expect.arrayContaining([
@@ -94,7 +114,8 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = translationsDS.insert.mock.calls[0][0] as Translation[];
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
+        .calls[0][0] as Translation[];
 
       // Should include parent label
       expect(insertedTranslations).toEqual(
@@ -127,12 +148,310 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = translationsDS.insert.mock.calls[0][0] as Translation[];
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
+        .calls[0][0] as Translation[];
 
       // 'Item' appears twice but should only have 2 entries (one per language)
       const itemTranslations = insertedTranslations.filter(t => t.key === 'Item');
       expect(itemTranslations).toHaveLength(2);
       expect(itemTranslations.map(t => t.language)).toEqual(expect.arrayContaining(['en', 'es']));
+    });
+  });
+
+  describe('Update', () => {
+    const getThesaurus = async (_id: ObjectId) =>
+      testingEnvironment!
+        .db!.getCollection('dictionaries')!
+        .findOne<ThesaurusDBO>({ _id })
+        .then(doc => MongoThesaurusMapper.toDomain(doc!));
+
+    const createDefaultSut = () => {
+      const transactionManager = TransactionManagerFactory.default();
+      const settingsDS = SettingsDataSourceFactory.default(transactionManager);
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+
+      const { sut } = createSut({ settingsDS, translationsDS });
+
+      return { sut };
+    };
+
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
+    });
+
+    afterAll(async () => {
+      await testingEnvironment.tearDown();
+    });
+
+    it('should create translations for added thesaurus values', async () => {
+      const { sut } = createDefaultSut();
+
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const before = await getThesaurus(factory.id('countries'));
+      const after = before.update({ values: [...before.values, { label: 'Mexico' }] });
+
+      const diff = new ThesaurusDiff({ before, after });
+
+      await sut.update(diff);
+
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      const createdTranslations = translationsAfter.filter(
+        t => !translationsBefore.some(tb => tb._id.equals(t._id))
+      );
+
+      const existingTranslations = translationsAfter.filter(t =>
+        translationsBefore.some(tb => tb._id.equals(t._id))
+      );
+
+      expect(existingTranslations).toEqual(translationsBefore);
+
+      expect(createdTranslations).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          key: 'Mexico',
+          value: 'Mexico',
+          language: 'en',
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+        },
+        {
+          _id: expect.any(ObjectId),
+          key: 'Mexico',
+          value: 'Mexico',
+          language: 'es',
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+        },
+      ]);
+    });
+
+    it('should delete translations for removed thesaurus values', async () => {
+      const { sut } = createDefaultSut();
+
+      const before = await getThesaurus(factory.id('countries'));
+      const after = before.update({ values: before.values.filter(v => v.label !== 'Canada') });
+
+      const diff = new ThesaurusDiff({ before, after });
+
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      await sut.update(diff);
+
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      const deletedTranslations = translationsBefore.filter(
+        t => !translationsAfter.some(ta => ta._id.equals(t._id))
+      );
+
+      expect(translationsBefore.filter(t => t.key !== 'Canada')).toEqual(translationsAfter);
+
+      expect(deletedTranslations).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'Canada',
+          language: 'en',
+          value: 'Canada',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'Canada',
+          language: 'es',
+          value: 'Canada ES',
+        },
+      ]);
+    });
+
+    it('should update translations for updated thesaurus values', async () => {
+      const { sut } = createDefaultSut();
+
+      const keysToBeUpdated = ['USA', 'Europe', 'France'];
+      const updatedKeys = ['USA Updated', 'Europe Updated', 'France Updated'];
+
+      const before = await getThesaurus(factory.id('countries'));
+      const after = before.update({
+        values: [
+          { ...before.values[0], label: 'USA Updated' },
+          before.values[1],
+          {
+            ...before.values[2],
+            label: 'Europe Updated',
+            values: [
+              { ...before.values[2].values![0], label: 'France Updated' },
+              ...before.values[2].values!,
+            ],
+          },
+        ],
+      });
+
+      const diff = new ThesaurusDiff({ before, after });
+
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      await sut.update(diff);
+
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      const updatedTranslations = translationsAfter.filter(t => updatedKeys.includes(t.key));
+      const unchangedTranslations = translationsAfter.filter(t => !updatedKeys.includes(t.key));
+
+      expect(unchangedTranslations).toEqual(
+        translationsBefore.filter(t => !keysToBeUpdated.includes(t.key))
+      );
+
+      expect(updatedTranslations).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'USA Updated',
+          language: 'en',
+          value: 'USA Updated',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'Europe Updated',
+          language: 'en',
+          value: 'Europe Updated',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'France Updated',
+          language: 'en',
+          value: 'France Updated',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'USA Updated',
+          language: 'es',
+          value: 'USA ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'Europe Updated',
+          language: 'es',
+          value: 'Europe ES',
+        },
+        {
+          _id: expect.any(ObjectId),
+          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+          key: 'France Updated',
+          language: 'es',
+          value: 'France ES',
+        },
+      ]);
+    });
+
+    it('should update translations for updated thesaurus name', async () => {
+      const { sut } = createDefaultSut();
+
+      const before = await getThesaurus(factory.id('countries'));
+      const after = before.update({ name: 'Countries Updated' });
+
+      const diff = new ThesaurusDiff({ before, after });
+
+      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      await sut.update(diff);
+
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      const updatedTranslations = translationsAfter.filter(t => t.key === 'Countries Updated');
+
+      expect(translationsBefore.length).toBe(translationsAfter.length);
+
+      expect(updatedTranslations).toEqual(
+        expect.arrayContaining([
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries Updated', id: diff.id },
+            key: 'Countries Updated',
+            language: 'en',
+            value: 'Countries Updated',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries Updated', id: diff.id },
+            key: 'Countries Updated',
+            language: 'es',
+            value: 'Countries ES',
+          },
+        ])
+      );
+
+      expect(translationsAfter.some(t => t.key === 'Countries' && t.context.id === diff.id)).toBe(
+        false
+      );
+    });
+
+    it('should handle changes in all gracefully', async () => {
+      const { sut } = createDefaultSut();
+
+      const before = await getThesaurus(factory.id('countries'));
+      const after = before.update({
+        name: 'Countries Updated',
+        values: [
+          { ...before.values[0], label: 'USA Updated' },
+          { label: 'Brazil' },
+          {
+            ...before.values[2],
+            label: 'Europe Updated',
+            values: [
+              { ...before.values[2].values![0], label: 'France Updated' },
+              { label: 'Italy' },
+            ],
+          },
+        ],
+      });
+
+      const diff = new ThesaurusDiff({ before, after });
+
+      await sut.update(diff);
+
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+
+      // Verify all changes were applied correctly
+      expect(
+        translationsAfter.some(
+          t => t.key === 'Countries Updated' && t.context.label === 'Countries Updated'
+        )
+      ).toBe(true);
+
+      expect(
+        translationsAfter.some(
+          t => t.key === 'USA Updated' && t.language === 'en' && t.value === 'USA Updated'
+        )
+      ).toBe(true);
+
+      expect(
+        translationsAfter.some(
+          t => t.key === 'Brazil' && t.language === 'en' && t.value === 'Brazil'
+        )
+      ).toBe(true);
+
+      expect(
+        translationsAfter.some(
+          t => t.key === 'France Updated' && t.language === 'en' && t.value === 'France Updated'
+        )
+      ).toBe(true);
+
+      expect(
+        translationsAfter.some(t => t.key === 'Italy' && t.language === 'en' && t.value === 'Italy')
+      ).toBe(true);
+
+      // Old keys should be removed
+      expect(translationsAfter.some(t => t.key === 'Canada')).toBe(false);
+      expect(translationsAfter.some(t => t.key === 'Germany')).toBe(false);
+      expect(translationsAfter.some(t => t.key === 'Countries' && !t.key.includes('Updated'))).toBe(
+        false
+      );
     });
   });
 });
