@@ -60,7 +60,7 @@ const routes = app => {
         return;
       }
 
-      if (tenants.current()?.featureFlags?.v2UpdateThesaurus && !!req?.body?._id) {
+      if (tenants.current()?.featureFlags?.v2UpdateThesaurus && !req?.file && !!req?.body?._id) {
         await UpdateThesaurusController.createHandler()(req, res);
         return;
       }
