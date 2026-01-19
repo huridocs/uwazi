@@ -16,7 +16,7 @@ import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFac
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXCreateParagraphsFactory {
-  static createDefault() {
+  static createDefault(batchSize?: number) {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
@@ -54,12 +54,15 @@ export class PXCreateParagraphsFactory {
       mongoTransactionManager,
     });
 
-    return new PXCreateParagraphs({
-      extractorsDS,
-      entitiesStatusDS,
-      entitiesService,
-      propertyAssignmentStrategy,
-      transactionManager: mongoTransactionManager,
-    });
+    return new PXCreateParagraphs(
+      {
+        extractorsDS,
+        entitiesStatusDS,
+        entitiesService,
+        propertyAssignmentStrategy,
+        transactionManager: mongoTransactionManager,
+      },
+      batchSize
+    );
   }
 }
