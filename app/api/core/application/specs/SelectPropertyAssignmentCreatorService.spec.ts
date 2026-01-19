@@ -3,12 +3,11 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
 import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { PropertyNotFoundError } from 'api/core/domain/template/errors';
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
 import { SelectPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService';
 
 const factory = getFixturesFactory();
@@ -268,7 +267,7 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+  const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default(transactionManager);
 
   const sut = new SelectPropertyAssignmentCreatorService({
@@ -433,33 +432,6 @@ describe('SelectPropertyAssignmentCreatorService', () => {
     ]);
   });
 
-  it('should throw when the provided value does not exist in the referenced thesaurus', async () => {
-    const { sut } = createSut();
-    const templateDBO = await testingEnvironment.db
-      .getCollection('templates')!
-      .findOne({ _id: factory.id('Document') });
-
-    const template = MongoTemplateMapper.toDomain(templateDBO as any);
-
-    await expect(
-      sut.create({
-        template,
-        propertyAssignment: { name: 'select', value: [{ value: 'INVALID_VALUE' }] },
-      })
-    ).rejects.toThrow(
-      'The value "INVALID_VALUE" does not exist in the referenced Thesaurus "Fruits"'
-    );
-
-    await expect(
-      sut.create({
-        template,
-        propertyAssignment: { name: 'select_grouped', value: [{ value: 'INVALID_VALUE' }] },
-      })
-    ).rejects.toThrow(
-      'The value "INVALID_VALUE" does not exist in the referenced Thesaurus "Grouped Fruits"'
-    );
-  });
-
   it('should create property assignment for a select linked to a grouped thesaurus', async () => {
     const { sut } = createSut();
 
@@ -518,5 +490,50 @@ describe('SelectPropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'non_existent_property', value: [{ value: 'Apple' }] },
       })
     ).rejects.toThrow(PropertyNotFoundError);
+  });
+
+  it('should filter out values that do not exist in the referenced thesaurus', async () => {
+    const { sut } = createSut();
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    const assignments = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'select',
+        value: [{ value: 'apple_id' }, { value: 'INVALID_VALUE' }],
+      },
+    });
+
+    expect(assignments).toEqual([
+      {
+        name: 'select',
+        value: [{ value: 'apple_id', label: 'Apple' }],
+        type: 'select',
+        language: 'en',
+        isTranslatable: false,
+      },
+      {
+        name: 'select',
+        value: [{ value: 'apple_id', label: 'Apple in Portuguese' }],
+        type: 'select',
+        language: 'pt',
+        isTranslatable: false,
+      },
+    ]);
+
+    const assignmentsGrouped = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'select_grouped',
+        value: [{ value: 'cherry_id' }, { value: 'INVALID_VALUE' }],
+      },
+    });
+
+    expect(assignmentsGrouped[0].value).toHaveLength(1);
+    expect(assignmentsGrouped[0].value[0].value).toBe('cherry_id');
   });
 });

@@ -3,28 +3,37 @@ import { DispatchableClass, JobsDispatcher } from '../application/contracts/Jobs
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { NamespacedDispatcher } from './NamespacedDispatcher';
 
-interface DispactcherFactory {
+interface DispatcherFactory {
   (name: string): NamespacedDispatcher;
 }
 
 export class JobsRouter implements JobsDispatcher {
-  private dispactcherFactory: DispactcherFactory;
+  private dispatcherFactory: DispatcherFactory;
 
-  constructor(dispactcherFactory: DispactcherFactory) {
-    this.dispactcherFactory = dispactcherFactory;
+  constructor(dispatcherFactory: DispatcherFactory) {
+    this.dispatcherFactory = dispatcherFactory;
+  }
+
+  async deleteByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {
+    const dispatcher = this.routeJob();
+
+    return dispatcher.deleteByParams(dispatchable, params);
   }
 
   private routeJob() {
     const { queueName } = config;
-    return this.dispactcherFactory(queueName);
+    return this.dispatcherFactory(queueName);
   }
 
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]
   ): Promise<void> {
-    const dispactcher = this.routeJob();
-    return dispactcher.dispatch(dispatchable, params);
+    const dispatcher = this.routeJob();
+    return dispatcher.dispatch(dispatchable, params);
   }
 
   async dispatchMany(
@@ -35,7 +44,7 @@ export class JobsRouter implements JobsDispatcher {
       ) => void
     ) => Promise<void>
   ): Promise<void> {
-    const dispactcher = this.routeJob();
-    await dispactcher.dispatchMany(callback);
+    const dispatcher = this.routeJob();
+    await dispatcher.dispatchMany(callback);
   }
 }

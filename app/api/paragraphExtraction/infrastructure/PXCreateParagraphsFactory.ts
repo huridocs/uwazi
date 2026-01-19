@@ -7,10 +7,10 @@ import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/Te
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants/tenantContext';
 
+import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
@@ -23,7 +23,7 @@ export class PXCreateParagraphsFactory {
 
     const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(mongoTransactionManager);
-    const thesauriDS = new MongoThesauriDataSource(connection, mongoTransactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(mongoTransactionManager);
     const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
     const jobsDispatcher = DefaultDispatcher(tenant.name, mongoTransactionManager);

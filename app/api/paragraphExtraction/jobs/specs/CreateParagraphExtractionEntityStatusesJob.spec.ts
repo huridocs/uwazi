@@ -17,6 +17,7 @@ import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/M
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
@@ -48,10 +49,10 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(createBaseFixtures());
-    mockDispatcher = {
+    mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
-    };
+    }) as jest.Mocked<JobsDispatcher>;
   });
 
   afterAll(async () => {

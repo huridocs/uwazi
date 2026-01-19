@@ -27,6 +27,7 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
 
       const response: ResponseDto = MongoThesaurusMapper.toDBO(output);
 
+      this.request.sockets.emitToCurrentTenant('thesauriChange', response);
       this.response.status(201).json(response);
     } catch (error: unknown) {
       logger.info(

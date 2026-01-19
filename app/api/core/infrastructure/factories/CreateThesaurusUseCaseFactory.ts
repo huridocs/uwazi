@@ -2,14 +2,13 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { CreateThesaurusUseCase } from 'api/core/application/CreateThesaurus';
 import { ThesaurusTranslationService } from 'api/core/application/thesaurusTranslationService/ThesaurusTranslationService';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSourceV2 } from '../mongodb/thesauri/MongoThesaurusDataSourceV2';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
+import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 
 class CreateThesaurusUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
