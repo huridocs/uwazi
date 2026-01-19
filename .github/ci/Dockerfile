@@ -1,6 +1,6 @@
 # Uwazi CI runner image: Node + poppler-utils + mongosh
 # Base on Debian Bookworm and install official MongoDB mongosh
-FROM node:20-bookworm AS ci
+FROM node:20.19.6-bookworm AS ci
 
 # Install essential utilities (poppler-utils for PDF processing)
 RUN apt-get update -qq \
