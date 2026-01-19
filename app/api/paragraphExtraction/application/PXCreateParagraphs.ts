@@ -90,7 +90,6 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
         extractor,
         sourceEntities,
         user,
-        entityStatus,
       });
       if (onParagraphBatchCreated) {
         await onParagraphBatchCreated();

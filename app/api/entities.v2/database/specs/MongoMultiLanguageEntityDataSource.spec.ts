@@ -1,13 +1,14 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource';
 import { Entity } from 'api/core/domain/entity/Entity';
+import { NumericProperty } from 'api/core/domain/template/NumericProperty';
 import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
 import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
+import { MongoMultiLanguageEntityDataSource } from '../MongoMultiLanguageEntityDataSource';
+import { Template } from 'api/core/domain/template/Template';
 
 const factory = getFixturesFactory();
 
@@ -31,8 +32,8 @@ const fixtures = {
   ],
 };
 
-const createSampleTemplate = (name: string = 'Template') => {
-  return TemplateBuilder.aTemplate({ id: new ObjectId().toString(), name })
+const createSampleTemplate = (name: string = 'Template') =>
+  TemplateBuilder.aTemplate({ id: new ObjectId().toString(), name })
     .withProperties([
       new TextProperty({
         id: 'text',
@@ -46,9 +47,8 @@ const createSampleTemplate = (name: string = 'Template') => {
       }),
     ])
     .build();
-};
 
-const createEntity = (languages: string[], template = createSampleTemplate(), userId?: string) => {
+const createEntity = (languages: string[], template: Template, userId?: string) => {
   const entity = Entity.create({ languages: languages as any, template, userId });
   entity.setPropertyAssignmentsInAllLanguages([
     template.createPropertyAssignment('title', { value: [{ value: `Entity ${entity.sharedId}` }] }),

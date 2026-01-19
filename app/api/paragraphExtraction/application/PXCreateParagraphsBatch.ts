@@ -12,7 +12,6 @@ import { EntitySchema } from 'shared/types/entityType';
 
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractor } from '../domain/PXExtractor';
 
@@ -21,7 +20,6 @@ type PXCreateParagraphsBatchInput = {
   extractor: PXExtractor;
   user: { _id: ObjectId };
   paragraphs: ParagraphOutput[];
-  entityStatus: PXEntityStatusModel;
 };
 
 type LegacyRelationshipsDS = typeof relationshipsDS;
