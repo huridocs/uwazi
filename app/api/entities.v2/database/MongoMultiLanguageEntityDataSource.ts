@@ -71,6 +71,25 @@ export class MongoMultiLanguageEntityDataSource
     return result.map((doc: any) => doc._id);
   }
 
+  private async findTemplatesUsingThesaurus(thesaurusId: string) {
+    const directTemplates = await this.getCollection<TemplateDBO>('templates')
+      .find({ 'properties.content': thesaurusId })
+      .project({ _id: 1 })
+      .toArray();
+
+    const relatedTemplates = await this.getCollection<TemplateDBO>('templates')
+      .find({
+        'properties.type': 'relationship',
+        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+      })
+      .project({ _id: 1 })
+      .toArray();
+
+    const allTemplates = [...directTemplates, ...relatedTemplates];
+
+    return Array.from(new Set(allTemplates.map(t => t._id)));
+  }
+
   async getSharedIdsUsingThesaurus(thesaurusId: string) {
     const settings = await this.getCollection<SettingsType>('settings').findOne();
     const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
@@ -79,51 +98,14 @@ export class MongoMultiLanguageEntityDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const templateIds = await this.getCollection<TemplateDBO>('templates')
-      .aggregate([
-        {
-          $match: {
-            'properties.content': thesaurusId,
-          },
-        },
-        {
-          $lookup: {
-            from: 'templates',
-            let: { templateId: { $toString: '$_id' } },
-            pipeline: [
-              {
-                $match: {
-                  type: { $in: ['select', 'multiselect'] },
-                  'properties.content': '$$templateId',
-                },
-              },
-            ],
-            as: 'relatedTemplates',
-          },
-        },
-        {
-          $project: {
-            templates: {
-              $concatArrays: [[{ _id: '$_id' }], '$relatedTemplates'],
-            },
-          },
-        },
-        { $unwind: '$templates' },
-        { $replaceRoot: { newRoot: '$templates' } },
-        {
-          $group: {
-            _id: '$_id',
-          },
-        },
-      ])
-      .toArray();
+    const uniqueTemplateIds = await this.findTemplatesUsingThesaurus(thesaurusId);
 
     const entities = await this.getCollection()
       .aggregate([
         {
           $match: {
             language: defaultLanguage,
-            template: { $in: templateIds.map(t => t._id) },
+            template: { $in: uniqueTemplateIds },
           },
         },
         {
