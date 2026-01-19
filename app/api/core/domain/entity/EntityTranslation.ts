@@ -11,6 +11,7 @@ import {
   TextPropertyValue,
 } from '../template/PropertyValue';
 import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from './errors';
+import { PropertyType } from '../template/PropertyType';
 
 type Props = {
   language: LanguageISO6391;
@@ -87,6 +88,10 @@ class EntityTranslation {
     }
 
     return this.metadata[name] as unknown as PropertyAssignment<Value>;
+  }
+
+  getByType(type: PropertyType[]): PropertyAssignment[] {
+    return Object.values(this.metadata).filter(pa => type.includes(pa.type));
   }
 }
 

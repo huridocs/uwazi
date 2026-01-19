@@ -6,10 +6,10 @@ import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/
 import entities from 'api/entities/entities';
 import v1EntitiesModel from 'api/entities/entitiesModel';
 import { search } from 'api/search';
-import { MongoSettingsDataSource } from 'api/core/infrastructure/mongodb/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/core/infrastructure/mongodb/template/MongoTemplatesDataSource';
 import { Db, ObjectId } from 'mongodb';
 import { MetadataSchema } from 'shared/types/commonTypes';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
@@ -21,14 +21,14 @@ export class MongoEntitiesDataSource
 {
   protected collectionName = 'entities';
 
-  private settingsDS: MongoSettingsDataSource;
+  private settingsDS: SettingsDataSource;
 
   protected templatesDS: MongoTemplatesDataSource;
 
   constructor(
     db: Db,
     templatesDS: MongoTemplatesDataSource,
-    settingsDS: MongoSettingsDataSource,
+    settingsDS: SettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
     super(db, transactionManager);

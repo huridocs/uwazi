@@ -12,6 +12,7 @@ import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrast
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { entity1, entity2, extractor } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 
@@ -48,10 +49,10 @@ const setUpUseCase = () => {
     connection,
     mongoTransactionManager,
   });
-  const dispatcher: JobsDispatcher = {
+  const dispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn(),
     dispatchMany: jest.fn(),
-  };
+  });
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({
     entitiesStatusDS,

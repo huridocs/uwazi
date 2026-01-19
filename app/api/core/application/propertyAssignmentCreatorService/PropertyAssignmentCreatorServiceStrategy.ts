@@ -7,7 +7,6 @@ import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLa
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { SelectPropertyAssignmentCreatorService } from './SelectPropertyAssignmentCreatorService';
-import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { RelationshipPropertyAssignmentCreatorService } from './RelationshipPropertyAssignmentCreatorService';
 import {
   PropertyAssignmentCreatorService,
@@ -16,6 +15,7 @@ import {
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService';
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
 import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
+import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
@@ -46,7 +46,6 @@ class PropertyAssignmentCreatorServiceStrategy {
         return this.props.image;
       case 'media':
         return this.props.media;
-
       default:
         return this.props.default;
     }
@@ -55,7 +54,7 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: InputFile[]
+    attachments: InputFile[] = []
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,

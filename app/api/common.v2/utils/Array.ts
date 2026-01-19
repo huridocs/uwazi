@@ -5,12 +5,12 @@ type RunInBatchesInput<Item> = {
   batchSize?: number;
 };
 
-type RunInBatchesCallback<Item> = (
+type RunInBatchesCallback<Item, Result> = (
   item: Item,
   index: number,
   batch: Item[],
   batches: Item[][]
-) => Promise<void>;
+) => Promise<Result>;
 
 export class ArrayUtils {
   /**
@@ -58,17 +58,34 @@ export class ArrayUtils {
    *
    * @batchSize = 10
    */
-  static async runInBatches<Item>(
+  static async runInBatches<Item, Result>(
     { array, batchSize }: RunInBatchesInput<Item>,
-    callback: RunInBatchesCallback<Item>
-  ): Promise<void> {
+    callback: RunInBatchesCallback<Item, Result>
+  ): Promise<Result[]> {
     const _batchSize = batchSize || 10;
 
     const batches = this.splitInChunks(array, _batchSize);
 
-    await ArrayUtils.sequentialFor(batches, async batch => {
-      await ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches));
+    const results = await ArrayUtils.sequentialFor(batches, async batch =>
+      ArrayUtils.parallelFor(batch, async (...args) => callback(...args, batches))
+    );
+
+    return results.flat();
+  }
+
+  static splitInTwo<T>(array: T[], predicate: (item: T) => boolean): [T[], T[]] {
+    const pass: T[] = [];
+    const fail: T[] = [];
+
+    array.forEach(item => {
+      if (predicate(item)) {
+        pass.push(item);
+      } else {
+        fail.push(item);
+      }
     });
+
+    return [pass, fail];
   }
 
   static deduplicate<T>(array: T[], checker: (item: T) => string | number | undefined | null): T[] {
