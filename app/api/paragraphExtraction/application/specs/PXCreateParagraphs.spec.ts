@@ -122,9 +122,9 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-const setUpUseCase = () => {
-  const createParagraphs = PXCreateParagraphsFactory.createDefault();
-  (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
+const setUpUseCase = (batchSize?: number) => {
+  const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
+  (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
 
   return { createParagraphs };
 };
@@ -748,8 +748,8 @@ describe('PXCreateParagraphs', () => {
     });
   });
 
-  it('should execute onParagraphCreated callback on each paragraph creation', async () => {
-    const { createParagraphs } = setUpUseCase();
+  it('should execute onParagraphBatchCreated callback on each batch creation', async () => {
+    const { createParagraphs } = setUpUseCase(1);
 
     const input: PXCreateParagraphsInput = {
       entityStatusId: mongoEntityStatus._id.toString(),
@@ -802,11 +802,11 @@ describe('PXCreateParagraphs', () => {
           ],
         },
       ],
-      onParagraphCreated: jest.fn(),
+      onParagraphBatchCreated: jest.fn(),
     };
 
     await createParagraphs.execute(input);
 
-    expect(input.onParagraphCreated).toHaveBeenCalledTimes(input.paragraphs.length);
+    expect(input.onParagraphBatchCreated).toHaveBeenCalledTimes(input.paragraphs.length);
   });
 });

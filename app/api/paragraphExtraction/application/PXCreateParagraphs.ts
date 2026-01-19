@@ -14,13 +14,13 @@ import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
-import { PXCreateParagraph } from './PXCreateParagraph';
+import { PXCreateParagraphsBatch } from './PXCreateParagraphsBatch';
 
 type PXCreateParagraphsInput = {
   userId: string;
   entityStatusId: string;
   paragraphs: ParagraphOutput[];
-  onParagraphCreated?: () => Promise<void>;
+  onParagraphBatchCreated?: () => Promise<void>;
 };
 
 type Output = any;
@@ -34,10 +34,18 @@ type Dependencies = {
 };
 
 export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
-  createParagraph: PXCreateParagraph;
+  private static readonly DEFAULT_BATCH_SIZE = 100;
 
-  constructor(private dependencies: Dependencies) {
-    this.createParagraph = new PXCreateParagraph({
+  private readonly batchSize: number;
+
+  createParagraphsBatch: PXCreateParagraphsBatch;
+
+  constructor(
+    private dependencies: Dependencies,
+    batchSize?: number
+  ) {
+    this.batchSize = batchSize ?? PXCreateParagraphs.DEFAULT_BATCH_SIZE;
+    this.createParagraphsBatch = new PXCreateParagraphsBatch({
       logger: LoggerFactory.default(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
       relationshipsDS,
@@ -51,7 +59,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     entityStatusId,
     paragraphs,
     userId,
-    onParagraphCreated,
+    onParagraphBatchCreated,
   }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(userId) };
     const entityStatus = await this.getEntityStatus(entityStatusId);
@@ -75,16 +83,16 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
-      await this.createParagraph.execute({
-        paragraph,
+    const batches = ArrayUtils.splitInChunks(paragraphs, this.batchSize);
+    await ArrayUtils.sequentialFor(batches, async batch => {
+      await this.createParagraphsBatch.execute({
+        paragraphs: batch,
         extractor,
         sourceEntities,
         user,
-        entityStatus,
       });
-      if (onParagraphCreated) {
-        await onParagraphCreated();
+      if (onParagraphBatchCreated) {
+        await onParagraphBatchCreated();
       }
     });
 
