@@ -45,7 +45,7 @@ export class AdapterEntityProcessor {
   constructor(context: ProcessingContext) {
     this.context = context;
     this.templateProcessor = new AdapterTemplateProcessor(context);
-    this.supportingFilesProcessor = new SupportingFilesProcessor();
+    this.supportingFilesProcessor = new SupportingFilesProcessor(context);
     this.referencesProcessor = new ReferencesProcessor();
 
     this.initializeProcessors();

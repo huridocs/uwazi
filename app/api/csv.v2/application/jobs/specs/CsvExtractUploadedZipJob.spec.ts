@@ -17,6 +17,7 @@ import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer';
 import { CsvImportRowsStager } from '../../services/CsvImportRowsStager';
@@ -122,9 +123,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
-    const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
-    expect(updated?.failure ?? undefined).toBeUndefined();
+    const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
+    expect(updated.failure ?? undefined).toBeUndefined();
     const extractedPath = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,
@@ -262,9 +263,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     await useCase.execute(buildInput(id, userId));
     createdImportIds.push(id);
 
-    const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.ExtractingFilesDone);
-    expect(updated?.failure ?? undefined).toBeUndefined();
+    const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(updated.status).toBe(CsvImportStatus.ExtractingFilesDone);
+    expect(updated.failure ?? undefined).toBeUndefined();
     const extractedDir = pathManager.createPath({
       type: 'customPath',
       destination: `${destination}/extracted`,
@@ -276,11 +277,11 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     expect(stagedRows[1].values).toEqual(['Zip Row 2', 'Zip Value 2']);
   });
 
-  it('should throw NonRetryableJobError when import not found', async () => {
+  it('should throw when import not found (??? This originally was a NonRetryableJobError)', async () => {
     const { useCase } = setUp();
     const f = getFixturesFactory();
     await expect(useCase.execute(buildInput(f.idString('non-existent')))).rejects.toBeInstanceOf(
-      NonRetryableJobError
+      CsvImportDoesNotExistError
     );
   });
 
@@ -296,8 +297,8 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     });
     await csvImportsDS.insert(importDoc);
     await expect(useCase.execute(buildInput(id))).rejects.toBeInstanceOf(NonRetryableJobError);
-    const after = await csvImportsDS.getById(id);
-    expect(after?.status).toBe(CsvImportStatus.ExtractingFiles);
+    const after = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(after.status).toBe(CsvImportStatus.ExtractingFiles);
   });
 
   it('should set failed when ZIP is missing import.csv', async () => {
@@ -340,9 +341,9 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       NonRetryableJobError
     );
     createdImportIds.push(id);
-    const updated = await csvImportsDS.getById(id);
-    expect(updated?.status).toBe(CsvImportStatus.Failed);
-    expect(updated?.failure).toEqual(
+    const updated = (await csvImportsDS.getById(id)).getDataOrThrow();
+    expect(updated.status).toBe(CsvImportStatus.Failed);
+    expect(updated.failure).toEqual(
       expect.objectContaining({
         retryable: false,
         stage: 'extracting files',

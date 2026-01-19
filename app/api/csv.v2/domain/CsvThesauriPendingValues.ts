@@ -1,32 +1,45 @@
-type CsvThesauriPendingChild = {
-  label: string;
-  normalized: string;
-  languages: Record<string, string>;
-};
+import { CsvThesauriPendingChild } from './CsvThesauriPendingChild';
+import { CsvThesauriPendingEntry } from './CsvThesauriPendingEntry';
+import { CsvThesauriPendingRoot } from './CsvThesauriPendingRoot';
 
-type CsvThesauriPendingRoot = {
-  label: string;
-  normalized: string;
-  languages: Record<string, string>;
-  children: CsvThesauriPendingChild[];
-};
-
-type CsvThesauriPendingEntry = {
-  propertyId: string;
-  propertyName: string;
-  thesaurusId: string;
-  type: 'select' | 'multiselect';
-  roots: CsvThesauriPendingRoot[];
-};
-
-export type CsvThesauriPendingValues = {
+type CsvThesauriPendingValuesProps = {
   importId: string;
   createdAt: number;
   defaultLanguage: string;
   entries: CsvThesauriPendingEntry[];
 };
 
-export type CsvThesauriPendingIssue = {
+class CsvThesauriPendingValues {
+  readonly importId: string;
+
+  readonly createdAt: number;
+
+  readonly defaultLanguage: string;
+
+  readonly entries: CsvThesauriPendingEntry[];
+
+  private constructor(props: CsvThesauriPendingValuesProps) {
+    this.importId = props.importId;
+    this.createdAt = props.createdAt;
+    this.defaultLanguage = props.defaultLanguage;
+    this.entries = props.entries;
+  }
+
+  static create(props: CsvThesauriPendingValuesProps) {
+    return new CsvThesauriPendingValues(props);
+  }
+
+  toObject() {
+    return {
+      importId: this.importId,
+      createdAt: this.createdAt,
+      defaultLanguage: this.defaultLanguage,
+      entries: this.entries.map(entry => entry.toObject()),
+    };
+  }
+}
+
+type CsvThesauriPendingIssue = {
   property: string;
   reason: string;
   value?: string;
@@ -34,4 +47,10 @@ export type CsvThesauriPendingIssue = {
   type: 'parse' | 'translation' | 'conflict';
 };
 
-export type { CsvThesauriPendingEntry, CsvThesauriPendingRoot, CsvThesauriPendingChild };
+export type { CsvThesauriPendingIssue };
+export {
+  CsvThesauriPendingChild,
+  CsvThesauriPendingEntry,
+  CsvThesauriPendingRoot,
+  CsvThesauriPendingValues,
+};

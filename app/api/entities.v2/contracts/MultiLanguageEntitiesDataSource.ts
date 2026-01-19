@@ -29,4 +29,5 @@ export interface MultiLanguageEntityDataSource {
   getSharedIdsUsingThesaurus(thesaurusId: string): Promise<string[]>;
 
   create(entity: Entity): Promise<void>;
+  bulkInsert(entities: Entity[]): Promise<void>;
 }

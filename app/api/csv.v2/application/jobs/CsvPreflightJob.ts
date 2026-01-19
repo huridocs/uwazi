@@ -60,24 +60,20 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
       grouped.set(entry.thesaurusId, list);
     });
 
-    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) => ({
-      importId,
-      thesaurusId,
-      createdAt,
-      entries: groupedEntries,
-      appliedValues: [],
-    }));
+    return Array.from(grouped.entries()).map(([thesaurusId, groupedEntries]) =>
+      CsvImportThesauriValues.create({
+        importId,
+        thesaurusId,
+        createdAt,
+        entries: groupedEntries,
+      })
+    );
   }
 
   private async setStatus(importId: string, status: CsvImportStatus) {
-    const existing = await this.deps.csvImportsDS.getById(importId);
-    if (!existing) {
-      throw new Error(`CSV import not found: ${importId}`);
-    }
-    await this.transactionManager.run(async () => {
-      const updated = CsvImportDomain.withStatus(existing, status);
-      await this.deps.csvImportsDS.update(updated);
-    });
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
+    const updated = CsvImportDomain.withStatus(csvImport, status);
+    await this.deps.csvImportsDS.update(updated);
   }
 
   async markAsFailed(importId: string) {
@@ -85,10 +81,7 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
   }
 
   private async getImport(importId: string) {
-    const csvImport = await this.deps.csvImportsDS.getById(importId);
-    if (!csvImport) {
-      throw new NonRetryableJobError(new Error(`CSV import not found: ${importId}`));
-    }
+    const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     if (!csvImport.storage?.path) {
       throw new NonRetryableJobError(
         new Error(`CSV import storage path not found for import ${importId}`)
@@ -150,15 +143,19 @@ export class CsvPreflightJob extends AbstractUseCase<Input, Output, Deps> {
 
   private async persistGenericFailure(
     importId: string,
-    csvImport: CsvImport | undefined,
+    passedCsvImport: CsvImport | undefined,
     error: Error
   ) {
-    const existing = csvImport ?? (await this.deps.csvImportsDS.getById(importId));
-    if (!existing) {
+    const csvImportRes = await this.deps.csvImportsDS.getById(importId);
+
+    if (!passedCsvImport && csvImportRes.isError()) {
       return;
     }
+
+    const csvImport = (passedCsvImport || csvImportRes.getData())!;
+
     await this.transactionManager.run(async () => {
-      const withFailure = CsvImportDomain.withFailure(existing, {
+      const withFailure = CsvImportDomain.withFailure(csvImport, {
         message: error.message,
         retryable: !(error instanceof NonRetryableJobError),
         at: Date.now(),

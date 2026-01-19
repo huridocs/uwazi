@@ -48,6 +48,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         actorId: this.actorId,
         tenantName: this.tenant.name,
       });
+
       await this.deps.fileService.insert(documentsOrAttachments);
     });
 
