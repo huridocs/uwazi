@@ -5,14 +5,13 @@ import { UpdateThesaurusUseCase } from 'api/core/application/UpdateThesaurus';
 import { tenants } from 'api/tenants/tenantContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSourceV2 } from '../mongodb/thesauri/MongoThesauriDataSourceV2';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
+import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 
 class UpdateThesaurusUseCaseFactory {
   static default() {
     const transactionManager = TransactionManagerFactory.default();
-    const thesauriDS = new MongoThesauriDataSourceV2(getConnection(), transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
