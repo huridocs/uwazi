@@ -8,12 +8,12 @@ import { UpdateThesaurusUseCaseFactory } from '../../factories/UpdateThesaurusUs
 
 const ValueEntrySchema = z.object({
   label: z.string(),
-  id: z.string(),
+  id: z.string().optional(),
 });
 
 const ValueSchema = z.object({
   label: z.string(),
-  id: z.string(),
+  id: z.string().optional(),
   values: z.array(ValueEntrySchema).optional(),
 });
 
