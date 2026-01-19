@@ -61,6 +61,30 @@ class EntitiesService {
     });
   }
 
+  async bulkInsert(entities: Entity[], context: InsertContext) {
+    await this.deps.entitiesDS.bulkInsert(entities);
+
+    await this.deps.dispatcher.dispatchMany(async dispatch => {
+      entities.forEach(entity => {
+        dispatch(RelationshipSyncJob, {
+          sharedId: entity.sharedId,
+          targetLanguage: entity.languages[0],
+          templateId: entity.template.id,
+          tenantName: context.tenantName,
+          userId: context.actorId,
+        });
+      });
+    });
+
+    this.deps.transactionManager.onCommitted(async () => {
+      await Promise.all(
+        entities.map(async entity =>
+          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, entity.languages[0]))
+        )
+      );
+    });
+  }
+
   private async getTemplateByIdOrDefault(templateId?: string) {
     if (templateId) {
       return (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
