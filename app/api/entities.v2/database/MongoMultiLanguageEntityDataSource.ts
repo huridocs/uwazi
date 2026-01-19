@@ -265,4 +265,13 @@ export class MongoMultiLanguageEntityDataSource
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
     this.modifiedSharedIds.add(entity.sharedId);
   }
+
+  async bulkInsert(entities: Entity[]): Promise<void> {
+    if (entities.length === 0) {
+      return;
+    }
+    const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
+    await this.getCollection().insertMany(allDbos, { ignoreUndefined: true, ordered: false });
+    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+  }
 }

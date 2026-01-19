@@ -47,7 +47,7 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
         userId: this.params.userId,
         entityStatusId: this.params.entityStatusId,
         paragraphs: paragraphsResult.paragraphs,
-        onParagraphCreated: heartBeatCallBack,
+        onParagraphBatchCreated: heartBeatCallBack,
       });
     } catch (e) {
       if (!isRetriable) {
