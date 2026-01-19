@@ -3,13 +3,13 @@ import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDat
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { Template } from 'api/core/domain/template/Template';
 import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { Entity } from 'api/core/domain/entity/Entity';
+import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
+import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
 import {
   CsvImportDomain,
@@ -17,19 +17,11 @@ import {
   CsvImportStats,
   CsvImport,
 } from '../../domain/CsvImport';
-import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
-import { CsvEntitiesImportMapper, MappedAssignment } from '../services/CsvEntitiesImportMapper';
+import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
+import { persistRowErrorsReport } from '../services/CsvImportEntitiesErrorReporting';
+import { processImportRows } from './CsvImportEntitiesRowsProcessor';
+import { Callbacks, ImportContext } from './CsvImportEntitiesTypes';
 
-type Callbacks = BaseCallbacks & {
-  onProgress: (info: {
-    importId: string;
-    processedRows: number;
-    totalRows: number;
-    batchIndex: number;
-    batchCount: number;
-    entitiesCreatedInBatch: number;
-  }) => void;
-};
 type Input = {
   importId: string;
   callbacks: Callbacks;
@@ -37,51 +29,28 @@ type Input = {
 type Deps = {
   csvImportsDS: CsvImportsDataSource;
   rowsDS: CsvImportRowsDataSource;
+  rowErrorsDS: CsvImportRowErrorsDataSource;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   mapper: CsvEntitiesImportMapper;
   transactionManager: TransactionManager;
+  fileStorage: FileStorage;
+  batchSize?: number;
 };
 
-type ImportContext = {
-  csvImport: CsvImport;
-  template: Template;
-  languages: LanguageISO6391[];
-  stagedRows: Awaited<ReturnType<CsvImportRowsDataSource['getByImport']>>;
-  thesaurusIndex: Awaited<ReturnType<CsvEntitiesImportMapper['buildAppliedValuesIndex']>>;
-  sanitizedHeaders: string[];
-  headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
-};
-
-const buildEntityFromRow = (context: ImportContext, rowValues: string[]) => {
-  const { template, languages, thesaurusIndex, sanitizedHeaders, headerAnalysis, csvImport } =
-    context;
-
-  const assignments = CsvEntitiesImportMapper.buildPropertyAssignments({
-    template,
-    headerAnalysis,
-    sanitizedHeaders,
-    rowValues,
-    thesaurusIndex,
-    languages,
-  });
-
-  const entity = Entity.create({
-    languages,
-    template,
-    userId: csvImport.createdBy,
-  });
-
-  assignments.forEach((assignment: MappedAssignment) => {
-    entity.setPropertyAssignments([assignment.value], assignment.language, false);
-  });
-
-  return entity;
-};
+const DEFAULT_BATCH_SIZE = 1000;
+const CSV_IMPORT_ROW_FAILURE_WARMUP_ROWS = 50;
+const CSV_IMPORT_ROW_FAILURE_RATIO_STOP = 0.6;
+const CSV_IMPORT_ROW_FAILURE_CONSECUTIVE_STOP = 25;
+const CSV_IMPORT_ROW_FAILURE_ABSOLUTE_STOP = 500;
 
 class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
+  private getBatchSize() {
+    return Math.max(1, this.deps.batchSize ?? DEFAULT_BATCH_SIZE);
+  }
+
   private async setStatus(importId: string, status: CsvImportStatus) {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     await this.transactionManager.run(async () => {
@@ -120,16 +89,17 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
   private async loadContext(importId: string): Promise<ImportContext> {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     const template = (await this.deps.templatesDS.getById(csvImport.templateId)).getDataOrThrow();
-    const [availableLanguages, defaultLanguage, settings, stagedRows, thesaurusIndex] =
+    const [availableLanguages, defaultLanguage, settings, totalRows, firstRow, thesaurusIndex] =
       await Promise.all([
         this.deps.settingsDS.getLanguageKeys(),
         this.deps.settingsDS.getDefaultLanguageKey(),
         this.deps.settingsDS.get(),
-        this.deps.rowsDS.getByImport(importId),
+        this.deps.rowsDS.countByImport(importId),
+        this.deps.rowsDS.getByImport(importId, 0, 1),
         this.deps.mapper.buildAppliedValuesIndex(importId),
       ]);
 
-    if (!stagedRows.length) {
+    if (!totalRows || !firstRow.length) {
       throw new NonRetryableJobError(new Error(`No staged rows found for import ${importId}`));
     }
     const analyzerOptions: AnalyzerOptions = {
@@ -139,11 +109,11 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
     };
 
     const sanitizedHeaders = CsvEntitiesImportMapper.sanitizeHeaders(
-      stagedRows[0].headers,
+      firstRow[0].headers,
       analyzerOptions.newNameGeneration
     );
     const headerAnalysis = CsvHeaderAnalyzer.analyze(
-      stagedRows[0].headers,
+      firstRow[0].headers,
       template,
       analyzerOptions
     );
@@ -151,69 +121,27 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
       csvImport,
       template,
       languages: availableLanguages.map((lang: string): LanguageISO6391 => lang as LanguageISO6391),
-      stagedRows,
+      defaultLanguage: defaultLanguage as LanguageISO6391,
+      dateFormat: settings?.dateFormat,
+      totalRows,
       thesaurusIndex,
       sanitizedHeaders,
       headerAnalysis,
     };
   }
 
-  private async processAndPersistRow(context: ImportContext, rowValues: string[]) {
-    const entity = buildEntityFromRow(context, rowValues);
-    await this.deps.entitiesDS.create(entity);
-  }
-
-  private async handleRowProcessing(params: {
-    context: ImportContext;
-    callbacks: Callbacks;
-    rowValues: string[];
-    index: number;
-    totalRows: number;
-  }) {
-    const { context, callbacks, rowValues, index, totalRows } = params;
-    await this.processAndPersistRow(context, rowValues);
-    callbacks.onProgress({
-      importId: context.csvImport.id,
-      processedRows: index + 1,
-      totalRows,
-      batchIndex: index + 1,
-      batchCount: totalRows,
-      entitiesCreatedInBatch: 1,
-    });
-  }
-
-  private async processRows(params: {
-    context: ImportContext;
-    callbacks: Callbacks;
-  }): Promise<{ entitiesCreated: number; processedRows: number }> {
-    const { context, callbacks } = params;
-    const { stagedRows } = context;
-    const totalRows = stagedRows.length;
-
-    let processedRows = 0;
-    let entitiesCreated = 0;
-
-    for (const [index, row] of stagedRows.entries()) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.handleRowProcessing({
-        context,
-        callbacks,
-        rowValues: row.values,
-        index,
-        totalRows,
-      });
-      entitiesCreated += 1;
-      processedRows += 1;
-    }
-
-    return { entitiesCreated, processedRows };
-  }
-
-  private async finalizeSuccess(csvImport: CsvImport, entitiesCreated: number) {
+  private async finalizeSuccess(
+    csvImport: CsvImport,
+    entitiesCreated: number,
+    processedRows: number,
+    failedRows: number
+  ) {
     await this.transactionManager.run(async () => {
       const updatedStats: CsvImportStats = {
         ...(csvImport.stats || {}),
         entitiesCreated: (csvImport.stats?.entitiesCreated || 0) + entitiesCreated,
+        rowsProcessed: processedRows,
+        rowsFailed: failedRows,
       };
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(cleared, CsvImportStatus.ImportEntitiesDone);
@@ -223,8 +151,38 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
 
   private async runImport(importId: string, callbacks: Callbacks) {
     const context = await this.loadContext(importId);
-    const { entitiesCreated } = await this.processRows({ context, callbacks });
-    await this.finalizeSuccess(context.csvImport, entitiesCreated);
+    const { entitiesCreated, csvImport, processedRows, shouldStop, stopReason } =
+      await processImportRows({
+        context,
+        callbacks,
+        deps: {
+          rowsDS: this.deps.rowsDS,
+          rowErrorsDS: this.deps.rowErrorsDS,
+          csvImportsDS: this.deps.csvImportsDS,
+          entitiesDS: this.deps.entitiesDS,
+          transactionManager: this.transactionManager,
+        },
+        batchSize: this.getBatchSize(),
+        failurePolicy: {
+          warmupRows: CSV_IMPORT_ROW_FAILURE_WARMUP_ROWS,
+          failureRatioStop: CSV_IMPORT_ROW_FAILURE_RATIO_STOP,
+          consecutiveStop: CSV_IMPORT_ROW_FAILURE_CONSECUTIVE_STOP,
+          absoluteStop: CSV_IMPORT_ROW_FAILURE_ABSOLUTE_STOP,
+        },
+      });
+    const report = await persistRowErrorsReport({
+      importId,
+      totalRows: processedRows,
+      rowErrorsDS: this.deps.rowErrorsDS,
+      rowsDS: this.deps.rowsDS,
+      csvImportsDS: this.deps.csvImportsDS,
+      transactionManager: this.transactionManager,
+      fileStorage: this.deps.fileStorage,
+    });
+    if (shouldStop) {
+      throw new NonRetryableJobError(new Error(stopReason || 'Stopped due to failure policy'));
+    }
+    await this.finalizeSuccess(csvImport, entitiesCreated, processedRows, report.failedRows);
   }
 
   async execute(input: Input): Promise<void> {

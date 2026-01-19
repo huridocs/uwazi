@@ -295,21 +295,25 @@ export function registerJobs(
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
     const thesauriValuesDS =
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
     const mapper = new CsvEntitiesImportMapper(thesauriValuesDS);
+    const fileStorage = FileStorageFactory.default();
     const useCase = new CsvImportEntitiesJob({
       csvImportsDS,
       rowsDS,
+      rowErrorsDS,
       thesauriValuesDS,
       templatesDS,
       settingsDS,
       entitiesDS,
       mapper,
       transactionManager,
+      fileStorage,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvImportEntitiesJobHandler({ useCase, sockets });

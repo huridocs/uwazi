@@ -50,6 +50,15 @@ type CsvImportStats = {
   thesaurusValuesCreated?: number;
   thesauriTouched?: number;
   entitiesCreated?: number;
+  rowsProcessed?: number;
+  rowsFailed?: number;
+};
+
+type CsvImportProgress = {
+  totalRows: number;
+  processedRows: number;
+  lastProcessedRow: number;
+  batchSize: number;
 };
 
 type CsvImportFailure = {
@@ -66,6 +75,7 @@ type CsvImportProps = CsvImportToCreate & {
   storage?: CsvImportStorage;
   rowErrors?: any;
   stats?: CsvImportStats;
+  progress?: CsvImportProgress;
   failure?: CsvImportFailure;
 };
 
@@ -89,6 +99,8 @@ class CsvImportDomain {
   readonly rowErrors?: any;
 
   readonly stats?: CsvImportStats;
+
+  readonly progress?: CsvImportProgress;
 
   readonly failure?: CsvImportFailure;
 
@@ -139,6 +151,20 @@ class CsvImportDomain {
     });
   }
 
+  withRowErrors(rowErrors: any) {
+    return this.clone({
+      rowErrors,
+      updatedAt: Date.now(),
+    });
+  }
+
+  withProgress(progress: CsvImportProgress) {
+    return this.clone({
+      progress,
+      updatedAt: Date.now(),
+    });
+  }
+
   withFailure(failure: CsvImportFailure) {
     return this.clone({
       failure,
@@ -165,6 +191,7 @@ class CsvImportDomain {
       storage: this.storage,
       rowErrors: this.rowErrors,
       stats: this.stats,
+      progress: this.progress,
       failure: this.failure,
     };
   }
@@ -188,6 +215,14 @@ class CsvImportDomain {
     return CsvImportDomain.toDomain(csvImport).withFailure(failure);
   }
 
+  static withRowErrors(csvImport: CsvImport | CsvImportDomain, rowErrors: any) {
+    return CsvImportDomain.toDomain(csvImport).withRowErrors(rowErrors);
+  }
+
+  static withProgress(csvImport: CsvImport | CsvImportDomain, progress: CsvImportProgress) {
+    return CsvImportDomain.toDomain(csvImport).withProgress(progress);
+  }
+
   static clearFailure(csvImport: CsvImport | CsvImportDomain) {
     return CsvImportDomain.toDomain(csvImport).clearFailure();
   }
@@ -207,5 +242,6 @@ export type {
   CsvImportToCreate,
   CsvImportFailureIssue,
   CsvImportStats,
+  CsvImportProgress,
   CsvImportFailure,
 };

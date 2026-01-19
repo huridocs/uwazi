@@ -34,5 +34,14 @@ export interface CsvImportDBO {
     thesaurusValuesObserved?: number;
     thesaurusValuesCreated?: number;
     thesauriTouched?: number;
+    entitiesCreated?: number;
+    rowsProcessed?: number;
+    rowsFailed?: number;
+  };
+  progress?: {
+    totalRows: number;
+    processedRows: number;
+    lastProcessedRow: number;
+    batchSize: number;
   };
 }

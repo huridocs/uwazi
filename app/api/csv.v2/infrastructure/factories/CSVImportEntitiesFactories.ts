@@ -14,6 +14,7 @@ import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
 import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource';
 import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource';
 import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
+import { MongoCsvImportRowErrorsDataSource } from '../mongodb/MongoCsvImportRowErrorsDataSource';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
@@ -29,6 +30,11 @@ export class CSVImportEntitiesFactories {
   static CSVImportThesauriValuesDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportThesauriValuesDataSource(db, transactionManager);
+  }
+
+  static CSVImportRowErrorsDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRowErrorsDataSource(db, transactionManager);
   }
 
   static default() {
