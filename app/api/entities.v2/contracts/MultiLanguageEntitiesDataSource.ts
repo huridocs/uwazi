@@ -27,4 +27,5 @@ export interface MultiLanguageEntityDataSource {
   ): Promise<ResultSet<Entity>>;
 
   create(entity: Entity): Promise<void>;
+  bulkInsert(entities: Entity[]): Promise<void>;
 }
