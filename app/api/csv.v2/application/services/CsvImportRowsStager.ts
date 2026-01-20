@@ -1,8 +1,8 @@
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { CsvImportRow } from 'api/csv.v2/domain/CsvImportRow';
-import { CsvReader } from './CsvReader';
-import { CsvReaderError } from './CsvReaderError';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
+import { CsvReader } from '#api/csv.v2/application/services/CsvReader.js';
+import { CsvReaderError } from '#api/csv.v2/application/services/CsvReaderError.js';
 
 type StageRowsParams = {
   importId: string;

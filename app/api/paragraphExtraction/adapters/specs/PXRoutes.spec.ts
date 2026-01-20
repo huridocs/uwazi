@@ -3,7 +3,7 @@ import request from 'supertest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { CreateParagraphExtractionEntityStatusesJob } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
@@ -18,12 +18,12 @@ import {
   PXExtractRequest,
   PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
-} from '../paragraphExtraction/types.js';
+} from '#api/paragraphExtraction/types.js';
 
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
-import { paragraphExtractionRoutes } from '../PXRoutes';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { paragraphExtractionRoutes } from '#api/paragraphExtraction/adapters/PXRoutes.js';
 
 import {
   user,
@@ -33,13 +33,13 @@ import {
   relationshipTypesFixtures,
   paragraphProperty,
   paragraphNumberProperty,
-} from './fixtures';
+} from '#api/paragraphExtraction/adapters/specs/fixtures.js';
 
 const mockDispatchMethod = jest.fn();
 
 // Mock DefaultDispatcher from the factories module
-jest.mock('api/core/libs/queue/configuration/factories', () => ({
-  ...jest.requireActual('api/core/libs/queue/configuration/factories'), // Preserve other exports
+jest.mock('#api/core/libs/queue/configuration/factories', () => ({
+  ...jest.requireActual('#api/core/libs/queue/configuration/factories'), // Preserve other exports
   DefaultDispatcher: jest.fn().mockReturnValue({
     // Mock DefaultDispatcher export - returns synchronously, not a Promise
     // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError

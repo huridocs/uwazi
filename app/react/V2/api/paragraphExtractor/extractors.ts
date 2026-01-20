@@ -5,8 +5,8 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import {
   ParagraphExtractorApiPayload,
   PXTable,
-} from '#app/V2/Routes/Settings/ParagraphExtraction/types.js';
-import { Extractor } from '#shared/ParagraphExtractionTypes.js';
+} from '#V2/Routes/Settings/ParagraphExtraction/types.js';
+import { Extractor } from '#V2/shared//ParagraphExtractionTypes.js';
 
 import api from '#app/utils/api.js';
 

@@ -1,19 +1,19 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSourceV2 } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2.js';
 import { ObjectId } from 'mongodb';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Result } from 'api/core/libs/Result';
-import { ThesaurusNameAlreadyExistsError } from 'api/core/domain/thesaurus/errors';
-import { CreateThesaurusUseCase } from '../CreateThesaurus';
-import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
-import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Result } from '#api/core/libs/Result.js';
+import { ThesaurusNameAlreadyExistsError } from '#api/core/domain/thesaurus/errors.js';
+import { CreateThesaurusUseCase } from '#api/core/application/CreateThesaurus.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 
 const factory = getFixturesFactory();
 

@@ -1,11 +1,11 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
 import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 
-import { EntityStatus } from './PXEntityStatusModel';
-import { EntityStatusDTO } from '../types';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatusDTO } from '#api/paragraphExtraction/types.js';
 
 type GetExtractorsOutput = {
   _id: string;

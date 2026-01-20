@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 const Tip = ({ children, icon = 'question-circle', position = '' }) => {
   const className = position ? `property-description-${position}` : 'property-description';

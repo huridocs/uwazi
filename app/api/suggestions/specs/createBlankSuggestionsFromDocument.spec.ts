@@ -3,12 +3,12 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
-import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
+import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
 import {
   ExtractorsNotAvailableError,
   FileTypeNotSupportedError,
   LanguageNotSupportedError,
-} from '../ixValidationError';
+} from '#api/suggestions/ixValidationError.js';
 
 const factory = getFixturesFactory();
 

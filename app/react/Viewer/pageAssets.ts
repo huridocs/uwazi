@@ -1,18 +1,13 @@
 import { IStore } from '#app/istore.js';
 
 import { formater as formatter } from '#app/Metadata/index.js';
-import {
-  pick,
-  isArray,
-  isObject,
-  isEmpty,
-  toPairs,
-  take,
-  get,
-  groupBy,
-  has,
-  flatMap,
-} from 'lodash';
+import pick from 'lodash/pick.js';
+import isArray from 'lodash/isArray.js';
+import isObject from 'lodash/isObject.js';
+import isEmpty from 'lodash/isEmpty.js';
+import get from 'lodash/get.js';
+import groupBy from 'lodash/groupBy.js';
+import has from 'lodash/has.js';
 import {
   MetadataObjectSchema,
   MetadataSchema,

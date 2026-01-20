@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { ActionButton, mapStateToProps } from '../ActionButton';
 
+import { ActionButton, mapStateToProps } from '#app/Connections/components/ActionButton.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('ActionButton', () => {
   let component;
   let props;

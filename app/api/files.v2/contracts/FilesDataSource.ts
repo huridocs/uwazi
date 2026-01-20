@@ -1,9 +1,9 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { UwaziFile } from '../model/UwaziFile';
-import { Segmentation } from '../model/Segmentation';
-import { Document } from '../model/Document';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
 type GetDocumentsForEntityOptions = {
   languages?: LanguageISO6391[];

@@ -1,5 +1,5 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { OcrStatus } from '#api/services/ocr/ocrModel';
+import { OcrStatus } from '#api/services/ocr/ocrModel.js';
 
 const fixturesFactory = getFixturesFactory();
 

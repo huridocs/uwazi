@@ -9,7 +9,7 @@ import { ensure } from '#shared/tsUtils.js';
 import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import model from '#api/templates/templatesModel.js';
+import model from '#api/core/v1_layer/templates/templatesModel.js';
 
 const safeName = sharedSafeName;
 

@@ -10,18 +10,18 @@ import { ObjectId } from 'mongodb';
 import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { spyOnEmit } from '#api/eventsbus/eventTesting.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { applicationEventsBus } from '#api/eventsbus/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { inspect } from 'util';
 
-import { TemplateDeletedEvent } from '#api/templates/events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from '#api/templates/events/TemplateUpdatedEvent';
-import templates from '#api/templates/templates';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
+import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
+import templates from '#api/templates/templates.js';
 import templatesModel from '#api/templates/templatesModel';
-import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase';
+import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase.js';
 import fixtures, {
   factory,
   propertyToBeInherited,

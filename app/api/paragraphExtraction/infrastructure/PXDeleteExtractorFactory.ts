@@ -1,8 +1,8 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { PXDeleteExtractor } from '../application/PXDeleteExtractor';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { PXDeleteExtractor } from '#api/paragraphExtraction/application/PXDeleteExtractor.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 export class PXDeleteExtractorFactory {
   static createDefault() {

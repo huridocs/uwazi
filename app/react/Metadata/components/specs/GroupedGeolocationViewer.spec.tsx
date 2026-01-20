@@ -1,10 +1,10 @@
-import { renderConnected } from '#app/utils/test/renderConnected.js';
+import { renderConnected } from '#app/utils/test/renderConnected.jsx';
 import Immutable from 'immutable';
 import { ShallowWrapper } from 'enzyme';
 import {
   GroupedGeolocationViewer,
   GroupedGeolocationViewerProps,
-} from '../GroupedGeolocationViewer';
+} from '#app/Metadata/components/GroupedGeolocationViewer.jsx';
 
 describe('GroupedGeolocationViewer', () => {
   let state: any;

@@ -13,8 +13,8 @@ import {
   sanitizeMetadataValue,
   SanitizationWarning,
   sanitizeStringValue,
-} from '../sanitizationUtils.js';
-import { csvConstants } from '../csvDefinitions.js';
+} from '#api/csv/sanitizationUtils.js';
+import { csvConstants } from '#api/csv/csvDefinitions.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];

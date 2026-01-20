@@ -4,15 +4,15 @@ import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { Button, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
+import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
@@ -24,17 +24,17 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from './helpers.js';
-import type { ConfirmationCallback } from './helpers.js';
+} from '#V2/Routes/Settings/Thesauri/helpers.js';
+import type { ConfirmationCallback } from '#V2/Routes/Settings/Thesauri/helpers.js';
 import {
   DeletionModal,
   GroupForm,
   ThesaurusValueForm,
   ThesaurusActions,
-} from './components/index.js';
-import type { ThesaurusRow } from './components/index.js';
-import { ThesaurusForm } from './ThesaurusForm.js';
-import { ImportButton } from './components/ImportButton.js';
+} from '#V2/Routes/Settings/Thesauri/components/index.js';
+import type { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/index.js';
+import { ThesaurusForm } from '#V2/Routes/Settings/Thesauri/ThesaurusForm.jsx';
+import { ImportButton } from '#V2/Routes/Settings/Thesauri/components/ImportButton.jsx';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();

@@ -3,17 +3,16 @@ import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { Button } from '#app/V2/Components/UI/index.js';
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
-import type { PXEntityLoaderResponse, TablePXEntityRow } from '#shared/ParagraphExtractionTypes.js';
-import { EntityStatus } from '#shared/ParagraphExtractionTypes.js';
-import * as entitiesAPI from '#app/V2/api/paragraphExtractor/entities.js';
-import { EntitiesTable } from './components/entities/Table.js';
-import { generateDisplayPill } from './utils/generateDisplayPill.js';
-import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog/index.js';
-import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel.js';
-import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { Button } from '#V2/Components/UI/index.js';
+import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
+import { EntityStatus, type PXEntityLoaderResponse, type TablePXEntityRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
+import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
+import { EntitiesTable } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/Table.jsx';
+import { generateDisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateDisplayPill.jsx';
+import { ExtractEntitiesDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/ExtractEntitiesDialog/index.jsx';
+import { EntityFilterSidepanel } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/EntityFilterSidepanel.jsx';
+import { filterSidepanelStatusAtom } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',

@@ -4,14 +4,14 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { Highlight } from '@huridocs/react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 
-import { IStore } from '#app/V2/shared/types.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import { pdfScaleAtom } from '#app/V2/atoms/index.js';
-import { PageReferences, groupByRectangle } from '../PageReferences.js';
+import { IStore } from '#V2/shared/types.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
+import { PageReferences, groupByRectangle } from '#app/Viewer/components/PageReferences.jsx';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 

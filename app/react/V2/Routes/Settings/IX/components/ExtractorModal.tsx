@@ -1,22 +1,22 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useState, useEffect } from 'react';
-import { uniq } from 'lodash';
+import uniq from 'lodash/uniq.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
-import { InputField } from '#app/V2/Components/Forms/InputField.js';
-import { defaultSearch, MultiselectList, RadioSelect } from '#app/V2/Components/Forms/index.js';
-import { Modal, Button, Pill } from '#app/V2/Components/UI/index.js';
-import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { InputField } from '#V2/Components/Forms/InputField.jsx';
+import { defaultSearch, MultiselectList, RadioSelect } from '#V2/Components/Forms/index.js';
+import { Modal, Button, Pill } from '#V2/Components/UI/index.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
 import {
   getAvailableSources,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from '../helpers/index.js';
+} from '#V2/Routes/Settings/IX/helpers/index.js';
 
 const SUPPORTED_PROPERTIES = [
   'text',
@@ -159,11 +159,11 @@ const ExtractorModal = ({
 
     const result: null | ClientIXExtractorType = values.length
       ? ({
-          name,
-          source: extractorSource,
-          property: getPropertyNameFromExtractPair(values[0]),
-          templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
-        } as ClientIXExtractorType)
+        name,
+        source: extractorSource,
+        property: getPropertyNameFromExtractPair(values[0]),
+        templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
+      } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {

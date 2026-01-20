@@ -1,4 +1,4 @@
-import { ValidatorSchema, createValidator } from '../common.v2/validation/routesValidation.js';
+import { ValidatorSchema, createValidator } from '#api/common.v2/validation/routesValidation.js';
 
 import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 

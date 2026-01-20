@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/10-sync-starting-point/index.js';
 import fixtures, {
   template1,
   template2,
@@ -8,7 +8,7 @@ import fixtures, {
   translation1,
   connection1,
   migration1,
-} from './fixtures.js';
+} from '#api/migrations/migrations/10-sync-starting-point/specs/fixtures.js';
 
 describe('migration sync-starting-point', () => {
   let updatelogs;

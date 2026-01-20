@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
-import { t } from 'app/I18N';
-import { MediaMetadataProperty } from 'V2/domain/entities/types';
-import { MetadataFieldProps } from './types';
-import { PropertyLabel } from './PropertyLabel';
-import { MediaPlayer } from '../UI';
-import { MetadataCard } from './MetadataCard';
+import { t } from '#app/I18N/index.js';
+import { MediaMetadataProperty } from '#V2/domain/entities/types';
+import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
+import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.jsx';
+import { MediaPlayer } from '#V2/Components/UI/index.js';
+import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';
 
 type MediaProps = MetadataFieldProps & {
   values: MediaMetadataProperty['values'];

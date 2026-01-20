@@ -7,11 +7,11 @@ import { fireEvent, RenderResult, act } from '@testing-library/react';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 
-import { ClientFile } from '#app/V2/shared/types.js';
-import { DeleteSelectionButton } from '../DeleteSelectionButton';
-import * as actions from '#app/actions/metadataExtractionActions';
+import { ClientFile } from '#app/istore.js';
+import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.jsx';
+import * as actions from './../../actions/metadataExtractionActions.js';
 
 describe('Delete selections button', () => {
   let renderResult: RenderResult;

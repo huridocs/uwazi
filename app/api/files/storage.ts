@@ -6,15 +6,15 @@ import { createReadStream, createWriteStream } from 'fs';
 import { access, readdir } from 'fs/promises';
 import path from 'path';
 
-import { config } from '../config.js';
-import { legacyLogger } from '../log/index.js';
-import { tenants } from '../tenants/index.js';
+import { config } from '#api/config.js';
+import { legacyLogger } from '#api/log/index.js';
+import { tenants } from '#api/tenants/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { FileNotFound } from './FileNotFound.js';
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
 import {
   activityLogPath,
   attachmentsPath,
@@ -22,8 +22,8 @@ import {
   customUploadsPath,
   deleteFile,
   uploadsPath,
-} from './filesystem.js';
-import { S3Error, S3Storage } from './S3Storage.js';
+} from '#api/files/filesystem.js';
+import { S3Error, S3Storage } from '#api/files/S3Storage.js';
 
 let s3Instance: S3Storage;
 

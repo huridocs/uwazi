@@ -6,10 +6,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy.js';
 import PropTypes from 'prop-types';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { withContext, withRouter } from '#app/componentWrappers.js';
+import Icon from '#UI/Icon/Icon.jsx';
+import { withContext, withRouter } from '#app/componentWrappers.jsx';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from '#app/ConnectionsList/index.js';
 import { CreateConnectionPanel, actions as connectionsActions } from '#app/Connections/index.js';
@@ -18,19 +18,19 @@ import { RelationshipsFormButtons } from '#app/Relationships/index.js';
 import { TemplateLabel, Icon as PropertyIcon } from '#app/Layout/index.js';
 import { connectionsChanged, deleteConnection } from '#app/ConnectionsList/actions/actions.js';
 import { t, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
-import AddEntitiesPanel from '#app/Relationships/components/AddEntities.js';
-import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
+import AddEntitiesPanel from '#app/Relationships/components/AddEntities.jsx';
+import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.jsx';
 import ShowIf from '#app/App/ShowIf.jsx';
-import SidePanel from '#app/Layout/SidePanel.js';
+import SidePanel from '#app/Layout/SidePanel.jsx';
 import ContextMenu from '#app/ContextMenu/index.js';
-import { FileList } from '#app/Attachments/components/FileList.js';
-import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
-import { PageViewer } from '#app/Pages/components/PageViewer.js';
-import { ShowSidepanelMenu } from './ShowSidepanelMenu';
-import V2NewRelationshipsBoard from './V2NewRelationshipsBoard';
-import { deleteEntity } from '../actions/actions.js';
-import { showTab } from '../actions/uiActions';
-import EntityForm from '../containers/EntityForm';
+import { FileList } from '#app/Attachments/components/FileList.jsx';
+import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
+import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
+import { ShowSidepanelMenu } from '#app/Entities/components/ShowSidepanelMenu.jsx';
+import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.jsx';
+import { deleteEntity } from '#app/Entities/actions/actions.js';
+import { showTab } from '#app/Entities/actions/uiActions.js';
+import EntityForm from '#app/Entities/containers/EntityForm.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {
@@ -130,9 +130,8 @@ class EntityViewer extends Component {
 
     const includeFooter = user.get('_id') && ['info', 'relationships'].includes(selectedTab);
     const hasHeader = ['info', 'relationships'].includes(selectedTab);
-    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
-      user.get('_id') && includeFooter ? 'with-footer' : ''
-    } ${panelOpen ? 'with-panel' : ''}`;
+    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${user.get('_id') && includeFooter ? 'with-footer' : ''
+      } ${panelOpen ? 'with-panel' : ''}`;
 
     return (
       <div className="row">

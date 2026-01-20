@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 const SnippetsTab = ({ snippets }) => (
   <div>

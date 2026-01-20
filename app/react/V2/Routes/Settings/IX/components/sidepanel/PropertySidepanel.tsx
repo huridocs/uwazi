@@ -17,22 +17,23 @@ import {
   ToggleButton,
   VerticalDrawer,
   Truncate,
-} from '#app/V2/Components/UI/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { secondsToISODate } from '#shared/dateHelpers.js';
-import { ClientIXExtractorType } from '#shared/types.js';
-import { TableSuggestion } from '../types.js';
+} from '#V2/Components/UI/index.js';
+import { Checkbox } from '#V2/Components/Forms/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { secondsToISODate } from '#V2/shared/dateHelpers.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../../helpers';
-import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '../atoms';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
-import { SidepanelProps } from './types';
+} from '#V2/Routes/Settings/IX/helpers/index.js';
+import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.jsx';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
+import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('../TextProperty')).TextProperty);
@@ -134,12 +135,16 @@ const PropertySidepanel = ({
         } else {
           const value =
             property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
+          if (value !== null && value !== undefined) {
+            setValue('field', value, { shouldDirty: true });
+          }
           setSelectionError(undefined);
         }
       } else {
         const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
-        setValue('field', sanitizedText, { shouldDirty: true });
+        if (sanitizedText !== undefined) {
+          setValue('field', sanitizedText, { shouldDirty: true });
+        }
       }
     }
   };

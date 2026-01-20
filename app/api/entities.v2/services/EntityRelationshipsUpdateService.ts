@@ -2,13 +2,13 @@ import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 
 import { Template } from '#api/core/domain/template/Template.js';
 
-import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Entity, EntityMetadata } from '../model/Entity';
-import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
+import { Entity, EntityMetadata } from '#api/entities.v2/model/Entity.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 export class EntityRelationshipsUpdateService {
   private entitiesDataSource: EntitiesDataSource;

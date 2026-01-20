@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import connected from '../NeedAuthorization';
+import { renderConnected } from '#app/utils/test/renderConnected.jsx';
+import connected from '#app/Auth/components/NeedAuthorization.jsx';
 
 describe('NeedAuthorization', () => {
   let props;

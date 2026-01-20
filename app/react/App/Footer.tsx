@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, Translate } from '#app/I18N/index.js';
 import { createSelector } from 'reselect';
-import { libraryViewInfo } from '#app/App/libraryViewInfo.ts';
+import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
 
 const getLibraryURL = libraryView =>
   libraryViewInfo[libraryView] ? `/${libraryViewInfo[libraryView].url}` : '/library';

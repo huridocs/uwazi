@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Dropdown } from 'app/V2/Components/UI/Header/Dropdown';
-import type { DropdownItem } from 'app/V2/Components/UI/Header/Dropdown';
+import { Dropdown } from '#V2/Components/UI/Header/Dropdown.jsx';
+import type { DropdownItem } from '#V2/Components/UI/Header/Dropdown.jsx';
 
 const meta: Meta<typeof Dropdown> = {
   title: 'Components/UI/Dropdown',

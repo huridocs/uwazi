@@ -2,7 +2,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
-import { EventsBus } from '#api/eventsbus/index.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
 export class ATEntityCreationListener {

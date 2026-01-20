@@ -1,7 +1,7 @@
 import { Context } from '#api/core/domain/template/Property.js';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { AbstractSelectProperty, AbstractSelectPropertyProps } from '#api/core/domain/template/select/AbstractSelectProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { PropertyTypeInvalidTypeError } from '../errors.js';
 
 type Props = {
   type?: PropertyTypeEnum.MultiSelect;

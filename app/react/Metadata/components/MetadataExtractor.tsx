@@ -8,9 +8,9 @@ import { t, Translate } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 
 import { SelectionRectanglesSchema } from '#shared/types/commonTypes.js';
-import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
+import { updateSelection, updateFormField } from '#app/Metadata/actions/metadataExtractionActions.js';
 import { IStore } from '#app/istore.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 type OwnPropTypes = {
   fieldName: string;

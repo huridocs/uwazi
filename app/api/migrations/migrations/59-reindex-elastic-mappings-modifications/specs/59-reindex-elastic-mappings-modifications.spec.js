@@ -1,4 +1,4 @@
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/59-reindex-elastic-mappings-modifications/index.js';
 
 describe('migration reindex-elastic-mappings-modifications', () => {
   beforeEach(async () => {

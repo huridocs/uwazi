@@ -3,7 +3,7 @@ import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-import { validateFormat, ValidateFormatError } from '../csv/csv.js';
+import { validateFormat, ValidateFormatError } from '#api/csv/index.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
@@ -13,9 +13,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { DefaultTranslations } from '../defaultTranslations';
-import i18nRoutes from '../routes';
-import translations from '../translations';
+import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
+import i18nRoutes from '#api/i18n/routes.js';
+import translations from '#api/i18n/translations.js';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
 

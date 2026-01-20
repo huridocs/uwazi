@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { emitSocketEvent } from '../app/api/socketio/standaloneEmitSocketEvent';
+import { emitSocketEvent } from '#api/socketio/standaloneEmitSocketEvent.js';
 
 const { tenant, event } = await yargs
   .option('tenant', {

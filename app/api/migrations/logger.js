@@ -1,4 +1,4 @@
-import model from '../activitylog/activitylogModel.js';
+import model from '#api/activitylog/activitylogModel.js';
 
 export const logTypes = {
   FIELD_PARSE_ERROR: 'fieldParseError',

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import scroller from '../Scroller.js';
+import scroller from '#app/Viewer/utils/Scroller.js';
 
 describe('scroller', () => {
   let container;

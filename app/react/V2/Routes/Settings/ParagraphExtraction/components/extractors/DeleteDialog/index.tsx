@@ -3,17 +3,17 @@ import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { ConfirmationModal } from '#app/V2/Components/UI/index.js';
-import * as extractorsAPI from '#app/V2/api/paragraphExtractor/extractors.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types.js';
+import { ConfirmationModal } from '#V2/Components/UI/index.js';
+import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
 
 const DeleteDialog = ({
   setIsProcessing,
   onSuccess,
   selected,
   isOpen = false,
-  setIsOpen = () => {},
+  setIsOpen = () => { },
 }: {
   setIsProcessing: (value: boolean) => void;
   selected: PXTable[];

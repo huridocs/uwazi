@@ -1,4 +1,4 @@
-import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
@@ -17,11 +17,11 @@ import { createError } from '#api/utils/index.js';
 
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { QueryMapper } from '../database/QueryMapper';
-import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
-import { RelationshipProperty } from '../../../domain/template/RelationshipProperty';
+import { TransactionManager } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { QueryMapper } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
+import { TemplateInput, TemplateInputMappers } from '#api/core/v1_layer/templates.v2/services/TemplateInputMappers.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 
 interface MatchQuery {
   templates: string[];

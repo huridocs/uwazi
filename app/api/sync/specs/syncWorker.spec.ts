@@ -7,9 +7,9 @@ import { rm, writeFile } from 'fs/promises';
 import bodyParser from 'body-parser';
 import _ from 'lodash';
 
-import authRoutes from '../auth/routes.js';
+import authRoutes from '#api/auth/routes.js';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
 import {
@@ -24,19 +24,19 @@ import translations from '#app/I18N/index.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import relationships from '../../relationships.js';
+import relationships from '#api/relationships/index.js';
 
-import relationtypes from '../relationtypes.js';
+import relationtypes from '#api/relationtypes/index.js';
 
-import syncRoutes from '../sync/routes.js';
+import syncRoutes from '#api/sync/routes.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 
-import users from '../users/users.js';
+import users from '#api/users/users.js';
 
 import { appContext } from '#api/utils/AppContext.js';
 
@@ -66,10 +66,10 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { Db, ObjectId } from 'mongodb';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import * as utils from '#shared/tsUtils.js';
-import { syncWorker } from '../syncWorker.js';
+import { syncWorker } from '#api/sync/syncWorker.js';
 import {
   host1Fixtures,
   host2Fixtures,
@@ -82,7 +82,7 @@ import {
   template1,
   template2,
   thesauri1Value2,
-} from './fixtures.js';
+} from '#api/sync/specs/fixtures.js';
 
 async function runAllTenants() {
   try {

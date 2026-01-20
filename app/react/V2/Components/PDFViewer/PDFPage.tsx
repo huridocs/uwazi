@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
-import { Highlight } from '@huridocs/react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
 import { useAtom } from 'jotai';
-import { pdfScaleAtom } from '#app/V2/atoms/index.ts';
-import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
-import { TextHighlight } from './types.js';
-import { calculateScaling } from './functions/calculateScaling.js';
-import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
+import { EventBus, PDFJSViewer, PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';
+import { TextHighlight } from '#V2/Components/PDFViewer/types.js';
+import { calculateScaling } from '#V2/Components/PDFViewer/functions/calculateScaling.js';
+import { adjustSelectionsToScale } from '#V2/Components/PDFViewer/functions/handleTextSelection.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;

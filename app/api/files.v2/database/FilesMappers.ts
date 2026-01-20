@@ -1,10 +1,13 @@
 import { LanguageUtils } from '#shared/language/index.js';
-import { FileDBOType } from './schemas/filesTypes';
+import { fileDBO as FileDBOType } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { UwaziFile } from '../model/UwaziFile';
-import { Document } from '../model/Document';
-import { URLAttachment } from '../model/URLAttachment';
-import { Attachment } from '../model/Attachment';
-import { CustomUpload } from '../model/CustomUpload';
+import { Document } from '#api/files.v2/model/Document.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { FileAttachment as Attachment } from '#api/core/domain/files/FileAttachment.js';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
+
+type UwaziFile = BaseFile;
 
 const toDocumentModel = (fileDBO: FileDBOType) =>
   new Document(
@@ -13,7 +16,7 @@ const toDocumentModel = (fileDBO: FileDBOType) =>
     fileDBO.totalPages,
     fileDBO.filename,
     LanguageUtils.fromISO639_3(fileDBO.language).ISO639_1!
-  ).withCreationDate(new Date(fileDBO.creationDate));
+  );
 
 export const FileMappers = {
   toModel(fileDBO: FileDBOType): UwaziFile {

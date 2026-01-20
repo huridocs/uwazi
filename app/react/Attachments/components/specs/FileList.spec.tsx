@@ -3,13 +3,13 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import UploadButton from '#app/Metadata/components/UploadButton.js';
+import UploadButton from '#app/Metadata/components/UploadButton.jsx';
 
-import { LanguageUtils } from '#shared/language.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { ConnectedFile as File } from '../File';
-import { FileList, FileListProps } from '../FileList';
+import { ConnectedFile as File } from '#app/Attachments/components/File.jsx';
+import { FileList, FileListProps } from '#app/Attachments/components/FileList.jsx';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;

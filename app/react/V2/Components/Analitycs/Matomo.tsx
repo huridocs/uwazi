@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from '#app/V2/atoms/index.ts';
+import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
 
 import { isClient } from '#app/utils/index.js';
 
@@ -55,7 +55,7 @@ const Matomo = () => {
     ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
     //silent fail
     // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) { }
 
   useEffect(() => {
     if (!scriptIsPresent.current) {

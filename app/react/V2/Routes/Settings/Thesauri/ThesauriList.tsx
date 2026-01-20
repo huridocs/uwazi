@@ -5,21 +5,21 @@ import { useSetAtom, useAtomValue } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
 
-import * as ThesauriAPI from '#app/V2/api/thesauri/index.js';
+import * as ThesauriAPI from '#V2/api/thesauri/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 
-import { ThesauriTable } from './components/ThesauriTable';
-import type { ThesauriRow } from './components/ThesauriTable';
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
+import { ThesauriTable } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
+import type { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
+import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    ThesauriAPI.get({}, headers);
+    async () =>
+      ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();

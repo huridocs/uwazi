@@ -1,9 +1,9 @@
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { MetadataSchema } from '#shared/types/commonTypes.js';
-import { Entity } from '../model/Entity';
-import { EntityDBO } from './schemas/EntityTypes';
+import { Entity } from '#api/entities.v2/model/Entity.js';
+import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 
 export const EntityMappers = {
   toModel(dbo: EntityDBO) {

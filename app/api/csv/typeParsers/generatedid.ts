@@ -5,7 +5,7 @@ import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.
 import { ensure } from '#shared/tsUtils.js';
 
 import { generateID } from '#shared/IDGenerator.js';
-import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
+import { sanitizeMetadataValue, SanitizationWarning } from '#api/csv/sanitizationUtils.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];

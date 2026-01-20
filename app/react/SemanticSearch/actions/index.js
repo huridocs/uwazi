@@ -15,7 +15,7 @@ import {
   addSearchResults,
   getSearch,
   getMoreSearchResults,
-} from './actions';
+} from '#app/SemanticSearch/actions/actions.js';
 
 export default {
   fetchSearches,

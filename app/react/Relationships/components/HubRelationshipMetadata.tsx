@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Map, List } from 'immutable';
+
 
 import { t } from '#app/I18N/index.js';
 import formater from '#app/Metadata/helpers/formater.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
+import Immutable from 'immutable';
 
+const { Map, List } = Immutable;
 const conformQuote = text => (
   <div className="relationship-quote">
     <span className="quoteIconStart">

@@ -2,7 +2,7 @@ import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriStats,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
+} from '#api/csv.v2/domain/CsvImportThesauriValues.js';
 
 export interface CsvImportThesauriValuesDataSource {
   replacePendingValues(importId: string, pendingValues: CsvImportThesauriValues[]): Promise<void>;

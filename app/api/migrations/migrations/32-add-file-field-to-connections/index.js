@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import languages from './languages';
+import languages from '#api/migrations/migrations/32-add-file-field-to-connections/languages.js';
 
 const getDefaultLanguage = async db => {
   const settings = await db.collection('settings').find().toArray();

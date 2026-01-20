@@ -4,18 +4,18 @@ import { useRevalidator } from 'react-router';
 
 import { socket } from '#app/socket.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+import { notificationAtom } from '#V2/atoms/index.js';
 
 import { t } from '#app/I18N/index.js';
-import { ModelEvents, SuggestionEvents } from '../events.js';
+import { ModelEvents, SuggestionEvents } from '#V2/Routes/Settings/IX/events.js';
 import type {
   IXModelStatusCallback,
   IXErrorTrainingModelCallback,
   AcceptSuggestionSuccessCallback,
   AcceptSuggestionErrorCallback,
-} from '../events.js';
-import { ixStatus } from '../types.js';
-import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions.js';
+} from '#V2/Routes/Settings/IX/events.js';
+import { ixStatus } from '#V2/Routes/Settings/IX/types.js';
+import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/acceptedSuggestions.js';
 
 type useEventHandlerProps = {
   extractorId: string;

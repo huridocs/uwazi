@@ -4,14 +4,14 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component, Suspense } from 'react';
 
-import Footer from '#app/App/Footer.js';
+import Footer from '#app/App/Footer.jsx';
 import MarkdownViewer from '#app/Markdown/index.js';
-import { Context } from '#app/Markdown/components.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import { Context } from '#app/Markdown/components/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { ErrorBoundary, ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorBoundary.js';
-import Script from './Script';
+import { ErrorBoundary, ErrorFallback } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
+import Script from '#app/Pages/components/Script.jsx';
 
 class PageViewer extends Component {
   constructor(props) {

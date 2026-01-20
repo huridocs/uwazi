@@ -1,21 +1,21 @@
 /* eslint-disable max-lines */
-import { AbstractUseCase } from 'api/core/libs/UseCase';
-import { TemplatesDataSource } from 'api/core/application/contracts/TemplatesDataSource';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { Template } from 'api/core/domain/template/Template';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImport, CsvImportDomain, CsvImportStatus } from '../../domain/CsvImport';
-import { CsvHeaderAnalyzer, AnalyzerOptions, HeaderAnalysis } from '../services/CsvHeaderAnalyzer';
-import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError';
-import { CsvThesauriPendingValuesBuilder } from '../services/CsvThesauriPendingValuesBuilder';
-import { CsvImportRowsDataSource } from '../../application/contracts/CsvImportRowsDataSource';
-import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
-import { Callbacks } from './types/UseCaseCallbacks';
-import { CsvCreateThesauriValuesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
-import { CsvThesauriPendingEntry } from '../../domain/CsvThesauriPendingValues';
-import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
+import { CsvImport, CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvHeaderAnalyzer, AnalyzerOptions, HeaderAnalysis } from '#api/csv.v2/application/services/CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '#api/csv.v2/application/services/CsvHeaderAnalyzerError.js';
+import { CsvThesauriPendingValuesBuilder } from '#api/csv.v2/application/services/CsvThesauriPendingValuesBuilder.js';
+import { CsvImportRowsDataSource } from '#api/csv.v2/application/contracts/CsvImportRowsDataSource.js';
+import { CsvImportThesauriValuesDataSource } from '#api/csv.v2/application/contracts/CsvImportThesauriValuesDataSource.js';
+import { Callbacks } from '#api/csv.v2/application/jobs/types/UseCaseCallbacks.js';
+import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvThesauriPendingEntry } from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
+import { CsvImportThesauriValues } from '#api/csv.v2/domain/CsvImportThesauriValues.js';
 
 type ThesauriWritePort = {
   appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;

@@ -3,7 +3,9 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { get, isEmpty, uniqBy } from 'lodash';
+import get from 'lodash/get.js';
+import isEmpty from 'lodash/isEmpty.js';
+import uniqBy from 'lodash/uniqBy.js';
 import { captureException } from '@sentry/react';
 
 import { Translate } from '#app/I18N/index.js';
@@ -15,16 +17,16 @@ import {
   MultiselectList,
   MultiselectListOption,
   Textarea,
-} from '#app/V2/Components/Forms/index.js';
-import { Button } from '#app/V2/Components/UI/index.js';
-import { thesauriAtom } from '#app/V2/atoms/index.ts';
-import { selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
-import { SuggestionValue, TableSuggestion } from '../types.js';
-import { MultiselectItemLabel } from './MultiselectItemLabel.js';
-import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
-import { escapeLucene, searchRelatedEntities } from '../helpers/index.js';
-import { ClientIXExtractorType } from '#app/istore.js';
+} from '#V2/Components/Forms/index.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { thesauriAtom } from '#V2/atoms/index.js';
+import { MultiselectItemLabel } from '#V2/Routes/Settings/IX/components/MultiselectItemLabel.jsx';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
+import { ClientIXExtractorType } from '#app/V2/shared/types.js';
+import { escapeLucene, searchRelatedEntities } from '../../helpers';
+import { SuggestionValue, TableSuggestion } from '../../types';
+import { textSelectionAtom, selectionErrorAtom } from '../atoms';
+import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
 
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
@@ -272,11 +274,10 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && fieldName
-          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-          : `title:(${escapedText}*)`
-      } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
+        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+        : `title:(${escapedText}*)`
+        } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 

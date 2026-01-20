@@ -1,13 +1,13 @@
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { prepareAssets } from '../pageAssets';
+import { prepareAssets } from '#app/Viewer/pageAssets.js';
 import {
   dbEntity,
   dbTemplates,
   thesauris,
   expectedFormattedEntity,
-} from './fixtures/pageAssets/pageAssets';
+} from '#app/Viewer/specs/fixtures/pageAssets/pageAssets.js';
 import {
   otherEntities,
   relationTypes,
@@ -22,7 +22,7 @@ import {
   myTemplate,
   inheritingDocument,
   myEntity,
-} from './fixtures/pageAssets/relationsAggregations';
+} from '#app/Viewer/specs/fixtures/pageAssets/relationsAggregations.js';
 
 describe('pageAssets', () => {
   describe('prepareAssets', () => {

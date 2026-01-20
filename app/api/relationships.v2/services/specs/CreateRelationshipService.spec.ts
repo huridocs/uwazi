@@ -1,8 +1,8 @@
-import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
@@ -10,7 +10,7 @@ import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntities
 
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 
-import { MongoFilesDataSource } from '../files.v2/database/MongoFilesDataSource.js';
+import { MongoFilesDataSource } from '#api/files.v2/database/MongoFilesDataSource.js';
 
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 
@@ -18,9 +18,9 @@ import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/data
 
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
 
-import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
-import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -30,9 +30,9 @@ import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { CreateRelationshipService } from '../CreateRelationshipService';
-import { DenormalizationService } from '../DenormalizationService';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { CreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 
 const factory = getFixturesFactory();
 

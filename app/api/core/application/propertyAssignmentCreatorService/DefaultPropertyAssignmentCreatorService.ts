@@ -1,8 +1,8 @@
-import { PropertyValue } from 'api/core/domain/template/PropertyValue';
+import { PropertyValue } from '#api/core/domain/template/PropertyValue.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
 export class DefaultPropertyAssignmentCreatorService implements PropertyAssignmentCreatorService {
   // eslint-disable-next-line class-methods-use-this

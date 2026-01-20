@@ -1,9 +1,9 @@
-import users from '../users/users.js';
+import users from '#api/users/users.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
-import { validateUserGroup } from './validateUserGroup.js';
-import { WithId } from '../odm/index.js';
+import { validateUserGroup } from '#api/usergroups/validateUserGroup.js';
+import { WithId } from '#api/odm/index.js';
 import { UserSchema } from '#shared/types/userType.js';
-import model from './userGroupsModel.js';
+import model from '#api/usergroups/userGroupsModel.js';
 
 export default {
   async get(query: any, select: any = '', options = {}) {

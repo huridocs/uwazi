@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MongooseModelWrapper } from '../odm/MongooseModelWrapper.js';
+import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
 
 const syncSchema = new mongoose.Schema({
   lastSyncs: { type: mongoose.Schema.Types.Mixed, default: {} },

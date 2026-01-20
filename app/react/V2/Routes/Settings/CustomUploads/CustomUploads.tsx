@@ -11,31 +11,31 @@ import { Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { FileType } from '#shared/types/fileType.js';
-import { getByType, remove, UploadService } from '#app/files/index.js';
 import {
   Button,
   ConfirmationModal,
   Table,
   ConfirmNavigationModal,
-} from '#app/V2/Components/UI/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+} from '#V2/Components/UI/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { notificationAtom } from '#V2/atoms/index.js';
 import {
   createColumns,
   FileList,
   UploadProgress,
   DropzoneModal,
   EditFileSidepanel,
-} from './components/index.js';
+} from '#V2/Routes/Settings/CustomUploads/components/index.js';
+import { UploadService, getByType } from '#app/V2/api/files/index.js';
 
 type CustomUpload = FileType & { rowId: string };
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<CustomUpload[]> =>
-  async () => {
-    const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
-    return files;
-  };
+    async () => {
+      const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
+      return files;
+    };
 
 const uploadService = new UploadService('custom');
 
@@ -53,7 +53,7 @@ const CustomUploads = () => {
     action: () => void;
     items: CustomUpload[];
   }>({
-    action: () => {},
+    action: () => { },
     items: [],
   });
 

@@ -13,7 +13,7 @@ import { AccessLevels } from '#shared/types/permissionSchema.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
-import { RelationshipsFormButtons } from '../RelationshipsFormButtons';
+import { RelationshipsFormButtons } from '#app/Relationships/components/RelationshipsFormButtons.jsx';
 
 describe('RelationshipsFormButtons', () => {
   const middlewares = [thunk];

@@ -1,7 +1,7 @@
-import { UseCase } from 'api/core/libs/UseCase';
-import { Suggestions } from '../suggestions';
-import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
-import { SuggestionFactory } from '../suggestionFactory';
+import { UseCase } from '#api/core/libs/UseCase.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { CreateBlankSuggestionsInput } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
+import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 
 type Input = CreateBlankSuggestionsInput;
 

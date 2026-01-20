@@ -4,7 +4,7 @@ import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Translate } from '#app/I18N/index.js';
-import { formatBytes } from '#app/V2/shared/formatHelpers.js';
+import { formatBytes } from '#V2/shared/formatHelpers.js';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];

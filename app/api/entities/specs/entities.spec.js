@@ -6,21 +6,21 @@ import Ajv from 'ajv';
 import fs from 'fs/promises';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { spyOnEmit } from '../eventsbus/eventTesting.js';
-import relationships from '../../relationships.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import relationships from '#api/relationships/index.js';
 import { storage, uploadsPath } from '#api/files/index.js';
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
 import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { applicationEventsBus } from '../eventsbus.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import entities from '#api/entities.js';
-import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
-import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
+import entities from '#api/entities/index.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -34,7 +34,7 @@ import fixtures, {
   unpublishedDocId,
   uploadId1,
   uploadId2,
-} from './fixtures.js';
+} from '#api/entities/specs/fixtures.js';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();

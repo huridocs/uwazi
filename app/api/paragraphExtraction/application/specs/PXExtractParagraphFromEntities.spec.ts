@@ -6,22 +6,22 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 
-import { PXExtractParagraphsFromEntityJob } from '../paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
+import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
-import { entity1, entity2, extractor } from './fixtures';
-import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
+import { entity1, entity2, extractor } from '#api/paragraphExtraction/application/specs/fixtures.js';
+import { Input, PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
 
 const mongoEntityStatus1: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),

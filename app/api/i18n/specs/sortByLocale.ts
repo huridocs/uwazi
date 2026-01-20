@@ -1,5 +1,5 @@
 import { TranslationType } from '#shared/translationType.js';
-import { IndexedTranslations } from '../translations';
+import { IndexedTranslations } from '#api/i18n/translations.js';
 
 export function sortByLocale(
   a: TranslationType | IndexedTranslations,

@@ -1,15 +1,17 @@
+import cloneDeep from 'lodash/cloneDeep.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
-import { applicationEventsBus } from '#api/eventsbus/index.js';
-import { MongoRelationshipsV1DataSource } from '../../relationships/MongoRelationshipsV1DataSource.js';
-import { RelationsV1Collection } from '../../relationships/RelationsV1Collection.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { cloneDeep } from 'lodash';
 import { generateID } from '#shared/IDGenerator.js';
+import { EntitySchema } from '#shared/types/entityType.js';
+import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 
 type Input = {
   entitiesIds: string[];
@@ -34,7 +36,7 @@ type Dependencies = {
 };
 
 export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Output> {
-  constructor(private dependencies: Dependencies) {}
+  constructor(private dependencies: Dependencies) { }
 
   async execute({
     entitiesIds,

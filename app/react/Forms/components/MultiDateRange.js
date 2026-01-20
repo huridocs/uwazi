@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import DatePicker from './DatePicker';
+import DatePicker from '#app/Forms/components/DatePicker.jsx';
 
 class MultiDateRange extends Component {
   constructor(props) {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import SelectFilter from '#app/Library/components/SelectFilter.js';
+import SelectFilter from '#app/Library/components/SelectFilter.jsx';
 
 import { Aggregations } from '#shared/types/aggregations.js';
-import { FilterTocGeneration } from '../FilterTocGeneration';
+import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/FilterTocGeneration.jsx';
 
 describe('FilterTocGeneration', () => {
   let component: ShallowWrapper<typeof FilterTocGeneration>;

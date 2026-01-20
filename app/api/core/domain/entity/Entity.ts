@@ -1,23 +1,23 @@
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
-import { Template } from 'api/core/domain/template/Template';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { IndexTypes } from 'shared/data_utils/objectIndex';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { SharedId } from 'api/core/domain/entity/SharedId';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { IndexTypes } from '#shared/data_utils/objectIndex.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { SharedId } from '#api/core/domain/entity/SharedId.js';
 import {
   PropertyAssignment,
   PropertyValue,
   RelationshipEntry,
   TextPropertyValue,
-} from 'api/core/domain/template/PropertyValue';
+} from '#api/core/domain/template/PropertyValue.js';
 import {
   EntityTranslation,
   EntityTranslationProps,
-} from 'api/core/domain/entity/EntityTranslation';
-import { AccessGrant, EntityPermission } from './EntityPermission';
-import { PermissionType } from './PermissionType';
-import { AccessLevel } from './AccessLevel';
-import { EntityTranslationDoesNotExistError } from './errors';
+} from '#api/core/domain/entity/EntityTranslation.js';
+import { AccessGrant, EntityPermission } from '#api/core/domain/entity/EntityPermission.js';
+import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
+import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
+import { EntityTranslationDoesNotExistError } from '#api/core/domain/entity/errors.js';
 
 type CreateInput = {
   languages: LanguageISO6391[];

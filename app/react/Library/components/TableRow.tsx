@@ -5,10 +5,10 @@ import { IStore, TableViewColumn } from '#app/istore.js';
 
 import { Icon as PropertyIcon } from '#app/Layout/index.js';
 import formatter from '#app/Metadata/helpers/formater.js';
-import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.js';
+import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.jsx';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { deletedEntityAtom } from '#app/V2/atoms/index.ts';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 
@@ -105,9 +105,8 @@ const TableRowComponent = ({
   const [firstCell, ...rowCells] = cells;
   return (
     <tr
-      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${
-        deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
-      }`}
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
+        }`}
       onClick={selectRow}
     >
       {firstCell && (
@@ -116,7 +115,7 @@ const TableRowComponent = ({
             <div className="checkbox-cell" onClick={checkEntity}>
               <input
                 type="checkbox"
-                onChange={() => {}}
+                onChange={() => { }}
                 checked={multipleSelection && selected}
                 onClick={checkEntity}
               />

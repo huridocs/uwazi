@@ -16,10 +16,10 @@ import fixtures, {
   thesauriId1,
   thesauriId2,
   thesauriId4,
-} from './validatorFixtures';
+} from '#api/templates/specs/validatorFixtures.js';
 
-import { validateTemplate } from '#shared/types/templateSchema';
-import { safeName } from '../utils';
+import { validateTemplate } from '#shared/types/templateSchema.js';
+import { safeName } from '#api/utils/index.js';
 
 describe('template schema', () => {
   beforeEach(async () => {

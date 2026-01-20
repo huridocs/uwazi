@@ -11,18 +11,18 @@ import { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { Button, Card, ConfirmationModal } from '#app/V2/Components/UI/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
-import { getCurrentUser, updateUser } from '#app/V2/api/users/index.js';
-import { validEmailFormat } from '#app/V2/shared/formatHelpers.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Button, Card, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { TwoFactorSetup } from '#V2/Routes/Settings/Account/Components/TwoFactorSetup.jsx';
+import { getCurrentUser, updateUser } from '#V2/api/users/index.js';
+import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getCurrentUser(headers);
+    async () =>
+      getCurrentUser(headers);
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;

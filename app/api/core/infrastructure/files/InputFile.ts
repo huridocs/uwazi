@@ -1,14 +1,14 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import date from 'api/utils/date';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import date from '#api/utils/date.js';
 import path from 'path';
-import { FileAttachment } from '../../domain/files/FileAttachment';
-import { FileContents } from '../../domain/files/FileContents';
-import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
-import { URLAttachment } from '../../domain/files/URLAttachment';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
 
 type FileMetadata = {
   fieldname: string;

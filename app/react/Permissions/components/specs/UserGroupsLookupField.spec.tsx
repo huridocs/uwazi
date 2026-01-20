@@ -7,7 +7,7 @@ import React from 'react';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-import { UserGroupsLookupField } from '../UserGroupsLookupField';
+import { UserGroupsLookupField } from '#app/Permissions/components/UserGroupsLookupField.jsx';
 
 describe('UserGroupsLookupField', () => {
   let onChangeMock: (search: string) => void;

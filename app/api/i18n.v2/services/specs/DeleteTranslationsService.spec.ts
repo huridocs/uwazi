@@ -7,7 +7,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { DeleteTranslationsService } from '../DeleteTranslationsService';
+import { DeleteTranslationsService } from '#api/i18n.v2/services/DeleteTranslationsService.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

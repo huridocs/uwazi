@@ -6,7 +6,7 @@ import { Field, Form, actions as formActions } from 'react-redux-form';
 
 import { debounce } from '#app/utils/index.js';
 import { t } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { searchReferences } from '#app/ConnectionsList/actions/actions.js';
 

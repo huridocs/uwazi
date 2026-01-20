@@ -1,4 +1,4 @@
-import { RelationsV1Collection } from '../relationships/RelationsV1Collection.js';
+import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 
 import { Template, TemplateProperty } from '#api/core/domain/template/Template.js';
 
@@ -7,8 +7,8 @@ import { V1RelationshipProperty } from '#api/core/domain/template/V1Relationship
 import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Entity } from './Entity';
-import { EntityTranslations } from './EntityTranslations';
+import { Entity } from '#api/entities.v2/model/Entity.js';
+import { EntityTranslations } from '#api/entities.v2/model/EntityTranslations.js';
 
 export class MultiLanguageEntity {
   public translations: EntityTranslations;

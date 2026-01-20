@@ -10,7 +10,7 @@ import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { collaborators } from '#api/permissions/collaborators.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { PUBLIC_PERMISSION } from '../publicPermission';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 

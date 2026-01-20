@@ -4,13 +4,15 @@
 
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { fromJS } from 'immutable';
 
-import { ILink } from '#shared/V2/shared/types.js';
+
+import { ILink } from '#V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { DropdownMenu } from '../DropdownMenu';
+import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 const links: ILink[] = [
   {
     title: 'title 1',

@@ -1,4 +1,4 @@
-import sanitizeResponse from '../sanitizeResponse';
+import sanitizeResponse from '#api/utils/sanitizeResponse.js';
 
 describe('sanitizeResponse', () => {
   it("should sanitize a database response so every row is the 'value' property of each row", () => {

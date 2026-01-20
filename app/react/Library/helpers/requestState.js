@@ -5,11 +5,11 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js';
 import { setTableViewColumns } from '#app/Library/actions/libraryActions.js';
-import { tocGenerationUtils } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { getTableColumns } from './tableColumns.js';
-import setReduxState from './setReduxState.js';
+import { getTableColumns } from '#app/Library/helpers/tableColumns.js';
+import setReduxState from '#app/Library/helpers/setReduxState.js';
+import { tocGenerationUtils } from '#app/ToggledFeatures/tocGeneration/utils.js';
 
 const decodeQuery = params => {
   try {
@@ -68,11 +68,11 @@ const requestState = (
 
   const markersRequest = options.geolocation
     ? api.search(
-        requestParams.set({
-          ...docsQuery,
-          geolocation: true,
-        })
-      )
+      requestParams.set({
+        ...docsQuery,
+        geolocation: true,
+      })
+    )
     : { rows: [] };
 
   return Promise.all([api.search(documentsRequest), markersRequest]).then(

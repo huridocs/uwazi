@@ -3,17 +3,17 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
-import { withRouter } from '#app/componentWrappers.js';
+import { withRouter } from '#app/componentWrappers.jsx';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { isClient, events } from '#app/utils/index.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
-import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
+import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.jsx';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { leaveEditMode } from '#app/Viewer/actions/documentActions.js';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
-import { scrollToPage, activateReference } from './actions/uiActions.js';
-import { requestViewerState } from './actions/routeActions.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { scrollToPage, activateReference } from '#app/Viewer/actions/uiActions.js';
+import { requestViewerState } from '#app/Viewer/actions/routeActions.js';
 
 const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
 
@@ -141,7 +141,7 @@ PDFViewComponent.propTypes = {
 };
 
 PDFViewComponent.defaultProps = {
-  leaveEditMode: () => {},
+  leaveEditMode: () => { },
 };
 
 function mapDispatchToProps(dispatch) {

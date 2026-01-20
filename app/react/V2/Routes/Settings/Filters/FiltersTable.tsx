@@ -9,11 +9,11 @@ import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { notificationAtom, settingsAtom } from '#app/V2/atoms/index.ts';
-import * as settingsAPI from '#app/V2/api/settings/index.js';
-import * as templatesAPI from '#app/V2/api/templates/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { Button, Table, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
+import { notificationAtom, settingsAtom } from '#V2/atoms/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -27,16 +27,16 @@ import {
   sanitizeFilters,
   formatFilters,
   Filter,
-} from './components/index.js';
+} from '#V2/Routes/Settings/Filters/components/index.js';
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
-  async () => {
-    const { filters } = await settingsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
-    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
-    return { filters: tableFilters, templates };
-  };
+    async () => {
+      const { filters } = await settingsAPI.get(headers);
+      const templates = await templatesAPI.get(headers);
+      const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+      return { filters: tableFilters, templates };
+    };
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;

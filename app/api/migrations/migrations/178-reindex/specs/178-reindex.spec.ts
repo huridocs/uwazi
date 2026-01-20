@@ -1,7 +1,7 @@
-import testingDB from 'api/utils/testing_db';
-import migration from '../index';
-import { Fixture } from '../types';
-import { fixtures } from './fixtures';
+import testingDB from '#api/utils/testing_db.js';
+import migration from '#api/migrations/migrations/178-reindex/index.js';
+import { Fixture } from '#api/migrations/migrations/178-reindex/types.js';
+import { fixtures } from '#api/migrations/migrations/178-reindex/specs/fixtures.js';
 
 const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);

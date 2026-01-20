@@ -2,15 +2,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { setTargetSelection, unsetTargetSelection } from '#app/Viewer/actions/selectionActions.js';
-import Document from '#app/Viewer/components/Document.js';
+import Document from '#app/Viewer/components/Document.jsx';
 import {
   highlightReference,
   selectReference,
   deactivateReference,
 } from '#app/Viewer/actions/uiActions.js';
-import { selectTargetDoc, selectTargetReferences } from '../selectors';
+import { selectTargetDoc, selectTargetReferences } from '#app/Viewer/selectors.js';
 
-import TargetDocumentHeader from './TargetDocumentHeader';
+import TargetDocumentHeader from '#app/Viewer/components/TargetDocumentHeader.jsx';
 
 const mapStateToProps = state => {
   const { documentViewer } = state;

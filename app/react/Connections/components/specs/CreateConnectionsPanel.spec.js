@@ -1,16 +1,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import SidePanel from '#app/Layout/SidePanel.js';
 
-import { Icon } from 'UI';
+import SidePanel from '#app/Layout/SidePanel.jsx';
 
-import { CreateConnectionPanel } from '../CreateConnectionPanel';
-import SearchForm from '../SearchForm';
-import ActionButton from '../ActionButton';
-import SearchResults from '../SearchResults';
+import { Icon } from '#UI/Icon/Icon.jsx';
 
+import { CreateConnectionPanel } from '#app/Connections/components/CreateConnectionPanel.jsx';
+import SearchForm from '#app/Connections/components/SearchForm.jsx';
+import ActionButton from '#app/Connections/components/ActionButton.jsx';
+import SearchResults from '#app/Connections/components/SearchResults.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('CreateConnectionPanel', () => {
   let component;
   let props;
@@ -30,9 +32,9 @@ describe('CreateConnectionPanel', () => {
       searchResults: Immutable([{ _id: 'sr1' }, { _id: 'sr2' }]),
       uiState: Immutable({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
-      setTargetDocument: () => {},
+      setTargetDocument: () => { },
       onCreate: jasmine.createSpy('onCreate'),
-      onRangedConnect: () => {},
+      onRangedConnect: () => { },
     };
   });
 

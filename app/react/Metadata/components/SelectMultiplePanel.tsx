@@ -12,7 +12,7 @@ import { advancedSort } from '#app/utils/advancedSort.js';
 import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
 import SidePanel from '#app/Layout/SidePanel.jsx';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.jsx';
 import MetadataForm from '#app/Metadata/components/MetadataForm.jsx';

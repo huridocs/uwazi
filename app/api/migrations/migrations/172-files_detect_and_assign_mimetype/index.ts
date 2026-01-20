@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
-import { getMimeTypeFromOriginalName } from './fileUtils';
-import { ArrayUtils } from './arrayUtils';
+import { getMimeTypeFromOriginalName } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/fileUtils.js';
+import { ArrayUtils } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/arrayUtils.js';
 
 export default {
   delta: 172,

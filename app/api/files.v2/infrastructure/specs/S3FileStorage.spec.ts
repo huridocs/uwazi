@@ -7,16 +7,16 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 import { Attachment } from '../files.v2/model/Attachment.js';
 
-import { Document } from '../files.v2/model/Document.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { Tenant } from '#api/tenants/tenantContext.js';
-import { S3FileStorage } from '../S3FileStorage.js';
+import { S3FileStorage } from '#api/files.v2/infrastructure/S3FileStorage.js';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;

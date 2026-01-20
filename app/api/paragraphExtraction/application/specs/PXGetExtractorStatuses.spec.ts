@@ -6,20 +6,20 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
-import { PXExtractorsQueryServiceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 
-import { GetExtractorStatusesInput } from '../paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { GetExtractorStatusesInput } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { extractorsQueryFixtures, extractor1 } from './shared/extractorsQueryFixtures';
-import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses';
+import { extractorsQueryFixtures, extractor1 } from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
+import { PXGetExtractorStatuses } from '#api/paragraphExtraction/application/PXGetExtractorStatuses.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 

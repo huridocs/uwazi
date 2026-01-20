@@ -1,6 +1,6 @@
 import mimetypes from 'mime-types';
 
-import { FileType } from './types';
+import { FileType } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
 
 const ID = () => Math.random().toString(36).substr(2);
 

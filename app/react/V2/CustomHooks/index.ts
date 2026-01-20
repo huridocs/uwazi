@@ -1,8 +1,8 @@
-export { useApiCaller } from './useApiCaller';
-export { useIsFirstRender } from './useIsFirstRender';
+export { useApiCaller } from '#V2/CustomHooks/useApiCaller.jsx';
+export { useIsFirstRender } from '#V2/CustomHooks/useIsFirstRender.js';
 
 export {
   EntityCompositionProvider,
   useEntityComposition,
   useFluentEntityComposition,
-} from './useEntityComposition';
+} from '#V2/CustomHooks/useEntityComposition.js';

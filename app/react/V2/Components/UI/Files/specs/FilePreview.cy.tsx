@@ -1,8 +1,8 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { FilePreview } from '../FilePreview';
-import { EntityFile } from '../FileCard';
+import { FilePreview } from '#V2/Components/UI/Files/FilePreview.jsx';
+import { EntityFile } from '#V2/Components/UI/Files/FileCard.jsx';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 import {
   mockImageFile,
@@ -11,7 +11,7 @@ import {
   mockVideoFile,
   setupMediaIntercepts,
   setupMediaElement,
-} from './testHelpers';
+} from '#V2/Components/UI/Files/specs/testHelpers.js';
 
 const mockMainDocument: EntityFile = {
   ...mockPdfFile,

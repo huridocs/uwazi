@@ -5,8 +5,8 @@ import React from 'react';
 import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
 import fetchMock from 'fetch-mock';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import MarkdownMedia from '../MarkdownMedia';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import MarkdownMedia from '#app/Markdown/components/MarkdownMedia.jsx';
 
 let playerRef: { current: { seekTo: any; getCurrentTime: () => number } };
 

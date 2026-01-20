@@ -1,5 +1,5 @@
-import { Property } from '#api/templates.v2/model/Property.js';
-import { PropertyTypeMismatchError } from '../errors';
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyTypeMismatchError } from '#api/core/domain/template/errors.js';
 
 describe('Property', () => {
   it('should set defaults values if not provided', () => {

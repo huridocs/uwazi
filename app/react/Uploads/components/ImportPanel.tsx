@@ -6,10 +6,10 @@ import { bindActionCreators } from 'redux';
 
 import { Translate } from '#app/I18N/index.js';
 import SidePanel from '#app/Layout/SidePanel.jsx';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from '#app/Uploads/actions/uploadsActions.js';
-import ImportProgress from '#app/ImportProgress';
+import ImportProgress from './ImportProgress.js';
 
 class ImportPanel extends Component {
   constructor(props) {

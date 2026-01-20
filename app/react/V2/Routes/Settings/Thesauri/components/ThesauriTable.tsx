@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router';
 import { Row } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
-import { Table } from '#app/V2/Components/UI/index.js';
+import { Table } from '#V2/Components/UI/index.js';
 
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { columnsThesauri } from './TableComponents.js';
+import { columnsThesauri } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
 
 interface ThesauriRow extends ClientThesaurus {
   rowId: string;

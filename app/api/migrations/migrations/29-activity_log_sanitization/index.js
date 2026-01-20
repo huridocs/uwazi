@@ -1,7 +1,7 @@
 import {
   BODY_REQUIRED_ENDPOINTS,
   IGNORED_ENDPOINTS,
-} from '../activitylog/activitylogMiddleware.js';
+} from '#api/activitylog/activitylogMiddleware.js';
 import date from '#api/utils/date.js';
 
 export default {

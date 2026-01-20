@@ -1,11 +1,11 @@
-import * as entitiesIndex from 'api/search/entitiesIndex';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
+import * as entitiesIndex from '#api/search/entitiesIndex.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import { Application, NextFunction } from 'express';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '#shared/types/templateType.js';
 import request from 'supertest';
-import templateRoutes from '../routes';
-import { fixtureFactory, fixtures } from './routesFixtures';
+import templateRoutes from '#api/core/infrastructure/express/template/routes.js';
+import { fixtureFactory, fixtures } from '#api/core/infrastructure/express/template/specs/routesFixtures.js';
 
 jest.mock(
   '../../../../../auth/authMiddleware.ts',

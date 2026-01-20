@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 
 import ShowIf from '#app/App/ShowIf.jsx';
 import { Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
-import { resetSearch } from '#app/Metadata/actions/actions.js';
+import { resetSearch } from '../actions/actions';
 
 class ResetSearch extends Component {
   render() {

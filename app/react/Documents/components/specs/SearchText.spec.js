@@ -6,8 +6,8 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
-import { SearchText } from '../SearchText.js';
-import SnippetList from '../SnippetList';
+import { SearchText } from '#app/Documents/components/SearchText.jsx';
+import SnippetList from '#app/Documents/components/SnippetList.jsx';
 
 describe('SearchText', () => {
   let component;

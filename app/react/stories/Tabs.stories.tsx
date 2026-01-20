@@ -1,7 +1,7 @@
 /* eslint-disable import/no-default-export */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Tabs } from '#app/V2/Components/UI/Tabs.js';
+import { Tabs } from '#V2/Components/UI/Tabs.jsx';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',

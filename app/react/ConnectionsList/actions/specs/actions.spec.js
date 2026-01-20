@@ -1,13 +1,15 @@
-import { fromJS as Immutable } from 'immutable';
+
 import { actions as formActions } from 'react-redux-form';
 
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import * as actions from '../actions';
+import * as actions from '#app/ConnectionsList/actions/actions.js';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('ConnectionsList actions', () => {
   let dispatch;
   let getState;

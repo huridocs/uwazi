@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { defaultSearch, MultiselectList } from '#app/V2/Components/Forms/index.js';
-import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures.js';
+import { defaultSearch, MultiselectList } from '#V2/Components/Forms/index.js';
+import { items, remoteLookupFunction } from '#app/stories/Forms/MultiselectListSotoryFixtures.js';
 
 const meta: Meta<typeof MultiselectList> = {
   title: 'Forms/MultiselectList',

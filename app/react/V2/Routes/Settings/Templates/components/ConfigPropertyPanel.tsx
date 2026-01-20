@@ -1,15 +1,15 @@
 /* eslint-disable max-lines */
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Sidepanel } from '#app/V2/Components/UI/Sidepanel.js';
+import { Sidepanel } from '#V2/Components/UI/Sidepanel.jsx';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { Button } from '#app/V2/Components/UI/Button.js';
+import { Button } from '#V2/Components/UI/Button.jsx';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '#app/V2/atoms/index.ts';
+import { templatesAtom } from '#V2/atoms/index.js';
 import {
   PropertyTypeField,
   LabelField,
@@ -21,15 +21,15 @@ import {
   FilterField,
   StyleField,
   FullWidthField,
-} from './fields/index.js';
-import { ThesaurusField } from './fields/ThesaurusField.js';
-import { RelationshipFields } from './fields/RelationshipFields.js';
-import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
-import { translationsKeys } from '../helpers.js';
-import { PropertyRow } from '../types.js';
-import { GeneratedIdField } from './fields/GeneratedIdField.js';
+} from '#V2/Routes/Settings/Templates/components/fields/index.js';
+import { ThesaurusField } from '#V2/Routes/Settings/Templates/components/fields/ThesaurusField.jsx';
+import { RelationshipFields } from '#V2/Routes/Settings/Templates/components/fields/RelationshipFields.jsx';
+import { MatchingPropertiesTable } from '#V2/Routes/Settings/Templates/components/MatchingPropertiesTable.jsx';
+import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
+import { PropertyRow } from '#V2/Routes/Settings/Templates/types.js';
+import { GeneratedIdField } from '#V2/Routes/Settings/Templates/components/fields/GeneratedIdField.jsx';
 import { ClientTemplateSchema } from '#app/istore.js';
-import { ClientProperty } from '#app/V2/shared/types.js';
+import { ClientProperty } from '#V2/shared/types.js';
 
 interface ConfigPropertyPanelProps {
   isOpen: boolean;
@@ -84,20 +84,20 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   const form = useForm<ClientProperty>({
     defaultValues: propertyToEdit
       ? {
-          type: propertyToEdit.type,
-          label: propertyToEdit.label || '',
-          noLabel: propertyToEdit.noLabel || false,
-          required: propertyToEdit.required || false,
-          showInCard: propertyToEdit.showInCard || false,
-          filter: propertyToEdit.filter || false,
-          defaultfilter: propertyToEdit.defaultfilter || false,
-          prioritySorting: propertyToEdit.prioritySorting || false,
-          style: propertyToEdit.style || '',
-          content: propertyToEdit.content || '',
-          relationType: propertyToEdit.relationType || '',
-          inherit: propertyToEdit.inherit,
-          generatedId: propertyToEdit.generatedId || false,
-        }
+        type: propertyToEdit.type,
+        label: propertyToEdit.label || '',
+        noLabel: propertyToEdit.noLabel || false,
+        required: propertyToEdit.required || false,
+        showInCard: propertyToEdit.showInCard || false,
+        filter: propertyToEdit.filter || false,
+        defaultfilter: propertyToEdit.defaultfilter || false,
+        prioritySorting: propertyToEdit.prioritySorting || false,
+        style: propertyToEdit.style || '',
+        content: propertyToEdit.content || '',
+        relationType: propertyToEdit.relationType || '',
+        inherit: propertyToEdit.inherit,
+        generatedId: propertyToEdit.generatedId || false,
+      }
       : { ...emptyProperty },
   });
 

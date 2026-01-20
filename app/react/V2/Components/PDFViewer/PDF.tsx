@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
-import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
+import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 
 import { Translate } from '#app/I18N/index.js';
-import { PDFJS, CMAP_URL, EventBus } from './pdfjs';
-import { TextHighlight } from './types';
-import { triggerScroll } from './functions/helpers';
-import { pdfEventBus } from './events';
-import { highlightSnippetInPage, clearSnippets } from './functions/snippetToHighlight';
+import { PDFJS, CMAP_URL, EventBus } from '#V2/Components/PDFViewer/pdfjs.js';
+import { TextHighlight } from '#V2/Components/PDFViewer/types.js';
+import { triggerScroll } from '#V2/Components/PDFViewer/functions/helpers.js';
+import { pdfEventBus } from '#V2/Components/PDFViewer/events.js';
+import { highlightSnippetInPage, clearSnippets } from '#V2/Components/PDFViewer/functions/snippetToHighlight.js';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage

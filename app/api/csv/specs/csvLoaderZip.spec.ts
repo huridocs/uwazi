@@ -13,10 +13,10 @@ import entities from '#api/entities/index.js';
 
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 
-import { CSVLoader } from '../csvLoader';
-import { fixtures, template1Id } from './fixtures';
+import { CSVLoader } from '#api/csv/csvLoader.js';
+import { fixtures, template1Id } from '#api/csv/specs/fixtures.js';
 
-import { createTestingZip } from './helpers';
+import { createTestingZip } from '#api/csv/specs/helpers.js';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/test.zip'));

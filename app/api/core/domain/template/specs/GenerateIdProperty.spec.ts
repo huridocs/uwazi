@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { GenerateIdProperty } from '../GenerateIdProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 describe('GenerateIdProperty', () => {
   it('should set defaults values if not provided', () => {

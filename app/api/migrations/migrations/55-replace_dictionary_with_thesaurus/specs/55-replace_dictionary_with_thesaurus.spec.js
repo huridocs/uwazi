@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/55-replace_dictionary_with_thesaurus/index.js';
+import fixtures from '#api/migrations/migrations/55-replace_dictionary_with_thesaurus/specs/fixtures.js';
 
 describe('migration replace_dictionary_with_thesaurus', () => {
   let translations;

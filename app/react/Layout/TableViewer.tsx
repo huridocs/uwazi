@@ -7,7 +7,7 @@ import { EntityDisplayState, IStore, TableViewColumn } from '#app/istore.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { TableRows } from '#app/Layout/TableRows.js';
+import { TableRows } from '#app/Layout/TableRows.jsx';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
 interface TableViewerProps extends CollectionViewerProps {

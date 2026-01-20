@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { instanceModel } from '../odm/index.js';
+import { instanceModel } from '#api/odm/index.js';
 import { PageType } from '#shared/types/pageType.js';
 
 const propsWithDBSpecifics = {

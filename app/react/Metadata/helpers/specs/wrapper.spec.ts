@@ -3,8 +3,8 @@
  */
 import fetchMock from 'fetch-mock';
 
-import { ClientTemplateSchema } from '#app/V2/shared/types.js';
-import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { wrapEntityMetadata, prepareMetadataAndFiles } from '#app/Metadata/helpers/wrapper.js';
 
 describe('wrapEntityMetadata', () => {
   const template = {

@@ -4,9 +4,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import { validMediaFile } from '#app/Metadata/helpers/validator.js';
+import { validMediaFile } from '#app/Metadata/helpers/validator.jsx';
 
 interface MarkdownMediaProps {
   compact?: boolean;
@@ -309,7 +309,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           url = URL.createObjectURL(blob);
           setMediaURL(url);
         })
-        .catch(_e => {})
+        .catch(_e => { })
         .finally(() => {
           setIsLoading(false);
         });

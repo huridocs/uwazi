@@ -3,10 +3,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { mapStateToProps, ListChartComponent } from '../ListChart.js';
-import markdownDatasets from '#app/Markdown/markdownDatasets';
-import { aggregationWithNestedValues } from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures';
-import { nestedThesauri } from './fixture/nestedThesauri';
+import { mapStateToProps, ListChartComponent } from '#app/Markdown/components/ListChart.jsx';
+import markdownDatasets from '#app/Markdown/markdownDatasets.js';
+import { aggregationWithNestedValues } from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
+import { nestedThesauri } from '#app/Markdown/components/specs/fixture/nestedThesauri.js';
 
 describe('ListChart Markdown component', () => {
   const state = {

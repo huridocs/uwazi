@@ -1,6 +1,8 @@
-import { fromJS } from 'immutable';
-import * as types from '../actions/actionTypes';
 
+import * as types from '#app/Relationships/actions/actionTypes.js';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 const initialState = [];
 
 const emptyRigthRelationship = () => ({ relationships: [] });

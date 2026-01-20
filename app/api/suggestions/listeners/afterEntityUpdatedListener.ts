@@ -1,14 +1,14 @@
-import { EventsBus } from '../eventsbus.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
-import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
-import { isEqual } from 'lodash';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
+import isEqual from 'lodash/isEqual.js';
 import { ObjectId } from 'mongodb';
-import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
-import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';
+import { UpdateSuggestionsAfterEntityUpdate } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
+import { ProcessSuggestionsAfterTemplateChanged } from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;
@@ -21,7 +21,7 @@ export class AfterEntityUpdatedListener {
   constructor(
     private eventBus: EventsBus,
     private depsFactory: () => Dependencies
-  ) {}
+  ) { }
 
   private get deps() {
     return this.depsFactory();

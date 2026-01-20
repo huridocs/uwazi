@@ -2,11 +2,11 @@
 import fs from 'fs';
 import { promisify } from 'util';
 
-import { legacyLogger } from '../log.js';
-import { config } from '../config.js';
+import { legacyLogger } from '#api/log/index.js';
+import { config } from '#api/config.js';
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures, { docId1, docId4 } from './fixtures.js';
+import migration from '#api/migrations/migrations/4-pdf_thumbnails/index.js';
+import fixtures, { docId1, docId4 } from '#api/migrations/migrations/4-pdf_thumbnails/specs/fixtures.js';
 
 const exists = promisify(fs.stat);
 

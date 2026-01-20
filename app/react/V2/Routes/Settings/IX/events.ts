@@ -1,4 +1,4 @@
-import { ixStatus } from './types';
+import { ixStatus } from '#V2/Routes/Settings/IX/types.js';
 
 type IXModelStatusData = {
   processed: number;

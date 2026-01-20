@@ -1,10 +1,10 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { CreateThesaurusUseCase } from 'api/core/application/CreateThesaurus';
-import { ThesaurusTranslationService } from 'api/core/application/thesaurusTranslationService/ThesaurusTranslationService';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSourceV2 } from '../mongodb/thesauri/MongoThesaurusDataSourceV2';
-import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { CreateThesaurusUseCase } from '#api/core/application/CreateThesaurus.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoThesauriDataSourceV2 } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusDataSourceV2.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 class CreateThesaurusUseCaseFactory {
   static default() {

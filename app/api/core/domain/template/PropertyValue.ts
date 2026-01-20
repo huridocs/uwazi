@@ -1,5 +1,5 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { PropertyType } from './PropertyType';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type Icon = {
   id: string;

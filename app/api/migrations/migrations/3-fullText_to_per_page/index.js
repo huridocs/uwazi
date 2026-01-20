@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import { config } from '../config.js';
-import { PDF } from '../files/PDF.js';
+import { config } from '#api/config.js';
+import { PDF } from '#app/PDF/index.js';
 import fs from 'fs';
 import path from 'path';
 

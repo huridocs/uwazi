@@ -4,7 +4,7 @@ import { wrapValidator } from '#shared/tsUtils.js';
 
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { userGroupSchema } from '#shared/types/userGroupSchema.js';
-import model from './userGroupsModel.js';
+import model from '#api/usergroups/userGroupsModel.js';
 
 const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
 ajv.addVocabulary(['tsType']);

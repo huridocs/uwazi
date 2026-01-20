@@ -3,7 +3,7 @@ import backend from 'fetch-mock';
 
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 
-import { actions as relationshipActions } from '#app/Relationships.js';
+import { actions as relationshipActions } from '#app/Relationships/index.js';
 
 import { APIURL } from '#app/config.js';
 import configureMockStore from 'redux-mock-store';
@@ -12,8 +12,8 @@ import Immutable from 'immutable';
 
 import { mockID } from '#shared/uniqueID.js.js';
 
-import { ClientEntitySchema } from '#app/V2/shared/types.js';
-import { tocGenerationActions } from '../actions';
+import { ClientEntitySchema } from '#V2/shared/types.js';
+import { tocGenerationActions } from '#app/ToggledFeatures/tocGeneration/actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

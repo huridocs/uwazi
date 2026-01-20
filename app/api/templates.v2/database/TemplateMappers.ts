@@ -1,19 +1,19 @@
 /* eslint-disable no-redeclare */
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
 import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
-import { mapPropertyQuery } from './QueryMapper';
-import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
-import { RelationshipPropertyDBO, TemplateDBO } from './schemas/TemplateDBO';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
+import { TraverseQueryDBO } from '#api/core/infrastructure/mongodb/template/DBOs/RelationshipsQueryDBO.js';
+import { RelationshipPropertyDBO, TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 

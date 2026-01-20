@@ -1,11 +1,11 @@
 import translations from '#api/i18n/translations.js';
-import 'api/utils/jasmineHelpers';
+import '#api/utils/jasmineHelpers';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import instrumentRoutes from '#api/utils/instrumentRoutes';
-import thesauriRoute from '../routes.js';
-import thesauri from '../thesauri';
-import { fixtures } from './fixtures';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
+import thesauriRoute from '#api/thesauri/routes.js';
+import thesauri from '#api/thesauri/thesauri.js';
+import { fixtures } from '#api/thesauri/specs/fixtures.js';
 
 describe('thesauri routes', () => {
   let routes;

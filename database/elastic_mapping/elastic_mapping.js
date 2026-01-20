@@ -1,7 +1,7 @@
-import { elasticLanguageCodes } from '../../app/shared/language/index.js';
 import baseProperties from './base_properties';
 import settings from './settings';
 import dynamicTemplates from './dynamic_templates';
+import { elasticLanguageCodes } from 'app/shared/language/index.js';
 
 const config = {
   settings,

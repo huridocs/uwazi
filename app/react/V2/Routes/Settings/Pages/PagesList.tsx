@@ -6,15 +6,15 @@ import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
-import * as pagesAPI from '#app/V2/api/pages/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
 
-import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { Page } from '#app/istore.js';
 
-import { notificationAtom, notificationAtomType } from '#app/V2/atoms/index.ts';
+import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
 
 import {
   EntityViewHeader,
@@ -25,15 +25,15 @@ import {
   UrlCell,
   ActionHeader,
   List,
-} from './components/PageListTable.js';
+} from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 type TablePage = Page & { rowId: string };
 
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
+    async () =>
+      (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
 
 const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
   type: !hasErrors ? 'success' : 'error',

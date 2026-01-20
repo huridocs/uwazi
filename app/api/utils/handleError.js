@@ -11,9 +11,9 @@ import { legacyLogger } from '#api/log/index.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
 import { appContext } from '#api/utils/AppContext.js';
-import { createError } from './index.js';
+import { createError } from '#api/utils/index.js';
 import util from 'node:util';
-import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors';
+import { FileNotFound as FileNotFoundV2 } from '#api/core/domain/files/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 const ajvPrettifier = error => {

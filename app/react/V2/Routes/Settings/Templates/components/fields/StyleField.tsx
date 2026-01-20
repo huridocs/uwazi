@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { RadioSelect } from '#app/V2/Components/Forms/index.js';
+import { RadioSelect } from '#V2/Components/Forms/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';

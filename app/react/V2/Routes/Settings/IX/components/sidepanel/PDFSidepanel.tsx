@@ -19,23 +19,23 @@ import {
   ToggleButton,
   Truncate,
   VerticalDrawer,
-} from '#app/V2/Components/UI/index.js';
-import { PDF, selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
-import { notificationAtom, pdfScaleAtom } from '#app/V2/atoms/index.ts';
-import { secondsToISODate } from '#app/V2/shared/dateHelpers.js';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
-import { TableSuggestion } from '../types.js';
+} from '#V2/Components/UI/index.js';
+import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { notificationAtom, pdfScaleAtom } from '#V2/atoms/index.js';
+import { secondsToISODate } from '#V2/shared/dateHelpers.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { TableSuggestion } from './types.js';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../../helpers';
-import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from '../atoms';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
-import { SidepanelProps } from './types';
+} from '#V2/Routes/Settings/IX/helpers/index.js';
+import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.jsx';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
+import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 
 enum HighlightColors {
   CURRENT = '#B1F7A3',

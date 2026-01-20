@@ -1,5 +1,5 @@
-import { MongoQueueAdapter } from './MongoQueueAdapter';
-import { Job } from './QueueAdapter';
+import { MongoQueueAdapter } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
+import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
 export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   private latestTenants: string[] = ['', ''];

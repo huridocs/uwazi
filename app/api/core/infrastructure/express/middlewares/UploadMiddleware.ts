@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { generateFileName } from 'api/files';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { tenants } from 'api/tenants';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { generateFileName } from '#api/files/index.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { tenants } from '#api/tenants/index.js';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 

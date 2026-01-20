@@ -6,7 +6,7 @@ import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { userAtom } from '#app/V2/atoms/index.ts';
+import { userAtom } from '#V2/atoms/index.js';
 
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
 

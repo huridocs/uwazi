@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
-import { Icon } from 'UI';
 
-import StackTrace from '../StackTrace.js';
+import { Icon } from '#UI/Icon/Icon.jsx';
 
+import StackTrace from '#app/components/Elements/StackTrace.jsx';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 describe('StackTrace', () => {
   let component;
   const props = {

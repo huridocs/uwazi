@@ -9,9 +9,9 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { UserSchema } from '#shared/types/userType.js';
-import { expectedLinks, linkFixtures, newLinks } from './fixtures';
-import settingsRoutes from '../routes';
-import settings from '../settings';
+import { expectedLinks, linkFixtures, newLinks } from '#api/settings/specs/fixtures.js';
+import settingsRoutes from '#api/settings/routes.js';
+import settings from '#api/settings/settings.js';
 
 let currentUser: UserSchema;
 
@@ -53,7 +53,7 @@ beforeEach(async () => {
 
 afterAll(async () => testingEnvironment.tearDown());
 
-describe('api/settings/links', () => {
+describe('#api/settings/links', () => {
   describe('GET', () => {
     it('should respond with links', async () => {
       const response = await request(app).get('/api/settings/links').expect(200);

@@ -11,22 +11,22 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
-import * as suggestionsAPI from '#app/V2/api/ix/suggestions.js';
-import * as templatesAPI from '#app/V2/api/templates/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { Button, PaginationState, Paginator, Table } from '#app/V2/Components/UI/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+import * as extractorsAPI from '#V2/api/ix/extractors.js';
+import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema } from '#app/istore.js';
-import { SuggestionsTitle } from './components/SuggestionsTitle.js';
-import { FiltersSidepanel } from './components/FiltersSidepanel.js';
-import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
-import { generateChildrenRows, formatAccepted } from './helpers/index.js';
+import { SuggestionsTitle } from '#V2/Routes/Settings/IX/components/SuggestionsTitle.jsx';
+import { FiltersSidepanel } from '#V2/Routes/Settings/IX/components/FiltersSidepanel.jsx';
+import { suggestionsTableColumnsBuilder } from '#V2/Routes/Settings/IX/components/TableElements.jsx';
+import { generateChildrenRows, formatAccepted } from '#V2/Routes/Settings/IX/helpers/index.js';
 import {
   TableSuggestion,
   MultiValueSuggestion,
@@ -34,18 +34,18 @@ import {
   ixStatus,
   IXSuggestionsLoaderResponse,
   EntitySuggestion,
-} from './types';
-import { useEventHandler } from './hooks/useEventHandler';
-import { acceptedSuggestions } from './components/atoms';
-import { PDFSidepanel } from './components/sidepanel/PDFSidepanel';
-import { PropertySidepanel } from './components/sidepanel/PropertySidepanel';
-import { TrainModelModal } from './components/TrainModelModal';
-import { ProcessExtractorModal } from './components/ProcessExtractorModal';
+} from '#V2/Routes/Settings/IX/types.js';
+import { useEventHandler } from '#V2/Routes/Settings/IX/hooks/useEventHandler.js';
+import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import { PDFSidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PDFSidepanel.jsx';
+import { PropertySidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PropertySidepanel.jsx';
+import { TrainModelModal } from '#V2/Routes/Settings/IX/components/TrainModelModal.jsx';
+import { ProcessExtractorModal } from '#V2/Routes/Settings/IX/components/ProcessExtractorModal.jsx';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from './helpers/loaderHelper.js';
+} from '#V2/Routes/Settings/IX/helpers/loaderHelper.js';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -155,7 +155,7 @@ const IXSuggestions = () => {
             samplePolicy,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
-        } catch (error) {}
+        } catch (error) { }
       }
     }
   };
@@ -171,7 +171,7 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      } catch (error) {}
+      } catch (error) { }
     }
   };
 
@@ -468,82 +468,82 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId }, request }): Promise<IXSuggestionsLoaderResponse> => {
-    if (!extractorId) throw new Error('extractorId is required');
-    const searchParams = new URLSearchParams(request.url.split('?')[1]);
-    const filter: any = { extractorId };
-    let activeFilters = 0;
-    if (searchParams.has('filter')) {
-      filter.customFilter = JSON.parse(searchParams.get('filter')!);
-      activeFilters = Object.values(filter.customFilter).filter(Boolean).length;
-    }
-    const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
+    async ({ params: { extractorId }, request }): Promise<IXSuggestionsLoaderResponse> => {
+      if (!extractorId) throw new Error('extractorId is required');
+      const searchParams = new URLSearchParams(request.url.split('?')[1]);
+      const filter: any = { extractorId };
+      let activeFilters = 0;
+      if (searchParams.has('filter')) {
+        filter.customFilter = JSON.parse(searchParams.get('filter')!);
+        activeFilters = Object.values(filter.customFilter).filter(Boolean).length;
+      }
+      const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
-    const suggestionsList: {
-      suggestions: EntitySuggestion[];
-      totalPages: number;
-      total: number;
-    } = await suggestionsAPI.get(
-      {
-        filter,
-        page: {
-          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
-          size: SUGGESTIONS_PER_PAGE,
+      const suggestionsList: {
+        suggestions: EntitySuggestion[];
+        totalPages: number;
+        total: number;
+      } = await suggestionsAPI.get(
+        {
+          filter,
+          page: {
+            number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+            size: SUGGESTIONS_PER_PAGE,
+          },
+          ...(sortingOption && { sort: JSON.parse(sortingOption) }),
         },
-        ...(sortingOption && { sort: JSON.parse(sortingOption) }),
-      },
-      headers
-    );
-
-    const extractors = await extractorsAPI.getById(extractorId, headers);
-    const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
-    const currentStatus = await suggestionsAPI.status(extractorId, headers);
-    const templates = await templatesAPI.get(headers);
-
-    const template = templates.find(temp => extractors[0].templates.includes(temp._id));
-    const property =
-      extractors[0].property === 'title'
-        ? template?.commonProperties?.find(prop => prop.name === extractors[0].property)
-        : template?.properties?.find(prop => prop.name === extractors[0].property);
-
-    let suggestions = suggestionsList.suggestions.map(suggestion => ({
-      ...suggestion,
-      rowId: suggestion._id,
-      disableRowSelection: suggestion.state.processing,
-      extractorSource: extractors[0].source,
-    }));
-
-    if (property?.type === 'relationship') {
-      const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
-        suggestions,
-        property,
-        templates
+        headers
       );
-      extractors[0].inheritedProperty = targetProperty;
-      const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
-        ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
-        : new Map();
-      const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
-        ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
-        : new Map();
 
-      suggestions = updateSuggestionValues(
+      const extractors = await extractorsAPI.getById(extractorId, headers);
+      const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
+      const currentStatus = await suggestionsAPI.status(extractorId, headers);
+      const templates = await templatesAPI.get(headers);
+
+      const template = templates.find(temp => extractors[0].templates.includes(temp._id));
+      const property =
+        extractors[0].property === 'title'
+          ? template?.commonProperties?.find(prop => prop.name === extractors[0].property)
+          : template?.properties?.find(prop => prop.name === extractors[0].property);
+
+      let suggestions = suggestionsList.suggestions.map(suggestion => ({
+        ...suggestion,
+        rowId: suggestion._id,
+        disableRowSelection: suggestion.state.processing,
+        extractorSource: extractors[0].source,
+      }));
+
+      if (property?.type === 'relationship') {
+        const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
+          suggestions,
+          property,
+          templates
+        );
+        extractors[0].inheritedProperty = targetProperty;
+        const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
+          ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
+          : new Map();
+        const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
+          ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
+          : new Map();
+
+        suggestions = updateSuggestionValues(
+          suggestions,
+          entityCurrentValuesMap,
+          entitySuggestedValuesMap
+        );
+      }
+
+      return {
         suggestions,
-        entityCurrentValuesMap,
-        entitySuggestedValuesMap
-      );
-    }
-
-    return {
-      suggestions,
-      totalPages: suggestionsList.totalPages,
-      extractor: extractors[0],
-      templates,
-      aggregation,
-      currentStatus: currentStatus.status,
-      activeFilters,
-      total: suggestionsList.total,
+        totalPages: suggestionsList.totalPages,
+        extractor: extractors[0],
+        templates,
+        aggregation,
+        currentStatus: currentStatus.status,
+        activeFilters,
+        total: suggestionsList.total,
+      };
     };
-  };
 
 export { IXSuggestions, IXSuggestionsLoader };

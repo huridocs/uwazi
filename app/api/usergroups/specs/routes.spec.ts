@@ -4,13 +4,13 @@ import { ObjectId } from 'mongodb';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import userGroupRoutes from '../usergroups/routes.js';
+import userGroupRoutes from '#api/usergroups/routes.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import userGroups from '../userGroups';
+import userGroups from '#api/usergroups/userGroups.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

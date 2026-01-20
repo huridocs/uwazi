@@ -1,17 +1,17 @@
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
-import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
-import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { tenants } from '../tenants/index.js';
+import { tenants } from '#api/tenants/index.js';
 
 export const denormalizeTemplateEntities = async (
   template: Template,

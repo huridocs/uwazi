@@ -2,7 +2,7 @@ import React from 'react';
 import { captureException } from '@sentry/react';
 import { isClient } from '#app/utils/index.js';
 import Translate from '#shared/translate.js';
-import { atomStore, notificationAtom } from '../atoms';
+import { atomStore, notificationAtom } from '#V2/atoms/index.js';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {

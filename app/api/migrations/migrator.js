@@ -1,9 +1,13 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 
 import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import migrationsModel from './migrationsModel';
+import migrationsModel from '#api/migrations/migrationsModel.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const promiseInSequence = funcs =>
   funcs.reduce(
@@ -16,7 +20,10 @@ const sortByDelta = migrations => migrations.sort((a, b) => a.delta - b.delta);
 const getMigrations = async migrationsDir => {
   const [lastMigration] = await migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } });
   const files = await fs.readdir(migrationsDir);
-  let migrations = files.map(migration => require(path.join(migrationsDir, migration)).default);
+  const migrationModules = await Promise.all(
+    files.map(migration => import(pathToFileURL(path.join(migrationsDir, migration)).href))
+  );
+  let migrations = migrationModules.map(module => module.default);
   migrations = sortByDelta(migrations);
   if (lastMigration) {
     migrations = migrations.map(m => (m.delta > lastMigration.delta ? m : null)).filter(m => m);

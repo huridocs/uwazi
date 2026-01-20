@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import migration from '#api/migrations/migrations/133-set_up_new_relationship_collection/index.js';
+import { fixtures } from '#api/migrations/migrations/133-set_up_new_relationship_collection/specs/fixtures.js';
 
 describe('migration set_up_new_relationship_collection', () => {
   let db;

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { t } from 'app/I18N';
-import { I18NLink } from 'app/I18N/I18NLinkV2';
+import { t } from '#app/I18N/index.js';
+import { I18NLink } from '#app/I18N/I18NLinkV2.jsx';
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon } from '@heroicons/react/24/outline';
 import { availableLanguages } from '#shared/language/index.js';
-import { localeAtom, settingsAtom } from '../../../atoms';
-import { BaseDropdown } from './BaseDropdown';
+import { localeAtom, settingsAtom } from '#V2/atoms/index.js';
+import { BaseDropdown } from '#V2/Components/UI/Header/BaseDropdown.jsx';
 
 interface MobileMenuDropdownProps {
   links: any[] | undefined;

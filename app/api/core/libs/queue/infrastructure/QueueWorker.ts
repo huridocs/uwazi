@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop */
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
-import { Dispatchable } from '../application/contracts/Dispatchable';
-import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { NonRetryableJobError, UnregisteredJobError } from './errors';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { NonRetryableJobError, UnregisteredJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
 interface WorkerOptions {
   waitTime?: number;

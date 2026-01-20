@@ -7,8 +7,8 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import Icon from '#UI/Icon/Icon.jsx';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  let formDispatch: Function = () => {};
+  let formDispatch: Function = () => { };
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {

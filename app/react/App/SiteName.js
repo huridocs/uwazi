@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { I18NLink } from '#app/I18N/index.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { store } from '../store';
+import { store } from '#app/store.js';
 
 export class SiteName extends Component {
   render() {

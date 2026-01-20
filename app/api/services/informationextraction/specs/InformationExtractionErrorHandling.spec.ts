@@ -4,23 +4,23 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
-import { factory, fixtures, patchFixturesWithPort } from './fixtures';
-import { InformationExtraction } from '../InformationExtraction';
+import { factory, fixtures, patchFixturesWithPort } from '#api/services/informationextraction/specs/fixtures.js';
+import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
-import { IXModelsModel } from '../IXModelsModel';
+import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
 
-jest.mock('api/services/tasksmanager/TaskManager.ts');
-jest.mock('api/socketio/setupSockets');
-jest.mock('api/core/libs/queue/configuration/factories', () => ({
+jest.mock('#api/services/tasksmanager/TaskManager.ts');
+jest.mock('#api/socketio/setupSockets');
+jest.mock('#api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => ({
     dispatch: jest.fn(),
   }),

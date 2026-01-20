@@ -8,8 +8,8 @@ import 'flowbite/dist/flowbite.min.css';
 import uniqueID from '#shared/uniqueID.js';
 
 import { t } from '#app/I18N/index.js';
-import { Label } from '../Label';
-import { InputError } from '../InputError';
+import { Label } from '#V2/Components/Forms/Label.jsx';
+import { InputError } from '#V2/Components/Forms/InputError.jsx';
 
 interface DatePickerProps {
   dateFormat?: string;

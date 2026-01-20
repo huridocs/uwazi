@@ -1,5 +1,5 @@
-import * as actions from './actions';
-import NeedAuthorization from './components/NeedAuthorization';
+import * as actions from '#app/Auth/actions.js';
+import NeedAuthorization from '#app/Auth/components/NeedAuthorization.jsx';
 
 export default {
   actions,

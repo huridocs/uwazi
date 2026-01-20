@@ -1,6 +1,6 @@
-export { AddTemplatesModal } from './AddTemplatesModal';
-export { createColumns } from './TableComponents';
-export { FiltersSidepanel } from './FiltersSidepanel';
+export { AddTemplatesModal } from '#V2/Routes/Settings/Filters/components/AddTemplatesModal.jsx';
+export { createColumns } from '#V2/Routes/Settings/Filters/components/TableComponents.jsx';
+export { FiltersSidepanel } from '#V2/Routes/Settings/Filters/components/FiltersSidepanel.jsx';
 export {
   filterAvailableTemplates,
   updateFilters,
@@ -8,6 +8,6 @@ export {
   deleteFilters,
   sanitizeFilters,
   formatFilters,
-} from './helpers';
-export { sidepanelAtom } from './sidepanelAtom';
-export type { LoaderData, Filter } from './helpers';
+} from '#V2/Routes/Settings/Filters/components/helpers.js';
+export { sidepanelAtom } from '#V2/Routes/Settings/Filters/components/sidepanelAtom.js';
+export type { LoaderData, Filter } from '#V2/Routes/Settings/Filters/components/helpers.js';

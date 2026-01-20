@@ -2,12 +2,12 @@ import { Db } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
-import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoPXExtractorsDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
 
 type Props = {
   connection?: Db;

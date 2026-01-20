@@ -1,12 +1,12 @@
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { WithId } from '../odm/index.js';
+import { WithId } from '#api/odm/index.js';
 
 import { files as filesAPI, storage } from '#api/files/index.js';
-import { processDocument } from '../files/processDocument.js';
+import { processDocument } from '#api/files/processDocument.js';
 
-import { legacyLogger } from '../log/index.js';
+import { legacyLogger } from '#api/log/index.js';
 import { handleError, prettifyError } from '#api/utils/handleError.js';
 
 import { FileType } from '#shared/types/fileType.js';
@@ -14,7 +14,7 @@ import { ClientEntitySchema } from '#app/istore.js';
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { TypeOfFile } from '#shared/types/fileSchema.js';
-import { FileAttachment } from './entitySavingManager.js';
+import { FileAttachment } from '#api/entities/entitySavingManager.js';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,

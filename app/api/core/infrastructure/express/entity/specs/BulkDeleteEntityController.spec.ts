@@ -1,12 +1,12 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Request, Response } from 'express';
-import { tenants } from 'api/tenants';
-import { BulkDeleteEntityUseCaseFactory } from 'api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory';
-import entities from 'api/entities';
+import { tenants } from '#api/tenants/index.js';
+import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
+import entities from '#api/entities/index.js';
 import {
   BulkDeleteEntityController,
   BulkDeleteEntityRequestDto,
-} from '../BulkDeleteEntityController';
+} from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
 
 type CreateSutProps = {
   requestDto?: BulkDeleteEntityRequestDto;

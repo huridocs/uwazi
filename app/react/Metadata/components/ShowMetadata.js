@@ -1,13 +1,13 @@
 import ShowIf from '#app/App/ShowIf.jsx';
 import { DocumentLanguage, TemplateLabel } from '#app/Layout/index.js';
 import { Icon } from '#app/Layout/Icon.jsx';
-import TimelineViewer from '#app/Timeline/components/TimelineViewer.js';
+import TimelineViewer from '#app/Timeline/components/TimelineViewer.jsx';
 import { caseTemplate, matterTemplate } from '#app/Timeline/utils/timelineFixedData.js';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FormatMetadata } from '../containers/FormatMetadata';
+import { FormatMetadata } from '#app/Metadata/containers/FormatMetadata.jsx';
 
 class ShowMetadata extends Component {
   render() {

@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from '../suggestions/suggestions.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/templates/templates.js';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 
@@ -11,19 +11,19 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
-} from '../suggestions/blankSuggestions.js';
+} from '#api/suggestions/blankSuggestions.js';
 
 import { Subset } from '#shared/tsUtils.js';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { IXExtractorModel as model } from './IXExtractorModel.js';
-import { IXErrorCode, IXValidationError } from './IXValidationError.js';
+import { IXExtractorModel as model } from '#api/services/informationextraction/IXExtractorModel.js';
+import { IXErrorCode, IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
 
 type AllowedPropertyTypes =
   | Subset<
-      PropertyTypeSchema,
-      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
-    >
+    PropertyTypeSchema,
+    'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
+  >
   | 'title';
 
 interface ExtractorType extends IXExtractorType {

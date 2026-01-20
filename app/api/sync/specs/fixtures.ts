@@ -2,7 +2,7 @@
 
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { UpdateLog } from '../updatelogs/index.js';
+import { UpdateLog } from '#api/index.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 

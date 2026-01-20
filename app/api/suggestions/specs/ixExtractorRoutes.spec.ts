@@ -11,7 +11,7 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import { extractorsRoutes } from '../extractorsRoutes';
+import { extractorsRoutes } from '#api/suggestions/extractorsRoutes.js';
 
 const adminUser = {
   username: 'User 1',

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Icon as UIIcon, CountryList } from '/home/mercy/Projects/uwazi/node_modules/@testing-library/user-event/dist/types/document/UI.d.js';
+import { Icon as UIIcon, CountryList } from '#UI';
 
 function getFaSize(size) {
   switch (size) {

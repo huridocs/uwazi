@@ -6,8 +6,8 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 
-import { searchRoutes } from '../routes';
-import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
+import { searchRoutes } from '#api/search.v2/routes.js';
+import { permissionsLevelFixtures, users } from '#api/search.v2/specs/permissionsFiltersFixtures.js';
 
 describe('entities GET permissions + published filter', () => {
   const app: Application = setUpApp(searchRoutes);

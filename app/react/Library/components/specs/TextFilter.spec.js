@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import TextFilter from '../TextFilter';
+import TextFilter from '#app/Library/components/TextFilter.jsx';
 
 describe('TextFilter', () => {
   it('should render a text filter field with a label and passing the model', () => {

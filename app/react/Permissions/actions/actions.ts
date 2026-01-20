@@ -14,7 +14,7 @@ import {
   UPDATE_DOCUMENTS_PUBLISHED,
 } from '#app/Library/actions/actionTypes.js';
 import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
-import { PermissionType, MixedAccess } from '#shared/types/permissionSchema';
+import { PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
 
 export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {

@@ -4,9 +4,9 @@ import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockID } from '#shared/uniqueID.js.js';
-import { api } from '#app/Entities.js';
+import { api } from '#app/Entities/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import * as actions from '../actions';
+import * as actions from '#app/Metadata/actions/actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

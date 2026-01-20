@@ -4,8 +4,8 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import { AttachmentsModalCmp, AttachmentsModalProps } from '#app/Attachments/components/AttachmentsModal.jsx';
 
 describe('Attachments Modal', () => {
   let props: AttachmentsModalProps;

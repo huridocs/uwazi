@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fromJS as Immutable } from 'immutable';
+
 import PropTypes from 'prop-types';
 import qs from 'qs';
 
@@ -10,8 +10,10 @@ import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Slider from '#app/slider';
+import Slider from './slider.js';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 class ItemList extends Component {
   render() {
     const { items, link } = this.props;

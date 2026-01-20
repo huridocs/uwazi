@@ -4,12 +4,12 @@ import path from 'path';
 import translations from '#api/i18n/translations.js';
 import thesauri from '#api/thesauri/thesauri.js';
 import entities from '#api/entities/index.js';
-import { fixtureFactory } from '../csv/specs/csvLoaderSelectsFixtures.js';
+import { fixtureFactory } from '#api/csv/specs/csvLoaderSelectsFixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures } from './csvLoaderSelectsFixtures';
+import { fixtures } from '#api/csv/specs/csvLoaderSelectsFixtures.js';
 
-import { CSVLoader } from '../csvLoader';
-import { ArrangeThesauriError } from '../arrangeThesauri';
+import { CSVLoader } from '#api/csv/csvLoader.js';
+import { ArrangeThesauriError } from '#api/csv/arrangeThesauri.js';
 
 const loader = new CSVLoader();
 

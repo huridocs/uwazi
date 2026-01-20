@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { actions, Field } from 'react-redux-form';
-import { FormGroup } from '#app/ReactReduxForms/index.js';
+import { FormGroup } from '#app/ReactReduxForms/index.jsx';
 import { Translate, t } from '#app/I18N/index.js';
 import api from '#app/utils/api.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { LocalForm } from '#app/Forms/Form.js';
-import { FormCaptcha } from './FormCaptcha';
+import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.jsx';
 
 class ContactForm extends Component {
   constructor(props, context) {

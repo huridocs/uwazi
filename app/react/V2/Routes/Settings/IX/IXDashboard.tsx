@@ -4,20 +4,20 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
-import * as extractorsAPI from '#app/V2/api/ix/extractors.js';
-import * as templatesAPI from '#app/V2/api/templates/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import * as extractorsAPI from '#V2/api/ix/extractors.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { ClientTemplateSchema } from '#app/istore.js';
-import { Button, ConfirmationModal, Table } from '#app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 
 import { Translate, t } from '#app/I18N/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
-import { ExtractorModal } from './components/ExtractorModal.js';
-import { extractorsTableColumns } from './components/TableElements.js';
-import { List } from './components/List.js';
-import { TableExtractor } from './types.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { ExtractorModal } from '#V2/Routes/Settings/IX/components/ExtractorModal.jsx';
+import { extractorsTableColumns } from '#V2/Routes/Settings/IX/components/TableElements.jsx';
+import { List } from '#V2/Routes/Settings/IX/components/List.jsx';
+import { TableExtractor } from '#V2/Routes/Settings/IX/types.js';
 
 const formatExtractors = (
   extractors: ClientIXExtractorType[],
@@ -205,10 +205,10 @@ const IXDashboard = () => {
 
 const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const extractors = await extractorsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
-    return { extractors, templates };
-  };
+    async () => {
+      const extractors = await extractorsAPI.get(headers);
+      const templates = await templatesAPI.get(headers);
+      return { extractors, templates };
+    };
 
 export { IXDashboard, IXdashboardLoader, formatExtractors };

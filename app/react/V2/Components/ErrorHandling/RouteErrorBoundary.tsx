@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteError } from 'react-router';
 import { captureException } from '@sentry/react';
-import { ErrorFallback } from './ErrorFallback';
+import { ErrorFallback } from '#V2/Components/ErrorHandling/ErrorFallback.jsx';
 
 interface ErrorBoundaryProps {
   error?: Error;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import settings from '../settings/index.js';
-import { captchaAuthorization } from './index';
+import settings from '#api/settings/index.js';
+import { captchaAuthorization } from '#api/auth/index.js';
 
 export const publicAPIMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const { openPublicEndpoint } = await settings.get();

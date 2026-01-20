@@ -1,23 +1,23 @@
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
-import { FileStorageStrategyFactory } from '../files.v2/infrastructure/FileStorageStrategyFactory.js';
+import { FileStorageStrategyFactory } from '#api/files.v2/infrastructure/FileStorageStrategyFactory.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
-import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { PXExtractParagraphsFromEntity } from '#api/paragraphExtraction/application/PXExtractParagraphsFromEntity.js';
+import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {

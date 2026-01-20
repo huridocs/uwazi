@@ -6,9 +6,9 @@ import { bindActionCreators } from 'redux';
 import { I18NLink } from '#app/I18N/index.js';
 import SearchDescription from '#app/Library/components/SearchDescription.jsx';
 import { withContext } from '#app/componentWrappers.jsx';
-import { Icon, ProgressBar } from '/home/mercy/Projects/uwazi/node_modules/@testing-library/user-event/dist/types/document/UI.d.js';
+import { Icon, ProgressBar } from '#UI';
 
-import { deleteSearch, resumeSearch, stopSearch } from '#app/Metadata/actions/actions.js';
+import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions.js';
 
 class SearchItemComponent extends Component {
   constructor(props) {

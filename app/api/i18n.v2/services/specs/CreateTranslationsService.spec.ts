@@ -14,8 +14,8 @@ import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { CreateTranslationsService } from '../CreateTranslationsService';
-import { ValidateTranslationsService } from '../ValidateTranslationsService';
+import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
+import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

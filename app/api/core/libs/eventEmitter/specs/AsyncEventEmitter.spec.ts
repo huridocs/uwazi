@@ -1,20 +1,20 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { tenants } from 'api/tenants';
-import { getSharedConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { tenants } from '#api/tenants/index.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Collection } from 'mongodb';
-import { DependenciesContext } from '../../DependenciesContext';
-import { JobInfo } from '../../queue/application/contracts/Dispatchable';
-import { AsyncEventEmitter } from '../AsyncEventEmitter';
-import { Event } from '../Event';
-import { Listener } from '../Listener';
-import { DefaultDispatcher } from '../../queue/configuration/factories';
-import { EventEmitter } from '../EventEmitter';
+import { DependenciesContext } from '#api/core/libs/DependenciesContext.js';
+import { JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { AsyncEventEmitter } from '#api/core/libs/eventEmitter/AsyncEventEmitter.js';
+import { Event } from '#api/core/libs/eventEmitter/Event.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();

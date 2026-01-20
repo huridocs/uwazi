@@ -1,8 +1,8 @@
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
-import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '../csv';
-import { mockCsvFileReadStream } from './helpers';
+import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '#api/csv/csv.js';
+import { mockCsvFileReadStream } from '#api/csv/specs/helpers.js';
 
 const mockFileStream = (content: string) => {
   const mockedFile = mockCsvFileReadStream(content);
@@ -21,7 +21,7 @@ describe('peekHeaders()', () => {
   });
 
   it('should handle path as input', async () => {
-    const path = 'app/api/csv/specs/arrangeThesauriTest.csv';
+    const path = '#app/api/csv/specs/arrangeThesauriTest.csv';
     const headers = await peekHeaders(path);
     expect(headers).toEqual([
       'title',

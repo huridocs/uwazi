@@ -1,7 +1,7 @@
 import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
-import templates from '../templates/index.js';
+import templates from '#api/templates/index.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
@@ -11,7 +11,7 @@ import {
   formatCreationDate,
   formatDocuments,
   formatAttachments,
-} from './typeFormatters';
+} from '#api/csv/typeFormatters.js';
 import { EntitySchema } from '#shared/types/entityType';
 
 export type SearchResults = {

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { instanceModel } from '../odm/index.js';
+import { instanceModel } from '#api/odm/index.js';
 
 const pagesSchema = new mongoose.Schema({
   method: String,

@@ -1,15 +1,17 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { is, fromJS as Immutable } from 'immutable';
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
 import ShowIf from '#app/App/ShowIf.jsx';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
-import { setFilter } from '#app/Metadata/actions/actions.js';
+import { setFilter } from '../actions/actions';
+import ImmutableLib from 'immutable';
 
+const { is, fromJS: Immutable } = ImmutableLib;
 class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {
     if (props.group.get('templates').size > state.groupTemplates.size) {

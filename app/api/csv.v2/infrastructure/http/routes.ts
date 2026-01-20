@@ -1,14 +1,14 @@
 import { Application } from 'express';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
-import { handleError } from 'api/utils';
-import { tenants } from 'api/tenants/tenantContext';
-import { CSVLoader } from 'api/csv';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
+import { handleError } from '#api/utils/index.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { CSVLoader } from '#api/csv/index.js';
 import multer from 'multer';
-import { generateFileName } from 'api/files/filesystem';
+import { generateFileName } from '#api/files/filesystem.js';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
-import { RegisterCsvImportController } from './RegisterCsvImportController';
+import { RegisterCsvImportController } from '#api/csv.v2/infrastructure/http/RegisterCsvImportController.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements

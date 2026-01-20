@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import RadioButtons from '../RadioButtons';
+import RadioButtons from '#app/Forms/components/RadioButtons.jsx';
 
 describe('RadioButtons', () => {
   let component;

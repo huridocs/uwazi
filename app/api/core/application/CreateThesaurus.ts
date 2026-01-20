@@ -1,7 +1,7 @@
-import { CreateThesaurusProps, Thesaurus } from '../domain/thesaurus/Thesaurus';
-import { AbstractUseCase } from '../libs/UseCase';
-import { ThesauriDataSource } from './contracts/ThesauriDataSource';
-import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService';
+import { CreateThesaurusProps, Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 
 type Input = CreateThesaurusProps;
 

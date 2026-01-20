@@ -3,21 +3,21 @@ import ReactModal from 'react-modal';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { get } from 'lodash';
+import get from 'lodash/get.js';
 import { Translate } from '#app/I18N/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
 
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
-import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
 import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
 
-import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.js';
-import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
-import { validImageFile, validMediaFile } from '../helpers/validator';
+import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.jsx';
+import { MediaModalUploadFileButton } from '#app/Metadata/components/MediaModalUploadFileButton.jsx';
+import { validImageFile, validMediaFile } from '#app/Metadata/helpers/validator.jsx';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { ClientFile, IStore } from '#app/istore.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 enum MediaModalType {
   Image,
@@ -193,9 +193,8 @@ const MediaModalComponent = ({
             </div>
           </div>
           <div
-            className={`tab-content attachments-modal__tabs-content ${
-              !filteredAttachments.length ? 'centered' : ''
-            }`}
+            className={`tab-content attachments-modal__tabs-content ${!filteredAttachments.length ? 'centered' : ''
+              }`}
           >
             <MediaModalFileList
               filteredAttachments={filteredAttachments}

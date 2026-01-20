@@ -1,14 +1,14 @@
-import 'api/entities';
+import '#api/entities';
 import urljoin from 'url-join';
 import request from '#shared/JSONRequest.js';
 import { SettingsSyncSchema } from '#shared/types/settingsType.js';
 
 import { tenants } from '#api/tenants/index.js';
-import settings from '../settings/index.js';
+import settings from '#api/settings/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { synchronizer } from './synchronizer';
-import { createSyncConfig } from './syncConfig';
-import syncsModel from './syncsModel';
+import { synchronizer } from '#api/sync/synchronizer.js';
+import { createSyncConfig } from '#api/sync/syncConfig.js';
+import syncsModel from '#api/sync/syncsModel.js';
 
 const updateSyncs = async (name: string, collection: string, lastSync: number) =>
   syncsModel._updateMany({ name }, { $set: { [`lastSyncs.${collection}`]: lastSync } }, {});
@@ -111,7 +111,7 @@ export const syncWorker = {
   },
 
   async login({ url, username, password }: SyncConfig) {
-    const response = await request.post(urljoin(url, 'api/login'), { username, password });
+    const response = await request.post(urljoin(url, '#api/login'), { username, password });
 
     return response.cookie || '';
   },

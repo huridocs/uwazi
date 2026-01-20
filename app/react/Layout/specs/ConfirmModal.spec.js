@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import ConfirmModal from '../ConfirmModal';
+import ConfirmModal from '#app/Layout/ConfirmModal.jsx';
 
 describe('ConfirmModal', () => {
   let component;

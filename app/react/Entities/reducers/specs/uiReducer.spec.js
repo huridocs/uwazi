@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import uiReducer, { initialState as rawInitialState } from '../uiReducer';
+import uiReducer, { initialState as rawInitialState } from '#app/Entities/reducers/uiReducer.js';
 import * as actions from '#app/actions/uiActions';
 
 describe('uiReducer', () => {

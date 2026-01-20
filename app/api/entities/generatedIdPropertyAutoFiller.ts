@@ -3,7 +3,7 @@ import { generateID } from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
-import model from './entitiesModel.js';
+import model from '#api/entities/entitiesModel.js';
 
 const updateRecursively = async (
   templateId: ObjectIdSchema,

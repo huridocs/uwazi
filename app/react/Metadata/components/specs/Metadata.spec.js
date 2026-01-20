@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import MarkdownViewer from '#app/Markdown.js';
-import Metadata from '../Metadata';
+import MarkdownViewer from '#app/Markdown/index.js';
+import Metadata from '#app/Metadata/components/Metadata.jsx';
 
 describe('Metadata', () => {
   let props;

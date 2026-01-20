@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { ATGateway } from '../contracts/ATGateway';
+import { ATGateway } from '#api/externalIntegrations.v2/automaticTranslation/contracts/ATGateway.js';
 
 export class ATExternalAPI implements ATGateway {
   // eslint-disable-next-line class-methods-use-this

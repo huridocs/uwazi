@@ -6,14 +6,14 @@ import ReactModal from 'react-modal';
 import ReactPlayer from 'react-player';
 import { actions as formActions } from 'react-redux-form';
 
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
 
-import { RenderAttachment } from '#app/Attachments/components/RenderAttachment.js';
+import { RenderAttachment } from '#app/Attachments/components/RenderAttachment.jsx';
 
-import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
 
 import * as supportingFileActions from '#app/Metadata/actions/supportingFilesActions.js';
-import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
+import { MediaModal, MediaModalProps, MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
 
 const store = {
   library: {

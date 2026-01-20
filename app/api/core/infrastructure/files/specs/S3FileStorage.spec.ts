@@ -9,19 +9,19 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { config } from 'api/config';
-import { FileAttachment } from 'api/core/domain/files/FileAttachment';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { S3Error } from 'api/files/S3Storage';
-import { Tenant } from 'api/tenants/tenantContext';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingTenants } from 'api/utils/testingTenants';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { config } from '#api/config.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { Readable } from 'node:stream';
-import { S3FileStorage } from '../S3FileStorage';
+import { S3FileStorage } from '#api/core/infrastructure/files/S3FileStorage.js';
 
 const f = getFixturesFactory();
 

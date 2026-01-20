@@ -2,8 +2,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTestingQueueAdapter } from 'api/core/libs/queue/configuration/factories';
-import { createTestJob } from './fixtures';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { createTestJob } from '#api/core/libs/queue/infrastructure/specs/fixtures.js';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),

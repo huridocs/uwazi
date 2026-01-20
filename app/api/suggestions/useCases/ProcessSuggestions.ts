@@ -1,19 +1,19 @@
-import { UseCase } from 'api/core/libs/UseCase';
+import { UseCase } from '#api/core/libs/UseCase.js';
 import { ObjectId } from 'mongodb';
 
-import { EnforcedWithId } from '../odm/index.js';
+import { EnforcedWithId } from '#api/index.js';
 
 import { IXModelType } from '#shared/types/IXModelType.js';
 
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
-import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+import { Extractors, ModelNotReadyError } from '#api/services/informationextraction/ixextractors.js';
 
-import ixmodels from '../services/informationextraction/ixmodels.js';
+import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
-import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 
-import { IXServices } from '../services/informationextraction/IXServices.js';
+import { IXServices } from '#api/services/informationextraction/IXServices.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import {
@@ -21,7 +21,7 @@ import {
   ProcessFindFilters,
   AutoAcceptSource,
   OverwriteMode,
-} from '../suggestions/contracts/ProcessSuggestionsContracts.js';
+} from '#api/suggestions/contracts/ProcessSuggestionsContracts.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 

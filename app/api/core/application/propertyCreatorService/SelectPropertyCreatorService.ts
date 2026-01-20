@@ -1,5 +1,5 @@
 import { Context, Property } from '#api/core/domain/template/Property.js';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
 
 type Deps = {
   thesauriDS: ThesauriDataSource;

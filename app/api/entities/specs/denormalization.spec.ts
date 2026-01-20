@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
@@ -12,7 +12,7 @@ import thesauris from '#api/thesauri/thesauri.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(

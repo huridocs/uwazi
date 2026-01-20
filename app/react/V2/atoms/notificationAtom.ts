@@ -1,5 +1,5 @@
 import { atomWithReset } from 'jotai/utils';
-import { NotificationProps } from '../Components/UI/Notification';
+import { NotificationProps } from '#V2/Components/UI/Notification.jsx';
 
 type notificationAtomType = Omit<NotificationProps, 'dismissAction'>;
 

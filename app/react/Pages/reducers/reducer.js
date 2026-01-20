@@ -4,7 +4,7 @@ import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from '#app/BasicReducer/index.js';
 
-import ui from './uiReducer.js';
+import ui from '#app/Pages/reducers/uiReducer.js';
 
 export default combineReducers({
   pageView: createReducer('page/pageView', {}),

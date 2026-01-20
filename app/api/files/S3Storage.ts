@@ -8,7 +8,7 @@ import {
   S3ServiceException,
   _Object,
 } from '@aws-sdk/client-s3';
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 class S3Error extends Error {
   constructor(cause: S3ServiceException) {

@@ -1,23 +1,25 @@
 import { Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Immutable, { is, fromJS } from 'immutable';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { debounce } from '#app/utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from '#app/Library/helpers/libraryFilters.js';
 import { searchDocuments } from '#app/Library/actions/libraryActions.js';
 import { Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.jsx';
 import { TemplatesFilter } from '#app/Library/components/TemplatesFilter.jsx';
 import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.jsx';
 import { withRouter } from '#app/componentWrappers.jsx';
 import { PermissionsFilter } from '#app/Library/components/PermissionsFilter.jsx';
 import { PublishedFilters } from '#app/Library/components/PublishedFilters.jsx';
 import Filters from '#app/Library/components/FiltersFromProperties.jsx';
+import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/index.js';
+
+const { is, fromJS } = Immutable;
 
 class FiltersForm extends Component {
   constructor(props) {

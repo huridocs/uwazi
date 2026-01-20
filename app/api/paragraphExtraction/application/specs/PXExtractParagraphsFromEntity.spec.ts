@@ -2,7 +2,7 @@
 import { ApiResponse } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
@@ -10,35 +10,35 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
+import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
 import { tenants } from '#api/tenants/index.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
-import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 
-import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { PXExtractParagraphsFromEntity } from '#api/paragraphExtraction/application/PXExtractParagraphsFromEntity.js';
 import {
   defaultTemplate,
   entity1,
@@ -72,7 +72,7 @@ import {
   sourceTemplate,
   targetTemplate,
   userId,
-} from './fixtures';
+} from '#api/paragraphExtraction/application/specs/fixtures.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],

@@ -9,11 +9,11 @@ import {
   MagnifyingGlassIcon,
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { PaneLayout } from 'V2/Components/Layouts/PaneLayout';
-import { MetadataDisplay } from 'V2/Components/Metadata';
-import { RelationshipPropertyIcon } from 'V2/Components/CustomIcons';
-import { Tabs } from 'V2/Components/UI';
+import { Translate } from '#app/I18N/index.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout';
+import { MetadataDisplay } from '#V2/Components/Metadata';
+import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons';
+import { Tabs } from '#V2/Components/UI';
 import {
   TabLabel,
   PDFView,
@@ -24,8 +24,8 @@ import {
   SearchResults,
   ToCPanel,
   FileList,
-} from './Components';
-import { LoaderResponse } from './types';
+} from '#V2/Routes/Entity/Components/index.js';
+import { LoaderResponse } from '#V2/Routes/Entity/types.js';
 
 const MAIN_TABS = {
   DOCUMENT: 'document',

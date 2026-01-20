@@ -1,7 +1,7 @@
-import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { TemplateValidationService } from '../TemplateValidationService';
+import { TemplateValidationService } from '#api/templates/validation/TemplateValidationService.js';
 
 describe('DefaultTemplateDeletionValidationService', () => {
   let validationService: TemplateValidationService;

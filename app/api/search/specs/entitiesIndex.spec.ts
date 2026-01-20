@@ -1,4 +1,4 @@
-import { legacyLogger } from '../log.js';
+import { legacyLogger } from '#api/log/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
@@ -15,10 +15,10 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { FileType } from '#shared/types/fileType.js';
-import { elastic } from '../elastic';
-import { reindexAll, updateMapping } from '../entitiesIndex';
-import { search } from '../search';
-import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
+import { elastic } from '#api/search/elastic.js';
+import { reindexAll, updateMapping } from '#api/search/entitiesIndex.js';
+import { search } from '#api/search/search.js';
+import { fixtures as fixturesForIndexErrors } from '#api/search/specs/fixtures_elastic_errors.js';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);

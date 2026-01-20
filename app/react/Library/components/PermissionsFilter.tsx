@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import FormGroup from '#app/DocumentForm/components/FormGroup.js';
+import FormGroup from '#app/DocumentForm/components/FormGroup.jsx';
 import { MultiSelect } from '#app/Forms/index.js';
 
 import { Aggregations } from '#shared/types/aggregations.js';
@@ -11,7 +11,7 @@ import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import Immutable from 'immutable';
-import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
+import { FiltrableLevel, filtrableLevels } from '#app/Library/components/FiltrablePermissionsLevels.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 
 interface PermissionsValue {

@@ -1,5 +1,5 @@
 import { ClientTemplateSchema } from '#app/istore.js';
-import { ClientProperty } from '#app/V2/shared/types.js';
+import { ClientProperty } from '#V2/shared/types.js';
 
 type TemplateRow = ClientTemplateSchema & {
   rowId: string;

@@ -1,5 +1,5 @@
-import { NestedProperty } from '../NestedProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 describe('NestedProperty', () => {
   it('should include nested type at the end of the PropertyName', () => {

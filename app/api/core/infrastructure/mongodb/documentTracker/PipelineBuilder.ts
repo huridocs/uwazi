@@ -2,7 +2,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-restricted-syntax */
 import { ObjectId } from 'mongodb';
-import type { DiffResult } from './DocumentTracker';
+import type { DiffResult } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
 
 /**
  * Builds a MongoDB update document or an aggregation pipeline from a DiffResult object.

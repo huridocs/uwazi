@@ -6,7 +6,7 @@ import backend from 'fetch-mock';
 
 import { APIURL } from '#app/config.js';
 import * as notifications from '#app/Notifications/actions/notificationsActions.js';
-import * as actions from '../actions';
+import * as actions from '#app/Auth/actions.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

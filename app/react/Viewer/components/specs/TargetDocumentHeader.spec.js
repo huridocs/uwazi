@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+
 
 import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js.js';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('TargetDocumentHeader', () => {
   let component;
   let props;

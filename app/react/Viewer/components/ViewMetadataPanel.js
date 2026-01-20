@@ -9,18 +9,18 @@ import {
   actions as connectionsActions,
   uiActions as connectionsUiActions,
 } from '#app/Connections/index.js';
-import { deleteDocument } from '#app/Viewer/actions/documentActions/index.js';
-import modals from '#app/Modals.js';
+import modals from '#app/Modals/index.js';
 
-import { closePanel } from '../actions/uiActions';
+import { closePanel } from '#app/Viewer/actions/uiActions.js';
+import { deleteDocument } from '#app/Library/actions/libraryActions.js';
 import {
   saveToc,
   editToc,
   leaveEditMode,
   removeFromToc,
   indentTocElement,
-} from '../actions/documentActions';
-import { DocumentForm } from '../containers/DocumentForm';
+} from '#app/Viewer/actions/documentActions.js';
+import { DocumentForm } from '#app/Viewer/containers/DocumentForm.js';
 
 export const mapStateToProps = state => {
   const { documentViewer } = state;

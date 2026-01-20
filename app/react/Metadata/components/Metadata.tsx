@@ -2,12 +2,12 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { flattenDeep } from 'lodash';
+import flattenDeep from 'lodash/flattenDeep.js';
 import { t } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import MarkdownViewer from '#app/Markdown/index.js';
 import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.jsx';
-import { MediaPlayer } from '#app/V2/Components/UI/index.js';
+import { MediaPlayer } from '#V2/Components/UI/index.js';
 import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.jsx';
 import { RelationshipLink } from '#app/Metadata/components/RelationshipLink.jsx';
 import ValueList from '#app/Metadata/components/ValueList.jsx';
@@ -129,8 +129,8 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
           prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
               ? flattenDeep(
-                  _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
-                )
+                _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
+              )
               : { ..._value, ...(_value.parent && { value: `${_value.parent}: ${_value.value}` }) }
           )
         );

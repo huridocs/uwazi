@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy.js';
 
-import translations from '#app/I18N/index.js';
-import { EnforcedWithId } from '../odm/index.js';
-import settings from '../settings/index.js';
-import templates from '../templates/index.js';
-import thesauri from '../thesauri/index.js';
+import translations from '#api/i18n/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import settings from '#api/settings/index.js';
+import templates from '#api/templates/index.js';
+import thesauri from '#api/thesauri/index.js';
 import { EventEmitter } from 'events';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
@@ -15,13 +15,13 @@ import { LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
-import { arrangeThesauri } from './arrangeThesauri.js';
-import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
-import { extractEntity, toSafeName } from './entityRow.js';
-import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity.js';
-import importFile from './importFile.js';
-import { thesauriFromStream } from './importThesauri.js';
-import { validateColumns } from './validateColumns.js';
+import { arrangeThesauri } from '#api/csv/arrangeThesauri.js';
+import csv, { CSVRow, validateFormat, ValidateFormatOptions } from '#api/csv/csv.js';
+import { extractEntity, toSafeName } from '#api/csv/entityRow.js';
+import { FullyIndexedTranslations, importEntity, translateEntity } from '#api/csv/importEntity.js';
+import importFile from '#api/csv/importFile.js';
+import { thesauriFromStream } from '#api/csv/importThesauri.js';
+import { validateColumns } from '#api/csv/validateColumns.js';
 
 const readResources = async (
   templateId: ObjectId | string

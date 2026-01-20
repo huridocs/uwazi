@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { File, FileProps } from '#api/files.v2/model/File';
+import { File, FileProps } from '#api/files.v2/infrastructure/FileStorageStrategyFactory.js';
 
 type FileBuilderProps = FileProps;
 

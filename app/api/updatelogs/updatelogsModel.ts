@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MongooseModelWrapper } from '../odm/MongooseModelWrapper.js';
+import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { ObjectId } from 'mongodb';
 

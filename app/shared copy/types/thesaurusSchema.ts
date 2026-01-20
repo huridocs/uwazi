@@ -1,0 +1,61 @@
+/** @format */
+
+import { objectIdSchema } from '#shared/types/commonSchemas.js';
+
+export const emitSchemaTypes = true;
+
+export const thesaurusValueSchema = {
+  type: 'object',
+  definitions: { objectIdSchema },
+  required: ['label'],
+  additionalProperties: false,
+  properties: {
+    id: {
+      type: 'string',
+      minLength: 1,
+    },
+    label: {
+      type: 'string',
+      minLength: 1,
+    },
+    values: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['label'],
+        additionalProperties: false,
+        properties: {
+          id: {
+            type: 'string',
+            minLength: 1,
+          },
+          label: {
+            type: 'string',
+            minLength: 1,
+          },
+          name: { type: 'string' },
+        },
+      },
+    },
+  },
+};
+
+export const thesaurusSchema = {
+  $async: true,
+  type: 'object',
+  required: ['name'],
+  definitions: { objectIdSchema, thesaurusValueSchema },
+  uniqueName: true,
+  uniqueLabels: true,
+  properties: {
+    _id: objectIdSchema,
+    name: {
+      type: 'string',
+      minLength: 1,
+    },
+    values: {
+      type: 'array',
+      items: thesaurusValueSchema,
+    },
+  },
+};

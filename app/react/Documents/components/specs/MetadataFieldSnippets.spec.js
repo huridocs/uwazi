@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
-import { MetadataFieldSnippets } from '../SnippetList';
+import { MetadataFieldSnippets } from '#app/Documents/components/SnippetList.jsx';
 
 describe('SnippetList', () => {
   let component;

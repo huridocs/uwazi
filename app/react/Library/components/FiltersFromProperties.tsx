@@ -8,7 +8,7 @@ import { t } from '#app/I18N/index.js';
 import FormGroup from '#app/DocumentForm/components/FormGroup.jsx';
 import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.js';
 import { selectTemplates } from '#app/utils/coreSelectors.js';
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 
 import DateFilter from '#app/Library/components/DateFilter.jsx';
 import NestedFilter from '#app/Library/components/NestedFilter.jsx';
@@ -104,7 +104,7 @@ const getPropertyType = (property, templates) => {
 };
 
 const FiltersFromProperties = ({
-  onChange = () => {},
+  onChange = () => { },
   properties,
   translationContext = '',
   modelPrefix = '',

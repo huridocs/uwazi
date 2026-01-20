@@ -1,9 +1,9 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { VideoPlayer } from '../VideoPlayer';
+import { VideoPlayer } from '#V2/Components/UI/Files/VideoPlayer.jsx';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
-import { setupMediaIntercepts, setupMediaElement } from './testHelpers';
+import { setupMediaIntercepts, setupMediaElement } from '#V2/Components/UI/Files/specs/testHelpers.js';
 
 describe('VideoPlayer', () => {
   const videoUrl = '/api/files/short-video.mp4';

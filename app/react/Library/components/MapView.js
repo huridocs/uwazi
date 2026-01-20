@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Map, Markers } from '#app/Map/index.js';
+import { Map, Markers } from '#app/Map/index.jsx';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import {
@@ -10,7 +10,7 @@ import {
   selectDocuments,
   unselectAllDocuments,
 } from '#app/Library/actions/libraryActions.js';
-import { SearchBar } from '#app/Library/components/SearchBar.js';
+import { SearchBar } from '#app/Library/components/SearchBar.jsx';
 import { t } from '#app/I18N/index.js';
 
 class MapViewComponent extends Component {

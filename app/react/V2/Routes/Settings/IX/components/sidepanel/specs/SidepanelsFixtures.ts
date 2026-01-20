@@ -3,7 +3,7 @@ import {
   IXSuggestionsLoaderResponse,
   TableSuggestion,
   ixStatus,
-} from '#app/V2/Routes/Settings/IX/types';
+} from '#V2/Routes/Settings/IX/types.js';
 
 const suggestion1: TableSuggestion = {
   _id: 'suggestion1',

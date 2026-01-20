@@ -9,7 +9,7 @@ import {
   templatesAtom,
   thesauriAtom,
   translationsAtom,
-} from '#app/V2/atoms/index.js';
+} from '#V2/atoms/index.js';
 import { socket } from '#app/socket.js';
 import '../sockets';
 import { store } from '#app/store.js';
@@ -21,7 +21,7 @@ import {
   translationKeysChangeResult,
   templates,
   thesauri,
-} from './fixtures/fixtures.js';
+} from '#app/App/specs/fixtures/fixtures.js';
 
 describe('sockets', () => {
   describe('connection events', () => {

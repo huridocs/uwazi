@@ -4,15 +4,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
 
-import { PDFView } from '#app/Viewer/PDFView.js';
+import { PDFView } from '#app/Viewer/PDFView.jsx';
 
-import EntityView from '#app/Viewer/EntityView.js';
+import EntityView from '#app/Viewer/EntityView.jsx';
 
-import { Loader } from '#app/components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.jsx';
 
-import { ErrorFallback } from '#app/V2/Components/ErrorHandling.js';
+import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>

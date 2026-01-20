@@ -1,18 +1,20 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+
 import { Tabs } from 'react-tabs-redux';
 
-import { ConnectionsGroups } from '#app/ConnectionsList.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import Connections from '#app/Viewer/components/ConnectionsList.js';
-import * as viewerModule from '#app/Viewer.js';
+import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
+import SidePanel from '#app/Layout/SidePanel.jsx';
+import Connections from '#app/Viewer/components/ConnectionsList.jsx';
+import * as viewerModule from '#app/Viewer/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
-import ShowToc from '../ShowToc';
-import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
+import ShowToc from '#app/Documents/components/ShowToc.jsx';
+import { DocumentSidePanel, mapStateToProps } from '#app/Documents/components/DocumentSidePanel.jsx';
+import Immutable from 'immutable';
 
-jest.mock('shared/entityDefaultDocument');
+const { fromJS } = Immutable;
+jest.mock('#shared/entityDefaultDocument');
 
 describe('DocumentSidePanel', () => {
   let component;

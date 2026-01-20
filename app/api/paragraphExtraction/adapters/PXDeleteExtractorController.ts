@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { AbstractController } from '../common.v2/infrastructure/AbstractController.js';
-import { PXDeleteExtractorFactory } from '../infrastructure/PXDeleteExtractorFactory';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { PXDeleteExtractorFactory } from '#api/paragraphExtraction/infrastructure/PXDeleteExtractorFactory.js';
 
 const RequestSchema = z.object({
   id: z.string({ message: 'You should provide an Extractor ID' }),

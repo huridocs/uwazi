@@ -1,7 +1,7 @@
-import { cloneDeep } from 'lodash';
-import { updateLinks } from '../MenuForm';
-import { links } from './fixtures';
-import { Link } from '#app/V2/Routes/Settings/MenuConfig';
+import cloneDeep from 'lodash/cloneDeep.js';
+import { updateLinks } from '#V2/Routes/Settings/MenuConfig/components/MenuForm.jsx';
+import { links } from '#V2/Routes/Settings/MenuConfig/components/specs/fixtures.js';
+import { Link } from '#V2/Routes/Settings/MenuConfig.js';
 
 describe('updateLinks', () => {
   let existinglinks: Link[] = [];

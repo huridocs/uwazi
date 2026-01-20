@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { filesModel } from '../files/filesModel.js';
-import { DataType, models, WithId } from '../odm/index.js';
-import { settingsModel } from '../settings/settingsModel.js';
+import { filesModel } from '#api/files/filesModel.js';
+import { DataType, models, WithId } from '#api/odm/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
 import templatesModel from '../templates/templatesModel.js';
-import { UpdateLog } from '../updatelogs/index.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';

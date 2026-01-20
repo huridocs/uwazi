@@ -2,8 +2,8 @@ import db from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NextFunction } from 'express';
-import captchaMiddleware from '../captchaMiddleware';
-import { CaptchaModel } from '../CaptchaModel';
+import captchaMiddleware from '#api/auth/captchaMiddleware.js';
+import { CaptchaModel } from '#api/auth/CaptchaModel.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes';
 
 const getMock = jest.fn().mockReturnValue(undefined);

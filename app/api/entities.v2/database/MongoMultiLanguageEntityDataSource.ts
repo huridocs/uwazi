@@ -1,6 +1,6 @@
-import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { TemplateProperty } from '#api/core/domain/template/Template.js';
@@ -8,10 +8,10 @@ import { V1RelationshipProperty } from '#api/core/domain/template/V1Relationship
 import { Db, Filter, ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
-import { MultiLanguageEntity } from '../model/MultiLanguageEntity.js';
-import { EntityMappers } from './EntityMapper.js';
-import { EntityDBO, MultiLanguageEntityDBO } from './schemas/EntityTypes.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { MultiLanguageEntity } from '#api/entities.v2/model/MultiLanguageEntity.js';
+import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
+import { EntityDBO, MultiLanguageEntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>

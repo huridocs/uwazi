@@ -1,10 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
-import AttachmentsList from '../AttachmentsList';
 
+import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.jsx';
+import AttachmentsList from '#app/Attachments/components/AttachmentsList.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('AttachmentsList', () => {
   let component;
   let props;

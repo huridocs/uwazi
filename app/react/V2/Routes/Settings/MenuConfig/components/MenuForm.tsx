@@ -3,13 +3,13 @@ import React, { useEffect, useRef } from 'react';
 
 import { Translate, t } from '#app/I18N/index.js';
 
-import { InputField, Select, OptionSchema } from '#app/V2/Components/Forms/index.js';
+import { InputField, Select, OptionSchema } from '#V2/Components/Forms/index.js';
 import { useForm } from 'react-hook-form';
 
-import { Button, Card } from '#app/V2/Components/UI/index.js';
+import { Button, Card } from '#V2/Components/UI/index.js';
 
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { createRowId, Link } from '../shared';
+import { createRowId, Link } from '#V2/Routes/Settings/MenuConfig/shared.js';
 
 interface MenuFormProps {
   closePanel: () => void;

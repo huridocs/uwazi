@@ -1,9 +1,9 @@
 import React from 'react';
-import { LibraryRootComponent } from '#app/Library/Library.js';
-import LibraryLayout from '#app/Library/LibraryLayout.js';
+import { LibraryRootComponent } from '#app/Library/Library.jsx';
+import LibraryLayout from '#app/Library/LibraryLayout.jsx';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
-import { withRouter } from '#app/componentWrappers.js';
-import { trackPage } from '#app/App/GoogleAnalytics.tsx';
+import { withRouter } from '#app/componentWrappers.jsx';
+import { trackPage } from '#app/App/GoogleAnalytics.jsx';
 import { requestState } from '#app/Library/helpers/requestState.js';
 
 class LibraryCardsComponent extends LibraryRootComponent {

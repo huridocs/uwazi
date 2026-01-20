@@ -8,14 +8,14 @@ import { useFetcher } from 'react-router';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { InputField, Select, MultiSelect } from '#app/V2/Components/Forms/index.js';
-import { Button, Card, ConfirmationModal, Sidepanel } from '#app/V2/Components/UI/index.js';
-import { validEmailFormat } from '#shared/formatHelpers.js';
+import { InputField, Select, MultiSelect } from '#V2/Components/Forms/index.js';
+import { Button, Card, ConfirmationModal, Sidepanel } from '#V2/Components/UI/index.js';
+import { validEmailFormat } from '#V2/shared//formatHelpers.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { PermissionsListModal } from './PermissionsListModal.js';
-import { User, Group } from '../types.js';
+import { PermissionsListModal } from '#V2/Routes/Settings/Users/components/PermissionsListModal.jsx';
+import { User, Group } from '#V2/Routes/Settings/Users/types.js';
 
 type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 

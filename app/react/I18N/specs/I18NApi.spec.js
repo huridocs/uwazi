@@ -1,7 +1,7 @@
 import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import I18NApi from '../I18NApi';
+import I18NApi from '#app/I18N/I18NApi.js';
 
 describe('I18NApi', () => {
   const translations = [{ locale: 'es' }, { locale: 'en' }];

@@ -4,8 +4,8 @@ import referencesAPI from '#app/Viewer/referencesAPI.js';
 import relationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 
-import { setReferences } from './referencesActions';
-import entitiesAPI from '#app/Entities/EntitiesAPI';
+import { setReferences } from '#app/Viewer/actions/referencesActions.js';
+import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 
 export function setViewerState(state) {
   return dispatch => {

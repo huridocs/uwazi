@@ -1,16 +1,16 @@
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { PXCreateParagraphs } from '../paragraphExtraction/application/PXCreateParagraphs.js';
+import { PXCreateParagraphs } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 
-import { PXExtractionService } from '../paragraphExtraction/domain/PXExtractionService.js';
+import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
-import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
@@ -19,10 +19,10 @@ import { ObjectId } from 'mongodb';
 import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
-} from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
-import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
-import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
+} from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 
 const extractionDBO: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),

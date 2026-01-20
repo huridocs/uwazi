@@ -5,10 +5,10 @@ import Immutable from 'immutable';
 
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
-import { Loader } from '#app/components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.jsx';
 import { arrayUtils } from '#app/Charts/index.js';
-import PieChartLabel from './PieChartLabel';
-import markdownDatasets from '../markdownDatasets';
+import PieChartLabel from '#app/Markdown/components/PieChartLabel.jsx';
+import markdownDatasets from '#app/Markdown/markdownDatasets.js';
 
 const formatData = (data, property, options) => {
   let formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, options));

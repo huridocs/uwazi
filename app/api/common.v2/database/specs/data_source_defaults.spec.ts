@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { MongoTransactionManager } from '../MongoTransactionManager';
-import { DefaultTransactionManager, DefaultIdGenerator } from '../data_source_defaults';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { DefaultTransactionManager, DefaultIdGenerator } from '#api/common.v2/database/data_source_defaults.js';
 
 beforeAll(async () => {
   await testingEnvironment.setUp({});

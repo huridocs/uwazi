@@ -4,21 +4,21 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import rison from '@huridocs/rison';
-import { SearchBar } from '#app/Library/components/SearchBar.js';
-import ConnectionSearchBar from '#app/ConnectionsList/components/SearchBar.js';
-import { Loader } from '#app/components/Elements/Loader.js';
-import Footer from '#app/App/Footer.js';
+import { SearchBar } from '#app/Library/components/SearchBar.jsx';
+import ConnectionSearchBar from '#app/ConnectionsList/components/SearchBar.jsx';
+import { Loader } from '#app/components/Elements/Loader.jsx';
+import Footer from '#app/App/Footer.jsx';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { withRouter } from '#app/componentWrappers.js';
-import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
+import { DocumentCounter } from '#app/Layout/DocumentCounter.jsx';
+import Icon from '#UI/Icon/Icon.jsx';
+import { withRouter } from '#app/componentWrappers.jsx';
+import { LibraryHeader } from '#app/Library/components/LibraryHeader.jsx';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import Welcome from './components/Welcome.js';
-import { TilesViewer } from './TilesViewer.js';
-import blankState from '../Library/helpers/blankState.js';
+import Welcome from '#app/Layout/components/Welcome.jsx';
+import { TilesViewer } from '#app/Layout/TilesViewer.jsx';
+import blankState from '#app/Library/helpers/blankState.js';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();
@@ -137,11 +137,11 @@ class DocumentsList extends Component {
 
     const totalConnections = connections
       ? connectionsGroups.reduce(
-          (total, g) =>
-            total +
-            g.get('templates').reduce((count, template) => count + template.get('count'), 0),
-          0
-        )
+        (total, g) =>
+          total +
+          g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+        0
+      )
       : undefined;
 
     const counter = (

@@ -1,21 +1,27 @@
 import { Application, Request } from 'express';
 
-import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
-import needsAuthorization from '../auth/authMiddleware.js';
-import { CSVLoader } from '../csv/index.js';
-import entities from '../entities/index.js';
-import { processDocument } from '../files/processDocument.js';
-import { uploadMiddleware } from '../files/uploadMiddleware.js';
+import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import { CSVLoader } from '#api/csv/index.js';
+import entities from '#api/entities/index.js';
+import { processDocument, createProcessingFile, convertPDF } from '#api/files/processDocument.js';
+import { uploadMiddleware } from '#api/files/uploadMiddleware.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { fileSchema } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { createError, handleError, validation } from '../utils';
-import { files } from './files';
-import { storage } from './storage';
+import { createError, handleError, validation } from '#api/utils/index.js';
+import { files } from '#api/files/files.js';
+import { storage } from '#api/files/storage.js';
 import { withTransaction } from '#api/utils/withTransaction.js';
+import { DownloadFileController } from '#api/core/infrastructure/express/DownloadFileController.js';
+import { DocumentUploadController } from '#api/core/infrastructure/express/files/DocumentUploadController.js';
+import { FileDeleteController } from '#api/core/infrastructure/express/files/FileDeleteController.js';
+import { tenants } from '#api/tenants/index.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const checkEntityPermission = async (
   file: FileType,

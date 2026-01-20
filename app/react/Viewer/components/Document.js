@@ -1,17 +1,17 @@
-import 'app/Viewer/scss/conversion_base.scss';
-import 'app/Viewer/scss/document.scss';
+import '#app/Viewer/scss/conversion_base.scss';
+import '#app/Viewer/scss/document.scss';
 
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 
-import { Loader } from '#app/components/Elements/Loader.js';
-import { PDF } from '#app/Viewer/PDF.js';
+import { Loader } from '#app/components/Elements/Loader.jsx';
+import PDF from '#app/PDF/components/PDF.jsx';
 import Immutable from 'immutable';
 import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
-import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
-import { atomStore, pdfScaleAtom } from '#app/V2/atoms/index.ts';
+import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
 
-import determineDirection from '#app/utils/determineDirection.js';
+import determineDirection from './../utils/determineDirection.js';
 
 import { APIURL } from '#app/config.js';
 
@@ -95,7 +95,7 @@ class Document extends Component {
     this.componentDidUpdate();
   }
 
-  handleOver() {}
+  handleOver() { }
 
   renderPDF(file) {
     if (!file._id && this.containerRef) {
@@ -127,9 +127,8 @@ class Document extends Component {
     return (
       <div>
         <div
-          className={`_${this.props.doc.get('_id')} document ${
-            this.props.className
-          } ${determineDirection(file)}`}
+          className={`_${this.props.doc.get('_id')} document ${this.props.className
+            } ${determineDirection(file)}`}
         >
           <Header />
           <div
@@ -147,20 +146,20 @@ class Document extends Component {
 }
 
 Document.defaultProps = {
-  onPageLoaded: () => {},
-  onDocumentReady: () => {},
-  onPageChange: () => {},
-  onClick: () => {},
-  onPDFLoaded: () => {},
+  onPageLoaded: () => { },
+  onDocumentReady: () => { },
+  onPageChange: () => { },
+  onClick: () => { },
+  onPDFLoaded: () => { },
   file: {},
   searchTerm: '',
   page: 1,
   selectedSnippet: Immutable.fromJS({}),
-  deactivateReference: () => {},
+  deactivateReference: () => { },
   header: () => false,
-  activateReference: () => {},
+  activateReference: () => { },
   doScrollToActive: false,
-  scrollToActive: () => {},
+  scrollToActive: () => { },
   activeReference: '',
   className: '',
   executeOnClickHandler: false,

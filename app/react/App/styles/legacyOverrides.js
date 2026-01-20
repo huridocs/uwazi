@@ -68,4 +68,4 @@ const legacyOverrides = {
   },
 };
 
-module.exports = legacyOverrides;
+export default legacyOverrides;

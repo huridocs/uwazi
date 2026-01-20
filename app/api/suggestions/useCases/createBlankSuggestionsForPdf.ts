@@ -1,13 +1,13 @@
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
 
 import { files } from '#api/files/index.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { Suggestions } from '../suggestions';
-import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
-import { SuggestionFactory } from '../suggestionFactory';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { CreateBlankSuggestionsInput } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
+import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 
 type Input = CreateBlankSuggestionsInput;
 

@@ -1,4 +1,4 @@
-import { FileBuilder } from './FileBuilder';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 
 describe('URLAttachment', () => {
   describe('hasContent', () => {

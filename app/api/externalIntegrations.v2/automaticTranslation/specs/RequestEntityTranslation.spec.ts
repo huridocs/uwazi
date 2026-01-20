@@ -6,9 +6,9 @@ import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSch
 
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
-import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
@@ -23,11 +23,11 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
-import { ValidationError, Validator } from '../infrastructure/Validator';
-import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
+import { ATTaskMessage, RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
-import { Redis } from '../infrastructure/Redis.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {

@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { AbstractEvent } from '../AbstractEvent';
-import { EventsBus } from '../EventsBus';
+import { AbstractEvent } from '#api/core/libs/eventsbus/AbstractEvent.js';
+import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
 
 function polledDeferred() {
   let resolve = false;

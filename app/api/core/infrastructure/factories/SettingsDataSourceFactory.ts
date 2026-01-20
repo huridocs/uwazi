@@ -1,6 +1,6 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoSettingsDataSource } from '../mongodb/MongoSettingsDataSource';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
 export class SettingsDataSourceFactory {
   static default(transactionManager: MongoTransactionManager) {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { SearchItem } from '#app/SearchItem';
+import { SearchItem } from './SearchItem.js';
 
 const SearchListComponent = ({ searches }) => (
   <div className="semantic-search-list">

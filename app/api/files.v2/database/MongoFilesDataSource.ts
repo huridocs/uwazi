@@ -4,20 +4,20 @@ import { LanguageUtils } from '#shared/language/index.js';
 
 import { SegmentationType } from '#shared/types/segmentationType.js';
 
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
-import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
+import { FilesDataSource, GetDocumentsForEntityOptions } from '#api/files.v2/contracts/FilesDataSource.js';
 import { UwaziFile } from '../model/UwaziFile';
-import { Segmentation } from '../model/Segmentation';
-import { Document } from '../model/Document';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
-import { FileMappers } from './FilesMappers';
+import { FileMappers } from '#api/files.v2/database/FilesMappers.js';
 import { FileDBOType } from './schemas/filesTypes';
-import { SegmentationMapper } from './SegmentationMapper';
+import { SegmentationMapper } from '#api/core/infrastructure/mongodb/files/SegmentationMapper.js';
 
 type GetDocumentsForEntityQuery = {
   entity: string;

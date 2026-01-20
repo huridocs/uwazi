@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+// import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
+// import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { PDFPage } from '#app/Viewer/PDF.js';
-import { isClient } from '#app/utils/index/index.js';
-import PDFJS from '#app/PDFJS';
+import PDFPage from '#app/PDF/components/PDFPage.jsx';
+import { isClient } from './../../utils/index.js';
+import PDFJS from './../PDFJS.js';
 
 const cMapUrl = '/legacy_character_maps/';
 const cMapPacked = true;
@@ -151,54 +152,54 @@ class PDF extends Component {
 
   render() {
     return (
-      <HandleTextSelection
-        onSelect={this.props.onTextSelection}
-        onDeselect={this.props.onTextDeselection}
+      // <HandleTextSelection
+      //   onSelect={this.props.onTextSelection}
+      //   onDeselect={this.props.onTextDeselection}
+      // >
+      <div
+        ref={ref => {
+          this.pdfContainer = ref;
+        }}
+        style={this.props.style}
+        id="pdf-container"
       >
-        <div
-          ref={ref => {
-            this.pdfContainer = ref;
-          }}
-          style={this.props.style}
-          id="pdf-container"
-        >
-          {(() => {
-            const pages = [];
-            for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-              pages.push(
-                <div key={page}>
-                  <SelectionRegion regionId={page.toString()}>
-                    <PDFPage
-                      onUnload={this.pageUnloaded}
-                      onLoading={this.pageLoading}
-                      onVisible={this.onPageVisible}
-                      onHidden={this.onPageHidden}
-                      page={page}
-                      pdf={this.state.pdf}
-                      highlightReference={this.props.highlightReference}
-                      containerWidth={this.containerWidth}
-                    />
-                  </SelectionRegion>
-                </div>
-              );
-            }
-            return pages;
-          })()}
-        </div>
-      </HandleTextSelection>
+        {(() => {
+          const pages = [];
+          for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
+            pages.push(
+              <div key={page}>
+                {/* <SelectionRegion regionId={page.toString()}> */}
+                <PDFPage
+                  onUnload={this.pageUnloaded}
+                  onLoading={this.pageLoading}
+                  onVisible={this.onPageVisible}
+                  onHidden={this.onPageHidden}
+                  page={page}
+                  pdf={this.state.pdf}
+                  highlightReference={this.props.highlightReference}
+                  containerWidth={this.containerWidth}
+                />
+                {/* </SelectionRegion> */}
+              </div>
+            );
+          }
+          return pages;
+        })()}
+      </div>
+      // </HandleTextSelection>
     );
   }
 }
 
 PDF.defaultProps = {
-  onPageLoaded: () => {},
+  onPageLoaded: () => { },
   filename: null,
-  onPageChange: () => {},
-  onPDFReady: () => {},
+  onPageChange: () => { },
+  onPDFReady: () => { },
   style: {},
-  onTextSelection: () => {},
-  onTextDeselection: () => {},
-  highlightReference: () => {},
+  onTextSelection: () => { },
+  onTextDeselection: () => { },
+  highlightReference: () => { },
 };
 
 PDF.propTypes = {

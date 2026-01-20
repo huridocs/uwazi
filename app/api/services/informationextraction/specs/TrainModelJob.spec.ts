@@ -1,13 +1,13 @@
-import { TestUtils } from '../common.v2/utils/Test.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { IXTrainModelJob } from '../TrainModelJob';
-import { TrainModelForPDF } from '../TrainModelForPDF';
-import { NoEntitiesForTraining, TrainModelForText } from '../TrainModelForText';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
-import { ExtractorNotFound, Extractors } from '../ixextractors';
+import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
+import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
+import { NoEntitiesForTraining, TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '#api/services/informationextraction/ixMaterials.js';
+import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
 
 type Props = {
   trainModelForPDF: TrainModelForPDF;

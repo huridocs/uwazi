@@ -4,12 +4,12 @@ import api from '#app/Search/SearchAPI.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { markdownDatasets } from '#app/Markdown.js';
+import { markdownDatasets } from '#app/Markdown/index.js';
 
-import PagesAPI from '#app/Pages/PagesAPI';
-import pageItemLists from '../pageItemLists';
+import PagesAPI from '#app/Pages/PagesAPI.js';
+import pageItemLists from '#app/Pages/utils/pageItemLists.js';
 
-import { getPageAssets } from '../getPageAssets';
+import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 
 describe('getPageAssets', () => {
   let page: { _id: string; title: string; metadata: { content: string } };

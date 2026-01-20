@@ -1,8 +1,8 @@
-import { Template } from 'api/core/domain/template/Template';
-import { Property } from 'api/core/domain/template/Property';
-import { PropertyType } from 'api/core/domain/template/PropertyType';
-import { PropertyName } from 'api/core/domain/template/PropertyName';
-import { CsvHeaderAnalyzerError, AnalyzerIssue } from './CsvHeaderAnalyzerError';
+import { Template } from '#api/core/domain/template/Template.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { CsvHeaderAnalyzerError, AnalyzerIssue } from '#api/csv.v2/application/services/CsvHeaderAnalyzerError.js';
 
 const LANGUAGE_HEADER_SEPARATOR = '__';
 const LANGUAGE_SUPPORTED_TYPES = new Set<PropertyType>([

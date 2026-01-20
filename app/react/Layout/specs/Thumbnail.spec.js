@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { Thumbnail } from '../Thumbnail';
+import { Thumbnail } from '#app/Layout/Thumbnail.jsx';
 
 describe('Thumbnail', () => {
   let component;

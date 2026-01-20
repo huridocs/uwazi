@@ -4,7 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import StackedDualBarChart from '../StackedDualBarChart';
+import StackedDualBarChart from '#app/Charts/components/StackedDualBarChart.jsx';
 
 describe('StackedDualBarChart', () => {
   let props;

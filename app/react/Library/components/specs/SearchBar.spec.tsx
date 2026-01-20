@@ -6,18 +6,20 @@ import { actions as formActions, formReducer, FormState } from 'react-redux-form
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
-import Immutable, { fromJS } from 'immutable';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 
 import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
 
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
-import { SearchBar } from '#app/Library/components/SearchBar.js';
+import { SearchBar } from '#app/Library/components/SearchBar.jsx';
 
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 

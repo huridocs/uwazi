@@ -1,2 +1,2 @@
-export { MetadataDisplay } from './MetadataDisplay';
-export { TemplateLabel } from './TemplateLabel';
+export { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.jsx';
+export { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.jsx';

@@ -2,19 +2,19 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
-import { editorUser } from '../entities/specs/entitySavingManagerFixtures.js';
+import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
 
-import { spyOnEmit, toEmitEvent, toEmitEventWith } from '../eventsbus/eventTesting.js';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
 
-import { legacyLogger } from '../log.js';
+import { legacyLogger } from '#api/log/index.js';
 
-import connections from '../../relationships.js';
+import connections from '#api/relationships/index.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
-import * as ocrRecords from '../services/ocr/ocrRecords.js';
+import * as ocrRecords from '#api/services/ocr/ocrRecords.js';
 
 import { appContext } from '#api/utils/AppContext.js';
 
@@ -27,13 +27,13 @@ import db from '#api/utils/testing_db.js';
 import { FileType } from '#shared/types/fileType.js';
 
 import { UserSchema } from '#shared/types/userType.js';
-import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
-import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
-import { files } from '../files';
-import jsRoutes from '../jsRoutes';
-import uploadRoutes from '../routes';
-import { storage } from '../storage';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { files } from '#api/files/files.js';
+import jsRoutes from '#api/files/jsRoutes.js';
+import uploadRoutes from '#api/files/routes.js';
+import { storage } from '#api/files/storage.js';
 import {
   adminUser,
   allowedPublicTemplate,
@@ -47,7 +47,7 @@ import {
   uploadId,
   uploadId2,
   writerUser,
-} from './fixtures';
+} from '#api/files/specs/fixtures.js';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 
@@ -445,7 +445,7 @@ describe('files routes', () => {
       expect(response.body.errors[0].message).toBe('must be string');
     });
 
-    describe('api/files/tocReviewed', () => {
+    describe('#api/files/tocReviewed', () => {
       beforeEach(() => {
         // WARNING!!! this sets an editor user in the permissions context.
         // It's inconsistent with the request logged-in user!!
@@ -534,7 +534,7 @@ describe('files routes', () => {
     });
   });
 
-  describe('api/public', () => {
+  describe('#api/public', () => {
     it('should run as a transaction', async () => {
       const jsRoutesApp: Application = setUpApp(
         jsRoutes,

@@ -1,8 +1,8 @@
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import testingDB from '#api/utils/testing_db.js';
 
-import fixtures from './fixtures.js';
-import migration from '../index.js';
+import fixtures from '#api/migrations/migrations/3-fullText_to_per_page/specs/fixtures.js';
+import migration from '#api/migrations/migrations/3-fullText_to_per_page/index.js';
 
 describe('migration fullText_to_per_page', () => {
   beforeEach(async () => {

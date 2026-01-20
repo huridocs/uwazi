@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import omit from 'lodash/omit.js';
 import api from '#app/utils/api.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
@@ -10,13 +10,13 @@ import { actions as formActions } from 'react-redux-form';
 import { documentsApi } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
-import { actions as relationshipActions } from '#app/Relationships.js';
+import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
-import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.ts';
+import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
-import * as selectionActions from './selectionActions.js';
-import * as uiActions from './uiActions.js';
+import * as selectionActions from '#app/Viewer/actions/selectionActions.js';
+import * as uiActions from '#app/Viewer/actions/uiActions.js';
 import { sortTextSelections } from '#app/Viewer/utils/sortTextSelections.js';
 import EntitiesApi from '#app/Entities/EntitiesAPI.js';
 

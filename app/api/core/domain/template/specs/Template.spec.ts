@@ -12,9 +12,9 @@ import { CreationDateProperty } from '#api/core/domain/template/CreationDateProp
 import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
 
 import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
-import { Template } from '../Template';
-import { Property } from '../Property';
-import { V1RelationshipProperty } from '../V1RelationshipProperty';
+import { Template } from '#api/core/domain/template/Template.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 describe('selectUpdatedProperties()', () => {
   it('should return information about properties that have changed', () => {

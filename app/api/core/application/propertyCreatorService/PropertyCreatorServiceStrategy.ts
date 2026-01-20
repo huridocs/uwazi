@@ -3,10 +3,10 @@ import { PropertyTypes } from '#api/core/domain/template/Property.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
-import { PropertyCreatorService } from './PropertyCreatorService';
-import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';
-import { RelationshipPropertyCreatorService } from './RelationshipPropertyCreatorService';
+import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
+import { PropertyCreatorService } from '#api/core/application/propertyCreatorService/PropertyCreatorService.js';
+import { SelectPropertyCreatorService, ThesauriDataSource } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
+import { RelationshipPropertyCreatorService } from '#api/core/application/propertyCreatorService/RelationshipPropertyCreatorService.js';
 
 type Props = {
   default: PropertyCreatorService;

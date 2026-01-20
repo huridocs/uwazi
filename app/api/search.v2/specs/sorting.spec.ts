@@ -7,14 +7,14 @@ import { testingDB } from '#api/utils/testing_db.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 
-import { searchRoutes } from '../routes';
+import { searchRoutes } from '#api/search.v2/routes.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { setupTestingEnviroment } from './setupTestingEnvironment';
+import { setupTestingEnviroment } from '#api/search.v2/specs/setupTestingEnvironment.js';
 
 describe('Sorting', () => {
   const factory = getFixturesFactory();

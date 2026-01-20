@@ -1,7 +1,7 @@
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { Translation } from 'api/i18n.v2/model/Translation';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;

@@ -1,18 +1,19 @@
 /* eslint-disable max-lines */
-import { get, uniqBy } from 'lodash';
+import get from 'lodash/get.js';
+import uniqBy from 'lodash/uniqBy.js';
 
 import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 import { t } from '#app/I18N/index.js';
-import { RadioProps } from '#app/V2/Components/Forms/index.js';
+import { RadioProps } from '#V2/Components/Forms/index.js';
 import { ClientIXExtractorType } from '#shared/types.js';
-import { TableSuggestion, MultiValueSuggestion } from '../types.js';
+import { TableSuggestion, MultiValueSuggestion } from '#V2/Routes/Settings/IX/types.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from './sidepanelFunctions.js';
+} from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
@@ -43,8 +44,8 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       return id
         ? String(id)
         : `obj_${JSON.stringify(value)
-            .slice(0, 20)
-            .replace(/[^a-zA-Z0-9]/g, '_')}`;
+          .slice(0, 20)
+          .replace(/[^a-zA-Z0-9]/g, '_')}`;
     }
     return String(value);
   };

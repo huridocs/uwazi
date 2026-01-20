@@ -3,7 +3,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/AutomaticTranslationFactory';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
 const fixtures = getFixturesFactory();
 

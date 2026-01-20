@@ -6,13 +6,13 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import db from '#api/utils/testing_db.js';
 
-import * as entitySavingManager from '../entities/entitySavingManager.js';
+import * as entitySavingManager from '#api/entities/entitySavingManager.js';
 
-import routes from '../entities/routes.js';
+import routes from '#api/entities/routes.js';
 
-import { legacyLogger } from '../log.js';
+import { legacyLogger } from '#api/log/index.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 
@@ -25,8 +25,8 @@ import path from 'path';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import entities from '../entities';
-import fixtures, { permissions } from './fixtures';
+import entities from '#api/entities/entities.js';
+import fixtures, { permissions } from '#api/entities/specs/fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

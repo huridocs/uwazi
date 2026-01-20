@@ -1,7 +1,7 @@
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { MongoFilesDataSource } from '../mongodb/files/MongoFilesDataSource';
-import { FileStorageFactory } from '../files/FileStorageFactory';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 
 export class FilesDataSourceFactory {
   static default(transactionManager: MongoTransactionManager) {

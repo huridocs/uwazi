@@ -6,13 +6,13 @@ import {
   aggregationWithNestedValues,
   expectNestedResult,
   expectNestedResultWithNoZeros,
-} from './fixtures/arrayUtilsFixtures';
-import colorScheme from '../colorScheme';
-import arrayUtils from '../arrayUtils';
+} from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
+import colorScheme from '#app/Charts/utils/colorScheme.js';
+import arrayUtils from '#app/Charts/utils/arrayUtils.jsx';
 
 const { sortValues, formatPayload, formatDataForChart } = arrayUtils;
 
-jest.mock('app/I18N', () => ({
+jest.mock('#app/I18N', () => ({
   __esModule: true,
   t: jest.fn(),
   default: jest.fn(),

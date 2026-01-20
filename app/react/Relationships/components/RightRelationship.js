@@ -2,13 +2,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate, t } from '#app/I18N/index.js';
-import Doc from '#app/Library/components/Doc.js';
+import Doc from '#app/Library/components/Doc.jsx';
 import DropdownList from 'react-widgets/lib/DropdownList';
-import * as actions from '../actions/actions.js';
-import * as uiActions from '../actions/uiActions';
-import HubRelationshipMetadata from './HubRelationshipMetadata';
+import * as actions from '#app/Relationships/actions/actions.js';
+import * as uiActions from '#app/Relationships/actions/uiActions.js';
+import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
 
 class RightRelationship extends Component {
   constructor(props) {
@@ -56,18 +56,16 @@ class RightRelationship extends Component {
       <div className="rightRelationships">
         {hub.get('rightRelationships').map((rightRelationshipGroup, rightRelationshipIndex) => (
           <div
-            className={`rightRelationshipsTypeGroup ${
-              rightRelationshipGroup.get('deleted') ? 'deleted' : ''
-            }`}
+            className={`rightRelationshipsTypeGroup ${rightRelationshipGroup.get('deleted') ? 'deleted' : ''
+              }`}
             key={rightRelationshipIndex}
           >
             <div
               className={`rightRelationshipType
-                             ${
-                               rightRelationshipIndex === hub.get('rightRelationships').size - 1
-                                 ? 'last-of-type'
-                                 : ''
-                             }`}
+                             ${rightRelationshipIndex === hub.get('rightRelationships').size - 1
+                  ? 'last-of-type'
+                  : ''
+                }`}
             >
               {!editing && (
                 <div className="rw-dropdown-list rw-widget no-edit">
@@ -136,9 +134,8 @@ class RightRelationship extends Component {
               const move = relationship.get('move');
               return (
                 <div
-                  className={`rightRelationship ${
-                    !rightRelationshipDeleted && deleted ? 'deleted' : ''
-                  } ${move ? 'move' : ''}`}
+                  className={`rightRelationship ${!rightRelationshipDeleted && deleted ? 'deleted' : ''
+                    } ${move ? 'move' : ''}`}
                   key={relationshipIndex}
                 >
                   <div className="rightRelationshipType">

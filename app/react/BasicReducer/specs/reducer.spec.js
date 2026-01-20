@@ -1,10 +1,12 @@
 /* eslint-disable max-lines */
 /** @format */
 
-import { fromJS as Immutable } from 'immutable';
+
 
 import createReducer, * as actions from '#app/BasicReducer/reducer.js';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('BasicReducer', () => {
   describe('createReducer', () => {
     it('should return a reducer function with default value passed', () => {

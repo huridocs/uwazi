@@ -2,10 +2,10 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-import { fromJS } from 'immutable';
+
 import { APIURL } from '#app/config.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
-import { actions as metadataActions } from '#app/Metadata.js';
+import { actions as metadataActions } from '#app/Metadata/index.js';
 import * as actions from '#app/Uploads/actions/uploadsActions.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import * as types from '#app/Uploads/actions/actionTypes.js';
@@ -133,7 +133,9 @@ describe('uploadsActions', () => {
         const file = getMockFile();
 
         store.dispatch(actions.importData([file], '123')).then(() => {
-          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
           done();
         });

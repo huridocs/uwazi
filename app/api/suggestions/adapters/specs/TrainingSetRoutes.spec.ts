@@ -2,14 +2,14 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { suggestionsRoutes } from 'api/suggestions/routes';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { factory, fixtures, suggestionSharedId6Title } from 'api/suggestions/specs/fixtures';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { suggestionsRoutes } from '#api/suggestions/routes.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { factory, fixtures, suggestionSharedId6Title } from '#api/suggestions/specs/fixtures.js';
 
 // Mock IX external service to avoid Redis/task manager initialization via routes import
-jest.mock('api/services/informationextraction/InformationExtraction', () => ({
+jest.mock('#api/services/informationextraction/InformationExtraction', () => ({
   InformationExtraction: class IXMock {
     status = jest.fn().mockResolvedValue({ status: 'ready' });
 

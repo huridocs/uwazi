@@ -10,13 +10,13 @@ import { tenants, Tenant } from '#api/tenants/tenantContext.js';
 
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
-import users from 'api/users/users';
+import users from '#api/users/users.js';
 
-import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '../setupSockets';
-import { emitSocketEvent } from '../standaloneEmitSocketEvent';
+import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '#api/socketio/setupSockets.js';
+import { emitSocketEvent } from '#api/socketio/standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {

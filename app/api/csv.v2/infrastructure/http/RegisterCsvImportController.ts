@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { CSVImportEntitiesFactories } from '../factories/CSVImportEntitiesFactories';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 
 const RequestSchema = z.object({
   template: z.string(),

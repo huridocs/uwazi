@@ -5,12 +5,12 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
-import { templatesAtom } from '#app/V2/atoms/index.ts';
+import { templatesAtom } from '#V2/atoms/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '#shared/ParagraphExtractionTypes.js';
-import { DisplayPill } from '../DisplayPills.js';
+} from '#V2/shared//ParagraphExtractionTypes.js';
+import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.jsx';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => {
   const { sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;

@@ -1,11 +1,11 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { MongoFilesDataSource } from '../MongoFilesDataSource';
+import { MongoFilesDataSource } from '#api/files.v2/database/MongoFilesDataSource.js';
 
 const factory = getFixturesFactory();
 

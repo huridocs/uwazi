@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 
-import { SettingsAPI } from '#app/Settings.js';
+import { SettingsAPI } from '#app/Settings/index.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 

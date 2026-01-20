@@ -1,11 +1,11 @@
-import { CSVLoader } from '../csv/index.js';
+import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
 
-import { tenants } from 'api/tenants';
-import { CreateThesaurusController } from 'api/core/infrastructure/express/thesaurus/CreateThesaurusController';
-import { validation } from '../utils';
-import needsAuthorization from '../auth/authMiddleware';
-import thesauri from './thesauri';
+import { tenants } from '#api/tenants/index.js';
+import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
+import { validation } from '#api/utils/index.js';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import thesauri from '#api/thesauri/thesauri.js';
 
 const routes = app => {
   app.post(

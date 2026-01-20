@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { t, Translate } from 'app/I18N';
-import { Entity } from 'V2/domain';
-import { PDF, pdfEventBus } from 'V2/Components/PDFViewer';
-import { TemplateLabel } from 'V2/Components/Metadata';
-import { NeedAuthorization, Truncate, Button } from 'V2/Components/UI';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { isClient } from 'app/utils';
-import { settingsAtom } from 'V2/atoms';
+import { t, Translate } from '#app/I18N/index.js';
+import { Entity } from '#V2/domain';
+import { PDF, pdfEventBus } from '#V2/Components/PDFViewer';
+import { TemplateLabel } from '#V2/Components/Metadata';
+import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI';
+import { Panel } from '#V2/Components/Layouts/Panel';
+import { isClient } from '#app/utils/index.js';
+import { settingsAtom } from '#V2/atoms';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { PlainText } from './PlainText';
-import { OCRButton } from './OCRButton';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../urlParams';
-import { scrollToPage } from './functions';
-import { useTocActions, convertTextSelectionToTocEntry } from './ToC/tocAtom';
+import { PlainText } from '#V2/Routes/Entity/Components/PlainText.jsx';
+import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.jsx';
+import { PAGE_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/urlParams.js';
+import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
+import { useTocActions, convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {

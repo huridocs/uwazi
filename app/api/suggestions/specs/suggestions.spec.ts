@@ -13,8 +13,8 @@ import {
   IXSuggestionsFilter,
 } from '#shared/types/suggestionType.js';
 
-import { applicationEventsBus } from '../eventsbus.js';
-import { Suggestions } from '../suggestions';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 import {
   factory,
   fixtures,
@@ -23,8 +23,8 @@ import {
   shared2AgeSuggestionId,
   shared2esId,
   suggestionId,
-} from './fixtures';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+} from '#api/suggestions/specs/fixtures.js';
+import { GetSuggestionsForTableQuery } from '#api/suggestions/getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
 
 const _getSuggestions = async (query: any) =>
   testingEnvironment.db.getCollection('ixsuggestions')?.find(query).toArray() || [];

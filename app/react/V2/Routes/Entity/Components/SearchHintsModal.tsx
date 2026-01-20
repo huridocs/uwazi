@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAtom } from 'jotai';
-import { Button, Modal } from 'V2/Components/UI';
-import { Translate, t } from 'app/I18N';
-import { searchHintsModalAtom } from './atoms';
+import { Button, Modal } from '#V2/Components/UI';
+import { Translate, t } from '#app/I18N/index.js';
+import { searchHintsModalAtom } from '#V2/Routes/Entity/Components/atoms.js';
 
 const SearchHintsModal = () => {
   const [showModal, setShowModal] = useAtom(searchHintsModalAtom);

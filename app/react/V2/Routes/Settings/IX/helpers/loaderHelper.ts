@@ -1,11 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
-import { get, has, isEmpty } from 'lodash';
+import get from 'lodash/get.js';
+import has from 'lodash/has.js';
+import isEmpty from 'lodash/isEmpty.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { SuggestionValue, EntitySuggestion } from '../types.js';
+import { SuggestionValue, EntitySuggestion } from '#V2/Routes/Settings/IX/types.js';
 import { ClientPropertySchema, ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
-import { search } from '#app/V2/api/search/index.js';
+import { search } from '#V2/api/search/index.js';
 
 type TransformedSuggestion = EntitySuggestion & {
   rowId: string;

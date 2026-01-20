@@ -5,24 +5,24 @@ import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { withContext } from '#app/componentWrappers.js';
+import Icon from '#UI/Icon/Icon.jsx';
+import { withContext } from '#app/componentWrappers.jsx';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from '#app/Metadata/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
-import { api as entitiesAPI } from '#app/V2/api/entities/index.js';
+import SidePanel from '#app/Layout/SidePanel.jsx';
+import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
+import { api as entitiesAPI } from '#V2/api/entities/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
-import { FileList } from '#app/Attachments/components/FileList.js';
+import { FileList } from '#app/Attachments/components/FileList.jsx';
 import {
   unselectConnection,
   updateRelationshipEntityData,
   addEntity,
   setAddToData,
   reloadRelationships,
-} from '../actions/actions.js';
+} from '#app/Relationships/actions/actions.js';
 
 class RelationshipMetadata extends Component {
   constructor(props) {
@@ -220,7 +220,7 @@ const mapStateToProps = state => {
   return {
     selectedConnection: Boolean(
       (state.relationships.connection && state.relationships.connection.get('_id')) ||
-        entityBeingEdited
+      entityBeingEdited
     ),
     entity: connectionSelector(state),
     entityBeingEdited,

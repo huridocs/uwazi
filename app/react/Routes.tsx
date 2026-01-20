@@ -3,95 +3,97 @@ import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 
-import LibraryRoot from '#app/Library/Library.js';
+import LibraryRoot from '#app/Library/Library.jsx';
 
-import { LibraryCards } from '#app/Library/LibraryCards.js';
+import { LibraryCards } from '#app/Library/LibraryCards.jsx';
 
-import { LibraryTable } from '#app/Library/LibraryTable.js';
-import { Preserve } from './V2/Routes/Settings/Preserve/Preserve.js';
-import { Settings } from './V2/Routes/Settings/Settings.js';
+import { LibraryTable } from '#app/Library/LibraryTable.jsx';
+import { Preserve } from '#V2/Routes/Settings/Preserve/Preserve.jsx';
+import { Settings } from '#V2/Routes/Settings/Settings.jsx';
 
-import { Login } from '#app/Users/Login.js';
-import { Users, usersLoader, userAction } from './V2/Routes/Settings/Users/Users.js';
-import { Collection, collectionLoader } from './V2/Routes/Settings/Collection/Collection.js';
+import { Login } from '#app/Users/Login.jsx';
+import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.jsx';
+import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.jsx';
 
-import ViewerRoute from '#app/Viewer/ViewerRoute.js';
+import ViewerRoute from '#app/Viewer/ViewerRoute.jsx';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,
-} from './V2/Routes/Settings/Translations/TranslationsList.js';
+} from '#V2/Routes/Settings/Translations/TranslationsList.jsx';
 import {
   EditTranslations,
   editTranslationsLoader,
   editTranslationsAction,
-} from './V2/Routes/Settings/Translations/EditTranslations.js';
-import { Dashboard, dashboardLoader } from './V2/Routes/Settings/Dashboard/Dashboard.js';
+} from '#V2/Routes/Settings/Translations/EditTranslations.jsx';
+import { Dashboard, dashboardLoader } from '#V2/Routes/Settings/Dashboard/Dashboard.jsx';
 
 import {
   EditThesaurus,
   thesauriLoader,
   ThesauriList,
   editThesaurusLoader,
-} from '#app/V2/Routes/Settings/Thesauri/index.js';
+} from '#V2/Routes/Settings/Thesauri/index.js';
 
-import { MenuConfig, menuConfigloader } from './V2/Routes/Settings/MenuConfig/MenuConfig.js';
+import { MenuConfig, menuConfigloader } from '#V2/Routes/Settings/MenuConfig/MenuConfig.jsx';
 import {
   RelationshipTypes,
   relationshipTypesLoader,
-} from './V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
+} from '#V2/Routes/Settings/RelationshipTypes/RelationshipTypes.jsx';
 import {
   LanguagesList,
   languagesListLoader,
-} from './V2/Routes/Settings/Languages/LanguagesList.js';
-import { Account, accountLoader } from './V2/Routes/Settings/Account/Account.js';
-import { IXdashboardLoader, IXDashboard } from './V2/Routes/Settings/IX/IXDashboard.js';
-import { IXSuggestions, IXSuggestionsLoader } from './V2/Routes/Settings/IX/IXSuggestions.js';
+} from '#V2/Routes/Settings/Languages/LanguagesList.jsx';
+import { Account, accountLoader } from '#V2/Routes/Settings/Account/Account.jsx';
+import { IXdashboardLoader, IXDashboard } from '#V2/Routes/Settings/IX/IXDashboard.jsx';
+import { IXSuggestions, IXSuggestionsLoader } from '#V2/Routes/Settings/IX/IXSuggestions.jsx';
 import {
   PageEditor,
   pageEditorLoader,
   PagesList,
   pagesListLoader,
-} from './V2/Routes/Settings/Pages/index.js';
+} from '#V2/Routes/Settings/Pages/index.js';
 import {
   customisationLoader,
   Customisation,
-} from './V2/Routes/Settings/Customization/Customization.js';
-import { ActivityLog, activityLogLoader } from './V2/Routes/Settings/ActivityLog/index.js';
+} from '#V2/Routes/Settings/Customization/Customization.jsx';
+import { ActivityLog, activityLogLoader } from '#V2/Routes/Settings/ActivityLog/index.js';
 import {
   CustomUploads,
   customUploadsLoader,
-} from './V2/Routes/Settings/CustomUploads/CustomUploads.js';
-import { FiltersTable, filtersLoader } from './V2/Routes/Settings/Filters/index.js';
-import { RouteErrorBoundary, GeneralError } from './V2/Components/ErrorHandling/index.js';
+} from '#V2/Routes/Settings/CustomUploads/CustomUploads.jsx';
+import { FiltersTable, filtersLoader } from '#V2/Routes/Settings/Filters/index.js';
+import { RouteErrorBoundary, GeneralError } from '#V2/Components/ErrorHandling/index.js';
 import {
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
-} from './V2/Routes/Settings/ParagraphExtraction/Loaders.js';
-import { ParagraphExtractorDashboard } from './V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js';
-import { PXEntityDashboard } from './V2/Routes/Settings/ParagraphExtraction/PXEntities.js';
-import { PXParagraphDashboard } from './V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js';
+} from '#V2/Routes/Settings/ParagraphExtraction/Loaders.js';
+import { ParagraphExtractorDashboard } from '#V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.jsx';
+import { PXEntityDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXEntities.jsx';
+import { PXParagraphDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.jsx';
 import {
   Templates,
   templatesLoader,
   TemplatesEditor,
   templatesEditorLoader,
-} from '#app/V2/Routes/Settings/Templates/index.js';
+} from '#V2/Routes/Settings/Templates/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
   privateRoute,
   ProtectedRoute,
-} from './ProtectedRoute.js';
-import { getIndexElement } from './getIndexElement.js';
-import { PageView } from './Pages/PageView.js';
-import ResetPassword from './Users/ResetPassword.js';
-import ConnectedUnlockAccount from './Users/UnlockAccount.js';
-import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
-import { LibraryMap } from '#app/Library/LibraryMap.js';
-import { App } from './App/App.js';
+} from '#app/ProtectedRoute.jsx';
+import { getIndexElement } from '#app/getIndexElement.jsx';
+import { PageView } from '#app/Pages/PageView.jsx';
+import ResetPassword from '#app/Users/ResetPassword.jsx';
+import ConnectedUnlockAccount from '#app/Users/UnlockAccount.jsx';
+import { NewRelMigrationDashboard } from '#app/Settings/components/relV2MigrationDashboard.jsx';
+import { LibraryMap } from '#app/Library/LibraryMap.jsx';
+import { App } from '#app/App/App.jsx';
+import { Entity } from '#V2/Routes/Entity/index.js';
+import { entityLoader } from '#V2/Routes/Entity/loader.js';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,

@@ -1,10 +1,10 @@
 import uniqueID from '#shared/uniqueID.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { ClientTemplateSchema, ClientProperty } from '#app/V2/shared/types.js';
+import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 
 import { t } from '#app/I18N/index.js';
-import { PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { PropertyRow } from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
 
 const commonPropertyTitle: ClientProperty = {
   label: 'Title',

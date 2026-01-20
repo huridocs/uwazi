@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
-import { DocumentLanguage, mapStateToProps } from '../DocumentLanguage';
 
-jest.mock('app/I18N', () => ({
+import { DocumentLanguage, mapStateToProps } from '#app/Layout/DocumentLanguage.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
+jest.mock('#app/I18N', () => ({
   t: (_context, key) => key,
   Translate: ({ children }) => children,
 }));

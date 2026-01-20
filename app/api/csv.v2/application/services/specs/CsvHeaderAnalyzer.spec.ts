@@ -1,9 +1,9 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
-import { CsvHeaderAnalyzerError } from '../CsvHeaderAnalyzerError';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { CsvHeaderAnalyzer } from '#api/csv.v2/application/services/CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '#api/csv.v2/application/services/CsvHeaderAnalyzerError.js';
 
 const TEMPLATE_ID = 'template-id';
 const AVAILABLE_LANGUAGES = ['en', 'es'];

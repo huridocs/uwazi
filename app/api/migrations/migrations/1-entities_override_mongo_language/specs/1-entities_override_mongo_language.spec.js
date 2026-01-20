@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
 
-import fixtures from './fixtures.js';
-import migration from '../index.js';
+import fixtures from '#api/migrations/migrations/1-entities_override_mongo_language/specs/fixtures.js';
+import migration from '#api/migrations/migrations/1-entities_override_mongo_language/index.js';
 
 describe('migration entities_override_mongo_language', () => {
   beforeEach(async () => {

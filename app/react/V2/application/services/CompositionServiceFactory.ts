@@ -1,6 +1,6 @@
-import { EntityRepository } from 'app/V2/infrastructure/repositories/EntityRepository';
-import { DependencyContainer } from '../container/DependencyContainer';
-import { EntityCompositionUseCase } from '../useCases/EntityCompositionUseCase';
+import { EntityRepository } from '#V2/infrastructure/repositories/EntityRepository.js';
+import { DependencyContainer } from '#V2/application/container/DependencyContainer.js';
+import { EntityCompositionUseCase } from '#V2/application/useCases/EntityCompositionUseCase.js';
 
 export class CompositionServiceFactory {
   private static container: DependencyContainer | null = null;

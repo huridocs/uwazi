@@ -3,13 +3,13 @@ import express from 'express';
 import { Server } from 'http';
 import multer from 'multer';
 
-import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
+import { HttpClientFactory } from '#api/common.v2/infrastructure/HttpClientFactory.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
+import { GetParagraphsResultOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
-import { document, mockGetParagraphsResult, segmentation } from './fixtures';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { PXExternalExtractionService } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/ExternalExtractionService.js';
+import { document, mockGetParagraphsResult, segmentation } from '#api/paragraphExtraction/infrastructure/specs/fixtures.js';
 
 const upload = multer();
 const app = express();

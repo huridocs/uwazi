@@ -1,7 +1,7 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { MongoPermissionsDataSource } from './MongoPermissionsDataSource';
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const DefaultPermissionsDataSource = (_transactionManager?: MongoTransactionManager) => {
   const connection = getConnection();

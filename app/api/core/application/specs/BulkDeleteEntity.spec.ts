@@ -1,25 +1,25 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { elastic, search } from 'api/search';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { elastic, search } from '#api/search/index.js';
 import { Collection, ObjectId } from 'mongodb';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { MongoEntityPermissionChecker } from 'api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 import {
   getConnection,
   getSharedConnection,
-} from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { UserSchema } from 'shared/types/userType';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity';
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
 
 const factory = getFixturesFactory();
 

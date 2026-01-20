@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
-import LibraryFilters from '#app/Library/components/LibraryFilters.js';
+import LibraryFilters from '#app/Library/components/LibraryFilters.jsx';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import SemanticSearchPanel from '#app/SemanticSearch/components/SemanticSearchPanel.js';
-import ImportPanel from '#app/Uploads/components/ImportPanel.js';
-import { LibraryFooter } from './components/LibraryFooter';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
+import SemanticSearchPanel from '#app/SemanticSearch/components/SemanticSearchPanel.jsx';
+import ImportPanel from '#app/Uploads/components/ImportPanel.jsx';
+import { LibraryFooter } from '#app/Library/components/LibraryFooter.jsx';
 
 class LibraryLayoutBase extends Component {
   render() {

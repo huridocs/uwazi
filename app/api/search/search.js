@@ -3,27 +3,27 @@ import _ from 'lodash';
 
 import date from '#api/utils/date.js';
 import propertiesHelper from '#shared/commonProperties.js';
-import dictionariesModel from '../thesauri/dictionariesModel.js';
+import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import { createError } from '#api/utils/index.js';
 import { filterOptions } from '#shared/optionsUtils.js';
 import { preloadOptionsLimit, preloadOptionsSearch } from '#shared/config.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { checkWritePermissions } from '#shared/permissionsUtils.js';
-import usersModel from '../users/users.js';
-import userGroups from '../usergroups/userGroups.js';
+import usersModel from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { OperationalError } from '../common.v2/errors/OperationalError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { inspect } from 'util';
-import documentQueryBuilder from './documentQueryBuilder';
-import { elastic } from './elastic';
-import entitiesModel from '../entities/entitiesModel';
-import templatesModel from '../core/v1_layer/templates';
-import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
-import thesauri from '../thesauri';
-import * as v2 from './v2_support';
+import documentQueryBuilder from '#api/search/documentQueryBuilder.js';
+import { elastic } from '#api/search/elastic.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
+import templatesModel from '#api/core/v1_layer/templates/index.js';
+import { bulkIndex, indexEntities, updateMapping } from '#api/search/entitiesIndex.js';
+import thesauri from '#api/thesauri/index.js';
+import * as v2 from '#api/search/v2_support.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {

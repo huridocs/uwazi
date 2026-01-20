@@ -5,10 +5,10 @@
 import React from 'react';
 import { render, act, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { pdfScaleAtom } from '#app/V2/atoms/index.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import PDF, { PDFProps } from '../PDF.js';
-import * as helpers from '../functions/helpers.js';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import PDF, { PDFProps } from '#V2/Components/PDFViewer/PDF.jsx';
+import * as helpers from '#V2/Components/PDFViewer/functions/helpers.js';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();

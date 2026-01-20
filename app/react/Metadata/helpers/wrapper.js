@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 import uniqueID from '#shared/uniqueID.js';
 
 const isMediaProperty = property => {

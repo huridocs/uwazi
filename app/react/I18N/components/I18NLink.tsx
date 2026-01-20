@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate, NavLink, useLocation } from 'react-router';
-import { omit } from 'lodash';
+import omit from 'lodash/omit.js';
 
 type I18NLinkProps = {
   to: string;

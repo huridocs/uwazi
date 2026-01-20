@@ -1,11 +1,11 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 
 import { NamespacedDispatcher } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
-import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
-import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
-import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
+import { UpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
+import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
+import { QueuedRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
 
 beforeEach(async () => {
   await testingEnvironment.setUp({});

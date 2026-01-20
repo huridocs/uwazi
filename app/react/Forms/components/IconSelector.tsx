@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { iconNames } from 'UI/Icon/library';
-import { CountryList } from '/home/mercy/Projects/uwazi/node_modules/@testing-library/user-event/dist/types/document/UI.d.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
-import IconSelectorItem from '#app/IconSelectorItem';
+import { iconNames } from '#app/UI/Icon/library.js';
+import IconSelectorItem from './IconSelectorItem.js';
 
 export default class IconSelector extends Component {
   constructor(props) {

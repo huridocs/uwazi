@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { isClient } from '#app/utils/index.js';
 import { Translate } from '#app/I18N/index.js';
 
-import { Notification } from '#app/Notifications/components/Notification.js';
+import { Notification } from '#app/Notifications/components/Notification.jsx';
 
 class Cookiepopup extends Component {
   constructor(props) {

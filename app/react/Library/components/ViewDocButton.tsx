@@ -4,9 +4,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Map } from 'immutable';
+import Immutable from 'immutable';
+
+const { Map } = Immutable;
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { actions } from '#app/BasicReducer/index.js';
 import url from 'url';
 

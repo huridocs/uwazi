@@ -6,7 +6,7 @@ import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,
 } from '#api/core/domain/template/errors.js';
-import { Context, Property, PropertyTypes, PropertyUpdateInfo } from './Property';
+import { Context, Property, PropertyTypes, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
 
 type Inherit = {
   property: string;

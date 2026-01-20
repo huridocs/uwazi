@@ -1,16 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
-import _, { isArray, isEqual, isObject } from 'lodash';
+import _ from 'lodash';
 import moment from 'moment';
 
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
-import * as activityLogAPI from '#app/V2/api/activityLog/index.js';
-import type { ActivityLogResponse } from '#app/V2/api/activityLog/index.js';
+import * as activityLogAPI from '#V2/api/activityLog/index.js';
+import type { ActivityLogResponse } from '#V2/api/activityLog/index.js';
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
+const { isArray, isEqual, isObject } = _;
 const ITEMS_PER_PAGE = 100;
 
 type LogEntry = ActivityLogEntryType & { rowId: string };
@@ -98,29 +99,29 @@ const activityLogLoader =
     headers?: IncomingHttpHeaders,
     _handlerContext?: { settings?: ClientSettings }
   ): LoaderFunction =>
-  async ({ request }) => {
-    const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams);
-    const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
-    if (activityLogList.message !== undefined) {
-      return {
-        error: activityLogList.message,
-        activityLogData: [],
-        totalPages: 0,
-        page: 0,
-        total: 0,
-      };
-    }
-    const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
+    async ({ request }) => {
+      const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
+      const searchParams = searchParamsFromSearchParams(urlSearchParams);
+      const params = getQueryParamsBySearchParams(searchParams);
+      const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
+      if (activityLogList.message !== undefined) {
+        return {
+          error: activityLogList.message,
+          activityLogData: [],
+          totalPages: 0,
+          page: 0,
+          total: 0,
+        };
+      }
+      const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
 
-    return {
-      activityLogData: activityLogList.rows.map(row => ({ ...row, rowId: row._id })),
-      totalPages,
-      page: params.page,
-      total: activityLogList.totalRows,
+      return {
+        activityLogData: activityLogList.rows.map(row => ({ ...row, rowId: row._id })),
+        totalPages,
+        page: params.page,
+        total: activityLogList.totalRows,
+      };
     };
-  };
 
 export interface ActivityLogSearch {
   username?: string;

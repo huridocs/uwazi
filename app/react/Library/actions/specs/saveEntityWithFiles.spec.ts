@@ -6,7 +6,7 @@ import fetchMock from 'fetch-mock';
 
 import { APIURL } from '#app/config.js';
 import { readFileAsBase64, saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
-import { contentForFiles } from './fixtures';
+import { contentForFiles } from '#app/Library/actions/specs/fixtures.js';
 
 describe('saveEntityWithFiles', () => {
   const dispatch = jasmine.createSpy('dispatch');

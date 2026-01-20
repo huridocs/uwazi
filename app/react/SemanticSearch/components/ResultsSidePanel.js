@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ResultsFiltersPanel from './ResultsFiltersPanel';
-import DocumentResultsPanel from './DocumentResultsPanel';
+import ResultsFiltersPanel from '#app/SemanticSearch/components/ResultsFiltersPanel.jsx';
+import DocumentResultsPanel from '#app/SemanticSearch/components/DocumentResultsPanel.js';
 
 export const ResultsSidePanel = () => (
   <>

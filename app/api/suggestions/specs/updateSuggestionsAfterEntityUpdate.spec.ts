@@ -6,7 +6,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,
-} from '../useCases/updateSuggestionsAfterEntityUpdate';
+} from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
 
 const factory = getFixturesFactory();
 

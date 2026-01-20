@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import superagent from 'superagent';
-import { UploadService } from '../UploadService';
+import { UploadService } from '#V2/api/files/UploadService.js';
 
 const file1 = new File(['File 1 contents'], 'file1.txt', {
   type: 'text/plain',
@@ -15,7 +15,7 @@ describe('Upload service', () => {
   const uploadService = new UploadService('attachment');
 
   const mockSuperAgent = () => {
-    const mockUpload = superagent.post('api/files');
+    const mockUpload = superagent.post('#api/files');
     spyOn(mockUpload, 'field').and.returnValue(mockUpload);
     spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
     spyOn(mockUpload, 'abort').and.returnValue(mockUpload);

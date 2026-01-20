@@ -12,7 +12,7 @@ import Footer from '#app/App/Footer.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { DocumentCounter } from '#app/Layout/DocumentCounter.jsx';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { withRouter } from '#app/componentWrappers.jsx';
 import { LibraryHeader } from '#app/Library/components/LibraryHeader.jsx';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
@@ -137,11 +137,11 @@ class DocumentsList extends Component {
 
     const totalConnections = connections
       ? connectionsGroups.reduce(
-          (total, g) =>
-            total +
-            g.get('templates').reduce((count, template) => count + template.get('count'), 0),
-          0
-        )
+        (total, g) =>
+          total +
+          g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+        0
+      )
       : undefined;
 
     const counter = (

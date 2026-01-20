@@ -1,8 +1,10 @@
-import { fromJS } from 'immutable';
+
 
 import * as actions from '#app/Pages/actions/actionTypes.js';
-import reducer from '../uiReducer';
+import reducer from '#app/Pages/reducers/uiReducer.js';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 describe('uiReducer', () => {
   describe('when state is undefined', () => {
     it('should return initial state', () => {

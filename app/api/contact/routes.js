@@ -1,6 +1,6 @@
-import contact from './contact';
-import { captchaAuthorization } from '../auth';
-import { validation } from '../utils';
+import contact from '#api/contact/contact.js';
+import { captchaAuthorization } from '#api/auth/index.js';
+import { validation } from '#api/utils/index.js';
 
 export default app => {
   app.post(

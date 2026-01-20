@@ -14,12 +14,11 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 
-import entities from '../entities/index.js';
+import entities from '#api/entities/entities.js';
 
-import thesauris from '#api/thesauri/thesauri.js';
+import thesauris, { flatThesaurusValues } from '#api/thesauri/thesauri.js';
 
-import { flatThesaurusValues } from '../thesauri/thesauri.js';
-import { validators, customErrorMessages } from './metadataValidators.js';
+import { validators, customErrorMessages } from '#api/entities/validation/metadataValidators.js';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
@@ -219,12 +218,12 @@ const validateSameRelationshipsMatch = (
   return valid
     ? []
     : [
-        validationError(
-          { message: customErrorMessages.relationship_values_should_match },
-          property,
-          entity
-        ),
-      ];
+      validationError(
+        { message: customErrorMessages.relationship_values_should_match },
+        property,
+        entity
+      ),
+    ];
 };
 
 export const validateMetadataField = async (

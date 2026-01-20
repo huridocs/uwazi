@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Rectangle } from 'recharts';
 
 import colorScheme, { light as colorSchemeLight } from '#app/utils/colorScheme';
-import ColoredBar from '../ColoredBar';
+import ColoredBar from '#app/Charts/components/ColoredBar.jsx';
 
 describe('ColoredBar', () => {
   let component;

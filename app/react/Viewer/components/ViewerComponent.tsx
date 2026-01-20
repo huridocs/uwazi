@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -8,9 +8,11 @@ import EntityView from '#app/Viewer/EntityView.jsx';
 import { Loader } from '#app/components/Elements/Loader.jsx';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
-import { ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorBoundary.jsx';
-import { PDFView } from '#app/PDFView';
+import { PDFView } from '#app/Viewer/PDFView.jsx';
+import { ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorFallback.js';
+import Immutable from 'immutable';
 
+const { Map } = Immutable;
 class EntityViewerComponent extends Component {
   constructor(props, context) {
     super(props, context);

@@ -3,7 +3,7 @@ import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { fromJS } from 'immutable';
+
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
@@ -15,16 +15,18 @@ import { processFilters, encodeSearch } from '#app/Library/actions/libraryAction
 
 import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
 
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
-import { libraryViewInfo } from '#app/App/libraryViewInfo.ts';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
+import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
-import { DropdownMenu } from './DropdownMenu';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
+import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 interface MenuProps {
   className: string;
   defaultLibraryView: any;

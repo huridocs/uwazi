@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TableViewColumn } from '#app/istore.js';
@@ -23,7 +23,7 @@ const ColumnItem = ({ item }: { item: SelectableColumn }) => (
       ref={updateIndeterminate(item)}
       type="checkbox"
       checked={!item.hidden}
-      onChange={() => {}}
+      onChange={() => { }}
     />
     comment to see the full error message
     <Translate context={item.translationContext}>{item.label}</Translate>

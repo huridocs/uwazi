@@ -1,11 +1,11 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { MongoRelationshipsDataSource } from './MongoRelationshipsDataSource';
-import { MongoV1ConnectionsDataSource } from './MongoV1ConnectionsDataSource';
-import { MongoHubsDataSource } from './MongoHubsDataSource';
-import { MongoRelationshipMigrationFieldsDataSource } from './MongoRelationshipMigrationFieldsDataSource';
-import { MongoMigrationHubRecordDataSource } from './MongoMigrationHubRecordDataSource';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MongoV1ConnectionsDataSource } from '#api/relationships.v2/database/MongoV1ConnectionsDataSource.js';
+import { MongoHubsDataSource } from '#api/relationships.v2/database/MongoHubsDataSource.js';
+import { MongoRelationshipMigrationFieldsDataSource } from '#api/relationships.v2/database/MongoRelationshipMigrationFieldsDataSource.js';
+import { MongoMigrationHubRecordDataSource } from '#api/relationships.v2/database/MongoMigrationHubRecordDataSource.js';
 
 const DefaultRelationshipDataSource = (transactionManager: MongoTransactionManager) => {
   const connection = getConnection();

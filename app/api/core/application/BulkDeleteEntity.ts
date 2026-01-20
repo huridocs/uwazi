@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { search } from 'api/search';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { AbstractUseCase } from '../libs/UseCase';
-import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
-import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
+import { search } from '#api/search/index.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { EntityPermissionChecker, Specification } from '#api/core/domain/entity/EntityPermissionChecker.js';
+import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
 
 const InputSchema = z.object({
   sharedIds: z

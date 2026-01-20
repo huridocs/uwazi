@@ -1,12 +1,12 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants/tenantContext';
-import { search } from 'api/search';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { BulkDeleteEntityUseCase } from 'api/core/application/BulkDeleteEntity';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { search } from '#api/search/index.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
 
 class BulkDeleteEntityUseCaseFactory {
   static default() {

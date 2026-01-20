@@ -10,7 +10,7 @@ import FreeBarChart, {
   FreeBarChartProps,
   CustomTooltip,
   CustomTooltipProps,
-} from '../FreeBarChart';
+} from '#app/Markdown/components/FreeBarChart.jsx';
 
 describe('FreeBarChart', () => {
   let component: any;

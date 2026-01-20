@@ -1,7 +1,7 @@
-import { CommonPropertyFactory } from '../CommonPropertyFactory';
-import { CreationDateProperty } from '../CreationDateProperty';
-import { ModifiedDateProperty } from '../ModifiedDateProperty';
-import { TitleProperty } from '../TitleProperty';
+import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
+import { CreationDateProperty } from '#api/core/domain/template/CreationDateProperty.js';
+import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
+import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 
 describe('CommonPropertyFactory', () => {
   it('should create an instance of TitleProperty', () => {

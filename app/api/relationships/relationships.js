@@ -6,12 +6,11 @@ import templatesAPI from '#api/templates/index.js';
 import settings from '#api/settings/index.js';
 import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';
-import { createError } from '#api/utils/index.js';
-
+import createError from '#api/utils/Error.js';
 import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import model from '#api/relationships/model.js';
-import { generateNames } from '#api/templates/utils.js';
+import { generateNames } from '#api/utils/templateUtils.js';
 
 import {
   filterRelevantRelationships,
@@ -75,11 +74,11 @@ export default {
         ...(Array.isArray(entity) ? { entity: { $in: entity } } : { entity }),
         ...(file
           ? {
-              $or: [
-                { file: { $exists: false } },
-                file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
-              ],
-            }
+            $or: [
+              { file: { $exists: false } },
+              file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+            ],
+          }
           : {}),
       });
     }
@@ -263,9 +262,9 @@ export default {
       relationships.map(r =>
         r._id
           ? {
-              ...r,
-              template: r.template && r.template._id !== null ? r.template : null,
-            }
+            ...r,
+            template: r.template && r.template._id !== null ? r.template : null,
+          }
           : r
       )
     );

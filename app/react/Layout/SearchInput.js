@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { t } from '#app/I18N/index.js';
-import ModalTips from '#app/App/ModalTips.js';
-import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
+import ModalTips from '#app/App/ModalTips.jsx';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.jsx';
 
 export class SearchInput extends Component {
   render() {

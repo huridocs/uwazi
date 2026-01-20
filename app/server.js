@@ -8,6 +8,10 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import * as Sentry from '@sentry/node';
 
@@ -33,7 +37,7 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import { handleError } from '#api/utils/handleError.js';
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
-import { serverSideRender } from './react/server.js';
+import { serverSideRender } from '#app/server.js';
 import { initSentry } from './initSentry.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
 

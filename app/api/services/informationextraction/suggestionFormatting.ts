@@ -20,8 +20,8 @@ import {
 } from '#shared/types/suggestionSchema.js';
 
 import { syncWrapValidator } from '#shared/tsUtils.js';
-import { InternalIXResultsMessage } from './InformationExtraction.js';
-import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors.js';
+import { InternalIXResultsMessage } from '#api/services/informationextraction/InformationExtraction.js';
+import { AllowedPropertyTypes, checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
 
 type RawSuggestion = {
   entity_name?: string;

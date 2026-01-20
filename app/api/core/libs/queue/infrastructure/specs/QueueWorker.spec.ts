@@ -2,20 +2,20 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
 
-import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from '../queue.v2/application/contracts/Dispatchable.js';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
-import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { NamespacedDispatcher } from '../NamespacedDispatcher';
-import { QueueWorker } from '../QueueWorker';
-import { createSignals } from './Signals';
-import { NonRetryableJobError } from '../errors';
+import { NamespacedDispatcher } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import { QueueWorker } from '#api/core/libs/queue/infrastructure/QueueWorker.js';
+import { createSignals } from '#api/core/libs/queue/infrastructure/specs/Signals.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 class TestJob implements Dispatchable {
   static shouldFail = false;

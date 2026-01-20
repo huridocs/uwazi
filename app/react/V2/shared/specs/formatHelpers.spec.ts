@@ -1,4 +1,4 @@
-import { formatBytes, getFileNameAndExtension, validEmailFormat } from '../formatHelpers';
+import { formatBytes, getFileNameAndExtension, validEmailFormat } from '#V2/shared/formatHelpers.js';
 
 describe('Formatting helpers', () => {
   describe('bytes formatter', () => {

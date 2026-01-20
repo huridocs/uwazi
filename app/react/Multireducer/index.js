@@ -1,4 +1,4 @@
-import wrapDispatch from './wrapDispatch';
+import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
 
 export { wrapDispatch };
 

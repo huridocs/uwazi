@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import { translationsV2, translations, templateContext } from './fixtures.js';
+import migration from '#api/migrations/migrations/145-remove-translations-v2/index.js';
+import { translationsV2, translations, templateContext } from '#api/migrations/migrations/145-remove-translations-v2/specs/fixtures.js';
 
 describe('migration remove-obsolete-translation-keys', () => {
   beforeEach(async () => {

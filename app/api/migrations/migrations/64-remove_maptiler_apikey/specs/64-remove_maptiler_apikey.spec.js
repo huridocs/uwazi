@@ -1,6 +1,6 @@
 import { testingDB } from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/64-remove_maptiler_apikey/index.js';
+import fixtures from '#api/migrations/migrations/64-remove_maptiler_apikey/specs/fixtures.js';
 
 describe('migration remove maptiler apikey', () => {
   beforeEach(async () => {

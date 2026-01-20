@@ -1,11 +1,11 @@
 import { Db } from 'mongodb';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoPXEntityStatusesQueryService } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusesQueryService.js';
 
 type Props = {
   connection?: Db;

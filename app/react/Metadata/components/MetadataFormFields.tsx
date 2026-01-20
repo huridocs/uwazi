@@ -14,7 +14,7 @@ import Tip from '#app/Layout/Tip.jsx';
 import { generateID } from '#shared/IDGenerator.js';
 
 import { saveThesaurus } from '#app/Thesauri/actions/thesauriActions.js';
-import { sanitizeThesauri } from '#app/V2/Routes/Settings/Thesauri/helpers.js';
+import { sanitizeThesauri } from '#V2/Routes/Settings/Thesauri/helpers.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import {
   DatePicker,
@@ -30,7 +30,7 @@ import {
   Select,
   LookupMultiSelect,
   MediaField,
-} from '#app/ReactReduxForms/index.js';
+} from '#app/ReactReduxForms/index.jsx';
 import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
 import { MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
 import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.jsx';

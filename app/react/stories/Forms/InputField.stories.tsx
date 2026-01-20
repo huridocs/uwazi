@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { InputField } from '#app/V2/Components/Forms/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof InputField> = {
   title: 'Forms/InputField',

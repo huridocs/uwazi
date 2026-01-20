@@ -5,7 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { actions as formActions } from 'react-redux-form';
 
-import { LoginComponent } from '../Login.js';
+import { LoginComponent } from '#app/Users/Login.jsx';
 
 describe('Login', () => {
   let component;

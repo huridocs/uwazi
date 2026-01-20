@@ -10,10 +10,10 @@ import { connect } from 'react-redux';
 import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
 import defaultTemplate from '#app/Metadata/helpers/defaultTemplate.js';
-import validator from '#app/Metadata/helpers/validator.js';
+import validator from '#app/Metadata/helpers/validator.jsx';
 import { IconField } from '#app/Metadata/components/IconField.jsx';
 import MetadataFormFields from '#app/Metadata/components/MetadataFormFields.jsx';
 import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.jsx';
@@ -143,9 +143,9 @@ class MetadataForm extends Component {
     }
     const titleLabel = template.get('commonProperties')
       ? template
-          .get('commonProperties')
-          .find(p => p.get('name') === 'title')
-          .get('label')
+        .get('commonProperties')
+        .find(p => p.get('name') === 'title')
+        .get('label')
       : 'Title';
 
     return (
@@ -218,10 +218,10 @@ MetadataForm.defaultProps = {
   showSubset: undefined,
   version: undefined,
   initialTemplateId: undefined,
-  componentWillUnmount: () => {},
-  notify: () => {},
-  changeTemplate: () => {},
-  onSubmit: () => {},
+  componentWillUnmount: () => { },
+  notify: () => { },
+  changeTemplate: () => { },
+  onSubmit: () => { },
   highlightedProps: [],
   storeKey: '',
   attachments: [],
@@ -266,7 +266,7 @@ export const mapStateToProps = (state, ownProps) => {
     template: ownProps.template
       ? ownProps.template
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-        immutableDefaultTemplate,
+      immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,

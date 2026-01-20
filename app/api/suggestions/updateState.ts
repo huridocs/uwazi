@@ -1,5 +1,5 @@
-import settings from '../settings/index.js';
-import templates from '../templates/index.js';
+import settings from '#api/settings/index.js';
+import templates from '#api/templates/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   CurrentValue,
@@ -8,14 +8,14 @@ import {
 } from '#shared/getIXSuggestionState.js';
 import { propertyIsMultiselect, propertyIsRelationship } from '#shared/propertyTypes.js';
 import { LanguagesListSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { IXExtractorModel } from '../services/informationextraction/IXExtractorModel.js';
-import { IXSuggestionsModel } from './IXSuggestionsModel';
+import { IXExtractorModel } from '#api/services/informationextraction/IXExtractorModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import {
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
-} from './pipelineStages';
+} from '#api/suggestions/pipelineStages.js';
 
 type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
   _id: any;

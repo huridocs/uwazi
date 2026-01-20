@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Numeric from '../Numeric';
+import Numeric from '#app/Forms/components/Numeric.jsx';
 
 describe('Numeric', () => {
   let component;

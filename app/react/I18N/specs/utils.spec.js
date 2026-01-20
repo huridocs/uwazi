@@ -1,7 +1,7 @@
 import * as Cookie from 'tiny-cookie';
 import * as appUtils from '#app/Viewer/utils.js';
 
-import utils from '../utils.js';
+import utils from '#app/I18N/utils.js';
 
 jest.mock('tiny-cookie', () => ({
   ...jest.requireActual('tiny-cookie'),

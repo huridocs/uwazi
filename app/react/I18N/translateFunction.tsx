@@ -1,7 +1,7 @@
 import React from 'react';
-import { atomStore, translationsAtom, localeAtom } from '#app/V2/atoms/index.ts';
+import { atomStore, translationsAtom, localeAtom } from '#V2/atoms/index.js';
 import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
-import { Translate } from './Translate.js';
+import { Translate } from '#app/I18N/Translate.jsx';
 
 //return type as any since there is no way to create conditional returns based on parameters
 interface TranslationFunction {

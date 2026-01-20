@@ -1,7 +1,7 @@
-import { setupTestUploadedPaths } from '../files/filesystem.js';
+import { setupTestUploadedPaths } from '#api/files/filesystem.js';
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 import { DB } from '#api/odm/index.js';
-import { models } from '../odm/model.js';
+import { models } from '#api/odm/model.js';
 import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { Db, ObjectId } from 'mongodb';
@@ -15,10 +15,10 @@ import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import uniqueID from '#shared/uniqueID.js';
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import { UserSchema } from '#shared/types/userType';
-import { elasticTesting } from './elastic_testing.js';
-import { testingTenants } from './testingTenants.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 mongoose.Promise = Promise;
 let connected = false;

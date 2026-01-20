@@ -1,5 +1,5 @@
-import { Redis } from 'api/infrastructure/Redis';
 import mongoose from 'mongoose';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 process.env.EXTERNAL_SERVICES = true;
 

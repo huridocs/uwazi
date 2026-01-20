@@ -18,20 +18,21 @@ import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
 import { ModifiedDateProperty } from '#api/core/domain/template/ModifiedDateProperty.js';
 import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
 import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
-import { MultiSelectProperty } from '#api/core/domain/template/MultiSelectProperty.js';
 import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
 import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
-import { SelectProperty } from '#api/core/domain/template/SelectProperty.js';
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
-import { TemplateDBO } from '#api/templates.v2/database/schemas/TemplateDBO.js';
-import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { ObjectId } from 'mongodb';
 
 import { PropertySchema } from '../../../../../shared/types/commonTypes.js';
+import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { TemplateDBO } from './DBOs/TemplateDBO.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {

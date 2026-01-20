@@ -2,10 +2,12 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { List } from 'immutable';
-import './scss/stackTrace.scss';
-import { Icon } from '#app/V2/Components/UI/index.js';
 
+import './scss/stackTrace.scss';
+import Icon from '#UI/Icon/Icon.jsx';
+import Immutable from 'immutable';
+
+const { List } = Immutable;
 const conformValidations = (expand, validations) => {
   if (!expand || !validations) {
     return null;

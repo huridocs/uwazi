@@ -1,14 +1,14 @@
-import { PropertyAssignment, SelectionEntry } from 'api/core/domain/template/PropertyValue';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ThesauriDataSource } from '../propertyCreatorService/SelectPropertyCreatorService';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { ThesaurusValueNotFoundError } from '../errors';
+import { PropertyAssignment, SelectionEntry } from '#api/core/domain/template/PropertyValue.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { ThesauriDataSource } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { ThesaurusValueNotFoundError } from '#api/core/application/errors.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;

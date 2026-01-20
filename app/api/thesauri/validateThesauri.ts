@@ -3,7 +3,7 @@ import ajvKeywords from 'ajv-keywords';
 import { wrapValidator } from '#shared/tsUtils.js';
 import { thesaurusSchema } from '#shared/types/thesaurusSchema.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import model from './dictionariesModel.js';
+import model from '#api/thesauri/dictionariesModel.js';
 
 const ajv = ajvKeywords(new Ajv({ allErrors: true }), ['uniqueItemProperties']);
 ajv.addVocabulary(['tsType']);

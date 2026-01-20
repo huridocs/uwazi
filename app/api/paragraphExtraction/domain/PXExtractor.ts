@@ -10,8 +10,8 @@ import { Property } from '#api/core/domain/template/Property.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { PXValidationError, PXErrorCode } from './PXValidationError';
-import { ParagraphOutput } from './PXExtractionService';
+import { PXValidationError, PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { ParagraphOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
 export type PXExtractorProps = {
   id: string;

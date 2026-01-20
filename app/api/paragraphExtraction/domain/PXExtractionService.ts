@@ -1,11 +1,11 @@
-import { Segmentation } from '../files.v2/model/Segmentation.js';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { Document } from '../files.v2/model/Document.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
 import { File } from '../../files.v2/model/File.js';
-import { PXExtractionKey } from './PXExtractionKey';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 
 type ExtractParagraphInput = {
   segmentations: Segmentation[];

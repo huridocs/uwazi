@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import { renderConnected } from '#app/utils/test/renderConnected.js';
-import { TableViewer } from '#app/Layout/TableViewer.js';
+import { renderConnected } from '#app/utils/test/renderConnected.jsx';
+import { TableViewer } from '#app/Layout/TableViewer.jsx';
 
 import { Translate } from '#app/I18N/index.js';
 

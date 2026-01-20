@@ -1,10 +1,10 @@
-import { Entity, EntityIcon } from 'api/core/domain/entity/Entity';
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { AbstractUseCase } from '../libs/UseCase';
-import { EntitiesService } from './EntitiesService';
-import { FilesService } from './FilesService';
-import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService';
-import { PropertyAssignmentCreatorServiceStrategy } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
+import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { EntitiesService } from '#api/core/application/EntitiesService.js';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 
 type Input = {
   propertyAssignments: PropertyAssignmentInput[];

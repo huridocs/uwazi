@@ -1,16 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { isEmpty, last } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 
 import { Translate } from '#app/I18N/index.js';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
-import { ThesaurusRow } from './TableComponents.js';
-import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers.js';
+import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
+import { emptyThesaurus, sanitizeThesaurusLabel } from '#V2/Routes/Settings/Thesauri/helpers.js';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;

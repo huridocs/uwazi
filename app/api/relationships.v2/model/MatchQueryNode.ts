@@ -2,8 +2,8 @@
 
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import _ from 'lodash';
-import { QueryNode } from './QueryNode';
-import { TraversalQueryNode } from './TraversalQueryNode';
+import { QueryNode } from '#api/relationships.v2/model/QueryNode.js';
+import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 
 interface MatchFilters {
   sharedId?: string;

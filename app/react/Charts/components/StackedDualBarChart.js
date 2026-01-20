@@ -13,8 +13,8 @@ import {
 
 import { arrayUtils } from '#app/Charts/index.js';
 
-import ExtendedTooltip from './ExtendedTooltip';
-import ColoredBar from './ColoredBar';
+import ExtendedTooltip from '#app/Charts/components/ExtendedTooltip.jsx';
+import ColoredBar from '#app/Charts/components/ColoredBar.jsx';
 
 const StackedDualBarChart = props => {
   const { data, chartLabel } = props;

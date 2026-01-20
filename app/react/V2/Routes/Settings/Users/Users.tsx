@@ -4,19 +4,19 @@ import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, ConfirmationModal, Table, Tabs } from '#app/V2/Components/UI/index.js';
-import * as usersAPI from '#app/V2/api/users/index.js';
+import { Button, ConfirmationModal, Table, Tabs } from '#V2/Components/UI/index.js';
+import * as usersAPI from '#V2/api/users/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   getUsersColumns,
   getGroupsColumns,
   ListOfItems,
-} from './components/index.js';
-import { FormIntent, User, Group } from './types.js';
-import { useHandleNotifications } from './useHandleNotifications.js';
+} from '#V2/Routes/Settings/Users/components/index.js';
+import { FormIntent, User, Group } from '#V2/Routes/Settings/Users/types.js';
+import { useHandleNotifications } from '#V2/Routes/Settings/Users/useHandleNotifications.jsx';
 
 type ActiveTab = 'Groups' | 'Users';
 

@@ -1,11 +1,11 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
-import { ThesauriRepository } from '../contracts/ThesauriRepository';
-import { TranslationsRepository } from '../contracts/TranslationsRepository';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from './CsvThesauriValuesDiff';
+} from '#api/csv.v2/domain/CsvImportThesauriValues.js';
+import { ThesauriRepository } from '#api/csv.v2/application/contracts/ThesauriRepository.js';
+import { TranslationsRepository } from '#api/csv.v2/application/contracts/TranslationsRepository.js';
+import { CsvThesauriValuesDiff, ThesauriDiffResult } from '#api/csv.v2/application/services/CsvThesauriValuesDiff.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;

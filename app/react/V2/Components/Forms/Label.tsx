@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Translate } from '#app/I18N/index.js';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 
 interface LabelProps {
   htmlFor: string;

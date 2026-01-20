@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Notification } from '#app/V2/Components/UI/Notification.js';
+import { Notification } from '#V2/Components/UI/Notification.jsx';
 
 const meta: Meta<typeof Notification> = {
   title: 'Components/Notification',

@@ -1,13 +1,13 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
   CsvCreateThesauriValuesJob,
   ThesauriCreationProgress,
-} from '../../application/jobs/CsvCreateThesauriValuesJob';
+} from '#api/csv.v2/application/jobs/CsvCreateThesauriValuesJob.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

@@ -1,8 +1,8 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '../model/RelationshipMigrationField';
+} from '#api/relationships.v2/model/RelationshipMigrationField.js';
 
 export interface RelationshipMigrationFieldsDataSource {
   getAll(): ResultSet<RelationshipMigrationField>;

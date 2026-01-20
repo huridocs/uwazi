@@ -1,4 +1,4 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
@@ -9,15 +9,15 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
-import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
-} from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
+} from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 const createSut = () => {
   const connection = getConnection();

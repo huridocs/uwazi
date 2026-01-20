@@ -9,12 +9,12 @@ import { FileType } from '#shared/types/fileType.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { getFileNameAndExtension } from '#shared/formatHelpers.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { update } from '#app/files/index.js';
-import { CustomUpload } from '../CustomUploads.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { getFileNameAndExtension } from '#V2/shared//formatHelpers.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { update } from '#app/V2/api/files/index.js';
+import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.jsx';
 
 type EditFileSidepanelProps = {
   showSidepanel: boolean;
@@ -68,7 +68,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={isSubmitting ? () => {} : closeSidepanel}
+      closeSidepanelFunction={isSubmitting ? () => { } : closeSidepanel}
       title={<Translate>Edit File</Translate>}
     >
       <form onSubmit={handleSubmit(save)} className="flex flex-col h-full" id="file-edit-form">

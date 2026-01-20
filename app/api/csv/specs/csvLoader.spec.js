@@ -2,18 +2,18 @@
 /* eslint-disable max-lines */
 import path from 'path';
 import moment from 'moment';
-import { CSVLoader } from '../csv.js';
-import { simpleTemplateId, templateWithGeneratedTitle } from '../csv/specs/csvLoaderFixtures.js';
-import entities from '#api/entities.js';
+import { CSVLoader } from '#api/csv/csv.js';
+import { simpleTemplateId, templateWithGeneratedTitle } from '#api/csv/specs/csvLoaderFixtures.js';
+import entities from '#api/entities/index.js';
 import translations from '#app/I18N/index.js';
-import { search } from '#api/search.js';
-import settings from '../settings.js';
+import { search } from '#api/search/index.js';
+import settings from '#api/settings/index.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import thesauri from '#api/thesauri/thesauri.js';
-import typeParsers from '../typeParsers';
-import fixtures, { template1Id } from './csvLoaderFixtures';
-import { mockCsvFileReadStream } from './helpers';
+import typeParsers from '#api/csv/typeParsers.js';
+import fixtures, { template1Id } from '#api/csv/specs/csvLoaderFixtures.js';
+import { mockCsvFileReadStream } from '#api/csv/specs/helpers.js';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');

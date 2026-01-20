@@ -1,11 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
 
-import { RelationshipsGraphEdit } from '../RelationshipsGraphEdit';
-import LeftRelationship from '../LeftRelationship';
-import RightRelationship from '../RightRelationship';
 
+import { RelationshipsGraphEdit } from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
+import LeftRelationship from '#app/Relationships/components/LeftRelationship.jsx';
+import RightRelationship from '#app/Relationships/components/RightRelationship.jsx';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 describe('RelationshipsGraphEdit', () => {
   let component;
   let props;

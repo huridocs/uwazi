@@ -3,7 +3,7 @@
  */
 import { store } from '#app/store.js';
 import Immutable from 'immutable';
-import blankState from '../blankState';
+import blankState from '#app/Library/helpers/blankState.js';
 
 describe('blankState()', () => {
   describe('when there is no thesauris', () => {

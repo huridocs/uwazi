@@ -2,9 +2,10 @@ import { IImmutable } from '#shared/types/Immutable.js';
 
 import { generateID } from '#shared/IDGenerator.js';
 import { ClientTranslationSchema } from '#app/istore.js';
-import { filter, find } from 'lodash';
+import filter from 'lodash/filter.js';
+import find from 'lodash/find.js';
 
-type LocaleTranslation = { locale: string; [key: string]: string };
+type LocaleTranslation = { locale: string;[key: string]: string };
 
 type formDataType = {
   key: string;

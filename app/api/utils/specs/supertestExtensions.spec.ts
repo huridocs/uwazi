@@ -1,6 +1,6 @@
 // @ts-ignore
 import Test from 'supertest/lib/test';
-import { extendSupertest } from '../supertestExtensions';
+import { extendSupertest } from '#api/utils/supertestExtensions.js';
 
 describe('assertStatus', () => {
   const mockError = new Error('mock error');

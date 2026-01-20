@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/128-remove-duplicated-relationships/index.js';
 import {
   fixtures,
   withRepetitionHub1Prop1,
@@ -8,7 +8,7 @@ import {
   withRepetitionProp2,
   withRepetitionProp3,
   withoutRepetitionProp2,
-} from './fixtures.js';
+} from '#api/migrations/migrations/128-remove-duplicated-relationships/specs/fixtures.js';
 
 describe('migration remove-duplicated-relationships', () => {
   beforeEach(async () => {

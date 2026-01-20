@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { PaneLayout } from '#app/V2/Components/Layouts/PaneLayout.js';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.jsx';
 
 const meta: Meta<typeof PaneLayout> = {
   title: 'Layouts/PaneLayout',

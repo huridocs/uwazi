@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
-import { TableRow } from './Table';
+import { TableRow } from '#V2/Components/UI/Table/Table.jsx';
 
 const dndHoverClass = 'dnd-hover-shadow';
 const childIndicatorClass = 'dnd-child-shadow';

@@ -4,9 +4,9 @@ import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
-import { TextProperty } from '../../domain/template/TextProperty';
-import { PropertyTypeMismatchError } from '../../domain/template/errors';
+import { PropertyCreatorService } from '#api/core/application/propertyCreatorService/PropertyCreatorService.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { PropertyTypeMismatchError } from '#api/core/domain/template/errors.js';
 
 const prevCreated = new ObjectId();
 

@@ -1,17 +1,17 @@
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
-import { MongoSaveStream } from '#api/common.v2/database/MongoSaveStream.js';
-import { MigrationHubRecordDBO } from './schemas/v1ConnectionTypes';
-import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
-import { MigrationHubRecord } from '../model/MigrationHubRecord';
+import { MongoSaveStream } from '#api/core/infrastructure/mongodb/common/MongoSaveStream.js';
+import { MigrationHubRecordDBO } from '#api/relationships.v2/database/schemas/v1ConnectionTypes.js';
+import { MigrationHubRecordDataSource } from '#api/relationships.v2/contracts/MigrationHubRecordDataSource.js';
+import { MigrationHubRecord } from '#api/relationships.v2/model/MigrationHubRecord.js';
 import {
   mapReadableConnectionToDBO,
   mapConnectionsWithEntityInfoToApp,
-} from './v1ConnectionMappers';
+} from '#api/relationships.v2/database/v1ConnectionMappers.js';
 
 const mapRecordToDBO = (record: MigrationHubRecord): MigrationHubRecordDBO => ({
   hubId: MongoIdHandler.mapToDb(record.hubId),

@@ -3,7 +3,7 @@ import {
   ActivityLogQueryTime,
   bodyCondition,
   prepareToFromRanges,
-} from '../activityLogFilter';
+} from '#api/activitylog/activityLogFilter.js';
 
 describe('activityLogFilter', () => {
   describe('prepareToFromRanges', () => {

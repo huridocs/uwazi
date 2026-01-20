@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t, Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Warning } from '#app/Layout/index.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
-import Connection from './Connection';
+import Connection from '#app/Viewer/components/Connection.jsx';
 import { sortTextSelections } from '#app/Viewer/utils/sortTextSelections.js';
 
-import 'app/Viewer/scss/viewReferencesPanel.scss';
+import '#app/Viewer/scss/viewReferencesPanel.scss';
 
 class ConnectionsList extends Component {
   static blankStateMessage(title, message) {

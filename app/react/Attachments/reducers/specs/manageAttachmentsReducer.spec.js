@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { manageAttachmentsReducer } from '../manageAttachmentsReducer';
+import { manageAttachmentsReducer } from '#app/Attachments/reducers/manageAttachmentsReducer.js';
 
 describe('manageAttachmentsReducer', () => {
   let originalReducer;

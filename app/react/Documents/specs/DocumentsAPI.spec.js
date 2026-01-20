@@ -1,7 +1,7 @@
 import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import documentsAPI from '../DocumentsAPI';
+import documentsAPI from '#app/Documents/DocumentsAPI.js';
 
 describe('DocumentsAPI', () => {
   const arrayResponse = [{ documents: 'array' }];

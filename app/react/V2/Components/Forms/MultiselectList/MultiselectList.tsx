@@ -2,16 +2,16 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 import React, { useEffect, useState, useRef } from 'react';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 
 import { t, Translate } from '#app/I18N/index.js';
 
 import { debounce } from '#app/utils/index.js';
-import { Label } from '../Label.js';
-import { Checkbox } from '../Checkbox.js';
-import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';
-import { MultiselectListGroup } from './MultiselectListGroup.js';
-import { InputField, RadioSelect } from '..';
+import { Label } from '#V2/Components/Forms/Label.jsx';
+import { Checkbox } from '#V2/Components/Forms/Checkbox.jsx';
+import { MultiselectListButtonItem } from '#V2/Components/Forms/MultiselectList/MultiselectListButtonItem.jsx';
+import { MultiselectListGroup } from '#V2/Components/Forms/MultiselectList/MultiselectListGroup.jsx';
+import { InputField, RadioSelect } from '#V2/Components/Forms/index.js';
 
 interface MultiselectListOption {
   label: string | React.ReactNode;

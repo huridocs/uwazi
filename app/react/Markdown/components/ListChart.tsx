@@ -8,8 +8,8 @@ import qs from 'qs';
 
 import { Loader } from '#app/components/Elements/Loader.jsx';
 import { arrayUtils } from '#app/Charts/index.js';
-import MarkdownLink from '#app/MarkdownLink.js';
-import markdownDatasets from '#app/markdownDatasets.js';
+import MarkdownLink from './MarkdownLink.js';
+import markdownDatasets from './../markdownDatasets.js';
 
 export const ListChartComponent = props => {
   const { excludeZero, property, data, classname, context, scatter, colors } = props;

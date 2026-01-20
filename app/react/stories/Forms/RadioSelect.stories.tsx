@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 
-import { RadioSelect } from '#app/V2/Components/Forms/index.js';
+import { RadioSelect } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof RadioSelect> = {
   title: 'Forms/RadioSelect',

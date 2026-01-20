@@ -1,14 +1,14 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
-import { TemplatesDataSource } from '#api/templates.v2/contracts/TemplatesDataSource.js';
+import { TemplatesDataSource } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
-import { Property } from '#api/templates.v2/model/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { propertyMappings } from 'database/elastic_mapping/mappings';
-import { RelationshipPropertyMappingFactory } from '../RelationshipPropertyMappingFactory';
+import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory.js';
 
 const fixtureFactory = getFixturesFactory();
 

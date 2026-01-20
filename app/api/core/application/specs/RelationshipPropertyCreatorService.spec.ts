@@ -9,14 +9,14 @@ import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/da
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { V1RelationshipProperty } from '#api/templates.v2/model/V1RelationshipProperty.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
   TemplateDoesNotExistError,
-} from '../../domain/template/errors';
-import { RelationshipPropertyCreatorService } from '../propertyCreatorService/RelationshipPropertyCreatorService';
+} from '#api/core/domain/template/errors.js';
+import { RelationshipPropertyCreatorService } from '#api/core/application/propertyCreatorService/RelationshipPropertyCreatorService.js';
 
 const factory = getFixturesFactory();
 

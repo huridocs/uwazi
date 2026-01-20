@@ -4,10 +4,12 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
-import { fromJS } from 'immutable';
-import { GeneralError } from '../GeneralError';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.jsx';
 
+import { GeneralError } from '#V2/Components/ErrorHandling/GeneralError.jsx';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 let requestId = '';
 let errorCode = 500;
 

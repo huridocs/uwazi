@@ -1,10 +1,10 @@
-import { PropertyAssignment } from 'api/core/domain/template/PropertyValue';
-import { ImageProperty } from 'api/core/domain/template/ImageProperty';
-import { AttachmentNotFoundError } from 'api/core/domain/entity/errors';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
+import { AttachmentNotFoundError } from '#api/core/domain/entity/errors.js';
 import {
   CreatePropertyAssignmentInput,
   PropertyAssignmentCreatorService,
-} from './PropertyAssignmentCreatorService';
+} from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
 type ImageValueInput = { value: string } | { attachment: number };
 

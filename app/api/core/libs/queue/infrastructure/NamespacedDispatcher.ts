@@ -1,6 +1,6 @@
-import { Dispatchable } from '../application/contracts/Dispatchable';
-import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { DispatchableClass, JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
 interface QueueOptions {
   lockWindow?: number;

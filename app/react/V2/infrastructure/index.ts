@@ -1,2 +1,2 @@
-export { EntityRepositoryImpl } from './repositories/EntityRepositoryImpl';
-export type { EntityRepository } from './repositories/EntityRepository';
+export { EntityRepositoryImpl } from '#V2/infrastructure/repositories/EntityRepositoryImpl.js';
+export type { EntityRepository } from '#V2/infrastructure/repositories/EntityRepository.js';

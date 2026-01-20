@@ -6,8 +6,8 @@ import date from '#api/utils/date.js';
 
 import db from '#api/utils/testing_db.js';
 
-import { fixtures, pageToUpdate } from './fixtures';
-import pages from '../pages';
+import { fixtures, pageToUpdate } from '#api/pages/specs/fixtures.js';
+import pages from '#api/pages/pages.js';
 
 describe('pages', () => {
   beforeEach(async () => {

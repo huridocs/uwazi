@@ -5,13 +5,13 @@ import { IStore } from '#app/istore.js';
 
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { createSelector } from 'reselect';
-import { Highlight } from '@huridocs/react-text-selection-handler';
+// import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
 
 import { unique } from '#shared/filterUnique.js';
 
 import { SelectionRectangleSchema } from '#shared/types/commonTypes.js';
-import { pdfScaleAtom } from '#app/V2/atoms/index.ts';
-import { selectionHandlers } from '#app/V2/Components/PDFViewer/index.js';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
+import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 
 type ReferenceGroup = {
   _id: string;
@@ -79,7 +79,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
             onClick={handleClick(reference)}
           >
             <div style={{ pointerEvents: props.enableClickAction ? 'auto' : 'none' }}>
-              <Highlight textSelection={highlight} color={color} />
+              {/* <Highlight textSelection={highlight} color={color} /> */}
             </div>
           </div>
         );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Geolocation from '../Geolocation';
+import Geolocation from '#app/Forms/components/Geolocation.jsx';
 
 describe('Geolocation', () => {
   let component;

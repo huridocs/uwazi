@@ -1,13 +1,17 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import { useAtomValue } from 'jotai';
-import { Loader } from '@googlemaps/js-api-loader';
+import GoogleMapsLoader from '@googlemaps/js-api-loader';
 
-import { LMap } from '#app/Map/index.js';
+import { LMap } from '#app/Map/index.jsx';
 
-import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
+import { DataMarker, MarkerInput } from '#app/Map/MapHelper.jsx';
 import { IStore } from '#app/istore.js';
-import { ErrorBoundary } from '#app/V2/Components/ErrorHandling/ErrorBoundary.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+
+const { Loader } = GoogleMapsLoader;
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 

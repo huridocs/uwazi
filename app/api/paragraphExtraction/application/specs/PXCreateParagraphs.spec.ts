@@ -3,17 +3,17 @@ import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
-import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -23,15 +23,15 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 
-import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 
-import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
-import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
+import { PXCreateParagraphs, PXCreateParagraphsInput } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
 
 const factory = getFixturesFactory();
 

@@ -2,18 +2,18 @@ import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDa
 
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 
-import relationshipTypeDS from '../relationtypes.js';
+import relationshipTypeDS from '#api/relationtypes/index.js';
 
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
-import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
-import { PXExtractor } from '../domain/PXExtractor';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
+import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { PXErrorCode, PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 type Input = {
   targetTemplateId: string;

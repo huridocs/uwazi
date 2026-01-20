@@ -1,7 +1,7 @@
-import { config } from '../../app/api/config.js';
-import { AutomaticTranslationFactory } from '../../app/api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-import { DB } from '../../app/api/odm/index.js';
-import { tenants } from '../../app/api/tenants/index.js';
+import { config } from '#api/config.js';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { DB } from '#api/odm/index.js';
+import { tenants } from '#api/tenants/index.js';
 import yargs from 'yargs';
 
 (async () => {

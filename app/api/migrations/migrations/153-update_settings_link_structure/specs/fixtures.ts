@@ -1,4 +1,4 @@
-import { Fixtures } from '../types';
+import { Fixtures } from '#api/migrations/migrations/153-update_settings_link_structure/types.js';
 
 const faultyLinks = [
   {

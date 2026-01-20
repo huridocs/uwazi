@@ -1,8 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index';
-import { fixtures } from './fixtures';
+import migration from '#api/migrations/migrations/150-per_namespace_lastSyncs/index.js';
+import { fixtures } from '#api/migrations/migrations/150-per_namespace_lastSyncs/specs/fixtures.js';
 
 let db: Db | null;
 

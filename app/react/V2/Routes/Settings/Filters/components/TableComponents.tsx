@@ -4,9 +4,9 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button } from '#app/V2/Components/UI/index.js';
-import { sidepanelAtom } from './sidepanelAtom.js';
-import { Filter } from './helpers.js';
+import { Button } from '#V2/Components/UI/index.js';
+import { sidepanelAtom } from '#V2/Routes/Settings/Filters/components/sidepanelAtom.js';
+import { Filter } from '#V2/Routes/Settings/Filters/components/helpers.js';
 
 const columnHelper = createColumnHelper<Filter>();
 

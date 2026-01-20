@@ -15,12 +15,12 @@ import {
   MetadataObjectSchema,
   ExtractedMetadataSchema,
 } from '#shared/types/commonTypes.js';
-import { UpdateLog } from '../updatelogs/index.js';
+import { UpdateLog } from '#api/updatelogs/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { WithId } from '../odm/model.js';
+import { WithId } from '#api/odm/model.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { getV2FixturesFactoryElements } from '../common.v2/testing/fixturesFactory.js';
+import { getV2FixturesFactoryElements } from '#api/common.v2/testing/fixturesFactory.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MongoSegmentationBuilder } from '../files.v2/database/specs/MongoSegmentationBuilder.js';

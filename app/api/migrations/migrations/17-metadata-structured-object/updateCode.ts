@@ -1,10 +1,10 @@
 /* eslint-disable max-statements,no-eval,node/no-restricted-import,no-console */
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import fs from 'fs';
 import path from 'path';
 
-import index from '../migrations/migrations/17-metadata-structured-object.js';
+import index from '#api/migrations/migrations/17-metadata-structured-object/index.js';
 
 function walk(dir: string, callback: (file: string, stats: fs.Stats) => void) {
   fs.readdir(dir, (err, files) => {

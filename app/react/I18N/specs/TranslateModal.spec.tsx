@@ -3,17 +3,17 @@
  */
 import React, { act } from 'react';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import {
   settingsAtom,
   translationsAtom,
   inlineEditAtom,
   notificationAtom,
-} from '#app/V2/atoms/index.js';
-import * as translationsAPI from '#app/V2/api/translations/index.js';
-import { NotificationsContainer } from '#app/V2/Components/UI/index.js';
-import { TranslateModal } from '../TranslateModal.js';
-import { languages, translations } from './fixtures.js';
+} from '#V2/atoms/index.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
+import { NotificationsContainer } from '#V2/Components/UI/index.js';
+import { TranslateModal } from '#app/I18N/TranslateModal.jsx';
+import { languages, translations } from '#app/I18N/specs/fixtures.js';
 
 describe('TranslateModal', () => {
   let renderResult: RenderResult;

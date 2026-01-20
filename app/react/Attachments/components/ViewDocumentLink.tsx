@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import CurrentLocationLink from '#app/Layout/CurrentLocationLink.js';
+import CurrentLocationLink from '#app/Layout/CurrentLocationLink.jsx';
 
 type ViewDocumentLinkProps = {
   filename: string;

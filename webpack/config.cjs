@@ -69,6 +69,12 @@ module.exports = production => {
       extensions: ['.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
+    externals: (context, request, callback) => {
+      if (request && request.startsWith('#api/')) {
+        return callback(null, `commonjs ${request}`);
+      }
+      callback();
+    },
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -106,7 +112,7 @@ module.exports = production => {
           ],
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            { loader: 'css-loader', options: { url: false, sourceMap: true, esModule: true } },
             {
               loader: 'postcss-loader',
               options: {
@@ -126,7 +132,7 @@ module.exports = production => {
           ],
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: true } },
+            { loader: 'css-loader', options: { url: false, sourceMap: true, esModule: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
         },
@@ -204,14 +210,18 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
-      // Custom plugin to handle # prefixed imports
+      // Custom plugin to handle # prefixed imports and relative .js/.jsx imports
       new (class {
         apply(compiler) {
           compiler.hooks.normalModuleFactory.tap('HashPrefixPlugin', (nmf) => {
             nmf.hooks.beforeResolve.tap('HashPrefixPlugin', (resolveData) => {
-              if (resolveData.request && resolveData.request.startsWith('#')) {
-                const request = resolveData.request;
-                let newRequest = request;
+              if (!resolveData.request) return;
+              
+              const fs = require('fs');
+              const request = resolveData.request;
+              let newRequest = request;
+              
+              if (request.startsWith('#')) {
                 if (request.startsWith('#app/')) {
                   newRequest = request.replace('#app/', path.join(rootPath, 'app/react/'));
                 } else if (request.startsWith('#api/')) {
@@ -223,26 +233,49 @@ module.exports = production => {
                 } else if (request.startsWith('#V2/')) {
                   newRequest = request.replace('#V2/', path.join(rootPath, 'app/react/V2/'));
                 }
-                if (newRequest !== request) {
-                  const fs = require('fs');
-                  const ext = path.extname(newRequest);
-                  if (ext === '.js' || ext === '.jsx') {
-                    const basePath = newRequest.slice(0, -ext.length);
-                    const tsPath = basePath + '.ts';
-                    const tsxPath = basePath + '.tsx';
-                    const jsxPath = basePath + '.jsx';
-                    if (fs.existsSync(tsPath)) {
-                      resolveData.request = tsPath;
-                    } else if (fs.existsSync(tsxPath)) {
-                      resolveData.request = tsxPath;
-                    } else if (ext === '.js' && fs.existsSync(jsxPath)) {
-                      resolveData.request = jsxPath;
+              } else if ((request.startsWith('./') || request.startsWith('../')) && resolveData.context) {
+                newRequest = path.resolve(resolveData.context, request);
+              } else if (request.startsWith(rootPath) && (request.includes('/app/react/') || request.includes('/app/shared/') || request.includes('/app/api/'))) {
+                newRequest = request;
+              }
+              
+              if (newRequest && newRequest !== request || (request.startsWith('./') || request.startsWith('../')) || (request.startsWith(rootPath))) {
+                const ext = path.extname(newRequest);
+                if (fs.existsSync(newRequest)) {
+                  resolveData.request = newRequest;
+                } else if (ext === '.js' || ext === '.jsx' || !ext) {
+                  const basePath = ext ? newRequest.slice(0, -ext.length) : newRequest;
+                  const tsxPath = basePath + '.tsx';
+                  const tsPath = basePath + '.ts';
+                  const jsxPath = basePath + '.jsx';
+                  const jsPath = basePath + '.js';
+                  if (fs.existsSync(tsxPath)) {
+                    resolveData.request = tsxPath;
+                  } else if (fs.existsSync(tsPath)) {
+                    resolveData.request = tsPath;
+                  } else if (fs.existsSync(jsxPath)) {
+                    resolveData.request = jsxPath;
+                  } else if (fs.existsSync(jsPath)) {
+                    resolveData.request = jsPath;
+                  } else {
+                    const indexTsx = path.join(basePath, 'index.tsx');
+                    const indexTs = path.join(basePath, 'index.ts');
+                    const indexJsx = path.join(basePath, 'index.jsx');
+                    const indexJs = path.join(basePath, 'index.js');
+                    if (fs.existsSync(indexTsx)) {
+                      resolveData.request = indexTsx;
+                    } else if (fs.existsSync(indexTs)) {
+                      resolveData.request = indexTs;
+                    } else if (fs.existsSync(indexJsx)) {
+                      resolveData.request = indexJsx;
+                    } else if (fs.existsSync(indexJs)) {
+                      resolveData.request = indexJs;
                     } else {
                       resolveData.request = newRequest;
                     }
-                  } else {
-                    resolveData.request = newRequest;
                   }
+                } else {
+                  resolveData.request = newRequest;
                 }
               }
             });

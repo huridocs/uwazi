@@ -3,24 +3,24 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 
-import { tenants } from 'api/tenants/tenantContext';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { CsvImportDomain, CsvImportStatus } from 'api/csv.v2/domain/CsvImport';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { createTestingZip } from 'api/csv/specs/helpers';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
-import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
-import { CsvImportFileNormalizer } from '../../services/CsvImportFileNormalizer';
-import { CsvImportRowsStager } from '../../services/CsvImportRowsStager';
-import { CsvExtractUploadedZipJob, Callbacks } from '../CsvExtractUploadedZipJob';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { createTestingZip } from '#api/csv/specs/helpers.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
+import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
+import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
+import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
+import { CsvExtractUploadedZipJob, Callbacks } from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
 
 const callbacks: Callbacks = {
   onStart: jest.fn(),

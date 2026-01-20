@@ -4,7 +4,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { FileType } from '#shared/types/fileType.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { File, FileProps } from '../File';
+import { File, FileProps } from '#app/Attachments/components/File.jsx';
 import { LocalForm } from '#app/Forms/Form.js';
 
 describe('file', () => {

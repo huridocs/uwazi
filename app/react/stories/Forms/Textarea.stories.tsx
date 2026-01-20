@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Textarea } from '#app/V2/Components/Forms/index.js';
+import { Textarea } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Textarea> = {
   title: 'Forms/Textarea',

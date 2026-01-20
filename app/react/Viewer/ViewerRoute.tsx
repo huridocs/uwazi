@@ -7,11 +7,11 @@ import { actions } from '#app/BasicReducer/index.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
 import { trackPage } from '#app/App/GoogleAnalytics.jsx';
-import { ErrorBoundary } from '#app/V2/Components/ErrorHandling/ErrorBoundary.jsx';
-import { PDFViewComponent } from '#app/PDFView';
-import EntityView from '#app/EntityView';
-import { ViewerComponent } from '#app/components/ViewerComponent';
-import { setReferences } from '#app/actions/referencesActions';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
+import { setReferences } from '#app/Viewer/actions/referencesActions.js';
+import { PDFViewComponent } from '#app/Viewer/PDFView.jsx';
+import EntityView from '#app/Viewer/EntityView.jsx';
 
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {

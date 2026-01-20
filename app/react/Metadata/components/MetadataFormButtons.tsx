@@ -6,7 +6,7 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import * as actions from '#app/Metadata/actions/actions.js';
@@ -143,8 +143,8 @@ MetadataFormButtons.defaultProps = {
   includeViewButton: true,
   hideDelete: false,
   formName: 'metadataForm',
-  delete: () => {},
-  copyFrom: () => {},
+  delete: () => { },
+  copyFrom: () => { },
   storeKey: undefined,
   uploadFileprogress: undefined,
 };

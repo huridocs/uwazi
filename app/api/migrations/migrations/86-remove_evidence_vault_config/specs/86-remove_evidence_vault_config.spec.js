@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/86-remove_evidence_vault_config/index.js';
 
 describe('migration remove_evidence_vault_config', () => {
   beforeEach(async () => {

@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { OptionSchema, Select } from '#app/V2/Components/Forms/index.js';
+import { OptionSchema, Select } from '#V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
 
-import { relationshipTypesAtom, templatesAtom } from '#app/V2/atoms/index.ts';
+import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { useCreateExtractorContext } from '#app/V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext';
+import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.jsx';
 
 const getOptions = (options: OptionSchema[]) => [
   {
@@ -24,12 +24,12 @@ const getTemplateProperties = (
 ): OptionSchema[] =>
   targetTemplate?.properties
     ? targetTemplate.properties
-        .filter(property => property.type === type)
-        .map(property => ({
-          key: property._id?.toString(),
-          value: property._id?.toString() ?? '',
-          label: property.label,
-        }))
+      .filter(property => property.type === type)
+      .map(property => ({
+        key: property._id?.toString(),
+        value: property._id?.toString() ?? '',
+        label: property.label,
+      }))
     : [];
 
 const Body = () => {

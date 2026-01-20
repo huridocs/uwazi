@@ -10,7 +10,7 @@ import moment from 'moment';
 import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { I18NUtils } from '#app/I18N/index.js';
-import RouteHandler from '../RouteHandler';
+import RouteHandler from '#app/App/RouteHandler.jsx';
 import { APIURL } from '#app/config.js';
 
 class TestController extends RouteHandler {

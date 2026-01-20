@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures, { templateContext } from './fixtures.js';
+import migration from '#api/migrations/migrations/131-update_translations/index.js';
+import fixtures, { templateContext } from '#api/migrations/migrations/131-update_translations/specs/fixtures.js';
 
 describe('migration update translations of new Translations UI', () => {
   beforeEach(async () => {

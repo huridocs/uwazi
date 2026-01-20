@@ -4,7 +4,7 @@ import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
@@ -12,14 +12,14 @@ import {
 import { t, Translate } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import ModalTips from '#app/App/ModalTips.js';
-import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
+import ModalTips from '#app/App/ModalTips.jsx';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.jsx';
 import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
 import { IStore } from '#app/istore.js';
 import { Form } from '#app/Forms/Form.js';
 
-interface SearchBarOwnProps {}
+interface SearchBarOwnProps { }
 const mapStateToProps = (state: IStore) => {
   const { search, filters } = state.library;
   return {

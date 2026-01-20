@@ -1,12 +1,12 @@
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { RelationshipProperty } from 'api/core/domain/template/RelationshipProperty';
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
-import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/MongoTemplateMapper';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultRelationshipDataSource } from '#api/relationships.v2/database/data_source_defaults.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import {
   DenormalizationService as CreateDenormalizationService,
   CreateRelationshipService,
@@ -19,11 +19,11 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { DefaultRelationshipDataSource } from '#api/relationships.v2/database/data_source_defaults.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
-import { TemplateDBO } from '#api/templates.v2/database/schemas/TemplateDBO.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 

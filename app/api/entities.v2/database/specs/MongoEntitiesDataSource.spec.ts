@@ -1,10 +1,10 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
-import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
-import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -17,7 +17,7 @@ import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { MongoEntitiesDataSource } from '../MongoEntitiesDataSource';
+import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 
 const factory = getFixturesFactory();
 

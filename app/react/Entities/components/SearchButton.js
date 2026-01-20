@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { showFilters, hideFilters } from '#app/Entities/actions/uiActions.js';
-import { SearchButton } from '#app/Library/components/SearchButton.js';
+import { SearchButton } from '#app/Library/components/SearchButton.jsx';
 
 export function mapStateToProps({ entityView }) {
   return {

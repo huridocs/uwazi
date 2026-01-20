@@ -4,19 +4,19 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { DropdownList } from '#app/Forms/index.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { IStore } from '#app/istore.js';
-import { omit } from 'lodash';
+import omit from 'lodash/omit.js';
 import {
   filterTemplates,
   getPropertySortType,
   getSortOptions,
   SearchOptions,
   SortType,
-} from '../helpers/sortComponets';
+} from '#app/Library/helpers/sortComponets.js';
 
 interface SortButtonsOwnProps {
   stateProperty: string;
@@ -54,10 +54,10 @@ const getToggleSearchIcon = (search: SearchOptions) =>
 const validateSearch = (search: SearchOptions): SearchOptions =>
   search.sort === '_score' && !search.searchTerm
     ? {
-        sort: 'creationDate',
-        order: 'desc',
-        searchTerm: search.searchTerm,
-      }
+      sort: 'creationDate',
+      order: 'desc',
+      searchTerm: search.searchTerm,
+    }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
 const sortDirection = (condition: string) => {

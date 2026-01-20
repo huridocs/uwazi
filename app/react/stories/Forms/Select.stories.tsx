@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Select, SelectProps } from '#app/V2/Components/Forms/index.js';
+import { Select, SelectProps } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Select> = {
   title: 'Forms/Select',

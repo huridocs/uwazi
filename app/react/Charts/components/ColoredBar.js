@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Rectangle } from 'recharts';
-
 import { colorScheme, light as colorSchemeLight } from '#app/Charts/index.js';
 
 const ColoredBar = props => {

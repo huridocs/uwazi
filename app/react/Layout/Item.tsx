@@ -10,11 +10,11 @@ import { FavoriteBanner } from '#app/Favorites/index.js';
 import helpers from '#app/Documents/helpers.js';
 import { Translate } from '#app/I18N/index.js';
 import { RowList, ItemFooter } from '#app/Layout/Lists.jsx';
-import DocumentLanguage from '#app/DocumentLanguage';
-import Icon from '#app/Icon';
-import Tip from '#app/Tip';
-import ItemSnippet from '#app/ItemSnippet';
-import TemplateLabel from '#app/TemplateLabel';
+import DocumentLanguage from './DocumentLanguage.js';
+import Tip from './Tip.js';
+import ItemSnippet from './ItemSnippet.js';
+import Icon from '#app/UI/Icon/Icon.js';
+import { TemplateLabel } from '#app/V2/Components/Metadata/index.js';
 
 class Item extends Component {
   getSearchSnipett(doc) {
@@ -99,9 +99,9 @@ class Item extends Component {
 }
 
 Item.defaultProps = {
-  onClick: () => {},
-  onMouseEnter: () => {},
-  onMouseLeave: () => {},
+  onClick: () => { },
+  onMouseEnter: () => { },
+  onMouseLeave: () => { },
   noMetadata: false,
 };
 

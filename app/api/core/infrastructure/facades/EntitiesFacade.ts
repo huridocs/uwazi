@@ -1,9 +1,9 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { randomUUID } from 'node:crypto';
-import { CreateEntityDTO, CreateEntitySchema } from '../express/entity/Schemas';
-import { CreateEntityUseCaseFactory } from '../factories/CreateEntityUseCaseFactory';
-import { LoggerFactory } from '../factories/LoggerFactory';
-import { ExpressEntityMapper } from '../express/entity/ExpressEntityMapper';
+import { CreateEntityDTO, CreateEntitySchema } from '#api/core/infrastructure/express/entity/Schemas.js';
+import { CreateEntityUseCaseFactory } from '#api/core/infrastructure/factories/CreateEntityUseCaseFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { ExpressEntityMapper } from '#api/core/infrastructure/express/entity/ExpressEntityMapper.js';
 
 export class EntityFacade {
   static async create(dto: CreateEntityDTO, inputFiles?: InputFile[]) {

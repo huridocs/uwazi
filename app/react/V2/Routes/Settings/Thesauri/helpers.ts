@@ -2,10 +2,12 @@ import { SetStateAction } from 'react';
 import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
-import { assign, isEqual, orderBy, remove } from 'lodash';
+import assign from 'lodash/assign.js';
+import isEqual from 'lodash/isEqual.js';
+import orderBy from 'lodash/orderBy.js';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { get as getThesauri } from '#app/V2/api/thesauri/index.js';
+import { get as getThesauri } from '#V2/api/thesauri/index.js';
 
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
 
@@ -14,7 +16,7 @@ import { httpRequest } from '#shared/superagent.js';
 import uniqueID from '#shared/uniqueID.js';
 
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
-import { ThesaurusRow } from './components/TableComponents.js';
+import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
   item.rowId === searchedItem.rowId ? item : undefined;
@@ -79,8 +81,8 @@ const importThesaurus = async (
 
 const editThesaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { _id } }) =>
-    (await getThesauri({ _id }, headers))[0];
+    async ({ params: { _id } }) =>
+      (await getThesauri({ _id }, headers))[0];
 
 const emptyThesaurus = () => ({
   label: '',
@@ -136,57 +138,57 @@ const sortValues =
     thesaurusValues: ThesaurusRow[],
     setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
   ) =>
-  () => {
-    const sortedSubRows = thesaurusValues.map(({ subRows, ...item }) =>
-      !subRows?.length
-        ? item
-        : {
+    () => {
+      const sortedSubRows = thesaurusValues.map(({ subRows, ...item }) =>
+        !subRows?.length
+          ? item
+          : {
             ...item,
             subRows: [...orderBy(subRows, 'label')],
           }
-    );
-    setThesaurusValues([...orderBy(sortedSubRows, 'label')]);
-  };
+      );
+      setThesaurusValues([...orderBy(sortedSubRows, 'label')]);
+    };
 
 const addItemSubmit =
   (
     thesaurusValues: ThesaurusRow[],
     setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
   ) =>
-  (items: ThesaurusRow[]) => {
-    const prevItem = items.length && findItem(thesaurusValues, items[0]);
-    if (!prevItem) {
-      setThesaurusValues((prev: ThesaurusRow[]) => {
-        pushItemsIntoValues(items, prev);
-        return [...prev];
-      });
-    } else {
-      prevItem.label = items[0].label;
-      setThesaurusValues([...thesaurusValues]);
-    }
-  };
+    (items: ThesaurusRow[]) => {
+      const prevItem = items.length && findItem(thesaurusValues, items[0]);
+      if (!prevItem) {
+        setThesaurusValues((prev: ThesaurusRow[]) => {
+          pushItemsIntoValues(items, prev);
+          return [...prev];
+        });
+      } else {
+        prevItem.label = items[0].label;
+        setThesaurusValues([...thesaurusValues]);
+      }
+    };
 const addGroupSubmit =
   (
     thesaurusValues: ThesaurusRow[],
     setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
   ) =>
-  (group: ThesaurusRow) => {
-    const prevItem = findItem(thesaurusValues, group);
-    if (!prevItem) {
-      setThesaurusValues((prev: ThesaurusRow[]) => {
-        const subRows = group.subRows?.map(({ groupId: _groupId, ...item }) => item);
-        prev.push({ ...group, subRows });
-        return [...prev];
-      });
-    } else {
-      setThesaurusValues((prev: ThesaurusRow[]) => {
-        pushItemsIntoValues(group.subRows || [], prev);
-        const prevGroup = findItem(prev, group)!;
-        prevGroup.label = group.label;
-        return [...prev];
-      });
-    }
-  };
+    (group: ThesaurusRow) => {
+      const prevItem = findItem(thesaurusValues, group);
+      if (!prevItem) {
+        setThesaurusValues((prev: ThesaurusRow[]) => {
+          const subRows = group.subRows?.map(({ groupId: _groupId, ...item }) => item);
+          prev.push({ ...group, subRows });
+          return [...prev];
+        });
+      } else {
+        setThesaurusValues((prev: ThesaurusRow[]) => {
+          pushItemsIntoValues(group.subRows || [], prev);
+          const prevGroup = findItem(prev, group)!;
+          prevGroup.label = group.label;
+          return [...prev];
+        });
+      }
+    };
 
 const compareThesaurus = (
   thesaurus: ClientThesaurus,

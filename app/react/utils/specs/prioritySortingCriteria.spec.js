@@ -1,6 +1,8 @@
-import { fromJS as Immutable } from 'immutable';
-import prioritySorting from '../prioritySortingCriteria';
 
+import prioritySorting from '#app/utils/prioritySortingCriteria.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 const prioritySortingCriteria = prioritySorting.get;
 
 describe('prioritySortingCriteria', () => {

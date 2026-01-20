@@ -1,15 +1,15 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { FileUploadForEntity } from 'api/core/application/FileUploadForEntity';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
-import { FileUploadForEntityFactory } from '../../factories/FileUploadForEntityFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { PDFPostProcessJobFactory } from '../../factories/PDFPostProcessJobFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { PDFPostProcessJobHandler } from '../../jobs/PDFPostProcessJobHandler';
-import { V1WebSocketsWrapper } from '../../services/V1WebSocketsWrapper';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { FileUploadForEntityFactory } from '#api/core/infrastructure/factories/FileUploadForEntityFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 
 class DocumentUploadController extends AbstractController {
   protected async handle(): Promise<void> {

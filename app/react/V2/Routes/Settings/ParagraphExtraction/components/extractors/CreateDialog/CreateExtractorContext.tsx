@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { templatesAtom } from '#app/V2/atoms/index.ts';
+import { templatesAtom } from '#V2/atoms/index.js';
 import { useAtomValue } from 'jotai';
 
-import { MultiselectListOption } from '#app/V2/Components/Forms/index.js';
-import { AddExtractorSteps } from './steps/index.js';
-import { formatTemplatesToOptions } from '#app/utils/formatters.js';
-import { filterPXQualifiedTemplates } from '#app/utils/filterPXQualifiedTemplates.js';
+import { MultiselectListOption } from '#V2/Components/Forms/index.js';
+import { AddExtractorSteps } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/index.js';
+import { formatTemplatesToOptions } from './../../../utils/formatters.js';
+import { filterPXQualifiedTemplates } from './../../../utils/filterPXQualifiedTemplates.js';
 
 interface CreateExtractorContextType {
   targetTemplateId: string;

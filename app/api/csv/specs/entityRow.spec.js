@@ -1,4 +1,4 @@
-import { extractEntity } from '../entityRow';
+import { extractEntity } from '#api/csv/entityRow.js';
 
 describe('entityRow', () => {
   const languages = ['es', 'en', 'pt'];

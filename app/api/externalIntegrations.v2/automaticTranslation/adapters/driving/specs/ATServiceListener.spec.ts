@@ -1,8 +1,8 @@
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
-import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
-import { SaveEntityTranslations } from '../externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
+import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
@@ -11,9 +11,9 @@ import RedisSMQ from 'rsmq';
 
 import { UserSchema } from '#shared/types/userType.js';
 import waitForExpect from 'wait-for-expect';
-import { ATServiceListener } from '../ATServiceListener.js';
+import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
 
-import { Redis } from '../infrastructure/Redis.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 import { RedisClient } from 'redis';
 
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {

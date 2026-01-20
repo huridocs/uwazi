@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/35-remove-_id-from-filter-items/index.js';
+import fixtures from '#api/migrations/migrations/35-remove-_id-from-filter-items/specs/fixtures.js';
 
 describe('migration remove-_id-from-filter-items', () => {
   beforeEach(async () => {

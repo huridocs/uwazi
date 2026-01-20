@@ -5,8 +5,8 @@ import SettingsAPI from '#app/Settings/SettingsAPI.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import I18NApi from '#app/I18N/I18NApi';
-import * as actions from '../I18NActions';
+import I18NApi from '#app/I18N/I18NApi.js';
+import * as actions from '#app/I18N/actions/I18NActions.js';
 
 describe('I18NActions', () => {
   const dispatch = jasmine.createSpy('dispatch');

@@ -1,7 +1,9 @@
-import { fromJS as Immutable } from 'immutable';
-import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.js';
-import { mapStateToProps } from '../ConnectionsList';
 
+import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
+import { mapStateToProps } from '#app/ConnectionsList/components/ConnectionsList.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;

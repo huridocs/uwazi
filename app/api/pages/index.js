@@ -1,5 +1,5 @@
-import pages from './pages';
-import model from './pagesModel';
+import pages from '#api/pages/pages.js';
+import model from '#api/pages/pagesModel.js';
 
 export default pages;
 

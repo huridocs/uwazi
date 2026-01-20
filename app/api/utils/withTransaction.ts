@@ -1,9 +1,9 @@
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { storage } from '../files/storage.js';
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { dbSessionContext } from '../odm/sessionsContext.js';
+import { storage } from '#api/files/storage.js';
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { dbSessionContext } from '#api/odm/sessionsContext.js';
 
-import { search } from '../search/search.js';
+import { search } from '#api/search/search.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 

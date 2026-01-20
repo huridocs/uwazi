@@ -1,9 +1,9 @@
 import { Db, ObjectId } from 'mongodb';
 
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 
 export interface JobDBO {
   _id: ObjectId;

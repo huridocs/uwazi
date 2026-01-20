@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
 import {
   GetEntityParagraphRelationshipsOutput,
@@ -16,12 +16,12 @@ import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
-import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
-import { PXEntityStatusMapper } from './PXEntityStatusMapper';
+} from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { PXEntityStatusMapper } from '#api/paragraphExtraction/infrastructure/PXEntityStatusMapper.js';
 
 const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
   const number = inputNumber || 1;

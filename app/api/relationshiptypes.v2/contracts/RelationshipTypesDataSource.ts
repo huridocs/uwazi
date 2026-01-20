@@ -1,5 +1,5 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
-import { RelationshipType } from '../model/RelationshipType';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
 
 export interface RelationshipTypesDataSource {
   typesExist(ids: string[]): Promise<boolean>;

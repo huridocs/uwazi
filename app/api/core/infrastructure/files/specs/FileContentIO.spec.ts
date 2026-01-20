@@ -3,8 +3,8 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, unlink } from 'fs/promises';
 
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { FileContents } from 'api/core/domain/files/FileContents';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { tmpdir } from 'os';
 import path from 'path';
 

@@ -1,7 +1,7 @@
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
-import { Highlights } from '#app/V2/Routes/Settings/IX/types';
+import { Highlights } from '#V2/Routes/Settings/IX/types.js';
 
 const getHighlightsFromFile = (
   selections: ExtractedMetadataSchema[],

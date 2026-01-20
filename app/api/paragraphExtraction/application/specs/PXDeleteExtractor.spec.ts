@@ -2,27 +2,27 @@ import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 
-import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
-import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
-import { MongoExtractorBuilder } from '../paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
+import { MongoExtractorBuilder } from '#api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder.js';
 
-import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { PXDeleteExtractor } from '../PXDeleteExtractor';
+import { PXDeleteExtractor } from '#api/paragraphExtraction/application/PXDeleteExtractor.js';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

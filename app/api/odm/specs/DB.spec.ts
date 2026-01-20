@@ -6,9 +6,9 @@ import { tenants } from '#api/tenants/tenantContext.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 
-import { config } from '../config.js';
-import { DB } from '../DB.js';
-import { instanceModel } from '../model.js';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/DB.js';
+import { instanceModel } from '#api/odm/model.js';
 
 import testingDB from '#api/utils/testing_db.js';
 

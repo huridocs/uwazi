@@ -1,10 +1,10 @@
-import settings from '../settings/index.js';
+import settings from '#api/settings/index.js';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
-import { TemplateMutationController } from '#api/core/infrastructure//express/template/TemplateMutationController.js';
-import needsAuthorization from '../auth/authMiddleware';
-import { createError, validation } from '../utils';
-import templates from './templates';
+import { TemplateMutationController } from '#api/core/infrastructure/express/template/TemplateMutationController.js';
+import needsAuthorization from '#api/auth/authMiddleware.js';
+import { createError, validation } from '#api/utils/index.js';
+import templates from '#api/templates/templates.js';
 
 export const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
   try {

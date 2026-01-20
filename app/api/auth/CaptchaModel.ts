@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { instanceModel } from '../odm/index.js';
+import { instanceModel } from '#api/odm/index.js';
 
 const props = {
   autoexpire: { type: Date, expires: 36000, default: Date.now },

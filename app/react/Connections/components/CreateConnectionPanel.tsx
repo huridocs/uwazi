@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import SidePanel from '#app/Layout/SidePanel.jsx';
 import { Translate } from '#app/I18N/index.js';
 
-import { closePanel } from '#app/actions/uiActions';
-import { setRelationType, setTargetDocument } from '#app/Metadata/actions/actions.js';
-import ActionButton from '#app/ActionButton';
-import SearchForm from '#app/SearchForm';
-import SearchResults from '#app/SearchResults';
+import { closePanel } from './../../Viewer/actions/uiActions.js';
+import { setRelationType, setTargetDocument } from '../actions/actions';
+import ActionButton from './ActionButton.js';
+import SearchForm from './SearchForm.js';
+import { SearchResults } from '#app/V2/Routes/Entity/Components/SearchResults.jsx';
 
 class CreateConnectionPanel extends Component {
   renderCheckType(template) {

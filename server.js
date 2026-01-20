@@ -2,19 +2,20 @@
 /* eslint-disable no-console */
 /* eslint-disable global-require */
 
-import dotenv from 'dotenv';
+import { register } from 'node:module';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
-dotenv.config();
+import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const { NODE_ENV } = process.env;
+register(`${__dirname}/css-loader.mjs`, pathToFileURL(`${__dirname}/`));
 
-// Note: require.extensions is not available in ESM
-// These extensions will be handled by the build process
+dotenv.config();
+
+const { NODE_ENV } = process.env;
 
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 
@@ -32,7 +33,10 @@ process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
     }
   } else {
     const { default: babelRegister } = await import('@babel/register');
-    babelRegister({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
+    babelRegister({ 
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      ignore: [/\.(css|scss|sass)$/],
+    });
     await import('./app/server.js');
   }
 })();

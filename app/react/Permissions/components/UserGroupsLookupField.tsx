@@ -1,11 +1,11 @@
 import { Translate } from '#app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
 import { debounce } from '#app/utils/index.js';
-import { MemberListItemInfo } from './MemberListItemInfo.js';
+import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.jsx';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;

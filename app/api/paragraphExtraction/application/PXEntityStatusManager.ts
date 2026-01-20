@@ -2,23 +2,23 @@ import { ObjectId } from 'mongodb';
 
 import { FileType as LegacyFileType } from '#shared/types/fileType.js';
 
-import { FileType } from '../files.v2/model/FileType.js';
+import { FileType } from '#api/core/domain/files/FileType.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
 
-import { Document } from '../files.v2/model/Document.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

@@ -2,12 +2,12 @@ import { DBFixture } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { PXEntityParagraphsFactory } from '../paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
+import { PXEntityParagraphsFactory } from '#api/paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
 import {
   extractorsQueryFixtures,
   entityFixtures,
   extractor1,
-} from './shared/extractorsQueryFixtures';
+} from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 

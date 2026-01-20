@@ -5,8 +5,8 @@ import { Settings } from 'luxon';
 
 import { metadataSelectors } from '#app/selectors';
 
-import formater from '../formater';
-import { doc, templates, thesauris, relationships } from './fixtures';
+import formater from '#app/Metadata/helpers/formater.js';
+import { doc, templates, thesauris, relationships } from '#app/Metadata/helpers/specs/fixtures.js';
 
 describe('metadata formater', () => {
   function assessBasicProperties(element, [label, name, translateContext, value]) {

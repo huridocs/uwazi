@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { MultiSelect } from '#app/V2/Components/Forms/index.js';
+import { MultiSelect } from '#V2/Components/Forms/index.js';
 
 const meta: Meta<typeof MultiSelect> = {
   title: 'Forms/MultiSelect',

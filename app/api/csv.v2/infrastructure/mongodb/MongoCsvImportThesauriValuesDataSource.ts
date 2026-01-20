@@ -1,10 +1,10 @@
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
-} from '../../domain/CsvImportThesauriValues';
-import { CsvImportThesauriValuesDataSource } from '../../application/contracts/CsvImportThesauriValuesDataSource';
-import { CsvImportThesauriValuesDBO } from '../schemas/CsvImportThesauriValuesTypes';
+} from '#api/csv.v2/domain/CsvImportThesauriValues.js';
+import { CsvImportThesauriValuesDataSource } from '#api/csv.v2/application/contracts/CsvImportThesauriValuesDataSource.js';
+import { CsvImportThesauriValuesDBO } from '#api/csv.v2/infrastructure/schemas/CsvImportThesauriValuesTypes.js';
 
 export class MongoCsvImportThesauriValuesDataSource
   extends MongoDataSource<CsvImportThesauriValuesDBO>

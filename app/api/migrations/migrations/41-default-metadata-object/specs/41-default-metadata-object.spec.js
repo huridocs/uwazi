@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/41-default-metadata-object/index.js';
+import fixtures from '#api/migrations/migrations/41-default-metadata-object/specs/fixtures.js';
 
 describe('migration default-metadata-object', () => {
   beforeEach(async () => {

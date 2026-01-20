@@ -1,9 +1,11 @@
 import React from 'react';
-import { fromJS as Immutable } from 'immutable';
-import { shallow } from 'enzyme';
-import { ItemFooter } from '#app/Layout/Lists.js';
-import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus';
 
+import { shallow } from 'enzyme';
+import { ItemFooter } from '#app/Layout/Lists.jsx';
+import { UploadEntityStatus, mapStateToProps } from '#app/Library/components/UploadEntityStatus.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('UploadEntityStatus', () => {
   describe('render', () => {
     let component;

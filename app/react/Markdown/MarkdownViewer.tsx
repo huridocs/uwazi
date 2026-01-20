@@ -4,14 +4,14 @@ import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { atomStore, userAtom } from '#app/V2/atoms/index.ts';
+import { atomStore, userAtom } from '#V2/atoms/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
-import { store } from '#app/store.ts';
-import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from '#app/components/index.js';
-import CustomHookComponents from '#app/CustomHooks/index.js';
-import markdownToReact from '#app/markdownToReact.js';
-import { ValidatedElement } from '#app/ValidatedElement.js';
-import { errorCollector, visualizationHtmlTags } from '#app/utils/index/index.js';
+import { store } from '#app/store.js';
+import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from '#app/Markdown/components/index.js';
+import CustomHookComponents from '#app/Markdown/CustomHooks/index.js';
+import markdownToReact from '#app/Markdown/markdownToReact.js';
+import { ValidatedElement } from '#app/Markdown/ValidatedElement.js';
+import { errorCollector, visualizationHtmlTags } from '#app/Markdown/utils.js';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {
@@ -129,9 +129,9 @@ class MarkdownViewer extends Component {
     const sanitizedMarkdown = !this.props.sanitized
       ? this.props.markdown
       : sanitizeHtml(this.props.markdown, {
-          allowedTags: visualizationHtmlTags,
-          allowedAttributes: false,
-        });
+        allowedTags: visualizationHtmlTags,
+        allowedAttributes: false,
+      });
 
     const ReactFromMarkdown = markdownToReact(
       sanitizedMarkdown,

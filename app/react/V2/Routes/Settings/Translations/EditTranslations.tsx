@@ -21,67 +21,67 @@ import { advancedSort } from '#app/utils/advancedSort.js';
 
 import { ClientTranslationSchema } from '#app/istore.js';
 
-import { InputField } from '#app/V2/Components/Forms/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import RenderIfVisible from 'react-render-if-visible';
-import { Button, ToggleButton, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
-import * as translationsAPI from '#app/V2/api/translations/index.js';
-import * as settingsAPI from '#app/V2/api/settings/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
+import * as translationsAPI from '#V2/api/translations/index.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 
 import { availableLanguages } from '#shared/language/index.js';
 
 import { Settings } from '#shared/types/settingsType.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { LanguagePill } from './components/LanguagePill.js';
+import { LanguagePill } from '#V2/Routes/Settings/Translations/components/LanguagePill.jsx';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }: { params: Params }) => {
-    const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
+    async ({ params }: { params: Params }) => {
+      const translations = await translationsAPI.get(headers, params);
+      const settings = await settingsAPI.get(headers);
 
-    const sortedTranslations = translations.map(language => {
-      const sortedContexts = language.contexts.map(context => {
-        const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
+      const sortedTranslations = translations.map(language => {
+        const sortedContexts = language.contexts.map(context => {
+          const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
-        const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
-          const value = context.values[contextKey];
-          return { ...results, [contextKey]: value };
-        }, {});
+          const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
+            const value = context.values[contextKey];
+            return { ...results, [contextKey]: value };
+          }, {});
 
-        return { ...context, values: sortedContext };
+          return { ...context, values: sortedContext };
+        });
+
+        return { ...language, contexts: sortedContexts };
       });
 
-      return { ...language, contexts: sortedContexts };
-    });
-
-    return { translations: sortedTranslations, settings };
-  };
+      return { translations: sortedTranslations, settings };
+    };
 
 const editTranslationsAction =
   (): ActionFunction =>
-  // eslint-disable-next-line max-statements
-  async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
-    const formData = await request.formData();
-    const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
-    const { context } = params;
-    let response: ClientTranslationSchema[] | FetchResponseError = [];
+    // eslint-disable-next-line max-statements
+    async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
+      const formData = await request.formData();
+      const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
+      const { context } = params;
+      let response: ClientTranslationSchema[] | FetchResponseError = [];
 
-    if (formIntent === 'form-submit' && context) {
-      const formValues = formData.get('data') as string;
-      response = await translationsAPI.post(JSON.parse(formValues), context);
-    }
+      if (formIntent === 'form-submit' && context) {
+        const formValues = formData.get('data') as string;
+        response = await translationsAPI.post(JSON.parse(formValues), context);
+      }
 
-    if (formIntent === 'file-upload') {
-      const file = formData.get('data') as File;
-      response = await translationsAPI.importTranslations(file, 'System');
-    }
+      if (formIntent === 'file-upload') {
+        const file = formData.get('data') as File;
+        response = await translationsAPI.importTranslations(file, 'System');
+      }
 
-    return response;
-  };
+      return response;
+    };
 
 type formValuesType = {
   _id?: string;

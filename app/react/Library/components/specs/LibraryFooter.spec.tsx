@@ -6,14 +6,14 @@ import {
   defaultState,
   renderConnected,
   renderConnectedContainer,
-} from '#app/utils/test/renderConnected.js';
+} from '#app/utils/test/renderConnected.jsx';
 
 import * as uploadActions from '#app/Uploads/actions/uploadsActions.js';
 import { ShallowWrapper } from 'enzyme';
 import { act, fireEvent, screen } from '@testing-library/react';
-import { fromJS } from 'immutable';
+
 import { Provider } from 'react-redux';
-import { LibraryFooter } from '../LibraryFooter';
+import { LibraryFooter } from '#app/Library/components/LibraryFooter.jsx';
 
 describe('LibraryFooter', () => {
   it.each(['library', 'uploads'])(
@@ -35,7 +35,9 @@ describe('LibraryFooter', () => {
     const component = renderConnected(LibraryFooter, props, {});
 
     const createButton = component.find({ icon: 'import-csv' }).parent();
-    createButton.simulate('click');
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;    createButton.simulate('click');
     expect(uploadActions.showImportPanel).toHaveBeenCalled();
   });
 

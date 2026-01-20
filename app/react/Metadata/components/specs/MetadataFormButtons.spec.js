@@ -1,13 +1,15 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as immutable } from 'immutable';
+
 import { I18NLink } from '#app/I18N/index.js';
 
-import { Icon } from 'UI';
+import { Icon } from '#UI/Icon/Icon.jsx';
 
-import { ShareButton } from '#app/Permissions/components/ShareButton.js';
-import { MetadataFormButtons } from '../MetadataFormButtons';
+import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
+import { MetadataFormButtons } from '#app/Metadata/components/MetadataFormButtons.jsx';
+import Immutable from 'immutable';
 
+const { fromJS: immutable } = Immutable;
 describe('MetadataFormButtons', () => {
   let component;
   let props;

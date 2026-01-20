@@ -1,4 +1,4 @@
-import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
+import { createValidator, ValidatorSchema } from '#api/common.v2/validation/routesValidation.js';
 
 import { MigrationRequest } from '#shared/types/api.v2/relationships.migrate.js';
 

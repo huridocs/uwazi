@@ -1,4 +1,4 @@
-import { Template } from '#api/templates.v2/model/Template.js';
+import { Template } from '#api/core/domain/template/Template.js';
 
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 
@@ -30,7 +30,7 @@ import { DateProperty } from '#api/core/domain/template/DateProperty.js';
 
 import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
 import { ObjectId } from 'mongodb';
-import { MongoTemplateMapper } from '../template/MongoTemplateMapper';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 const IDS = {
   TEMPLATE: new ObjectId(),

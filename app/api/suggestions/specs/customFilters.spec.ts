@@ -3,8 +3,8 @@
 import { testingDB } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { factory as f, stateFilterFixtures, comprehensiveTestFixtures } from './fixtures';
-import { Suggestions } from '../suggestions';
+import { factory as f, stateFilterFixtures, comprehensiveTestFixtures } from '#api/suggestions/specs/fixtures.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
 beforeAll(async () => {
   await testingEnvironment.setUp(stateFilterFixtures);

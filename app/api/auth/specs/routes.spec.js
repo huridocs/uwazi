@@ -3,15 +3,15 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import request from 'supertest';
 
-import users from '../users/users.js';
+import users from '#api/users/users.js';
 import backend from 'fetch-mock';
 import passport from 'passport';
 import svgCaptcha from 'svg-captcha';
-import instrumentRoutes from '#api/utils/instrumentRoutes';
-import { CaptchaModel } from '../CaptchaModel';
-import { comparePasswords } from '../encryptPassword';
-import authRoutes from '../routes';
-import fixtures from './fixtures.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
+import { CaptchaModel } from '#api/auth/CaptchaModel.js';
+import { comparePasswords } from '#api/auth/encryptPassword.js';
+import authRoutes from '#api/auth/routes.js';
+import fixtures from '#api/auth/specs/fixtures.js';
 
 describe('Auth Routes', () => {
   let routes;

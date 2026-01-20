@@ -1,9 +1,9 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
-import { MultiSelectProperty } from 'api/core/domain/template/select/MultiSelectProperty';
-import { CsvHeaderAnalyzer } from '../CsvHeaderAnalyzer';
-import { CsvThesauriPendingValuesBuilder } from '../CsvThesauriPendingValuesBuilder';
-import { CsvImportRow } from '../../../domain/CsvImportRow';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { CsvHeaderAnalyzer } from '#api/csv.v2/application/services/CsvHeaderAnalyzer.js';
+import { CsvThesauriPendingValuesBuilder } from '#api/csv.v2/application/services/CsvThesauriPendingValuesBuilder.js';
+import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
 
 const TEMPLATE_ID = 'template-id';
 const IMPORT_ID = 'import-id';

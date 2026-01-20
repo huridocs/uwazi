@@ -1,4 +1,4 @@
-import { Dispatchable } from './Dispatchable';
+import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 export interface DispatchableClass<T extends Dispatchable> {
   new (...args: any[]): T;

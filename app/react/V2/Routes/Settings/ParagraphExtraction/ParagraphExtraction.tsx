@@ -1,19 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '#app/V2/atoms/index.ts';
-import { Extractor } from '#shared/ParagraphExtractionTypes.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { Extractor } from '#V2/shared//ParagraphExtractionTypes.js';
 
-import { Button } from '#app/V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 
-import { PXTable } from './types.js';
-import { formatExtractors } from './utils/formatters.js';
-import { CreateDialog } from './components/extractors/CreateDialog/index.js';
-import { ExtractorsTable } from './components/extractors/Table.js';
-import { DeleteDialog } from './components/extractors/DeleteDialog/index.js';
+import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
+import { formatExtractors } from '#V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
+import { CreateDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/index.jsx';
+import { ExtractorsTable } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/Table.jsx';
+import { DeleteDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/DeleteDialog/index.jsx';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {

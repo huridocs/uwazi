@@ -1,4 +1,4 @@
-import { PXExtractor } from './PXExtractor';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 
 export type ExistsInput = {
   sourceTemplateId: string;

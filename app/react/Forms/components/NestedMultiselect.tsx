@@ -5,9 +5,9 @@ import { Field, Control } from 'react-redux-form';
 import { t } from '#app/I18N/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import nestedProperties from '#app/Templates/components/ViolatedArticlesNestedProperties.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { MultiSelect } from '#app/MultiSelect';
-import { store } from '#app/store.ts';
+import Icon from '#UI/Icon/Icon.jsx';
+import { MultiSelect } from '#app/Forms/components/MultiSelect.jsx';
+import { store } from '#app/store.js';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {

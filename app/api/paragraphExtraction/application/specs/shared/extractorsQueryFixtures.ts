@@ -3,16 +3,16 @@ import { ObjectId } from 'mongodb';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 const f = getFixturesFactory();
 

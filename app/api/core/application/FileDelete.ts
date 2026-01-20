@@ -1,12 +1,12 @@
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { z } from 'zod';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF';
-import { Thumbnail } from '../domain/files/Thumbnail';
-import { AbstractUseCase } from '../libs/UseCase';
-import { FilesDataSource } from './contracts/FilesDataSource';
-import { FilesService } from './FilesService';
-import { EntityPermissionChecker } from '../domain/entity/EntityPermissionChecker';
-import { createError } from 'api/utils';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { EntityPermissionChecker } from '#api/core/domain/entity/EntityPermissionChecker.js';
+import { createError } from '#api/utils/index.js';
 
 type Output = Omit<fileDBO, '_id'> & { _id: string };
 

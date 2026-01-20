@@ -1,21 +1,21 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
-import entities from '../entities/index.js';
+import entities from '#api/entities/entities.js';
 
-import relationshipsDS from '../../relationships.js';
+import relationshipsDS from '#api/relationships/index.js';
 
-import { PXExtractor } from '../domain/PXExtractor';
-import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
+import { ParagraphOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
+import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
+import { PXEntityStatusModel } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 type PXCreateParagraphInput = {
   sourceEntities: EntitySchema[];
@@ -81,7 +81,7 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       if (
         existingTranslation?.title === paragraphTranslation.title &&
         existingTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value ===
-          paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value
+        paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value
       ) {
         return;
       }

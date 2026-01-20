@@ -1,9 +1,11 @@
-import { fromJS } from 'immutable';
+
 
 import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
 
-import * as types from '../actions/actionTypes';
+import * as types from '#app/Connections/actions/actionTypes.js';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 const initialState = {
   template: '',
   targetDocument: '',

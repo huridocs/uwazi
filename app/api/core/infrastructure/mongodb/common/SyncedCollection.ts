@@ -33,11 +33,11 @@ import {
   WithId,
   WithoutId,
 } from 'mongodb';
-import { MongoTransactionManager } from './MongoTransactionManager';
-import { SessionScopedCollection } from './SessionScopedCollection';
-import { BulkWriteStream } from './BulkWriteStream';
-import { MongoResultSet } from './MongoResultSet';
-import { CollectionWrapper } from './CollectionWrapper';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { SessionScopedCollection } from '#api/core/infrastructure/mongodb/common/SessionScopedCollection.js';
+import { BulkWriteStream } from '#api/core/infrastructure/mongodb/common/BulkWriteStream.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { CollectionWrapper } from '#api/core/infrastructure/mongodb/common/CollectionWrapper.js';
 
 export class SyncedCollection<TSchema extends Document = Document>
   extends CollectionWrapper<TSchema>

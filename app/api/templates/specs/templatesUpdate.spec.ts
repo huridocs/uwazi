@@ -1,14 +1,14 @@
-import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 
-import entities from '../entities/entities.js.js';
+import entities from '#api/entities/index.js';
 
-import { EntityUpdatedData, EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 
-import { applicationEventsBus } from '../eventsbus.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 
-import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-fields/types.js';
+import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 
@@ -22,7 +22,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 import { inspect } from 'util';
-import templates from '../templates';
+import templates from '#api/templates/templates.js';
 
 const f = getFixturesFactory();
 

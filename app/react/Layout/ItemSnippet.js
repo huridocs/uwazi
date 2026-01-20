@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import SafeHTML from '#app/utils/SafeHTML.js';
+import SafeHTML from '#app/utils/SafeHTML.jsx';
 import getFieldLabel from '#app/Templates/utils/getFieldLabel.js';
 
 import { t } from '#app/I18N/index.js';

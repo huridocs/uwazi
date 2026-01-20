@@ -1,20 +1,20 @@
-import { createError } from 'api/utils';
+import { createError } from '#api/utils/index.js';
 
-import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { tenants } from 'api/tenants';
-import { User } from 'api/users.v2/model/User';
+import { AbstractController, Dependencies } from '#api/common.v2/infrastructure/AbstractController.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { tenants } from '#api/tenants/index.js';
+import { User } from '#api/users.v2/model/User.js';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { pipeline } from 'stream/promises';
-import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
 

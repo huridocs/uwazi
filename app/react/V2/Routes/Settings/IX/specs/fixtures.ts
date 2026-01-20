@@ -1,6 +1,6 @@
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { ClientTemplateSchema, ClientEntitySchema } from '#app/istore.js';
-import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
+import { ixStatus, IXSuggestionsLoaderResponse } from '#V2/Routes/Settings/IX/types.js';
 
 const thesauri: ClientThesaurus[] = [
   {

@@ -1,11 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
+
 import { Form } from 'react-redux-form';
 
-import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.js';
-import FiltersFromProperties from '../FiltersFromProperties';
+import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.jsx';
+import FiltersFromProperties from '#app/Library/components/FiltersFromProperties.jsx';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('FiltersForm', () => {
   let component;
   let props;

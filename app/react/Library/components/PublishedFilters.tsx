@@ -1,11 +1,10 @@
 import React from 'react';
-import SelectFilter from '#app/Library/components/SelectFilter.js';
-import FormGroup from '#app/DocumentForm/components/FormGroup.js';
+import SelectFilter from '#app/Library/components/SelectFilter.jsx';
+import FormGroup from '#app/DocumentForm/components/FormGroup.jsx';
 import { Aggregations } from '#shared/types/aggregations.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate } from '#app/I18N/index.js';
-import Icon from '#app/V2/Components/UI/index.js';
-
+import Icon from '#UI/Icon/Icon.jsx';
 interface PublishedFiltersProps {
   onChange: () => void;
   aggregations: Aggregations;

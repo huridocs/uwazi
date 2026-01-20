@@ -6,10 +6,10 @@ import Immutable from 'immutable';
 import { act } from 'react-dom/test-utils';
 import { LocalForm } from '#app/Forms/Form.js';
 import Dropzone from 'react-dropzone';
-import { MetadataFormFields } from '#app/Metadata.js';
-import { Captcha } from '#app/ReactReduxForms.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { PublicFormComponent as PublicForm } from '../PublicForm';
+import { MetadataFormFields } from '#app/Metadata/index.js';
+import { Captcha } from '#app/ReactReduxForms/index.jsx';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
+import { PublicFormComponent as PublicForm } from '#app/Markdown/components/PublicForm.jsx';
 
 const mockApiGet = jest.fn().mockResolvedValue({
   json: {
@@ -19,8 +19,8 @@ const mockApiGet = jest.fn().mockResolvedValue({
     ],
   },
 });
-jest.mock('app/utils/api', () => ({
-  ...jest.requireActual('app/utils/api'),
+jest.mock('#app/utils/api', () => ({
+  ...jest.requireActual('#app/utils/api'),
   __esModule: true,
   default: { get: () => mockApiGet() },
   get: () => mockApiGet(),

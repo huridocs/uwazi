@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { Map, Markers } from '#app/Map/index.js';
+import { Map, Markers } from '#app/Map/index.jsx';
 import { TemplateLabel } from '#app/Layout/index.js';
 import {
   getAndSelectDocument,
@@ -13,8 +13,8 @@ import {
 } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import { Loader } from '#app/components/Elements/Loader.js';
-import markdownDatasets from '../markdownDatasets';
+import { Loader } from '#app/components/Elements/Loader.jsx';
+import markdownDatasets from '#app/Markdown/markdownDatasets.js';
 
 const renderInfo = marker => (
   <div>

@@ -4,11 +4,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
+import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.jsx';
 import { Provider } from 'react-redux';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 import { MockStoreEnhanced } from 'redux-mock-store';
 
 describe('UploadSupportingFile', () => {

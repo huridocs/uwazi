@@ -1,7 +1,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
-import { documents } from './documents';
+import { documents } from '#api/documents/documents.js';
 
 export const documentRoutes = (app: Application) => {
   app.get(

@@ -3,11 +3,11 @@ import { Db } from 'mongodb';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 
-import { instanceModel } from '../odm.js';
+import { instanceModel } from '#api/odm/index.js';
 
 import testingDB from '#api/utils/testing_db.js';
 

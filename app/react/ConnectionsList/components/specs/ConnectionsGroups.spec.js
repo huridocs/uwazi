@@ -1,10 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { ConnectionsGroups } from '../ConnectionsGroups';
-import ConnectionsGroup from '../ConnectionsGroup';
 
+import { ConnectionsGroups } from '#app/ConnectionsList/components/ConnectionsGroups.jsx';
+import ConnectionsGroup from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('ConnectionsGroups', () => {
   let component;
   let props;

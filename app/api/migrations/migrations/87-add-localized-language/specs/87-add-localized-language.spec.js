@@ -1,5 +1,5 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/87-add-localized-language/index.js';
 
 describe('migration add-localized-language', () => {
   beforeEach(async () => {

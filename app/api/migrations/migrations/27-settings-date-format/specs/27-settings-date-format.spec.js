@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixturesWithFormat from './fixtures_with_format.js';
-import fixturesWithoutFormat from './fixtures_without_format.js';
+import migration from '#api/migrations/migrations/27-settings-date-format/index.js';
+import fixturesWithFormat from '#api/migrations/migrations/27-settings-date-format/specs/fixtures_with_format.js';
+import fixturesWithoutFormat from '#api/migrations/migrations/27-settings-date-format/specs/fixtures_without_format.js';
 
 describe('migration settings-date-format', () => {
   beforeEach(() => {

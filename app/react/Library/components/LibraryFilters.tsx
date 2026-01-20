@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { hideFilters } from '#app/Entities/actions/uiActions.js';
 import { withRouter } from '#app/componentWrappers.jsx';
 
@@ -30,9 +30,8 @@ class LibraryFilters extends Component {
             <div className="filter-buttons">
               <button
                 type="button"
-                className={`closeSidepanel ${
-                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
-                }`}
+                className={`closeSidepanel ${this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
+                  }`}
                 onClick={this.props.hideFilters}
                 aria-label="Close side panel"
               >
@@ -59,7 +58,7 @@ LibraryFilters.defaultProps = {
   open: false,
   storeKey: 'library',
   sidePanelMode: '',
-  hideFilters: () => {},
+  hideFilters: () => { },
 };
 
 LibraryFilters.propTypes = {

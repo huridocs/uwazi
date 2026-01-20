@@ -1,78 +1,42 @@
-#!/usr/bin/env node
-
 import { readFileSync, writeFileSync } from 'fs';
 import { glob } from 'glob';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
+const replacements = [
+  {
+    from: /from\s+(['"])api\//g,
+    to: `from $1#api/`,
+  },
+  {
+    from: /import\s+.*?from\s+(['"])api\//g,
+    to: (match) => match.replace(/from\s+(['"])api\//, `from $1#api/`),
+  },
+];
 
-function fixImportsInFile(filePath) {
-  const content = readFileSync(filePath, 'utf-8');
+const files = await glob('app/**/*.{ts,tsx,js,jsx}', {
+  ignore: ['**/node_modules/**', '**/dist/**', '**/specs/**', '**/*.spec.*', '**/prod/**'],
+});
+
+let totalFixed = 0;
+
+for (const file of files) {
+  let content = readFileSync(file, 'utf-8');
   let modified = false;
-  let newContent = content;
-
-  const importRegex = /from\s+['"]([^'"]+)['"]/g;
-  const requireRegex = /require\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
-
-  newContent = newContent.replace(importRegex, (match, importPath) => {
-    if (importPath.startsWith('api/') && !importPath.startsWith('#api/')) {
+  
+  for (const { from, to } of replacements) {
+    const newContent = typeof to === 'function' 
+      ? content.replace(from, to)
+      : content.replace(from, to);
+    
+    if (newContent !== content) {
+      content = newContent;
       modified = true;
-      return match.replace(importPath, '#' + importPath);
     }
-    return match;
-  });
-
-  newContent = newContent.replace(requireRegex, (match, importPath) => {
-    if (importPath.startsWith('api/') && !importPath.startsWith('#api/')) {
-      modified = true;
-      return match.replace(importPath, '#' + importPath);
-    }
-    return match;
-  });
-
+  }
+  
   if (modified) {
-    writeFileSync(filePath, newContent, 'utf-8');
-    return true;
+    writeFileSync(file, content, 'utf-8');
+    totalFixed++;
   }
-
-  return false;
 }
 
-async function main() {
-  console.log('🔍 Finding files with api/ imports (without #)...');
-
-  const patterns = [
-    'app/**/*.{js,jsx,ts,tsx}',
-  ];
-
-  const files = [];
-  for (const pattern of patterns) {
-    const matches = await glob(pattern, {
-      cwd: projectRoot,
-      absolute: true,
-      ignore: ['**/node_modules/**', '**/dist/**', '**/prod/**'],
-    });
-    files.push(...matches);
-  }
-
-  console.log(`📁 Found ${files.length} files to check`);
-
-  let fixedCount = 0;
-  for (const file of files) {
-    try {
-      if (fixImportsInFile(file)) {
-        fixedCount++;
-        console.log(`✅ Fixed: ${path.relative(projectRoot, file)}`);
-      }
-    } catch (error) {
-      console.error(`❌ Error processing ${file}:`, error.message);
-    }
-  }
-
-  console.log(`\n✨ Fixed ${fixedCount} files`);
-}
-
-main().catch(console.error);
+console.log(`✨ Fixed ${totalFixed} files`);

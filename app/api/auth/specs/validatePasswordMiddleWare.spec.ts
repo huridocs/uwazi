@@ -7,8 +7,8 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import { encryptPassword } from '../encryptPassword';
-import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { validatePasswordMiddleWare } from '#api/auth/validatePasswordMiddleWare.js';
 
 const fixturesFactory = getFixturesFactory();
 

@@ -1,4 +1,4 @@
-import { templateUtils } from '../templates/index.js';
+import { templateUtils } from '#api/index.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 

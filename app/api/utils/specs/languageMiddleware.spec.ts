@@ -1,7 +1,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NextFunction, Request, Response } from 'express';
-import middleware from '../languageMiddleware';
-import fixtures from './languageFixtures';
+import middleware from '#api/utils/languageMiddleware.js';
+import fixtures from '#api/utils/specs/languageFixtures.js';
 
 describe('languageMiddleware', () => {
   let req: Request;

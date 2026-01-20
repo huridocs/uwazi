@@ -8,7 +8,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { Translate } from '#app/I18N/index.js';
 import React from 'react';
-import { useApiCaller } from '../useApiCaller';
+import { useApiCaller } from '#V2/CustomHooks/useApiCaller.jsx';
 
 const mockSetNotification = jest.fn();
 

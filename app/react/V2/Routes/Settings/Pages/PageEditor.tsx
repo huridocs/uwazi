@@ -13,39 +13,39 @@ import {
 } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce.js';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import { Translate, t } from '#app/I18N/index.js';
-import * as pagesAPI from '#app/V2/api/pages/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
 import { Page } from '#app/istore.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import {
   Button,
   CopyValueInput,
   Tabs,
   ConfirmNavigationModal,
-} from '#app/V2/Components/UI/index.js';
-import { CodeEditor } from '#app/V2/Components/CodeEditor/index.js';
+} from '#V2/Components/UI/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 
-import { EnableButtonCheckbox, InputField } from '#app/V2/Components/Forms/index.js';
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+import { EnableButtonCheckbox, InputField } from '#V2/Components/Forms/index.js';
+import { notificationAtom } from '#V2/atoms/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { getPageUrl } from './components/PageListTable.js';
-import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
+import { getPageUrl } from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
+import { HTMLNotification, JSNotification } from '#V2/Routes/Settings/Pages/components/PageEditorComponents.jsx';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    if (params.sharedId) {
-      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
+    async ({ params }) => {
+      if (params.sharedId) {
+        const page = await pagesAPI.getBySharedId(params.sharedId, headers);
 
-      return page;
-    }
+        return page;
+      }
 
-    return {};
-  };
+      return {};
+    };
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;

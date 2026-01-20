@@ -4,9 +4,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
-import { TestingRoundRobinQueueAdapter } from '../queue.v2/configuration/factories.js';
-import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures';
-import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter';
+import { TestingRoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
+import { createTestJob, pickJobs, pushJobsForNamespaces } from '#api/core/libs/queue/infrastructure/specs/fixtures.js';
+import { RoundRobinMongoQueueAdapter } from '#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js';
 
 describe('RoundRobinQueueAdapter', () => {
   let adapter: RoundRobinMongoQueueAdapter;

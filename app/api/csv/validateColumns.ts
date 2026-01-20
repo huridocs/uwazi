@@ -1,13 +1,13 @@
-import { templateUtils } from 'api/core/v1_layer/templates';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 import _ from 'lodash';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { peekHeaders } from './csv';
-import { notTranslated } from './entityRow';
-import { ImportFile } from './importFile';
-import { csvConstants } from './csvDefinitions';
+import { peekHeaders } from '#api/csv/csv.js';
+import { notTranslated } from '#api/csv/entityRow.js';
+import { ImportFile } from '#api/csv/importFile.js';
+import { csvConstants } from '#api/csv/csvDefinitions.js';
 
 const PROPERTIES_WITH_LANGUAGE = new Set([
   propertyTypes.text,

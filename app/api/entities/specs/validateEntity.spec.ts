@@ -11,15 +11,15 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 
-import * as entitiesIndex from '../search/entitiesIndex.js';
-import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
+import * as entitiesIndex from '#api/search/entitiesIndex.js';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from '#api/entities/specs/validatorFixtures.js';
 
-import { customErrorMessages } from '../validation/metadataValidators.js';
-import { validateEntity } from '../validateEntity';
+import { customErrorMessages } from '#api/entities/validation/metadataValidators.js';
+import { validateEntity } from '#api/entities/validateEntity.js';
 
 describe('validateEntity', () => {
   beforeEach(async () => {

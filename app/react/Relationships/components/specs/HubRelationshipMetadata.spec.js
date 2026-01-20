@@ -2,10 +2,12 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
 
-import HubRelationshipMetadata, { mapStateToProps } from '../HubRelationshipMetadata';
 
+import HubRelationshipMetadata, { mapStateToProps } from '#app/Relationships/components/HubRelationshipMetadata.jsx';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
 describe('HubRelationshipMetadata', () => {
   let props;
   let template;

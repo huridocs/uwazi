@@ -5,13 +5,13 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
+import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
 
 describe('HiddenColumnsDropdown', () => {
-  jest.mock('app/Library/actions/libraryActions');
+  jest.mock('#app/Library/actions/libraryActions');
 
   const storeState = {
     library: {

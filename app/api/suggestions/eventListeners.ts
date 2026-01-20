@@ -1,24 +1,24 @@
-import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 
-import { EventsBus } from '../eventsbus.js';
-import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
-import { Extractors } from '../services/informationextraction/ixextractors.js';
-import settings from '../settings/index.js';
-import templates from '../templates/index.js';
-import { TemplateDeletedEvent } from '../templates/events/TemplateDeletedEvent.js';
-import { TemplateUpdatedEvent } from '../templates/events/TemplateUpdatedEvent.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import settings from '#api/settings/index.js';
+import templates from '#api/templates/index.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
+import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { Suggestions } from './suggestions';
-import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
-import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
-import { SuggestionFactory } from './suggestionFactory';
-import { AfterEntityUpdatedListener } from './listeners/afterEntityUpdatedListener';
-import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestionsAfterEntityUpdate';
-import { ProcessSuggestionsAfterTemplateChanged } from './useCases/processSuggestionsAfterTemplateChanged';
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
+import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
+import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
+import { AfterEntityUpdatedListener } from '#api/suggestions/listeners/afterEntityUpdatedListener.js';
+import { UpdateSuggestionsAfterEntityUpdate } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
+import { ProcessSuggestionsAfterTemplateChanged } from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();

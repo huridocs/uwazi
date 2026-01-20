@@ -15,10 +15,10 @@ import * as actions from '#app/Library/actions/libraryActions.js';
 import { documentsApi } from '#app/Documents/index.js';
 import { mockID } from '#shared/uniqueID.js.js';
 
-import { api } from '#app/Entities.js';
+import { api } from '#app/Entities/index.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import SearchApi from '#app/Search/SearchAPI.js';
-import * as saveEntityWithFiles from '../saveEntityWithFiles';
+import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

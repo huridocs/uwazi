@@ -1,13 +1,13 @@
-import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
-import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
+import { PXParagraphsResultListener, ResultMessage } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 
-jest.mock('api/services/tasksmanager/TaskManager');
+jest.mock('#api/services/tasksmanager/TaskManager');
 
 const extractionKey = PXExtractionKey.create({
   entityStatusId: new ObjectId().toHexString(),

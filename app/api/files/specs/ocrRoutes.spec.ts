@@ -3,12 +3,12 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import relationships from '../../relationships.js';
+import relationships from '#api/relationships/index.js';
 import { storage } from '#api/files/index.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
-import { ocrManager } from '../services/ocr/OcrManager.js';
+import { ocrManager } from '#api/services/ocr/OcrManager.js';
 
 import settings from '#api/settings/settings.js';
 
@@ -26,17 +26,17 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 import { UserSchema } from '#shared/types/userType.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
-import { TaskManager } from '../../services/tasksmanager/TaskManager';
-import { files } from '../files';
-import { ocrRoutes } from '../ocrRoutes';
+import { OcrModel, OcrStatus } from '#api/services/ocr/ocrModel.js';
+import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { files } from '#api/files/files.js';
+import { ocrRoutes } from '#api/files/ocrRoutes.js';
 
-jest.mock('api/services/tasksmanager/TaskManager.ts');
+jest.mock('#api/services/tasksmanager/TaskManager.ts');
 
 const fixturesFactory = getFixturesFactory();
 

@@ -10,15 +10,15 @@ import { deleteDocument, searchSnippets } from '#app/Library/actions/libraryActi
 import { deleteEntity } from '#app/Entities/actions/actions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-import modals from '#app/Modals.js';
+import modals from '#app/Modals/index.js';
 
 import * as connectionsActions from '#app/ConnectionsList/actions/actions.js';
 import {
   getDocumentReferences,
   unselectAllDocuments,
   saveDocument,
-} from '../actions/libraryActions';
-import EntityForm from '../containers/EntityForm';
+} from '#app/Library/actions/libraryActions.js';
+import EntityForm from '#app/Library/containers/EntityForm.js';
 
 const getTemplates = state => state.templates;
 

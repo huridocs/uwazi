@@ -13,7 +13,7 @@ import { getThesaurusPropertyNames } from '#shared/commonTopicClassification.js'
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import { updateEntities } from './libraryActions';
+import { updateEntities } from '#app/Library/actions/libraryActions.js';
 
 function toggleQuickLabelAutoSave() {
   return (dispatch: Dispatch<IStore>, getState: () => IStore) => {

@@ -1,16 +1,16 @@
-import { legacyLogger } from '../log.js';
-import { createError } from '../utils.js';
+import { legacyLogger } from '#api/log/index.js';
+import { createError } from '#api/utils/index.js';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
-import { OperationalError } from '../common.v2/errors/OperationalError.js';
-import { S3Error } from '../files/S3Storage.js';
-import { IXValidationError } from '../services/informationextraction/IXValidationError.js';
-import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { appContext } from '#api/utils/AppContext.js';
 import util from 'node:util';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { handleError, prettifyError } from '../handleError';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { handleError, prettifyError } from '#api/utils/handleError.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 const contextRequestId = '1234';
 

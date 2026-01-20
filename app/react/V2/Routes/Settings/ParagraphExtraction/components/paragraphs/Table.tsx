@@ -3,17 +3,17 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 
 import { availableLanguages } from '#shared/language/index.js';
-import { Table, Button } from '#app/V2/Components/UI/index.js';
+import { Table, Button } from '#V2/Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '#shared/ParagraphExtractionTypes.js';
+} from '#V2/shared//ParagraphExtractionTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { templatesAtom } from '#app/V2/atoms/index.ts';
-import { TableTitle } from '../TableTitle.js';
-import { PXTableFooter } from '../PXTableFooter.js';
-import { tableBuilder } from './TableElements/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { TableTitle } from '#V2/Routes/Settings/ParagraphExtraction/components/TableTitle.jsx';
+import { PXTableFooter } from '#V2/Routes/Settings/ParagraphExtraction/components/PXTableFooter.jsx';
+import { tableBuilder } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/TableElements/index.js';
 
 interface ParagraphsTableProps {
   pxParagraphData: TablePXEntityParagraphRow[];
@@ -34,18 +34,18 @@ const ParagraphsTable = ({
   const languages =
     pxParagraphData.length > 0
       ? [
-          {
-            _id: pxParagraphData[0]._id,
-            name:
-              availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
-              '',
-          },
-          ...(pxParagraphData[0].subRows || []).map(subRow => ({
-            _id: subRow._id,
-            name:
-              availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
-          })),
-        ]
+        {
+          _id: pxParagraphData[0]._id,
+          name:
+            availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label ||
+            '',
+        },
+        ...(pxParagraphData[0].subRows || []).map(subRow => ({
+          _id: subRow._id,
+          name:
+            availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
+        })),
+      ]
       : [];
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId)!;

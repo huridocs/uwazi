@@ -7,10 +7,10 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
-import BarChartComponent, { mapStateToProps } from '../BarChart.js';
-import markdownDatasets from '#app/Markdown/markdownDatasets';
-import { aggregationWithNestedValues } from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures';
-import { nestedThesauri } from './fixture/nestedThesauri';
+import BarChartComponent, { mapStateToProps } from '#app/Markdown/components/BarChart.jsx';
+import markdownDatasets from '#app/Markdown/markdownDatasets.js';
+import { aggregationWithNestedValues } from '#app/Charts/utils/specs/fixtures/arrayUtilsFixtures.js';
+import { nestedThesauri } from '#app/Markdown/components/specs/fixture/nestedThesauri.js';
 
 describe('BarChart Markdown component', () => {
   const state = {

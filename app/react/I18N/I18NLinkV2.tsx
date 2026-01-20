@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLinkProps, NavLink } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { localeAtom } from '#app/V2/atoms/index.ts';
+import { localeAtom } from '#V2/atoms/index.js';
 
 type I18NLinkProps = NavLinkProps & { to: string; activeClassname?: string; localized?: boolean };
 

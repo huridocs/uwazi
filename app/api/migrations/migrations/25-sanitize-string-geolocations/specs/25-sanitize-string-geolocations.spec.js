@@ -1,7 +1,7 @@
 import testingDB from '#api/utils/testing_db.js';
-import logger from '../migrations/logger.js.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import logger from '#api/migrations/logger.js';
+import migration from '#api/migrations/migrations/25-sanitize-string-geolocations/index.js';
+import fixtures from '#api/migrations/migrations/25-sanitize-string-geolocations/specs/fixtures.js';
 
 describe('migration sanitize-string-geolocations', () => {
   beforeEach(async () => {

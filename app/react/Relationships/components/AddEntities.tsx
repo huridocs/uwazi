@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Immuable from 'immutable';
+import Immutable from 'immutable';
 
 import SidePanel from '#app/Layout/SidePanel.jsx';
 import SearchResults from '#app/Connections/components/SearchResults.jsx';
 import { loadInReduxForm } from '#app/Metadata/actions/actions.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import { closePanel } from '#app/actions/uiActions';
-import SearchForm from '#app/SearchEntitiesForm';
+import { closePanel } from './../../Viewer/actions/uiActions.js';
+import SearchForm from './SearchEntitiesForm.js';
 import * as actions from '#app/Metadata/actions/actions.js';
 
 class AddEntities extends Component {
@@ -80,7 +80,7 @@ AddEntities.propTypes = {
   uiState: PropTypes.object,
   addEntity: PropTypes.func.isRequired,
   searchResults: PropTypes.object,
-  templates: PropTypes.instanceOf(Immuable.List).isRequired,
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
   hubIndex: PropTypes.number,
   rightRelationshipIndex: PropTypes.number,
   closePanel: PropTypes.func.isRequired,

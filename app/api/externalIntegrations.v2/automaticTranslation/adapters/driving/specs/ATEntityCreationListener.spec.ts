@@ -1,12 +1,12 @@
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
-import { EventsBus } from '../eventsbus.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 
-import { AutomaticTranslationFactory } from '../externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
-import { RequestEntityTranslation } from '../externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
+import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
 import { tenants } from '#api/tenants/index.js';
 
@@ -15,7 +15,7 @@ import { appContext } from '#api/utils/AppContext.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { ATEntityCreationListener } from '../ATEntityCreationListener';
+import { ATEntityCreationListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATEntityCreationListener.js';
 
 const factory = getFixturesFactory();
 

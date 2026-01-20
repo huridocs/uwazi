@@ -1,8 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
-import { ResetSearch } from '../ResetSearch';
 
+import { ResetSearch } from '#app/ConnectionsList/components/ResetSearch.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('ResetSearch', () => {
   let component;
   let props;

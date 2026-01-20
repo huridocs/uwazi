@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { S3Client } from '@aws-sdk/client-s3';
-import { S3Storage, S3Error } from '../S3Storage';
+import { S3Storage, S3Error } from '#api/files/S3Storage.js';
 
 const expectedMetadata = {
   requestId: 'mock-request-123',

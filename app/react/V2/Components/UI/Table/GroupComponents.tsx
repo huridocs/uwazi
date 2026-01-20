@@ -4,8 +4,8 @@ import { Row } from '@tanstack/react-table';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
-import { EmbededButton } from '../EmbededButton';
-import { TableRow } from './Table';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.jsx';
+import { TableRow } from '#V2/Components/UI/Table/Table.jsx';
 
 const GroupHeader = () => <Translate className="sr-only">Empty</Translate>;
 

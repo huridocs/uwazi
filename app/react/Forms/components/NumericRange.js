@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import Numeric from './Numeric';
+import Numeric from '#app/Forms/components/Numeric.jsx';
 
 export default class NumericRange extends Component {
   constructor(props) {

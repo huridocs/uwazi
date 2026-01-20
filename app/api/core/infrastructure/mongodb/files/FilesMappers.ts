@@ -1,12 +1,12 @@
-import { BaseFile, FileContentLoader } from 'api/core/domain/files/BaseFile';
+import { BaseFile, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
 import { ObjectId } from 'mongodb';
-import { FileAttachment } from '../../../domain/files/FileAttachment';
-import { CustomUpload } from '../../../domain/files/CustomUpload';
-import { ProcessingPDF } from '../../../domain/files/ProcessingPDF';
-import { ProcessedPDF } from '../../../domain/files/ProcessedPDF';
-import { Thumbnail } from '../../../domain/files/Thumbnail';
-import { URLAttachment } from '../../../domain/files/URLAttachment';
-import { FileAttachmentDBO, fileDBO } from './schemas/filesTypes';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
+import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { FileAttachmentDBO, fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 
 export const FileMappers = {
   toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {

@@ -3,12 +3,12 @@ import { Link } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { Button } from '#app/V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 
-import { Sidepanel } from '#app/V2/Components/UI/Sidepanel.js';
+import { Sidepanel } from '#V2/Components/UI/Sidepanel.jsx';
 
-import { TablePXEntityParagraphRow } from '#shared/V2/shared/ParagraphExtractionTypes.js';
-import { ViewParagraph } from './ViewParagraph';
+import { TablePXEntityParagraphRow } from '#V2/shared//ParagraphExtractionTypes.js';
+import { ViewParagraph } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraph.jsx';
 
 type ViewParagraphSidePanelProps = {
   isSidePanelOpen: boolean;

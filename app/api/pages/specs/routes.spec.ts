@@ -4,8 +4,8 @@ import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import pagesRoutes from '../routes';
-import { fixtures } from './fixtures';
+import pagesRoutes from '#api/pages/routes.js';
+import { fixtures } from '#api/pages/specs/fixtures.js';
 
 const getUser = () => ({ _username: 'user 1', role: 'admin' });
 

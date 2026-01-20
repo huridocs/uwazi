@@ -6,9 +6,9 @@ import db from '#api/utils/testing_db.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { fixtures, document1 } from './fixtures';
+import { fixtures, document1 } from '#api/documents/specs/fixtures.js';
 
-import { documentRoutes } from '../routes';
+import { documentRoutes } from '#api/documents/routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

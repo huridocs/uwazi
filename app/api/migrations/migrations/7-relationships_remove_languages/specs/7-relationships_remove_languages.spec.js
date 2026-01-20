@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/7-relationships_remove_languages/index.js';
+import fixtures from '#api/migrations/migrations/7-relationships_remove_languages/specs/fixtures.js';
 
 describe('migration relationships_remove_languages', () => {
   beforeEach(async () => {

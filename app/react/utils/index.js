@@ -33,5 +33,5 @@ const risonDecodeOrIgnore = (query, defaultValue = {}) => {
 
 const events = new Jvent();
 
-export { debounce } from './debounce';
+export { debounce } from '#app/utils/debounce.js';
 export { isClient, events, risonDecodeOrIgnore, getPropsFromRoute };

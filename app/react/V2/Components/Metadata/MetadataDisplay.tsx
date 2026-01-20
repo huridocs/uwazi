@@ -1,20 +1,20 @@
 import React, { Fragment, useCallback } from 'react';
-import { Translate } from 'app/I18N';
-import { Entity, MetadataProperty } from 'V2/domain';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { Button } from 'V2/Components/UI';
-import { Date } from './Date';
-import { Geolocation } from './Geolocation';
-import { Relationship } from './Relationship';
-import { Media } from './Media';
-import { Image } from './Image';
-import { SimpleValue } from './SimpleValue';
-import { Title } from './Title';
-import { Markdown } from './Markdown';
-import { Select } from './Select';
-import { MetadataCard } from './MetadataCard';
-import { TemplateLabel } from './TemplateLabel';
-import { LinkProperty } from './LinkProperty';
+import { Translate } from '#app/I18N/index.js';
+import { Entity, MetadataProperty } from '#V2/domain';
+import { Panel } from '#V2/Components/Layouts/Panel';
+import { Button } from '#V2/Components/UI';
+import { Date } from '#V2/Components/Metadata/Date.jsx';
+import { Geolocation } from '#V2/Components/Metadata/Geolocation.jsx';
+import { Relationship } from '#V2/Components/Metadata/Relationship.jsx';
+import { Media } from '#V2/Components/Metadata/Media.jsx';
+import { Image } from '#V2/Components/Metadata/Image.jsx';
+import { SimpleValue } from '#V2/Components/Metadata/SimpleValue.jsx';
+import { Title } from '#V2/Components/Metadata/Title.jsx';
+import { Markdown } from '#V2/Components/Metadata/Markdown.jsx';
+import { Select } from '#V2/Components/Metadata/Select.jsx';
+import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.jsx';
+import { LinkProperty } from '#V2/Components/Metadata/LinkProperty.jsx';
 
 type MetadataDisplayProps = {
   entity: Entity;

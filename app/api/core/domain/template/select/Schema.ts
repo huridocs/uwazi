@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PropertyType } from '../PropertyType';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 const EntrySchema = z.object({
   value: z.string().min(1, 'Select/MultiSelect value must be a non-empty string.'),

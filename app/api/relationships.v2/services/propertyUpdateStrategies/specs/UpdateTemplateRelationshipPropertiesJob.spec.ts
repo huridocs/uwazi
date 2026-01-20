@@ -12,11 +12,11 @@ import { QueueAdapter } from '../queue.v2/infrastructure/QueueAdapter.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
-import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 
 import { NamespacedDispatcher } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
-import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
-import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
+import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
+import { UpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
 
 const fixturesFactory = getFixturesFactory();
 

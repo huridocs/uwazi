@@ -2,11 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Map } from 'immutable';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { Translate } from '#app/I18N/index.js';
-import { saveConnection, selectRangedTarget } from '../actions/actions.js';
 
+import Icon from '#UI/Icon/Icon.jsx';
+import { Translate } from '#app/I18N/index.js';
+import { saveConnection, selectRangedTarget } from '#app/Connections/actions/actions.js';
+import Immutable from 'immutable';
+
+const { Map } = Immutable;
 class ActionButton extends Component {
   onClick(enabled, connection) {
     if (enabled) {
@@ -63,8 +65,8 @@ class ActionButton extends Component {
 }
 
 ActionButton.defaultProps = {
-  onCreate: () => {},
-  onRangedConnect: () => {},
+  onCreate: () => { },
+  onRangedConnect: () => { },
   type: '',
   busy: false,
 };

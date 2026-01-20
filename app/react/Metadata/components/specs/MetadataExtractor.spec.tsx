@@ -5,19 +5,19 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, act, fireEvent } from '@testing-library/react';
 
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import * as actions from '#app/actions/metadataExtractionActions';
-import { MetadataExtractor, Selection } from '../MetadataExtractor';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import * as actions from '#app/Metadata/actions/metadataExtractionActions.js';
+import { MetadataExtractor, Selection } from '#app/Metadata/components/MetadataExtractor.jsx';
 
 describe('MetadataExtractor', () => {
   let selected: Selection | undefined;
 
   beforeEach(() => {
-    spyOn(actions, 'updateSelection').and.returnValue(() => {});
-    spyOn(actions, 'updateFormField').and.returnValue(() => {});
-    spyOn(notificationActions, 'notify').and.returnValue(() => {});
+    spyOn(actions, 'updateSelection').and.returnValue(() => { });
+    spyOn(actions, 'updateFormField').and.returnValue(() => { });
+    spyOn(notificationActions, 'notify').and.returnValue(() => { });
     selected = {
       text: 'a user selected text',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 1, page: '1' }],

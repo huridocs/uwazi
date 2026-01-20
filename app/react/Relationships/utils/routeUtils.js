@@ -1,12 +1,14 @@
 // TEST!!!
-import { fromJS } from 'immutable';
+
 import { actions as formActions } from 'react-redux-form';
 
 import { actions } from '#app/BasicReducer/index.js';
 import { actions as connectionsListActions } from '#app/ConnectionsList/index.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
     const filteredTemplates = connectionsGroups.reduce(

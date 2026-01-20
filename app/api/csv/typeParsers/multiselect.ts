@@ -15,7 +15,7 @@ import {
   generateMetadataValue,
   splitMultiselectLabels,
   normalizeMultiselectLabels,
-} from './shared.js';
+} from '#api/csv/typeParsers/shared.js';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

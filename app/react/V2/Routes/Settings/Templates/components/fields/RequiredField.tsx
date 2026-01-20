@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Checkbox } from '#app/V2/Components/Forms/index.js';
+import { Checkbox } from '#V2/Components/Forms/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';

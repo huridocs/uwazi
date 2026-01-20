@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '#app/ReactReduxForms/index.jsx';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import SidePanel from '#app/Layout/SidePanel.jsx';
 import { t, Translate } from '#app/I18N/index.js';

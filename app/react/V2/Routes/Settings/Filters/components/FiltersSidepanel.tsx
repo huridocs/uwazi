@@ -9,10 +9,10 @@ import uniqueID from '#shared/uniqueID.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientTemplateSchema } from '#app/istore.js';
-import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
-import { InputField, MultiSelect } from '#app/V2/Components/Forms/index.js';
-import { sidepanelAtom } from './sidepanelAtom.js';
-import { Filter, LoaderData } from './helpers.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
+import { sidepanelAtom } from '#V2/Routes/Settings/Filters/components/sidepanelAtom.js';
+import { Filter, LoaderData } from '#V2/Routes/Settings/Filters/components/helpers.js';
 
 type FiltersSidepanelProps = {
   showSidepanel: boolean;

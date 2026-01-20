@@ -5,9 +5,9 @@ import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_sour
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
-import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
-import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { SelectPropertyCreatorService } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
+import { SelectPropertyWithInvalidThesaurusError } from '#api/core/domain/template/errors.js';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {

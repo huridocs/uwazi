@@ -2,11 +2,11 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import { ImportFile } from '../csv/importFile.js';
+import { ImportFile } from '#api/csv/importFile.js';
 import translations from '#api/i18n/translations.js';
-import { WithId } from '../odm/index.js';
-import thesauri from '../thesauri/index.js';
-import { normalizeThesaurusLabel } from '../thesauri/thesauri.js';
+import { WithId } from '#api/odm/index.js';
+import thesauri from '#api/thesauri/index.js';
+import { normalizeThesaurusLabel } from '#api/thesauri/thesauri.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { Sets } from '#shared/data_utils/sets.js';
 import { ensure } from '#shared/tsUtils.js';
@@ -16,13 +16,13 @@ import { DoubleIndexedObject } from '#shared/data_utils/DoubleIndexedObject.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
-import csv, { CSVRow } from './csv.js';
-import { toSafeName } from './entityRow.js';
-import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect.js';
-import { determineParentChildRelationship } from './typeParsers/select.js';
-import { headerWithLanguage } from './csvDefinitions.js';
-import { sanitizeStringValue } from './sanitizationUtils.js';
-import { LabelInfoBase } from './typeParsers/shared.js';
+import csv, { CSVRow } from '#api/csv/csv.js';
+import { toSafeName } from '#api/csv/entityRow.js';
+import { LabelInfo, splitMultiselectLabels } from '#api/csv/typeParsers/multiselect.js';
+import { determineParentChildRelationship } from '#api/csv/typeParsers/select.js';
+import { headerWithLanguage } from '#api/csv/csvDefinitions.js';
+import { sanitizeStringValue } from '#api/csv/sanitizationUtils.js';
+import { LabelInfoBase } from '#api/csv/typeParsers/shared.js';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;

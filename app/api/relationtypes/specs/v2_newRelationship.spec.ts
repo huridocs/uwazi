@@ -1,4 +1,4 @@
-import relationtypes from '../relationtypes/relationtypes.js';
+import relationtypes from '#api/relationtypes/index.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 

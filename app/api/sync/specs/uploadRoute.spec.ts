@@ -16,7 +16,7 @@ import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 
-import syncRoutes from '../routes';
+import syncRoutes from '#api/sync/routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

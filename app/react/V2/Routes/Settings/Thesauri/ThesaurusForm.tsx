@@ -8,13 +8,13 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import * as thesauriAPI from '#app/V2/api/thesauri/index.js';
+import * as thesauriAPI from '#V2/api/thesauri/index.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { Table } from '#app/V2/Components/UI/index.js';
-import { InputField } from '#app/V2/Components/Forms/index.js';
-import { addSelection, sanitizeThesaurusValues } from './helpers.js';
-import { columnsThesaurus, ThesaurusRow } from './components/TableComponents.js';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { Table } from '#V2/Components/UI/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
+import { addSelection, sanitizeThesaurusValues } from '#V2/Routes/Settings/Thesauri/helpers.js';
+import { columnsThesaurus, ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
@@ -88,7 +88,7 @@ const ThesaurusForm = ({
           enableSelections
           header={
             <InputField
-              clearFieldAction={() => {}}
+              clearFieldAction={() => { }}
               id="thesauri-name"
               placeholder={t('System', 'Thesauri name', null, false)}
               hasErrors={!!errors.name}

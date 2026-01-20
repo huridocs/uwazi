@@ -1,2 +1,2 @@
-export { columns } from './columns';
-export { NoDataCell } from './NoDataCell';
+export { columns } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/columns.jsx';
+export { NoDataCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/NoDataCell.jsx';

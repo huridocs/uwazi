@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
-import { isEmpty } from 'lodash';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { uploadDocument } from '#app/Uploads/actions/uploadsActions.js';
+import isEmpty from 'lodash/isEmpty.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { socket } from '#app/socket.js';
 import { Translate } from '#app/I18N/index.js';
+import { uploadDocument, updateMainDocument } from '#app/Uploads/actions/uploadsActions.js';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
@@ -136,8 +136,8 @@ UploadButton.defaultProps = {
   progress: Immutable.fromJS({}),
   storeKey: '',
   entitySharedId: '',
-  uploadDocument: () => {},
-  updateMainDocument: () => {},
+  uploadDocument: () => { },
+  updateMainDocument: () => { },
 };
 
 UploadButton.propTypes = {

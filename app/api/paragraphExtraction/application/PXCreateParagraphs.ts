@@ -1,22 +1,22 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
-import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import entities from '../entities/index.js';
+import entities from '#api/entities/entities.js';
 
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
 
-import relationshipsDS from '../../relationships.js';
+import relationshipsDS from '#api/relationships/index.js';
 
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXValidationError } from '../domain/PXValidationError';
-import { PXCreateParagraph } from './PXCreateParagraph';
+import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
+import { ParagraphOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
+import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { PXCreateParagraph } from '#api/paragraphExtraction/application/PXCreateParagraph.js';
 
-import { OperationalError } from '../common.v2/errors/OperationalError.js';
+import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 type PXCreateParagraphsInput = {
   userId: string;

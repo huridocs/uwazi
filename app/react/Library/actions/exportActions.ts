@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+
 
 import superagent from 'superagent';
 import { actions } from '#app/BasicReducer/index.js';
@@ -13,9 +13,11 @@ import { CaptchaValue } from '#shared/types/Captcha.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
-import { processFilters } from './libraryActions';
+import { processFilters } from '#app/Library/actions/libraryActions.js';
 import { ExportStore } from '../reducers/ExportStoreType';
+import Immutable from 'immutable';
 
+const { List } = Immutable;
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
   const link: HTMLAnchorElement = document.createElement('a');

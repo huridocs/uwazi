@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import formatcoords from 'formatcoords';
 import { Translate } from '#app/I18N/index.js';
 
-import { Map } from '#app/Map/index.js';
+import { Map } from '#app/Map/index.jsx';
 
 const GeolocationViewer = ({ points, onlyForCards }) => {
   if (onlyForCards) {

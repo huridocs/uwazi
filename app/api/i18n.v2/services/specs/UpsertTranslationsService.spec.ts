@@ -11,9 +11,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { CreateTranslationsData } from '../CreateTranslationsService';
-import { UpsertTranslationsService } from '../UpsertTranslationsService';
-import { ValidateTranslationsService } from '../ValidateTranslationsService';
+import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
+import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
+import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 
-import { saveEntity } from '../entities/entitySavingManager.js';
+import { saveEntity } from '#api/entities/entitySavingManager.js';
 
 import {
   attachmentsPath,
@@ -9,9 +9,9 @@ import {
   uploadsPath,
 } from '#api/files/index.js';
 
-import * as processDocumentApi from '../files/processDocument.js';
+import * as processDocumentApi from '#api/files/processDocument.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import db from '#api/utils/testing_db.js';
 
@@ -27,7 +27,7 @@ import { ObjectId } from 'mongodb';
 import path from 'path';
 
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
-import entities from '../entities';
+import entities from '#api/entities/entities.js';
 import {
   anotherTextFile,
   editorUser,
@@ -42,7 +42,7 @@ import {
   template1Id,
   template2Id,
   textFile,
-} from './entitySavingManagerFixtures';
+} from '#api/entities/specs/entitySavingManagerFixtures.js';
 
 const validPdfString = `
 %PDF-1.0

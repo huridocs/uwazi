@@ -1,7 +1,7 @@
 import { sortingParams } from '#shared/types/activityLogApiSchemas.js';
-import model from './activitylogModel';
-import { getSemanticData } from './activitylogParser';
-import { ActivityLogFilter } from './activityLogFilter';
+import model from '#api/activitylog/activitylogModel.js';
+import { getSemanticData } from '#api/activitylog/activitylogParser.js';
+import { ActivityLogFilter } from '#api/activitylog/activityLogFilter.js';
 
 const sortingParamsAsSet = new Set(sortingParams);
 

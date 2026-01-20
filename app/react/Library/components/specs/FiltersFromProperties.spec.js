@@ -4,19 +4,19 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { t } from '#app/I18N/index.js';
-import { FiltersFromProperties, mapStateToProps } from '../FiltersFromProperties';
-import DateFilter from '../DateFilter';
-import NestedFilter from '../NestedFilter';
-import NumberRangeFilter from '../NumberRangeFilter';
-import SelectFilter from '../SelectFilter';
-import TextFilter from '../TextFilter';
-import { defaultProperties } from './fixtures/FiltersFromPropertiesFixtures';
+import { FiltersFromProperties, mapStateToProps } from '#app/Library/components/FiltersFromProperties.jsx';
+import DateFilter from '#app/Library/components/DateFilter.jsx';
+import NestedFilter from '#app/Library/components/NestedFilter.jsx';
+import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.jsx';
+import SelectFilter from '#app/Library/components/SelectFilter.jsx';
+import TextFilter from '#app/Library/components/TextFilter.jsx';
+import { defaultProperties } from '#app/Library/components/specs/fixtures/FiltersFromPropertiesFixtures.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useLocation: () => jest.fn(),
 }));
-jest.mock('app/I18N', () => ({
+jest.mock('#app/I18N', () => ({
   __esModule: true,
   t: jest.fn(),
   default: jest.fn(),

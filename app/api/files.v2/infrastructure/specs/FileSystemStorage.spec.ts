@@ -5,9 +5,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 
-import { FileType } from '../files.v2/model/FileType.js';
-import { FileSystemStorage } from '../FileSystemStorage';
-import { PathManager } from '../PathManager';
+import { FileType } from '#api/core/domain/files/FileType.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: FileType) => `TestFileSystemStorage${fileType}.txt`;

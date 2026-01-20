@@ -3,17 +3,17 @@
  */
 import React, { ReactNode } from 'react';
 import { render } from '@testing-library/react';
-import { userAtom } from '#app/V2/atoms/index.js';
+import { userAtom } from '#V2/atoms/index.js';
 
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
-import { NeedAuthorization } from '../index.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
+import { NeedAuthorization } from '#V2/Components/UI/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
 
-import { ClientEntitySchema } from '#app/V2/shared/types.js';
+import { ClientEntitySchema } from '#V2/shared/types.js';
 
 describe('NeedAuthorization', () => {
   const editorUser = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { WebMediaResourceForm } from '../WebMediaResourceForm';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
 
 let component: ShallowWrapper;
 

@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
+import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { PDFPage } from '#app/Viewer/PDF.js';
-import { isClient } from '#app/utils';
-import PDFJS from '../PDFJS';
+import PDFPage from '#app/PDF/components/PDFPage.jsx';
+import { isClient } from '#app/utils/index.js';
+import PDFJS from '#app/PDF/PDFJS.js';
 
 const cMapUrl = '/legacy_character_maps/';
 const cMapPacked = true;

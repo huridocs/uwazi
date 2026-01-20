@@ -1,5 +1,5 @@
 import { files } from '#api/files/index.js';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy.js';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Forms/FileDropzone.stories.js';
+import * as stories from '#app/stories/Forms/FileDropzone.stories.jsx';
 // @ts-ignore
 import { SinonSpy } from 'cypress/types/sinon';
 

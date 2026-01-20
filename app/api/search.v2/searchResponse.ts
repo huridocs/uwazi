@@ -1,5 +1,5 @@
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
-import { ElasticHit, SearchResponse } from '../search/elasticTypes.js';
+import { ElasticHit, SearchResponse } from '#api/search/elasticTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {

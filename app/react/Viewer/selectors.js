@@ -1,5 +1,7 @@
 import { createSelector } from 'reselect';
-import { Set as ImmutableSet, List as ImmutableList } from 'immutable';
+import Immutable from 'immutable';
+
+const { Set: ImmutableSet, List: ImmutableList } = Immutable;
 
 const documentViewer = s => s.documentViewer;
 

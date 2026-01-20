@@ -11,7 +11,7 @@ import * as notifyActions from '#app/Notifications/actions/notificationsActions.
 
 const mockRedirect = jest.fn();
 
-jest.mock('app/I18N', () => {
+jest.mock('#app/I18N', () => {
   const mockT = jest.fn((_context, key) => key);
   return {
     t: mockT,
@@ -20,8 +20,8 @@ jest.mock('app/I18N', () => {
   };
 });
 
-import api from 'app/utils/api';
-import * as I18N from 'app/I18N';
+import api from '#app/utils/api.js';
+import * as I18N from '#app/I18N/index.js';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

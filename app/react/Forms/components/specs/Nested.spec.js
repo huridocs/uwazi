@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Nested from '../Nested';
-import { MarkDown } from '../MarkDown';
+import Nested from '#app/Forms/components/Nested.jsx';
+import { MarkDown } from '#app/Forms/components/MarkDown.jsx';
 
 describe('Nested', () => {
   let component;

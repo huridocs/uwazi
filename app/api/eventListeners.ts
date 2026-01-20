@@ -1,11 +1,11 @@
-import { EventsBus } from './core/libs/eventsbus';
-import { AutomaticTranslationFactory } from './externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
-import { PXEntityDeletedListener } from './paragraphExtraction/infrastructure/PXEntityDeletedListener';
-import { PXEntityUpdatedListener } from './paragraphExtraction/infrastructure/PXEntityUpdatedListener';
-import { PXFilesDeletedListener } from './paragraphExtraction/infrastructure/PXFilesDeletedListener';
-import { PXFileUpdatedListener } from './paragraphExtraction/infrastructure/PXFileUpdatedListener';
-import { registerEventListeners as registerSegmentationListeners } from './services/pdfsegmentation/eventListeners';
-import { Suggestions } from './suggestions/suggestions';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { PXEntityDeletedListener } from '#api/paragraphExtraction/infrastructure/PXEntityDeletedListener.js';
+import { PXEntityUpdatedListener } from '#api/paragraphExtraction/infrastructure/PXEntityUpdatedListener.js';
+import { PXFilesDeletedListener } from '#api/paragraphExtraction/infrastructure/PXFilesDeletedListener.js';
+import { PXFileUpdatedListener } from '#api/paragraphExtraction/infrastructure/PXFileUpdatedListener.js';
+import { registerEventListeners as registerSegmentationListeners } from '#api/services/pdfsegmentation/eventListeners.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   Suggestions.registerEventListeners(eventsBus);

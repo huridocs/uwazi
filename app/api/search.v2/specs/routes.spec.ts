@@ -3,10 +3,10 @@ import { Application } from 'express';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
-import { elastic } from '#api/search.js';
+import { elastic } from '#api/search/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { searchRoutes } from '../routes';
+import { searchRoutes } from '#api/search.v2/routes.js';
 
 import {
   fixturesTitleSearch,
@@ -20,7 +20,7 @@ import {
   entity3es,
   entity4es,
   entity5es,
-} from './fixturesTitleSearch';
+} from '#api/search.v2/specs/fixturesTitleSearch.js';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);

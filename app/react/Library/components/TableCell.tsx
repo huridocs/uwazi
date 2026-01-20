@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { showByType } from '#app/Metadata/components/Metadata.js';
+import { showByType } from '#app/Metadata/components/Metadata.jsx';
 
 interface TableCellProps {
   content?: FormattedMetadataValue;

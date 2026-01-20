@@ -1,11 +1,11 @@
-import { CSVLoader } from '../csv/index.js';
+import { CSVLoader } from '#api/csv/index.js';
 import { generateFileName } from '#api/files/index.js';
 import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { DefaultTranslations } from './defaultTranslations.js';
-import { legacyLogger } from '../log/index.js';
-import { EnforcedWithId, WithId } from '../odm/index.js';
+import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
+import { legacyLogger } from '#api/log/index.js';
+import { EnforcedWithId, WithId } from '#api/odm/index.js';
 import settings from '#api/settings/settings.js';
-import thesauri from '../thesauri/thesauri.js';
+import thesauri from '#api/thesauri/thesauri.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
@@ -28,7 +28,7 @@ import {
   updateContextV2,
   upsertTranslationEntries,
   upsertTranslationsV2,
-} from './v2_support.js';
+} from '#api/i18n/v2_support.js';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },

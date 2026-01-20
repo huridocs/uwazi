@@ -1,14 +1,14 @@
-import { Extractors } from '../services/informationextraction/ixextractors.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
 import { IXSuggestionsQuery, SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 import { ObjectId } from 'mongodb';
-import templates from 'api/core/v1_layer/templates';
-import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
-import { getMatchStage } from '../pipelineStages';
-import { IXSuggestionsModel } from '../IXSuggestionsModel';
-import { PipelineBuilder } from '../queryBuilder';
-import { Pagination } from '../pagination';
-import { Sorter } from './sorter';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
+import { getMatchStage } from '#api/suggestions/pipelineStages.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
+import { Pagination } from '#api/suggestions/pagination.js';
+import { Sorter } from '#api/suggestions/getSuggestionsForTableQuery/sorter.js';
 
 type InputDto = {
   extractorId: string;

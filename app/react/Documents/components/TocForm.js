@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Form, Field } from 'react-redux-form';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 class TocForm extends Component {
   constructor(props) {
@@ -56,9 +56,9 @@ class TocForm extends Component {
 
 TocForm.defaultProps = {
   toc: [],
-  removeEntry: () => {},
-  indent: () => {},
-  onSubmit: () => {},
+  removeEntry: () => { },
+  indent: () => { },
+  onSubmit: () => { },
 };
 
 TocForm.propTypes = {

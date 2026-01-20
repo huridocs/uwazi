@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { removeNotification } from '../actions/notificationsActions';
+import Icon from '#UI/Icon/Icon.jsx';
+import { removeNotification } from '#app/Notifications/actions/notificationsActions.js';
 
 export class Notification extends Component {
   close() {
@@ -23,12 +23,12 @@ export class Notification extends Component {
     const FormattedMessage = isNode
       ? message
       : message.split('\n').map((item, i) => (
-          //eslint-disable-next-line react/no-array-index-key
-          <React.Fragment key={i}>
-            {item}
-            <br />
-          </React.Fragment>
-        ));
+        //eslint-disable-next-line react/no-array-index-key
+        <React.Fragment key={i}>
+          {item}
+          <br />
+        </React.Fragment>
+      ));
 
     return (
       <div className={cssClass} onClick={this.close.bind(this)}>

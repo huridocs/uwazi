@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import Modal from '#app/Layout/Modal.js';
+import Modal from '#app/Layout/Modal.jsx';
 
-import { ConfirmCloseForm } from '../ConfirmCloseForm';
+import { ConfirmCloseForm } from '#app/Viewer/components/ConfirmCloseForm.jsx';
 
 describe('ConfirmCloseForm', () => {
   let component;

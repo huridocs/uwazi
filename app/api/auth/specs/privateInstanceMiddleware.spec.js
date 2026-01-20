@@ -1,5 +1,5 @@
-import middleWare from '../privateInstanceMiddleware';
-import settings from '../../settings';
+import middleWare from '#api/auth/privateInstanceMiddleware.js';
+import settings from '#api/settings/index.js';
 
 describe('privateInstanceMiddleware', () => {
   let req;

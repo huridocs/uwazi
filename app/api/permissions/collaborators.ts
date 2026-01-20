@@ -1,11 +1,11 @@
-import users from '../users/users.js';
-import userGroups from '../usergroups/userGroups.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { WithId } from '../odm/index.js';
-import { permissionsContext } from './permissionsContext.js';
-import { PUBLIC_PERMISSION } from './publicPermission.js';
+import { WithId } from '#api/odm/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {

@@ -1,18 +1,18 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import { FileDelete } from 'api/core/application/FileDelete';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
-import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory';
-import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
-import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
-import { FileStorageFactory } from '../../files/FileStorageFactory';
-import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler';
-import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { FileDelete } from '#api/core/application/FileDelete.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
+import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {

@@ -3,9 +3,9 @@
  */
 import React from 'react';
 
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import { ErrorFallback } from '../ErrorFallback';
-import { RouteErrorBoundary } from '../RouteErrorBoundary';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
+import { ErrorFallback } from '#V2/Components/ErrorHandling/ErrorFallback.jsx';
+import { RouteErrorBoundary } from '#V2/Components/ErrorHandling/RouteErrorBoundary.jsx';
 
 let error: any = null;
 

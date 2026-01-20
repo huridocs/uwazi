@@ -1,11 +1,11 @@
 import {
   RelationshipMetadataProperty,
   RelationshipPropertyTypes,
-} from 'app/V2/domain/entities/types';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { ProcessingContext, AdapterMetadataProperty } from './types';
-import { DEFAULT_ENTITY_BASE_PATH } from '../../optionsPresets';
+} from '#V2/domain/entities/types.js';
+import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
+import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
+import { ProcessingContext, AdapterMetadataProperty } from '#V2/application/services/processors/types.js';
+import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 
 export class RelationshipProcessor extends BasePropertyProcessor {
   readonly name = 'RelationshipProcessor';

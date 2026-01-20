@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import SelectFilter from '../SelectFilter';
+import SelectFilter from '#app/Library/components/SelectFilter.jsx';
 
 describe('SelectFilter', () => {
   let props;

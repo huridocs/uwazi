@@ -2,7 +2,7 @@ import { Db, MongoClient } from 'mongodb';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
-import { config } from '../../config.js';
+import { config } from '#api/config.js';
 
 function getTenant(): Tenant {
   return tenants.current();

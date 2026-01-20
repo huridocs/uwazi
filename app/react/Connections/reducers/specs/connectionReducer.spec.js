@@ -1,7 +1,9 @@
-import { fromJS as Immutable } from 'immutable';
 
-import reducer from '../connectionReducer';
 
+import reducer from '#app/Connections/reducers/connectionReducer.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {

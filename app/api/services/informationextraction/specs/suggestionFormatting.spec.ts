@@ -5,8 +5,8 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { formatSuggestionFacade } from '../suggestionFormatting';
-import { InternalIXResultsMessage } from '../InformationExtraction';
+import { formatSuggestionFacade } from '#api/services/informationextraction/suggestionFormatting.js';
+import { InternalIXResultsMessage } from '#api/services/informationextraction/InformationExtraction.js';
 
 const fixtureFactory = getFixturesFactory();
 

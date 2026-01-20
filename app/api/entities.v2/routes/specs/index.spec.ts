@@ -8,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import { entitiesRoutes } from '..';
+import { entitiesRoutes } from '#api/entities.v2/routes/index.js';
 
 describe('entities countByTemplate V2 routes', () => {
   const factory = getFixturesFactory();

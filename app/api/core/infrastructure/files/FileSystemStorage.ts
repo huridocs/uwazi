@@ -2,15 +2,15 @@
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 
-import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { FileWithContents } from 'api/core/domain/files/FileWithContents';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { DiskFile } from './DiskFile';
-import { FileContents } from '../../domain/files/FileContents';
-import { StoredFile } from '../../domain/files/StoredFile';
-import { PathManager } from './PathManager';
+import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileStorage.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { StoredFile } from '#api/core/domain/files/StoredFile.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 
 export class FileSystemStorage implements FileStorage {
   private pathManager: PathManager;

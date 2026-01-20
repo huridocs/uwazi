@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from 'api/core/infrastructure/mongodb/common/MongoDataSource';
-import { Result, ResultType } from 'api/core/libs/Result';
-import { CsvImportDoesNotExistError } from 'api/csv.v2/domain/csvImporErrors';
-import { CsvImport } from '../../domain/CsvImport';
-import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource';
-import { CsvImportMapper } from './CsvImportMapper';
-import { CsvImportDBO } from '../schemas/CsvImportTypes';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
+import { CsvImport } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
+import { CsvImportMapper } from '#api/csv.v2/infrastructure/mongodb/CsvImportMapper.js';
+import { CsvImportDBO } from '#api/csv.v2/infrastructure/schemas/CsvImportTypes.js';
 
 export class MongoCsvImportsDataSource
   extends MongoDataSource<CsvImportDBO>

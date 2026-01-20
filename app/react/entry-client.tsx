@@ -12,12 +12,12 @@ import {
 } from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
-import { ErrorBoundary } from './V2/Components/ErrorHandling';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import './App/sockets';
-import CustomProvider from './App/Provider';
-import { atomStore } from './V2/atoms';
-import { store } from './store';
-import { routes } from './appRoutes';
+import CustomProvider from '#app/App/Provider.jsx';
+import { atomStore } from '#V2/atoms/index.js';
+import { store } from '#app/store.js';
+import { routes } from '#app/appRoutes.js';
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({

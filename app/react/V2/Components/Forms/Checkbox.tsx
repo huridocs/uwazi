@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 import React, { ReactEventHandler, Ref } from 'react';
 import { Checkbox as FlowbiteCheckbox, Label } from 'flowbite-react';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 
 import { Translate } from '#app/I18N/index.js';
 

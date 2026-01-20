@@ -2,11 +2,11 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from '../queue.v2/application/contracts/Dispatchable.js';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 import { tenants } from '#api/tenants/index.js';
-import { BatchRange } from '../batchProcessing';
-import { createBlankStateSuggestionsBatch } from '../blankSuggestions';
+import { BatchRange } from '#api/suggestions/batchProcessing.js';
+import { createBlankStateSuggestionsBatch } from '#api/suggestions/blankSuggestions.js';
 
 type SpecificJobParams = {
   batch: BatchRange;

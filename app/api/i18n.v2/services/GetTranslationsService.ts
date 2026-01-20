@@ -1,4 +1,4 @@
-import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
+import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 
 export class GetTranslationsService {
   private translationsDS: TranslationsDataSource;

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ItemFooter } from '#app/Layout/Lists.js';
+import { ItemFooter } from '#app/Layout/Lists.jsx';
 import { connect } from 'react-redux';
-import docState from '../docState';
+import docState from '#app/Library/docState.js';
 
 export class UploadEntityStatus extends Component {
   renderProgressBar() {

@@ -1,13 +1,13 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import {
   BulkDeleteEntityInput,
   BulkDeleteEntityUseCase,
-} from 'api/core/application/BulkDeleteEntity';
-import { tenants } from 'api/tenants';
-import entities from 'api/entities';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
-import { LoggerFactory } from '../../factories/LoggerFactory';
+} from '#api/core/application/BulkDeleteEntity.js';
+import { tenants } from '#api/tenants/index.js';
+import entities from '#api/entities/index.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 type RequestDto = BulkDeleteEntityInput;
 

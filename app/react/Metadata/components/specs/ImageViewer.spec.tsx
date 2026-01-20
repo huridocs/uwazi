@@ -5,8 +5,8 @@ import React, { act } from 'react';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { ImageViewer, ImageViewerProps } from '../ImageViewer';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import { ImageViewer, ImageViewerProps } from '#app/Metadata/components/ImageViewer.jsx';
 
 describe('ImageViewer', () => {
   const props: ImageViewerProps = {

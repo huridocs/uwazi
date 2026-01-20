@@ -1,20 +1,20 @@
 import { detectLanguage } from '#shared/detectLanguage.js';
 import entities from '#api/entities/index.js';
-import { legacyLogger } from '../log/index.js';
+import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
-import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
 import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
-import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.ts';
-import { elastic } from './elastic.js';
+import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.js';
+import { elastic } from '#api/search/elastic.js';
 
-class IndexError extends Error {}
+class IndexError extends Error { }
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const db = getConnection();
@@ -167,7 +167,7 @@ const indexEntities = async ({
   query,
   select = '',
   limit = 50,
-  batchCallback = () => {},
+  batchCallback = () => { },
   searchInstance,
 }) => {
   const totalRows = await entities.count(query);

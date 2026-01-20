@@ -9,7 +9,7 @@ import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { t } from '#app/I18N/index.js';
 import { APIURL } from '#app/config.js';
-import EntitiesApi from '#app/Entities/EntitiesAPI';
+import EntitiesApi from '#app/Entities/EntitiesAPI.js';
 
 export function enterUploads() {
   return {

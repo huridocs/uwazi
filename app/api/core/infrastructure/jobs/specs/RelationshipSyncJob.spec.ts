@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import relationships from 'api/relationships';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { EntityNotFoundError } from 'api/core/application/errors';
-import { RelationshipSyncJob } from '../RelationshipSyncJob';
+import relationships from '#api/relationships/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 
 const factory = getFixturesFactory();
 

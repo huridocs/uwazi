@@ -10,7 +10,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri';
+import { arrangeThesauri, ArrangeThesauriError } from '#api/csv/arrangeThesauri.js';
 import translations from '#api/i18n/translations.js';
 import { templateUtils } from '#api/templates/index.js';
 
@@ -512,7 +512,7 @@ describe('arrangeThesauri', () => {
       jest.resetModules();
 
       const csvModulePath = require.resolve('../csv');
-      const thesauriModulePath = require.resolve('api/thesauri');
+      const thesauriModulePath = require.resolve('#api/thesauri');
       const arrangeThesauriModulePath = require.resolve('../arrangeThesauri');
 
       const csvState = { onErrorThrew: false };

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { ClientEntitySchema, ClientPropertySchema } from '#app/V2/shared/types.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#V2/shared/types.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import {
@@ -11,11 +11,11 @@ import {
   handleEntitySave,
   getFormValue,
   coerceValue,
-} from '../sidepanelFunctions';
+} from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
 
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
 
-jest.mock('V2/api/entities', () => ({
+jest.mock('#V2/api/entities', () => ({
   formatter: {
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
@@ -124,7 +124,7 @@ describe('sidepanelFunctions', () => {
     });
 
     it('should handle title property updates', async () => {
-      const { formatter, save } = jest.requireMock('V2/api/entities');
+      const { formatter, save } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(mockEntity, mockTextProperty, 'New Title', mockTemplate);
 
@@ -134,7 +134,7 @@ describe('sidepanelFunctions', () => {
 
     it('should handle regular property updates', async () => {
       const regularProperty = { ...mockTextProperty, name: 'description' };
-      const { formatter, save } = jest.requireMock('V2/api/entities');
+      const { formatter, save } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(mockEntity, regularProperty, 'New Description', mockTemplate);
 
@@ -145,7 +145,7 @@ describe('sidepanelFunctions', () => {
     });
 
     it('should handle relationship property updates with the same content', async () => {
-      const { save } = jest.requireMock('V2/api/entities');
+      const { save } = jest.requireMock('#V2/api/entities');
 
       await handleEntitySave(
         mockEntity,

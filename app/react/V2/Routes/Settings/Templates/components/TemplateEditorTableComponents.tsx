@@ -1,17 +1,17 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Button } from '#app/V2/Components/UI/Button.js';
+import { Button } from '#V2/Components/UI/Button.jsx';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { Translate } from '#app/I18N/Translate.js';
-import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
-import { Pill } from '#app/V2/Components/UI/index.js';
+import { Translate } from '#app/I18N/Translate.jsx';
+import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
+import { Pill } from '#V2/Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
-import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#app/V2/atoms/index.ts';
-import { translationsKeys } from '../helpers.js';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
+import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
 
 type PropertyRow = PropertySchema & {
   rowId: string;
@@ -23,30 +23,30 @@ const columnHelper = createColumnHelper<PropertyRow>();
 
 const LabelCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
-  ({ cell }: CellContext<PropertyRow, string>) => {
-    const property = cell.row.original;
-    if (property.disableRowDnD) {
+    ({ cell }: CellContext<PropertyRow, string>) => {
+      const property = cell.row.original;
+      if (property.disableRowDnD) {
+        return (
+          <button
+            type="button"
+            onClick={() => handleEditProperty(property)}
+            className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+          >
+            <LockClosedIcon className="w-4 h-4 text-primary-700" />
+            {cell.getValue()}
+          </button>
+        );
+      }
       return (
         <button
           type="button"
           onClick={() => handleEditProperty(property)}
-          className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+          className="text-left text-primary-700 cursor-pointer font-medium"
         >
-          <LockClosedIcon className="w-4 h-4 text-primary-700" />
           {cell.getValue()}
         </button>
       );
-    }
-    return (
-      <button
-        type="button"
-        onClick={() => handleEditProperty(property)}
-        className="text-left text-primary-700 cursor-pointer font-medium"
-      >
-        {cell.getValue()}
-      </button>
-    );
-  };
+    };
 
 const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
   <div className="flex items-center gap-2">
@@ -59,11 +59,11 @@ const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
 
 const ActionsCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
-  ({ cell }: CellContext<PropertyRow, any>) => (
-    <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
-      <Translate>Edit</Translate>
-    </Button>
-  );
+    ({ cell }: CellContext<PropertyRow, any>) => (
+      <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
+        <Translate>Edit</Translate>
+      </Button>
+    );
 
 const LabelHeader = () => <Translate>Property</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;

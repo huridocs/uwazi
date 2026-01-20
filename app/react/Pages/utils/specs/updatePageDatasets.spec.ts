@@ -1,14 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import { fromJS } from 'immutable';
+
 import { Store } from 'redux';
 
 import create from '#app/store.js';
 
-import { IStore } from '#app/V2/shared/types.js';
-import { updatePageDatasets } from '../updatePageDatasets';
+import { IStore } from '#V2/shared/types.js';
+import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 describe('Update page datasets', () => {
   let ReduxStore: Store<IStore>;
 

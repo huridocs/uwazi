@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import ProgressBar from '../ProgressBar';
+import ProgressBar from '#UI/ProgressBar/ProgressBar.jsx';
 
 describe('ProgressBar', () => {
   it('should render progress bar as value percentage of max', () => {

@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index';
-import { Fixture } from '../types';
-import { fixtures } from './fixtures';
+import migration from '#api/migrations/migrations/169-reindex_persist_filename_with_fullText_object/index.js';
+import { Fixture } from '#api/migrations/migrations/169-reindex_persist_filename_with_fullText_object/types.js';
+import { fixtures } from '#api/migrations/migrations/169-reindex_persist_filename_with_fullText_object/specs/fixtures.js';
 
 let db: Db | null;
 

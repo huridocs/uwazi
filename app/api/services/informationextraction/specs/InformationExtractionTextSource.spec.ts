@@ -8,34 +8,34 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { InformationExtraction } from '../InformationExtraction';
-import { factory, fixtures } from './fixtures';
-import { IXModelsModel } from '../IXModelsModel';
-import { ExtractionKey } from '../ExtractionKey';
-import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoEntitiesForTraining } from '../TrainModelForText';
-import { getEntitiesForTraining } from '../ixMaterials';
+import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
+import { factory, fixtures } from '#api/services/informationextraction/specs/fixtures.js';
+import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
+import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey.js';
+import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
+import { NoEntitiesForTraining } from '#api/services/informationextraction/TrainModelForText.js';
+import { getEntitiesForTraining } from '#api/services/informationextraction/ixMaterials.js';
 
-jest.mock('api/socketio/setupSockets');
-jest.mock('api/services/tasksmanager/TaskManager.ts');
+jest.mock('#api/socketio/setupSockets');
+jest.mock('#api/services/tasksmanager/TaskManager.ts');
 
-jest.mock('api/core/libs/queue/configuration/factories', () => ({
+jest.mock('#api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
+    } = require('#api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
-    } = require('api/services/informationextraction/InformationExtraction');
-    const { IXTaskService } = require('api/services/informationextraction/TaskService');
-    const { TrainModelForPDF } = require('api/services/informationextraction/TrainModelForPDF');
-    const { TrainModelForText } = require('api/services/informationextraction/TrainModelForText');
-    const { IXTrainModelJob } = require('api/services/informationextraction/TrainModelJob');
+    } = require('#api/services/informationextraction/InformationExtraction');
+    const { IXTaskService } = require('#api/services/informationextraction/TaskService');
+    const { TrainModelForPDF } = require('#api/services/informationextraction/TrainModelForPDF');
+    const { TrainModelForText } = require('#api/services/informationextraction/TrainModelForText');
+    const { IXTrainModelJob } = require('#api/services/informationextraction/TrainModelJob');
 
     return new SyncDispatcherForTests({
       IXTrainModelJob: async () => {

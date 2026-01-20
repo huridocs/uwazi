@@ -1,20 +1,20 @@
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
-import { CommonProperty } from '#api/templates.v2/model/CommonProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
 
 import { Property } from '#api/core/domain/template/Property.js';
 import { Db } from 'mongodb';
 
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
-import { ATGateway } from '../contracts/ATGateway';
-import { ATConfig, ATTemplateConfig } from '../model/ATConfig';
+import { ATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/contracts/ATConfigDataSource.js';
+import { ATGateway } from '#api/externalIntegrations.v2/automaticTranslation/contracts/ATGateway.js';
+import { ATConfig, ATTemplateConfig } from '#api/externalIntegrations.v2/automaticTranslation/model/ATConfig.js';
 
 export class MongoATConfigDataSource
   extends MongoDataSource<SettingsType>

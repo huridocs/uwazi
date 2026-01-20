@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-params */
 /* eslint-disable max-lines */
-import entities from '../entities/index.js';
-import { ArrayUtils } from '../common.v2/utils/Array.js';
-import { DefaultLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
-import { checkTypeIsAllowed } from '../services/informationextraction/ixextractors.js';
+import entities from '#api/entities/index.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
-import { flatThesaurusValues } from '../thesauri/thesauri.js';
+import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';

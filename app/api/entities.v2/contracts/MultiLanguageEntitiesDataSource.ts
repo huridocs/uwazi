@@ -1,8 +1,8 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TemplateProperty } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
-import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
+import { MultiLanguageEntity } from '#api/entities.v2/model/MultiLanguageEntity.js';
 
 export interface MultiLanguageEntityDataSource {
   bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;

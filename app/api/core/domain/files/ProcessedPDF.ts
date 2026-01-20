@@ -1,12 +1,12 @@
 import {
   ProcessedPDFDBO,
   ProcessedPDFDTO,
-} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
+} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
-import { FileContents } from './FileContents';
-import { FileWithContents } from './FileWithContents';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { BaseFile, BaseFileProps, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
 
 type fullTextProp = { [k: string]: string };
 

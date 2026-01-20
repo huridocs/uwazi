@@ -1,11 +1,11 @@
 import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from '../suggestions/suggestions.js';
-import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
+import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { validateAndCoerceRequest } from '#api/utils/validateRequest.js';
 
-import { needsAuthorization } from '../auth.js';
+import { needsAuthorization } from '#api/auth/index.js';
 import { parseQuery } from '#api/utils/parseQueryMiddleware.js';
 import { SuggestionsQueryFilterSchema } from '#shared/types/suggestionSchema.js';
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
@@ -15,10 +15,10 @@ import {
   IXSuggestionsQuery,
 } from '#shared/types/suggestionType.js';
 import { handleError } from '#api/utils/index.js';
-import { serviceMiddleware } from './serviceMiddleware';
-import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
-import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
-import { TrainingSetController } from './adapters/TrainingSetController';
+import { serviceMiddleware } from '#api/suggestions/serviceMiddleware.js';
+import { GetSuggestionsForTableQuery } from '#api/suggestions/getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { ProcessSuggestionsController } from '#api/suggestions/adapters/ProcessSuggestionsController.js';
+import { TrainingSetController } from '#api/suggestions/adapters/TrainingSetController.js';
 
 const IX = new InformationExtraction();
 

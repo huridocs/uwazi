@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { DomainError } from '../error/DomainError';
-import { AJVObject, ValidationError } from '../error/ValidationError';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { AJVObject, ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 export class ThesaurusNotFoundError extends DomainError {
   constructor(thesaurusId: string) {

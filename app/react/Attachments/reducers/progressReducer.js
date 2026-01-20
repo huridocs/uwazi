@@ -1,6 +1,8 @@
-import { fromJS as Immutable } from 'immutable';
-import * as types from '../actions/actionTypes';
 
+import * as types from '#app/Attachments/actions/actionTypes.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 const initialState = {};
 
 export default function documents(state = initialState, action = {}) {

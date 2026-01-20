@@ -5,11 +5,11 @@ import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDa
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
+import { RelationshipMigrationFieldsDataSource } from '#api/relationships.v2/contracts/RelationshipMigrationFieldsDataSource.js';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
-} from '../model/RelationshipMigrationField';
+} from '#api/relationships.v2/model/RelationshipMigrationField.js';
 
 class GetRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;

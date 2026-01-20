@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import ResultsFiltersPanel from '#app/ResultsFiltersPanel';
-import DocumentResultsPanel from '#app/DocumentResultsPanel';
+import ResultsFiltersPanel from './ResultsFiltersPanel.js';
+import DocumentResultsPanel from './DocumentResultsPanel.js';
 
 export const ResultsSidePanel = () => (
   <>

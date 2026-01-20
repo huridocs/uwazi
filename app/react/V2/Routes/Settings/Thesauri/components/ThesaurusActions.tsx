@@ -4,9 +4,9 @@ import { Link } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { Button, ConfirmationModal } from '#app/V2/Components/UI/index.js';
+import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 
-import { ConfirmationCallback } from '../helpers';
+import { ConfirmationCallback } from '#V2/Routes/Settings/Thesauri/helpers.js';
 
 interface DeletionModalProps {
   confirmCallback: ConfirmationCallback;

@@ -11,9 +11,9 @@ import { toUrlParams } from '#shared/JSONRequest.js';
 import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.jsx';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { leaveEditMode } from '#app/Viewer/actions/documentActions.js';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
-import { scrollToPage, activateReference } from '#app/actions/uiActions.js';
-import { requestViewerState } from '#app/actions/routeActions.js';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { scrollToPage, activateReference } from './actions/uiActions.js';
+import { requestViewerState } from './actions/routeActions.js';
 
 const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
 
@@ -141,7 +141,7 @@ PDFViewComponent.propTypes = {
 };
 
 PDFViewComponent.defaultProps = {
-  leaveEditMode: () => {},
+  leaveEditMode: () => { },
 };
 
 function mapDispatchToProps(dispatch) {

@@ -1,17 +1,17 @@
 // eslint-disable-next-line node/no-restricted-import
-import { PDFService } from 'api/core/application/contracts/PDFService';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { Result } from 'api/core/libs/Result';
-import { ShellExecutor } from 'api/core/libs/shell/ShellExecutor';
-import { FileContents } from 'api/core/domain/files/FileContents';
+import { PDFService } from '#api/core/application/contracts/PDFService.js';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { Result } from '#api/core/libs/Result.js';
+import { ShellExecutor } from '#api/core/libs/shell/ShellExecutor.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import franc from 'franc';
 // eslint-disable-next-line node/no-restricted-import
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import * as os from 'os';
 import path from 'path';
 import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
-import { FileContentsIO } from '../files/FileContentIO';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 
 class FileIsNotAPDF extends DomainError {
   constructor(file: DiskFile, cause?: Error) {

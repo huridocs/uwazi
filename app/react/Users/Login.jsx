@@ -3,12 +3,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { t, Translate } from '#app/I18N/index.js';
 import { reconnectSocket } from '#app/socket.js';
-import RouteHandler from '#app/App/RouteHandler.js';
+import RouteHandler from '#app/App/RouteHandler.jsx';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
-import { withRouter } from '#app/componentWrappers.js';
+import { withRouter } from '#app/componentWrappers.jsx';
 import auth from '#app/Auth/index.js';
 
 const reloadHome = () => {

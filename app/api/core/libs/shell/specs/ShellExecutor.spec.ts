@@ -1,4 +1,4 @@
-import { ShellExecutor } from '../ShellExecutor';
+import { ShellExecutor } from '#api/core/libs/shell/ShellExecutor.js';
 
 describe('ShellExecutor', () => {
   let shellExecutor: ShellExecutor;

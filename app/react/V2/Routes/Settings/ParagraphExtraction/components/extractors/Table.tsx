@@ -1,9 +1,9 @@
 import React from 'react';
-import { Table } from '#app/V2/Components/UI/index.js';
+import { Table } from '#V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { columns, NoDataCell } from './TableElements/index.js';
-import { PXTable } from '#app/V2/Routes/Settings/Templates/types.js';
+import { columns, NoDataCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/index.js';
+import { PXTable } from '#V2/Routes/Settings/Templates/types.js';
 
 interface ExtractorsTableProps {
   paragraphExtractorData: PXTable[];

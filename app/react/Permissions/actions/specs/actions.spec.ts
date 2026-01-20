@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
 
-import { IStore } from '#app/V2/shared/types.js';
+import { IStore } from '#V2/shared/types.js';
 
-import { notificationActions } from '#app/Notifications.js';
+import { notificationActions } from '#app/Notifications/index.js';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
 import {
@@ -10,9 +10,9 @@ import {
   UPDATE_DOCUMENTS_PUBLISHED,
 } from '#app/Library/actions/actionTypes.js';
 
-import { PUBLIC_PERMISSION } from '#app/permissions/publicPermission.js';
-import * as api from '#app/Permissions/PermissionsAPI';
-import * as actions from '../actions';
+import { PUBLIC_PERMISSION } from './../../../../api/permissions/publicPermission.js';
+import * as api from '#app/Permissions/PermissionsAPI.js';
+import * as actions from '#app/Permissions/actions/actions.js';
 
 describe('Permissions actions', () => {
   let dispatch: Dispatch<IStore>;

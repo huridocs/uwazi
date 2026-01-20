@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon, CountryList } from '/home/mercy/Projects/uwazi/node_modules/@testing-library/user-event/dist/types/document/UI.d.js';
+import { Icon, CountryList } from '#UI';
 import { Translate } from '#app/I18N/index.js';
 
 const style = { display: 'inline-block', width: '25px' };

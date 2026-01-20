@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { Translate, t } from '#app/I18N/index.js';
-import SnippetList from '#app/Documents/components/SnippetList.js';
+import SnippetList from '#app/Documents/components/SnippetList.jsx';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
-import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
+import { NumericRangeSlide } from '#app/ReactReduxForms/index.jsx';
 import { Icon } from '#app/Layout/Icon.jsx';
 import { TemplateLabel, DocumentLanguage } from '#app/Layout/index.js';
 

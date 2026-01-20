@@ -4,19 +4,19 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { fromJS } from 'immutable';
+
 import { shallow } from 'enzyme';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/V2/BasicReducer/reducer.js';
-import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.js';
-import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.js';
-import RouteHandler from '#app/App/RouteHandler.js';
+import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.jsx';
+import { ConnectedViewer as Viewer } from '#app/Viewer/components/Viewer.jsx';
+import RouteHandler from '#app/App/RouteHandler.jsx';
 import * as utils from '#app/Viewer/utils.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import { renderConnectedMount } from '#app/utils/test/renderConnected.jsx';
 import * as documentActions from '#app/Viewer/actions/documentActions.js';
-import * as routeActions from '../actions/routeActions';
-import * as uiActions from '../actions/uiActions';
+import * as routeActions from '#app/Viewer/actions/routeActions.js';
+import * as uiActions from '#app/Viewer/actions/uiActions.js';
 
 let page = 0;
 let raw = 'abc';
@@ -55,10 +55,10 @@ jest.mock('react-router', () => ({
   useNavigate: () => path => mockNavigate(path),
   useMatches: () => {},
 }));
-jest.mock('app/ContextMenu', () => () => <div>ContextMenu</div>);
-jest.mock('app/App/Footer', () => () => <div>Footer</div>);
-jest.mock('app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
-jest.mock('app/Connections', () => ({
+jest.mock('#app/ContextMenu', () => () => <div>ContextMenu</div>);
+jest.mock('#app/App/Footer', () => () => <div>Footer</div>);
+jest.mock('#app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
+jest.mock('#app/Connections', () => ({
   CreateConnectionPanel: () => <div>CreateConnectionPanel</div>,
 }));
 
@@ -189,7 +189,9 @@ describe('PDFView', () => {
 
     it('should modify raw to true if is server side rendered', () => {
       // eslint-disable-next-line no-import-assign
-      utils.isClient = false;
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;      utils.isClient = false;
       const requestParams = new RequestParams({
         documentId: 'documentId',
         lang: 'es',

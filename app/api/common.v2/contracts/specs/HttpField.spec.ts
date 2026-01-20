@@ -1,4 +1,4 @@
-import { HttpField } from '../HttpField';
+import { HttpField } from '#api/common.v2/contracts/HttpField.js';
 
 describe('HttpField', () => {
   it('should parse a string value correctly', () => {

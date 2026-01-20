@@ -3,8 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
 
-import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
-import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons';
+import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
+import { LibraryModeToggleButtons, mapStateToProps } from '#app/Library/components/LibraryModeToggleButtons.jsx';
 
 describe('LibraryModeToggleButtons', () => {
   let component;
@@ -25,7 +25,7 @@ describe('LibraryModeToggleButtons', () => {
   };
 
   beforeAll(() => {
-    spyOn(require('app/utils'), 'isClient').and.returnValue(true);
+    spyOn(require('#app/utils'), 'isClient').and.returnValue(true);
   });
 
   describe('render()', () => {

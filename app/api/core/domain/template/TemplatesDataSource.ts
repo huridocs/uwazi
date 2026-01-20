@@ -1,10 +1,10 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
 export interface TemplatesDataSource {
   updateMapping(template: Template, reset?: boolean): Promise<void>;

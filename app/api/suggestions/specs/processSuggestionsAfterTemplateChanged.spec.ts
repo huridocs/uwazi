@@ -6,7 +6,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import {
   Input,
   ProcessSuggestionsAfterTemplateChanged,
-} from '../useCases/processSuggestionsAfterTemplateChanged';
+} from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
 
 const factory = getFixturesFactory();
 

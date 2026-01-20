@@ -2,9 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 import testingDB from '#api/utils/testing_db.js';
-import { config } from '../config.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import { config } from '#api/config.js';
+import migration from '#api/migrations/migrations/14-separate-custom-uploads-from-documents/index.js';
+import fixtures from '#api/migrations/migrations/14-separate-custom-uploads-from-documents/specs/fixtures.js';
 
 const asyncFs = fs.promises;
 

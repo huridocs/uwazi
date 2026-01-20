@@ -1,4 +1,4 @@
-import { AbstractEvent } from '#api/eventsbus/AbstractEvent.js';
+import { AbstractEvent } from '#api/core/libs/eventsbus/AbstractEvent.js';
 
 interface TemplateDeletedData {
   templateId: string;

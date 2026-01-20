@@ -6,18 +6,18 @@ import path from 'path';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import request from 'supertest';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 import { setupTestUploadedPaths, storage } from '#api/files/index.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import mailer from '#api/utils/mailer.js';
 
 import { setUpApp, socketEmit } from '#api/utils/testingRoutes.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { routes } from '../jsRoutes';
-import { fixtures, templateId } from './fixtures';
+import { routes } from '#api/files/jsRoutes.js';
+import { fixtures, templateId } from '#api/files/specs/fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

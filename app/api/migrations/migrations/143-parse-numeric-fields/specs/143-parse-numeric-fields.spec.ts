@@ -1,8 +1,8 @@
 import testingDB from '#api/utils/testing_db.js';
 import { WithId } from 'mongodb';
-import migration from '../index';
-import { fixtures } from './fixtures';
-import { EntitySchema } from '../types';
+import migration from '#api/migrations/migrations/143-parse-numeric-fields/index.js';
+import { fixtures } from '#api/migrations/migrations/143-parse-numeric-fields/specs/fixtures.js';
+import { EntitySchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 
 describe('migration parse-numeric-fields', () => {
   beforeEach(async () => {

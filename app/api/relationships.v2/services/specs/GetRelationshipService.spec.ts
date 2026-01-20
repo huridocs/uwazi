@@ -1,8 +1,8 @@
 import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
 
-import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 
@@ -10,9 +10,9 @@ import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/Mon
 
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 
-import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
-import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 
 import { User } from '#api/users.v2/model/User.js';
 
@@ -23,7 +23,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { GetRelationshipService } from '../GetRelationshipService';
+import { GetRelationshipService } from '#api/relationships.v2/services/GetRelationshipService.js';
 
 const fixtureFactory = getFixturesFactory();
 

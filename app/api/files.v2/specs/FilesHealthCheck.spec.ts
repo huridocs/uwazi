@@ -5,11 +5,11 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { FilesHealthCheck } from '../FilesHealthCheck';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage';
-import { DefaultFilesDataSource } from '../database/data_source_defaults';
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 import { UwaziFile } from '../model/UwaziFile';
-import { URLAttachment } from '../model/URLAttachment';
-import { CustomUpload } from '../model/CustomUpload';
-import { StoredFile } from '../model/StoredFile';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
+import { StoredFile } from '#api/core/domain/files/StoredFile.js';
 import { File } from '../model/File';
 
 const factory = getFixturesFactory();

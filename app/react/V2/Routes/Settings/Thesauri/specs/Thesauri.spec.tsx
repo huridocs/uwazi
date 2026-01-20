@@ -14,13 +14,13 @@ import {
   cleanup,
 } from '@testing-library/react/pure';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { has } from 'lodash';
-import { templatesAtom } from '#app/V2/atoms/index.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import { ThesauriList, thesauriLoader } from '../ThesauriList.js';
-import { EditThesaurus } from '../EditThesaurus.js';
-import { editThesaurusLoader } from '../helpers.js';
-import { savedThesaurus, thesauri } from './fixtures.js';
+import has from 'lodash/has.js';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { ThesauriList, thesauriLoader } from '#V2/Routes/Settings/Thesauri/ThesauriList.jsx';
+import { EditThesaurus } from '#V2/Routes/Settings/Thesauri/EditThesaurus.jsx';
+import { editThesaurusLoader } from '#V2/Routes/Settings/Thesauri/helpers.js';
+import { savedThesaurus, thesauri } from '#V2/Routes/Settings/Thesauri/specs/fixtures.js';
 
 const deleteFn = jest.fn();
 const saveFn = jest.fn();
@@ -32,8 +32,8 @@ const mockDeleteThesauri = deleteFn.mockImplementation((_params, _headers) => ({
 }));
 const mockSaveThesauri = saveFn.mockImplementation(_params => savedThesaurus);
 
-jest.mock('app/V2/api/thesauri', () => ({
-  ...jest.requireActual('app/V2/api/thesauri'),
+jest.mock('#app/V2/api/thesauri', () => ({
+  ...jest.requireActual('#app/V2/api/thesauri'),
   get: (params: { _id?: string }, headers?: IncomingHttpHeaders) =>
     mockUseLoaderData(params, headers),
   deleteThesauri: (params: { _id: string }) => mockDeleteThesauri(params),
@@ -43,7 +43,7 @@ jest.mock('app/V2/api/thesauri', () => ({
 describe('Settings Thesauri', () => {
   beforeEach(() => {
     jest.spyOn(console, 'error').mockImplementation(jest.fn());
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => { });
   });
 
   describe('ThesauriList', () => {

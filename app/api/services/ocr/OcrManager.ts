@@ -1,16 +1,16 @@
 import { files, storage } from '#api/files/index.js';
 
-import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
+import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
 
-import { processDocument } from '../files/processDocument.js';
+import { processDocument } from '#api/files/processDocument.js';
 
-import relationships from '../relationships/relationships.js';
+import relationships from '#api/relationships/index.js';
 
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
 import settings from '#api/settings/settings.js';
 
-import { emitToTenant } from '../socketio/setupSockets.js';
+import { emitToTenant } from '#api/socketio/setupSockets.js';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
@@ -28,15 +28,15 @@ import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 import urljoin from 'url-join';
-import { EnforcedWithId } from '#api/odm/model';
-import { OcrRecord, OcrStatus } from './ocrModel';
+import { EnforcedWithId } from '#api/odm/model.js';
+import { OcrRecord, OcrStatus } from '#api/services/ocr/ocrModel.js';
 import {
   createForFile,
   getForSourceFile,
   getForSourceOrTargetFile,
   markError,
   markReady,
-} from './ocrRecords';
+} from '#api/services/ocr/ocrRecords.js';
 
 interface OcrSettings {
   url: string;

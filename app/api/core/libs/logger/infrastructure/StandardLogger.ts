@@ -1,9 +1,8 @@
-import { getTenant } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
-import { Logger } from '../contracts/Logger';
-import { LogEntry, LogMetadata } from './LogEntry';
-import { LogLevel, LogLevels } from './LogLevels';
-import { LogWriter } from './LogWriter';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LogEntry, LogMetadata } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { LogLevel, LogLevels } from '#api/core/libs/logger/infrastructure/LogLevels.js';
+import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -45,13 +44,13 @@ class StandardLogger implements Logger {
 
 export const withFeature =
   (writer: LogWriter, featureName: string): LogWriter =>
-  (log: LogEntry) => {
-    writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
-        ...log.metadata,
-        feature: featureName,
-      })
-    );
-  };
+    (log: LogEntry) => {
+      writer(
+        new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+          ...log.metadata,
+          feature: featureName,
+        })
+      );
+    };
 
 export { StandardLogger };

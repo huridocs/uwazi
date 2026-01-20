@@ -1,10 +1,10 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Select } from '#app/V2/Components/Forms/index.js';
+import { Select } from '#V2/Components/Forms/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
-import { settingsAtom } from '#app/V2/atoms/index.ts';
+import { settingsAtom } from '#V2/atoms/index.js';
 
 interface PropertyTypeFieldProps {
   control: any;

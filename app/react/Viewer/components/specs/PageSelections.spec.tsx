@@ -7,12 +7,12 @@ import { RenderResult } from '@testing-library/react';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 
-import { ClientEntitySchema, ClientFile } from '#app/V2/shared/types.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import { pdfScaleAtom } from '#app/V2/atoms/index.js';
-import { PageSelections } from '../PageSelections.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
+import { PageSelections } from '#app/Viewer/components/PageSelections.jsx';
+import { ClientFile, ClientEntitySchema } from '#app/istore.js';
 
 const defaultEntityDocument: ClientFile = {
   _id: '62f52bddc6897a159347cf6b',

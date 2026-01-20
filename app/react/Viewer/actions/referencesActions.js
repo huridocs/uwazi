@@ -6,7 +6,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { actions as connectionsActions } from '#app/Connections/index.js';
 import { reloadRelationships } from '#app/Relationships/actions/actions.js';
-import * as uiActions from './uiActions';
+import * as uiActions from '#app/Viewer/actions/uiActions.js';
 
 export function setReferences(references) {
   return {

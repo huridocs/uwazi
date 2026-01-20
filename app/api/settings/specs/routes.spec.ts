@@ -1,13 +1,13 @@
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { search } from '#api/search.js';
-import settings from '../settings.js';
+import { search } from '#api/search/index.js';
+import settings from '#api/settings/settings.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
-import users from '../users/users.js';
+import users from '#api/users/users.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
@@ -17,10 +17,10 @@ import translations from '#app/I18N/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
-import * as setupSockets from 'api/socketio/setupSockets';
-import settingsRoutes from '../routes';
-import { settingsModel } from '../settingsModel';
-import fixtures from './fixtures';
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import settingsRoutes from '#api/settings/routes.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
+import fixtures from '#api/settings/specs/fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

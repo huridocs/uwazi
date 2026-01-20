@@ -3,7 +3,7 @@ import { NextFunction } from 'express';
 
 import { Task, TaskProvider } from '#shared/tasks/tasks.js';
 import request from 'supertest';
-import testRoute from '../routes';
+import testRoute from '#api/tasks/routes.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

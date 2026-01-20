@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { FixtureType } from '../types';
+import { FixtureType } from '#api/migrations/migrations/149-remove_inconsistent_relationships_metadata/types.js';
 
 const ids = {
   relationType: new ObjectId(),

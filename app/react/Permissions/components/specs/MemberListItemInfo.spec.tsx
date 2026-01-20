@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { MemberListItemInfo } from '../MemberListItemInfo';
-import { data } from './testData';
+import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.jsx';
+import { data } from '#app/Permissions/components/specs/testData.js';
 
 describe('MemberListItem', () => {
   const expectedIcon = ['user', 'users', 'users', 'user', 'user', 'globe-africa'];

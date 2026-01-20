@@ -5,37 +5,38 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { cloneDeep, isEqual } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
+import isEqual from 'lodash/isEqual.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import * as SettingsAPI from '#app/V2/api/settings.js';
+import * as SettingsAPI from '#V2/api/settings/index.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.ts';
-import { settingsAtom } from '#app/V2/atoms/settingsAtom.ts';
+import { notificationAtom } from '#V2/atoms/index.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
-import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
+import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import { MenuForm } from './components/MenuForm';
-import { columns } from './components/TableComponents';
-import { Link, sanitizeIds } from './shared';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { MenuForm } from '#V2/Routes/Settings/MenuConfig/components/MenuForm.jsx';
+import { columns } from '#V2/Routes/Settings/MenuConfig/components/TableComponents.jsx';
+import { Link, sanitizeIds } from '#V2/Routes/Settings/MenuConfig/shared.js';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
-      const linkWithRowId: Link = { ...link, rowId: link._id! };
-      if (link.sublinks) {
-        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
-          ...sublink,
-          rowId: `${link._id}-${index}`,
-        }));
-      }
-      return linkWithRowId;
-    });
-    return tableRows;
-  };
+    async () => {
+      const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+        const linkWithRowId: Link = { ...link, rowId: link._id! };
+        if (link.sublinks) {
+          linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+            ...sublink,
+            rowId: `${link._id}-${index}`,
+          }));
+        }
+        return linkWithRowId;
+      });
+      return tableRows;
+    };
 
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
@@ -183,9 +184,8 @@ const MenuConfig = () => {
       <Sidepanel
         title={
           <Translate className="uppercase">
-            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
-              formValues?.type === 'group' ? 'Group' : 'Link'
-            }`}
+            {`${formValues?.title === '' ? 'New' : 'Edit'} ${formValues?.type === 'group' ? 'Group' : 'Link'
+              }`}
           </Translate>
         }
         isOpen={isSidepanelOpen}

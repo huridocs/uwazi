@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Map } from 'immutable';
+
 import { ConnectionsList } from '#app/ConnectionsList/index.js';
 import { CreateConnectionPanel } from '#app/Connections/index.js';
 import { CurrentLocationLink, Icon } from '#app/Layout/index.js';
-import { RelationshipsFormButtons } from '#app/Relationships/index/index.js';
+import { RelationshipsFormButtons } from '#app/Relationships/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import AddEntitiesPanel from '#app/Relationships/components/AddEntities.jsx';
@@ -20,23 +20,25 @@ import ShowIf from '#app/App/ShowIf.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
 import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.jsx';
-import { PaginatorWithPage } from '#app/Paginator';
-import { addReference as addReferenceAction } from '#app/actions/referencesActions';
+import { PaginatorWithPage } from '#app/Viewer/components/Paginator.jsx';
+import { addReference as addReferenceAction } from './../actions/referencesActions.js';
 import {
   loadDefaultViewerMenu,
   loadTargetDocument as loadTargetDocumentAction,
-} from '#app/actions/documentActions';
-import { openPanel, toggleReferences } from '#app/actions/uiActions';
-import { selectDoc } from '#app/Metadata/selectors.js';
-import ConfirmCloseForm from '#app/ConfirmCloseForm';
-import ViewMetadataPanel from '#app/ViewMetadataPanel';
-import ViewerDefaultMenu from '#app/ViewerDefaultMenu';
-import ViewerTextSelectedMenu from '#app/ViewerTextSelectedMenu';
-import SourceDocument from '#app/SourceDocument';
-import TargetDocument from '#app/TargetDocument.js';
-import determineDirection from '#app/utils/determineDirection';
-import { OCRStatus } from '#app/OCRStatus';
+} from './../actions/documentActions.js';
+import { openPanel, toggleReferences } from './../actions/uiActions.js';
+import { selectDoc } from './../selectors.js';
+import ConfirmCloseForm from './ConfirmCloseForm.js';
+import ViewMetadataPanel from './ViewMetadataPanel.js';
+import ViewerDefaultMenu from './ViewerDefaultMenu.js';
+import ViewerTextSelectedMenu from './ViewerTextSelectedMenu.js';
+import SourceDocument from './SourceDocument.js';
+import TargetDocument from './TargetDocumentHeader.js';
+import determineDirection from './../utils/determineDirection.js';
+import { OCRStatus } from './OCRStatus.js';
+import Immutable from 'immutable';
 
+const { Map } = Immutable;
 class Viewer extends Component {
   constructor(props) {
     super(props);
@@ -136,7 +138,7 @@ class Viewer extends Component {
                     </FeatureToggle>
                   </NeedAuthorization>
                   <CurrentLocationLink
-                    onClick={!raw ? this.handlePlainTextClick : () => {}}
+                    onClick={!raw ? this.handlePlainTextClick : () => { }}
                     className="btn btn-default"
                     queryParams={{ raw: raw || firstRender ? '' : 'true' }}
                     replace
@@ -222,9 +224,9 @@ class Viewer extends Component {
 Viewer.defaultProps = {
   searchTerm: '',
   raw: false,
-  onPageChange: () => {},
-  changePage: () => {},
-  onDocumentReady: () => {},
+  onPageChange: () => { },
+  changePage: () => { },
+  onDocumentReady: () => { },
   page: 1,
   doc: Map(),
   file: {},
@@ -277,7 +279,7 @@ const mapStateToProps = state => {
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
       !documentViewer.targetDoc.get('_id') &&
-        state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
+      state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
     ),
     user: state.user,
     // relationships v2

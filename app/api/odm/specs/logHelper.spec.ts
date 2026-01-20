@@ -1,4 +1,4 @@
-import { createUpdateLogHelper, NoLogger, UpdateLogHelper } from '../logHelper';
+import { createUpdateLogHelper, NoLogger, UpdateLogHelper } from '#api/odm/logHelper.js';
 
 describe('createUpdateLogHelper', () => {
   describe('when collection name is either than activitylog', () => {

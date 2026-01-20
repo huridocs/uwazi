@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/2-sanitize_empty_geolocations/index.js';
+import fixtures from '#api/migrations/migrations/2-sanitize_empty_geolocations/specs/fixtures.js';
 
 describe('migration sanitize_empty_geolocations', () => {
   beforeEach(async () => {

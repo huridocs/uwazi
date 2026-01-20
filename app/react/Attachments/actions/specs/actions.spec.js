@@ -8,8 +8,8 @@ import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { NOTIFY } from '#app/Notifications/actions/actionTypes.js';
-import * as actions from '../actions';
-import * as types from '../actionTypes';
+import * as actions from '#app/Attachments/actions/actions.js';
+import * as types from '#app/Attachments/actions/actionTypes.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

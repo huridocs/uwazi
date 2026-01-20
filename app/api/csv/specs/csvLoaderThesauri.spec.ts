@@ -12,9 +12,9 @@ import { WithId } from '#api/odm/index.js';
 import { ObjectId } from 'mongodb';
 
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { CSVLoader } from '../csvLoader';
-import { fixtures, thesauri1Id } from './fixtures';
-import { mockCsvFileReadStream } from './helpers';
+import { CSVLoader } from '#api/csv/csvLoader.js';
+import { fixtures, thesauri1Id } from '#api/csv/specs/fixtures.js';
+import { mockCsvFileReadStream } from '#api/csv/specs/helpers.js';
 
 const getTranslation = async (lang: string, id: ObjectId) =>
   ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(

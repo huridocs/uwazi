@@ -1,6 +1,6 @@
 import { testingDB } from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import migration from '#api/migrations/migrations/63-remove_id_and_localID_from_template/index.js';
+import { fixtures } from '#api/migrations/migrations/63-remove_id_and_localID_from_template/specs/fixtures.js';
 
 describe('migration remove_id_and_localID_from_template', () => {
   beforeEach(async () => {

@@ -1,12 +1,12 @@
-import { FileType } from 'shared/types/fileType';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { FileType } from '#shared/types/fileType.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import {
   EntityPermissions,
   MetadataProperty,
   DateMetadataProperty,
   EntityTemplate,
   EntityReference,
-} from './types';
+} from '#V2/domain/entities/types.js';
 
 export interface Entity {
   readonly _id: string;

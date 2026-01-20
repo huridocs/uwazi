@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 import mongoose, { Model, Document } from 'mongoose';
-import { config } from '../config.js';
-import { DB } from '../odm/DB.js';
+import { config } from '#api/config.js';
+import { DB } from '#api/odm/DB.js';
 import { handleError } from '#api/utils/index.js';
 import { ChangeStream, MongoError } from 'mongodb';
 
-import { Tenant } from './tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 
 const schemaValidator = {
   $jsonSchema: {

@@ -2,7 +2,7 @@
 import { Collection, ObjectId } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import { DocumentTracker, MongoDocument } from '../documentTracker/DocumentTracker';
+import { DocumentTracker, MongoDocument } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
 
 describe('DocumentTracker', () => {
   let testingCollection: Collection<Document>;

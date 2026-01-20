@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 
-import { StandardLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 import { getIdMapper } from '#api/utils/fixturesFactory.js';
 
@@ -8,9 +8,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB from '#api/utils/testing_db.js';
 import { MongoClient, ObjectId } from 'mongodb';
-import { MongoDataSource } from '../MongoDataSource';
-import { MongoTransactionManager } from '../MongoTransactionManager';
-import { getClient, getConnection, getTenant } from '../getConnectionForCurrentTenant';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { getClient, getConnection, getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 const id = getIdMapper();
 

@@ -10,9 +10,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 
@@ -20,15 +20,15 @@ import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
-import { EnforcedWithId } from '../odm.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
-import settings from '../settings.js';
+import settings from '#api/settings/index.js';
 
-import { Suggestions } from '../suggestions/suggestions.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
-import { LanguageUtils } from '#shared/language.js';
+import { LanguageUtils } from '#shared/language/index.js';
 
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
@@ -36,10 +36,10 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
-import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 
-import { filesModel } from '../files/filesModel.js';
-import { factory, fixtures } from './fixtures';
+import { filesModel } from '#api/files/filesModel.js';
+import { factory, fixtures } from '#api/services/informationextraction/specs/fixtures.js';
 import {
   CommonSuggestion,
   IXResultsMessage,
@@ -47,28 +47,28 @@ import {
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-} from '../InformationExtraction';
+} from '#api/services/informationextraction/InformationExtraction.js';
 import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
-import { IXModelsModel } from '../IXModelsModel';
-import { Extractors } from '../ixextractors';
-import { IXWebSocketEvents } from '../WebSocketEvents';
-import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials';
+import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
+import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '#api/services/informationextraction/ixMaterials.js';
 
 let informationExtractionForJob: InformationExtraction;
-jest.mock('api/services/tasksmanager/TaskManager.ts');
-jest.mock('api/socketio/setupSockets');
-jest.mock('api/core/libs/queue/configuration/factories', () => ({
+jest.mock('#api/services/tasksmanager/TaskManager.ts');
+jest.mock('#api/socketio/setupSockets');
+jest.mock('#api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
+    } = require('#api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
-    } = require('api/services/informationextraction/InformationExtraction');
-    const { IXTaskService } = require('api/services/informationextraction/TaskService');
-    const { TrainModelForPDF } = require('api/services/informationextraction/TrainModelForPDF');
-    const { TrainModelForText } = require('api/services/informationextraction/TrainModelForText');
-    const { IXTrainModelJob } = require('api/services/informationextraction/TrainModelJob');
+    } = require('#api/services/informationextraction/InformationExtraction');
+    const { IXTaskService } = require('#api/services/informationextraction/TaskService');
+    const { TrainModelForPDF } = require('#api/services/informationextraction/TrainModelForPDF');
+    const { TrainModelForText } = require('#api/services/informationextraction/TrainModelForText');
+    const { IXTrainModelJob } = require('#api/services/informationextraction/TrainModelJob');
 
     return new SyncDispatcherForTests({
       IXTrainModelJob: async () => {

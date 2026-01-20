@@ -24,14 +24,14 @@ import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 import { Tenant } from '#api/tenants/tenantContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { preserveSync } from '../preserveSync.js';
-import { preserveSyncModel } from '../preserveSyncModel.js';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';
+import { preserveSync } from '#api/services/preserve/preserveSync.js';
+import { preserveSyncModel } from '#api/services/preserve/preserveSyncModel.js';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from '#api/services/preserve/specs/fixtures.js';
 import { legacyLogger } from '#api/log/index.js';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {

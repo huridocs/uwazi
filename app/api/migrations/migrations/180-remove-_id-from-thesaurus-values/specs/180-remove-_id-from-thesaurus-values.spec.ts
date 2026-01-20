@@ -1,6 +1,6 @@
-import testingDB from 'api/utils/testing_db';
-import migration from '../index';
-import { fixtures, ids } from './fixtures';
+import testingDB from '#api/utils/testing_db.js';
+import migration from '#api/migrations/migrations/180-remove-_id-from-thesaurus-values/index.js';
+import { fixtures, ids } from '#api/migrations/migrations/180-remove-_id-from-thesaurus-values/specs/fixtures.js';
 
 describe('Remove _id from thesaurus values', () => {
   const getThesaurus = async () => testingDB.mongodb!.collection('dictionaries').find().toArray();

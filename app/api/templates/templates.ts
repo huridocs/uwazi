@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
-import { ValidationError } from '../common.v2/validation/ValidationError.js';
-import entities from '#api/entities/index.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
+import entities, { model } from '#api/entities/index.js';
 import { populateGeneratedIdByTemplate } from '#api/entities/generatedIdPropertyAutoFiller.js';
-import { applicationEventsBus } from '#api/eventsbus/index.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import translations from '#api/i18n/translations.js';
 import { WithId } from '#api/odm/index.js';
 import { search } from '#api/search/index.js';
 import { reindexAll, updateMapping } from '#api/search/entitiesIndex.js';
 import settings from '#api/settings/settings.js';
-import { TemplateInputMappers } from '#api/templates.v2/services/TemplateInputMappers.js';
+import { TemplateInputMappers } from '#api/core/v1_layer/templates.v2/services/TemplateInputMappers.js';
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import createError from '#api/utils/Error.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
@@ -18,7 +18,6 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { ensure } from '#shared/tsUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { validateTemplate } from '#shared/types/templateSchema.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { tenants } from '#api/tenants/index.js';
@@ -28,9 +27,8 @@ import {
   DefaultTransactionManager,
 } from '#api/common.v2/database/data_source_defaults.js';
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
-import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mapper.js';
-import { LegacyTranslationService } from '#api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { UpdateTemplateUseCase } from '#api/core/application/UpdateTemplate.js';
@@ -38,30 +36,22 @@ import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from '#api/core/application/TemplateDTOs.js';
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
-import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure//jobs/TemplatePostProcessEntitiesJob.js';
+import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
-import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
-import { LegacyPageService } from '#api/core/infrastructure//mongodb/page/LegacyPageService.js';
-import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase.js';
-import { TemplateValidationService } from './validation/TemplateValidationService.js';
-import * as v2 from './v2_support.js';
-import {
-  setInheritedPropertiesType,
-  generateNames,
-  getDeletedProperties,
-  getRenamedTitle,
-  getUpdatedNames,
-  updateExtractedMetadataProperties,
-} from './utils.js';
-import model from './templatesModel.js';
-import { checkIfReindex } from './reindex.js';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent.js';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent.js';
+import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
+import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase.js';
+import { TemplateValidationService } from '#api/templates/validation/TemplateValidationService.js';
+import * as v2 from '#api/core/v1_layer/templates/v2_support.js';
+
+import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
+import { getUpdatedNames, getDeletedProperties, generateNames } from '#api/utils/templateUtils.js';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -174,7 +164,7 @@ export default {
     onTemplateProcessed: (
       error?: Error,
       denormalizationExecuted?: boolean
-    ) => Promise<void> = async () => {}
+    ) => Promise<void> = async () => { }
   ) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
     if (v2CreateTemplateUseCase && !template._id) {
@@ -356,7 +346,7 @@ export default {
     onTemplateProcessed: (
       error?: Error,
       denormalizationExecuted?: boolean
-    ) => Promise<void> = async () => {}
+    ) => Promise<void> = async () => { }
   ) {
     const templateStructureChanges = await checkIfReindex(template);
     const reindex = _reindex && templateStructureChanges && !template.synced;

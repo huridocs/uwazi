@@ -4,9 +4,9 @@ import { CellContext } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 import { Link } from 'react-router';
 
-import { Button } from '#app/V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 
-import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types';
+import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
   <div className="flex gap-2 justify-end">

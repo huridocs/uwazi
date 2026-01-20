@@ -11,11 +11,11 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 import { storage } from '#api/files/index.js';
 import { Readable } from 'stream';
-import { appContext } from '#api/utils/AppContext';
-import { elasticTesting } from '#api/utils/elastic_testing';
-import { getFixturesFactory } from '#api/utils/fixturesFactory';
-import { testingEnvironment } from '#api/utils/testingEnvironment';
-import { withTransaction } from '#api/utils/withTransaction';
+import { appContext } from '#api/utils/AppContext.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { withTransaction } from '#api/utils/withTransaction.js';
 
 const factory = getFixturesFactory();
 

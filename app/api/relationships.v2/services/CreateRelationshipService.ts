@@ -1,4 +1,4 @@
-import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 
@@ -8,19 +8,19 @@ import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSourc
 
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 
-import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
 
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 
 import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
+import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import {
   EntityPointer,
   Relationship,
   TextReferencePointer,
   Selection,
-} from '../model/Relationship';
-import { DenormalizationService } from './DenormalizationService';
+} from '#api/relationships.v2/model/Relationship.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
 interface ReferencePointerData {
   type: 'text';

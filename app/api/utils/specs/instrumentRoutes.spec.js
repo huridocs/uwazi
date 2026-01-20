@@ -1,4 +1,4 @@
-import instrumentRoutes from '../instrumentRoutes.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
 
 describe('routesMock', () => {
   function middleware1() {}

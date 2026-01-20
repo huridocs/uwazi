@@ -3,12 +3,12 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { Validator } from '#api/core/domain/Validator.js';
 
 import { TemplateWithDuplicatedPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
-import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
-import { V1RelationshipProperty } from './V1RelationshipProperty';
-import { CommonProperty } from './CommonProperty';
-import { PropertyType } from './PropertyType';
-import { TemplateWithMissingCommonPropertyValidator } from './templateValidator/TemplateWithMissingCommonPropertyValidator';
-import { PropertyAssignment } from './PropertyValue';
+import { Property, PropertyTypes, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { TemplateWithMissingCommonPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator.js';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 
 type CloneProps = {
   name?: string;

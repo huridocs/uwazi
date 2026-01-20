@@ -7,13 +7,13 @@ import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { MetadataObjectSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
 import { ensure } from '#shared/tsUtils.js';
-import { sanitizeStringValue } from '../sanitizationUtils.js';
+import { sanitizeStringValue } from '#api/csv/sanitizationUtils.js';
 import {
   LabelInfo,
   determineParentChildRelationship,
   generateMetadataValue,
   parseParentChildWithSpaces,
-} from './shared.js';
+} from '#api/csv/typeParsers/shared.js';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

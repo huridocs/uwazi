@@ -9,9 +9,9 @@ import {
   scrollToActive,
   deactivateReference,
 } from '#app/Viewer/actions/uiActions.js';
-import Document from '#app/Viewer/components/Document.js';
+import Document from '#app/Viewer/components/Document.jsx';
 import { createSelector } from 'reselect';
-import { selectDoc, selectReferences } from '../selectors';
+import { selectDoc, selectReferences } from '#app/Viewer/selectors.js';
 
 const selectSourceRange = createSelector(
   s => s.uiState,

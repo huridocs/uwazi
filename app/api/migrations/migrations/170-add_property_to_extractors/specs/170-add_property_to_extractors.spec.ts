@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index';
-import { Fixture } from '../types';
-import { fixtures } from './fixtures';
+import migration from '#api/migrations/migrations/170-add_property_to_extractors/index.js';
+import { Fixture } from '#api/migrations/migrations/170-add_property_to_extractors/types.js';
+import { fixtures } from '#api/migrations/migrations/170-add_property_to_extractors/specs/fixtures.js';
 
 let db: Db | null;
 

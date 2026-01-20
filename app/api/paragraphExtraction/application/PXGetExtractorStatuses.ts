@@ -1,16 +1,16 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
 
 import {
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
   PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService';
+} from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
 
 type PXGetExtractorStatusesOutput = Omit<GetExtractorStatusesOutput, 'rows'> & {
   rows: (GetExtractorStatusesOutput['rows'][0] & {

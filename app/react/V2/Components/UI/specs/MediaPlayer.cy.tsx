@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/MediaPlayer.stories.js';
+import * as stories from '#app/stories/MediaPlayer.stories.jsx';
 
 const { LocalFile, LocalFileWithThumbnail, InvalidMedia } = composeStories(stories);
 

@@ -6,15 +6,15 @@ import settings from '#api/settings/settings.js';
 
 import entities from '#api/entities/entities.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
-import relationtypes from '../relationtypes.js';
+import relationtypes from '#api/relationtypes/index.js';
 import {
   getTextWithAttachedImages,
   getTwitterImages,
   getTwitterImagesData,
   TwitterImageData,
-} from '../services/twitterintegration/getTwitterImages.js';
+} from '#api/services/twitterintegration/getTwitterImages.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 

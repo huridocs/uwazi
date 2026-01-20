@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types';
-import { generateDisplayPill } from '#app/utils/generateDisplayPill';
+import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
+import { generateDisplayPill } from './../../../utils/generateDisplayPill.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',

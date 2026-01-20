@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Truncate } from '#app/V2/Components/UI/index.js';
+import { Truncate } from '#V2/Components/UI/index.js';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
@@ -10,7 +10,7 @@ import {
   optimizeTextForDisplay,
   calculateOptimalContextLength,
   analyzeContentForTruncation,
-} from '../helpers/contextHelpers';
+} from '#V2/Routes/Settings/IX/helpers/contextHelpers.js';
 
 const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-gray-500',

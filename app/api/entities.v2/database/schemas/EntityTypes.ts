@@ -1,6 +1,6 @@
-import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { ObjectId } from 'mongodb';
-import { PermissionSchema } from 'shared/types/permissionType';
+import { PermissionSchema } from '#shared/types/permissionType.js';
 
 export interface EntityDBO {
   _id: ObjectId;

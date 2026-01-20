@@ -1,18 +1,18 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 
-import { Property } from '#api/templates.v2/model/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
 
-import { RelationshipProperty } from '#api/templates.v2/model/RelationshipProperty.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
-import { mapPropertyQuery } from '../QueryMapper';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 
 const factory = getFixturesFactory();
 

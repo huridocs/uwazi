@@ -1,6 +1,6 @@
-import { SimpleMetadataProperty } from 'app/V2/domain/entities/types';
-import { BasePropertyProcessor } from './BasePropertyProcessor';
-import { AdapterMetadataProperty, ProcessingContext } from './types';
+import { SimpleMetadataProperty } from '#V2/domain/entities/types.js';
+import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
+import { AdapterMetadataProperty, ProcessingContext } from '#V2/application/services/processors/types.js';
 
 export class DefaultPropertyProcessor extends BasePropertyProcessor {
   readonly name = 'DefaultPropertyProcessor';

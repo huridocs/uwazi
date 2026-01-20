@@ -9,11 +9,11 @@ import { ObjectId } from 'mongodb';
 
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 
-import { MongoThesauriDataSource } from '#api/core/infrastructure//mongodb/thesauri/MongoThesauriDS.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { LegacyTranslationService } from '#api/core/infrastructure//mongodb/template/LegacyTemplatesTranslationService.js';
+import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
 
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
@@ -21,8 +21,8 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
-import { LegacyPageService } from '#api/core/infrastructure//mongodb/page/LegacyPageService.js';
-import { CreateTemplateUseCase } from '../CreateTemplate';
+import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
+import { CreateTemplateUseCase } from '#api/core/application/CreateTemplate.js';
 
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();

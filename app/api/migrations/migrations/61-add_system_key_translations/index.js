@@ -8,7 +8,7 @@ After copy pasting:
 
 // eslint-disable-next-line max-statements,node/no-restricted-import
 import fs from 'fs';
-import csv from '../csv/csv.js';
+import csv from '#api/csv/index.js';
 
 async function readCsvToSystemKeys(db, filename) {
   const fstream = fs.createReadStream(filename);
@@ -55,7 +55,7 @@ export default {
 
     await readCsvToSystemKeys(
       db,
-      'app/api/migrations/migrations/61-add_system_key_translations/system_keys.csv'
+      '#app/api/migrations/migrations/61-add_system_key_translations/system_keys.csv'
     );
   },
 };

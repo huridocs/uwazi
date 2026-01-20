@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { MediaPlayer } from '#app/V2/Components/UI/index.js';
+import { MediaPlayer } from '#V2/Components/UI/index.js';
 
 const meta: Meta<typeof MediaPlayer> = {
   title: 'Components/MediaPlayer',

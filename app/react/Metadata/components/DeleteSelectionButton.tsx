@@ -1,14 +1,14 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 import { ClientFile, IStore } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
-import { deleteSelection } from '../actions/metadataExtractionActions';
+import { deleteSelection } from '#app/Metadata/actions/metadataExtractionActions.js';
 
 type deleteSelectionButtonProps = {
   propertyName: string;

@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
@@ -16,7 +15,7 @@ import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infra
 import {
   Dispatchable,
   HeartbeatCallback,
-} from '#api/queue.v2/application/contracts/Dispatchable.js';
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
@@ -24,14 +23,45 @@ import { IXTaskService } from '#api/services/informationextraction/TaskService.j
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
 import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
-import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { DefaultDispatcher } from '#api/queue.v2/configuration/factories';
+import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import settings from '#api/settings/settings.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
+import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
+import { DeleteFileFromStorageJobHandler } from '#api/core/infrastructure/jobs/DeleteFileFromStorageJobHandler.js';
+import { PDFPostProcessJobHandler } from '#api/core/infrastructure/jobs/PDFPostProcessJobHandler.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
+import { CsvCreateThesauriValuesJob } from '#api/csv.v2/application/jobs/CsvCreateThesauriValuesJob.js';
+import { CsvExtractUploadedZipJob } from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
+import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
+import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
+import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
+import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
+import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
+import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
+import { LegacyThesauriRepository } from '#api/csv.v2/infrastructure/services/LegacyThesauriRepository.js';
+import { LegacyTranslationsRepository } from '#api/csv.v2/infrastructure/services/LegacyTranslationsRepository.js';
+import relationships from '#api/relationships/relationships.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included

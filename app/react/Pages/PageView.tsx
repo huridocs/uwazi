@@ -8,7 +8,7 @@ import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { withRouter } from '#app/componentWrappers.jsx';
 import { trackPage } from '#app/App/GoogleAnalytics.jsx';
-import { ErrorBoundary } from '#app/V2/Components/ErrorHandling/ErrorBoundary.jsx';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
 import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
 import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';

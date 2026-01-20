@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Alert from '../Alert.js';
+import Alert from '#app/components/Elements/Alert.jsx';
 
 describe('Alert', () => {
   let component;

@@ -1,9 +1,9 @@
 /* eslint-disable import/no-default-export */
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { TocSchema } from 'shared/types/commonTypes';
-import { ToC, type ProcessedTocEntry } from 'V2/Routes/Entity/Components/ToC/ToC';
-import { normalizeToc, findItemsWithChildren } from 'V2/Routes/Entity/Components/ToC/utils';
+import { TocSchema } from '#shared/types/commonTypes.js';
+import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/ToC';
+import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils';
 
 const meta: Meta<typeof ToC> = {
   title: 'Components/ToC',

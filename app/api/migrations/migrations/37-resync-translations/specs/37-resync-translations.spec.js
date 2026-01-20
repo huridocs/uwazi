@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures, { translation1, translation2, translation3, entity1 } from './fixtures';
+import migration from '#api/migrations/migrations/37-resync-translations/index.js';
+import fixtures, { translation1, translation2, translation3, entity1 } from '#api/migrations/migrations/37-resync-translations/specs/fixtures.js';
 
 describe('migration resync translations', () => {
   let updatelogs;

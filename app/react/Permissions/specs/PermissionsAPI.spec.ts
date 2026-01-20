@@ -7,7 +7,7 @@ import {
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
-jest.mock('app/utils/api', () => ({
+jest.mock('#app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
   put: jest.fn().mockResolvedValue({ json: [{ refId: 'user1', type: 'group', level: 'read' }] }),
   post: jest.fn().mockResolvedValue({

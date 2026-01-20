@@ -4,10 +4,10 @@ import request from 'supertest';
 import { tenants } from '#api/tenants/index.js';
 
 import { TenantFeatureFlags } from '#api/tenants/tenantContext.js';
-import { appContextMiddleware } from '../appContextMiddleware';
-import { multitenantMiddleware } from '../multitenantMiddleware';
+import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 
-import { featureFlagEnabled } from '../featureFlagEnabledMiddleware';
+import { featureFlagEnabled } from '#api/utils/featureFlagEnabledMiddleware.js';
 
 const testingRoutes = (app: Application) => {
   app.get(

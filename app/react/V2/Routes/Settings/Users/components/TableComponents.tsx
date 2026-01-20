@@ -4,10 +4,10 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { Tooltip } from 'flowbite-react';
 
-import { Button, Pill } from '#app/V2/Components/UI/index.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { User, Group } from '../types';
+import { User, Group } from '#V2/Routes/Settings/Users/types.js';
 
 const userColumns = createColumnHelper<User>();
 const groupColumns = createColumnHelper<Group>();

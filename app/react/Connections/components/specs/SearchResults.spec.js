@@ -1,10 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
-import { Loader } from '#app/components/Elements/Loader.js';
 
-import { SearchResults } from '../SearchResults';
+import { Loader } from '#app/components/Elements/Loader.jsx';
 
+import { SearchResults } from '#app/Connections/components/SearchResults.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('SearchResults', () => {
   let component;
   let props;

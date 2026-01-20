@@ -1,2 +1,2 @@
-export { ActivityLog } from './ActivityLog';
-export { activityLogLoader } from './ActivityLogLoader';
+export { ActivityLog } from '#V2/Routes/Settings/ActivityLog/ActivityLog.jsx';
+export { activityLogLoader } from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';

@@ -3,14 +3,14 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
 import svgCaptcha from 'svg-captcha';
-import settings from '../settings/index.ts';
+import settings from '#api/settings/index.js';
 import urljoin from 'url-join';
-import { DB } from '../odm/index.ts';
-import { config } from '../config.ts';
+import { DB } from '#api/odm/index.js';
+import { config } from '#api/config.js';
 import cors from 'cors';
 import request from '#shared/JSONRequest.js';
 import { randomSleep } from '#shared/tsUtils.js';
-import { CaptchaModel } from './CaptchaModel.ts';
+import { CaptchaModel } from '#api/auth/CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
 

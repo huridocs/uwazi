@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { withContext } from '#app/componentWrappers.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import ShowIf from '#app/App/ShowIf.jsx';
@@ -11,8 +11,8 @@ import { Translate, t } from '#app/I18N/index.js';
 import AttachmentForm from '#app/Attachments/components/AttachmentForm.jsx';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
-import { store } from '#app/store.ts';
-import { getFileExtension } from '#app/utils/getFileExtension.ts';
+import { store } from '#app/store.js';
+import { getFileExtension } from '#app/utils/getFileExtension.js';
 
 import {
   deleteAttachment,
@@ -20,7 +20,7 @@ import {
   loadForm,
   submitForm,
   resetForm,
-} from '#app/Metadata/actions/actions.js';
+} from '../actions/actions';
 
 const getItemOptions = (filename, url) => {
   const options = {};

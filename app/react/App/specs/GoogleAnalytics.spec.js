@@ -5,7 +5,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { GoogleAnalytics, trackPage } from '../GoogleAnalytics';
+import { GoogleAnalytics, trackPage } from '#app/App/GoogleAnalytics.jsx';
 
 describe('GoogleAnalytics', () => {
   let component;

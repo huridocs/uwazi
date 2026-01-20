@@ -1,18 +1,20 @@
-import { fromJS as Immutable } from 'immutable';
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
-import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
-import { FavoriteBanner } from '#app/Favorites.js';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
+import { FavoriteBanner } from '#app/Favorites/index.js';
 import { Translate } from '#app/I18N/index.js';
-import { FormatMetadata } from '#app/Metadata';
-import { Item, mapStateToProps } from '../Item';
-import { RowList, ItemFooter } from '../Lists';
-import DocumentLanguage from '../DocumentLanguage';
-import * as Icon from '../Icon';
-import TemplateLabel from '../TemplateLabel';
-import ItemSnippet from '../ItemSnippet';
+import { FormatMetadata } from '#app/Metadata/index.js';
+import { Item, mapStateToProps } from '#app/Layout/Item.jsx';
+import { RowList, ItemFooter } from '#app/Layout/Lists.jsx';
+import DocumentLanguage from '#app/Layout/DocumentLanguage.jsx';
+import * as Icon from '#app/Layout/Icon.jsx';
+import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
+import ItemSnippet from '#app/Layout/ItemSnippet.jsx';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('Item', () => {
   let component;
   let props;

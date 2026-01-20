@@ -7,7 +7,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { TriStateSelectValue } from '#app/istore.js';
 import { Icon as CustomIcon } from '#app/Layout/Icon.jsx';
 import React, { Component, createRef, RefObject } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: any };
 enum SelectStates {
@@ -56,8 +56,8 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  onChange: (_v: any) => {},
-  onFilter: async (_searchTerm: string) => {},
+  onChange: (_v: any) => { },
+  onFilter: async (_searchTerm: string) => { },
   totalPossibleOptions: 0,
   allowSelectGroup: false,
   topLevelSelectable: true,
@@ -341,7 +341,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   label(option: Option, isSelect = true) {
     const { optionsValue, optionsLabel, prefix } = this.props;
-    const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
+    const clickEvent = isSelect ? () => { } : this.toggleOptions.bind(this, option);
     return (
       <>
         <label
@@ -350,9 +350,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
           onClick={clickEvent}
         >
           <span
-            className={`multiselectItem-icon${
-              !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
-            }`}
+            className={`multiselectItem-icon${!isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
+              }`}
           >
             <Icon icon={['far', 'square']} className="checkbox-empty" />
             <Icon icon="check" className="checkbox-checked" />
@@ -392,9 +391,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return (
       <li key={index} className="multiselect-group" aria-label="group">
         <div
-          className={`multiselectItem${
-            !this.props.topLevelSelectable ? ' no-top-level-select' : ''
-          }`}
+          className={`multiselectItem${!this.props.topLevelSelectable ? ' no-top-level-select' : ''
+            }`}
         >
           {this.props.topLevelSelectable && (
             <input

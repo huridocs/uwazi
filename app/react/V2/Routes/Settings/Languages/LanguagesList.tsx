@@ -3,21 +3,23 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { intersectionBy, keyBy, merge, values } from 'lodash';
+import keyBy from 'lodash/keyBy.js';
+import merge from 'lodash/merge.js';
+import values from 'lodash/values.js';
 import { Row, createColumnHelper } from '@tanstack/react-table';
 
 import { Translate, I18NApi, t } from '#app/I18N/index.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { settingsAtom } from '#app/V2/atoms/settingsAtom.ts';
-import { Button, Table, ConfirmationModal } from '#app/V2/Components/UI/index.js';
-import { useApiCaller } from '#app/V2/CustomHooks/useApiCaller.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import { Button, Table, ConfirmationModal } from '#V2/Components/UI/index.js';
+import { useApiCaller } from '#V2/CustomHooks/useApiCaller.jsx';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
+import { InstallLanguagesModal } from '#V2/Routes/Settings/Languages/components/InstallLanguagesModal.jsx';
 import {
   DefaultHeader,
   LabelHeader,
@@ -27,15 +29,15 @@ import {
   ResetButton,
   UninstallButton,
   LanguageLabel,
-} from './components/TableComponents.js';
+} from '#V2/Routes/Settings/Languages/components/TableComponents.jsx';
 
 type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    I18NApi.getLanguages(new RequestParams({}, headers));
+    async () =>
+      I18NApi.getLanguages(new RequestParams({}, headers));
 
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
@@ -62,16 +64,16 @@ const LanguagesList = () => {
       key: string,
       currentLanguage?: LanguageSchema
     ) =>
-    async () => {
-      setShowModal(false);
-      if (currentLanguage) {
-        await requestAction(
-          action,
-          new RequestParams({ [key]: currentLanguage.key }),
-          successMessage
-        );
-      }
-    };
+      async () => {
+        setShowModal(false);
+        if (currentLanguage) {
+          await requestAction(
+            action,
+            new RequestParams({ [key]: currentLanguage.key }),
+            successMessage
+          );
+        }
+      };
 
   const confirmAction = (
     message: string,

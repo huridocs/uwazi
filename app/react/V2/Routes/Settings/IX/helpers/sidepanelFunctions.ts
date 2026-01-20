@@ -3,9 +3,9 @@ import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '#shared/types/commonTypes.js';
 
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
-import { secondsToISODate } from '#shared/dateHelpers.js';
-import * as entitiesAPI from '#app/V2/api/entities/index.js';
-import * as filesAPI from '#app/V2/api/files/index.js';
+import { secondsToISODate } from '#V2/shared//dateHelpers.js';
+import * as entitiesAPI from '#V2/api/entities/index.js';
+import * as filesAPI from '#V2/api/files/index.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 

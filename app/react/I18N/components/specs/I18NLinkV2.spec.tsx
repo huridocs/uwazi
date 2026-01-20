@@ -4,9 +4,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { TestAtomStoreProvider, TestRouterContext } from '#app/V2/testing/index.js';
-import { localeAtom } from '#app/V2/atoms/index.js';
-import { I18NLink, I18NLinkProps } from '#app/I18N/I18NLinkV2.js';
+import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
+import { I18NLink, I18NLinkProps } from '#app/I18N/I18NLinkV2.jsx';
 
 describe('I18NLinkV2', () => {
   const defaultProps: I18NLinkProps & { locale: string; location: string } = {

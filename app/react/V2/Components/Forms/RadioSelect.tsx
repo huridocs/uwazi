@@ -1,9 +1,9 @@
 import React, { ReactEventHandler } from 'react';
 import { Radio, Label } from 'flowbite-react';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { Option } from './SelectTypes';
+import { Option } from '#V2/Components/Forms/SelectTypes.js';
 
 interface RadioProps {
   legend?: string | React.ReactNode;
@@ -26,9 +26,8 @@ const RadioSelect = ({
   orientation = 'vertical',
 }: RadioProps) => (
   <fieldset
-    className={`flex flex-wrap gap-4 ${
-      orientation === 'vertical' ? 'flex-col max-w-md' : ''
-    } ${className}`}
+    className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''
+      } ${className}`}
     id={`radio_${name}`}
   >
     {legend && <legend className="mb-2 text-sm font-medium text-gray-700">{legend}</legend>}

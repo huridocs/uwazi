@@ -1,7 +1,6 @@
 import { actions as formActions, getModel } from 'react-redux-form';
 
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { api } from '#app/V2/api/entities/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { t } from '#app/I18N/index.js';
 import { removeDocuments, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
@@ -10,7 +9,8 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import searchAPI from '#app/Search/SearchAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { generateID } from '#shared/IDGenerator.js';
-import emptyTemplate from '../helpers/defaultTemplate';
+import emptyTemplate from '#app/Metadata/helpers/defaultTemplate.js';
+import api from '#app/utils/api.js';
 
 function resetReduxForm(form) {
   return formActions.reset(form);

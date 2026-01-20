@@ -2,7 +2,7 @@ import entitiesUtil from '#app/Entities/utils/filterBaseProperties.js';
 import { Select as SimpleSelect } from '#app/Forms/index.js';
 import { I18NLink, t, Translate } from '#app/I18N/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
-import { FormGroup } from '#app/ReactReduxForms/index.js';
+import { FormGroup } from '#app/ReactReduxForms/index.jsx';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -10,16 +10,16 @@ import { connect } from 'react-redux';
 import { Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { wrapEntityMetadata } from '#app/Metadata/index.js';
-import defaultTemplate from '../helpers/defaultTemplate';
-import validator from '../helpers/validator';
-import { IconField } from './IconField';
-import MetadataFormFields from './MetadataFormFields';
-import { MetadataExtractor } from './MetadataExtractor';
-import { SupportingFiles } from './SupportingFiles';
-import { PDFUpload } from './PDFUpload';
-import { DeleteSelectionButton } from './DeleteSelectionButton';
+import defaultTemplate from '#app/Metadata/helpers/defaultTemplate.js';
+import validator from '#app/Metadata/helpers/validator.jsx';
+import { IconField } from '#app/Metadata/components/IconField.jsx';
+import MetadataFormFields from '#app/Metadata/components/MetadataFormFields.jsx';
+import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.jsx';
+import { SupportingFiles } from '#app/Metadata/components/SupportingFiles.jsx';
+import { PDFUpload } from '#app/Metadata/components/PDFUpload.jsx';
+import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.jsx';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -143,9 +143,9 @@ class MetadataForm extends Component {
     }
     const titleLabel = template.get('commonProperties')
       ? template
-          .get('commonProperties')
-          .find(p => p.get('name') === 'title')
-          .get('label')
+        .get('commonProperties')
+        .find(p => p.get('name') === 'title')
+        .get('label')
       : 'Title';
 
     return (
@@ -218,10 +218,10 @@ MetadataForm.defaultProps = {
   showSubset: undefined,
   version: undefined,
   initialTemplateId: undefined,
-  componentWillUnmount: () => {},
-  notify: () => {},
-  changeTemplate: () => {},
-  onSubmit: () => {},
+  componentWillUnmount: () => { },
+  notify: () => { },
+  changeTemplate: () => { },
+  onSubmit: () => { },
   highlightedProps: [],
   storeKey: '',
   attachments: [],
@@ -266,7 +266,7 @@ export const mapStateToProps = (state, ownProps) => {
     template: ownProps.template
       ? ownProps.template
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-        immutableDefaultTemplate,
+      immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,

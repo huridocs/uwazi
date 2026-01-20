@@ -1,1 +1,1 @@
-export { FiltersTable, filtersLoader } from './FiltersTable';
+export { FiltersTable, filtersLoader } from '#V2/Routes/Settings/Filters/FiltersTable.jsx';

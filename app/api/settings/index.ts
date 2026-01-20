@@ -1,1 +1,1 @@
-export { default } from './settings';
+export { default } from '#api/settings/settings.js';

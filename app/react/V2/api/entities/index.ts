@@ -6,7 +6,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import * as formatter from './formatter';
+import * as formatter from '#V2/api/entities/formatter.js';
 
 const getById = async ({
   _id,

@@ -1,6 +1,6 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
-import { ExpressEntityMapper } from '../ExpressEntityMapper';
-import { CreateEntityDTO } from '../Schemas';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { ExpressEntityMapper } from '#api/core/infrastructure/express/entity/ExpressEntityMapper.js';
+import { CreateEntityDTO } from '#api/core/infrastructure/express/entity/Schemas.js';
 
 describe('ExpressEntityMapper', () => {
   // eslint-disable-next-line max-statements

@@ -1,4 +1,4 @@
-import markdownEscapedValues from '../markdownEscapedValues';
+import markdownEscapedValues from '#app/utils/markdownEscapedValues.js';
 
 describe('markdownEscapedValues', () => {
   it('should return an emtpy array when no match found', () => {

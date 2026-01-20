@@ -1,6 +1,6 @@
-import cejilChart001 from './components/cejilChart001';
-import CejilChart002 from './components/CejilChart002';
-import cejilHero from './components/cejilHero';
+import cejilChart001 from '#app/Markdown/CustomHooks/components/cejilChart001.js';
+import CejilChart002 from '#app/Markdown/CustomHooks/components/CejilChart002.js';
+import cejilHero from '#app/Markdown/CustomHooks/components/cejilHero.jsx';
 
 export default {
   cejilChart001,

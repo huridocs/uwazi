@@ -1,17 +1,17 @@
 import { Readable } from 'stream';
 import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 
 import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage.js';
 import { Attachment } from '../model/Attachment.js';
 import { UwaziFile } from '../model/UwaziFile.js';
-import { URLAttachment } from '../model/URLAttachment.js';
-import { CustomUpload } from '../model/CustomUpload.js';
-import { StoredFile } from '../model/StoredFile.js';
-import { PathManager } from './PathManager.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
+import { StoredFile } from '#api/core/domain/files/StoredFile.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { File } from '../model/File.js';
 
 export class S3FileStorage implements FileStorage {

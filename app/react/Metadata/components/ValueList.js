@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icon } from '#app/Layout';
+import { Icon } from '#app/Layout/index.js';
 
 const composeIcon = data =>
   typeof data.value === 'string' && data.icon !== undefined ? (

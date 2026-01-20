@@ -3,7 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
-import { CreateRelationshipService, DeleteRelationshipService } from '../service_factories';
+import { CreateRelationshipService, DeleteRelationshipService } from '#api/relationships.v2/services/service_factories.js';
 
 const factory = getFixturesFactory();
 

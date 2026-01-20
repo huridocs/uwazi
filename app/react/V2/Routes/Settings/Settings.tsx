@@ -3,7 +3,7 @@ import { useOutlet } from 'react-router';
 import { Helmet } from 'react-helmet';
 
 import { t } from '#app/I18N/index.js';
-import { SettingsNavigation } from './SettingsNavigation';
+import { SettingsNavigation } from '#V2/Routes/Settings/SettingsNavigation.jsx';
 
 const Settings = () => {
   const outlet = useOutlet();

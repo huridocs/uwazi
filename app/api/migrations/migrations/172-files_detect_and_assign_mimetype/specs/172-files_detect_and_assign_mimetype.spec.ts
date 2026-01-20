@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index';
-import { Fixture } from '../types';
+import migration from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/index.js';
+import { Fixture } from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/types.js';
 import {
   attachmentFile1,
   attachmentFile2,
@@ -13,7 +13,7 @@ import {
   primaryDocument2,
   primaryDocument3,
   primaryDocument4,
-} from './fixtures';
+} from '#api/migrations/migrations/172-files_detect_and_assign_mimetype/specs/fixtures.js';
 
 let db: Db | null;
 

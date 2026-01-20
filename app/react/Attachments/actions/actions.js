@@ -9,7 +9,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as basicReducerActions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
 
-import * as types from './actionTypes';
+import * as types from '#app/Attachments/actions/actionTypes.js';
 
 export function updateFile(file, entity) {
   return async dispatch => {

@@ -1,10 +1,10 @@
-import authMiddleware from '../auth/authMiddleware.js';
+import authMiddleware from '#api/auth/authMiddleware.js';
 
-import csvExporter, { SearchResults } from '../csv/csvExporter.js';
+import csvExporter, { SearchResults } from '#api/csv/csvExporter.js';
 
-import * as filesystem from '../files/filesystem.js';
+import * as filesystem from '#api/files/filesystem.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
@@ -16,9 +16,9 @@ import { User } from '#api/users/usersModel.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
-import routes from '../exportRoutes';
+import routes from '#api/files/exportRoutes.js';
 
-jest.mock('api/csv/csvExporter');
+jest.mock('#api/csv/csvExporter');
 jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;

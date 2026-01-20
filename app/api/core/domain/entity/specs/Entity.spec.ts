@@ -1,26 +1,26 @@
 /* eslint-disable max-statements */
-import { Entity } from 'api/core/domain/entity/Entity';
-import { TemplateBuilder } from '../../template/specs/TemplateBuilder';
-import { TextProperty } from '../../template/TextProperty';
-import { NumericProperty } from '../../template/NumericProperty';
-import { DateProperty } from '../../template/DateProperty';
-import { DateRangeProperty } from '../../template/DateRangeProperty';
-import { MultiDateProperty } from '../../template/MultiDateProperty';
-import { MultiDateRangeProperty } from '../../template/MultiDateRangeProperty';
-import { SelectProperty } from '../../template/select/SelectProperty';
-import { MultiSelectProperty } from '../../template/select/MultiSelectProperty';
-import { GeolocationProperty } from '../../template/GeoLocationProperty';
-import { LinkProperty } from '../../template/LinkProperty';
-import { MarkdownProperty } from '../../template/MarkdownProperty';
-import { ImageProperty } from '../../template/ImageProperty';
-import { MediaProperty } from '../../template/MediaProperty';
-import { PreviewProperty } from '../../template/PreviewProperty';
-import { NestedProperty } from '../../template/NestedProperty';
-import { V1RelationshipProperty } from '../../template/V1RelationshipProperty';
-import { EntityTranslation } from '../EntityTranslation';
-import { GenerateIdProperty } from '../../template/GenerateIdProperty';
-import { PermissionType } from '../PermissionType';
-import { AccessLevel } from '../AccessLevel';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { TextProperty } from '#api/core/domain/template/TextProperty.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { DateProperty } from '#api/core/domain/template/DateProperty.js';
+import { DateRangeProperty } from '#api/core/domain/template/DateRangeProperty.js';
+import { MultiDateProperty } from '#api/core/domain/template/MultiDateProperty.js';
+import { MultiDateRangeProperty } from '#api/core/domain/template/MultiDateRangeProperty.js';
+import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
+import { GeolocationProperty } from '#api/core/domain/template/GeoLocationProperty.js';
+import { LinkProperty } from '#api/core/domain/template/LinkProperty.js';
+import { MarkdownProperty } from '#api/core/domain/template/MarkdownProperty.js';
+import { ImageProperty } from '#api/core/domain/template/ImageProperty.js';
+import { MediaProperty } from '#api/core/domain/template/MediaProperty.js';
+import { PreviewProperty } from '#api/core/domain/template/PreviewProperty.js';
+import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { EntityTranslation } from '#api/core/domain/entity/EntityTranslation.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
+import { PermissionType } from '#api/core/domain/entity/PermissionType.js';
+import { AccessLevel } from '#api/core/domain/entity/AccessLevel.js';
 
 const createSampleTemplate = () =>
   TemplateBuilder.aTemplate({ id: 'template-123' })

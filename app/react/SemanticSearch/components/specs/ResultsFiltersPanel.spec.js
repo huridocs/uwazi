@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ResultsFiltersPanel } from '../ResultsFiltersPanel';
+import { ResultsFiltersPanel } from '#app/SemanticSearch/components/ResultsFiltersPanel.jsx';
 
 describe('ResultsFiltersPanel', () => {
   let props;

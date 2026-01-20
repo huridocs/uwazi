@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
 
 import testingDB from '#api/utils/testing_db.js';
-import { legacyLogger } from '../log.js';
-import { config } from '../config.js';
+import { legacyLogger } from '#api/log/index.js';
+import { config } from '#api/config.js';
 import {
   connectionOutOfRangeId,
   connectionToMissingDocumentId,
@@ -11,10 +11,10 @@ import {
   firstConnectionId,
   missingDocumentId,
   secondConnectionId,
-} from '../migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
+} from '#api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
 
-import fixtures from './fixtures.js';
-import migration from '../index.js';
+import fixtures from '#api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
+import migration from '#api/migrations/migrations/33-character-count-to-absolute-position/index.js';
 
 describe('conversion of character count to absolute position', () => {
   beforeEach(async () => {

@@ -5,13 +5,14 @@ import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy.js';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
-import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';
-import { TranslationService } from '../domain/template/TranslationService.js';
-import { CreateTemplateDTO } from './TemplateDTOs.js';
-import { PageService } from '../domain/template/PageService.js';
+import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
+import { PropertyCreatorServiceStrategy } from '#api/core/application/propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
+import { TranslationService } from '#api/core/domain/template/TranslationService.js';
+import { CreateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
+import { PageService } from '#api/core/domain/template/PageService.js';
+import { Input } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
 
 type Output = Template;
 

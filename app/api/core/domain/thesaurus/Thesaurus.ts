@@ -1,4 +1,4 @@
-import { Id } from 'api/core/libs/Id';
+import { Id } from '#api/core/libs/Id.js';
 import { z } from 'zod';
 import uuid from 'node-uuid';
 

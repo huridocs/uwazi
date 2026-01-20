@@ -3,7 +3,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import NestedFilter from '../NestedFilter';
+import NestedFilter from '#app/Library/components/NestedFilter.jsx';
 
 describe('NestedFilter', () => {
   it('should render a text filter field with a label and passing the model', () => {

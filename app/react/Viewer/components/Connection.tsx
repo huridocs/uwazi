@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fromJS as Immutable } from 'immutable';
+
 import { createSelector } from 'reselect';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.jsx';
@@ -18,7 +18,9 @@ import {
 } from '#app/Viewer/actions/uiActions.js';
 import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,
   s => s.documentViewer.doc,
@@ -64,6 +66,9 @@ class Connection extends Component {
 
   render() {
     const { reference } = this.props;
+    if (!reference?.associatedRelationship) {
+      return null;
+    }
     let itemClass = '';
     const disabled = this.props.targetDoc && typeof reference.reference === 'undefined';
 
@@ -91,9 +96,8 @@ class Connection extends Component {
         onClick={this.clickReference.bind(this, reference)}
         doc={doc}
         noMetadata
-        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${
-          this.props.readOnly ? 'readOnly' : ''
-        }`}
+        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''
+          }`}
         data-id={reference._id}
         additionalText={
           reference.associatedRelationship.reference
@@ -158,6 +162,16 @@ Connection.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { documentViewer } = state;
+  if (!ownProps?.reference?._id) {
+    return {
+      highlighted: false,
+      active: false,
+      targetRange: undefined,
+      targetDoc: false,
+      relationTypes: documentViewer.relationTypes,
+      doc: selectDoc(state),
+    };
+  }
   const isActive = documentViewer.uiState.get('activeReference')
     ? documentViewer.uiState.get('activeReference') === ownProps.reference._id
     : documentViewer.uiState.get('activeReferences')?.includes(ownProps.reference._id);

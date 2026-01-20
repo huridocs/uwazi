@@ -3,9 +3,9 @@ import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
@@ -13,21 +13,21 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import relationshipTypeDS from '../relationtypes.js';
+import relationshipTypeDS from '#api/relationtypes/index.js';
 
-import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
+import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
-import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 
-import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
-import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';
-import { mongoPXExtractorsCollection } from '#api/externalIntegrations.v2/infrastructure/MongoPXExtractorsDataSource';
-import { Input, PXCreateExtractor } from '../PXCreateExtractor';
+import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { Input, PXCreateExtractor } from '#api/paragraphExtraction/application/PXCreateExtractor.js';
 
 const f = getFixturesFactory();
 

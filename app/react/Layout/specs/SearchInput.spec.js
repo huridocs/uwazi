@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import SearchInput from '#app/Layout/SearchInput.js';
+import SearchInput from '#app/Layout/SearchInput.jsx';
 
 describe('SearchInput', () => {
   let component;

@@ -1,12 +1,12 @@
-import { CommonProperty, CommonPropertyProps } from '#api/templates.v2/model/CommonProperty.js';
+import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
 
 import { Context, PropertyTypes } from '#api/core/domain/template/Property.js';
 import {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
-} from './errors';
-import { PropertyType } from './PropertyType';
-import { PropertyAssignment } from './PropertyValue';
+} from '#api/core/domain/template/errors.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
+import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 
 type Props = { prioritySorting?: boolean; type?: PropertyType } & Omit<CommonPropertyProps, 'type'>;
 

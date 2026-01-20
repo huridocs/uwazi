@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { List } from 'immutable';
+
 import { socket } from '#app/socket.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import ShowIf from '#app/App/ShowIf.jsx';
 
 import SidePanel from '#app/Layout/SidePanel.jsx';
@@ -14,10 +14,12 @@ import {
   registerForUpdates,
   updateSearch,
   hideSemanticSearch,
-} from '#app/Metadata/actions/actions.js';
+} from '../actions/actions.js';
 
-import SearchList from '#app/SearchList';
+import SearchList from './SearchList.js';
+import Immutable from 'immutable';
 
+const { List } = Immutable;
 export class SemanticSearchSidePanel extends Component {
   constructor(props) {
     super(props);

@@ -1,4 +1,4 @@
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
 export type ThesaurusValueInput = {
   label: string;

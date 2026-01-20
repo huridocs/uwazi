@@ -1,4 +1,4 @@
-import { AbstractEvent } from '#api/eventsbus/index.js';
+import { AbstractEvent } from '#api/core/libs/eventsbus/index.js';
 
 import { WithId } from '#api/odm/index.js';
 

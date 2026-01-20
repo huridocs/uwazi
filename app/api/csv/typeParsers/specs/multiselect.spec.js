@@ -3,8 +3,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 
-import { fixtures, thesauri1Id } from '#api/csv/specs/fixtures';
-import typeParsers from '#api/csv/typeParsers';
+import { fixtures, thesauri1Id } from '#api/csv/specs/fixtures.js';
+import typeParsers from '#api/csv/typeParsers.js';
 
 const rawEntityWithMultiselectValue = val => ({
   propertiesFromColumns: {

@@ -7,10 +7,10 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from '#api/queue.v2/application/contracts/UserAwareDispatchable.js';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 
-import { HeartbeatCallback } from '#api/queue.v2/application/contracts/Dispatchable.js';
-import { AcceptSuggestionsUseCase } from '#api/suggestions/application/AcceptSuggestionsUseCase';
+import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { AcceptSuggestionsUseCase } from '#api/suggestions/application/AcceptSuggestionsUseCase.js';
 
 type CustomParams = UserAwareDispatchableParams & {
   extractorId: string;

@@ -3,12 +3,12 @@ import path from 'path';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from '#api/utils/testing_db';
-import migrationsModel from '../migrationsModel';
-import { migrator } from '../migrator';
-import migration1 from './testMigrations/1-migrationTest';
-import migration10 from './testMigrations/10-migrationTest';
-import migration2 from './testMigrations/2-migrationTest';
+import testingDB from '#api/utils/testing_db.js';
+import migrationsModel from '#api/migrations/migrationsModel.js';
+import { migrator } from '#api/migrations/migrator.js';
+import migration1 from '#api/migrations/specs/testMigrations/1-migrationTest/index.js';
+import migration10 from '#api/migrations/specs/testMigrations/10-migrationTest/index.js';
+import migration2 from '#api/migrations/specs/testMigrations/2-migrationTest/index.js';
 
 expect.extend({ toHaveBeenCalledBefore });
 

@@ -1,4 +1,4 @@
-import { CsvThesauriPendingEntry } from './CsvThesauriPendingValues';
+import { CsvThesauriPendingEntry } from '#api/csv.v2/domain/CsvThesauriPendingValues.js';
 
 type CsvImportThesauriAppliedValue = {
   label: string;

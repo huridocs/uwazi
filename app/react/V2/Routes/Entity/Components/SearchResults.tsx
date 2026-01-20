@@ -7,15 +7,15 @@ import sanitizeHtml from 'sanitize-html';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { t, Translate } from 'app/I18N';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { templatesAtom } from 'V2/atoms';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { SEARCH_PARAM } from '../urlParams';
-import { searchHintsModalAtom } from './atoms';
-import { LoaderResponse } from '../types';
-import { scrollToSnippet } from './functions';
-import { NoSearch, NoResults } from './BlankState';
+import { t, Translate } from '#app/I18N/index.js';
+import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { templatesAtom } from '#V2/atoms/index.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { SEARCH_PARAM } from '#V2/Routes/Entity/urlParams.js';
+import { searchHintsModalAtom } from '#V2/Routes/Entity/Components/atoms.js';
+import { LoaderResponse } from '#V2/Routes/Entity/types.js';
+import { scrollToSnippet } from '#V2/Routes/Entity/Components/functions.js';
+import { NoSearch, NoResults } from '#V2/Routes/Entity/Components/BlankState.jsx';
 
 type FormValues = {
   search: string;
@@ -44,7 +44,7 @@ const createNode = (node: ChildNode, key: number): React.ReactNode => {
       'b',
       { key },
       element.children &&
-        element.children.map((child: ChildNode, index: number) => createNode(child, index))
+      element.children.map((child: ChildNode, index: number) => createNode(child, index))
     );
   }
 
@@ -170,16 +170,30 @@ const SearchResults = () => {
 
                       {fullText?.length
                         ? fullText.map((pageText, j) => {
-                            const snippetKey = `${i}-${j}`;
-                            const isActive = activeSnippet === snippetKey;
+                          const snippetKey = `${i}-${j}`;
+                          const isActive = activeSnippet === snippetKey;
 
-                            return (
-                              <div
-                                key={snippetKey}
-                                role="button"
-                                tabIndex={0}
-                                aria-pressed={isActive}
-                                onClick={() => {
+                          return (
+                            <div
+                              key={snippetKey}
+                              role="button"
+                              tabIndex={0}
+                              aria-pressed={isActive}
+                              onClick={() => {
+                                const newActive =
+                                  activeSnippet === snippetKey ? null : snippetKey;
+                                setActiveSnippet(newActive);
+
+                                if (newActive) {
+                                  scrollToSnippet(
+                                    { text: pageText.text, page: pageText.page },
+                                    currentPage
+                                  );
+                                }
+                              }}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
                                   const newActive =
                                     activeSnippet === snippetKey ? null : snippetKey;
                                   setActiveSnippet(newActive);
@@ -190,32 +204,18 @@ const SearchResults = () => {
                                       currentPage
                                     );
                                   }
-                                }}
-                                onKeyDown={e => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    const newActive =
-                                      activeSnippet === snippetKey ? null : snippetKey;
-                                    setActiveSnippet(newActive);
-
-                                    if (newActive) {
-                                      scrollToSnippet(
-                                        { text: pageText.text, page: pageText.page },
-                                        currentPage
-                                      );
-                                    }
-                                  }
-                                }}
-                                className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
+                                }
+                              }}
+                              className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
                               ${isActive ? 'border-primary-400' : 'border-gray-100'}`}
-                              >
-                                <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                                <p className="font-bold float-right">
-                                  {t('System', 'Page', null, false)} {pageText.page}
-                                </p>
-                              </div>
-                            );
-                          })
+                            >
+                              <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                              <p className="font-bold float-right">
+                                {t('System', 'Page', null, false)} {pageText.page}
+                              </p>
+                            </div>
+                          );
+                        })
                         : null}
                     </div>
                   );

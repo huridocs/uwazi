@@ -1,4 +1,4 @@
-import authMiddleware from '../authMiddleware';
+import authMiddleware from '#api/auth/authMiddleware.js';
 
 describe('authMiddleware', () => {
   let req;

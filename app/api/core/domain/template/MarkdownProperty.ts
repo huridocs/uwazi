@@ -1,8 +1,9 @@
-import { Context, PropertyTypes } from '#api/core/domain/template/Property.js';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
-import { PropertyTypeEnum } from './PropertyType';
-import { MarkdownEntry, PropertyAssignment } from './PropertyValue';
+import { z } from 'zod';
+import { Context, PropertyTypes, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import { FilterableProperty, FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { MarkdownEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Markdown;

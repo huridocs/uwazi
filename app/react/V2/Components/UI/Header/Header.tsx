@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { BookOpenIcon, Cog6ToothIcon, KeyIcon } from '@heroicons/react/24/outline';
-import { I18NLink } from 'app/I18N/I18NLinkV2';
-import { Translate } from 'app/I18N';
-import { userAtom, settingsAtom } from '../../../atoms';
-import { LanguageDropdown } from './LanguageDropdown';
-import { MenuLinks } from './MenuLinks';
+import { I18NLink } from '#app/I18N/I18NLinkV2.jsx';
+import { Translate } from '#app/I18N/index.js';
+import { userAtom, settingsAtom } from '#V2/atoms/index.js';
+import { LanguageDropdown } from '#V2/Components/UI/Header/LanguageDropdown.jsx';
+import { MenuLinks } from '#V2/Components/UI/Header/MenuLinks.jsx';
 
 // No props needed - using Jotai atoms directly
 

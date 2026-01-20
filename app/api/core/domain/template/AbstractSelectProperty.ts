@@ -1,6 +1,6 @@
 import { Context } from '#api/core/domain/template/Property.js';
-import { FieldIsRequiredError, PropertyThesaurusMismatchError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { FieldIsRequiredError, PropertyThesaurusMismatchError } from '#api/core/domain/template/errors.js';
+import { FilterableProperty, FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
 
 type Props = {
   content: string;

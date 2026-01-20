@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/110-replace_connection_with_relationship_type/index.js';
+import fixtures from '#api/migrations/migrations/110-replace_connection_with_relationship_type/specs/fixtures.js';
 
 describe('migration replace_connection_with_relationship_type', () => {
   beforeEach(async () => {

@@ -1,14 +1,14 @@
-import { WebSockets } from 'api/core/application/contracts/WebSockets';
-import { PDFPostProcessJob } from 'api/core/application/PDFPostProcessJob';
-import { ProcessingFileFailed, ProcessingFileNotFound } from 'api/core/domain/files/errors';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
-import { FileIsNotAPDF } from '../services/PDFService';
+import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
+import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
+import { ProcessingFileFailed, ProcessingFileNotFound } from '#api/core/domain/files/errors.js';
+import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { FileIsNotAPDF } from '#api/core/infrastructure/services/PDFService.js';
 
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 
 type Params = UserAwareDispatchableParams & {
   documentId: string;

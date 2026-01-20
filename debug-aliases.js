@@ -61,7 +61,7 @@ function convertPathAlias(filePath, aliasPath) {
 }
 
 // Test with the actual file
-const filePath = 'app/api/externalIntegrations.v2/automaticTranslation/specs/fixtures/SaveEntity.fixtures.ts';
+const filePath = 'app/api/externalIntegrations.v2/automaticTranslation/specs/fixtures/SaveEntity.fixtures.js';
 const aliasPath = 'api/utils/fixturesFactory';
 
 console.log('Testing convertPathAlias function:');

@@ -1,8 +1,8 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { Translation } from 'api/i18n.v2/model/Translation';
-import { MongoSettingsDataSource } from '../../../infrastructure/mongodb/MongoSettingsDataSource';
-import { ThesaurusTranslationService } from '../ThesaurusTranslationService';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
+import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 
 const createSut = () => {
   const settingsDS = TestUtils.mockClass<MongoSettingsDataSource>({

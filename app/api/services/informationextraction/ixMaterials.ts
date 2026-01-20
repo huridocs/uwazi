@@ -42,8 +42,8 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { Extractors } from './ixextractors.js';
-import { IXServices } from './IXServices.js';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { IXServices } from '#api/services/informationextraction/IXServices.js';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;

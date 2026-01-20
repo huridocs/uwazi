@@ -1,10 +1,10 @@
 import {
   FileAttachmentDBO,
   FileAttachmentDTO,
-} from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
-import { BaseFile, BaseFileProps, FileContentLoader } from './BaseFile';
-import { FileContents } from './FileContents';
-import { FileWithContents } from './FileWithContents';
+} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { BaseFile, BaseFileProps, FileContentLoader } from '#api/core/domain/files/BaseFile.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
 
 type Props = BaseFileProps & { entity: string; content: FileContents };
 export class FileAttachment extends FileWithContents {

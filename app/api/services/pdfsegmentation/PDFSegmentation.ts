@@ -1,8 +1,8 @@
 import { storage, uploadsPath } from '#api/files/index.js';
 
-import { FileNotFound } from '../files/FileNotFound.js';
+import { FileNotFound } from '#api/files/FileNotFound.js';
 
-import { filesModel } from '../files/filesModel.js';
+import { filesModel } from '#api/files/filesModel.js';
 
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
@@ -24,7 +24,7 @@ import { SegmentationType } from '#shared/types/segmentationType.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { SegmentationModel } from './segmentationModel';
+import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';

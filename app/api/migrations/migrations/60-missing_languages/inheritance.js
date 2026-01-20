@@ -1,4 +1,4 @@
-import { translator } from './translator.js';
+import { translator } from '#api/migrations/migrations/60-missing_languages/translator.js';
 
 class Inheritance {
   constructor() {

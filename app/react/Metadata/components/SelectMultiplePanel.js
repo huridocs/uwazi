@@ -9,14 +9,14 @@ import { deleteEntities } from '#app/Entities/actions/actions.js';
 import * as metadataActions from '#app/Metadata/actions/actions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { ShareButton } from '#app/Permissions/components/ShareButton.js';
-import TemplateLabel from '#app/Layout/TemplateLabel.js';
-import SidePanel from '#app/Layout/SidePanel.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
+import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
+import SidePanel from '#app/Layout/SidePanel.jsx';
+import Icon from '#UI/Icon/Icon.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { withContext } from '#app/componentWrappers.js';
-import MetadataForm from './MetadataForm.js';
-import comonTemplate from '../helpers/comonTemplate.js';
+import { withContext } from '#app/componentWrappers.jsx';
+import MetadataForm from '#app/Metadata/components/MetadataForm.jsx';
+import comonTemplate from '#app/Metadata/helpers/comonTemplate.js';
 
 const sortedTemplates = createSelector(
   s => s.templates,

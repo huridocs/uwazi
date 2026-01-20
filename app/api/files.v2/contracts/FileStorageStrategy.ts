@@ -1,7 +1,7 @@
 import { Tenant } from '#api/tenants/tenantContext.js';
-import { FileStorage, GetFileInput } from './FileStorage';
+import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileStorage.js';
 import { File } from '../model/File';
-import { StoredFile } from '../model/StoredFile';
+import { StoredFile } from '#api/core/domain/files/StoredFile.js';
 import { UwaziFile } from '../model/UwaziFile';
 
 type Strategy = {

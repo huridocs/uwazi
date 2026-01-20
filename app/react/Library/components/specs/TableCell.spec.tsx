@@ -2,13 +2,13 @@
  * @jest-environment jsdom
  */
 
-import { TableCell, TableCellProps } from '#app/Library/components/TableCell.js';
+import { TableCell, TableCellProps } from '#app/Library/components/TableCell.jsx';
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import MarkdownViewer from '#app/Markdown.js';
+import MarkdownViewer from '#app/Markdown/index.js';
 
-import ValueList from '#app/Metadata/components/ValueList.js';
+import ValueList from '#app/Metadata/components/ValueList.jsx';
 
 describe('TableCell', () => {
   let component: any;

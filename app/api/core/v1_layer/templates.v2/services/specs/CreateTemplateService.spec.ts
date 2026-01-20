@@ -1,10 +1,10 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 
 import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
 
-import { MongoTemplatesDataSource } from '#api/templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -12,7 +12,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 
-import { MongoSettingsDataSource } from '#api/settings.v2/database/MongoSettingsDataSource.js';
+import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
@@ -23,7 +23,7 @@ import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { CreateTemplateService } from '../CreateTemplateService';
+import { CreateTemplateService } from '#api/core/v1_layer/templates.v2/services/CreateTemplateService.js';
 
 const fixturesFactory = getFixturesFactory();
 

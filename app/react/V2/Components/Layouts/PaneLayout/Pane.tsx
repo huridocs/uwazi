@@ -1,5 +1,5 @@
 import React from 'react';
-import { PaneProps } from './types';
+import { PaneProps } from '#V2/Components/Layouts/PaneLayout/types.js';
 
 const Pane = ({ children, className, background = 'white' }: PaneProps) => (
   <div

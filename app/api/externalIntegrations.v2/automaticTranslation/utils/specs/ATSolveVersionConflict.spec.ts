@@ -1,9 +1,9 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
-import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations';
-import { ATSolveVersionConflict } from '../ATSolveVersionConflict';
+import { RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
+import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
+import { ATSolveVersionConflict } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
 
 const factory = getFixturesFactory();
 

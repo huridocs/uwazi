@@ -1,10 +1,10 @@
-const postcss = require('postcss');
-const tailwindcss = require('@tailwindcss/postcss');
-const prefixWrap = require('postcss-prefixwrap');
-const postcssNesting = require('postcss-nesting');
-const legacyOverrides = require('./app/react/App/styles/legacyOverrides');
+import postcss from 'postcss';
+import tailwindcss from '@tailwindcss/postcss';
+import prefixWrap from 'postcss-prefixwrap';
+import postcssNesting from 'postcss-nesting';
+import legacyOverrides from './app/react/App/styles/legacyOverrides.js';
 
-module.exports = ctx => {
+export default ctx => {
   const filePath = ctx?.file?.dirname
     ? `${ctx.file.dirname}/${ctx.file.basename || ''}`
     : ctx?.file?.path || ctx?.file || '';
@@ -12,11 +12,8 @@ module.exports = ctx => {
 
   const plugins = [];
 
-  // Process CSS nesting (for native CSS nesting syntax)
-  // This must come before Tailwind CSS processing
   plugins.push(postcssNesting());
 
-  // Always process Tailwind CSS (it will only process files that import Tailwind)
   plugins.push(tailwindcss());
 
   const unwrapTailwindLayers = () => ({

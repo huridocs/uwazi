@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 
-import * as translate from '#app/I18N/translateFunction.js';
-import { formatOptions } from '#app/components/ExtractorModal';
-import { formatExtractors } from '#app/V2/Routes/Settings/IX/IXDashboard';
-import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';
-import { extractors, templates, templatesWithCommonProperties } from './fixtures';
-import { MultiValueSuggestion } from '#app/V2/Routes/Settings/IX/types';
+import * as translate from '#app/I18N/translateFunction.jsx';
+import { formatOptions } from './../../components/ExtractorModal.js';
+import { formatExtractors } from '#V2/Routes/Settings/IX/IXDashboard.jsx';
+import { getAvailableSources, generateChildrenRows, formatAccepted } from '#V2/Routes/Settings/IX/helpers/helpers.js';
+import { extractors, templates, templatesWithCommonProperties } from '#V2/Routes/Settings/IX/helpers/specs/fixtures.js';
+import { MultiValueSuggestion } from '#V2/Routes/Settings/IX/types.js';
 
 describe('helpers', () => {
   describe('formatOptions', () => {

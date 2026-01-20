@@ -1,4 +1,4 @@
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
 
@@ -6,7 +6,7 @@ import { LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.j
 
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { DefaultLanguageMissingError } from '../errors/settingsErrors';
+import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>

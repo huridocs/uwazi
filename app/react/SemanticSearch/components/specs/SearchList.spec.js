@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { SearchListComponent as SearchList } from '../SearchList';
+import { SearchListComponent as SearchList } from '#app/SemanticSearch/components/SearchList.jsx';
 
 describe('SearchList', () => {
   let searches;

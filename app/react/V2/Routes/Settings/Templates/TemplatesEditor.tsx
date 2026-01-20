@@ -2,15 +2,15 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import {
   Table,
   ConfirmNavigationModal,
   ConfirmationModal,
   ProgressBar,
-} from '#app/V2/Components/UI/index.js';
+} from '#V2/Components/UI/index.js';
 
-import { Translate } from '#app/I18N/Translate.js';
+import { Translate } from '#app/I18N/Translate.jsx';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -19,14 +19,14 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from '#app/V2/api/templates/index.js';
-import * as pagesAPI from '#app/V2/api/pages/index.js';
+import * as templatesAPI from '#V2/api/templates/index.js';
+import * as pagesAPI from '#V2/api/pages/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from '#app/V2/shared/types.js';
-import { isEqual } from 'lodash';
+import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
+import isEqual from 'lodash/isEqual.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from '#app/V2/atoms/index.ts';
+import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
 
@@ -37,41 +37,41 @@ import {
   processDefaultProperties,
   processProperties,
   confirmationMessages,
-} from './helpers.js';
-import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents.js';
-import { TemplateMetadata } from './components/TemplateMetadata.js';
-import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.js';
-import { AddThesaurusModal } from './components/AddThesaurusModal.js';
-import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
-import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
+} from '#V2/Routes/Settings/Templates/helpers.js';
+import { propertyColumns, PropertyRow } from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
+import { TemplateMetadata } from '#V2/Routes/Settings/Templates/components/TemplateMetadata.jsx';
+import { AddRelationshipTypeModal } from '#V2/Routes/Settings/Templates/components/AddRelationshipTypeModal.jsx';
+import { AddThesaurusModal } from '#V2/Routes/Settings/Templates/components/AddThesaurusModal.jsx';
+import { TemplatesEditorFooter } from '#V2/Routes/Settings/Templates/components/TemplatesEditorFooter.jsx';
+import { ConfigPropertyPanel } from '#V2/Routes/Settings/Templates/components/ConfigPropertyPanel.jsx';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    const allPages = await pagesAPI.get(headers);
-    const pages = allPages.filter((page: any) => page.entityView);
-    const pagesOptions = pages.map((page: Page) => ({
-      value: page.sharedId,
-      label: page.title,
-    }));
-    let loadedTemplate = emptyTemplate;
-    const templates = await templatesAPI.get(headers);
+    async ({ params }) => {
+      const allPages = await pagesAPI.get(headers);
+      const pages = allPages.filter((page: any) => page.entityView);
+      const pagesOptions = pages.map((page: Page) => ({
+        value: page.sharedId,
+        label: page.title,
+      }));
+      let loadedTemplate = emptyTemplate;
+      const templates = await templatesAPI.get(headers);
 
-    let entityCount = 0;
+      let entityCount = 0;
 
-    if (params.templateId) {
-      const templateToEdit = templates.find(template => template._id === params.templateId);
-      if (templateToEdit) {
-        entityCount =
-          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
+      if (params.templateId) {
+        const templateToEdit = templates.find(template => template._id === params.templateId);
+        if (templateToEdit) {
+          entityCount =
+            (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
             templateToEdit._id
-          ] || 0;
-        loadedTemplate = templateToEdit as ClientTemplateSchema;
+            ] || 0;
+          loadedTemplate = templateToEdit as ClientTemplateSchema;
+        }
       }
-    }
 
-    return { loadedTemplate, pagesOptions, entityCount };
-  };
+      return { loadedTemplate, pagesOptions, entityCount };
+    };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();

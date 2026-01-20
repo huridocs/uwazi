@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/9-default-template/index.js';
+import fixtures from '#api/migrations/migrations/9-default-template/specs/fixtures.js';
 
 describe('migration default-template', () => {
   beforeEach(async () => {

@@ -4,7 +4,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
 
-import CejilChart from './CejilChart';
+import CejilChart from '#app/Markdown/CustomHooks/components/CejilChart.jsx';
 import parsingUtils from '#app/Markdown/CustomHooks/utils/parsingUtils.js';
 
 const judgesCommisionersTemplate = '58b2f3a35d59f31e1345b4b6';

@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/24-fix_updatelogs_again/index.js';
+import fixtures from '#api/migrations/migrations/24-fix_updatelogs_again/specs/fixtures.js';
 
 describe('migration fix_udaptelogs', () => {
   beforeEach(async () => {

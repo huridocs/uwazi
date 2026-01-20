@@ -8,9 +8,9 @@ import { IndexTypes } from '#shared/data_utils/objectIndex.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { EntityMappers } from '../database/EntityMapper';
-import { BaseMetadataValue, Entity, EntityMetadata } from './Entity';
-import { MultiLanguageEntity } from './MultiLanguageEntity';
+import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
+import { BaseMetadataValue, Entity, EntityMetadata } from '#api/entities.v2/model/Entity.js';
+import { MultiLanguageEntity } from '#api/entities.v2/model/MultiLanguageEntity.js';
 
 export class EntityTranslations {
   public translations: { [key in LanguageISO6391]?: Entity } = {};

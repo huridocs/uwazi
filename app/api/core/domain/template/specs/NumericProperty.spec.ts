@@ -1,6 +1,6 @@
-import { PropertyTypeInvalidTypeError } from '../errors';
-import { NumericProperty } from '../NumericProperty';
-import { PropertyTypeEnum } from '../PropertyType';
+import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import { NumericProperty } from '#api/core/domain/template/NumericProperty.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 describe('NumericProperty', () => {
   it('should set defaults values if not provided', () => {

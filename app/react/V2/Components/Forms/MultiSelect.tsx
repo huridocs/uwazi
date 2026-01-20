@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import { isString } from 'lodash';
+import isString from 'lodash/isString.js';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { Pill } from '../UI';
+import { Pill } from '#V2/Components/UI/index.js';
 
 type Option = { label: string | React.ReactNode; value: string };
 
@@ -30,7 +30,7 @@ const MultiSelect = ({
   options,
   disabled,
   hasErrors,
-  onChange = () => {},
+  onChange = () => { },
   placeholder = 'No options',
   canBeEmpty = true,
   value,
@@ -68,14 +68,12 @@ const MultiSelect = ({
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-md">
       <div
-        className={`flex items-center px-4 h-12 rounded-t-lg ${
-          hasErrors ? 'bg-error-50' : 'bg-gray-50'
-        }`}
+        className={`flex items-center px-4 h-12 rounded-t-lg ${hasErrors ? 'bg-error-50' : 'bg-gray-50'
+          }`}
       >
         <span
-          className={`flex-1 font-semibold text-sm ${
-            hasErrors ? 'text-pink-800' : 'text-gray-700'
-          }`}
+          className={`flex-1 font-semibold text-sm ${hasErrors ? 'text-pink-800' : 'text-gray-700'
+            }`}
         >
           {renderChild(label)}
         </span>
@@ -127,30 +125,29 @@ const MultiSelect = ({
       <div className="flex flex-wrap gap-2 p-4 min-h-fit">
         {currentValue.length
           ? currentValue.map((v: string) => {
-              const option = options.find(opt => opt.value === v);
-              const isDisabled = disabled || (!canBeEmpty && value.length === 1);
-              if (!option) return null;
-              return (
-                <Pill color="gray" key={option.value} className="flex flex-row gap-2">
-                  <span className="text-gray-600">{renderChild(option.label)}</span>
-                  <button
-                    type="button"
-                    className={`content-center justify-center text-xs font-bold ${
-                      isDisabled
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-500 hover:text-gray-700'
+            const option = options.find(opt => opt.value === v);
+            const isDisabled = disabled || (!canBeEmpty && value.length === 1);
+            if (!option) return null;
+            return (
+              <Pill color="gray" key={option.value} className="flex flex-row gap-2">
+                <span className="text-gray-600">{renderChild(option.label)}</span>
+                <button
+                  type="button"
+                  className={`content-center justify-center text-xs font-bold ${isDisabled
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-500 hover:text-gray-700'
                     }`}
-                    disabled={isDisabled}
-                    onClick={() => {
-                      removeValue(v);
-                    }}
-                  >
-                    <Translate className="sr-only">Remove</Translate>
-                    <XMarkIcon className="w-4" />
-                  </button>
-                </Pill>
-              );
-            })
+                  disabled={isDisabled}
+                  onClick={() => {
+                    removeValue(v);
+                  }}
+                >
+                  <Translate className="sr-only">Remove</Translate>
+                  <XMarkIcon className="w-4" />
+                </button>
+              </Pill>
+            );
+          })
           : renderChild(placeholder, 'text-gray-500')}
       </div>
     </div>

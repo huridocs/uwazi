@@ -1,4 +1,4 @@
-import { FilterableProperty } from '../FilterableProperty';
+import { FilterableProperty } from '#api/core/domain/template/FilterableProperty.js';
 
 class Testing extends FilterableProperty {}
 

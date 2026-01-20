@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
 import rison from '@huridocs/rison';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { t } from '#app/I18N/index.js';
 import ModalTips from '#app/App/ModalTips.jsx';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.jsx';

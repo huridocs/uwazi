@@ -1,35 +1,35 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
-import { Document } from '../files.v2/model/Document.js';
+import { Document } from '#api/files.v2/model/Document.js';
 
 import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 import { FileStorage } from '../files.v2/contracts/FileStorage.js';
 
-import { Segmentation } from '../files.v2/model/Segmentation.js';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
 
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
-import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
+import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
+import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { PXErrorCode, PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;

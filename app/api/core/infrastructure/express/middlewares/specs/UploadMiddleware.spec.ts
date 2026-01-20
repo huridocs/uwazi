@@ -1,12 +1,12 @@
-import { InputFile } from 'api/core/infrastructure/files/InputFile';
+import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import express, { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
-import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { generateFileName } from 'api/files';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UploadMiddleware } from '../UploadMiddleware';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { generateFileName } from '#api/files/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 
 const fileIO = new FileContentsIO();
 

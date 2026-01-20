@@ -5,9 +5,9 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
-import templateRoutes from '../routes';
-import templates from '../templates';
-import { fixtureFactory, fixtures, templateCommonProperties } from './fixtures/routesFixtures';
+import templateRoutes from '#api/templates/routes.js';
+import templates from '#api/templates/templates.js';
+import { fixtureFactory, fixtures, templateCommonProperties } from '#api/core/infrastructure/express/template/specs/routesFixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

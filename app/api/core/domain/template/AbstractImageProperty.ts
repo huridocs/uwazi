@@ -1,5 +1,5 @@
 import { Context, Property, PropertyProps } from '#api/core/domain/template/Property.js';
-import { InvalidStyleTypeError } from './errors';
+import { InvalidStyleTypeError } from '#api/core/domain/template/errors.js';
 
 enum ImageStyle {
   Cover = 'cover',

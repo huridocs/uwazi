@@ -1,19 +1,19 @@
-import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { tenants } from 'api/tenants/tenantContext';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/core/infrastructure/mongodb/common/MongoTransactionManager';
-import { CsvImportEntities } from '../../CsvImportEntities';
-import { CsvPreflightJob } from '../../application/jobs/CsvPreflightJob';
-import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource';
-import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource';
-import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { CsvImportEntities } from '#api/csv.v2/CsvImportEntities.js';
+import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
+import { MongoCsvImportsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportsDataSource.js';
+import { MongoCsvImportRowsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportRowsDataSource.js';
+import { MongoCsvImportThesauriValuesDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportThesauriValuesDataSource.js';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {

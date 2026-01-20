@@ -1,5 +1,5 @@
 import { EntitySchema } from '#shared/types/entityType.js';
-import entities from '../entities/index.js';
+import entities from '#api/entities/index.js';
 
 export async function QueryForEach(batchSize: number, fn: (e: EntitySchema) => Promise<void>) {
   let lastId;

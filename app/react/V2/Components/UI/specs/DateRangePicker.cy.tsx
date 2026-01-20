@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from '#app/stories/Forms/DateRangePicker.stories.js';
+import * as stories from '#app/stories/Forms/DateRangePicker.stories.jsx';
 
 const { Basic } = composeStories(stories);
 

@@ -4,10 +4,10 @@ import { useSearchParams } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { Button } from '#app/V2/Components/UI/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import { filterSidepanelAtom } from './filterSidepanelAtom';
+import { filterSidepanelAtom } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
 
 const FilterSidepanelButton = () => {
   const setOpen = useSetAtom(filterSidepanelAtom);

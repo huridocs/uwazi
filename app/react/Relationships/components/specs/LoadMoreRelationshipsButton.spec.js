@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
-import { LoadMoreRelationshipsButton, mapStateToProps } from '../LoadMoreRelationshipsButton';
 
-jest.mock('app/I18N', () => ({
+import { LoadMoreRelationshipsButton, mapStateToProps } from '#app/Relationships/components/LoadMoreRelationshipsButton.jsx';
+import Immutable from 'immutable';
+
+const { fromJS } = Immutable;
+jest.mock('#app/I18N', () => ({
   t: (_context, key) => key,
   Translate: ({ children }) => children,
 }));

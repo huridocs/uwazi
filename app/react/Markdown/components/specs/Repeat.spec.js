@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import { render } from 'enzyme';
 
 import { createStore } from 'redux';
-import Repeat from '../Repeat';
-import Value from '../Value';
-import PagesContext from '../Context';
+import Repeat from '#app/Markdown/components/Repeat.jsx';
+import Value from '#app/Markdown/components/Value.jsx';
+import PagesContext from '#app/Markdown/components/Context.jsx';
 
 describe('Repeat', () => {
   let datasets;

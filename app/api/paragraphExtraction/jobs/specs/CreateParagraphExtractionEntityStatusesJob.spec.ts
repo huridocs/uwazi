@@ -3,34 +3,34 @@ import { WithId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
-} from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+} from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
-import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
-import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 import { ConnectionSchema } from '#shared/types/connectionType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 
-import { PXCreateEntityStatusesFactory } from '../paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
-import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';
+import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
+import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from '#api/paragraphExtraction/jobs/specs/fixtures.js';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
 

@@ -1,8 +1,8 @@
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import testingDB from '#api/utils/testing_db.js';
-import { legacyLogger } from '../log.js';
-import fixtures, { connectionWithRangeId, documentId } from './fixtures.js';
-import migration from '../index.js';
+import { legacyLogger } from '#api/log/index.js';
+import fixtures, { connectionWithRangeId, documentId } from '#api/migrations/migrations/32-add-file-field-to-connections/specs/fixtures.js';
+import migration from '#api/migrations/migrations/32-add-file-field-to-connections/index.js';
 
 describe('migration add-file-field-to-connections', () => {
   beforeEach(async () => {

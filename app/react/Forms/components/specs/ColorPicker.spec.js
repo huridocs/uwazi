@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { TwitterPicker } from 'react-color';
 
-import ColorPicker from '../ColorPicker';
+import ColorPicker from '#app/Forms/components/ColorPicker.jsx';
 
 describe('ColorPicker', () => {
   let component;

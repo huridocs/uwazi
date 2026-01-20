@@ -1,8 +1,8 @@
 import testingDB from '#api/utils/testing_db.js';
 import request from '#shared/JSONRequest.js';
-import * as attachmentMethods from '../files/filesystem.js';
+import * as attachmentMethods from '#api/files/filesystem.js';
 import mime from 'mime-types';
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/36-populate-mimetype-on-attachments/index.js';
 
 describe('migration populate-mimetype-on-attachments', () => {
   let headRequestMock;

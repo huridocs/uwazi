@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import { IStore } from '#app/istore.js';
 
-import Doc from '#app/Library/components/Doc.js';
+import Doc from '#app/Library/components/Doc.jsx';
 import { CollectionViewerProps } from './CollectionViewerProps';
-import { RowList } from './Lists';
+import { RowList } from '#app/Layout/Lists.jsx';
 
 export interface TilesViewerProps extends CollectionViewerProps {
   search: any;

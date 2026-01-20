@@ -6,8 +6,8 @@ import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { MemberListItemInfo } from './MemberListItemInfo';
-import { MemberListItemPermission } from './MemberListItemPermission';
+import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.jsx';
+import { MemberListItemPermission } from '#app/Permissions/components/MemberListItemPermission.jsx';
 
 interface MemberListProps {
   members: MemberWithPermission[];

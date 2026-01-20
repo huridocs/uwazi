@@ -6,9 +6,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy.js';
 import PropTypes from 'prop-types';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { withContext, withRouter } from '#app/componentWrappers.jsx';
 import { AttachmentsList } from '#app/Attachments/index.js';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from '#app/ConnectionsList/index.js';
@@ -26,11 +26,11 @@ import ContextMenu from '#app/ContextMenu/index.js';
 import { FileList } from '#app/Attachments/components/FileList.jsx';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
 import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
-import { ShowSidepanelMenu } from '#app/ShowSidepanelMenu';
-import V2NewRelationshipsBoard from '#app/V2NewRelationshipsBoard';
-import { deleteEntity } from '#app/Metadata/actions/actions.js';
-import { showTab } from '#app/actions/uiActions';
-import EntityForm from '#app/containers/EntityForm';
+import { ShowSidepanelMenu } from './ShowSidepanelMenu.js';
+import V2NewRelationshipsBoard from './V2NewRelationshipsBoard.js';
+import { deleteEntity } from '#app/Entities/actions/actions.js';
+import { showTab } from '#app/Entities/actions/uiActions.js';
+import EntityForm from './../../Library/containers/EntityForm.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {
@@ -130,9 +130,8 @@ class EntityViewer extends Component {
 
     const includeFooter = user.get('_id') && ['info', 'relationships'].includes(selectedTab);
     const hasHeader = ['info', 'relationships'].includes(selectedTab);
-    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
-      user.get('_id') && includeFooter ? 'with-footer' : ''
-    } ${panelOpen ? 'with-panel' : ''}`;
+    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${user.get('_id') && includeFooter ? 'with-footer' : ''
+      } ${panelOpen ? 'with-panel' : ''}`;
 
     return (
       <div className="row">

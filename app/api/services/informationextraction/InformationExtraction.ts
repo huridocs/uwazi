@@ -59,7 +59,7 @@ import moment from 'moment';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { DefaultDispatcher } from '#api/queue.v2/configuration/factories.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import NeedAuthorization from '#app/Auth/components/NeedAuthorization.js';
-import { TemplateLabel, SidePanel } from '#app/Layout.js';
-import { SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel';
+import NeedAuthorization from '#app/Auth/components/NeedAuthorization.jsx';
+import { TemplateLabel, SidePanel } from '#app/Layout/index.js';
+import { SelectMultiplePanel, mapStateToProps } from '#app/Metadata/components/SelectMultiplePanel.jsx';
 
 describe('SelectMultiplePanel', () => {
   let component;

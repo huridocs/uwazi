@@ -1,4 +1,4 @@
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import { createClient, RedisClient } from 'redis';
 
 let redisClient: RedisClient | undefined;

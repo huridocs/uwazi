@@ -1,12 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { Item } from '#app/Layout.js';
+
+import { Item } from '#app/Layout/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { mapStateToProps } from '../Doc';
-import { Doc } from '../Doc';
+import { mapStateToProps } from '#app/Library/components/Doc.jsx';
+import { Doc } from '#app/Library/components/Doc.jsx';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('Doc', () => {
   let component;
   let props = {};

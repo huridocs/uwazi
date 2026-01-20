@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
-import { uploadAttachment } from '#app/Metadata/actions/actions.js';
+import { uploadAttachment } from '../actions/actions';
 
 export class UploadAttachment extends Component {
   onChangeSingle(e) {

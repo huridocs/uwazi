@@ -1,13 +1,13 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
-import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
-import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import {
   CsvExtractUploadedZipJob,
   ExtractionProgress,
-} from '../../application/jobs/CsvExtractUploadedZipJob';
+} from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;

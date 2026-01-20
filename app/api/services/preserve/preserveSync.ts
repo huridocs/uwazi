@@ -1,24 +1,24 @@
-import entities from '../entities/index.js';
+import entities from '#api/index.js';
 
 import { files, generateFileName, storage } from '#api/files/index.js';
 
-import { legacyLogger } from '../log/index.js';
+import { legacyLogger } from '#api/index.js';
 
-import { EnforcedWithId } from '../odm/index.js';
+import { EnforcedWithId } from '#api/index.js';
 
-import settings from '../settings/index.js';
+import settings from '#api/index.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
-import { newThesauriId } from '../templates/utils.js';
+import { newThesauriId } from '#api/utils/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 
-import dictionariesModel from '../thesauri/dictionariesModel.js';
+import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 
-import users from '../users/users.js';
+import users from '#api/users/users.js';
 
 import { appContext } from '#api/utils/AppContext.js';
 import { ObjectId } from 'mongodb';
@@ -38,7 +38,7 @@ import { PreserveConfig } from '#shared/types/settingsType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
-import { preserveSyncModel } from './preserveSyncModel.js';
+import { preserveSyncModel } from '#api/services/preserve/preserveSyncModel.js';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
   const [value] = await dictionariesModel.db.aggregate([

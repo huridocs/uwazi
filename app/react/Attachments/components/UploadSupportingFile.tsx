@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { attachmentCompleted } from '#app/Metadata/actions/supportingFilesActions.js';
-import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions.js';
-import { AttachmentsModal } from './AttachmentsModal.jsx';
+import { uploadAttachment, uploadAttachmentFromUrl } from '#app/Attachments/actions/actions.js';
+import { AttachmentsModal } from '#app/Attachments/components/AttachmentsModal.jsx';
 
 interface UploadSupportingFileProps {
   entitySharedId: string;

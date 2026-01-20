@@ -1,26 +1,26 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import {
   CreateInput,
   GetExistingInput,
   PXEntitiesStatusDataSource,
-} from '../domain/PXEntitiesStatusDataSource';
-import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
-import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
-import { PXValidationError } from '../domain/PXValidationError';
+} from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
+import { EntityStatus, PXEntityStatusModel } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 

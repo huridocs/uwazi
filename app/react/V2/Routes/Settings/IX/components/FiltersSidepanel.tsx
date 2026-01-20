@@ -6,10 +6,10 @@ import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, Card, Sidepanel } from '#app/V2/Components/UI/index.js';
-import { Checkbox } from '#app/V2/Components/Forms/index.js';
-import { StatsTooltip } from './Tooltip.js';
-import { IXFilters } from '../types.js';
+import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
+import { Checkbox } from '#V2/Components/Forms/index.js';
+import { StatsTooltip } from '#V2/Routes/Settings/IX/components/Tooltip.jsx';
+import { IXFilters } from '#V2/Routes/Settings/IX/types.js';
 
 type Aggregations = {
   total: number;

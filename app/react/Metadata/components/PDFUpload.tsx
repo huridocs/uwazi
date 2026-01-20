@@ -2,11 +2,11 @@ import React, { useRef } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
-import { get } from 'lodash';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import get from 'lodash/get.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
-import { MetadataFormFiles } from './MetadataFormFiles';
+import { MetadataFormFiles } from '#app/Metadata/components/MetadataFormFiles.jsx';
 
 type PDFUploadProps = {
   model: string;

@@ -2,13 +2,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Map } from 'immutable';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import Doc from '#app/Library/components/Doc.js';
-import DropdownList from 'react-widgets/lib/DropdownList';
-import * as actions from '../actions/actions.js';
-import HubRelationshipMetadata from './HubRelationshipMetadata';
 
+import Icon from '#UI/Icon/Icon.jsx';
+import Doc from '#app/Library/components/Doc.jsx';
+import DropdownList from 'react-widgets/lib/DropdownList';
+import * as actions from '#app/Relationships/actions/actions.js';
+import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
+import Immutable from 'immutable';
+
+const { Map } = Immutable;
 class LeftRelationship extends Component {
   static renderFigure() {
     return (
@@ -75,11 +77,10 @@ class LeftRelationship extends Component {
           />
         )}
         <div
-          className={`leftDocument ${
-            !hub.getIn(['leftRelationship', 'template']) && !editing
-              ? 'docWithoutRelationshipType'
-              : ''
-          }`}
+          className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing
+            ? 'docWithoutRelationshipType'
+            : ''
+            }`}
         >
           <Doc
             className="item-collapsed"

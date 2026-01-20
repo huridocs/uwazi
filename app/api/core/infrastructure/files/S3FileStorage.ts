@@ -8,21 +8,21 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { config } from 'api/config';
-import { BaseFile } from 'api/core/domain/files/BaseFile';
-import { FileWithContents } from 'api/core/domain/files/FileWithContents';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { S3Error } from 'api/files/S3Storage';
-import { Tenant } from 'api/tenants/tenantContext';
+import { config } from '#api/config.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
+import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { S3Error } from '#api/files/S3Storage.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage';
-import { FileAttachment } from '../../domain/files/FileAttachment';
-import { CustomUpload } from '../../domain/files/CustomUpload';
-import { FileContents } from '../../domain/files/FileContents';
-import { StoredFile } from '../../domain/files/StoredFile';
-import { URLAttachment } from '../../domain/files/URLAttachment';
-import { PathManager } from './PathManager';
+import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileStorage.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { StoredFile } from '#api/core/domain/files/StoredFile.js';
+import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 
 const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
   try {

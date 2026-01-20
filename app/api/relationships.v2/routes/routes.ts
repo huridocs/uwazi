@@ -2,7 +2,7 @@ import { performance } from 'perf_hooks';
 
 import { Application, NextFunction, Request, Response } from 'express';
 
-import { needsAuthorization } from '../auth.js';
+import { needsAuthorization } from '#api/auth/index.js';
 
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
@@ -29,15 +29,15 @@ import {
   GetRelationshipService,
   MigrationService,
   UpsertRelationshipMigrationFieldService,
-} from '../services/service_factories';
-import { validateCreateRelationship } from './validators/createRelationship';
-import { validateDeleteRelationships } from './validators/deleteRelationships';
-import { validateGetRelationships } from './validators/getRelationship';
-import { validateMigration, validateTestOneHub } from './validators/migration';
-import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
-import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
+} from '#api/relationships.v2/services/service_factories.js';
+import { validateCreateRelationship } from '#api/relationships.v2/routes/validators/createRelationship.js';
+import { validateDeleteRelationships } from '#api/relationships.v2/routes/validators/deleteRelationships.js';
+import { validateGetRelationships } from '#api/relationships.v2/routes/validators/getRelationship.js';
+import { validateMigration, validateTestOneHub } from '#api/relationships.v2/routes/validators/migration.js';
+import { validateDeleteRelationshipMigrationField } from '#api/relationships.v2/routes/validators/deleteRelationshipMigrationFields.js';
+import { validateUpsertRelationshipMigrationField } from '#api/relationships.v2/routes/validators/upsertRelationshipMigrationFields.js';
 
-import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords';
+import { validateGetMigrationHubRecordsRequest } from '#api/relationships.v2/routes/validators/getMigrationHubRecords.js';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (

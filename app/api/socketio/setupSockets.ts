@@ -1,6 +1,6 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
-import { config } from '../config.js';
+import { config } from '#api/config.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { handleError } from '#api/utils/index.js';
 import * as cookie from 'cookie';

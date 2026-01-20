@@ -1,20 +1,20 @@
 /* eslint-disable max-lines */
-import { MongoDataSource, MongoDSOptions } from '#api/common.v2/database/MongoDataSource.js';
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 
-import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
-import { Property } from '../model/Property';
-import { RelationshipProperty } from '../model/RelationshipProperty';
-import { Template } from '../model/Template';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
-import { mapPropertyQuery } from './QueryMapper';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
+import { Template } from '#api/core/domain/template/Template.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>

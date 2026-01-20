@@ -1,6 +1,6 @@
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index.js';
-import fixtures from './fixtures.js';
+import migration from '#api/migrations/migrations/13-geolocation-arrays/index.js';
+import fixtures from '#api/migrations/migrations/13-geolocation-arrays/specs/fixtures.js';
 
 describe('migration geolocation-arrays', () => {
   beforeEach(async () => {

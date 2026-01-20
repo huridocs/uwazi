@@ -5,14 +5,14 @@ import translations from '#api/i18n/translations.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import templates from '../templates';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import fixtures, {
   propertyA,
   propertyB,
   propertyC,
   propertyD,
   templateWithExtractedMetadata,
-} from './fixtures/fixtures';
+} from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema, language = 'en') {
   jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();

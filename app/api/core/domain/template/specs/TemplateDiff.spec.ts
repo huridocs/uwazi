@@ -1,8 +1,8 @@
-import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
-import { Property } from 'api/core/domain/template/Property';
-import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
-import { TemplateDiff } from '../TemplateDiff';
-import { GenerateIdProperty } from '../GenerateIdProperty';
+import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { TemplateDiff } from '#api/core/domain/template/TemplateDiff.js';
+import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 
 describe('TemplateDiff', () => {
   it('should detect new properties', () => {

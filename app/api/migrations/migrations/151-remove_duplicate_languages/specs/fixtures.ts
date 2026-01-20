@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { Fixture } from '../types';
+import { Fixture } from '#api/migrations/migrations/151-remove_duplicate_languages/types.js';
 
 const settingsOnlyDuplication: Fixture = {
   settings: [

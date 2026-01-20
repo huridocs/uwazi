@@ -1,7 +1,9 @@
-import { fromJS as Immutable } from 'immutable';
 
-import uiReducer from '../uiReducer';
 
+import uiReducer from '#app/Connections/reducers/uiReducer.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('Connections uiReducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {

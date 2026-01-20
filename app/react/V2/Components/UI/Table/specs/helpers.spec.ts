@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { getRowIds, dndSortHandler } from '../helpers';
-import { tableData } from './fixtures';
+import { getRowIds, dndSortHandler } from '#V2/Components/UI/Table/helpers.js';
+import { tableData } from '#V2/Components/UI/Table/specs/fixtures.js';
 
 describe('row id generator', () => {
   it('should return a flat array of row ids with the correct format', () => {

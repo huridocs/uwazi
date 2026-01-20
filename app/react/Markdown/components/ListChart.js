@@ -6,10 +6,10 @@ import rison from '@huridocs/rison';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import qs from 'qs';
 
-import { Loader } from '#app/components/Elements/Loader.js';
+import { Loader } from '#app/components/Elements/Loader.jsx';
 import { arrayUtils } from '#app/Charts/index.js';
-import MarkdownLink from './MarkdownLink.js';
-import markdownDatasets from '../markdownDatasets.js';
+import MarkdownLink from '#app/Markdown/components/MarkdownLink.jsx';
+import markdownDatasets from '#app/Markdown/markdownDatasets.js';
 
 export const ListChartComponent = props => {
   const { excludeZero, property, data, classname, context, scatter, colors } = props;

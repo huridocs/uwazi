@@ -2,14 +2,14 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 import { uploadsPath, customUploadsPath, storage } from '#api/files/index.js';
 
 import { setUpApp, socketEmit, iosocket, TestEmitSources } from '#api/utils/testingRoutes.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
@@ -20,22 +20,22 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import entities from 'api/entities';
-import { customUploadsPath, fileExistsOnPath } from 'api/files';
-import { search } from 'api/search';
-import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
-import { FileType } from 'shared/types/fileType';
+import entities from '#api/entities/index.js';
+import { customUploadsPath, fileExistsOnPath } from '#api/files/index.js';
+import { search } from '#api/search/index.js';
+import { iosocket, setUpApp, socketEmit, TestEmitSources } from '#api/utils/testingRoutes.js';
+import { FileType } from '#shared/types/fileType.js';
 
-import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
-import { tenants } from 'api/tenants';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
-import { UserSchema } from 'shared/types/userType';
-import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { files } from '../files';
-import uploadRoutes from '../routes';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
+import { tenants } from '#api/tenants/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { csvImportRoutes } from '#api/csv.v2/infrastructure/http/routes.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
+import { files } from '#api/files/files.js';
+import uploadRoutes from '#api/files/routes.js';
 
 import { UserSchema } from '#shared/types/userType.js';
 

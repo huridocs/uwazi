@@ -1,4 +1,4 @@
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/73-Remove raw field from elastic/index.js';
 
 describe('migration Remove raw field from elastic', () => {
   beforeEach(async () => {

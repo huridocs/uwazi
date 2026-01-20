@@ -6,13 +6,13 @@ import { ClientTemplateSchema, IStore } from '#app/istore.js';
 import formatter from '#app/Metadata/helpers/formater.js';
 
 import { safeName } from '#shared/propertyNames.js';
-import { showByType } from '#app/Metadata/components/Metadata.js';
+import { showByType } from '#app/Metadata/components/Metadata.jsx';
 import { Translate } from '#app/I18N/index.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 
 import { ensure } from '#shared/tsUtils.js';
-import { errorCollector } from '../utils.js';
+import { errorCollector } from '#app/Markdown/utils.js';
 
 interface Options {
   formattedEntity: any;

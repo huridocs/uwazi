@@ -1,11 +1,11 @@
 import db from '#api/utils/testing_db.js';
 
-import { search } from '../search/search.js';
+import { search } from '#api/search/index.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import inheritanceFixtures, { ids } from './fixturesInheritance';
-import { fixturesTimeOut } from './fixtures_elastic';
+import inheritanceFixtures, { ids } from '#api/search/specs/fixturesInheritance.js';
+import { fixturesTimeOut } from '#api/search/specs/fixtures_elastic.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

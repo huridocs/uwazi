@@ -1,16 +1,16 @@
-import { FilesService } from 'api/core/application/FilesService';
-import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { tenants } from 'api/tenants';
-import { FileContentsIO } from '../files/FileContentIO';
-import { PathManager } from '../files/PathManager';
-import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { PDFService } from '../services/PDFService';
-import { IdGeneratorFactory } from './IdGeneratorFactory';
+import { FilesService } from '#api/core/application/FilesService.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { tenants } from '#api/tenants/index.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PDFService } from '#api/core/infrastructure/services/PDFService.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 
 class FilesServiceFactory {
   static default(

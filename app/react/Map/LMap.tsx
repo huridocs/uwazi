@@ -7,7 +7,7 @@ import { GeolocationSchema } from '#shared/types/commonTypes.js';
 import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { deletedEntityAtom } from '#app/V2/atoms/index.ts';
+import { deletedEntityAtom } from '#V2/atoms/index.js';
 import {
   DataMarker,
   getClusterMarker,
@@ -15,8 +15,8 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
-} from './MapHelper.js';
-import { getMapProvider } from './TilesProviderFactory.js';
+} from '#app/Map/MapHelper.jsx';
+import { getMapProvider } from '#app/Map/TilesProviderFactory.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 

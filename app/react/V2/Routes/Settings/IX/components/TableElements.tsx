@@ -3,13 +3,13 @@
 import React, { useCallback, useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { useAtom } from 'jotai';
-import { get } from 'lodash';
+import get from 'lodash/get.js';
 import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Pill } from '#app/V2/Components/UI/index.js';
-import { EmbededButton } from '#app/V2/Components/UI/EmbededButton.js';
-import { ClientTemplateSchema } from '#app/V2/shared/types.js';
-import { propertyIcons } from '#app/V2/Components/UI/Icons.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.jsx';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
 
 import { ClientPropertySchema } from '#app/istore.js';
 
@@ -20,12 +20,12 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '../types';
-import { Dot } from './Dot';
-import { SuggestedValue } from './SuggestedValue';
-import { acceptedSuggestions } from './atoms';
-import { ContextCell } from './ContextCell';
-import { calculateOptimalProportions } from '../helpers/contextHelpers';
+} from '#V2/Routes/Settings/IX/types.js';
+import { Dot } from '#V2/Routes/Settings/IX/components/Dot.jsx';
+import { SuggestedValue } from '#V2/Routes/Settings/IX/components/SuggestedValue.jsx';
+import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import { ContextCell } from '#V2/Routes/Settings/IX/components/ContextCell.jsx';
+import { calculateOptimalProportions } from '#V2/Routes/Settings/IX/helpers/contextHelpers.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();

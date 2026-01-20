@@ -1,13 +1,13 @@
-import { search } from '#api/search.js';
-import 'api/utils/jasmineHelpers';
+import { search } from '#api/search/index.js';
+import '#api/utils/jasmineHelpers';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import templates from '../../templates/templates';
-import thesauri from '../../thesauri';
-import instrumentRoutes from '#api/utils/instrumentRoutes';
-import entities from '../entities';
-import * as entitiesSavingManager from '../entitySavingManager';
-import documentRoutes from '../routes.js';
-import fixtures, { batmanFinishesId, templateId, unpublishedDocId } from './fixtures.js';
+import templates from '#api/templates/templates.js';
+import thesauri from '#api/thesauri/index.js';
+import instrumentRoutes from '#api/utils/instrumentRoutes.js';
+import entities from '#api/entities/entities.js';
+import * as entitiesSavingManager from '#api/entities/entitySavingManager.js';
+import documentRoutes from '#api/entities/routes.js';
+import fixtures, { batmanFinishesId, templateId, unpublishedDocId } from '#api/entities/specs/fixtures.js';
 
 describe('entities', () => {
   let routes;

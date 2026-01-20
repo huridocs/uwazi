@@ -1,14 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import EntitiesAPI from '#app/Entities/EntitiesAPI';
-import EntityView from '../EntityView';
-import { PDFViewComponent } from '../PDFView';
-import { ViewerRouteComponent as ViewerRoute } from '../ViewerRoute';
-import { ViewerComponent } from '../components/ViewerComponent';
+import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
+import EntityView from '#app/Viewer/EntityView.jsx';
+import { PDFViewComponent } from '#app/Viewer/PDFView.jsx';
+import { ViewerRouteComponent as ViewerRoute } from '#app/Viewer/ViewerRoute.jsx';
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 describe('ViewerRoute', () => {
   describe('Entity views', () => {
     const entity = { _id: 1, sharedId: 'sid', documents: [{}] };

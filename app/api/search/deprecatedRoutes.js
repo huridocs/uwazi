@@ -1,7 +1,7 @@
-import entities from '../entities/index.js';
+import entities from '#api/entities/index.js';
 import { searchParamsSchema } from '#shared/types/searchParameterSchema.js';
-import { search } from './search';
-import { validation, parseQuery } from '../utils';
+import { search } from '#api/search/search.js';
+import { validation, parseQuery } from '#api/utils/index.js';
 
 export default app => {
   app.get(

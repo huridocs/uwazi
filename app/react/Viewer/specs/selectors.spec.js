@@ -1,6 +1,8 @@
-import { fromJS as Immutable } from 'immutable';
-import * as selectors from '../selectors';
 
+import * as selectors from '#app/Viewer/selectors.js';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('Viewer selectors', () => {
   let state;
 

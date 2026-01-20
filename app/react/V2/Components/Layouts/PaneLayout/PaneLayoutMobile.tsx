@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
-import { PaneLayoutProps } from './types';
+import { PaneLayoutProps } from '#V2/Components/Layouts/PaneLayout/types.js';
 
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   const [currentPane, setCurrentPane] = useState(0);

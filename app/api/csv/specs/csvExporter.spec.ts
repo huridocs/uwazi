@@ -17,8 +17,8 @@ import CSVExporter, {
   processEntity,
   processHeaders,
   translateCommonHeaders,
-} from '../csvExporter';
-import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures';
+} from '#api/csv/csvExporter.js';
+import { csvExample, searchResults, templates as testTemplates } from '#api/csv/specs/exportCsvFixtures.js';
 
 const hostname = 'cejil.uwazi.io';
 

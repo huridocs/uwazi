@@ -1,14 +1,14 @@
-import * as actions from './actions/actions';
-import { FormatMetadata } from './containers/FormatMetadata';
-import ShowMetadata from './components/ShowMetadata';
-import formater from './helpers/formater';
-import validator from './helpers/validator';
-import MetadataForm from './components/MetadataForm';
-import MetadataFormButtons from './components/MetadataFormButtons';
-import MetadataFormFields from './components/MetadataFormFields';
-import SelectMultiplePanel from './components/SelectMultiplePanel';
+import * as actions from '#app/Metadata/actions/actions.js';
+import { FormatMetadata } from '#app/Metadata/containers/FormatMetadata.jsx';
+import ShowMetadata from '#app/Metadata/components/ShowMetadata.jsx';
+import formater from '#app/Metadata/helpers/formater.js';
+import validator from '#app/Metadata/helpers/validator.jsx';
+import MetadataForm from '#app/Metadata/components/MetadataForm.jsx';
+import MetadataFormButtons from '#app/Metadata/components/MetadataFormButtons.jsx';
+import MetadataFormFields from '#app/Metadata/components/MetadataFormFields.jsx';
+import SelectMultiplePanel from '#app/Metadata/components/SelectMultiplePanel.jsx';
 
-export * from './helpers/wrapper';
+export * from '#app/Metadata/helpers/wrapper.js';
 
 export {
   validator,

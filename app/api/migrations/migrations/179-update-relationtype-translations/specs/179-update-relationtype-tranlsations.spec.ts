@@ -1,8 +1,8 @@
 import { Db } from 'mongodb';
-import testingDB from 'api/utils/testing_db';
-import migration from '../index';
-import { fixtures } from './fixtures';
-import { Fixture } from '../types';
+import testingDB from '#api/utils/testing_db.js';
+import migration from '#api/migrations/migrations/179-update-relationtype-translations/index.js';
+import { fixtures } from '#api/migrations/migrations/179-update-relationtype-translations/specs/fixtures.js';
+import { Fixture } from '#api/migrations/migrations/179-update-relationtype-translations/types.js';
 
 let db: Db | null;
 

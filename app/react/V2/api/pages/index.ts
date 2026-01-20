@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from '#app/utils/api.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { Page } from '#app/V2/shared/types.js';
+import { Page } from '#V2/shared/types.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 

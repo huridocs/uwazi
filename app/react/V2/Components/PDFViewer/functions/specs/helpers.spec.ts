@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import { triggerScroll } from '../helpers';
+import { triggerScroll } from '#V2/Components/PDFViewer/functions/helpers.js';
 
 describe('triggerScroll', () => {
   //defined as any since the correct definition of the react ref type has no impact on the test

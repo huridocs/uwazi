@@ -3,7 +3,7 @@ import qs from 'qs';
 import rison from '@huridocs/rison';
 import { actions as formActions } from 'react-redux-form';
 import { t } from '#app/I18N/index.js';
-import { store } from '#app/store.ts';
+import { store } from '#app/store.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { documentsApi } from '#app/Documents/index.js';
@@ -12,11 +12,11 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import searchAPI from '#app/Search/SearchAPI.js';
-import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.ts';
+import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
-import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
-import { filterToQuery } from '../helpers/publishedStatusFilter';
-import { saveEntityWithFiles } from './saveEntityWithFiles';
+import { selectedDocumentsChanged, maybeSaveQuickLabels } from '#app/Library/actions/quickLabelActions.js';
+import { filterToQuery } from '#app/Library/helpers/publishedStatusFilter.js';
+import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 
 function enterLibrary() {
   return { type: types.ENTER_LIBRARY };

@@ -1,9 +1,9 @@
 import React from 'react';
 import { DocumentIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { EntityFile } from './FileCard';
-import { VideoPlayer } from './VideoPlayer';
-import AudioPlayer from './AudioPlayer';
+import { EntityFile } from '#V2/Components/UI/Files/FileCard.jsx';
+import { VideoPlayer } from '#V2/Components/UI/Files/VideoPlayer.jsx';
+import AudioPlayer from '#V2/Components/UI/Files/AudioPlayer.jsx';
 
 type FileIconProps = {
   file: EntityFile;

@@ -4,7 +4,7 @@ import qs from 'qs';
 import api from '#app/utils/api.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { PXParagraphAPIResponse, PXParagraphQuery } from '#shared/ParagraphExtractionTypes.js';
+import { PXParagraphAPIResponse, PXParagraphQuery } from '#V2/shared//ParagraphExtractionTypes.js';
 
 const getByParagraphExtractorId = async (
   parameters: PXParagraphQuery,

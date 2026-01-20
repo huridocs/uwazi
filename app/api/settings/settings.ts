@@ -7,13 +7,13 @@ import {
   SettingsSublinkSchema,
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
-import templates from '../templates/index.js';
+import templates from '#api/templates/index.js';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { validateSettings } from '#shared/types/settingsSchema.js';
 import { ContextType } from '#shared/translationSchema.js';
-import { settingsModel } from './settingsModel.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 

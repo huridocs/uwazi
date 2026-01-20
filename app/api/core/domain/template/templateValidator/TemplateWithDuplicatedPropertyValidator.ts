@@ -1,6 +1,6 @@
 import { Template } from '#api/core/domain/template/Template.js';
-import { ValidationStep } from '../../Validator';
-import { TemplateWithDuplicatedPropertyError } from '../errors';
+import { ValidationStep } from '#api/core/domain/Validator.js';
+import { TemplateWithDuplicatedPropertyError } from '#api/core/domain/template/errors.js';
 
 class TemplateWithDuplicatedPropertyValidator implements ValidationStep<Template> {
   // eslint-disable-next-line class-methods-use-this

@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import httpRequest from 'http';
+import path from 'path';
 import rtlcss from 'rtlcss';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
@@ -20,14 +21,13 @@ const http = createServer(app);
 
 const compiler = webpack(webpackConfig.default);
 
-app.use(
-  webpackDevMiddleware(compiler, {
-    publicPath: webpackConfig.default.output.publicPath,
-    headers: { 'Access-Control-Allow-Origin': '*' },
-    stats: 'errors-warnings',
-  })
-);
+const devMiddleware = webpackDevMiddleware(compiler, {
+  publicPath: webpackConfig.default.output.publicPath,
+  headers: { 'Access-Control-Allow-Origin': '*' },
+  stats: 'errors-warnings',
+});
 
+app.use(devMiddleware);
 app.use(webpackHotMiddleware(compiler));
 
 app.get('/CSS/:file', (req, res) => {
@@ -44,6 +44,7 @@ app.get('/CSS/:file', (req, res) => {
           data = rtlcss.process(data);
           process.stdout.write('Done!\r\n');
         }
+        res.setHeader('Content-Type', 'text/css');
         res.end(data);
       });
     }
@@ -51,6 +52,7 @@ app.get('/CSS/:file', (req, res) => {
 
   request.on('error', e => {
     process.stdout.write(`${e.message}\r\n`);
+    res.status(404).end('CSS file not found');
   });
 
   request.end();

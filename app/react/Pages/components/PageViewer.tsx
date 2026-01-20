@@ -7,11 +7,11 @@ import React, { Component, Suspense } from 'react';
 import Footer from '#app/App/Footer.jsx';
 import MarkdownViewer from '#app/Markdown/index.js';
 import { Context } from '#app/Markdown/components/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { ErrorBoundary, ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorBoundary.jsx';
-import Script from '#app/Script';
+import { ErrorFallback, ErrorBoundary } from '#app/V2/Components/ErrorHandling/index.js';
+import Script from './Script.js';
 
 class PageViewer extends Component {
   constructor(props) {

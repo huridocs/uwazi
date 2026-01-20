@@ -2,24 +2,24 @@ import { Db, ObjectId } from 'mongodb';
 
 import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
 
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 import entities from '#api/entities/index.js';
 
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
-import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor';
+import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 import {
   DeleteParagraphsInput,
   ExistsInput,
   PXExtractorsDataSource,
-} from '#api/paragraphExtraction/domain/PXExtractorDataSource';
-import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
-import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
-import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError';
-import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService';
+} from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
+import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 

@@ -4,13 +4,13 @@ import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
 } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
-} from '../../domain/template/errors';
-import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
+} from '#api/core/domain/template/errors.js';
+import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;

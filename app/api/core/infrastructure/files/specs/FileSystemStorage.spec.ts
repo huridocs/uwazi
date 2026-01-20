@@ -1,17 +1,17 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-import { FileBuilder } from 'api/core/domain/files/specs/FileBuilder';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { fileExistsOnPath } from 'api/files';
-import { Tenant, tenants } from 'api/tenants/tenantContext';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { fileExistsOnPath } from '#api/files/index.js';
+import { Tenant, tenants } from '#api/tenants/tenantContext.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { createReadStream } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
-import { FileSystemStorage } from '../FileSystemStorage';
-import { PathManager } from '../PathManager';
+import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
+import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;

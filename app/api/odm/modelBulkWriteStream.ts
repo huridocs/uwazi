@@ -1,5 +1,5 @@
-import { OdmModel } from '../odm/model.js';
-import { MongooseModelWrapper } from '../odm/MongooseModelWrapper.js';
+import { OdmModel } from '#api/odm/model.js';
+import { MongooseModelWrapper } from '#api/odm/MongooseModelWrapper.js';
 
 class ModelBulkWriteStream {
   db: MongooseModelWrapper<any>;

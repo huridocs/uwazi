@@ -5,7 +5,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db from '#api/utils/testing_db.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
-import { ModelBulkWriteStream } from '../modelBulkWriteStream';
+import { ModelBulkWriteStream } from '#api/odm/modelBulkWriteStream.js';
 
 const fixtures = {
   users: [

@@ -1,15 +1,15 @@
-import { EventsBus } from '../eventsbus.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 
-import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { inspect } from 'util';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
-import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
-import { IXValidationError } from '../ixValidationError';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
+import { IXValidationError } from '#api/suggestions/ixValidationError.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

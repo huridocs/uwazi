@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { UploadAttachment } from '../UploadAttachment';
 
+import { UploadAttachment } from '#app/Attachments/components/UploadAttachment.jsx';
+import ImmutableLib from 'immutable';
+
+const { fromJS: Immutable } = ImmutableLib;
 describe('UploadAttachment', () => {
   let component;
   let props;

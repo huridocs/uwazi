@@ -1,5 +1,5 @@
-import { notify, removeNotification } from './actions/notificationsActions';
-import Notifications from './components/Notifications';
+import { notify, removeNotification } from '#app/Notifications/actions/notificationsActions.js';
+import Notifications from '#app/Notifications/components/Notifications.jsx';
 
 const notificationActions = {
   notify,

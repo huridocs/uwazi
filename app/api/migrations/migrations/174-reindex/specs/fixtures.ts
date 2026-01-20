@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Fixture } from '../types';
+import { Fixture } from '#api/migrations/migrations/174-reindex/types.js';
 
 const fixtures: Fixture = {
   entities: [

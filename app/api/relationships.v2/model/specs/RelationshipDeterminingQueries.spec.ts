@@ -1,5 +1,5 @@
-import { MatchQueryNode } from '../MatchQueryNode';
-import { TraversalQueryNode } from '../TraversalQueryNode';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
+import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 
 describe('when checking if, given an entity, the query defines a relationship', () => {
   it('should be true if it is a 1 hop, 1 relationship type query', () => {

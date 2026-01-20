@@ -1,24 +1,24 @@
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
+import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 
-import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 
-import { applicationEventsBus } from '../eventsbus.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 
-import { FileCreatedEvent } from '../files/events/FileCreatedEvent.js';
+import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 
-import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
+import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 
-import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
+import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
-import { TemplateDeletedEvent } from '../templates/events/TemplateDeletedEvent.js';
+import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 
-import { TemplateUpdatedEvent } from '../templates/events/TemplateUpdatedEvent.js';
+import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -30,9 +30,9 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { EntityCreatedEvent } from '../entities/events/EntityCreatedEvent.js';
-import { registerEventListeners } from '../eventListeners';
-import { Suggestions } from '../suggestions';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { registerEventListeners } from '#api/suggestions/eventListeners.js';
+import { Suggestions } from '#api/suggestions/suggestions.js';
 
 const fixturesFactory = getFixturesFactory();
 

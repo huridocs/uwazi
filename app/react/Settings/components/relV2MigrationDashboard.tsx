@@ -14,7 +14,7 @@ import {
   deleteRelationshipMigrationField,
 } from '#app/Entities/actions/V2NewRelationshipsActions.js';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
@@ -304,9 +304,8 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                   &emsp;
                   {`(${connection.templateName})`}
                   <Icon icon="link" />
-                  {`${connection.entityTitle}(${
-                    this.templateIndex[connection.entityTemplate].name
-                  })`}
+                  {`${connection.entityTitle}(${this.templateIndex[connection.entityTemplate].name
+                    })`}
                 </div>
               ))}
             </div>
@@ -333,12 +332,10 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       t => t.templateName
     );
     const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
-      `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
-        this.templateIndex[orig.entityTemplate].name
+      `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${this.templateIndex[orig.entityTemplate].name
       })`;
     const displayEntityTitleAndNameFromTransformed = (entity: string) =>
-      `${oneHubTestEntityTitlesBySharedId[entity]}(${
-        this.templateIndex[oneHubTestEntityTemplatesBySharedId[entity]].name
+      `${oneHubTestEntityTitlesBySharedId[entity]}(${this.templateIndex[oneHubTestEntityTemplatesBySharedId[entity]].name
       })`;
 
     return (
@@ -383,10 +380,9 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </div>
                 <div>
                   Unused: {this.migrationSummary.total - this.migrationSummary.used}
-                  {`(${
-                    this.migrationSummary.totalTextReferences -
+                  {`(${this.migrationSummary.totalTextReferences -
                     this.migrationSummary.usedTextReferences
-                  })`}
+                    })`}
                 </div>
                 <div>Errors: {this.migrationSummary.errors}</div>
                 <br />

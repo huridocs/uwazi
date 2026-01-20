@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
-import testingDB from 'api/utils/testing_db';
-import migration from '../index';
+import testingDB from '#api/utils/testing_db.js';
+import migration from '#api/migrations/migrations/176-update_entity_title_indexes/index.js';
 
 let db: Db | null;
 

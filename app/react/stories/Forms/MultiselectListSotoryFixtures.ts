@@ -1,4 +1,4 @@
-import { MultiselectListOption } from '#app/V2/Components/Forms/index.js';
+import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 
 const items = [
   { searchLabel: 'Someone', label: 'Someone', value: 'someone' },

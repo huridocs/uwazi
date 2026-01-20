@@ -1,4 +1,4 @@
-import { pdfEventBus, Snippet } from 'V2/Components/PDFViewer';
+import { pdfEventBus, Snippet } from '#V2/Components/PDFViewer/index.jsx';
 
 const scrollToPage = (pageNumber: number) => {
   pdfEventBus.dispatch('goToPage', pageNumber);

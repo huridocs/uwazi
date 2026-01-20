@@ -1,10 +1,10 @@
 import { files, storage, testingUploadPaths } from '#api/files/index.js';
 
-import { Redis } from '../infrastructure/Redis.js';
+import { Redis } from '#api/infrastructure/Redis.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { tenants } from '#api/tenants/index.js';
 
@@ -18,8 +18,8 @@ import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
-import { convertToPDFService } from '../convertToPdfService';
-import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
+import { convertToPDFService } from '#api/services/convertToPDF/convertToPdfService.js';
+import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
 
 describe('convertToPdfWorker', () => {
   let worker: ConvertToPdfWorker;

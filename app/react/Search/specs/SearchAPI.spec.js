@@ -2,7 +2,7 @@ import { APIURL } from '#app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/utils/api.js';
-import SearchApi from '../SearchAPI';
+import SearchApi from '#app/Search/SearchAPI.js';
 
 describe('SearchAPI', () => {
   const searchResponse = [{ documents: 'search' }];

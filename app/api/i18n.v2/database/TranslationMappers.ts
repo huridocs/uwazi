@@ -1,9 +1,9 @@
 import { OptionalId } from 'mongodb';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
-import { Translation } from '../model/Translation';
-import { TranslationDBO } from '../schemas/TranslationDBO';
-import { TranslationSyO } from '../schemas/TranslationSyO';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
 
 export const TranslationMappers = {
   toDBO(translation: Translation): OptionalId<TranslationDBO> {

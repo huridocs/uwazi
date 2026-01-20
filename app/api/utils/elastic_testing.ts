@@ -1,5 +1,5 @@
-import { elastic, search } from '#api/search.js';
-import { IndicesPutMapping } from '../search/elasticTypes.js';
+import { elastic, search } from '#api/search/index.js';
+import { IndicesPutMapping } from '#api/search/elasticTypes.js';
 import elasticMapping from '#api/database/elastic_mapping/elastic_mapping';
 
 const elasticTesting = {

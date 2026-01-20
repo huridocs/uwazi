@@ -1,10 +1,10 @@
 import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
 
-import { AuthorizationService } from '../../authorization.v2/services/AuthorizationService.js';
+import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
@@ -18,10 +18,10 @@ import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
-import { MissingRelationshipError } from '#api/externalIntegrations.v2/errors/relationshipErrors';
-import { DeleteRelationshipService } from '../DeleteRelationshipService';
-import { DenormalizationService } from '../DenormalizationService';
+import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { MissingRelationshipError } from '#api/relationships.v2/errors/relationshipErrors.js';
+import { DeleteRelationshipService } from '#api/relationships.v2/services/DeleteRelationshipService.js';
+import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
 const factory = getFixturesFactory();
 

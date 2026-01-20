@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from '#app/utils/api.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
 
 const get = async (headers?: IncomingHttpHeaders) => {
   try {

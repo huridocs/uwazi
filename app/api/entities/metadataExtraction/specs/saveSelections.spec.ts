@@ -3,7 +3,7 @@ import { files } from '#api/files/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture, testingDB } from '#api/utils/testing_db.js';
-import { saveSelections } from '../saveSelections';
+import { saveSelections } from '#api/entities/metadataExtraction/saveSelections.js';
 
 const file1ID = testingDB.id();
 const file2ID = testingDB.id();

@@ -8,23 +8,23 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
-import * as settingsAPI from '#app/V2/api/settings/index.js';
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import * as settingsAPI from '#V2/api/settings/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-import { Button, Tabs } from '#app/V2/Components/UI/index.js';
+import { Button, Tabs } from '#V2/Components/UI/index.js';
 
-import { CodeEditor } from '#app/V2/Components/CodeEditor.js';
-import { ConfirmNavigationModal } from '#app/V2/Components/UI/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
+import { ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
-import { notificationAtom } from '#app/V2/atoms/index.ts';
+import { notificationAtom } from '#V2/atoms/index.js';
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
-  async () => {
-    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-    return { allowcustomJS, customCSS, customJS };
-  };
+    async () => {
+      const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
+      return { allowcustomJS, customCSS, customJS };
+    };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;

@@ -12,7 +12,7 @@ import { notificationActions } from '#app/Notifications/index.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
-import { atomStore, deletedEntityAtom } from '#app/V2/atoms/index.ts';
+import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
 
 export function saveEntity(entity) {
   return async dispatch => {

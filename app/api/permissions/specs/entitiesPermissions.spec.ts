@@ -6,7 +6,7 @@ import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 
 import { fixtures, groupA, userA, userB } from '#api/permissions/specs/fixtures.js';
 
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
@@ -17,7 +17,7 @@ import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js
 import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
-import { PUBLIC_PERMISSION } from '../publicPermission';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 
 const publicPermission = {
   ...PUBLIC_PERMISSION,

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { bindActionCreators } from 'redux';
 import { closeImportProgress } from '#app/Uploads/actions/uploadsActions.js';
 import Immutable from 'immutable';

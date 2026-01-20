@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as immutable } from 'immutable';
-import configureMockStore from 'redux-mock-store';
-import TemplateLabel from '../TemplateLabel';
 
+import configureMockStore from 'redux-mock-store';
+import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
+import Immutable from 'immutable';
+
+const { fromJS: immutable } = Immutable;
 describe('TemplateLabel', () => {
   let component;
 

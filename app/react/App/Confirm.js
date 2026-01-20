@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate, t } from '#app/I18N/index.js';
 
-import Modal from '#app/Layout/Modal.js';
-import { Loader } from '#app/components/Elements/Loader.js';
+import Modal from '#app/Layout/Modal.jsx';
+import { Loader } from '#app/components/Elements/Loader.jsx';
 
 class Confirm extends Component {
   static getDerivedStateFromProps(newProps, state) {

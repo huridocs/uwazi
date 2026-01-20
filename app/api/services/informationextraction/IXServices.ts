@@ -1,6 +1,6 @@
-import { EnforcedWithId } from '../odm/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
-import templatesModel from '../templates/templatesModel.js';
+import templatesModel from '#api/templates/templates.js';
 
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
@@ -14,12 +14,12 @@ import { FileType } from '#shared/types/fileType.js';
 
 import { propertyIsMultiValued } from '#shared/getIXSuggestionState.js';
 
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 
 import { IXModelType } from '#shared/types/IXModelType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels.js';
+import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from '#api/services/informationextraction/ixmodels.js';
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;
@@ -89,15 +89,15 @@ export class IXServices {
     // Default to all three statuses if no explicit filter selection
     const matchAny = usingAnyFilter
       ? [
-          statuses.nonProcessed ? { date: null } : null,
-          statuses.obsolete ? { date: { $ne: null }, 'state.obsolete': true } : null,
-          statuses.error ? { date: { $ne: null }, 'state.error': true } : null,
-        ].filter(Boolean)
+        statuses.nonProcessed ? { date: null } : null,
+        statuses.obsolete ? { date: { $ne: null }, 'state.obsolete': true } : null,
+        statuses.error ? { date: { $ne: null }, 'state.error': true } : null,
+      ].filter(Boolean)
       : [
-          { date: null },
-          { date: { $ne: null }, 'state.obsolete': true },
-          { date: { $ne: null }, 'state.error': true },
-        ];
+        { date: null },
+        { date: { $ne: null }, 'state.obsolete': true },
+        { date: { $ne: null }, 'state.error': true },
+      ];
 
     const count = await IXSuggestionsModel.db.countDocuments({
       extractorId,

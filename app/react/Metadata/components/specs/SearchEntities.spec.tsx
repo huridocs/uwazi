@@ -1,14 +1,14 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 
-import SearchInput from '#app/Layout/SearchInput.js';
+import SearchInput from '#app/Layout/SearchInput.jsx';
 
 import { sleep } from '#shared/tsUtils.js';
 
 import SearchApi from '#app/Search/SearchAPI.js';
-import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities.js';
+import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '#app/Metadata/components/SearchEntities.jsx';
 
-import SearchResults from '#app/Connections/components/SearchResults.js';
+import SearchResults from '#app/Connections/components/SearchResults.jsx';
 
 describe('SearchEntities', () => {
   let component: ShallowWrapper<SearchEntitiesProps, SearchEntitiesState, SearchEntities>;

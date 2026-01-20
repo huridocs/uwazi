@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import type { Meta, StoryObj } from '@storybook/react';
-import { EmbededButton } from '#app/V2/Components/UI/EmbededButton.js';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.jsx';
 import { Translate } from '#app/I18N/index.js';
 
 const meta: Meta<typeof EmbededButton> = {

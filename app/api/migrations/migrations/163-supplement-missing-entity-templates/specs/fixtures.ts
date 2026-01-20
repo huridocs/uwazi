@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Entity, Fixture, Settings, TranslationDBO } from '../types';
+import { Entity, Fixture, Settings, TranslationDBO } from '#api/migrations/migrations/163-supplement-missing-entity-templates/types.js';
 
 const template1 = new ObjectId();
 const template2 = new ObjectId();

@@ -9,7 +9,7 @@ import Immutable from 'immutable';
 import { mockID } from '#shared/uniqueID.js.js';
 import { APIURL } from '#app/config.js';
 import * as connectionsActions from '#app/Connections/actions/actions.js';
-import { actions as relationshipsActions } from '#app/Relationships.js';
+import { actions as relationshipsActions } from '#app/Relationships/index.js';
 import * as actions from '#app/Viewer/actions/referencesActions.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';

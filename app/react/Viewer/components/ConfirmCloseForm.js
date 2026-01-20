@@ -6,9 +6,9 @@ import { actions as formActions } from 'react-redux-form';
 import { Translate } from '#app/I18N/index.js';
 
 import { hideModal } from '#app/Modals/actions/modalActions.js';
-import Modal from '#app/Layout/Modal.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
-import { closePanel } from '../actions/uiActions';
+import Modal from '#app/Layout/Modal.jsx';
+import Icon from '#UI/Icon/Icon.jsx';
+import { closePanel } from '#app/Viewer/actions/uiActions.js';
 
 export class ConfirmCloseForm extends Component {
   confirm() {

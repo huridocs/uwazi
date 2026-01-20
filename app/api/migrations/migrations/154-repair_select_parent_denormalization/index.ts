@@ -11,7 +11,7 @@ import {
   Thesaurus,
   ThesaurusValueBase,
   Translation,
-} from './types';
+} from '#api/migrations/migrations/154-repair_select_parent_denormalization/types.js';
 
 let writesOccured = false;
 

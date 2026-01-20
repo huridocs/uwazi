@@ -20,12 +20,12 @@ import {
   FileWithAggregation,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './ixMaterials';
-import { getPdfTrainingProcess } from './FetchMaterialsForTraining';
-import { IXWebSocketEvents } from './WebSocketEvents';
-import { CommonMaterialsData, MaterialsData } from './InformationExtraction';
-import { IXTaskService } from './TaskService';
-import ixmodels from './ixmodels';
+} from '#api/services/informationextraction/ixMaterials.js';
+import { getPdfTrainingProcess } from '#api/services/informationextraction/FetchMaterialsForTraining.js';
+import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
+import { CommonMaterialsData, MaterialsData } from '#api/services/informationextraction/InformationExtraction.js';
+import { IXTaskService } from '#api/services/informationextraction/TaskService.js';
+import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;

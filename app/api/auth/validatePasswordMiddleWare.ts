@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '#api/users/usersModel.js';
-import usersModel from '../users/users';
-import { comparePasswords } from './encryptPassword';
+import usersModel from '#api/users/users.js';
+import { comparePasswords } from '#api/auth/encryptPassword.js';
 
 const validatePassword = async (submittedPassword: string, requestUser: User) => {
   const user = await usersModel.getById(requestUser._id, '+password');

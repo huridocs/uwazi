@@ -12,7 +12,7 @@ import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import routes from '../routes';
+import routes from '#api/relationships.v2/routes/routes.js';
 
 const URL = '/api/v2/relationships';
 

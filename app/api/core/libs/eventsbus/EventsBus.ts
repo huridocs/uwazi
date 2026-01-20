@@ -1,4 +1,4 @@
-import { AbstractEvent } from './AbstractEvent';
+import { AbstractEvent } from '#api/core/libs/eventsbus/AbstractEvent.js';
 
 interface Listener<T> {
   (data: T): Promise<void>;

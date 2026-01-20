@@ -1,4 +1,4 @@
-import migration from '../index.js';
+import migration from '#api/migrations/migrations/74-add_mimetype_to_elastic/index.js';
 
 describe('migration add_mimetype_to_elastic', () => {
   beforeEach(async () => {

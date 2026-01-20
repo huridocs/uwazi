@@ -1,11 +1,12 @@
 /* eslint-disable import/no-mutable-exports,prefer-destructuring,global-require */
 
 import { isClient } from '#app/utils/index.js';
-import thunk from 'redux-thunk';
+import thunkModule from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 
-import { applyMiddleware, createStore, Store } from 'redux';
-import reducer from './reducer.js';
+const thunk: Middleware = (thunkModule.default?.default || thunkModule.default || thunkModule) as Middleware;
+import reducer from '#app/reducer.js';
 import { IStore } from './istore';
 
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
@@ -17,14 +18,14 @@ export default function create(initialData = data) {
   return store;
 }
 
-if (module.hot) {
+if (import.meta.webpackHot) {
   if (!window.store) {
     window.store = create();
   }
   store = window.store;
-  module.hot.accept('./reducer', () => {
-    const rootReducer = require('./reducer');
-    store!.replaceReducer(rootReducer);
+  import.meta.webpackHot.accept('./reducer.js', async () => {
+    const rootReducer = await import('./reducer.js');
+    store!.replaceReducer(rootReducer.default);
   });
 }
 
@@ -32,7 +33,7 @@ if (!store) {
   store = create();
 }
 
-if (typeof window !== 'undefined' && !module.hot) {
+if (typeof window !== 'undefined' && !import.meta.webpackHot) {
   window.store = store;
 }
 

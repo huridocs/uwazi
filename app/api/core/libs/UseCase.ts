@@ -1,12 +1,12 @@
-import { EventsBus } from 'api/core/libs/eventsbus';
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { UserSchema } from 'shared/types/userType';
-import { Tenant } from 'api/tenants/tenantContext';
-import { User } from 'api/users.v2/model/User';
-import { TransactionManager } from '../application/contracts/TransactionManager';
-import { IdGenerator } from '../application/contracts/IdGenerator';
-import { Logger } from './logger/contracts/Logger';
-import { EventEmitter } from './eventEmitter/EventEmitter';
+import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { UserSchema } from '#shared/types/userType.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
+import { User } from '#api/users.v2/model/User.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;
@@ -27,12 +27,11 @@ type Context = {
 };
 
 abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends any[] = []>
-  implements UseCase<Input, Output, Args>
-{
+  implements UseCase<Input, Output, Args> {
   constructor(
     protected deps: Deps<ExtendedDeps>,
     private context?: Context
-  ) {}
+  ) { }
 
   protected get logger(): Logger {
     if (!this.deps.logger) {

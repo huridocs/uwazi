@@ -7,11 +7,11 @@ import { t } from '#app/I18N/index.js';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from '#app/Library/actions/libraryActions.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import ModalTips from '#app/App/ModalTips.jsx';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.jsx';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import SnippetList from '#app/Documents/components/SnippetList.jsx';
 
 class SearchText extends Component {
@@ -40,7 +40,7 @@ class SearchText extends Component {
     this.formDispatch = dispatch;
   }
 
-  resetSearch() {}
+  resetSearch() { }
 
   searchSnippets(searchTerm, sharedId) {
     if (sharedId) {

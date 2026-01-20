@@ -1,16 +1,16 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import settings from '../settings.js';
+import settings from '#api/settings/index.js';
 
-import templates from '../templates/index.js';
+import templates from '#api/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 
 import request from '#shared/JSONRequest.js';
 
 import { PreserveConfig } from '#shared/types/settingsType.js.js';
-import fixtures, { userId1, userId2 } from './fixtures';
-import { Preserve } from '../preserve';
+import fixtures, { userId1, userId2 } from '#api/preserve/specs/fixtures.js';
+import { Preserve } from '#api/preserve/preserve.js';
 
 describe('Preserve', () => {
   const user = { _id: userId1 };

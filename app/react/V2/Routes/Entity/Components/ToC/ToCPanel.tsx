@@ -2,22 +2,22 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { TocSchema } from 'shared/types/commonTypes';
+import { Translate } from '#app/I18N/index.js';
+import { TocSchema } from '#shared/types/commonTypes.js';
 import { Tooltip } from 'flowbite-react';
-import { Panel } from 'V2/Components/Layouts/Panel';
-import { update as updateFile } from 'V2/api/files';
-import { FileType } from 'shared/types/fileType';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { Button } from 'V2/Components/UI/Button';
-import { NeedAuthorization } from 'V2/Components/UI';
-import { notificationAtom } from 'V2/atoms';
-import { BlankState } from '../BlankState';
-import { ToC, type ProcessedTocEntry, sortTocEntries } from './ToC';
-import { scrollToPage } from '../functions';
-import { entityLoaderCache } from '../../EntityLoaderCache';
-import { useToc, useTocActions } from './tocAtom';
-import { getPageNumber } from './utils';
+import { Panel } from '#V2/Components/Layouts/Panel';
+import { update as updateFile } from '#V2/api/files';
+import { FileType } from '#shared/types/fileType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Button } from '#V2/Components/UI/Button';
+import { NeedAuthorization } from '#V2/Components/UI';
+import { notificationAtom } from '#V2/atoms';
+import { BlankState } from '#V2/Routes/Entity/Components/BlankState.jsx';
+import { ToC, type ProcessedTocEntry, sortTocEntries } from '#V2/Routes/Entity/Components/ToC/ToC.jsx';
+import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
+import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { useToc, useTocActions } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
+import { getPageNumber } from '#V2/Routes/Entity/Components/ToC/utils.js';
 
 const ToCPanel = ({
   toc,

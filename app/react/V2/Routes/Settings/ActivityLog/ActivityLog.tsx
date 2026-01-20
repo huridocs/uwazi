@@ -9,25 +9,25 @@ import { Translate } from '#app/I18N/index.js';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-import { Button, PaginationState, Paginator, Pill, Table } from '#app/V2/Components/UI/index.js';
+import { Button, PaginationState, Paginator, Pill, Table } from '#V2/Components/UI/index.js';
 
-import { useIsFirstRender } from '#app/V2/CustomHooks/useIsFirstRender.js';
+import { useIsFirstRender } from '#V2/CustomHooks/useIsFirstRender.js';
 
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
-import { getActivityLogColumns } from './components/TableElements';
-import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
-import { FiltersSidePanel } from './components/FiltersSidePanel';
-import type { LoaderData } from './ActivityLogLoader';
+import { getActivityLogColumns } from '#V2/Routes/Settings/ActivityLog/components/TableElements.jsx';
+import { ActivityLogSidePanel } from '#V2/Routes/Settings/ActivityLog/components/ActivityLogSidePanel.jsx';
+import { FiltersSidePanel } from '#V2/Routes/Settings/ActivityLog/components/FiltersSidePanel.jsx';
+import type { LoaderData } from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
 import {
   getAppliedFilters,
   updateSearch,
   ActivityLogSearch,
   ITEMS_PER_PAGE,
   buildPageURL,
-} from './ActivityLogLoader';
-import { settingsAtom } from '#app/V2/atoms/index.ts';
+} from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
+import { settingsAtom } from '#V2/atoms/index.js';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

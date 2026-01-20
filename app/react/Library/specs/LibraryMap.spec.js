@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryMapComponent } from '#app/Library/LibraryMap.js';
-import RouteHandler from '#app/App/RouteHandler.js';
-import { MapView } from '#app/Library/components/MapView.js';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
+import { LibraryMapComponent } from '#app/Library/LibraryMap.jsx';
+import RouteHandler from '#app/App/RouteHandler.jsx';
+import { MapView } from '#app/Library/components/MapView.jsx';
+import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.jsx';
 
-jest.mock('app/appRoutes');
+jest.mock('#app/appRoutes');
 
 describe('LibraryMap', () => {
   let component;

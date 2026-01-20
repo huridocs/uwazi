@@ -12,13 +12,13 @@ import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { createMockLogger } from '#api/log.v2/infrastructure/MockLogger.js';
+import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
-import { Logger } from '#api/log.v2/contracts/Logger.js';
-import { SaveEntityTranslations } from '../SaveEntityTranslations';
-import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
-import { ValidationError, Validator } from '../infrastructure/Validator';
-import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures';
+import { Logger } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
+import { TranslationResult, translationResultSchema } from '#api/externalIntegrations.v2/automaticTranslation/types/TranslationResult.js';
+import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
+import { saveEntityFixtures } from '#api/externalIntegrations.v2/automaticTranslation/specs/fixtures/SaveEntity.fixtures.js';
 
 const factory = getFixturesFactory();
 

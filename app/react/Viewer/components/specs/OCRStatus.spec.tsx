@@ -8,13 +8,13 @@ import Immutable from 'immutable';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.js';
+import { renderConnectedContainer, defaultState } from '#app/utils/test/renderConnected.jsx';
 
 import { socket } from '#app/socket.js';
 import { Provider } from 'react-redux';
-import { OCRStatus } from '../OCRStatus';
-import * as ocrActions from '#app/actions/ocrActions';
-import * as documentActions from '#app/actions/documentActions';
+import { OCRStatus } from '#app/Viewer/components/OCRStatus.jsx';
+import * as ocrActions from './../../actions/ocrActions.js';
+import * as documentActions from './../../actions/documentActions.js';
 
 describe('OCRStatus', () => {
   let file: FileType;

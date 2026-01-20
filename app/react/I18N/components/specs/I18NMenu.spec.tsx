@@ -7,13 +7,13 @@ import { Location, MemoryRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 
 import { ClientUserSchema } from '#app/apiResponseTypes.js';
-import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#app/V2/atoms/index.js';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { I18NMenu } from '../I18NMenu.js';
+import { I18NMenu } from '#app/I18N/components/I18NMenu.jsx';
 
 const defaultLanguages = [
   {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import GeolocationViewer from '../GeolocationViewer';
+import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.jsx';
 
 describe('GeolocationViewer', () => {
   let component;

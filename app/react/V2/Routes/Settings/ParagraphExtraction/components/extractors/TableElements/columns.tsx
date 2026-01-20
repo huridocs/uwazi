@@ -1,9 +1,9 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TemplateCell } from './TemplateCell';
-import { EntityCountCell } from './EntityCountCell';
-import { ActionCell } from './ActionCell';
-import { generateTableHeader } from '#app/utils/generateTableHeader';
-import { PXTable } from '#app/V2/Routes/Settings/ParagraphExtraction/types';
+import { TemplateCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/TemplateCell.jsx';
+import { EntityCountCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/EntityCountCell.jsx';
+import { ActionCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/ActionCell.jsx';
+import { generateTableHeader } from './../../../utils/generateTableHeader.js';
+import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
 
 const extractorColumnHelper = createColumnHelper<PXTable>();
 

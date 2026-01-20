@@ -6,12 +6,12 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { SortDropdown } from '#app/Library/components/SortDropdown.js';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
-import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.js';
+import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
+import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.jsx';
+import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.jsx';
 import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
@@ -20,7 +20,7 @@ import { showFilters as showFiltersAction } from '#app/Entities/actions/uiAction
 import { IStore } from '#app/istore.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
+import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
 
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;

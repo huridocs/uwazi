@@ -4,8 +4,8 @@ import { I18NLink, Translate } from '#app/I18N/index.js';
 import React, { useRef, useState, useCallback } from 'react';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { ILink, ISublink } from '#app/istore.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
+import { ILink, ISublink } from '#app/V2/shared/types.js';
 
 export type DropdownMenuProps = {
   link: IImmutable<ILink>;

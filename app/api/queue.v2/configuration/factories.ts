@@ -1,11 +1,11 @@
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import {
   getClient,
   getConnection,
   getSharedClient,
   getSharedConnection,
-} from '#api/common.v2/database/getConnectionForCurrentTenant.js';
-import { DefaultLogger, SystemLogger } from '#api/log.v2/infrastructure/StandardLogger.js';
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { DefaultLogger, SystemLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { JobsRouter } from '../infrastructure/JobsRouter.js';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';

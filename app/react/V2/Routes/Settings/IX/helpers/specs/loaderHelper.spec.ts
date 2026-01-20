@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { ClientPropertySchema } from '#app/V2/shared/types.js';
+import { ClientPropertySchema } from '#V2/shared/types.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
@@ -10,14 +10,14 @@ import {
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from '../loaderHelper';
+} from '#V2/Routes/Settings/IX/helpers/loaderHelper.js';
 
-jest.mock('V2/api/search', () => ({
+jest.mock('#V2/api/search', () => ({
   search: jest.fn(),
 }));
 
 describe('loaderHelper', () => {
-  const mockSearch = jest.requireMock('V2/api/search').search;
+  const mockSearch = jest.requireMock('#V2/api/search').search;
 
   const createMockEntity = (id: string, title: string, sharedId: string, metadata = {}) => ({
     _id: id,

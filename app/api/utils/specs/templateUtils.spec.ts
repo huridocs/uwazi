@@ -12,7 +12,7 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   PropertyOrThesaurusSchema,
-} from '../templateUtils';
+} from '#api/utils/templateUtils.js';
 
 describe('templates utils', () => {
   beforeEach(async () => {

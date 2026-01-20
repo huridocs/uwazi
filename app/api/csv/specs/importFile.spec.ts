@@ -3,7 +3,7 @@ import path from 'path';
 import { streamToString, deleteFiles } from '#api/files/filesystem.js';
 
 import importFile from '#api/csv/importFile.js';
-import { createTestingZip } from './helpers';
+import { createTestingZip } from '#api/csv/specs/helpers.js';
 
 describe('importFile', () => {
   beforeAll(async () => {

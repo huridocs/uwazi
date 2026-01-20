@@ -4,14 +4,14 @@ import React from 'react';
 import { useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { CurrentLocationLink } from '#app/Layout/index.js';
-import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.ts';
+import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
 const disableButton = (page, pageToDisable) => ({
   className: page === pageToDisable ? 'btn disabled' : 'btn',
   rel: page === pageToDisable ? 'nofollow' : undefined,
 });
 
-const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
+const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => { } }) => {
   const prevPage = page - 1 || 1;
   const nextPage = page + 1 > totalPages ? totalPages : page + 1;
   return (

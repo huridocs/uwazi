@@ -8,9 +8,9 @@ import {
   templatesAtom,
   thesauriAtom,
   translationsAtom,
-} from '#app/V2/atoms/index.ts';
-import { store } from '../store.js';
-import { socket, reconnectSocket } from '../socket.js';
+} from '#V2/atoms/index.js';
+import { store } from '#app/store.js';
+import { socket, reconnectSocket } from '#app/socket.js';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;

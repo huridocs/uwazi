@@ -2,11 +2,11 @@ import { Link } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { CurrentLocationLink } from '#app/Layout.js';
+import { CurrentLocationLink } from '#app/Layout/index.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { ViewDocumentLink } from '../ViewDocumentLink';
+import { ViewDocumentLink } from '#app/Attachments/components/ViewDocumentLink.jsx';
 
 let pathname = 'entity/';
 

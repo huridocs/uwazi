@@ -5,11 +5,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import AttachmentForm from '#app/Attachments/components/AttachmentForm.js';
+import AttachmentForm from '#app/Attachments/components/AttachmentForm.jsx';
 
-import { Icon } from 'UI';
+import { Icon } from '#UI/Icon/Icon.jsx';
 
-import { Attachment, mapStateToProps } from '../Attachment';
+import { Attachment, mapStateToProps } from '#app/Attachments/components/Attachment.jsx';
 
 describe('Attachment', () => {
   let component;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PagesContext from '#app/Markdown/components/Context.jsx';
-import { objectPath } from '#app/utils/index/index.js';
+import { objectPath } from '#app/Markdown/utils.js';
 
 class Repeat extends Component {
   render() {

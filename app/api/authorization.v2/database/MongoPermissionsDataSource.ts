@@ -1,11 +1,11 @@
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
-import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
-import { EntityPermissions } from '../model/EntityPermissions';
-import { EntityPermissionsDBO } from './schemas/permissionTypes';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { PermissionsDataSource } from '#api/authorization.v2/contracts/PermissionsDataSource.js';
+import { EntityPermissions } from '#api/authorization.v2/model/EntityPermissions.js';
+import { EntityPermissionsDBO } from '#api/authorization.v2/database/schemas/permissionTypes.js';
 
 const mapPermissions = (entityPermissionInfo: EntityPermissionsDBO) => {
   const entries =

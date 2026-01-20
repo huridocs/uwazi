@@ -1,15 +1,17 @@
+import { z } from 'zod';
 import {
   Context,
   Property,
   PropertyProps,
   PropertyTypes,
+  CreatePropertyAssignmentInput,
 } from '#api/core/domain/template/Property.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { PropertyName } from './PropertyName';
-import { PropertyTypeInvalidTypeError } from './errors';
-import { PropertyTypeEnum } from './PropertyType';
-import { GeolocationEntry, PropertyAssignment } from './PropertyValue';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
+import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { GeolocationEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 
 type Props = {
   type?: PropertyTypeEnum.Geolocation;

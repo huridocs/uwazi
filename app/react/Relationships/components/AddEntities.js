@@ -2,16 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Immuable from 'immutable';
+import Immutable from 'immutable';
 
-import SidePanel from '#app/Layout/SidePanel.js';
-import SearchResults from '#app/Connections/components/SearchResults.js';
+import SidePanel from '#app/Layout/SidePanel.jsx';
+import SearchResults from '#app/Connections/components/SearchResults.jsx';
 import { loadInReduxForm } from '#app/Metadata/actions/actions.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import { closePanel } from '../actions/uiActions';
-import SearchForm from './SearchEntitiesForm';
-import * as actions from '../actions/actions.js';
+import { closePanel } from '#app/Relationships/actions/uiActions.js';
+import SearchForm from '#app/Relationships/components/SearchEntitiesForm.jsx';
+import * as actions from '#app/Relationships/actions/actions.js';
 
 class AddEntities extends Component {
   constructor(props) {

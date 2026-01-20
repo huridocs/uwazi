@@ -14,7 +14,7 @@ import ReferencesAPI from '#app/Viewer/referencesAPI.js';
 import formater from '#app/Metadata/helpers/formater.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 import { DateTime } from 'luxon';
 
@@ -367,9 +367,8 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${DateTime.fromSeconds(reference.additionalData.date, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${
-                        reference.data.title
-                      }`}
+                      title={`${DateTime.fromSeconds(reference.additionalData.date, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${reference.data.title
+                        }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
@@ -393,9 +392,8 @@ export class TimelineViewer extends Component {
                       data-toggle="tooltip"
                       data-placement="top"
                       data-animation="false"
-                      title={`${DateTime.fromSeconds(reference.timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${
-                        reference.label
-                      }`}
+                      title={`${DateTime.fromSeconds(reference.timestamp, { zone: 'utc' }).toLocaleString(DateTime.DATE_MED)}\n${reference.label
+                        }`}
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">

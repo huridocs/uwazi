@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import React, { Component } from 'react';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { connect } from 'react-redux';
 import { t } from '#app/I18N/index.js';
-import ConnectionsGroup from './ConnectionsGroup';
-import { LibraryViewRelationships } from './LibraryViewRelationships';
+import ConnectionsGroup from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
+import { LibraryViewRelationships } from '#app/ConnectionsList/components/LibraryViewRelationships.jsx';
 
 class ConnectionsGroupsComponent extends Component {
   render() {

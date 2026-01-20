@@ -1,6 +1,6 @@
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { MongoTemplatesDataSource } from './MongoTemplatesDataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 
 const DefaultTemplatesDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();

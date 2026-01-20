@@ -2,10 +2,10 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from '../common.v2/infrastructure/AbstractController.js';
+} from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractParagraphsByEntityStatusFactory } from '../infrastructure/PXExtractParagraphByEntityStatusFactory ';
-import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { PXExtractParagraphsByEntityStatusFactory } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphByEntityStatusFactory .js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 const RequestSchema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),

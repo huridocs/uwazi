@@ -4,10 +4,10 @@ import { stat } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 
-import { Result } from 'api/core/libs/Result';
-import { generateFileName } from 'api/files';
-import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
-import { FileContents } from 'api/core/domain/files/FileContents';
+import { Result } from '#api/core/libs/Result.js';
+import { generateFileName } from '#api/files/index.js';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { tmpdir } from 'os';
 import path from 'path';
 import { Readable } from 'stream';

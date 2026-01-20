@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import * as types from '#app/actions/actionTypes';
-import hubsReducer from '../hubsReducer';
+import hubsReducer from '#app/Relationships/reducers/hubsReducer.js';
 
 describe('Hubs Reducer', () => {
   let state;

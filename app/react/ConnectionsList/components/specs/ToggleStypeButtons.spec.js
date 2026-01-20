@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { ToggleStyleButtons, mapStateToProps } from '../ToggleStyleButtons';
+import { ToggleStyleButtons, mapStateToProps } from '#app/ConnectionsList/components/ToggleStyleButtons.jsx';
 
 describe('ToggleStyleButtons', () => {
   let component;

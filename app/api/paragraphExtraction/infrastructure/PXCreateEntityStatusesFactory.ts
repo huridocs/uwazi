@@ -4,13 +4,13 @@ import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from '#api/common.v2/database/MongoTransactionManager.js';
-import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses';
-import { PXEntityStatusesQueryServiceFactory } from './PXEntityStatusesQueryServiceFactory';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { PXCreateEntityStatuses } from '#api/paragraphExtraction/application/PXCreateEntityStatuses.js';
+import { PXEntityStatusesQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusesQueryServiceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 
 type Props = {
   batchSize: number;

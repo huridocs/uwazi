@@ -4,8 +4,8 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
-import { MemberListItemPermission } from '../MemberListItemPermission';
-import { data } from './testData';
+import { MemberListItemPermission } from '#app/Permissions/components/MemberListItemPermission.jsx';
+import { data } from '#app/Permissions/components/specs/testData.js';
 
 describe('MemberListItem', () => {
   describe('for each test element', () => {

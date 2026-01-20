@@ -1,8 +1,8 @@
-import { set } from 'lodash';
+import set from 'lodash/set.js';
 import entities from '#api/entities/entities.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
+import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from '#api/entities/managerFunctions.js';
 import { isValidUrl, sanitizeUrl } from '#shared/urlValidationUtils.js';
 
 const validateAndSanitizeUrls = (entity: EntityWithFilesSchema): EntityWithFilesSchema => {

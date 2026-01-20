@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { CurrentLocationLink } from '../CurrentLocationLink';
+import { CurrentLocationLink } from '#app/Layout/CurrentLocationLink.jsx';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),

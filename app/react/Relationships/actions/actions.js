@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy.js';
 import api from '#app/utils/api.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { debounce } from '#app/utils/index.js';
@@ -9,8 +9,8 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import SearchApi from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
 import EntitiesApi from '#app/Entities/EntitiesAPI.js';
-import * as types from './actionTypes.js';
-import * as uiActions from './uiActions.js';
+import * as types from '#app/Relationships/actions/actionTypes.js';
+import * as uiActions from '#app/Relationships/actions/uiActions.js';
 import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
 
 function parseResults(results, parentEntity, editing) {

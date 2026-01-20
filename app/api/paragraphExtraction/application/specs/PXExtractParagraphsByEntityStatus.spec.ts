@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 
-import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
@@ -12,14 +12,14 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 
-import { TestUtils } from '../common.v2/utils/Test.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-import { PXExtractParagraphsByEntityStatus } from '../PXExtractParagraphsByEntityStatus';
-import { PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
+import { PXExtractParagraphsByEntityStatus } from '#api/paragraphExtraction/application/PXExtractParagraphsByEntityStatus.js';
+import { PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
 
 const extractor1 = new ObjectId();
 const extractor2 = new ObjectId();

@@ -3,19 +3,19 @@ import SHA256 from 'crypto-js/sha256';
 
 import { createError } from '#api/utils/index.js';
 import random from '#shared/uniqueID.js';
-import { encryptPassword, comparePasswords } from '../auth/encryptPassword.js';
-import * as usersUtils from '../auth2fa/usersUtils.js';
+import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
+import * as usersUtils from '#api/auth2fa/usersUtils.js';
 
 import {
   getByMemberIdList,
   updateUserMemberships,
   removeUsersFromAllGroups,
-} from '../usergroups/userGroupsMembers.js';
+} from '#api/usergroups/userGroupsMembers.js';
 import mailer from '#api/utils/mailer.js';
-import model from './usersModel.js';
-import passwordRecoveriesModel from './passwordRecoveriesModel.js';
+import model from '#api/users/usersModel.js';
+import passwordRecoveriesModel from '#api/users/passwordRecoveriesModel.js';
 import settings from '#api/settings/settings.js';
-import { generateUnlockCode } from './generateUnlockCode.js';
+import { generateUnlockCode } from '#api/users/generateUnlockCode.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 

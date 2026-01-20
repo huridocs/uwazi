@@ -1,7 +1,7 @@
 import { Context, Property, PropertyProps } from '#api/core/domain/template/Property.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { PropertyName } from './PropertyName';
+import { PropertyName } from '#api/core/domain/template/PropertyName.js';
 
 class NestedProperty extends Property {
   constructor(props: PropertyProps, context?: Context) {

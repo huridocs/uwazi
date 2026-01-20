@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { t, Translate } from '#app/I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -8,11 +8,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { exportDocuments } from '#app/Library/actions/exportActions.js';
 
-import { User } from '#app/users/usersModel.js';
-import Modal from '#app/Layout/Modal.js';
+import { User } from './../../../api/users/usersModel.js';
+import Modal from '#app/Layout/Modal.jsx';
 
 import { CaptchaValue } from '#shared/types/Captcha.js';
-import { Captcha, FormGroup } from '#app/ReactReduxForms/index.js';
+import { Captcha, FormGroup } from '#app/ReactReduxForms/index.jsx';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { LocalForm } from '#app/Forms/Form.js';

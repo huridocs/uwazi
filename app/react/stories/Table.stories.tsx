@@ -3,8 +3,8 @@ import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from '#app/V2/Components/UI/index.js';
-import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures.js';
+import { Button, Table } from '#V2/Components/UI/index.js';
+import { BasicData, DataWithGroups, basicData, dataWithGroups } from '#app/stories/table/fixtures.js';
 
 type StoryProps = {
   columnType: string;

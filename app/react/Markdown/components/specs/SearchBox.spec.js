@@ -4,7 +4,7 @@
 import React from 'react';
 import { Form } from 'react-redux-form';
 import { shallow } from 'enzyme';
-import SearchBox from '../SearchBox';
+import SearchBox from '#app/Markdown/components/SearchBox.jsx';
 
 const mockUseNavigate = jest.fn();
 

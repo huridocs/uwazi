@@ -11,7 +11,7 @@ import {
   unselectAllDocuments,
   selectDocuments,
 } from '#app/Library/actions/libraryActions.js';
-import DocumentsList from '#app/Layout/DocumentsList';
+import DocumentsList from '#app/Layout/DocumentsList.jsx';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;

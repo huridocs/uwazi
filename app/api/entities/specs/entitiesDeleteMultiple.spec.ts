@@ -1,12 +1,12 @@
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 import db from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getFixturesFactory } from '#api/utils/fixturesFactory';
-import entitiesModel from '../entitiesModel';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import entitiesModel from '#api/entities/entitiesModel.js';
 
 const factory = getFixturesFactory();
 const loadFixtures = async () =>

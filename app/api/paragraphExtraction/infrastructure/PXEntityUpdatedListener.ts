@@ -1,10 +1,10 @@
-import { EventsBus } from '#api/eventsbus/index.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
@@ -19,8 +19,8 @@ import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source
 import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
 import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 type Dependencies = {

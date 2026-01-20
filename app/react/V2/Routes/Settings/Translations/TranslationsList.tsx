@@ -6,17 +6,17 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
-import { Table } from '#app/V2/Components/UI/index.js';
+import { Table } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
-import * as translationsAPI from '#app/V2/api/translations/index.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import * as translationsAPI from '#V2/api/translations/index.js';
 import {
   ContextPill,
   RenderButton,
   LabelHeader,
   TypeHeader,
   ActionHeader,
-} from './components/TableComponents.js';
+} from '#V2/Routes/Settings/Translations/components/TableComponents.jsx';
 
 type TranslationContext = ClientTranslationContextSchema & { rowId: string };
 

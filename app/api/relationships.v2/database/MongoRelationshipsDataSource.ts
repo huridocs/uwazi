@@ -1,16 +1,16 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
-import { MongoDataSource } from '#api/common.v2/database/MongoDataSource.js';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
-import { MongoResultSet } from '#api/common.v2/database/MongoResultSet.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 
-import { MongoIdHandler } from '#api/common.v2/database/MongoIdGenerator.js';
-import { Relationship } from '../model/Relationship';
-import { TraversalResult, RelationshipMappers } from './RelationshipMappers';
-import { RelationshipDBOType } from './schemas/relationshipTypes';
-import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { compileQuery } from './MongoGraphQueryCompiler';
-import { MatchQueryNode } from '../model/MatchQueryNode';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { Relationship } from '#api/relationships.v2/model/Relationship.js';
+import { TraversalResult, RelationshipMappers } from '#api/relationships.v2/database/RelationshipMappers.js';
+import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
+import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
+import { compileQuery } from '#api/relationships.v2/database/MongoGraphQueryCompiler.js';
+import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 
 const idsToDb = (ids: string[]) => ids.map(id => MongoIdHandler.mapToDb(id));
 

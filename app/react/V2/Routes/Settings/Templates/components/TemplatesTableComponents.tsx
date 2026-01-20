@@ -1,12 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { Button, Pill } from '#app/V2/Components/UI/index.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
 import { StarIcon } from '@heroicons/react/20/solid';
 
 import { Translate, I18NLinkV2 as I18NLink } from '#app/I18N/index.js';
 import { Tooltip } from 'flowbite-react';
-import { TemplateRow } from '../types.js';
+import { TemplateRow } from '#V2/Routes/Settings/Templates/types.js';
 
 const columnHelper = createColumnHelper<TemplateRow>();
 

@@ -1,11 +1,11 @@
 import { WithId } from 'mongodb';
 
-import { model as entityModel } from '../entities/index.js';
+import { model as entityModel } from '#api/entities/index.js';
 import entities from '#api/entities/entities.js';
 
-import { search } from '#api/search.js';
-import users from '../users/users.js';
-import userGroups from '../usergroups/userGroups.js';
+import { search } from '#api/search/index.js';
+import users from '#api/users/users.js';
+import userGroups from '#api/usergroups/userGroups.js';
 import { unique } from '#api/utils/filters.js';
 import { EntitySchema, EntityWithFilesSchema } from '#shared/types/entityType.js';
 import {
@@ -17,8 +17,8 @@ import {
 import { PermissionSchema, PermissionsDataSchema } from '#shared/types/permissionType.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { permissionsContext } from './permissionsContext';
-import { PUBLIC_PERMISSION } from './publicPermission';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 
 type PermissionUpdate = WithId<Pick<EntitySchema, '_id' | 'permissions' | 'published'>>;
 

@@ -1,8 +1,8 @@
 import translations from '#app/I18N/index.js';
-import { search } from '#api/search.js';
+import { search } from '#api/search/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { checkIfReindex } from '../reindex';
-import templates from '../templates';
+import templates from '#api/templates/templates.js';
 import fixtures, {
   pageSharedId,
   propertyToBeInherited2,

@@ -3,10 +3,10 @@
  */
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { TestAtomStoreProvider } from '#app/V2/testing/index.js';
-import { translationsAtom, inlineEditAtom, localeAtom } from '#app/V2/atoms/index.js';
-import { Translate } from '../Translate.js';
-import { translations } from './fixtures.js';
+import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
+import { Translate } from '#app/I18N/Translate.jsx';
+import { translations } from '#app/I18N/specs/fixtures.js';
 
 let initialValues: any[];
 

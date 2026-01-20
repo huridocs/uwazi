@@ -1,5 +1,5 @@
-import { Segmentation } from 'api/core/domain/files/Segmentation';
-import { SegmentationDBO } from './MongoFilesDataSource';
+import { Segmentation } from '#api/core/domain/files/Segmentation.js';
+import { SegmentationDBO } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
 
 export class SegmentationMapper {
   static toDomain(dbo: SegmentationDBO): Segmentation {

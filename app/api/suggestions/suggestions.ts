@@ -2,10 +2,10 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { files } from '../files/files.js';
-import { EnforcedWithId } from '../odm/index.js';
-import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
-import templates from '../templates/index.js';
+import { files } from '#api/files/files.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import templates from '#api/templates/index.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import {
   ExtractedMetadataSchema,
@@ -18,16 +18,16 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
-} from '../services/informationextraction/ixMaterials.js';
-import { ArrayUtils } from '../common.v2/utils/Array.js';
+} from '#api/services/informationextraction/ixMaterials.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
-import { registerEventListeners } from './eventListeners.js';
-import { updateStates } from './updateState.js';
+import { registerEventListeners } from '#api/suggestions/eventListeners.js';
+import { updateStates } from '#api/suggestions/updateState.js';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
-} from './updateEntities.js';
+} from '#api/suggestions/updateEntities.js';
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],

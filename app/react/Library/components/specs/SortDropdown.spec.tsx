@@ -2,12 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fromJS } from 'immutable';
+
 import { RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { SortDropdown } from '../SortDropdown';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
+import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 describe('Sort dropdown', () => {
   let props: any;
   let renderResult: RenderResult;

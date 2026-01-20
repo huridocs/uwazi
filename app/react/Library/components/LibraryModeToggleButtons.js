@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, t } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
 import { createSelector } from 'reselect';
 import { isClient } from '#app/utils/index.js';
@@ -69,9 +69,8 @@ const LibraryModeToggleButtons = ({
     <div className="list-view-mode">
       {!mapViewMode && (
         <div
-          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-            tableViewMode ? 'unpinned-mode' : ''
-          }`}
+          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${tableViewMode ? 'unpinned-mode' : ''
+            }`}
         >
           <button
             className="btn btn-default zoom-out"

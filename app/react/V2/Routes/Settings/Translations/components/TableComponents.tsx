@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 import { CellContext } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, Pill } from '#app/V2/Components/UI/index.js';
-import { TranslationContext } from '../TranslationsList.js';
+import { Button, Pill } from '#V2/Components/UI/index.js';
+import { TranslationContext } from '#V2/Routes/Settings/Translations/TranslationsList.jsx';
 
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;

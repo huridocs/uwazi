@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
-import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
-import { propertyTypeIsMultiValued } from '../services/informationextraction/ixMaterials.js';
-import templates from '../templates/index.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
+import templates from '#api/templates/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
-import { IXServices } from '../services/informationextraction/IXServices.js';
-import { ExtractorNotFound, Extractors } from '../services/informationextraction/ixextractors.js';
-import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from './batchProcessing';
-import { CreateBlankStateSuggestionsJob } from './jobs/CreateBlankStateSuggestionsJob';
-import { CreateBlankSuggestionStrategy } from './useCases/createBlankSuggestionStrategy';
+import { IXServices } from '#api/services/informationextraction/IXServices.js';
+import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from '#api/suggestions/batchProcessing.js';
+import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
+import { CreateBlankSuggestionStrategy } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
 
 // eslint-disable-next-line consistent-return
 async function createBlankStateSuggestionsBatch(

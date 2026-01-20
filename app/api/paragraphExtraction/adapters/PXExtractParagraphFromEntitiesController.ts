@@ -2,9 +2,9 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from '../common.v2/infrastructure/AbstractController.js';
+} from '#api/common.v2/infrastructure/AbstractController.js';
 
-import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory';
+import { PXExtractParagraphsFromEntitiesFactory } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesFactory.js';
 
 type Dependencies = AbstractControllerDependencies<Request>;
 

@@ -9,7 +9,7 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
-import { Bar } from './Bar';
+import { Bar } from '#app/Markdown/components/Bar.js';
 
 type layoutType = 'horizontal' | 'vertical' | undefined;
 

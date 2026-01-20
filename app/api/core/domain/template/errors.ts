@@ -5,10 +5,10 @@ import { Property } from '#api/core/domain/template/Property.js';
 import { Template } from '#api/core/domain/template/Template.js';
 
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { DomainError } from '../error/DomainError';
-import { AJVObject, ValidationError } from '../error/ValidationError';
-import { AbstractSelectProperty } from './select/AbstractSelectProperty';
-import { NestedPropertyProps } from './NestedProperty';
+import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { AJVObject, ValidationError } from '#api/core/domain/error/ValidationError.js';
+import { AbstractSelectProperty } from '#api/core/domain/template/select/AbstractSelectProperty.js';
+import { NestedPropertyProps } from '#api/core/domain/template/NestedProperty.js';
 
 export class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {

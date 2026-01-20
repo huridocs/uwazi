@@ -1,12 +1,12 @@
 import testingDB from '#api/utils/testing_db.js';
 
-import { migrator } from '../migrations/migrator.js';
+import { migrator } from '#api/migrations/migrator.js';
 import path from 'path';
 
-import { runMigration } from '../migrations/migrate.js';
+import { runMigration } from '#api/migrations/migrate.js';
 import { Connection } from 'mongoose';
 
-import { DB } from '../odm.js';
+import { DB } from '#api/odm/index.js';
 
 describe('migrate', () => {
   let connection: Connection;

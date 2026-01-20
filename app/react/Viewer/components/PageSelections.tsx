@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy.js';
 import { useAtomValue } from 'jotai';
-import { Highlight } from '@huridocs/react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
 import { IStore } from '#app/istore.js';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from '#shared/types/commonTypes.js';
-import { pdfScaleAtom } from '#app/V2/atoms/index.ts';
+import { pdfScaleAtom } from '#V2/atoms/index.js';
 
-import { selectionHandlers } from '#app/V2/Components/PDFViewer.js';
+import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;
@@ -39,9 +39,9 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
 
   const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
     ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
-        ...currentSelection,
-        isCurrent: true,
-      }))
+      ...currentSelection,
+      isCurrent: true,
+    }))
     : [];
 
   const selections = uniqueSelections(currentSelections, newSelections);
@@ -55,13 +55,13 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
             regionId: rectangle.page,
             ...(rectangle as Required<SelectionRectangleSchema>),
           }));
-          const highlight = selectionHandlers.adjustSelectionsToScale(
-            {
-              text: selected?.text,
-              selectionRectangles: rectangles,
-            },
-            pdfScaleFactor
-          );
+          // const highlight = selectionHandlers.adjustSelectionsToScale(
+          //   {
+          //     text: selected?.text,
+          //     selectionRectangles: rectangles,
+          //   },
+          //   pdfScaleFactor
+          // );
 
           return (
             <div
@@ -69,10 +69,10 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
               data-testid={selection.timestamp}
               className="selection"
             >
-              <Highlight
+              {/* <Highlight
                 textSelection={highlight}
                 color={selection.isCurrent ? '#B1F7A3' : '#F27DA5'}
-              />
+              /> */}
             </div>
           );
         })}

@@ -3,9 +3,9 @@ import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import MarkDownViewer from '#app/Markdown.js';
+import MarkDownViewer from '#app/Markdown/index.js';
 
-import { MarkDown, MarkDownType } from '../MarkDown';
+import { MarkDown, MarkDownType } from '#app/Forms/components/MarkDown.jsx';
 
 describe('MarkDown', () => {
   let component: ShallowWrapper<MarkDown>;

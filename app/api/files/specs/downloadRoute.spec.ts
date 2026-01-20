@@ -16,9 +16,9 @@ import {
   adminUser,
   customPdfFileName,
   fileOnPublicEntity,
-} from './fixtures';
+} from '#api/files/specs/fixtures.js';
 
-import uploadRoutes from '../routes';
+import uploadRoutes from '#api/files/routes.js';
 import {
   adminUser,
   collabInGroupUser,
@@ -31,7 +31,7 @@ import {
   mainDocument1,
   restrictedFileName,
   writerUser,
-} from './fixtures';
+} from '#api/files/specs/fixtures.js';
 
 const setAppWithUser = (routes: any, user: any) => {
   testingEnvironment.setPermissions(user);

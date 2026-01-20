@@ -3,8 +3,8 @@ import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 
 import { Translate } from '#app/I18N/index.js';
-import { Button, FileIcon } from '#app/V2/Components/UI/index.js';
-import { CustomUpload } from '../CustomUploads.js';
+import { Button, FileIcon } from '#V2/Components/UI/index.js';
+import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.jsx';
 
 const columnHelper = createColumnHelper<CustomUpload>();
 

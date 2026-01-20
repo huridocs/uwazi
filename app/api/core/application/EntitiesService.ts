@@ -1,12 +1,12 @@
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { Entity, EntityIcon } from '../domain/entity/Entity';
-import { SettingsDataSource } from './contracts/SettingsDataSource';
-import { TemplatesDataSource } from './contracts/TemplatesDataSource';
-import { EventsBus } from '../libs/eventsbus';
-import { TransactionManager } from './contracts/TransactionManager';
-import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
-import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { EventsBus } from '#api/core/libs/eventsbus/index.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 
 type CreateInput = {
   icon?: EntityIcon;

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Popover } from '@headlessui/react';
 
-import { InputField } from '#app/V2/Components/Forms/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 import { usePopper } from 'react-popper';
 
 type ColorPickerProps = {

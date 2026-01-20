@@ -1,2 +1,2 @@
-export { Matomo } from './Matomo';
-export { CleanInsights } from './CleanInsights';
+export { Matomo } from '#V2/Components/Analitycs/Matomo.jsx';
+export { CleanInsights } from '#V2/Components/Analitycs/CleanInsights.jsx';

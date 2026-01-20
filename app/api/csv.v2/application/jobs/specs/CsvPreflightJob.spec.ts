@@ -1,19 +1,19 @@
 /* eslint-disable max-statements, max-classes-per-file */
-import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { tenants } from 'api/tenants/tenantContext';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
-import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
-import { CsvImportRow } from '../../../domain/CsvImportRow';
-import { CsvPreflightJob } from '../CsvPreflightJob';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { tenants } from '#api/tenants/tenantContext.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler.js';
+import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
+import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
+import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
 
 const fixturesFactory = getFixturesFactory();
 

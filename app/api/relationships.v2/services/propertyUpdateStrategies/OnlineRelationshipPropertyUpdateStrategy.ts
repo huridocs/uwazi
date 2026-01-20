@@ -3,7 +3,7 @@ import { TransactionManager } from '../common.v2/contracts/TransactionManager.js
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
+import { RelationshipPropertyUpdateStrategy as Strategy } from '#api/relationships.v2/services/propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;

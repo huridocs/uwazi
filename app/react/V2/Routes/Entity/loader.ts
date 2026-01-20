@@ -1,15 +1,15 @@
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { FetchResponseError } from '#shared/JSONRequest.js';
 import { LoaderFunction } from 'react-router';
-import { isClient } from 'app/utils';
-import { getPagePlaintext } from 'V2/api/files';
-import { snippets } from 'V2/api/search';
-import { SnippetsSearchResponse } from 'V2/api/types';
-import { getEntityCompositionUseCase } from 'V2/application/container/singletons';
-import { fullDetailOptions } from 'V2/application/optionsPresets';
-import { entityLoaderCache } from './EntityLoaderCache';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from './Components';
-import { LoaderResponse } from './types';
+import { isClient } from '#app/utils/index.js';
+import { getPagePlaintext } from '#V2/api/files';
+import { snippets } from '#V2/api/search';
+import { SnippetsSearchResponse } from '#V2/api/types';
+import { getEntityCompositionUseCase } from '#V2/application/container/singletons';
+import { fullDetailOptions } from '#V2/application/optionsPresets';
+import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/Components/index.js';
+import { LoaderResponse } from '#V2/Routes/Entity/types.js';
 
 const entityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

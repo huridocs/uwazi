@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import SearchResults from '#app/Connections/components/SearchResults.js';
+import SearchResults from '#app/Connections/components/SearchResults.jsx';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import SearchInput from '#app/Layout/SearchInput.js';
+import SearchInput from '#app/Layout/SearchInput.jsx';
 
 import { debounce } from '#app/utils/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';

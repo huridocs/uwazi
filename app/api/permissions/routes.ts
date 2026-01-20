@@ -1,6 +1,6 @@
 import { Application, Request } from 'express';
 
-import { needsAuthorization } from '../auth.js';
+import { needsAuthorization } from '#api/auth/index.js';
 import { validation } from '#api/utils/index.js';
 import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { collaborators } from '#api/permissions/collaborators.js';

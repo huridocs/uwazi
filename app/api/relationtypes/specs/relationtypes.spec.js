@@ -2,8 +2,8 @@ import translations from '#api/i18n/translations.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ContextType } from '#shared/translationSchema.js';
-import relationtypes from '../relationtypes.js';
-import fixtures, { canNotBeDeleted, against, inRelProperty } from './fixtures.js';
+import relationtypes from '#api/relationtypes/relationtypes.js';
+import fixtures, { canNotBeDeleted, against, inRelProperty } from '#api/relationtypes/specs/fixtures.js';
 
 describe('relationtypes', () => {
   beforeEach(async () => {

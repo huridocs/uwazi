@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { wrapValidator } from '#shared/tsUtils.js';
 import addFormats from 'ajv-formats';
-import createError from './Error.js';
+import createError from '#api/utils/Error.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

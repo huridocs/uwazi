@@ -8,10 +8,10 @@ import { testingDB } from '#api/utils/testing_db.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
-import { searchRoutes } from '../routes';
+import { searchRoutes } from '#api/search.v2/routes.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { setupTestingEnviroment } from './setupTestingEnvironment';
+import { setupTestingEnviroment } from '#api/search.v2/specs/setupTestingEnvironment.js';
 
 describe('Pagination', () => {
   const factory = getFixturesFactory();

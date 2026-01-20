@@ -10,7 +10,7 @@ import { FormValue } from '#app/Forms/index.js';
 import ToggleDisplay from '#app/Layout/ToggleDisplay.jsx';
 import { bindActionCreators } from 'redux';
 import { Translate } from '#app/I18N/index.js';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import Icon from '#UI/Icon/Icon.jsx';
 
 export const IconFieldBase = ({ model, removeIcon }) => (
   <FormValue model={`${model}.icon`}>

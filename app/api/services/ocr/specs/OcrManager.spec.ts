@@ -4,9 +4,9 @@ import fetchMock from 'fetch-mock';
 
 import { files, storage } from '#api/files/index.js';
 
-import * as filesApi from '../files/filesystem.js';
+import * as filesApi from '#api/files/filesystem.js';
 
-import * as processDocumentApi from '../files/processDocument.js';
+import * as processDocumentApi from '#api/files/processDocument.js';
 
 import { tenants } from '#api/tenants/tenantContext.js';
 
@@ -17,17 +17,17 @@ import { Readable } from 'stream';
 
 import request from '#shared/JSONRequest.js';
 
-import * as sockets from '../socketio/setupSockets.js';
+import * as sockets from '#api/socketio/setupSockets.js';
 
 import * as handleError from '#api/utils/handleError.js';
-import { getOcrStatus, OcrManager } from '../OcrManager';
-import { OcrModel, OcrStatus } from '../ocrModel';
-import { ResultsMessage, TaskManager } from '#api/tasksmanager/TaskManager';
+import { getOcrStatus, OcrManager } from '#api/services/ocr/OcrManager.js';
+import { OcrModel, OcrStatus } from '#api/services/ocr/ocrModel.js';
+import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { mockTaskManagerImpl } from '#api/tasksmanager/specs/TaskManagerImplementationMocker';
-import { fixtures, fixturesFactory } from './fixtures/fixtures';
-import { cleanupRecordsOfFiles } from '../ocrRecords';
+import { fixtures, fixturesFactory } from '#api/services/ocr/specs/fixtures/fixtures.js';
+import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 
-jest.mock('api/services/tasksmanager/TaskManager.ts');
+jest.mock('#api/services/tasksmanager/TaskManager.ts');
 
 class Mocks {
   jestMocks: { [k: string]: jest.SpyInstance };

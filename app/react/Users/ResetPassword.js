@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import RouteHandler from '#app/App/RouteHandler.js';
+import RouteHandler from '#app/App/RouteHandler.jsx';
 import qs from 'qs';
-import { Icon } from '#app/V2/Components/UI/index.js';
+import { Icon } from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import { withRouter } from '#app/componentWrappers.js';
+import { withRouter } from '#app/componentWrappers.jsx';
 
 import auth from '#app/Auth/index.js';
 
@@ -52,16 +52,16 @@ class ResetPasswordComponent extends RouteHandler {
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
             {qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).createAccount ===
               'true' && (
-              <div className="alert alert-info">
-                <Icon icon="info-circle" />
-                <div>
-                  <Translate>
-                    To complete the account creation process, please create a password for your
-                    account
-                  </Translate>
+                <div className="alert alert-info">
+                  <Icon icon="info-circle" />
+                  <div>
+                    <Translate>
+                      To complete the account creation process, please create a password for your
+                      account
+                    </Translate>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             <form onSubmit={this.submit}>
               <div className={`form-group login-email ${this.state.error ? 'has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="password">

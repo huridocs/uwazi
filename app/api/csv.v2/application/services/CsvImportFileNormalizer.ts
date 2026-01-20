@@ -1,8 +1,8 @@
 import yauzl from 'yauzl';
-import { FileStorage } from 'api/core/application/contracts/FileStorage';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
-import { NonRetryableJobError } from 'api/core/libs/queue/infrastructure/errors';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { FileContents } from '#api/core/domain/files/FileContents.js';
+import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
+import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 
 type NormalizeParams = {
   importId: string;

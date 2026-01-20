@@ -1,8 +1,10 @@
 /* eslint-disable camelcase */
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { fromJS } from 'immutable';
+import Immutable from 'immutable';
 import { IStore } from '#app/istore.js';
+
+const { fromJS } = Immutable;
 
 const defaultState = {
   locale: 'en',

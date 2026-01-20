@@ -1,9 +1,9 @@
 import { Db, ObjectId } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration from '../index';
-import { Entity, Fixture, Template, TranslationDBO } from '../types';
-import { fixtures, correctFixture, template1, template2, template3 } from './fixtures';
+import migration from '#api/migrations/migrations/163-supplement-missing-entity-templates/index.js';
+import { Entity, Fixture, Template, TranslationDBO } from '#api/migrations/migrations/163-supplement-missing-entity-templates/types.js';
+import { fixtures, correctFixture, template1, template2, template3 } from '#api/migrations/migrations/163-supplement-missing-entity-templates/specs/fixtures.js';
 
 let db: Db | null;
 let entityTemplatesInDB: (ObjectId | undefined)[] = [];

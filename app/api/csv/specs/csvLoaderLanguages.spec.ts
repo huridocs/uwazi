@@ -16,9 +16,9 @@ import path from 'path';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 import translations from '#api/i18n/translations.js';
-import { CSVLoader } from '../csvLoader';
-import { fixtures, template1Id } from './fixtures';
-import { createTestingZip } from './helpers';
+import { CSVLoader } from '#api/csv/csvLoader.js';
+import { fixtures, template1Id } from '#api/csv/specs/fixtures.js';
+import { createTestingZip } from '#api/csv/specs/helpers.js';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));

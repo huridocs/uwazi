@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import ShowIf from '../ShowIf';
+import ShowIf from '#app/App/ShowIf.jsx';
 
 describe('ShowIf', () => {
   let component;

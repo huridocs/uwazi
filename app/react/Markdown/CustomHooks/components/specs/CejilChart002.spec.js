@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+
 
 import api from '#app/Search/SearchAPI.js';
 import CejilChart, {
@@ -10,9 +10,11 @@ import CejilChart, {
   judgesCommisionersTemplate as template,
   male,
   female,
-} from '../CejilChart002';
-import { countryKey } from '../CejilChart';
+} from '#app/Markdown/CustomHooks/components/CejilChart002.js';
+import { countryKey } from '#app/Markdown/CustomHooks/components/CejilChart.jsx';
+import Immutable from 'immutable';
 
+const { fromJS } = Immutable;
 describe('CejilChart002', () => {
   let props;
 

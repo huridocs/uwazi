@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from '../../../../../../../../atoms/index.js';
+import { templatesAtom } from '#V2/atoms/index.js';
 import {
   defaultSearch,
   MultiselectList,
   MultiselectListOption,
-} from '../../../../../../../../Components/Forms/index.js';
-import { useCreateExtractorContext } from '#app/V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
-import { filterPXQualifiedTemplates } from '#app/V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
-import { formatTemplatesToOptions } from '#app/V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
+} from '#V2/Components/Forms/index.js';
+import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.jsx';
+import { filterPXQualifiedTemplates } from '#V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from '#V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
 
 const Body = () => {
   const { targetTemplateId, setTargetTemplateId } = useCreateExtractorContext();

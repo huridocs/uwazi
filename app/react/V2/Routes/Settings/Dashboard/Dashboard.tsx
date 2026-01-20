@@ -6,13 +6,13 @@ import { LoaderFunction, useLoaderData } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { SettingsContent } from '#app/V2/Components/Layouts/SettingsContent.js';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-import { Card } from '#app/V2/Components/UI/index.js';
+import { Card } from '#V2/Components/UI/index.js';
 
-import { getStats } from '#app/V2/api/settings.js';
+import { getStats } from '#V2/api/settings/index.js';
+import { formatBytes } from '#app/V2/shared/formatHelpers.js';
 
-import { formatBytes } from '#shared/V2/shared/formatHelpers.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
@@ -23,8 +23,8 @@ interface InstanceStats {
 
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getStats(headers);
+    async () =>
+      getStats(headers);
 
 const Dashboard = () => {
   const stats = useLoaderData() as InstanceStats;

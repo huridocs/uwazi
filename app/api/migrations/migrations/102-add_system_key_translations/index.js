@@ -1,7 +1,7 @@
 //eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
 
-import csv from '../csv/csv.js';
+import csv from '#api/csv/index.js';
 
 /*
 This migration is meant to be repeatable.
@@ -58,7 +58,7 @@ export default {
 
     await readCsvToSystemKeys(
       db,
-      'app/api/migrations/migrations/102-add_system_key_translations/system_keys.csv'
+      '#app/api/migrations/migrations/102-add_system_key_translations/system_keys.csv'
     );
   },
 };

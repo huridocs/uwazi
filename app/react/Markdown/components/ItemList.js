@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { fromJS as Immutable } from 'immutable';
+
 import PropTypes from 'prop-types';
 import qs from 'qs';
 
-import { RowList } from '#app/Layout/Lists.js';
-import Doc from '#app/Library/components/Doc.js';
+import { RowList } from '#app/Layout/Lists.jsx';
+import Doc from '#app/Library/components/Doc.jsx';
 import { t, I18NLink } from '#app/I18N/index.js';
 import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Slider from './slider';
+import Slider from '#app/Markdown/components/slider.jsx';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 class ItemList extends Component {
   render() {
     const { items, link } = this.props;

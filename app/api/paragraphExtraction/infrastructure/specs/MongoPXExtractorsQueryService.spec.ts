@@ -5,11 +5,11 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
-import { getConnection } from '#api/common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import {
   extractorsQueryFixtures,
@@ -28,11 +28,11 @@ import {
   pxEntityStatus10,
   entity10En,
   entity10Pt,
-} from '../../application/specs/shared/extractorsQueryFixtures';
+} from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
 
-import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
+import { MongoPXExtractorsQueryService } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsQueryService.js';
+import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 

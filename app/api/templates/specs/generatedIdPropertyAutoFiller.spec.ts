@@ -1,14 +1,14 @@
-import entities from '#api/entities.js';
+import entities from '#api/entities/index.js';
 
 import translations from '#app/I18N/index.js';
 
-import { elastic } from '#api/search.js';
+import { elastic } from '#api/search/index.js';
 import {
   factory,
   fixtures,
   templateId,
   textPropertyId,
-} from '../templates/specs/generatedIdPropertyAutoFillerFixtures.js';
+} from '#api/templates/specs/generatedIdPropertyAutoFillerFixtures.js';
 
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 
@@ -16,7 +16,7 @@ import { unique } from '#api/utils/filters.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import * as setupSockets from '../socketio/setupSockets.js';
+import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
@@ -24,7 +24,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { inspect } from 'util';
-import templates from '../templates';
+import templates from '#api/templates/templates.js';
 
 async function updateTemplate(template: TemplateSchema) {
   return new Promise<void>((resolve, reject) => {

@@ -1,12 +1,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS as Immutable } from 'immutable';
 
-import { RowList } from '#app/Layout/Lists.js';
+
+import { RowList } from '#app/Layout/Lists.jsx';
 import { I18NLink } from '#app/I18N/index.js';
-import { ItemList } from '../ItemList';
-import Slider from '../slider';
+import { ItemList } from '#app/Markdown/components/ItemList.jsx';
+import Slider from '#app/Markdown/components/slider.jsx';
+import ImmutableLib from 'immutable';
 
+const { fromJS: Immutable } = ImmutableLib;
 describe('ItemList', () => {
   let component;
   let props;
