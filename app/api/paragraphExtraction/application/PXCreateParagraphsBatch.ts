@@ -11,12 +11,13 @@ import { tenants } from 'api/tenants/tenantContext';
 import { EntitySchema } from 'shared/types/entityType';
 
 import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { Entity } from 'api/core/domain/entity/Entity';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractor } from '../domain/PXExtractor';
 
 type PXCreateParagraphsBatchInput = {
-  sourceEntities: EntitySchema[];
+  sourceEntity: Entity;
   extractor: PXExtractor;
   user: { _id: ObjectId };
   paragraphs: ParagraphOutput[];
@@ -45,7 +46,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
   async execute({
     paragraphs,
     extractor,
-    sourceEntities,
+    sourceEntity,
     user,
   }: PXCreateParagraphsBatchInput): Promise<Output> {
     const entities: any[] = [];
@@ -53,7 +54,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
 
     await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
       const [mainParagraph, ...otherParagraphs] = extractor.createParagraphs(
-        sourceEntities,
+        sourceEntity,
         paragraph
       );
 
@@ -63,7 +64,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
       });
 
       const validParagraphs = [mainParagraph, ...otherParagraphs].filter(p =>
-        entity.languages.includes(p.language as any)
+        entity.languages.includes(p.language)
       );
 
       await ArrayUtils.sequentialFor(validParagraphs, async paragraphData => {
@@ -74,7 +75,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
         if (paragraphData.metadata) {
           Object.entries(paragraphData.metadata).forEach(([name, value]) => {
             if (value) {
-              propertyAssignments.push({ name, value: value as any });
+              propertyAssignments.push({ name, value });
             }
           });
         }
@@ -85,7 +86,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
           []
         );
 
-        entity.setPropertyAssignments(processedAssignments, paragraphData.language as any, true);
+        entity.setPropertyAssignments(processedAssignments, paragraphData.language, true);
       });
 
       entities.push(entity);
@@ -108,7 +109,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
       await this.dependencies.relationshipsDS.save(
         [
           {
-            entity: sourceEntities[0].sharedId,
+            entity: sourceEntity.sharedId,
             template: extractor.sourceRelationshipTypeId,
           },
           {
@@ -121,7 +122,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     });
 
     this.dependencies.logger.info(
-      `[PX] - Batch Created - ${entities.length} paragraph(s) for entity ${sourceEntities[0].sharedId}`
+      `[PX] - Batch Created - ${entities.length} paragraph(s) for entity ${sourceEntity.sharedId}`
     );
   }
 }
