@@ -1,13 +1,14 @@
 import { ObjectId } from 'mongodb';
 
-import { Entity } from 'api/entities.v2/model/Entity';
-import { Template } from 'api/core/domain/template/Template';
-import { EntitySchema } from 'shared/types/entityType';
 import { Property } from 'api/core/domain/template/Property';
+import { Template } from 'api/core/domain/template/Template';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
-import { PXValidationError, PXErrorCode } from './PXValidationError';
+import { Entity } from 'api/core/domain/entity/Entity';
 import { ParagraphOutput } from './PXExtractionService';
+import { PXErrorCode, PXValidationError } from './PXValidationError';
+import { EntityTranslation } from 'api/core/domain/entity/EntityTranslation';
 
 export type PXExtractorProps = {
   id: string;
@@ -94,15 +95,18 @@ export class PXExtractor {
   }
 
   private static createTitle(
-    sourceEntity: EntitySchema,
+    sourceEntity: EntityTranslation,
     extractedParagraph: ParagraphOutput
   ): string {
-    return `${sourceEntity.title}.${extractedParagraph.paragraphNumber.toString().padStart(2, '0')}`;
+    return `${sourceEntity.title.value.at(0)?.value}.${extractedParagraph.paragraphNumber.toString().padStart(2, '0')}`;
   }
 
-  private static getTranslation(sourceEntity: EntitySchema, extractedParagraph: ParagraphOutput) {
+  private static getTranslation(
+    entityTranslation: EntityTranslation,
+    extractedParagraph: ParagraphOutput
+  ) {
     const translation = extractedParagraph.translations.find(
-      t => t.language === sourceEntity.language
+      t => t.language === entityTranslation.language
     );
 
     const mainTranslation = extractedParagraph.translations.find(t => t.isMainLanguage)!;
@@ -129,15 +133,15 @@ export class PXExtractor {
   }
 
   canExtract(sourceEntity: Entity) {
-    return this.sourceTemplate.id === sourceEntity.template;
+    return this.sourceTemplate.id === sourceEntity.template.id;
   }
 
-  createParagraph(sourceEntity: EntitySchema, extractedParagraph: ParagraphOutput): EntitySchema {
-    const translation = PXExtractor.getTranslation(sourceEntity, extractedParagraph);
+  createParagraph(entityTranslation: EntityTranslation, extractedParagraph: ParagraphOutput) {
+    const translation = PXExtractor.getTranslation(entityTranslation, extractedParagraph);
 
     return {
-      language: sourceEntity.language,
-      title: PXExtractor.createTitle(sourceEntity, extractedParagraph),
+      language: entityTranslation.language,
+      title: PXExtractor.createTitle(entityTranslation, extractedParagraph),
       template: new ObjectId(this.targetTemplate.id),
       metadata: {
         [this.paragraphProperty.name]: [{ value: translation.text }],
@@ -146,14 +150,11 @@ export class PXExtractor {
     };
   }
 
-  createParagraphs(
-    sourceEntities: EntitySchema[],
-    extractedParagraph: ParagraphOutput
-  ): EntitySchema[] {
+  createParagraphs(sourceEntity: Entity, extractedParagraph: ParagraphOutput) {
     const mainLanguage = extractedParagraph.translations.find(t => t.isMainLanguage)!.language;
 
-    const paragraphs = sourceEntities.map(entity =>
-      this.createParagraph(entity, extractedParagraph)
+    const paragraphs = sourceEntity.languages.map(language =>
+      this.createParagraph(sourceEntity.getTranslation(language), extractedParagraph)
     );
 
     return paragraphs.sort((a, b) => PXExtractor.sortByMainLanguage(a, b, mainLanguage));

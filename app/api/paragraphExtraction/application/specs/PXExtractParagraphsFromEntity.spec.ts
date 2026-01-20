@@ -8,7 +8,6 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { createMockLogger } from 'api/core/libs/logger/infrastructure/MockLogger';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
@@ -57,6 +56,7 @@ import {
   targetTemplate,
   userId,
 } from './fixtures';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -87,7 +87,7 @@ const setUpUseCase = () => {
 
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
-  const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
@@ -104,7 +104,7 @@ const setUpUseCase = () => {
   const tenantName = tenants.current().name;
 
   const extractParagraphs = new PXExtractParagraphsFromEntity({
-    entityDS,
+    entitiesDS,
     extractorsDS,
     filesDS,
     settingsDS,
