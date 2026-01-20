@@ -36,6 +36,13 @@ export class NamespacedDispatcher implements JobsDispatcher {
     };
   }
 
+  async deleteByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {
+    await this.adapter.deleteByParams(dispatchable.name, params, this.namespace);
+  }
+
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]

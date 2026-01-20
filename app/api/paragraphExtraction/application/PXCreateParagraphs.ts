@@ -1,23 +1,26 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/core/libs/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import entities from 'api/entities';
+import { EntitiesService } from 'api/core/application/EntitiesService';
+import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
+import { UseCase } from 'api/core/libs/UseCase';
 import relationshipsDS from 'api/relationships';
 
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
-import { PXCreateParagraph } from './PXCreateParagraph';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { PXCreateParagraphsBatch } from './PXCreateParagraphsBatch';
 
 type PXCreateParagraphsInput = {
   userId: string;
   entityStatusId: string;
   paragraphs: ParagraphOutput[];
-  onParagraphCreated?: () => Promise<void>;
+  onParagraphBatchCreated?: () => Promise<void>;
 };
 
 type Output = any;
@@ -25,16 +28,31 @@ type Output = any;
 type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
   entitiesStatusDS: PXEntitiesStatusDataSource;
+  entitiesService: EntitiesService;
+  entitiesDS: MultiLanguageEntityDataSource;
+  propertyAssignmentStrategy: PropertyAssignmentCreatorServiceStrategy;
+  transactionManager: TransactionManager;
 };
 
 export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
-  createParagraph: PXCreateParagraph;
+  private static readonly DEFAULT_BATCH_SIZE = 100;
 
-  constructor(private dependencies: Dependencies) {
-    this.createParagraph = new PXCreateParagraph({
+  private readonly batchSize: number;
+
+  createParagraphsBatch: PXCreateParagraphsBatch;
+
+  constructor(
+    private dependencies: Dependencies,
+    batchSize?: number
+  ) {
+    this.batchSize = batchSize ?? PXCreateParagraphs.DEFAULT_BATCH_SIZE;
+    this.createParagraphsBatch = new PXCreateParagraphsBatch({
       logger: LoggerFactory.default(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
       relationshipsDS,
+      entitiesService: this.dependencies.entitiesService,
+      propertyAssignmentStrategy: this.dependencies.propertyAssignmentStrategy,
+      transactionManager: this.dependencies.transactionManager,
     });
   }
 
@@ -42,14 +60,16 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     entityStatusId,
     paragraphs,
     userId,
-    onParagraphCreated,
+    onParagraphBatchCreated,
   }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(userId) };
     const entityStatus = await this.getEntityStatus(entityStatusId);
 
-    const [extractor, sourceEntities] = await Promise.all([
+    const [extractor, sourceEntity] = await Promise.all([
       this.dependencies.extractorsDS.getById(entityStatus.extractorId),
-      entities.getAllLanguages(entityStatus.entitySharedId),
+      (
+        await this.dependencies.entitiesDS.getEntitiesBySharedIds([entityStatus.entitySharedId])
+      ).first(),
     ]);
 
     if (!extractor) {
@@ -59,23 +79,23 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    if (!sourceEntities.length) {
+    if (!sourceEntity) {
       throw new PXValidationError(
         PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE,
         `The source Entity for the Extractor ${extractor?.id} does not exist anymore`
       );
     }
 
-    await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
-      await this.createParagraph.execute({
-        paragraph,
+    const batches = ArrayUtils.splitInChunks(paragraphs, this.batchSize);
+    await ArrayUtils.sequentialFor(batches, async batch => {
+      await this.createParagraphsBatch.execute({
+        paragraphs: batch,
         extractor,
-        sourceEntities,
+        sourceEntity,
         user,
-        entityStatus,
       });
-      if (onParagraphCreated) {
-        await onParagraphCreated();
+      if (onParagraphBatchCreated) {
+        await onParagraphBatchCreated();
       }
     });
 

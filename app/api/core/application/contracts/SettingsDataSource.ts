@@ -7,4 +7,7 @@ export interface SettingsDataSource {
   readNewRelationshipsAllowed(): Promise<boolean>;
   getInstalledLanguages(): Promise<LanguagesListSchema>;
   get(): Promise<SettingsType>;
+  getNewRelationshipsConfiguration(): Promise<
+    Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
+  >;
 }

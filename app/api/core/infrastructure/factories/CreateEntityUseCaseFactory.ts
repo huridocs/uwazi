@@ -4,16 +4,15 @@ import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/p
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant';
-import { MongoThesauriDataSource } from '../mongodb/thesauri/MongoThesauriDS';
 import { FilesServiceFactory } from './FilesServiceFactory';
 import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
+import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
+import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
 
 class CreateEntityUseCaseFactory {
   static default() {
@@ -22,14 +21,13 @@ class CreateEntityUseCaseFactory {
     const transactionManager = TransactionManagerFactory.default();
     const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const idGenerator = IdGeneratorFactory.default();
+    const eventBus = applicationEventsBus;
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
+    const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-
-    const eventBus = applicationEventsBus;
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.create({
