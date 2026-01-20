@@ -13,6 +13,18 @@ type Deps = {
 class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
+  private labelExistsInOtherValues(thesaurus: Thesaurus, label: string, excludeId: string) {
+    return thesaurus.values.some(value => {
+      if (value.label === label && value.id !== excludeId) return true;
+
+      if (value.values) {
+        return value.values.some(nested => nested.label === label && nested.id !== excludeId);
+      }
+
+      return false;
+    });
+  }
+
   private createLabelsFromThesaurusValues(thesaurusValues: Thesaurus['values']) {
     const labels = new Set<string>();
 
@@ -56,47 +68,87 @@ class ThesaurusTranslationService {
   }
 
   async update(diff: ThesaurusDiff) {
+    const labelsToBeRemoved = new Set<string>();
+    const labelsToBeAdded = new Set<string>();
+    const labelsToBeUpdated: { [from: string]: string } = {};
+
     if (diff.removedValues.length) {
-      await this.deps.translationsDS.deleteKeysByContext(
-        diff.id,
-        diff.removedValues.map(v => v.label)
-      );
+      diff.removedValues.forEach(value => {
+        const stillExisting = diff.after.getValueByLabel(value.label);
+
+        if (!stillExisting) {
+          labelsToBeRemoved.add(value.label);
+        }
+      });
     }
 
     if (diff.addedValues.length) {
-      const labels = this.createLabelsFromThesaurusValues(diff.addedValues);
+      diff.addedValues.forEach(value => {
+        const alreadyExists = diff.before.getValueByLabel(value.label);
 
-      const translations = await this.createTranslations(diff.id, diff.name, labels);
+        if (!alreadyExists) {
+          labelsToBeAdded.add(value.label);
+        }
+      });
+    }
+
+    if (diff.updatedValues.length) {
+      diff.updatedValues.forEach(value => {
+        const beforeValue = diff.before.getValueById(value.id)!;
+        const labelChanged = beforeValue.label !== value.label;
+
+        if (!labelChanged) return;
+
+        const oldLabelExistsInOtherValues = this.labelExistsInOtherValues(
+          diff.after,
+          beforeValue.label,
+          value.id
+        );
+
+        const newLabelExistedInOtherValues = this.labelExistsInOtherValues(
+          diff.before,
+          value.label,
+          value.id
+        );
+
+        const isSimpleRename = !oldLabelExistsInOtherValues && !newLabelExistedInOtherValues;
+        const shouldRemoveOldLabel = !oldLabelExistsInOtherValues && newLabelExistedInOtherValues;
+        const shouldAddNewLabel = oldLabelExistsInOtherValues && !newLabelExistedInOtherValues;
+
+        if (isSimpleRename) {
+          labelsToBeUpdated[beforeValue.label] = value.label;
+        }
+
+        if (shouldRemoveOldLabel) {
+          labelsToBeRemoved.add(beforeValue.label);
+        }
+
+        if (shouldAddNewLabel) {
+          labelsToBeAdded.add(value.label);
+        }
+      });
+    }
+
+    if (labelsToBeRemoved.size) {
+      await this.deps.translationsDS.deleteKeysByContext(diff.id, Array.from(labelsToBeRemoved));
+    }
+
+    if (labelsToBeAdded.size) {
+      const translations = await this.createTranslations(diff.id, diff.name, labelsToBeAdded);
 
       await this.deps.translationsDS.insert(translations);
     }
 
-    let changes: { [from: string]: string } = {};
-
-    if (diff.updatedValues.length) {
-      changes = diff.updatedValues.reduce(
-        (acc, value) => {
-          const beforeValue = diff.before.getValueById(value.id);
-          if (beforeValue) {
-            acc[beforeValue.label] = value.label;
-          }
-
-          return acc;
-        },
-        {} as { [from: string]: string }
-      );
-    }
-
     if (diff.updatedName) {
-      changes[diff.before.name] = diff.after.name;
+      labelsToBeUpdated[diff.before.name] = diff.after.name;
     }
 
-    if (Object.keys(changes).length > 0) {
+    if (Object.keys(labelsToBeUpdated).length > 0) {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
       await this.deps.translationsDS.updateKeysByContextV2({
         contextId: diff.id,
-        keyChanges: changes,
+        keyChanges: labelsToBeUpdated,
         defaultLanguage,
       });
     }
