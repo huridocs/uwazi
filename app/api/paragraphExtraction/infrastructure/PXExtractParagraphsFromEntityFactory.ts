@@ -1,15 +1,15 @@
-import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
-import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
-import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFactory';
+import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
+import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
-import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXExtractParagraphsFromEntityFactory {
@@ -18,7 +18,7 @@ export class PXExtractParagraphsFromEntityFactory {
     const mongoTransactionManager = TransactionManagerFactory.default();
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
-      entityDS: DefaultEntitiesDataSource(mongoTransactionManager),
+      entitiesDS: new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager),
       entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
         mongoTransactionManager,

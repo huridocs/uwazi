@@ -2,16 +2,19 @@ import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
 import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { CsvImportThesauriValues } from '../../domain/CsvImportThesauriValues';
-import {
-  CsvThesauriPendingChild,
-  CsvThesauriPendingRoot,
-} from '../../domain/CsvThesauriPendingValues';
+import { CsvThesauriPendingChild } from '../../domain/CsvThesauriPendingValues';
 import { ThesaurusValueInput } from '../contracts/ThesauriRepository';
 
-type AggregatedChild = CsvThesauriPendingChild & { normalized: string };
-
-type AggregatedRoot = Omit<CsvThesauriPendingRoot, 'children'> & {
+type AggregatedChild = {
+  label: string;
   normalized: string;
+  languages: Record<string, string>;
+};
+
+type AggregatedRoot = {
+  label: string;
+  normalized: string;
+  languages: Record<string, string>;
   children: Map<string, AggregatedChild>;
 };
 
@@ -39,8 +42,8 @@ const normalizeLabel = (label: string) =>
 const aggregatePendingEntries = (pendingDoc: CsvImportThesauriValues) => {
   const roots = new Map<string, AggregatedRoot>();
 
-  const ensureRoot = (root: CsvThesauriPendingRoot): AggregatedRoot => {
-    const key = root.normalized || normalizeLabel(root.label) || root.label;
+  const ensureRoot = (root: CsvThesauriPendingChild): AggregatedRoot => {
+    const key = normalizeLabel(root.normalized || root.label) || root.label;
     const existing = roots.get(key);
     if (existing) {
       Object.entries(root.languages).forEach(([lang, value]) => {
@@ -50,10 +53,10 @@ const aggregatePendingEntries = (pendingDoc: CsvImportThesauriValues) => {
       });
       return existing;
     }
-    const { children, ...rootData } = root;
     const aggregated: AggregatedRoot = {
-      ...rootData,
+      label: root.label,
       normalized: key,
+      languages: { ...root.languages },
       children: new Map(),
     };
     roots.set(key, aggregated);
@@ -61,7 +64,7 @@ const aggregatePendingEntries = (pendingDoc: CsvImportThesauriValues) => {
   };
 
   const ensureChild = (parent: AggregatedRoot, child: CsvThesauriPendingChild) => {
-    const key = child.normalized || normalizeLabel(child.label) || child.label;
+    const key = normalizeLabel(child.normalized || child.label) || child.label;
     const existing = parent.children.get(key);
     if (existing) {
       Object.entries(child.languages).forEach(([lang, value]) => {
@@ -71,7 +74,11 @@ const aggregatePendingEntries = (pendingDoc: CsvImportThesauriValues) => {
       });
       return;
     }
-    parent.children.set(key, { ...child, normalized: key });
+    parent.children.set(key, {
+      label: child.label,
+      normalized: key,
+      languages: { ...child.languages },
+    });
   };
 
   pendingDoc.entries.forEach(entry => {

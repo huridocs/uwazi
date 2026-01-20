@@ -1,8 +1,11 @@
 import { ThesauriDataSource } from 'api/core/application/contracts/ThesauriDataSource';
 import { Result, ResultType } from 'api/core/libs/Result';
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
-import { Db } from 'mongodb';
-import { ThesaurusNameAlreadyExistsError } from 'api/core/domain/thesaurus/errors';
+import { Db, ObjectId } from 'mongodb';
+import {
+  ThesaurusNameAlreadyExistsError,
+  ThesaurusNotFoundError,
+} from 'api/core/domain/thesaurus/errors';
 import { MongoDataSource } from '../common/MongoDataSource';
 import { MongoThesaurusMapper } from './MongoThesaurusMapper';
 import { ThesaurusDBO } from './ThesaurusDBO';
@@ -16,6 +19,27 @@ class MongoThesauriDataSourceV2
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
     super(db, transactionManager);
+  }
+
+  async update(thesaurus: Thesaurus): Promise<void> {
+    const dbo = MongoThesaurusMapper.toDBO(thesaurus);
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(thesaurus.id) },
+      { $set: dbo },
+      { ignoreUndefined: true }
+    );
+  }
+
+  async getById(id: string): Promise<ResultType<Thesaurus, ThesaurusNotFoundError>> {
+    const dbo = await this.getCollection().findOne({ _id: ObjectId.createFromHexString(id) });
+    if (!dbo) {
+      return Result.fail(new ThesaurusNotFoundError(id));
+    }
+
+    const thesaurus = MongoThesaurusMapper.toDomain(dbo);
+
+    return Result.ok(thesaurus);
   }
 
   async create(thesaurus: Thesaurus): Promise<void> {

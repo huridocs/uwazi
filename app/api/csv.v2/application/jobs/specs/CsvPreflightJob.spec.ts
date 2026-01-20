@@ -10,8 +10,10 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { CsvCreateThesauriValuesJobHandler } from '../../../infrastructure/jobHandlers/CsvCreateThesauriValuesJobHandler';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport';
+import { CsvImportRow } from '../../../domain/CsvImportRow';
 import { CsvPreflightJob } from '../CsvPreflightJob';
 
 const fixturesFactory = getFixturesFactory();
@@ -24,9 +26,7 @@ const createCallbacks = () => ({
 
 const stageRows = async (
   rowsDS: {
-    insertMany: (
-      rows: Array<{ importId: string; index: number; headers: string[]; values: string[] }>
-    ) => Promise<void>;
+    insertMany: (rows: CsvImportRow[]) => Promise<void>;
   },
   params: { csv: string; importId: string }
 ) => {
@@ -35,13 +35,15 @@ const stageRows = async (
     .shift()!
     .split(',')
     .map(cell => cell.trim());
-  const docs = parsed.map((line, index) => ({
-    importId: params.importId,
-    index,
-    headers,
-    values: line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')),
-  }));
-  await rowsDS.insertMany(docs);
+  const rows = parsed.map((line, index) =>
+    CsvImportRow.create({
+      importId: params.importId,
+      index,
+      headers,
+      values: line.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')),
+    })
+  );
+  await rowsDS.insertMany(rows);
 };
 
 const insertImport = async (
@@ -69,10 +71,10 @@ const buildUseCase = () => {
   const thesauriValuesDS =
     CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
   const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
-  const jobsDispatcher: jest.Mocked<JobsDispatcher> = {
+  const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
-  };
+  }) as jest.Mocked<JobsDispatcher>;
   const useCase = new CsvPreflightJob({
     csvImportsDS,
     rowsDS,
@@ -162,8 +164,8 @@ describe('CsvPreflightJob (integration)', () => {
     expect(callbacks.onStart).toHaveBeenCalledWith({ importId });
     expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
 
-    const updatedImport = await csvImportsDS.getById(importId);
-    expect(updatedImport?.status).toBe(CsvImportStatus.PreflightThesauriDone);
+    const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(updatedImport.status).toBe(CsvImportStatus.PreflightThesauriDone);
     const pendingDocs = await thesauriValuesDS.getByImport(importId);
     expect(pendingDocs).toHaveLength(1);
     expect(pendingDocs[0]).toEqual(
@@ -250,9 +252,9 @@ describe('CsvPreflightJob (integration)', () => {
       })
     );
 
-    const failedImport = await csvImportsDS.getById(importId);
-    expect(failedImport?.status).toBe(CsvImportStatus.Failed);
-    expect(failedImport?.failure).toEqual(
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
       expect.objectContaining({
         code: 'THESAURI_VALUES_INVALID',
         stage: 'preflight:preparation:thesauri',
@@ -278,9 +280,9 @@ describe('CsvPreflightJob (integration)', () => {
       'Header validation failed'
     );
 
-    const failedImport = await csvImportsDS.getById(importId);
-    expect(failedImport?.status).toBe(CsvImportStatus.Failed);
-    expect(failedImport?.failure).toEqual(
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
       expect.objectContaining({
         message: 'Header validation failed',
         retryable: false,

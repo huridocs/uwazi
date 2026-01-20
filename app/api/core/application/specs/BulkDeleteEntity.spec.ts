@@ -17,8 +17,8 @@ import {
   getSharedConnection,
 } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 import { UserSchema } from 'shared/types/userType';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
 import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '../BulkDeleteEntity';
 
 const factory = getFixturesFactory();
@@ -129,9 +129,7 @@ const createSut = (props?: CreateSutProps) => {
     getConnection(),
     transactionManager
   );
-  const entitiesDS =
-    props?.entitiesDS ??
-    new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = props?.entitiesDS ?? EntitiesDataSourceFactory.default(transactionManager);
 
   const actor =
     props?.actor ??

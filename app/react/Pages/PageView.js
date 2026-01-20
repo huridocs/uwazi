@@ -12,6 +12,7 @@ import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
 import { PageViewer } from './components/PageViewer';
 import { getPageAssets } from './utils/getPageAssets';
 import { updatePageDatasets } from './utils/updatePageDatasets';
+import { openEntitySidePanel } from './utils/openEntitySidePanel';
 
 class PageViewComponent extends RouteHandler {
   static async requestState(requestParams) {
@@ -35,6 +36,7 @@ class PageViewComponent extends RouteHandler {
     this.closeSidePanel();
     if (isClient) {
       window.updatePageDatasets = updatePageDatasets;
+      window.openEntitySidePanel = openEntitySidePanel;
     }
   }
 

@@ -14,6 +14,7 @@ import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/Mong
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 
+import { TestUtils } from 'api/common.v2/utils/Test';
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';
 import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';
 import { Input, PXCreateExtractor } from '../PXCreateExtractor';
@@ -29,10 +30,10 @@ const setUpUseCase = () => {
     mongoTransactionManager,
   });
 
-  const mockDispatcher: jest.Mocked<JobsDispatcher> = {
+  const mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
-  };
+  });
 
   const createExtractor = new PXCreateExtractor({
     extractorDS,

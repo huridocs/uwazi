@@ -6,6 +6,7 @@ import { User } from 'api/users.v2/model/User';
 import { TransactionManager } from '../application/contracts/TransactionManager';
 import { IdGenerator } from '../application/contracts/IdGenerator';
 import { Logger } from './logger/contracts/Logger';
+import { EventEmitter } from './eventEmitter/EventEmitter';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;
@@ -17,6 +18,7 @@ type Deps<ExtendedDeps> = {
   jobsDispatcher?: JobsDispatcher;
   idGenerator?: IdGenerator;
   logger?: Logger;
+  eventEmitter?: EventEmitter;
 } & ExtendedDeps;
 
 type Context = {
@@ -49,7 +51,7 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
     return User.createFrom({
       id: this.context?.actor?._id?.toString(),
       role: this.context?.actor?.role,
-      groups: this.context?.actor?.groups?.map(g => g._id.toString()),
+      groups: (this.context?.actor?.groups || []).map(g => g._id.toString()),
     });
   }
 
@@ -91,6 +93,14 @@ abstract class AbstractUseCase<Input, Output, ExtendedDeps = {}, Args extends an
     }
 
     return this.deps.eventBus;
+  }
+
+  protected get eventEmitter(): EventEmitter {
+    if (!this.deps.eventEmitter) {
+      throw new Error('EventEmitter dependency not provided');
+    }
+
+    return this.deps.eventEmitter;
   }
 
   protected get jobsDispatcher(): JobsDispatcher {

@@ -9,6 +9,10 @@ import { LoggerFactory } from '../../factories/LoggerFactory';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory';
 import { FileStorageFactory } from '../../files/FileStorageFactory';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler';
+import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
+import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -54,11 +58,15 @@ class FileDeleteController extends AbstractController {
       });
     }
 
-    return new FileDelete({
-      filesDS: FilesDataSourceFactory.default(transactionManager),
-      filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
-      transactionManager,
-    });
+    return new FileDelete(
+      {
+        filesDS: FilesDataSourceFactory.default(transactionManager),
+        filesService: FilesServiceFactory.default(transactionManager, { jobsDispatcher }),
+        entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
+        transactionManager,
+      },
+      { actor: permissionsContext.getUserInContext()!, tenant: tenants.current() }
+    );
   }
 }
 
