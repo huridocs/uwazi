@@ -124,9 +124,9 @@ class Thesaurus {
     return this.hashedValues.get(id);
   }
 
-  getGroupById(id: string): ThesaurusValue | undefined {
+  getGroupByThesaurusValueId(id: string): ThesaurusValue | undefined {
     for (const value of this.values) {
-      if (value.values && this.hashedValues.has(id)) {
+      if (value.values && value.values.some(subValue => subValue.id === id)) {
         return value;
       }
     }
