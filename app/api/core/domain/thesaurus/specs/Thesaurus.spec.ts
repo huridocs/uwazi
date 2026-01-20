@@ -25,7 +25,8 @@ describe('Thesaurus', () => {
         },
       ],
 
-      hashedValues: expect.any(Object),
+      hashedValuesById: expect.any(Object),
+      hashedValuesByLabel: expect.any(Object),
     });
   });
 
@@ -38,7 +39,8 @@ describe('Thesaurus', () => {
       id: expect.any(String),
       name: 'Countries',
       values: [],
-      hashedValues: expect.any(Object),
+      hashedValuesById: expect.any(Object),
+      hashedValuesByLabel: expect.any(Object),
     });
   });
 
@@ -62,7 +64,8 @@ describe('Thesaurus', () => {
           values: [{ id: expect.any(String), label: 'Rio de Janeiro' }],
         },
       ],
-      hashedValues: expect.any(Object),
+      hashedValuesById: expect.any(Object),
+      hashedValuesByLabel: expect.any(Object),
     });
   });
 
@@ -182,7 +185,8 @@ describe('Thesaurus', () => {
           { id: expect.any(String), label: 'Canada' },
           { id: expect.any(String), label: 'Mexico' },
         ],
-        hashedValues: expect.any(Object),
+        hashedValuesById: expect.any(Object),
+        hashedValuesByLabel: expect.any(Object),
       });
     });
 
@@ -228,7 +232,8 @@ describe('Thesaurus', () => {
           { id: expect.any(String), label: 'USA' },
           { id: expect.any(String), label: 'Brazil' },
         ],
-        hashedValues: expect.any(Object),
+        hashedValuesById: expect.any(Object),
+        hashedValuesByLabel: expect.any(Object),
       });
     });
   });
@@ -278,7 +283,8 @@ describe('Thesaurus', () => {
           { id: expect.any(String), label: 'Canada' },
           { id: expect.any(String), label: 'Mexico' },
         ],
-        hashedValues: expect.any(Object),
+        hashedValuesById: expect.any(Object),
+        hashedValuesByLabel: expect.any(Object),
       });
 
       expect(updated2).toEqual({
@@ -299,7 +305,8 @@ describe('Thesaurus', () => {
             values: [{ id: expect.any(String), label: 'France' }],
           },
         ],
-        hashedValues: expect.any(Object),
+        hashedValuesById: expect.any(Object),
+        hashedValuesByLabel: expect.any(Object),
       });
 
       expect(updated3).toEqual({
@@ -315,7 +322,8 @@ describe('Thesaurus', () => {
             ],
           },
         ],
-        hashedValues: expect.any(Object),
+        hashedValuesById: expect.any(Object),
+        hashedValuesByLabel: expect.any(Object),
       });
     });
 
