@@ -21,8 +21,8 @@ export class PXCreateParagraphsFactory {
     const mongoTransactionManager = TransactionManagerFactory.default();
     const tenant = tenants.current();
 
-    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.cached(mongoTransactionManager);
+    const templatesDS = TemplatesDataSourceFactory.cached(mongoTransactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(mongoTransactionManager);
     const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
@@ -56,6 +56,7 @@ export class PXCreateParagraphsFactory {
 
     return new PXCreateParagraphs(
       {
+        entitiesDS,
         extractorsDS,
         entitiesStatusDS,
         entitiesService,

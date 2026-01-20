@@ -1,24 +1,24 @@
 import { ObjectId } from 'mongodb';
 
-import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
-import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
-import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { UseCase } from 'api/core/libs/UseCase';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { Entity } from 'api/entities.v2/model/Entity';
 import { FilesDataSource } from 'api/core/application/contracts/FilesDataSource';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
+import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { Segmentation } from 'api/core/domain/files/Segmentation';
+import { Logger } from 'api/core/libs/logger/contracts/Logger';
+import { UseCase } from 'api/core/libs/UseCase';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { Entity } from 'api/core/domain/entity/Entity';
+import { FileContents } from 'api/core/domain/files/FileContents';
 import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { FileContents } from 'api/core/domain/files/FileContents';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -31,7 +31,7 @@ type Output = void;
 
 type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
-  entityDS: EntitiesDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;
@@ -50,15 +50,14 @@ export class PXExtractParagraphsFromEntity
   // eslint-disable-next-line max-statements
   async execute(input: PXExtractParagraphsFromEntityInput, isRetriable = false): Promise<Output> {
     try {
-      const { extractor, entity, installedLanguages } = await this.getInitialData(input);
+      const { extractor, entity, installedLanguages, defaultLanguage } =
+        await this.getInitialData(input);
 
-      const documents = await this.getDocuments(entity, installedLanguages);
+      const documents = await this.getDocuments(entity, installedLanguages, defaultLanguage);
 
-      const segmentations = await this.getSegmentations(documents, entity);
+      const segmentations = await this.getSegmentations(documents, entity, defaultLanguage);
 
       const files = await this.getSegmentationFiles(segmentations);
-
-      const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
       const extractionKey = PXExtractionKey.create({
         tenantName: this.dependencies.tenantName,
@@ -109,13 +108,13 @@ export class PXExtractParagraphsFromEntity
 
   // eslint-disable-next-line max-statements
   private async getInitialData(input: PXExtractParagraphsFromEntityInput) {
-    const [extractor, entities, installedLanguages] = await Promise.all([
+    const [extractor, entity, installedLanguages] = await Promise.all([
       this.dependencies.extractorsDS.getById(input.extractorId),
-      this.dependencies.entityDS.getByIds([input.entitySharedId]).all(),
+      (await this.dependencies.entitiesDS.getEntitiesBySharedIds([input.entitySharedId])).first(),
       this.dependencies.settingsDS.getInstalledLanguages(),
     ]);
 
-    const [entity] = entities;
+    const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
     if (!extractor) {
       throw new PXValidationError(
@@ -134,11 +133,11 @@ export class PXExtractParagraphsFromEntity
     if (!extractor.canExtract(entity)) {
       throw new PXValidationError(
         PXErrorCode.ENTITY_INVALID,
-        `The Entity "${entity.title}" does not have valid template configured by this Extractor`
+        `The Entity "${entity.getTitle(defaultLanguage)}" does not have valid template configured by this Extractor`
       );
     }
 
-    return { extractor, entity, installedLanguages };
+    return { extractor, entity, installedLanguages, defaultLanguage };
   }
 
   private async getSegmentationFiles(segmentations: Segmentation[]) {
@@ -156,7 +155,11 @@ export class PXExtractParagraphsFromEntity
     return files;
   }
 
-  private async getDocuments(entity: Entity, installedLanguages: LanguagesListSchema) {
+  private async getDocuments(
+    entity: Entity,
+    installedLanguages: LanguagesListSchema,
+    defaultLanguage: LanguageISO6391
+  ) {
     const documents = await this.dependencies.filesDS
       .getProcessedDocsForEntity(entity.sharedId)
       .all();
@@ -189,14 +192,18 @@ export class PXExtractParagraphsFromEntity
     if (!uniqueByLanguage.length) {
       throw new PXValidationError(
         PXErrorCode.DOCUMENTS_NOT_FOUND,
-        `There is no valid Documents for the Entity ${entity.title}`
+        `There is no valid Documents for the Entity ${entity.getTitle(defaultLanguage)}`
       );
     }
 
     return uniqueByLanguage;
   }
 
-  private async getSegmentations(documents: ProcessedPDF[], entity: Entity) {
+  private async getSegmentations(
+    documents: ProcessedPDF[],
+    entity: Entity,
+    defaultLanguage: LanguageISO6391
+  ) {
     const segmentations = await this.dependencies.filesDS
       .getSegmentations(documents.map(document => document.id))
       .all();
@@ -204,7 +211,9 @@ export class PXExtractParagraphsFromEntity
     if (segmentations.length !== documents.length) {
       throw new PXValidationError(
         PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
-        `There are some Documents without Segmentations for the Entity "${entity.title}"`
+        `There are some Documents without Segmentations for the Entity "${entity.getTitle(
+          defaultLanguage!
+        )}"`
       );
     }
 

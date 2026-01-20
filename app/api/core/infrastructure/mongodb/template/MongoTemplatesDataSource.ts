@@ -366,6 +366,7 @@ export class MongoTemplatesDataSource
 
   async getDefaultTemplate(): Promise<ResultType<Template, DefaultTemplateNotFoundError>> {
     const schema = await this.getCollection().findOne({ default: true });
+
     if (!schema) {
       return Result.fail(new DefaultTemplateNotFoundError());
     }
