@@ -13,6 +13,7 @@ import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/The
 import { CreateThesaurusUseCase } from '../CreateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+import { ThesauriService } from '../ThesauriService';
 
 const factory = getFixturesFactory();
 
@@ -59,10 +60,14 @@ const createSut = (props?: CreateProps) => {
       translationsDS,
     });
 
-  const sut = new CreateThesaurusUseCase({
-    transactionManager,
+  const thesauriService = new ThesauriService({
     thesauriDS,
     thesaurusTranslationService,
+  });
+
+  const sut = new CreateThesaurusUseCase({
+    transactionManager,
+    thesauriService,
   });
 
   return { sut };
