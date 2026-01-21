@@ -253,14 +253,14 @@ describe('files routes download', () => {
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
         { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
-        'should set X-Cache-Policy to "short" for public unauthenticated access ($endpoint)',
+        'should set X-Cache-Policy to "yes-store" for public unauthenticated access ($endpoint)',
         async ({ endpoint, file }) => {
           const response = await request(app).get(
             path.join(endpoint, file?.filename || fileOnPublicEntity)
           );
 
           expect(response).toHaveStatus(200);
-          expect(response.get('X-Cache-Policy')).toBe('short');
+          expect(response.get('X-Cache-Policy')).toBe('yes-store');
         }
       );
     });
@@ -299,12 +299,12 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
         { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
-        'should set X-Cache-Policy to "long" for authenticated users ($endpoint/$file.filename)',
+        'should set X-Cache-Policy to "no-store" for authenticated users ($endpoint/$file.filename)',
         async ({ endpoint, file }) => {
           const response = await request(app).get(path.join(endpoint, file.filename));
 
           expect(response).toHaveStatus(200);
-          expect(response.get('X-Cache-Policy')).toBe('long');
+          expect(response.get('X-Cache-Policy')).toBe('no-store');
         }
       );
     });
@@ -339,7 +339,7 @@ describe('files routes download', () => {
           expect(secondResponse.body).toEqual({});
           expect(secondResponse.get('Last-Modified')).toBe(lastModified);
           expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
-          expect(secondResponse.get('X-Cache-Policy')).toBe('short');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('yes-store');
         }
       );
 
@@ -367,7 +367,7 @@ describe('files routes download', () => {
           expect(secondResponse).toHaveStatus(304);
           expect(secondResponse.body).toEqual({});
           expect(secondResponse.get('Cache-Control')).toBe('public, no-cache');
-          expect(secondResponse.get('X-Cache-Policy')).toBe('short');
+          expect(secondResponse.get('X-Cache-Policy')).toBe('yes-store');
         }
       );
 

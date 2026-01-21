@@ -109,10 +109,10 @@ class DownloadFileController extends AbstractController {
   private async addFileCacheHeaders(file: BaseFile) {
     if (this.request.user) {
       this.response.setHeader('Cache-Control', 'private, max-age=3600');
-      this.response.setHeader('X-Cache-Policy', 'long');
+      this.response.setHeader('X-Cache-Policy', 'no-store');
     } else {
       this.response.setHeader('Cache-Control', 'public, no-cache');
-      this.response.setHeader('X-Cache-Policy', 'short');
+      this.response.setHeader('X-Cache-Policy', 'yes-store');
     }
 
     if (file.creationDate) {
