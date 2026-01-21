@@ -7,9 +7,10 @@ import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { TestUtils } from 'api/common.v2/utils/Test';
-import { Result } from 'api/core/libs/Result';
 import { ThesaurusNameAlreadyExistsError } from 'api/core/domain/thesaurus/errors';
 import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { tenants } from 'api/tenants/tenantContext';
 import { CreateThesaurusUseCase } from '../CreateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
@@ -48,6 +49,7 @@ type CreateProps = {
 };
 
 const createSut = (props?: CreateProps) => {
+  const tenant = tenants.current();
   const transactionManager = TransactionManagerFactory.default();
 
   const thesauriDS = props?.thesauriDS ?? ThesauriDataSourceFactory.default(transactionManager);
@@ -63,6 +65,7 @@ const createSut = (props?: CreateProps) => {
   const thesauriService = new ThesauriService({
     thesauriDS,
     thesaurusTranslationService,
+    jobsDispatcher: DefaultDispatcher(tenant.name, transactionManager),
   });
 
   const sut = new CreateThesaurusUseCase({
@@ -168,7 +171,7 @@ describe('CreateThesaurusUseCase', () => {
   it('should revert when creating the thesaurus fails', async () => {
     const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
       create: jest.fn().mockRejectedValue(new Error('Creation failed')),
-      exists: jest.fn().mockResolvedValue(Result.ok(false)),
+      exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
     });
 
     const { sut } = createSut({ thesauriDS });

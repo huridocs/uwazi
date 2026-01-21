@@ -16,6 +16,8 @@ import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { MongoThesaurusMapper } from 'api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { tenants } from 'api/tenants';
 
 export const Preserve = {
   async setup(language: string, user: User) {
@@ -106,6 +108,7 @@ export const Preserve = {
         settingsDS: SettingsDataSourceFactory.default(transactionManager),
         translationsDS: DefaultTranslationsDataSource(transactionManager),
       }),
+      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
     });
 
     const thesaurus = Thesaurus.create({

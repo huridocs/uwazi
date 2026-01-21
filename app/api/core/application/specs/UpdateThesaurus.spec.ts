@@ -15,7 +15,10 @@ import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDi
 import { ThesaurusDBO } from 'api/core/infrastructure/mongodb/thesauri/ThesaurusDBO';
 import { ObjectId } from 'mongodb';
 import { UserSchema } from 'shared/types/userType';
-import { ThesaurusNotFoundError } from 'api/core/domain/thesaurus/errors';
+import {
+  ThesaurusNotFoundError,
+  ThesaurusNameAlreadyExistsError,
+} from 'api/core/domain/thesaurus/errors';
 import { JobDBO } from 'api/core/libs/queue/infrastructure/MongoQueueAdapter';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { Result } from 'api/core/libs/Result';
@@ -24,6 +27,7 @@ import { UpdateThesaurusUseCase } from '../UpdateThesaurus';
 import { ThesaurusTranslationService } from '../thesaurusTranslationService/ThesaurusTranslationService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
 import { factory, fixtures } from './UpdateThesaurusFixtures';
+import { ThesauriService } from '../ThesauriService';
 
 type CreateSutProps = {
   thesauriDS?: ThesauriDataSource;
@@ -55,12 +59,19 @@ const createSut = (props?: CreateSutProps) => {
       translationsDS,
     });
 
+  const thesauriService = new ThesauriService({
+    jobsDispatcher,
+    thesauriDS,
+    thesaurusTranslationService,
+  });
+
   const sut = new UpdateThesaurusUseCase(
     {
       thesauriDS,
       thesaurusTranslationService,
       jobsDispatcher,
       transactionManager,
+      thesauriService,
     },
     { tenant, actor }
   );
@@ -391,6 +402,7 @@ describe('UpdateThesaurusUseCase', () => {
       getById: jest.fn().mockResolvedValue({
         getDataOrThrow: jest.fn().mockReturnValue(thesaurus),
       }),
+      exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
       update: jest.fn().mockRejectedValue(new Error('update error')),
     });
 
@@ -531,5 +543,29 @@ describe('UpdateThesaurusUseCase', () => {
     expect(thesaurusTranslationService.update).not.toHaveBeenCalled();
     expect(jobsDispatcher.deleteByParams).not.toHaveBeenCalled();
     expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+  });
+
+  it('should not allow updating a thesaurus name to an existing name', async () => {
+    const { sut } = createSut();
+
+    const thesaurusBefore = await getThesaurusById(factory.id('countries'));
+    const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+    const jobsBefore = await getJobs();
+
+    await expect(
+      sut.execute({
+        id: factory.id('countries').toString(),
+        name: 'Fruits',
+        values: thesaurusBefore.values,
+      })
+    ).rejects.toEqual(new ThesaurusNameAlreadyExistsError('Fruits'));
+
+    const thesaurusAfter = await getThesaurusById(factory.id('countries'));
+    const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+    const jobsAfter = await getJobs();
+
+    expect(thesaurusAfter).toEqual(thesaurusBefore);
+    expect(translationsAfter).toEqual(translationsBefore);
+    expect(jobsAfter).toEqual(jobsBefore);
   });
 });

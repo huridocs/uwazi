@@ -5,6 +5,7 @@ import { UpdateThesaurusUseCase } from 'api/core/application/UpdateThesaurus';
 import { tenants } from 'api/tenants/tenantContext';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { ThesauriService } from 'api/core/application/ThesauriService';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 
@@ -23,12 +24,19 @@ class UpdateThesaurusUseCaseFactory {
 
     const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
 
+    const thesauriService = new ThesauriService({
+      jobsDispatcher,
+      thesauriDS,
+      thesaurusTranslationService,
+    });
+
     const useCase = new UpdateThesaurusUseCase(
       {
         transactionManager,
         thesauriDS,
         thesaurusTranslationService,
         jobsDispatcher,
+        thesauriService,
       },
       { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
     );

@@ -2,6 +2,7 @@ import { Id } from 'api/core/libs/Id';
 import { z } from 'zod';
 import uuid from 'node-uuid';
 import { InvalidThesaurusValueIdsError } from './errors';
+import { ThesaurusDiff } from './ThesaurusDiff';
 
 type ThesaurusValue = {
   id: string;
@@ -94,6 +95,8 @@ class Thesaurus {
 
   values: ThesaurusValue[];
 
+  private diff?: ThesaurusDiff;
+
   private hashedValuesById = new Map<string, ThesaurusValue>();
 
   private hashedValuesByLabel = new Map<string, ThesaurusValue>();
@@ -127,6 +130,14 @@ class Thesaurus {
 
       this.hashedValuesByLabel.set(value.label, value);
     });
+  }
+
+  getDiff() {
+    if (!this.diff) {
+      throw new Error('Diff is not available for this Thesaurus instance');
+    }
+
+    return this.diff;
   }
 
   getValueByLabel(label: string): ThesaurusValue | undefined {
@@ -214,11 +225,17 @@ class Thesaurus {
   }
 
   private clone(props: Partial<Props>): Thesaurus {
-    return new Thesaurus({
+    const after = new Thesaurus({
       id: this.id,
       name: props.name ?? this.name,
       values: props.values ?? structuredClone(this.values),
     });
+
+    const diff = new ThesaurusDiff({ before: this, after });
+
+    after.diff = diff;
+
+    return after;
   }
 
   private static createThesaurusValue(value: ThesaurusValueCreateProps): ThesaurusValue {

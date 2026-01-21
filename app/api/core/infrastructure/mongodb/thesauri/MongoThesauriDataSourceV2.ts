@@ -48,11 +48,14 @@ class MongoThesauriDataSourceV2
     await this.getCollection().insertOne(dbo, { ignoreUndefined: true });
   }
 
-  async exists(name: string): Promise<ResultType<false, Error>> {
-    const count = await this.getCollection().countDocuments({ name }, { limit: 1 });
+  async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
+    const count = await this.getCollection().countDocuments(
+      { name: thesaurus.name, _id: { $ne: new ObjectId(thesaurus.id) } },
+      { limit: 1 }
+    );
 
     if (count > 0) {
-      return Result.fail(new ThesaurusNameAlreadyExistsError(name));
+      return Result.fail(new ThesaurusNameAlreadyExistsError(thesaurus.name));
     }
 
     return Result.ok(false);
