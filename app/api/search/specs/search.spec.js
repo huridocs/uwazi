@@ -295,6 +295,22 @@ describe('search', () => {
     );
   });
 
+  it('should return the label with the aggregations (es)', async () => {
+    userFactory.mock(undefined);
+    const response = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+      'es'
+    );
+
+    expect(response.aggregations.all.groupedDictionary.buckets.map(b => b.label)).toEqual([
+      'Europa',
+      'Any',
+    ]);
+    expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
+      ['Alemania', 'Italia', 'Portugal']
+    );
+  });
+
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', async () => {
     userFactory.mock(undefined);
     const joker = await search.search(
