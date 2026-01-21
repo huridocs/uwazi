@@ -257,6 +257,10 @@ const fixtures: DBFixture = {
         content: factory.id('Fruits').toHexString(),
       }),
 
+      factory.property('multiselect_grouped', 'multiselect', {
+        content: factory.id('GroupedFruits').toHexString(),
+      }),
+
       factory.property('select_grouped', 'select', {
         content: factory.id('GroupedFruits').toHexString(),
       }),
@@ -470,6 +474,61 @@ describe('SelectPropertyAssignmentCreatorService', () => {
           },
         ],
         type: 'select',
+        language: 'pt',
+        isTranslatable: false,
+      },
+    ]);
+  });
+
+  it('should create property assignment for a multi select linked to a grouped thesaurus', async () => {
+    const { sut } = createSut();
+
+    const templateDBO = await testingEnvironment.db
+      .getCollection('templates')!
+      .findOne({ _id: factory.id('Document') });
+
+    const template = MongoTemplateMapper.toDomain(templateDBO as any);
+
+    const assignments = await sut.create({
+      template,
+      propertyAssignment: {
+        name: 'multiselect_grouped',
+        value: [{ value: 'cherry_id' }, { value: 'grape_id' }],
+      },
+    });
+
+    expect(assignments).toEqual([
+      {
+        name: 'multiselect_grouped',
+        value: [
+          {
+            value: 'cherry_id',
+            label: 'Cherry in English',
+            parent: { value: 'red_id', label: 'Red in English' },
+          },
+          {
+            value: 'grape_id',
+            label: 'Grape in English',
+          },
+        ],
+        type: 'multiselect',
+        language: 'en',
+        isTranslatable: false,
+      },
+      {
+        name: 'multiselect_grouped',
+        value: [
+          {
+            value: 'cherry_id',
+            label: 'Cherry in Portuguese',
+            parent: { value: 'red_id', label: 'Red in Portuguese' },
+          },
+          {
+            value: 'grape_id',
+            label: 'Grape in Portuguese',
+          },
+        ],
+        type: 'multiselect',
         language: 'pt',
         isTranslatable: false,
       },
