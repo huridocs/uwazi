@@ -14,8 +14,6 @@ export default ctx => {
 
   plugins.push(postcssNesting());
 
-  plugins.push(tailwindcss());
-
   const unwrapTailwindLayers = () => ({
     postcssPlugin: 'uwazi-unwrap-tailwind-layers',
     AtRule: {
@@ -37,6 +35,7 @@ export default ctx => {
   const injectLegacyOverrides = () => ({
     postcssPlugin: 'uwazi-legacy-overrides',
     Once(root) {
+      if (!legacyOverrides) return;
       const rules = Object.entries(legacyOverrides)
         .map(([selector, declarations]) => {
           const body = Object.entries(declarations)
@@ -63,6 +62,7 @@ export default ctx => {
   stripDarkMediaQueries.postcss = true;
 
   if (isTailwindFile) {
+    plugins.push(tailwindcss());
     plugins.push(unwrapTailwindLayers());
 
     plugins.push(

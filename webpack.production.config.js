@@ -1,13 +1,14 @@
-process.env.NODE_ENV = 'production';
-const webpack = require('webpack');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserWebpackPlugin = require('terser-webpack-plugin');
+/* eslint-disable */
+import webpack from 'webpack';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserWebpackPlugin from 'terser-webpack-plugin';
+import configFactory from './webpack/config.cjs';
 
 const production = true;
-const config = require('./webpack/config')(production);
+const config = configFactory(production);
 
 config.devtool = 'hidden-source-map';
-config.context = __dirname;
+config.context = import.meta.url.replace('file://', '').replace('/webpack.production.config.js', '');
 config.mode = 'production';
 
 config.plugins = config.plugins.concat([
@@ -30,4 +31,4 @@ config.performance = {
   hints: 'warning',
 };
 
-module.exports = config;
+export default config;

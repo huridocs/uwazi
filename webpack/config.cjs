@@ -14,15 +14,15 @@ const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
 
 module.exports = production => {
-  let stylesName = '[name].css';
-  let rtlStylesName = 'rtl-[name].css';
+  let stylesName = 'CSS/[name].css';
+  let rtlStylesName = 'CSS/rtl-[name].css';
   let jsChunkHashName = '';
   let outputPath = path.join(rootPath, 'dist');
 
   if (production) {
     outputPath = path.join(rootPath, 'prod/dist');
-    stylesName = '[name].[chunkhash].css';
-    rtlStylesName = 'rtl-[name].[fullhash].css';
+    stylesName = 'CSS/[name].[chunkhash].css';
+    rtlStylesName = 'CSS/rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
   }
 
@@ -79,6 +79,12 @@ module.exports = production => {
               return chunk.name && !chunk.name.match(/LazyLoad/);
             },
           },
+          vendorStyles: {
+            name: 'vendor',
+            test: /[\\/]node_modules[\\/].*\.(css|scss|sass)$/,
+            chunks: 'all',
+            enforce: true,
+          },
         },
       },
     },
@@ -127,7 +133,23 @@ module.exports = production => {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
-            { loader: 'sass-loader', options: { sourceMap: true } },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  config: path.resolve(__dirname, '../postcss.config.js'),
+                },
+              },
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+                sassOptions: {
+                  includePaths: [path.join(rootPath, 'app/react/App/scss')],
+                },
+              },
+            },
           ],
         },
         {
@@ -178,6 +200,7 @@ module.exports = production => {
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: stylesName,
+        chunkFilename: stylesName.replace('[name]', '[id]'),
       }),
       new RtlCssPlugin({
         filename: rtlStylesName,

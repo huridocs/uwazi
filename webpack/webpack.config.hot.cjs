@@ -22,6 +22,7 @@ config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
 
 config.output = {
+  ...config.output,
   publicPath: 'http://localhost:8080/',
   filename: '[name].js',
 };
