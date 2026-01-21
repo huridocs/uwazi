@@ -302,14 +302,15 @@ const _getAggregationDictionary = async (
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
-    const dictionaryTranslations = (
-      await translations.get({
-        locale: language,
-        context: dictionary._id.toString(),
-      })
-    )
-      .find(translation => translation.locale === language)
-      .contexts.find(context => context.id === dictionary._id.toString()).values;
+    const dictionaryTranslations =
+      (
+        await translations.get({
+          locale: language,
+          context: dictionary._id.toString(),
+        })
+      )
+        .find(translation => translation.locale === language)
+        ?.contexts?.find(context => context.id === dictionary._id.toString())?.values || {};
 
     const dictionaryValues = indexedDictionaryValues(dictionary, dictionaryTranslations);
     dictionaryCache[propContent] = [dictionary, dictionaryValues];
