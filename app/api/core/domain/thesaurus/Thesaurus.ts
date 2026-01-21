@@ -95,7 +95,7 @@ class Thesaurus {
 
   values: ThesaurusValue[];
 
-  private diff?: ThesaurusDiff;
+  private before?: Thesaurus;
 
   private hashedValuesById = new Map<string, ThesaurusValue>();
 
@@ -133,11 +133,11 @@ class Thesaurus {
   }
 
   getDiff() {
-    if (!this.diff) {
+    if (!this.before) {
       throw new Error('Diff is not available for this Thesaurus instance');
     }
 
-    return this.diff;
+    return new ThesaurusDiff({ before: this.before, after: this });
   }
 
   getValueByLabel(label: string): ThesaurusValue | undefined {
@@ -231,9 +231,7 @@ class Thesaurus {
       values: props.values ?? structuredClone(this.values),
     });
 
-    const diff = new ThesaurusDiff({ before: this, after });
-
-    after.diff = diff;
+    after.before = this;
 
     return after;
   }
