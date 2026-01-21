@@ -135,7 +135,7 @@ describe('uploadsActions', () => {
         store.dispatch(actions.importData([file], '123')).then(() => {
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
           done();
         });
@@ -278,7 +278,7 @@ const { fromJS } = Immutable;          expect(mockUpload.attach).toHaveBeenCalle
   });
 
   describe('newEntity', () => {
-    const store = mockStore({ templates: fromJS({}) });
+    const store = mockStore({ templates: Immutable.fromJS({}) });
     jest
       .spyOn(metadataActions, 'loadInReduxForm')
       .mockImplementation(() => store.dispatch({ type: 'action' }));

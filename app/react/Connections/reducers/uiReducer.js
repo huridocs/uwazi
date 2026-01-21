@@ -1,8 +1,6 @@
 
 import * as types from '#app/Connections/actions/actionTypes.js';
-import ImmutableLib from 'immutable';
-
-const { fromJS: Immutable } = ImmutableLib;
+import Immutable from 'immutable';
 const initialState = { open: false, connecting: false };
 
 export default function (state = initialState, action = {}) {
@@ -32,6 +30,6 @@ export default function (state = initialState, action = {}) {
       return state.set('creating', false).set('connecting', false).set('open', false);
 
     default:
-      return Immutable(state);
+      return Immutable.fromJS(state);
   }
 }

@@ -21,7 +21,7 @@ import { LibraryHeader, LibraryHeaderOwnProps } from '#app/Library/components/Li
 import { SearchBar } from '#app/Library/components/SearchBar.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 jest.mock('../SortDropdown', () => ({
   __esModule: true,
   SortDropdown: () => <>Sort Dropdown</>,
@@ -37,7 +37,7 @@ describe('LibraryHeader', () => {
     selectAllDocuments: jest.fn(),
     SearchBar,
     searchCentered: false,
-    filters: fromJS([]),
+    filters: Immutable.fromJS([]),
     tableViewMode: false,
     scrollCount: 0,
   };
@@ -59,7 +59,7 @@ describe('LibraryHeader', () => {
     };
   } = {
     ...defaultState,
-    templates: fromJS([
+    templates: Immutable.fromJS([
       {
         _id: 'template1',
         name: 'Template 1',
@@ -83,7 +83,7 @@ describe('LibraryHeader', () => {
       },
     ]),
     library: {
-      ui: fromJS({
+      ui: Immutable.fromJS({
         filtersPanel: [],
         selectedDocuments: [],
         zoomLevel: 2,
@@ -93,16 +93,16 @@ describe('LibraryHeader', () => {
           { name: 'column1', label: 'Column 1' },
         ],
       }),
-      filters: fromJS({ documentTypes: ['template2'], properties: [] }),
+      filters: Immutable.fromJS({ documentTypes: ['template2'], properties: [] }),
       search: {
         sort: 'desc',
       },
       searchForm: { ...storeState.form },
     },
     settings: {
-      collection: fromJS({}),
+      collection: Immutable.fromJS({}),
     },
-    user: fromJS({}),
+    user: Immutable.fromJS({}),
   };
 
   const render = () => {
@@ -121,7 +121,7 @@ describe('LibraryHeader', () => {
   it('should render a Select All button only if authorized', () => {
     render();
     expect(screen.queryByText('Select all')).not.toBeInTheDocument();
-    state.user = fromJS({ _id: 'user1', role: 'admin' });
+    state.user = Immutable.fromJS({ _id: 'user1', role: 'admin' });
     renderResult.unmount();
     render();
     expect(screen.queryByText('Select all')).toBeInTheDocument();

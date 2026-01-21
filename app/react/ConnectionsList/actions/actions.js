@@ -7,7 +7,7 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
   const searchTerm =
@@ -93,7 +93,7 @@ export function loadMoreReferences(limit) {
 export function setFilter(groupFilterValues) {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    const currentFilter = relationshipsList.filters.get('filter') || fromJS({});
+    const currentFilter = relationshipsList.filters.get('filter') || Immutable.fromJS({});
     const newFilter = currentFilter.merge(groupFilterValues);
     dispatch(
       actions.set('relationships/list/filters', relationshipsList.filters.set('filter', newFilter))
@@ -105,7 +105,7 @@ export function setFilter(groupFilterValues) {
 export function resetSearch() {
   return function (dispatch, getState) {
     dispatch(formActions.change('relationships/list/search.searchTerm', ''));
-    dispatch(actions.set('relationships/list/filters', fromJS({})));
+    dispatch(actions.set('relationships/list/filters', Immutable.fromJS({})));
     return searchReferences()(dispatch, getState);
   };
 }

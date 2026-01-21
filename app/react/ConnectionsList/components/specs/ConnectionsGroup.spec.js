@@ -3,9 +3,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ShowIf from '#app/App/ShowIf.jsx';
 import { ConnectionsGroup } from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsGroup', () => {
   let component;
   let props;
@@ -22,9 +22,9 @@ describe('ConnectionsGroup', () => {
     };
 
     props = {
-      group: Immutable(group),
+      group: Immutable.fromJS(group),
       setFilter: jasmine.createSpy('setFilter'),
-      filters: Immutable([]),
+      filters: Immutable.fromJS([]),
     };
   });
 
@@ -137,8 +137,8 @@ describe('ConnectionsGroup', () => {
 
     it('should unselect all options if filters is empty', () => {
       component.setProps({
-        filters: Immutable({}),
-        group: Immutable({ templates: [], context: 'oneContext' }),
+        filters: Immutable.fromJS({}),
+        group: Immutable.fromJS({ templates: [], context: 'oneContext' }),
       });
       expect(component.state().selected).toBe(false);
       expect(component.state().selectedItems.toJS()).toEqual([]);
@@ -146,8 +146,8 @@ describe('ConnectionsGroup', () => {
 
     it('should set selected False if there is more templates in new props', () => {
       component.setProps({
-        filters: Immutable({ a: 3 }),
-        group: Immutable({
+        filters: Immutable.fromJS({ a: 3 }),
+        group: Immutable.Map({
           templates: [{ _id: 1 }, { _id: 2 }, { _id: 3 }],
           context: 'oneContext',
         }),

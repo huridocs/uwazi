@@ -9,7 +9,7 @@ import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import { MetadataFormButtons } from '#app/Metadata/components/MetadataFormButtons.jsx';
 import Immutable from 'immutable';
 
-const { fromJS: immutable } = Immutable;
+// Removed - use Immutable.fromJS: immutable directly
 describe('MetadataFormButtons', () => {
   let component;
   let props;

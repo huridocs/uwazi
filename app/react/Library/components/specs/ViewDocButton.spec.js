@@ -7,7 +7,7 @@ import { actions } from '#app/V2/BasicReducer/reducer.js';
 import { ViewDocButton, mapDispatchToProps } from '#app/Library/components/ViewDocButton.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('ViewDocButton', () => {
   let props;
   let component;
@@ -36,7 +36,7 @@ describe('ViewDocButton', () => {
   });
   describe('when targetReference is provided', () => {
     it('should render view button with reference id in the url query', () => {
-      props.targetReference = fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
+      props.targetReference = Immutable.fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
       render();
       expect(component).toMatchSnapshot();
 
@@ -46,7 +46,7 @@ describe('ViewDocButton', () => {
     });
     it('should call openReferencesTab when clicked', () => {
       const event = { stopPropagation: jest.fn() };
-      props.targetReference = fromJS({ range: { start: 200, end: 300 } });
+      props.targetReference = Immutable.fromJS({ range: { start: 200, end: 300 } });
       render();
       component.simulate('click', event);
       expect(props.openReferencesTab).toHaveBeenCalled();

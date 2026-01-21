@@ -4,16 +4,16 @@ import { shallow } from 'enzyme';
 import { Loader } from '#app/components/Elements/Loader.jsx';
 
 import { SearchResults } from '#app/Connections/components/SearchResults.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('SearchResults', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      results: Immutable([{ sharedId: 'r1' }, { sharedId: 'r2' }]),
+      results: Immutable.fromJS([{ sharedId: 'r1' }, { sharedId: 'r2' }]),
       onClick: jasmine.createSpy('onClick'),
       selected: 'r2',
       searching: false,

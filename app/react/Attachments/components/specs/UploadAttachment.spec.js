@@ -3,9 +3,9 @@ import { shallow } from 'enzyme';
 
 
 import { UploadAttachment } from '#app/Attachments/components/UploadAttachment.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('UploadAttachment', () => {
   let component;
   let props;
@@ -16,8 +16,8 @@ describe('UploadAttachment', () => {
     props = {
       uploadAttachment: jasmine.createSpy('uploadAttachment'),
       entity: 'idE1',
-      progress: Immutable({}),
-      languages: Immutable(['en']),
+      progress: Immutable.fromJS({}),
+      languages: Immutable.fromJS(['en']),
       storeKey: 'library',
     };
   });
@@ -43,7 +43,7 @@ describe('UploadAttachment', () => {
 
   describe('when there are multiple languages', () => {
     it('should have another input to upload to all languages', () => {
-      props.languages = Immutable(['es', 'en']);
+      props.languages = Immutable.fromJS(['es', 'en']);
       render();
 
       expect(component.find('input').length).toBe(2);
@@ -78,8 +78,8 @@ describe('UploadAttachment', () => {
 
   describe('when uploading', () => {
     it('should show a progress bar only', () => {
-      props.languages = Immutable(['es', 'en']);
-      props.progress = Immutable({ idE1: 77 });
+      props.languages = Immutable.fromJS(['es', 'en']);
+      props.progress = Immutable.fromJS({ idE1: 77 });
 
       render();
 

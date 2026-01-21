@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
-import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
-import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
+// import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
+// import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 
@@ -186,38 +186,38 @@ const PDF = ({ fileUrl, highlights, onSelect = () => undefined, onDeselect, size
   }
 
   return (
-    <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
-      <div id="pdf-container" ref={pdfContainerRef} style={containerStyles}>
-        {pdf ? (
-          Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const regionId = number.toString();
-            const pageHighlights = highlights ? highlights[regionId] : undefined;
+    // <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
+    <div id="pdf-container" ref={pdfContainerRef} style={containerStyles}>
+      {pdf ? (
+        Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+          const regionId = number.toString();
+          const pageHighlights = highlights ? highlights[regionId] : undefined;
 
-            return (
-              <div
-                key={`page-${regionId}`}
-                id={`page-${regionId}-container`}
-                ref={el => {
-                  pageRefsMap.current[regionId] = el;
-                }}
-              >
-                <SelectionRegion regionId={regionId}>
-                  <PDFPage
-                    pdf={pdf}
-                    page={number}
-                    eventBus={eventBus}
-                    highlights={pageHighlights}
-                    containerWidth={containerWidth}
-                  />
-                </SelectionRegion>
-              </div>
-            );
-          })
-        ) : (
-          <Translate>Loading</Translate>
-        )}
-      </div>
-    </HandleTextSelection>
+          return (
+            <div
+              key={`page-${regionId}`}
+              id={`page-${regionId}-container`}
+              ref={el => {
+                pageRefsMap.current[regionId] = el;
+              }}
+            >
+              {/* <SelectionRegion regionId={regionId}> */}
+              <PDFPage
+                pdf={pdf}
+                page={number}
+                eventBus={eventBus}
+                highlights={pageHighlights}
+                containerWidth={containerWidth}
+              />
+              {/* </SelectionRegion> */}
+            </div>
+          );
+        })
+      ) : (
+        <Translate>Loading</Translate>
+      )}
+    </div>
+    // </HandleTextSelection>
   );
 };
 

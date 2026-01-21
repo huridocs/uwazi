@@ -2,7 +2,7 @@
 import * as types from '#app/Relationships/actions/actionTypes.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 const initialState = {
   editing: false,
   saving: false,
@@ -26,6 +26,6 @@ export default function (state = initialState, action = {}) {
       return state.set('saving', false);
 
     default:
-      return fromJS(state);
+      return Immutable.fromJS(state);
   }
 }

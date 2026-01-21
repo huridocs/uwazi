@@ -3,17 +3,17 @@ import { shallow } from 'enzyme';
 
 
 import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('TargetDocumentHeader', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      connection: Immutable({ _id: 'connection' }),
-      uiState: Immutable({ connecting: false }),
+      connection: Immutable.fromJS({ _id: 'connection' }),
+      uiState: Immutable.fromJS({ connecting: false }),
       reference: { targetRange: { text: 'text' }, targetDocument: 'abc2', targetFile: 'fileId' },
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
@@ -51,10 +51,10 @@ describe('TargetDocumentHeader', () => {
   describe('reference status', () => {
     it('should toggle references when connecting', () => {
       render();
-      component.setProps({ uiState: Immutable({ connecting: true }) }, () => {
+      component.setProps({ uiState: Immutable.fromJS({ connecting: true }) }, () => {
         expect(props.toggleReferences).toHaveBeenCalledWith(false);
       });
-      component.setProps({ uiState: Immutable({ connecting: false }) }, () => {
+      component.setProps({ uiState: Immutable.fromJS({ connecting: false }) }, () => {
         expect(props.toggleReferences).toHaveBeenCalledWith(true);
       });
     });

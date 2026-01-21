@@ -9,7 +9,7 @@ import { templatesAtom } from '#V2/atoms/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '#shared/ParagraphExtractionTypes.ts';
+} from '#shared/ParagraphExtractionTypes.js';
 import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.jsx';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => {

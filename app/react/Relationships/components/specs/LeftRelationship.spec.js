@@ -8,7 +8,7 @@ import { LeftRelationship } from '#app/Relationships/components/LeftRelationship
 import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('RelationshipsGraphEdit', () => {
   let component;
   let props;
@@ -45,8 +45,8 @@ describe('RelationshipsGraphEdit', () => {
       index: 0,
       search: { sort: 'creationDate', order: 'desc', treatAs: 'number' },
       relationTypes: [{ _id: '123', name: 'Friend' }],
-      parentEntity: fromJS({ sharedId: 'sharedId1' }),
-      hub: fromJS(hub),
+      parentEntity: Immutable.fromJS({ sharedId: 'sharedId1' }),
+      hub: Immutable.fromJS(hub),
       editing: false,
       updateLeftRelationshipType: jasmine.createSpy('updateLeftRelationshipType'),
       toggelRemoveLeftRelationship: jasmine.createSpy('toggelRemoveLeftRelationship'),
@@ -62,9 +62,9 @@ describe('RelationshipsGraphEdit', () => {
     beforeEach(render);
 
     it('should render the relationship', () => {
-      expect(component.find(Doc).props().doc).toEqual(fromJS(props.parentEntity));
+      expect(component.find(Doc).props().doc).toEqual(Immutable.fromJS(props.parentEntity));
       expect(component.find(HubRelationshipMetadata).props().relationship).toEqual(
-        fromJS(hub.leftRelationship)
+        Immutable.fromJS(hub.leftRelationship)
       );
     });
   });
@@ -94,7 +94,7 @@ describe('RelationshipsGraphEdit', () => {
   describe('when relationship is text range reference', () => {
     it('should render the Doc with the target reference', () => {
       hub.leftRelationship.range = { start: 100, end: 200 };
-      props.hub = fromJS(hub);
+      props.hub = Immutable.fromJS(hub);
       render();
       expect(component).toMatchSnapshot();
     });

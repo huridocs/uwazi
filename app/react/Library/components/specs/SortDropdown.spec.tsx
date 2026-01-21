@@ -9,7 +9,7 @@ import { defaultState, renderConnectedContainer } from '#app/utils/test/renderCo
 import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('Sort dropdown', () => {
   let props: any;
   let renderResult: RenderResult;
@@ -49,7 +49,7 @@ describe('Sort dropdown', () => {
   beforeEach(() => {
     props = {
       locale: 'en',
-      templates: fromJS(templates),
+      templates: Immutable.fromJS(templates),
       search: {
         order: 'asc',
         sort: 'creationDate',
@@ -103,7 +103,7 @@ describe('Sort dropdown', () => {
   });
 
   it('should not duplicate the entry when multiple options have the same property name', () => {
-    props.templates = fromJS([
+    props.templates = Immutable.fromJS([
       {
         _id: 'id1',
         properties: [

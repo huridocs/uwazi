@@ -20,9 +20,9 @@ import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
 import { TableViewColumn, IStore } from '#app/istore.js';
 import Immutable from 'immutable';
 
-const { List } = Immutable;
+
 interface HideColumnsComponentProps {
-  columns: List<IImmutable<TableViewColumn>>;
+  columns: Immutable.List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;
   setTableViewAllColumnsHidden: (hidden: boolean) => void;
 }
@@ -37,10 +37,10 @@ const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 const processColumns = (
-  columnsMap: List<{
+  columnsMap: Immutable.List<{
     toJS(): TableViewColumn;
     get<Field extends keyof TableViewColumn>(_field: Field): IImmutable<TableViewColumn[Field]>;
-    filter(fn: (listElement: any) => boolean | undefined): List<any>;
+    filter(fn: (listElement: any) => boolean | undefined): Immutable.List<any>;
   }>
 ) => {
   const columns = columnsMap.toJS().slice(1);

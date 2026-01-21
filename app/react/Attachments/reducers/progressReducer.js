@@ -1,8 +1,6 @@
 
 import * as types from '#app/Attachments/actions/actionTypes.js';
-import ImmutableLib from 'immutable';
-
-const { fromJS: Immutable } = ImmutableLib;
+import Immutable from 'immutable';
 const initialState = {};
 
 export default function documents(state = initialState, action = {}) {
@@ -22,5 +20,5 @@ export default function documents(state = initialState, action = {}) {
     return state.delete(action.entity);
   }
 
-  return Immutable(state);
+  return Immutable.fromJS(state);
 }

@@ -10,27 +10,27 @@ import { CreateConnectionPanel } from '#app/Connections/components/CreateConnect
 import SearchForm from '#app/Connections/components/SearchForm.jsx';
 import ActionButton from '#app/Connections/components/ActionButton.jsx';
 import SearchResults from '#app/Connections/components/SearchResults.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('CreateConnectionPanel', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      connection: Immutable({
+      connection: Immutable.Map({
         template: 'rt3',
         type: 'basic',
         sourceDocument: 'sourceId',
         targetDocument: 'targetId',
       }),
-      relationTypes: Immutable([
+      relationTypes: Immutable.List([
         { _id: 'rt1', name: 'relationType1' },
         { _id: 'rt2', name: 'relationType2' },
       ]),
-      searchResults: Immutable([{ _id: 'sr1' }, { _id: 'sr2' }]),
-      uiState: Immutable({ searching: true }),
+      searchResults: Immutable.fromJS([{ _id: 'sr1' }, { _id: 'sr2' }]),
+      uiState: Immutable.fromJS({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
       setTargetDocument: () => { },
       onCreate: jasmine.createSpy('onCreate'),
@@ -57,7 +57,7 @@ describe('CreateConnectionPanel', () => {
   });
 
   it('should mark the connnection type passed', () => {
-    props.connection = Immutable({
+    props.connection = Immutable.Map({
       template: 'rt1',
       type: 'basic',
       sourceDocument: 'sourceId',
@@ -69,7 +69,7 @@ describe('CreateConnectionPanel', () => {
     expect(options.at(0).find(Icon).props().icon).toBe('check');
     expect(options.at(1).find(Icon).props().icon).not.toBe('check');
 
-    props.connection = Immutable({
+    props.connection = Immutable.Map({
       template: 'rt2',
       type: 'basic',
       sourceDocument: 'sourceId',

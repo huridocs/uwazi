@@ -3,20 +3,20 @@ import { shallow } from 'enzyme';
 
 
 import { ActionButton, mapStateToProps } from '#app/Connections/components/ActionButton.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ActionButton', () => {
   let component;
   let props;
   const connections = {
-    basic: Immutable({
+    basic: Immutable.Map({
       sourceDocument: 'sourceId',
       targetDocument: 'targetId',
       template: 'template',
       type: 'basic',
     }),
-    ranged: Immutable({
+    ranged: Immutable.Map({
       sourceDocument: 'sourceId',
       sourceRange: 'sourceRange',
       targetDocument: 'targetId',
@@ -130,7 +130,7 @@ describe('ActionButton', () => {
       state = {
         connections: {
           connection: props.connection,
-          uiState: Immutable({ creating: false, connecting: false }),
+          uiState: Immutable.fromJS({ creating: false, connecting: false }),
         },
       };
     });

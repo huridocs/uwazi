@@ -14,7 +14,7 @@ import { IStore } from '#app/istore.js';
 import Item from '#app/Layout/Item.jsx';
 import Immutable from 'immutable';
 
-const { Map } = Immutable;
+
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
 }
@@ -51,7 +51,7 @@ const createRightRelationshipGroups = (
   const { relationTypes, selectConnection, parentEntity } = props;
   return (
     <div className="sidepanel-relationship-right">
-      {rightRelationships.map((relationship: Map<any, any>, index: number) => {
+      {rightRelationships.map((relationship: Immutable.Map<any, any>, index: number) => {
         let header;
         const relationshipTemplateId = relationship.get('template');
         const relationType = relationTypes.find(r => r._id === relationshipTemplateId);

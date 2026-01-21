@@ -2,16 +2,16 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { ResetSearch } from '#app/ConnectionsList/components/ResetSearch.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ResetSearch', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      connectionsGroups: Immutable([]),
+      connectionsGroups: Immutable.fromJS([]),
       resetSearch: jasmine.createSpy('resetSearch'),
     };
   });

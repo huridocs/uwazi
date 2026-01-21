@@ -1,9 +1,11 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
 
-import Doc from '#app/Library/components/Doc.js';
-import Footer from '#app/App/Footer.js';
+
+import { shallow } from 'enzyme';
+import Immutable from 'immutable';
+
+import Doc from '#app/Library/components/Doc.jsx';
+import Footer from '#app/App/Footer.jsx';
 
 import { DocumentCounter } from '#app/Layout/DocumentCounter.jsx';
 import { TilesViewer } from '#app/Layout/TilesViewer.jsx';
@@ -16,7 +18,7 @@ describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  const documents = fromJS({
+  const documents = Immutable.fromJS({
     rows: [
       { title: 'Document one', _id: '1' },
       { title: 'Document two', _id: '2' },
@@ -30,7 +32,7 @@ describe('DocumentsList', () => {
     props = {
       documents,
       search: { sort: 'sort' },
-      filters: fromJS({ documentTypes: [] }),
+      filters: Immutable.fromJS({ documentTypes: [] }),
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
@@ -56,7 +58,7 @@ describe('DocumentsList', () => {
     beforeEach(() => {
       props.view = 'graph';
       props.connections = { totalRows: 2 };
-      props.connectionsGroups = fromJS([
+      props.connectionsGroups = Immutable.fromJS([
         {
           templates: [
             {
@@ -92,7 +94,7 @@ describe('DocumentsList', () => {
         selectAllDocuments: expect.any(Function),
         searchCentered: false,
         storeKey: 'library',
-        filters: fromJS({ documentTypes: [] }),
+        filters: Immutable.fromJS({ documentTypes: [] }),
         tableViewMode: false,
         scrollCount: 1,
       });

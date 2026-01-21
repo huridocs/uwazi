@@ -69,16 +69,16 @@ describe('PDFView', () => {
 
   const state = {
     documentViewer: {
-      uiState: fromJS({ reference: { targetRange: [] } }),
-      targetDoc: fromJS({ _id: 'document1' }),
+      uiState: Immutable.fromJS({ reference: { targetRange: [] } }),
+      targetDoc: Immutable.fromJS({ _id: 'document1' }),
       sidepanel: { tab: '1', metadata: { _id: 'prop1' } },
       targetDocReferences: [],
     },
-    connections: { connection: fromJS({}) },
-    user: fromJS({ _id: 'user1' }),
-    settings: { collection: fromJS({}) },
-    modals: fromJS({ ConfirmCloseForm: fromJS({ _id: 'document1' }) }),
-    semanticSearch: { selectedDocument: fromJS({}) },
+    connections: { connection: Immutable.fromJS({}) },
+    user: Immutable.fromJS({ _id: 'user1' }),
+    settings: { collection: Immutable.fromJS({}) },
+    modals: Immutable.fromJS({ ConfirmCloseForm: Immutable.fromJS({ _id: 'document1' }) }),
+    semanticSearch: { selectedDocument: Immutable.fromJS({}) },
   };
 
   const render = () => {
@@ -106,7 +106,7 @@ describe('PDFView', () => {
     };
 
     props = {
-      entity: fromJS({
+      entity: Immutable.fromJS({
         sharedId: 'a2b4c3',
         defaultDoc: { _id: 'documentId', sharedId: 'sharedId', filename: '1234.pdf' },
       }),
@@ -191,7 +191,7 @@ describe('PDFView', () => {
       // eslint-disable-next-line no-import-assign
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;      utils.isClient = false;
+      utils.isClient = false;
       const requestParams = new RequestParams({
         documentId: 'documentId',
         lang: 'es',
@@ -227,7 +227,7 @@ const { fromJS } = Immutable;      utils.isClient = false;
       ref = 'refId';
       pathname = 'pathname';
       const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
-      const doc = fromJS({
+      const doc = Immutable.fromJS({
         relations: [{ _id: 'otherRef' }, reference],
       });
       render();
@@ -283,7 +283,7 @@ const { fromJS } = Immutable;      utils.isClient = false;
       <PDFViewComponent
         searchParams={searchParams}
         location={{ pathname: 'pathname' }}
-        entity={fromJS({})}
+        entity={Immutable.fromJS({})}
         navigate={mockNavigate}
       />
     );
@@ -307,7 +307,7 @@ const { fromJS } = Immutable;      utils.isClient = false;
 
       wrapper.setProps({
         searchParams: newSearchParams,
-        entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
+        entity: Immutable.fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
       await wrapper.update();
       expect(context.store.dispatch).toHaveBeenCalledWith(

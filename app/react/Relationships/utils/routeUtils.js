@@ -8,7 +8,7 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
     const filteredTemplates = connectionsGroups.reduce(
@@ -23,7 +23,7 @@ function requestState(requestParams, state) {
     });
     const params = state.relationships ? state.relationships.list : {};
     params.sort = params.sort || sortOptions;
-    params.filters = fromJS({ limit: 10 });
+    params.filters = Immutable.fromJS({ limit: 10 });
     params.sharedId = requestParams.data.sharedId;
     const newParams = requestParams.add(params);
     return Promise.all([

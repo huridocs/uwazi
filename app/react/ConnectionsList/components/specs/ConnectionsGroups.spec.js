@@ -4,16 +4,16 @@ import { shallow } from 'enzyme';
 
 import { ConnectionsGroups } from '#app/ConnectionsList/components/ConnectionsGroups.jsx';
 import ConnectionsGroup from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsGroups', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
-      connectionsGroups: Immutable([
+      connectionsGroups: Immutable.List([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
         {
           key: 'g2',
@@ -45,7 +45,7 @@ describe('ConnectionsGroups', () => {
 
   describe('when there are no connectionsGroups', () => {
     it('should render each individual ConnectionsGroup', () => {
-      props.connectionsGroups = Immutable([]);
+      props.connectionsGroups = Immutable.fromJS([]);
       render();
 
       expect(component.find(ConnectionsGroup).length).toBe(0);

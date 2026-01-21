@@ -33,6 +33,7 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
 import settingsApi from '#api/settings/settings.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { config } from '#api/config.js';
 import CustomProvider from '#app/App/Provider.js';
 import Root from '#app/App/Root.jsx';
 import RouteHandler from '#app/App/RouteHandler.jsx';
@@ -375,6 +376,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       loadingError={loadingError || ssrError}
       featureFlags={clientFeatureFlags}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
+      environment={config.ENVIRONMENT}
+      version={config.VERSION}
     />
   );
 

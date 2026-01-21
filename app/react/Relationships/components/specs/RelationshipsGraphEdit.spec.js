@@ -7,7 +7,7 @@ import LeftRelationship from '#app/Relationships/components/LeftRelationship.jsx
 import RightRelationship from '#app/Relationships/components/RightRelationship.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('RelationshipsGraphEdit', () => {
   let component;
   let props;
@@ -51,10 +51,10 @@ describe('RelationshipsGraphEdit', () => {
     ];
 
     props = {
-      parentEntity: fromJS({}),
-      hubs: fromJS(hubs),
+      parentEntity: Immutable.fromJS({}),
+      hubs: Immutable.fromJS(hubs),
       editing: false,
-      searchResults: fromJS({ rows: [] }),
+      searchResults: Immutable.fromJS({ rows: [] }),
       parseResults: jasmine.createSpy('parseResults'),
       addHub: jasmine.createSpy('addHub'),
     };
@@ -69,8 +69,8 @@ describe('RelationshipsGraphEdit', () => {
     const leftRelationshipComponents = component.find(LeftRelationship);
     expect(leftRelationshipComponents.length).toBe(2);
     expect(leftRelationshipComponents.at(0).props().index).toBe(0);
-    expect(leftRelationshipComponents.at(0).props().hub).toEqual(fromJS(hubs[0]));
-    expect(leftRelationshipComponents.at(1).props().hub).toEqual(fromJS(hubs[1]));
+    expect(leftRelationshipComponents.at(0).props().hub).toEqual(Immutable.fromJS(hubs[0]));
+    expect(leftRelationshipComponents.at(1).props().hub).toEqual(Immutable.fromJS(hubs[1]));
   });
 
   it('should render a RightRelationship component for each hub', () => {
@@ -78,8 +78,8 @@ describe('RelationshipsGraphEdit', () => {
     const rightRelationshipComponents = component.find(RightRelationship);
     expect(rightRelationshipComponents.length).toBe(2);
     expect(rightRelationshipComponents.at(0).props().index).toBe(0);
-    expect(rightRelationshipComponents.at(0).props().hub).toEqual(fromJS(hubs[0]));
-    expect(rightRelationshipComponents.at(1).props().hub).toEqual(fromJS(hubs[1]));
+    expect(rightRelationshipComponents.at(0).props().hub).toEqual(Immutable.fromJS(hubs[0]));
+    expect(rightRelationshipComponents.at(1).props().hub).toEqual(Immutable.fromJS(hubs[1]));
   });
 
   describe('when editing', () => {
@@ -111,7 +111,7 @@ describe('RelationshipsGraphEdit', () => {
       props.parseResults.calls.reset();
       instance.componentDidUpdate(props);
       expect(props.parseResults).not.toHaveBeenCalled();
-      props.searchResults = fromJS({ rows: [] });
+      props.searchResults = Immutable.fromJS({ rows: [] });
       instance.componentDidUpdate(props);
       expect(props.parseResults).toHaveBeenCalledWith(
         props.searchResults,

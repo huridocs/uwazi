@@ -11,7 +11,7 @@ import * as redux from 'redux';
 import DocumentTypesList from '#app/Library/components/DocumentTypesList.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 jest.mock('#app/Library/actions/filterActions');
 
 describe('TemplatesFilter', () => {
@@ -21,14 +21,14 @@ describe('TemplatesFilter', () => {
     selectedFilters?: String[]
   ) => {
     const store = {
-      templates: fromJS([]),
+      templates: Immutable.fromJS([]),
       settings: {
-        collection: fromJS({
+        collection: Immutable.fromJS({
           filters: templateFilters,
         }),
       },
       library: {
-        filters: fromJS({ documentTypes: selectedFilters }),
+        filters: Immutable.fromJS({ documentTypes: selectedFilters }),
       },
     };
     component = renderConnected(

@@ -17,7 +17,7 @@ import { processFilters } from '#app/Library/actions/libraryActions.js';
 import { ExportStore } from '../reducers/ExportStoreType';
 import Immutable from 'immutable';
 
-const { List } = Immutable;
+
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
   const link: HTMLAnchorElement = document.createElement('a');
@@ -52,7 +52,7 @@ function extractFileName(contentDisposition: string) {
 }
 
 const requestHandler = (
-  _params: CsvExportBody & { ids?: List<string> },
+  _params: CsvExportBody & { ids?: Immutable.List<string> },
   dispatch: Dispatch<any>,
   captcha?: CaptchaValue
 ) => {

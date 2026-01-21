@@ -4,9 +4,9 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Collapsible } from '#app/App/Collapsible.jsx';
 import { LibraryViewRelationshipsComp } from '#app/ConnectionsList/components/LibraryViewRelationships.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('LibraryViewRelationships', () => {
   let component: ShallowWrapper;
   let props: any;
@@ -19,9 +19,9 @@ describe('LibraryViewRelationships', () => {
   beforeEach(() => {
     props = {
       expanded: false,
-      parentEntity: Immutable({ _id: 'someparentid' }),
-      searchResults: Immutable({ rows: [] }),
-      hubs: Immutable([
+      parentEntity: Immutable.fromJS({ _id: 'someparentid' }),
+      searchResults: Immutable.fromJS({ rows: [] }),
+      hubs: Immutable.List([
         {
           hub: 'hubid',
           leftRelationship: { template: 'tempId', hub: 'hubid', entity: 'entityid', entityData },
@@ -67,7 +67,7 @@ describe('LibraryViewRelationships', () => {
   it('should not show default labels if none available', () => {
     const customProps = {
       ...props,
-      hubs: Immutable([
+      hubs: Immutable.List([
         {
           hub: 'hubid',
           leftRelationship: { template: null, hub: 'hubid', entity: 'entityid', entityData },

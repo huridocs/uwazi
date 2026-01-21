@@ -9,7 +9,7 @@ import { renderConnectedContainer, defaultState } from '#app/utils/test/renderCo
 import { GeneralError } from '#V2/Components/ErrorHandling/GeneralError.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 let requestId = '';
 let errorCode = 500;
 
@@ -42,9 +42,9 @@ describe('General Error', () => {
 
   const state = {
     ...defaultState,
-    connections: { connection: fromJS({}) },
-    user: fromJS({ _id: 'user1' }),
-    settings: { collection: fromJS({}) },
+    connections: { connection: Immutable.fromJS({}) },
+    user: Immutable.fromJS({ _id: 'user1' }),
+    settings: { collection: Immutable.fromJS({}) },
   };
 
   describe('when a page could not be rendered at server', () => {

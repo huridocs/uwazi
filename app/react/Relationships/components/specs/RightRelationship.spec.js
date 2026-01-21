@@ -8,7 +8,7 @@ import { RightRelationship } from '#app/Relationships/components/RightRelationsh
 import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('RelationshipsGraphEdit', () => {
   let component;
   let props;
@@ -38,13 +38,13 @@ describe('RelationshipsGraphEdit', () => {
 
     props = {
       index: 0,
-      hubActions: fromJS({ editing: false }),
+      hubActions: Immutable.fromJS({ editing: false }),
       search: { sort: 'creationDate', order: 'desc', treatAs: 'number' },
       relationTypes: [{ _id: '123', name: 'Friend' }],
-      parentEntity: fromJS({}),
-      hub: fromJS(hub),
+      parentEntity: Immutable.fromJS({}),
+      hub: Immutable.fromJS(hub),
       editing: false,
-      searchResults: fromJS({ rows: [] }),
+      searchResults: Immutable.fromJS({ rows: [] }),
       updateRightRelationshipType: jasmine.createSpy('updateRightRelationshipType'),
       toggleRemoveRightRelationshipGroup: jasmine.createSpy('toggleRemoveRightRelationshipGroup'),
       toggleMoveEntity: jasmine.createSpy('toggleMoveEntity'),
@@ -67,11 +67,11 @@ describe('RelationshipsGraphEdit', () => {
       expect(component.find('.rightRelationshipsTypeGroup').length).toBe(2);
       expect(component.find(Doc).length).toBe(4);
       expect(component.find(Doc).at(0).props().doc).toEqual(
-        fromJS(hub.rightRelationships[0].relationships[0].entityData)
+        Immutable.fromJS(hub.rightRelationships[0].relationships[0].entityData)
       );
       expect(component.find(HubRelationshipMetadata).length).toBe(4);
       expect(component.find(HubRelationshipMetadata).at(0).props().relationship).toEqual(
-        fromJS(hub.rightRelationships[0].relationships[0])
+        Immutable.fromJS(hub.rightRelationships[0].relationships[0])
       );
     });
   });
@@ -94,7 +94,7 @@ describe('RelationshipsGraphEdit', () => {
         text: ':D',
         selectionRectangles: [],
       };
-      props.hub = fromJS(hub);
+      props.hub = Immutable.fromJS(hub);
       render();
       expect(component).toMatchSnapshot();
     });
@@ -102,7 +102,7 @@ describe('RelationshipsGraphEdit', () => {
 
   describe('while editing', () => {
     beforeEach(() => {
-      props.hubActions = fromJS({ editing: true });
+      props.hubActions = Immutable.fromJS({ editing: true });
       render();
     });
 

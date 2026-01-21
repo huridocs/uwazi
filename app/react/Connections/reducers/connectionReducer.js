@@ -5,7 +5,7 @@ import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
 import * as types from '#app/Connections/actions/actionTypes.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 const initialState = {
   template: '',
   targetDocument: '',
@@ -20,7 +20,7 @@ const resetState = state => {
   propertiesToReset.forEach(key => {
     newState[key] = '';
   });
-  return fromJS(newState);
+  return Immutable.fromJS(newState);
 };
 
 export default function (state = initialState, action = {}) {
@@ -52,6 +52,6 @@ export default function (state = initialState, action = {}) {
       return state.delete('sourceRange');
 
     default:
-      return fromJS(state);
+      return Immutable.fromJS(state);
   }
 }

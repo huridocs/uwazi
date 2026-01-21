@@ -1,7 +1,7 @@
 import React from 'react';
 import { TableViewer } from '#app/Layout/TableViewer.jsx';
 import { LibraryRootComponent } from '#app/Library/Library.jsx';
-import LibraryLayout from '#app/Library/LibraryLayout.js';
+import LibraryLayout from '#app/Library/LibraryLayout.jsx';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 import { requestState } from '#app/Library/helpers/requestState.js';
 import { withRouter } from '#app/componentWrappers.jsx';

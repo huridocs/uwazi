@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { glob } from 'glob';
 
-const files = await glob('app/**/*.{ts,tsx,js,jsx}', {
+const files = await glob('app/**/*.{ts,tsx,js,jsx,mjs}', {
   ignore: ['**/node_modules/**', '**/dist/**', '**/specs/**', '**/*.spec.*'],
 });
 
@@ -34,6 +34,22 @@ for (const file of files) {
     },
     {
       from: /import\s+.*?from\s+(['"])#(?:app|api|shared|UI|V2)\/[^'"]*?\.ts(['"])/g,
+      to: (match) => match.replace(/\.ts(['"])$/, '.js$1'),
+    },
+    {
+      from: /require\s*\((['"])#(?:app|api|shared|UI|V2)\/[^'"]*?\.tsx(['"])\)/g,
+      to: (match) => match.replace(/\.tsx(['"])$/, '.jsx$1'),
+    },
+    {
+      from: /require\s*\((['"])#(?:app|api|shared|UI|V2)\/[^'"]*?\.ts(['"])\)/g,
+      to: (match) => match.replace(/\.ts(['"])$/, '.js$1'),
+    },
+    {
+      from: /export\s+.*\s+from\s+(['"])#(?:app|api|shared|UI|V2)\/[^'"]*?\.tsx(['"])/g,
+      to: (match) => match.replace(/\.tsx(['"])$/, '.jsx$1'),
+    },
+    {
+      from: /export\s+.*\s+from\s+(['"])#(?:app|api|shared|UI|V2)\/[^'"]*?\.ts(['"])/g,
       to: (match) => match.replace(/\.ts(['"])$/, '.js$1'),
     },
   ];

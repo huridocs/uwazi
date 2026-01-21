@@ -10,14 +10,14 @@ import { IStore } from '#V2/shared/types.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('Update page datasets', () => {
   let ReduxStore: Store<IStore>;
 
   beforeEach(() => {
     ReduxStore = create({
       page: {
-        datasets: fromJS({
+        datasets: Immutable.fromJS({
           default: { rows: [], totalRows: 10, aggregations: {} },
           dataset1: { rows: [], totalRows: 10, aggregations: {} },
         }),

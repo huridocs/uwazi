@@ -2,14 +2,14 @@
 import * as types from '#app/Relationships/actions/actionTypes.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 const initialState = [];
 
 const emptyRigthRelationship = () => ({ relationships: [] });
 
 const conformRelationships = action => {
   let order = -1;
-  const hubsObject = (action.results.get('rows') || fromJS([])).reduce((hubs, row) => {
+  const hubsObject = (action.results.get('rows') || Immutable.fromJS([])).reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
       const hubId = connection.get('hub').toString();
@@ -17,7 +17,7 @@ const conformRelationships = action => {
         order += 1;
         hubsImmutable = hubsImmutable.set(
           hubId,
-          fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
+          Immutable.fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
         );
       }
 
@@ -28,7 +28,7 @@ const conformRelationships = action => {
         if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
           hubsImmutable = hubsImmutable.setIn(
             [hubId, 'rightRelationships', templateId],
-            fromJS([])
+            Immutable.fromJS([])
           );
         }
         hubsImmutable = hubsImmutable.setIn(
@@ -39,7 +39,7 @@ const conformRelationships = action => {
     });
 
     return hubsImmutable;
-  }, fromJS({}));
+  }, Immutable.fromJS({}));
 
   return hubsObject.reduce((hubs, hub) => {
     let index = 0;
@@ -47,16 +47,16 @@ const conformRelationships = action => {
       .get('rightRelationships')
       .reduce((memo, relationshipsArray, template) => {
         let newMemo = memo.push(
-          fromJS({}).set('template', template).set('relationships', relationshipsArray)
+          Immutable.fromJS({}).set('template', template).set('relationships', relationshipsArray)
         );
         index += 1;
         if (action.editing && index === hub.get('rightRelationships').size) {
-          newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
+          newMemo = newMemo.push(Immutable.fromJS(emptyRigthRelationship()));
         }
         return newMemo;
-      }, fromJS([]));
+      }, Immutable.fromJS([]));
     return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
-  }, fromJS([]));
+  }, Immutable.fromJS([]));
 };
 
 export default function (state = initialState, action = {}) {
@@ -80,7 +80,7 @@ export default function (state = initialState, action = {}) {
 
     case types.ADD_RELATIONSHIPS_HUB:
       return state.push(
-        fromJS({
+        Immutable.fromJS({
           leftRelationship: { template: null },
           rightRelationships: [emptyRigthRelationship()],
         })
@@ -112,7 +112,7 @@ export default function (state = initialState, action = {}) {
       if (action.newRightRelationshipType) {
         const updatedRightRelationships = updatedHubs
           .getIn([action.index, 'rightRelationships'])
-          .push(fromJS(emptyRigthRelationship()));
+          .push(Immutable.fromJS(emptyRigthRelationship()));
         updatedHubs = updatedHubs.setIn(
           [action.index, 'rightRelationships'],
           updatedRightRelationships
@@ -131,7 +131,7 @@ export default function (state = initialState, action = {}) {
     case types.ADD_RELATIONSHIPS_ENTITY:
       relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
       relationships = relationship.get('relationships').push(
-        fromJS({
+        Immutable.fromJS({
           template: relationship.get('template'),
           entity: action.entity.sharedId,
           entityData: action.entity,
@@ -261,11 +261,11 @@ export default function (state = initialState, action = {}) {
       });
 
       return toUpdate.reduce(
-        (updatedState, path) => updatedState.setIn(path, fromJS(action.entity)),
+        (updatedState, path) => updatedState.setIn(path, Immutable.fromJS(action.entity)),
         state
       );
 
     default:
-      return fromJS(state);
+      return Immutable.fromJS(state);
   }
 }

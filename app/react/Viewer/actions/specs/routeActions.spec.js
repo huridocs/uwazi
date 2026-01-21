@@ -6,7 +6,7 @@ import { getDocument } from '#app/Viewer/actions/documentActions.js';
 import * as routeActions from '#app/Viewer/actions/routeActions.js';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 jest.mock('#app/Viewer/actions/documentActions');
 jest.mock('#app/Viewer/referencesAPI');
 
@@ -83,7 +83,7 @@ describe('Viewer routeActions', () => {
       requestParams.onlyHeaders = () => {};
       const globalResources = {
         settings: {
-          collection: fromJS({
+          collection: Immutable.fromJS({
             languages: [
               {
                 key: 'es',

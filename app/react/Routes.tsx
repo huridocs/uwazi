@@ -15,7 +15,7 @@ import { Login } from '#app/Users/Login.jsx';
 import { Users, usersLoader, userAction } from '#V2/Routes/Settings/Users/Users.jsx';
 import { Collection, collectionLoader } from '#V2/Routes/Settings/Collection/Collection.jsx';
 
-import ViewerRoute from '#app/Viewer/ViewerRoute.js';
+import ViewerRoute from '#app/Viewer/ViewerRoute.jsx';
 
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import {
@@ -86,12 +86,12 @@ import {
   ProtectedRoute,
 } from '#app/ProtectedRoute.jsx';
 import { getIndexElement } from '#app/getIndexElement.jsx';
-import { PageView } from '#app/Pages/PageView.js';
-import ResetPassword from '#app/Users/ResetPassword.js';
-import ConnectedUnlockAccount from '#app/Users/UnlockAccount.js';
+import { PageView } from '#app/Pages/PageView.jsx';
+import ResetPassword from '#app/Users/ResetPassword.jsx';
+import ConnectedUnlockAccount from '#app/Users/UnlockAccount.jsx';
 import { NewRelMigrationDashboard } from '#app/Settings/components/relV2MigrationDashboard.jsx';
 import { LibraryMap } from '#app/Library/LibraryMap.jsx';
-import { App } from '#app/App/App.js';
+import { App } from '#app/App/App.jsx';
 import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 
 const getRoutesLayout = (

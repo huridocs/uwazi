@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Icon as UIIcon } from 'UI';
+import { Icon as UIIcon } from '#UI/index.js';
 import { Icon } from '#app/Layout/Icon.jsx';
 
 describe('Icon', () => {

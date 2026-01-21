@@ -1,17 +1,17 @@
 
 import * as selectors from '#app/Viewer/selectors.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('Viewer selectors', () => {
   let state;
 
   beforeEach(() => {
     state = {
       documentViewer: {
-        doc: Immutable({ sharedId: 'docSharedId' }),
-        targetDoc: Immutable({ sharedId: 'targetDocSharedId' }),
-        references: Immutable([
+        doc: Immutable.fromJS({ sharedId: 'docSharedId' }),
+        targetDoc: Immutable.fromJS({ sharedId: 'targetDocSharedId' }),
+        references: Immutable.List([
           {
             _id: 'r1',
             entity: 'docSharedId',
@@ -45,7 +45,7 @@ describe('Viewer selectors', () => {
             hub: 'hub4',
           },
         ]),
-        targetDocReferences: Immutable([
+        targetDocReferences: Immutable.List([
           {
             _id: 'r9',
             entity: 'docSharedId',

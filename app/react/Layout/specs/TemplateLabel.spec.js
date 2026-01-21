@@ -5,7 +5,7 @@ import configureMockStore from 'redux-mock-store';
 import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
 import Immutable from 'immutable';
 
-const { fromJS: immutable } = Immutable;
+// Removed - use Immutable.fromJS: immutable directly
 describe('TemplateLabel', () => {
   let component;
 

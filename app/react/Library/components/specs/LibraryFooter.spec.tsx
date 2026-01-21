@@ -37,7 +37,7 @@ describe('LibraryFooter', () => {
     const createButton = component.find({ icon: 'import-csv' }).parent();
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;    createButton.simulate('click');
+    createButton.simulate('click');
     expect(uploadActions.showImportPanel).toHaveBeenCalled();
   });
 
@@ -81,8 +81,8 @@ const { fromJS } = Immutable;    createButton.simulate('click');
     it('should close the footer if when scrollcount increases', async () => {
       const state = {
         ...defaultState,
-        exportSearchResults: { exportSearchResultsProcessing: fromJS(false) },
-        user: fromJS({ _id: '1234' }),
+        exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
+        user: Immutable.fromJS({ _id: '1234' }),
       };
       const { renderResult, store } = renderConnectedContainer(
         <LibraryFooter storeKey="library" scrollCount={0} />,

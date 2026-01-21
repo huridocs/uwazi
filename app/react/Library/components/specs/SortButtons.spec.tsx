@@ -14,7 +14,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '#app/Library/components/SortButtons.jsx';
 import Immutable from 'immutable';
 
-const { fromJS: immutable } = Immutable;
+// Removed - use Immutable.fromJS: immutable directly
 describe('SortButtons', () => {
   let props: SortButtonsOwnProps;
   let state: Partial<Omit<IStore, 'library'>> & {

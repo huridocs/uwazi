@@ -10,7 +10,7 @@ import { renderConnected } from '#app/utils/test/renderConnected.jsx';
 import { PermissionsFilter, PermissionsFilterUncontrolled } from '#app/Library/components/PermissionsFilter.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('Permissions Filter', () => {
   let component: any;
   let onChangeMock: any;
@@ -38,7 +38,7 @@ describe('Permissions Filter', () => {
     };
 
     const state = {
-      user: fromJS({
+      user: Immutable.fromJS({
         _id: 'userId',
         groups: [{ _id: 'groupId' }],
       }),

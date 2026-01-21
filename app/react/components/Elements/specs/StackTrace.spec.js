@@ -8,7 +8,7 @@ import { Icon } from '#UI/Icon/Icon.jsx';
 import StackTrace from '#app/components/Elements/StackTrace.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('StackTrace', () => {
   let component;
   const props = {
@@ -19,7 +19,7 @@ describe('StackTrace', () => {
       '/Users/user/Sites/uwazi/node_modules/mongoose/lib/document.js:1647:17 ' +
       'at /Users/user/Sites/uwazi/node_modules/mongoose/lib/schematype.js:808:9 at _combinedTickCallback ' +
       '(internal/process/next_tick.js:131:7) at process._tickCallback (internal/process/next_tick.js:180:9)',
-    validations: fromJS([
+    validations: Immutable.fromJS([
       {
         message: 'should be number',
         instancePath: ".metadata['number']",

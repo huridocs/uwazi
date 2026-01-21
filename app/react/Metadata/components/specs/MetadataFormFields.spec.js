@@ -11,7 +11,7 @@ import { MetadataFormFields, mapDispatchToProps } from '#app/Metadata/components
 import { AddThesauriValueButton } from '#app/Metadata/components/AddThesauriValueButton.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;
   let fieldsTemplate;
@@ -47,13 +47,13 @@ describe('MetadataFormFields with one entity to edit ', () => {
         title: [{ value: 'testTitle' }],
         metadata,
       },
-      template: fromJS({
+      template: Immutable.fromJS({
         name: 'template1',
         _id: 'templateId',
         properties: fieldsTemplate,
       }),
-      fields: fromJS(fieldsTemplate),
-      thesauris: fromJS([
+      fields: Immutable.fromJS(fieldsTemplate),
+      thesauris: Immutable.fromJS([
         {
           _id: 2,
           name: 'thesauri',
@@ -65,7 +65,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
           ],
         },
       ]),
-      entityThesauris: fromJS({
+      entityThesauris: Immutable.fromJS({
         field2: [{ value: '1', label: 'option1' }],
       }),
       dateFormat: '',

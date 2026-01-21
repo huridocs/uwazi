@@ -8,20 +8,18 @@ import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreR
 import DocumentsList from '#app/Layout/DocumentsList.jsx';
 import { SortButtons } from '#app/Library/components/SortButtons.jsx';
 import { searchReferences } from '#app/ConnectionsList/actions/actions.js';
-import ImmutableLib from 'immutable';
-
-const { fromJS: Immutable } = ImmutableLib;
+import Immutable from 'immutable';
 export function mapStateToProps({ relationships }) {
   const documents = relationships.list.searchResults;
 
   return {
     documents,
     connections: {
-      totalRows: (documents.get('rows') || Immutable([]))
+      totalRows: (documents.get('rows') || Immutable.List([]))
         .filter(r => r.get('sharedId') !== relationships.list.sharedId)
         .reduce((total, r) => total + r.get('connections').size, 0),
     },
-    filters: Immutable({ documentTypes: [] }),
+    filters: Immutable.Map({ documentTypes: [] }),
     search: relationships.list.sort,
     sortButtonsStateProperty: 'relationships/list.sort',
     SearchBar,

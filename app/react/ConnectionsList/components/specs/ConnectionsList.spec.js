@@ -1,9 +1,9 @@
 
 import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
 import { mapStateToProps } from '#app/ConnectionsList/components/ConnectionsList.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;
@@ -14,7 +14,7 @@ describe('ConnectionsList', () => {
         relationships: {
           list: {
             sharedId: 'id1',
-            searchResults: Immutable({
+            searchResults: Immutable.Map({
               rows: [
                 { sharedId: 'id2', connections: ['a', 'b'] },
                 { sharedId: 'id1', connections: ['c'] },

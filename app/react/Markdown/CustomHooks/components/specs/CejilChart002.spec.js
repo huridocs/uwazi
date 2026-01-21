@@ -14,7 +14,7 @@ import CejilChart, {
 import { countryKey } from '#app/Markdown/CustomHooks/components/CejilChart.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 describe('CejilChart002', () => {
   let props;
 
@@ -43,7 +43,7 @@ describe('CejilChart002', () => {
   beforeEach(() => {
     props = mapStateToProps(
       {
-        thesauris: fromJS([{ _id: 'otherThesauri' }]),
+        thesauris: Immutable.fromJS([{ _id: 'otherThesauri' }]),
       },
       {}
     );

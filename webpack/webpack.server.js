@@ -38,19 +38,19 @@ const __dirname = path.dirname(__filename);
     if (req.query.rtl !== 'true') {
       return next();
     }
-    
+
     const filename = `CSS/${req.params.file}`;
-    
+
     middleware.waitUntilValid(() => {
       try {
         const outputFs = compiler.outputFileSystem;
         const outputPath = webpackConfig.default.output.path;
         const filePath = path.join(outputPath, filename);
-        
+
         if (!outputFs || !outputFs.existsSync || !outputFs.existsSync(filePath)) {
           return next();
         }
-        
+
         const file = outputFs.readFileSync(filePath, 'utf8');
         process.stdout.write('Processing RTL...\r\n');
         const processed = rtlcss.process(file);

@@ -1,7 +1,7 @@
 import loadable from '@loadable/component';
 
 import colorScheme, { light } from '#app/Charts/utils/colorScheme.js';
-import arrayUtils from '#app/Charts/utils/arrayUtils.js';
+import arrayUtils from '#app/Charts/utils/arrayUtils.jsx';
 import ExtendedTooltip from '#app/Charts/components/ExtendedTooltip.jsx';
 
 const Bar = loadable(

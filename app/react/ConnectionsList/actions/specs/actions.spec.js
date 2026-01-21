@@ -7,9 +7,9 @@ import referencesAPI from '#app/Viewer/referencesAPI.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import * as actions from '#app/ConnectionsList/actions/actions.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('ConnectionsList actions', () => {
   let dispatch;
   let getState;
@@ -19,12 +19,12 @@ describe('ConnectionsList actions', () => {
     dispatch = jasmine.createSpy('dispatch');
     getState = () => ({
       templates: 'templates',
-      entityView: { entity: Immutable({ sharedId: 'sid' }) },
+      entityView: { entity: Immutable.fromJS({ sharedId: 'sid' }) },
       relationships: {
         list: {
           sharedId: 'sid',
           sort: { order: 'order' },
-          filters: Immutable({ filter: 'filter' }),
+          filters: Immutable.fromJS({ filter: 'filter' }),
         },
       },
     });
@@ -86,7 +86,7 @@ describe('ConnectionsList actions', () => {
     it('should fetch the connections with the default state when filters is undefined', async () => {
       getState = () => ({
         templates: 'templates',
-        entityView: { entity: Immutable({ sharedId: 'sid' }) },
+        entityView: { entity: Immutable.fromJS({ sharedId: 'sid' }) },
         relationships: {
           list: { sharedId: 'sid', sort: { order: 'order' } },
         },
@@ -109,7 +109,7 @@ describe('ConnectionsList actions', () => {
           list: {
             sharedId: 'sid',
             sort: {},
-            filters: Immutable({}),
+            filters: Immutable.fromJS({}),
             search: {
               searchTerm: {
                 value: 'term',
@@ -209,8 +209,8 @@ describe('ConnectionsList actions', () => {
           list: {
             sharedId: 'sid',
             sort: { order: 'order' },
-            filters: Immutable({
-              filter: Immutable({ oldProperty: 'old', modifiedProperty: 'original' }),
+            filters: Immutable.Map({
+              filter: Immutable.fromJS({ oldProperty: 'old', modifiedProperty: 'original' }),
             }),
           },
         },

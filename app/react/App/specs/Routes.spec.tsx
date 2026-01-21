@@ -6,8 +6,8 @@ import { getIndexElement } from '#app/getIndexElement.jsx';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { Login } from '#app/Users/Login.jsx';
 import { LibraryTable } from '#app/Library/LibraryTable.jsx';
-import { PageView } from '#app/Pages/PageView.js';
-import { ViewerRoute } from '#app/Viewer/ViewerRoute.js';
+import { PageView } from '#app/Pages/PageView.jsx';
+import { ViewerRoute } from '#app/Viewer/ViewerRoute.jsx';
 import { LibraryMap } from '#app/Library/LibraryMap.jsx';
 import LibraryRoot from '#app/Library/Library.jsx';
 

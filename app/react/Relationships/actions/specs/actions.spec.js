@@ -8,9 +8,9 @@ import api from '#app/utils/api.js';
 import * as types from '#app/Relationships/actions/actionTypes.js';
 import * as actions from '#app/Relationships/actions/actions.js';
 import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
@@ -109,7 +109,7 @@ describe('Relationships actions', () => {
       const store = mockStore({});
       const getState = () => ({
         relationships: {
-          hubs: Immutable([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
+          hubs: Immutable.fromJS([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
         },
       });
 
@@ -130,7 +130,7 @@ describe('Relationships actions', () => {
       const store = mockStore({});
       const getState = () => ({
         relationships: {
-          hubs: Immutable([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
+          hubs: Immutable.fromJS([0, 1, 2, { rightRelationships: [0, 1, 2, 3, 4, 5, 6, 7] }]),
         },
       });
 
@@ -254,14 +254,14 @@ describe('Relationships actions', () => {
           hubs,
         },
         documentViewer: {
-          doc: Immutable({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
+          doc: Immutable.fromJS({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
         },
       };
     }
 
     beforeEach(() => {
       store = mockStore({});
-      hubs = Immutable([
+      hubs = Immutable.List([
         {
           hub: 'hub1',
           leftRelationship: { _id: 'originalLeftRelationship1', template: '1' },
@@ -383,7 +383,7 @@ describe('Relationships actions', () => {
               { type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults' },
               {
                 type: 'viewer/doc/SET',
-                value: { ...entity, defaultDoc: Immutable(defaultDoc) },
+                value: { ...entity, defaultDoc: Immutable.fromJS(defaultDoc) },
               },
               { type: 'CLOSE_RELATIONSHIPS_PANEL' },
               {
@@ -431,7 +431,7 @@ describe('Relationships actions', () => {
           [0, 'rightRelationships', 1, 'relationships'],
           hubs
             .getIn([0, 'rightRelationships', 1, 'relationships'])
-            .push(Immutable({ entity: 'n7', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n7', template: '1' }))
         );
 
         hubs = hubs.setIn([1, 'modified'], true);
@@ -441,7 +441,7 @@ describe('Relationships actions', () => {
           [1, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([1, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n8', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n8', template: '1' }))
         );
 
         hubs = hubs.setIn([2, 'deleted'], true);
@@ -449,13 +449,13 @@ describe('Relationships actions', () => {
           [2, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([2, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n9', template: '1', deleted: true }))
+            .push(Immutable.fromJS({ entity: 'n9', template: '1', deleted: true }))
         );
         hubs = hubs.setIn(
           [2, 'rightRelationships', 0, 'relationships'],
           hubs
             .getIn([2, 'rightRelationships', 0, 'relationships'])
-            .push(Immutable({ entity: 'n10', template: '1' }))
+            .push(Immutable.fromJS({ entity: 'n10', template: '1' }))
         );
 
         hubs = hubs.push({

@@ -1,4 +1,4 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
@@ -19,7 +19,7 @@ describe('Item', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({
+      doc: Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -36,8 +36,8 @@ describe('Item', () => {
       onMouseLeave: jasmine.createSpy('onMouseLeave'),
       additionalIcon: <div>additionalIcon</div>,
       buttons: <div>Buttons</div>,
-      templates: Immutable([]),
-      thesauris: Immutable([]),
+      templates: Immutable.fromJS([]),
+      thesauris: Immutable.fromJS([]),
     };
   });
 
@@ -148,7 +148,7 @@ describe('Item', () => {
 
   describe('when doc have no snippets', () => {
     it('should not render snippet secction when undefined', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -160,7 +160,7 @@ describe('Item', () => {
       expect(component.find('.item-snippet').length).toBe(0);
     });
     it('should not render snippet secction when empty', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
@@ -176,7 +176,7 @@ describe('Item', () => {
 
   describe('when doc have snippets', () => {
     it('should render ItemSnippet including doc, snippets and onSnippetClick props', () => {
-      props.doc = Immutable({
+      props.doc = Immutable.fromJS({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',

@@ -4,19 +4,19 @@ import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { IStore } from '#app/istore.js';
 
-const { fromJS } = Immutable;
+
 
 const defaultState = {
   locale: 'en',
-  inlineEdit: fromJS({ inlineEdit: false }),
-  translations: fromJS([
+  inlineEdit: Immutable.fromJS({ inlineEdit: false }),
+  translations: Immutable.fromJS([
     {
       locale: 'en',
       contexts: [],
     },
   ]),
-  settings: fromJS({}),
-  templates: fromJS({}),
+  settings: Immutable.fromJS({}),
+  templates: Immutable.fromJS({}),
 };
 
 const middlewares = [thunk];

@@ -5,9 +5,9 @@ import { Form } from 'react-redux-form';
 
 import { FiltersForm, mapStateToProps } from '#app/Library/components/FiltersForm.jsx';
 import FiltersFromProperties from '#app/Library/components/FiltersFromProperties.jsx';
-import ImmutableLib from 'immutable';
+import Immutable from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
+// Removed destructuring - use Immutable.fromJS directly
 describe('FiltersForm', () => {
   let component;
   let props;
@@ -17,7 +17,7 @@ describe('FiltersForm', () => {
       location: { myfilter: 'true' },
       navigate: jest.fn(),
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      fields: Immutable([
+      fields: Immutable.List([
         { _id: '1', name: 'name' },
         { _id: '2', name: 'name', type: 'numeric' },
         { _id: '3', name: 'date', type: 'date', defaultfilter: true },
@@ -58,9 +58,9 @@ describe('FiltersForm', () => {
           ],
         },
       ]),
-      documentTypes: Immutable([]),
-      templates: Immutable([]),
-      aggregations: Immutable({
+      documentTypes: Immutable.fromJS([]),
+      templates: Immutable.fromJS([]),
+      aggregations: Immutable.Map({
         all: {
           select: {
             count: 10,
@@ -131,7 +131,7 @@ describe('FiltersForm', () => {
     });
 
     it('should show the No Label aggregation for default filters when a template is selected', () => {
-      props.documentTypes = Immutable(['templateId']);
+      props.documentTypes = Immutable.fromJS(['templateId']);
       render();
       const fields = component.find(FiltersFromProperties);
       expect(fields.props().properties[4].options).toContainEqual({
@@ -148,14 +148,14 @@ describe('FiltersForm', () => {
     it('should contain the fields', () => {
       const store = {
         library: {
-          ui: Immutable({ searchTerm: 'do a barrel roll' }),
-          filters: Immutable({ properties: [{ name: 'author' }], documentTypes: { a: true } }),
+          ui: Immutable.fromJS({ searchTerm: 'do a barrel roll' }),
+          filters: Immutable.fromJS({ properties: [{ name: 'author' }], documentTypes: { a: true } }),
         },
         form: {
           filters: 'filtersForm',
         },
-        templates: Immutable([]),
-        settings: { collection: Immutable({}) },
+        templates: Immutable.fromJS([]),
+        settings: { collection: Immutable.fromJS({}) },
       };
       const state = mapStateToProps(store, { storeKey: 'library' });
       expect(state.fields.toJS()).toEqual([{ name: 'author' }]);

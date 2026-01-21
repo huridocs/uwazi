@@ -26,7 +26,7 @@ import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 interface MenuProps {
   className: string;
   defaultLibraryView: any;
@@ -66,7 +66,7 @@ const MenuComponent = ({
   toggleMobileMenu,
   setSidePanelView,
   showSemanticSearch,
-  links = fromJS([]),
+  links = Immutable.fromJS([]),
   defaultLibraryView = 'cards',
   privateInstance,
 }: mappedProps) => {
@@ -118,7 +118,7 @@ const MenuComponent = ({
 
       return (
         <DropdownMenu
-          link={fromJS(link.toJS())}
+          link={Immutable.fromJS(link.toJS())}
           position={index!}
           key={index}
           hideMobileMenu={hideMobileMenu}

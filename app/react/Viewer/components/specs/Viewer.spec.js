@@ -1,7 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-import { fromJS } from 'immutable';
+import Immutable from 'immutable';
+
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -20,7 +22,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: fromJS({
+      doc: Immutable.fromJS({
         _id: 'id',
         sharedId: 'sharedId',
         documents: [{ language: 'eng' }],
@@ -30,7 +32,7 @@ describe('Viewer', () => {
       addReference: () => {},
       loadTargetDocument: () => {},
       location: { query: {} },
-      templates: fromJS([]),
+      templates: Immutable.fromJS([]),
       locale: 'es',
       sidepanelTab: 'metadata',
     };

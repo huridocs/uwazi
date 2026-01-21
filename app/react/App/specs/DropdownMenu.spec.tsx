@@ -12,7 +12,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
 import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
+
 const links: ILink[] = [
   {
     title: 'title 1',
@@ -33,7 +33,7 @@ describe('DropdownMenu', () => {
   let hideMobileMenuMock: Function;
 
   beforeEach(() => {
-    immutableLinks = fromJS(links);
+    immutableLinks = Immutable.fromJS(links);
     hideMobileMenuMock = jest.fn();
     // @ts-ignore
   });
@@ -82,7 +82,7 @@ describe('DropdownMenu', () => {
   });
 
   it('should have correct link if the link is external', () => {
-    const externalLink = fromJS({
+    const externalLink = Immutable.fromJS({
       title: 'title 1',
       url: '/some_url',
       sublinks: [
