@@ -32,7 +32,6 @@ import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
 import settingsApi from '#api/settings/settings.js';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { config } from '#api/config.js';
 import CustomProvider from '#app/App/Provider.js';
 import Root from '#app/App/Root.jsx';

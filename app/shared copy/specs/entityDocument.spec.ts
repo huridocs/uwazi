@@ -1,5 +1,5 @@
-import { FileType } from './types/fileType.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
+import { FileType } from '#shared/types/fileType.js';
 
 describe('entityDefaultDocument', () => {
   let espDoc: FileType;

@@ -1,4 +1,3 @@
-import { UserSchema } from './types/userType';
 import { PermissionSchema } from './types/permissionType';
 import { UserSchema } from '#shared/types/userType.js';
 

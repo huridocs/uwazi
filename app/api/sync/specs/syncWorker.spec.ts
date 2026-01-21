@@ -14,7 +14,6 @@ import entities from '#api/entities/index.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/translations.v2/database/data_source_defaults.js';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -23,7 +22,7 @@ import {
   testingUploadPaths,
 } from '#api/files/index.js';
 
-import translations from '#app/I18N/index.js';
+import translations from '#api/i18n/translations.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
@@ -33,7 +32,7 @@ import relationtypes from '#api/relationtypes/index.js';
 
 import syncRoutes from '#api/sync/routes.js';
 
-import templates from '#api/index.js';
+import templates from '#api/templates/templates.js';
 
 import { tenants } from '#api/tenants/index.js';
 
@@ -53,7 +52,6 @@ import mailer from '#api/utils/mailer.js';
 
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { advancedSort } from '#api/utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
@@ -86,6 +84,7 @@ import {
   template2,
   thesauri1Value2,
 } from '#api/sync/specs/fixtures.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 
 async function runAllTenants() {
   try {

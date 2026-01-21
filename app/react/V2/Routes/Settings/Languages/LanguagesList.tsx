@@ -5,6 +5,7 @@ import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
 import keyBy from 'lodash/keyBy.js';
 import merge from 'lodash/merge.js';
+import intersectionBy from 'lodash/intersectionBy.js';
 import values from 'lodash/values.js';
 import { Row, createColumnHelper } from '@tanstack/react-table';
 

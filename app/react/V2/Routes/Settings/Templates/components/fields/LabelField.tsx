@@ -1,7 +1,7 @@
 import React from 'react';
 import { InputField } from '#V2/Components/Forms/index.js';
 
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { PropertyRow } from '#V2/Routes/Settings/Templates/types.js';
 

@@ -5,7 +5,6 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 
-import { ClientPropertySchema } from '#V2/shared/types.js';
 import { TestRouterContext } from '#V2/testing/TestRouterContext.jsx';
 import { TestAtomStoreProvider as AtomProvider } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
@@ -24,6 +23,7 @@ import {
 import { PDFSidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PDFSidepanel.jsx';
 import { PropertySidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PropertySidepanel.jsx';
 import * as sidepanelFunctions from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
+import { ClientPropertySchema } from '#app/istore.js';
 
 const renderPDFSidepanel = (
   suggestion: any,

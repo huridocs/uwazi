@@ -3,7 +3,7 @@ import { Table } from '#V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { columns, NoDataCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/index.js';
-import { PXTable } from '#V2/Routes/Settings/Templates/types.js';
+import { PXTable } from '../../types';
 
 interface ExtractorsTableProps {
   paragraphExtractorData: PXTable[];

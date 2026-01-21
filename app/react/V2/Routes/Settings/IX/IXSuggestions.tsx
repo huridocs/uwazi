@@ -46,6 +46,7 @@ import {
   getRelationshipInfo,
   updateSuggestionValues,
 } from '#V2/Routes/Settings/IX/helpers/loaderHelper.js';
+import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 
 const SUGGESTIONS_PER_PAGE = 100;
 

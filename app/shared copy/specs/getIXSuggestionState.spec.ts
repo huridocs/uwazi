@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
-
-import { SuggestionOptionValue } from './types/suggestionType.js';
 import { getSuggestionState, SuggestionValues } from '#shared/getIXSuggestionState.js';
+import { SuggestionOptionValue } from '#shared/types/suggestionType.js';
 
 describe('getIXSuggestionState', () => {
   describe('getSuggestionState', () => {

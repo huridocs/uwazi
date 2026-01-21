@@ -14,7 +14,7 @@ import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 import { ThesauriTable } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
 import type { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-import { ClientThesaurus } from '#app/apiResponseTypes.js';
+import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

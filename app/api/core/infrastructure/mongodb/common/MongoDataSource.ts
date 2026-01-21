@@ -5,8 +5,8 @@ import { tenants } from '#api/tenants/index.js';
 import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
 import { BulkWriteStream } from '#api/core/infrastructure/mongodb/common/BulkWriteStream.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { SessionScopedCollection } from '#api/core/infrastructure/mongodb/common/SessionScopedCollection.js';
 import { SyncedCollection } from '#api/core/infrastructure/mongodb/common/SyncedCollection.js';
+import { SessionScopedCollection } from './SessionScopedCollection';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
@@ -36,17 +36,17 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
   ) {
     return this.useSyncedCollection
       ? new SyncedCollection<Collection>(
-          new SessionScopedCollection<Collection>(
-            this.db.collection<Collection>(collectionName),
-            this.transactionManager
-          ),
-          this.transactionManager,
-          this.db
-        )
-      : new SessionScopedCollection<Collection>(
+        new SessionScopedCollection<Collection>(
           this.db.collection<Collection>(collectionName),
           this.transactionManager
-        );
+        ),
+        this.transactionManager,
+        this.db
+      )
+      : new SessionScopedCollection<Collection>(
+        this.db.collection<Collection>(collectionName),
+        this.transactionManager
+      );
   }
 
   protected async collectionExists(): Promise<boolean> {

@@ -9,6 +9,7 @@ import { Checkbox } from '#V2/Components/Forms/Checkbox.jsx';
 import { Select, OptionSchema } from '#V2/Components/Forms/Select.jsx';
 
 import { Translate } from '#app/I18N/Translate.jsx';
+import { t } from '#app/I18N/index.js';
 
 const templateColors = [
   '#628ccf',

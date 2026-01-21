@@ -7,6 +7,9 @@ import isObject from 'lodash/isObject.js';
 import isEmpty from 'lodash/isEmpty.js';
 import get from 'lodash/get.js';
 import groupBy from 'lodash/groupBy.js';
+import flatMap from 'lodash/flatMap.js';
+import toPairs from 'lodash/toPairs.js';
+import take from 'lodash/take.js';
 import has from 'lodash/has.js';
 import {
   MetadataObjectSchema,
@@ -144,7 +147,7 @@ const filterInheritedRelations = (
       : []
   )
     .filter(v => v)
-    .map(relatedEntity => relatedEntity.sharedId);
+    .map((relatedEntity: EntitySchema) => relatedEntity.sharedId);
   return entity.relations.filter(
     relation =>
       relation.entityData &&

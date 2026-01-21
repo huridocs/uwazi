@@ -78,6 +78,10 @@ const ThesaurusForm = ({
     }
   };
 
+  function t(arg0: string, arg1: string, arg2: null, arg3: boolean): string | undefined {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
       <div data-testid="thesauri" className="border rounded-md shadow-md border-gray-50">
