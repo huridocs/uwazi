@@ -1,8 +1,7 @@
 import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus';
-import { ThesaurusDiff } from '../domain/thesaurus/ThesaurusDiff';
-import { DenormalizeThesaurusEntitiesHandler } from '../infrastructure/jobs/DenormalizeThesaurusEntitiesHandler';
 import { AbstractUseCase } from '../libs/UseCase';
 import { ThesauriDataSource } from './contracts/ThesauriDataSource';
+import { ThesauriService } from './ThesauriService';
 import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService';
 
 type Input = {
@@ -16,6 +15,7 @@ type Output = Thesaurus;
 type Deps = {
   thesauriDS: ThesauriDataSource;
   thesaurusTranslationService: ThesaurusTranslationService;
+  thesauriService: ThesauriService;
 };
 
 class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -27,24 +27,12 @@ class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
       values: input.values,
     });
 
-    const diff = new ThesaurusDiff({ before: existing, after: updated });
-
-    if (!diff.hasChanges) {
-      return updated;
-    }
-
-    await this.transactionManager.run(async () => {
-      await this.deps.thesauriDS.update(updated);
-      await this.deps.thesaurusTranslationService.update(diff);
-      await this.jobsDispatcher.deleteByParams(DenormalizeThesaurusEntitiesHandler, {
-        thesaurusId: updated.id,
-      });
-      await this.jobsDispatcher.dispatch(DenormalizeThesaurusEntitiesHandler, {
+    await this.transactionManager.run(async () =>
+      this.deps.thesauriService.upsert(updated, {
         tenantName: this.tenant.name,
-        thesaurusId: updated.id,
-        userId: this.actorId,
-      });
-    });
+        actorId: this.actorId,
+      })
+    );
 
     return updated;
   }
