@@ -13,12 +13,11 @@ import {
 } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import debounce from 'lodash/debounce.js';
+import _ from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
-import { Page } from '#app/istore.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import {
   Button,
@@ -34,6 +33,7 @@ import { notificationAtom } from '#V2/atoms/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
 import { HTMLNotification, JSNotification } from '#V2/Routes/Settings/Pages/components/PageEditorComponents.jsx';
+import { Page } from '#app/V2/shared/types.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -54,7 +54,7 @@ const PageEditor = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
 
-  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
+  const debouncedChangeHandler = useMemo(() => (handler: () => void) => _.debounce(handler, 500), []);
 
   const {
     register,

@@ -3,12 +3,12 @@
  */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { Entity as EntityType } from '#V2/domain/entities/Entity';
-import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from '#V2/testing';
-import { settingsAtom, userAtom } from '#V2/atoms';
+import { Entity as EntityType } from '#V2/domain/entities/Entity.js';
+import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from '#V2/testing/index.js';
+import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
-import * as files from '#V2/api/files';
-import * as PDFViewerModule from '#V2/Components/PDFViewer';
+import * as files from '#V2/api/files/index.js';
+import * as PDFViewerModule from '#V2/Components/PDFViewer/index.js';
 import { Entity } from '#V2/Routes/Entity/Entity.jsx';
 
 jest.mock('#V2/Components/PDFViewer', () => ({

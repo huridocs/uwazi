@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AudioWaveformIcon } from '#V2/Components/CustomIcons';
+import { AudioWaveformIcon } from '#V2/Components/CustomIcons/index.js';
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/solid';
 
 type AudioPlayerProps = {

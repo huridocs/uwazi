@@ -11,7 +11,7 @@ import { highlightSnippet } from '#app/Viewer/actions/uiActions.js';
 import { selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
 
-import determineDirection from './../utils/determineDirection.js';
+import determineDirection from '#app/Viewer/utils/determineDirection.js';
 
 import { APIURL } from '#app/config.js';
 

@@ -20,7 +20,7 @@ import {
   loadForm,
   submitForm,
   resetForm,
-} from '../actions/actions';
+} from '#app/Attachments/actions/actions.js';
 
 const getItemOptions = (filename, url) => {
   const options = {};

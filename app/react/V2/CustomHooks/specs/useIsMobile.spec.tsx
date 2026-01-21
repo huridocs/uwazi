@@ -4,8 +4,8 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { Provider } from 'jotai';
-import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom';
-import { setupMatchMediaMock, TestAtomStoreProvider } from '#V2/testing';
+import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom.js';
+import { setupMatchMediaMock, TestAtomStoreProvider } from '#V2/testing/index.js';
 import { useIsMobile, MOBILE_VIEW_MAX_WIDTH } from '#V2/CustomHooks/useIsMobile.jsx';
 
 describe('useIsMobile', () => {

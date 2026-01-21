@@ -10,11 +10,11 @@ import { FavoriteBanner } from '#app/Favorites/index.js';
 import helpers from '#app/Documents/helpers.js';
 import { Translate } from '#app/I18N/index.js';
 import { RowList, ItemFooter } from '#app/Layout/Lists.jsx';
-import DocumentLanguage from './DocumentLanguage.js';
-import Tip from './Tip.js';
-import ItemSnippet from './ItemSnippet.js';
-import Icon from '#app/UI/Icon/Icon.js';
-import { TemplateLabel } from '#app/V2/Components/Metadata/index.js';
+import DocumentLanguage from '#app/Layout/DocumentLanguage.js';
+import Tip from '#app/Layout/Tip.js';
+import ItemSnippet from '#app/Layout/ItemSnippet.js';
+import Icon from '#UI/Icon/Icon.js';
+import { TemplateLabel } from '#V2/Components/Metadata/index.js';
 
 class Item extends Component {
   getSearchSnipett(doc) {

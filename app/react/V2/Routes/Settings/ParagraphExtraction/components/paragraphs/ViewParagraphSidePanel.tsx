@@ -7,7 +7,7 @@ import { Button } from '#V2/Components/UI/index.js';
 
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.jsx';
 
-import { TablePXEntityParagraphRow } from '#V2/shared//ParagraphExtractionTypes.js';
+import { TablePXEntityParagraphRow } from '#V2/shared/ParagraphExtractionTypes.js';
 import { ViewParagraph } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraph.jsx';
 
 type ViewParagraphSidePanelProps = {

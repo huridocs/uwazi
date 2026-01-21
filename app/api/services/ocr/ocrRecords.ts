@@ -1,4 +1,4 @@
-import { EnforcedWithId, WithId } from '#api/index.js';
+import { EnforcedWithId, WithId } from '#api/odm/index.js';
 import { ensure } from '#shared/tsUtils.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';

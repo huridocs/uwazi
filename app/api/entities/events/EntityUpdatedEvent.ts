@@ -8,7 +8,7 @@ interface EntityUpdatedData {
   targetLanguageKey: string;
 }
 
-class EntityUpdatedEvent extends AbstractEvent<EntityUpdatedData> {}
+class EntityUpdatedEvent extends AbstractEvent<EntityUpdatedData> { }
 
 export { EntityUpdatedEvent };
 

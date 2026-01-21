@@ -1,9 +1,9 @@
+/** @format */
 
 import { I18NUtils } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
 import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import moment from 'moment';
 import { Settings } from 'luxon';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

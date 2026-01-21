@@ -4,10 +4,10 @@ import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { ClientSettings, ClientThesaurus, Template } from '#app/apiResponseTypes.js';
-import { MetadataDisplay } from '#V2/Components/Metadata';
-import { settingsAtom } from '#V2/atoms';
-import { Entity } from '#V2/domain';
-import { FluentCompositionBuilder, ProcessingContext } from '#V2/application';
+import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
+import { Entity } from '#V2/domain/index.js';
+import { FluentCompositionBuilder, ProcessingContext } from '#V2/application/index.js';
 import {
   rawEntity,
   processingContextBase,

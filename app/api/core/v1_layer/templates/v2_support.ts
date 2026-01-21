@@ -4,8 +4,8 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { ensure } from '#shared/tsUtils.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import { validateCreateNewRelationshipProperty } from '../templates.v2/routes/validators/createNewRelationshipProperty';
-import { CreateTemplateService } from '../templates.v2/services/CreateTemplateService.js';
+import { validateCreateNewRelationshipProperty } from '#api/core/v1_layer/templates.v2/routes/validators/createNewRelationshipProperty.js';
+import { CreateTemplateService } from '#api/core/v1_layer/templates.v2/services/CreateTemplateService.js';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const transactionManager = TransactionManagerFactory.default();

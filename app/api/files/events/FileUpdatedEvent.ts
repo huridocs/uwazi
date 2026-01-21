@@ -7,6 +7,6 @@ interface FileUpdatedData {
   after: FileType;
 }
 
-class FileUpdatedEvent extends AbstractEvent<FileUpdatedData> {}
+class FileUpdatedEvent extends AbstractEvent<FileUpdatedData> { }
 
 export { FileUpdatedEvent };

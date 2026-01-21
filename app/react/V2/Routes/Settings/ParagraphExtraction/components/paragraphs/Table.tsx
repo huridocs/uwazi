@@ -7,7 +7,7 @@ import { Table, Button } from '#V2/Components/UI/index.js';
 import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '#V2/shared//ParagraphExtractionTypes.js';
+} from '#V2/shared/ParagraphExtractionTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';

@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { Entity, MetadataProperty } from '#V2/domain';
-import { Panel } from '#V2/Components/Layouts/Panel';
-import { Button } from '#V2/Components/UI';
+import { Entity, MetadataProperty } from '#V2/domain/index.js';
+import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { Button } from '#V2/Components/UI/index.js';
 import { Date } from '#V2/Components/Metadata/Date.jsx';
 import { Geolocation } from '#V2/Components/Metadata/Geolocation.jsx';
 import { Relationship } from '#V2/Components/Metadata/Relationship.jsx';

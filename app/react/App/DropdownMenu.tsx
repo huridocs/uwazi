@@ -5,7 +5,7 @@ import React, { useRef, useState, useCallback } from 'react';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import Icon from '#UI/Icon/Icon.jsx';
-import { ILink, ISublink } from '#app/V2/shared/types.js';
+import { ILink, ISublink } from '#V2/shared/types.js';
 
 export type DropdownMenuProps = {
   link: IImmutable<ILink>;

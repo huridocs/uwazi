@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAtomValue } from 'jotai';
-import GoogleMapsLoader from '@googlemaps/js-api-loader';
+import { isClient } from '#app/utils/index.js';
 
 import { LMap } from '#app/Map/index.jsx';
 
@@ -10,8 +10,6 @@ import { IStore } from '#app/istore.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-
-const { Loader } = GoogleMapsLoader;
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 
@@ -39,16 +37,24 @@ const Map = ({ ...props }: MapProps) => {
     mapLayers = mapLayers?.filter(layer => layer !== 'Dark');
   }
 
-  if (tilesProvider === 'google' && mapApiKey) {
-    const loader = new Loader({
-      apiKey: mapApiKey,
-      retries: 0,
-    });
-    loader
-      .load()
-      .then(() => {})
-      .catch(() => {});
-  }
+  useEffect(() => {
+    if (tilesProvider === 'google' && mapApiKey && isClient) {
+      import('@googlemaps/js-api-loader').then(module => {
+        const GoogleMapsLoader = module.default || module;
+        const Loader = GoogleMapsLoader.Loader || module.Loader;
+        if (Loader) {
+          const loader = new Loader({
+            apiKey: mapApiKey,
+            retries: 0,
+          });
+          loader
+            .load()
+            .then(() => {})
+            .catch(() => {});
+        }
+      }).catch(() => {});
+    }
+  }, [tilesProvider, mapApiKey]);
 
   const templatesInfo = templates.reduce(
     (info, t) => ({

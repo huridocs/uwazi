@@ -7,11 +7,11 @@ import Icon from '#UI/Icon/Icon.jsx';
 import SidePanel from '#app/Layout/SidePanel.jsx';
 import { Translate } from '#app/I18N/index.js';
 
-import { closePanel } from './../../Viewer/actions/uiActions.js';
-import { setRelationType, setTargetDocument } from '../actions/actions';
-import ActionButton from './ActionButton.js';
-import SearchForm from './SearchForm.js';
-import { SearchResults } from '#app/V2/Routes/Entity/Components/SearchResults.jsx';
+import { closePanel } from '#app/Viewer/actions/uiActions.js';
+import { setRelationType, setTargetDocument } from '#app/Connections/actions/actions.js';
+import ActionButton from '#app/Connections/components/ActionButton.js';
+import SearchForm from '#app/Connections/components/SearchForm.js';
+import { SearchResults } from '#V2/Routes/Entity/Components/SearchResults.jsx';
 
 class CreateConnectionPanel extends Component {
   renderCheckType(template) {

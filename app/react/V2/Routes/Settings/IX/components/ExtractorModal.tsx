@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useState, useEffect } from 'react';
-import uniq from 'lodash/uniq.js';
+import _ from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
@@ -162,7 +162,7 @@ const ExtractorModal = ({
         name,
         source: extractorSource,
         property: getPropertyNameFromExtractPair(values[0]),
-        templates: uniq(values.map(value => getTemplateFromExtractPair(value))),
+        templates: _.uniq(values.map(value => getTemplateFromExtractPair(value))),
       } as ClientIXExtractorType)
       : null;
 

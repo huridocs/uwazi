@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { iconNames } from '#UI/Icon/library';
+import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from 'UI';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import IconSelectorItem from '#app/Forms/components/IconSelectorItem.jsx';

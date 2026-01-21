@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { DisplayPill } from './../../DisplayPills.js';
+import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.jsx';
 import { PXTable } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
 
 const TemplateCell = ({

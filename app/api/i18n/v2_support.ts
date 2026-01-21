@@ -1,6 +1,8 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { MongoTranslationsSyncDataSource } from '#api/i18n.v2/database/MongoTranslationsSyncDataSource.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { Translation } from '#api/i18n.v2/model/Translation.js';
@@ -17,8 +19,6 @@ import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexedContextValues } from '#api/i18n/translations.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), TransactionManagerFactory.default());

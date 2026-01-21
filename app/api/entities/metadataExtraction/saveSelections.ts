@@ -1,5 +1,5 @@
 import { files } from '#api/files/index.js';
-import uniqBy from 'lodash/uniqBy.js';
+import _ from 'lodash';
 
 import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
 
@@ -16,7 +16,7 @@ const updateSelections = (
   storedSelections: ExtractedMetadataSchema[]
 ) => {
   const merged = newSelections.concat(storedSelections);
-  const selections = uniqBy(merged, 'name');
+  const selections = _.uniqBy(merged, 'name');
   return selections;
 };
 

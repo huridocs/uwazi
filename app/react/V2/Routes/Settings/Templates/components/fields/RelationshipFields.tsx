@@ -6,7 +6,7 @@ import { Select } from '#V2/Components/Forms/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import orderBy from 'lodash/orderBy.js';
+import _ from 'lodash';
 
 interface RelationshipFieldsProps {
   control: any;
@@ -25,7 +25,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
   }, [content, setValue]);
 
   const relationshipTypeOptions = useMemo(() => {
-    const options = orderBy(
+    const options = _.orderBy(
       relationshipTypes.map(type => ({
         value: type._id,
         label: t(type._id, type.name, null, false),
@@ -37,7 +37,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
   }, [relationshipTypes]);
 
   const entityOptions = useMemo(() => {
-    const options = orderBy(
+    const options = _.orderBy(
       templates
         .filter(template => template._id !== templateId)
         .map(template => {
@@ -65,7 +65,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
 
   const propertyOptions = useMemo(() => {
     if (!selectedTemplate?.properties) return [];
-    const options: { value: string; label: string; type?: string }[] = orderBy(
+    const options: { value: string; label: string; type?: string }[] = _.orderBy(
       selectedTemplate.properties.map(prop => ({
         value: String(prop._id || ''),
         label: t(selectedTemplate._id, prop.label, null, false, 100),

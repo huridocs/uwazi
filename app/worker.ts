@@ -8,6 +8,7 @@ import { DB } from '#api/odm/index.js';
 import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ocrManager } from '#api/services/ocr/OcrManager.js';

@@ -11,9 +11,9 @@ import { Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
-import { getFileNameAndExtension } from '#V2/shared//formatHelpers.js';
+import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 import { notificationAtom } from '#V2/atoms/index.js';
-import { update } from '#app/V2/api/files/index.js';
+import { update } from '#V2/api/files/index.js';
 import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.jsx';
 
 type EditFileSidepanelProps = {

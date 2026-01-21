@@ -11,6 +11,7 @@ import { Translate } from '#app/I18N/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
 import { FileType } from '#shared/types/fileType.js';
+import { getByType, remove, UploadService } from '#V2/api/files/index.js';
 import {
   Button,
   ConfirmationModal,
@@ -26,7 +27,6 @@ import {
   DropzoneModal,
   EditFileSidepanel,
 } from '#V2/Routes/Settings/CustomUploads/components/index.js';
-import { UploadService, getByType } from '#app/V2/api/files/index.js';
 
 type CustomUpload = FileType & { rowId: string };
 

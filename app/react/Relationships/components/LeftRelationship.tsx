@@ -7,7 +7,7 @@ import Icon from '#UI/Icon/Icon.jsx';
 import Doc from '#app/Library/components/Doc.jsx';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '#app/Metadata/actions/actions.js';
-import HubRelationshipMetadata from './HubRelationshipMetadata.js';
+import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.js';
 import Immutable from 'immutable';
 
 const { Map } = Immutable;

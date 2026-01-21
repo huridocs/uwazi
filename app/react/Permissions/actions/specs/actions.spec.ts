@@ -10,7 +10,7 @@ import {
   UPDATE_DOCUMENTS_PUBLISHED,
 } from '#app/Library/actions/actionTypes.js';
 
-import { PUBLIC_PERMISSION } from './../../../../api/permissions/publicPermission.js';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 import * as api from '#app/Permissions/PermissionsAPI.js';
 import * as actions from '#app/Permissions/actions/actions.js';
 

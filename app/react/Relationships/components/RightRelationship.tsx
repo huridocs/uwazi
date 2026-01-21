@@ -7,8 +7,8 @@ import { Translate, t } from '#app/I18N/index.js';
 import Doc from '#app/Library/components/Doc.jsx';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '#app/Metadata/actions/actions.js';
-import * as uiActions from './../../Viewer/actions/uiActions.js';
-import HubRelationshipMetadata from './HubRelationshipMetadata.js';
+import * as uiActions from '#app/Viewer/actions/uiActions.js';
+import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.js';
 
 class RightRelationship extends Component {
   constructor(props) {

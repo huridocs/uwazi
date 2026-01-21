@@ -6,7 +6,7 @@ import {
   ParagraphExtractorApiPayload,
   PXTable,
 } from '#V2/Routes/Settings/ParagraphExtraction/types.js';
-import { Extractor } from '#V2/shared//ParagraphExtractionTypes.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
 
 import api from '#app/utils/api.js';
 

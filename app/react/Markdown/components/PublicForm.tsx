@@ -16,7 +16,7 @@ import Icon from '#UI/Icon/Icon.jsx';
 import { Loader } from '#app/components/Elements/Loader.jsx';
 import './scss/public-form.scss';
 import { generateID } from '#shared/IDGenerator.js';
-import { FormCaptcha } from './FormCaptcha.js';
+import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.jsx';
 
 class PublicFormComponent extends Component {
   static renderTitle(template) {

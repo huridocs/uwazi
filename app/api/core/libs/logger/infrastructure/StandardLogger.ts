@@ -3,6 +3,7 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { LogEntry, LogMetadata } from '#api/core/libs/logger/infrastructure/LogEntry.js';
 import { LogLevel, LogLevels } from '#api/core/libs/logger/infrastructure/LogLevels.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -54,3 +55,6 @@ export const withFeature =
     };
 
 export { StandardLogger };
+
+export const SystemLogger = () => LoggerFactory.systemLogger();
+export const DefaultLogger = () => LoggerFactory.default();

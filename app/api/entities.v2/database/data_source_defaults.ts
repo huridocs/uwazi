@@ -1,10 +1,7 @@
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 
 const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) => {

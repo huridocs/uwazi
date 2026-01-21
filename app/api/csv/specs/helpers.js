@@ -1,10 +1,15 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import yazl from 'yazl';
 import { Readable } from 'stream';
 // eslint-disable-next-line node/no-restricted-import
 import fsPromises from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   new Promise((resolve, reject) => {

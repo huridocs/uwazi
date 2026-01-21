@@ -5,7 +5,7 @@ import { PageReferences } from '#app/Viewer/components/PageReferences.jsx';
 import { PageSelections } from '#app/Viewer/components/PageSelections.jsx';
 import { calculateScaling } from '#V2/Components/PDFViewer/index.js';
 import { atomStore, pdfScaleAtom } from '#V2/atoms/index.js';
-import PDFJS, { EventBus } from './../PDFJS.js';
+import PDFJS, { EventBus } from '#app/PDF/PDFJS.js';
 
 class PDFPage extends Component {
   constructor(props) {

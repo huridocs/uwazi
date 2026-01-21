@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-
+import { fromJS } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -12,9 +12,7 @@ import { ConnectedViewer } from '#app/Viewer/components/Viewer.jsx';
 import SourceDocument from '#app/Viewer/components/SourceDocument.js';
 import TargetDocument from '#app/Viewer/components/TargetDocument.js';
 import * as routeActions from '#app/actions/routeActions';
-import Immutable from 'immutable';
 
-const { fromJS } = Immutable;
 describe('Viewer', () => {
   let component;
   let props;

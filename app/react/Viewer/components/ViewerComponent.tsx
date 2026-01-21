@@ -9,7 +9,7 @@ import { Loader } from '#app/components/Elements/Loader.jsx';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
 import { PDFView } from '#app/Viewer/PDFView.jsx';
-import { ErrorFallback } from '#app/V2/Components/ErrorHandling/ErrorFallback.js';
+import { ErrorFallback } from '#V2/Components/ErrorHandling/ErrorFallback.jsx';
 import Immutable from 'immutable';
 
 const { Map } = Immutable;

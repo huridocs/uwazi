@@ -1,8 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
-
-const { fromJS } = Immutable;
+import Immutable, { fromJS } from 'immutable';
 
 import { clickOnDocument, selectAllDocuments, mapStateToProps } from '#app/Library/components/DocumentsList.js';
 import { DocumentsList } from '#app/Layout/DocumentsList.jsx';

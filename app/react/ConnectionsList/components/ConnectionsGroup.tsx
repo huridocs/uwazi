@@ -8,7 +8,7 @@ import { t } from '#app/I18N/index.js';
 import ShowIf from '#app/App/ShowIf.jsx';
 import Icon from '#UI/Icon/Icon.jsx';
 
-import { setFilter } from '../actions/actions';
+import { setFilter } from '#app/ConnectionsList/actions/actions.js';
 import ImmutableLib from 'immutable';
 
 const { is, fromJS: Immutable } = ImmutableLib;

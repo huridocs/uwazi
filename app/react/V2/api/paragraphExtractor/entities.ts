@@ -6,7 +6,7 @@ import api from '#app/utils/api.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
-import { PXEntityQuery, PXEntityRows, TablePXEntityRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
+import { PXEntityQuery, PXEntityRows, TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
 
 
 const get = async (

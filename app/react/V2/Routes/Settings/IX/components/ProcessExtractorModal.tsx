@@ -6,7 +6,7 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import { Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { Checkbox, InputField, RadioSelect } from '#V2/Components/Forms/index.js';
-import { ProcessParameters } from './../../../../api/ix/suggestions.js';
+import { ProcessParameters } from '#V2/api/ix/suggestions.js';
 import { IXFilters } from '#V2/Routes/Settings/IX/types.js';
 
 type FormData = {

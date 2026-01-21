@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAtom } from 'jotai';
-import { Button, Modal } from '#V2/Components/UI';
+import { Button, Modal } from '#V2/Components/UI/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { searchHintsModalAtom } from '#V2/Routes/Entity/Components/atoms.js';
 

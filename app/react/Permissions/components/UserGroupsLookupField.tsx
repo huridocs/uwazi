@@ -1,6 +1,6 @@
 import { Translate } from '#app/I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 

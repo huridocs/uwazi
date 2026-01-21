@@ -25,8 +25,8 @@ import 'flowbite/dist/flowbite.min.css';
 import 'flowbite';
 import './styles/tailwind.css';
 import './scss/styles.scss';
-import { LegacyHeader } from '#app/App/LegacyHeader.js';
-import { Header } from '#app/V2/Components/UI/Header/Header.js';
+import { LegacyHeader } from '#app/App/LegacyHeader.jsx';
+import { Header } from '#V2/Components/UI/Header/Header.jsx';
 
 const App = ({ customParams }) => {
   const [inlineEditState] = useAtom(inlineEditAtom);

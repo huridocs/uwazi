@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { t } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.jsx';
 
-import { uploadAttachment } from '../actions/actions';
+import { uploadAttachment } from '#app/Attachments/actions/actions.js';
 
 export class UploadAttachment extends Component {
   onChangeSingle(e) {

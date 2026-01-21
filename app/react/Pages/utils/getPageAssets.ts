@@ -1,7 +1,5 @@
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import get from 'lodash/get.js';
-import has from 'lodash/has.js';
-import uniq from 'lodash/uniq.js';
+import _ from 'lodash';
 import api from '#app/Search/SearchAPI.js';
 import { markdownDatasets } from '#app/Markdown/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
@@ -60,19 +58,19 @@ const replaceDynamicProperties = (pageContent?: string, datasets?: any) => {
   const content = pageContent.replace(/\$\{((entity.|template.)[^}^\s]*)\}/g, (match, p) => {
     switch (true) {
       case /entity.metadata.\w*$/.test(p):
-        return get(parsableDatasets, `${p}[0].value`);
+        return _.get(parsableDatasets, `${p}[0].value`);
 
       case /entity.metadata.\w*.(value|displayValue)$/.test(p): {
         const path = p.split('.');
         const pathEnd = path.pop();
-        return get(parsableDatasets, `${path.join('.')}[0].${pathEnd}`);
+        return _.get(parsableDatasets, `${path.join('.')}[0].${pathEnd}`);
       }
 
       case /entity.metadata.\w*\[\d+]$/.test(p):
-        return get(parsableDatasets, `${p}.value`);
+        return _.get(parsableDatasets, `${p}.value`);
 
-      case has(parsableDatasets, p):
-        return get(parsableDatasets, p);
+      case _.has(parsableDatasets, p):
+        return _.get(parsableDatasets, p);
 
       default:
         errors.push(match);
@@ -109,7 +107,7 @@ const getPageAssets = async (
     options: searchOptions[index],
   }));
 
-  const failedExpressions = uniq(errors).join('\n');
+  const failedExpressions = _.uniq(errors).join('\n');
   return {
     pageView,
     itemLists,

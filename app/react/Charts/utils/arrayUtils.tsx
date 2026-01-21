@@ -1,6 +1,6 @@
 import React from 'react';
 import { t } from '#app/I18N/index.js';
-import colorScheme from './colorScheme.js';
+import colorScheme from '#app/Charts/utils/colorScheme.js';
 
 const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());
 const compareDocCount = (a, b) => b.filtered.doc_count - a.filtered.doc_count;

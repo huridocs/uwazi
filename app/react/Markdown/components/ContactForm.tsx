@@ -10,7 +10,7 @@ import { bindActionCreators } from 'redux';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { LocalForm } from '#app/Forms/Form.js';
-import { FormCaptcha } from './FormCaptcha.js';
+import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.jsx';
 
 class ContactForm extends Component {
   constructor(props, context) {

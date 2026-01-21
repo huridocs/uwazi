@@ -32,7 +32,7 @@ import { PropertySchema } from '../../../../../shared/types/commonTypes.js';
 import { NestedProperty } from '#api/core/domain/template/NestedProperty.js';
 import { MultiSelectProperty } from '#api/core/domain/template/select/MultiSelectProperty.js';
 import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { TemplateDBO } from './DBOs/TemplateDBO.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {

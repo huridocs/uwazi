@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import { Button } from '#V2/Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
-import { EntityStatus, type PXEntityLoaderResponse, type TablePXEntityRow } from '#app/V2/shared/ParagraphExtractionTypes.js';
+import { EntityStatus, type PXEntityLoaderResponse, type TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
 import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
 import { EntitiesTable } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/Table.jsx';
 import { generateDisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateDisplayPill.jsx';

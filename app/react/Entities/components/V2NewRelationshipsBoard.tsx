@@ -13,7 +13,7 @@ import {
   deleteRelationships,
   getRelationshipsByEntity,
   saveRelationship,
-} from './../actions/V2NewRelationshipsActions.js';
+} from '#app/Entities/actions/V2NewRelationshipsActions.js';
 
 const bg = i => (i % 2 === 0 ? '#f2f2f2' : '#ffffff');
 

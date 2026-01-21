@@ -6,11 +6,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.jsx';
+import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
 import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.jsx';
 import {
   zoomIn as zoomInAction,

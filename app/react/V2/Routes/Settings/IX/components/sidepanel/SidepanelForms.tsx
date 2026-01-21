@@ -22,11 +22,11 @@ import { Button } from '#V2/Components/UI/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
 import { MultiselectItemLabel } from '#V2/Routes/Settings/IX/components/MultiselectItemLabel.jsx';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
-import { ClientIXExtractorType } from '#app/V2/shared/types.js';
-import { escapeLucene, searchRelatedEntities } from '../../helpers';
-import { SuggestionValue, TableSuggestion } from '../../types';
-import { textSelectionAtom, selectionErrorAtom } from '../atoms';
-import { selectAndSearchAtom } from '../atoms/selectAndSearchAtom';
+import { ClientIXExtractorType } from '#V2/shared/types.js';
+import { escapeLucene, searchRelatedEntities } from '#V2/Routes/Settings/IX/helpers/index.js';
+import { SuggestionValue, TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
+import { textSelectionAtom, selectionErrorAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
 
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],

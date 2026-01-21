@@ -1,5 +1,5 @@
-import { Entity } from '#V2/domain';
-import { SnippetsSearchResponse } from '#V2/api/types';
+import { Entity } from '#V2/domain/index.js';
+import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { isClient } from '#app/utils/index.js';
 
 interface CachedItem<T> {

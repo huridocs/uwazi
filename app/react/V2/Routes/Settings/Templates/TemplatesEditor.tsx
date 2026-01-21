@@ -24,7 +24,7 @@ import * as pagesAPI from '#V2/api/pages/index.js';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
-import isEqual from 'lodash/isEqual.js';
+import _ from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 
@@ -183,7 +183,7 @@ const TemplatesEditor = () => {
   const checkPendingChanges = useCallback(
     //ignore processing
     () =>
-      !isEqual(
+      !_.isEqual(
         { ...loadedTemplate, processing: undefined },
         { ...getCurrentStatus(), processing: undefined }
       ),
@@ -209,10 +209,10 @@ const TemplatesEditor = () => {
   const handleTableChange = (rows: PropertyRow[]) => {
     const newCommonProperties = rows.filter(row => row.isCommonProperty);
     const newProperties = rows.filter(row => !row.isCommonProperty);
-    if (!isEqual(newCommonProperties, commonProperties)) {
+    if (!_.isEqual(newCommonProperties, commonProperties)) {
       setCommonProperties(newCommonProperties);
     }
-    if (!isEqual(newProperties, properties)) {
+    if (!_.isEqual(newProperties, properties)) {
       setProperties(newProperties);
     }
   };

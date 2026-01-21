@@ -1,8 +1,13 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { Request as ExpressRequest, Response } from 'express';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import {
   createStaticHandler,
   createStaticRouter,
@@ -15,8 +20,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import omit from 'lodash/omit.js';
-import sortBy from 'lodash/sortBy.js';
+import _ from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import api from '#app/utils/api.js';
@@ -29,7 +33,7 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js';
 import settingsApi from '#api/settings/settings.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import CustomProvider from '#app/App/Provider.jsx';
+import CustomProvider from '#app/App/Provider.js';
 import Root from '#app/App/Root.jsx';
 import RouteHandler from '#app/App/RouteHandler.jsx';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
@@ -175,9 +179,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const reduxData = {
     user: userApiResponse.json,
-    templates: sortBy(templatesApiResponse.json.rows, 'name'),
+    templates: _.sortBy(templatesApiResponse.json.rows, 'name'),
     thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+    relationTypes: _.sortBy(relationTypesApiResponse.json.rows, 'name'),
     translations: translationsApiResponse.json.rows,
     settings: {
       collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
@@ -198,7 +202,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
       translations: translationsApiResponse.json.rows,
-      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
+      relationTypes: _.sortBy(relationTypesApiResponse.json.rows, 'name'),
       isMobile: isMobileDevice(userAgent),
     },
   };
@@ -237,7 +241,7 @@ const setReduxState = async (
       tenant: req.get('tenant'),
     };
     const requestParams = new RequestParams<{ q?: string }>(
-      { ...req.query, ...omit(routeParams, 'lang') },
+      { ...req.query, ..._.omit(routeParams, 'lang') },
       headers
     );
 

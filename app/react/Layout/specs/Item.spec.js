@@ -1,4 +1,4 @@
-
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
@@ -12,9 +12,7 @@ import DocumentLanguage from '#app/Layout/DocumentLanguage.jsx';
 import * as Icon from '#app/Layout/Icon.jsx';
 import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
 import ItemSnippet from '#app/Layout/ItemSnippet.jsx';
-import ImmutableLib from 'immutable';
 
-const { fromJS: Immutable } = ImmutableLib;
 describe('Item', () => {
   let component;
   let props;

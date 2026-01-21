@@ -1,4 +1,4 @@
-import { PUBLIC_PERMISSION } from './../../../../api/permissions/publicPermission.js';
+import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 

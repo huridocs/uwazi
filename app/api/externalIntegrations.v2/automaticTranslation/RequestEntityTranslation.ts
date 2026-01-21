@@ -1,16 +1,16 @@
-import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 import { ATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/contracts/ATConfigDataSource.js';
 import { Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 export type ATTaskMessage = {
   key: string[];

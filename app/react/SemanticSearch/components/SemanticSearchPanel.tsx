@@ -14,9 +14,9 @@ import {
   registerForUpdates,
   updateSearch,
   hideSemanticSearch,
-} from '../actions/actions.js';
+} from '#app/SemanticSearch/actions/actions.js';
 
-import SearchList from './SearchList.js';
+import SearchList from '#app/SemanticSearch/components/SearchList.js';
 import Immutable from 'immutable';
 
 const { List } = Immutable;

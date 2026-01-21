@@ -1,4 +1,4 @@
-import { actions } from './../../../reducer.js';
+import { actions } from '#app/reducer.js';
 
 import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 

@@ -26,11 +26,11 @@ import ContextMenu from '#app/ContextMenu/index.js';
 import { FileList } from '#app/Attachments/components/FileList.jsx';
 import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
 import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
-import { ShowSidepanelMenu } from './ShowSidepanelMenu.js';
-import V2NewRelationshipsBoard from './V2NewRelationshipsBoard.js';
+import { ShowSidepanelMenu } from '#app/Entities/components/ShowSidepanelMenu.js';
+import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.js';
 import { deleteEntity } from '#app/Entities/actions/actions.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
-import EntityForm from './../../Library/containers/EntityForm.js';
+import EntityForm from '#app/Library/containers/EntityForm.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {

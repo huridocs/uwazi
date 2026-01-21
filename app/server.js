@@ -9,9 +9,7 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { dirname } from 'path';
 
 import * as Sentry from '@sentry/node';
 
@@ -40,6 +38,9 @@ import { routesErrorHandler } from '#api/utils/routesErrorHandler.js';
 import { serverSideRender } from '#app/server.js';
 import { initSentry } from './initSentry.js';
 import { setupQueueWorker } from './setupQueueWorker.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 mongoose.Promise = Promise;
 
@@ -151,8 +152,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   registerEventListeners(applicationEventsBus);
 
   if (config.externalServices) {
-    // eslint-disable-next-line global-require
-    require('./worker');
+    await import('./worker.js');
   }
 
   if (!config.multiTenant && !config.clusterMode) {

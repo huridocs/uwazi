@@ -6,7 +6,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { Button } from '#V2/Components/UI/index.js';
 
-import { TablePXEntityRow } from '#V2/shared//ParagraphExtractionTypes.js';
+import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
 
 const ActionCell = ({
   cell,

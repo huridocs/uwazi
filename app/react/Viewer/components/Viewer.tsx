@@ -21,21 +21,21 @@ import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
 import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.jsx';
 import { PaginatorWithPage } from '#app/Viewer/components/Paginator.jsx';
-import { addReference as addReferenceAction } from './../actions/referencesActions.js';
+import { addReference as addReferenceAction } from '#app/Viewer/actions/referencesActions.js';
 import {
   loadDefaultViewerMenu,
   loadTargetDocument as loadTargetDocumentAction,
-} from './../actions/documentActions.js';
-import { openPanel, toggleReferences } from './../actions/uiActions.js';
-import { selectDoc } from './../selectors.js';
-import ConfirmCloseForm from './ConfirmCloseForm.js';
-import ViewMetadataPanel from './ViewMetadataPanel.js';
-import ViewerDefaultMenu from './ViewerDefaultMenu.js';
-import ViewerTextSelectedMenu from './ViewerTextSelectedMenu.js';
-import SourceDocument from './SourceDocument.js';
-import TargetDocument from './TargetDocumentHeader.js';
-import determineDirection from './../utils/determineDirection.js';
-import { OCRStatus } from './OCRStatus.js';
+} from '#app/Viewer/actions/documentActions.js';
+import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
+import { selectDoc } from '#app/Viewer/selectors.js';
+import ConfirmCloseForm from '#app/Viewer/components/ConfirmCloseForm.js';
+import ViewMetadataPanel from '#app/Viewer/components/ViewMetadataPanel.js';
+import ViewerDefaultMenu from '#app/Viewer/components/ViewerDefaultMenu.js';
+import ViewerTextSelectedMenu from '#app/Viewer/components/ViewerTextSelectedMenu.js';
+import SourceDocument from '#app/Viewer/components/SourceDocument.js';
+import TargetDocument from '#app/Viewer/components/TargetDocumentHeader.js';
+import determineDirection from '#app/Viewer/utils/determineDirection.js';
+import { OCRStatus } from '#app/Viewer/components/OCRStatus.jsx';
 import Immutable from 'immutable';
 
 const { Map } = Immutable;

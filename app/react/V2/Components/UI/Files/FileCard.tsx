@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { t, Translate } from '#app/I18N/index.js';
 import { FilePreview } from '#V2/Components/UI/Files/FilePreview.jsx';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { formatBytes, formatDuration, getMimetypeFromUrl } from '#V2/shared/formatHelpers';
+import { formatBytes, formatDuration, getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { FileType } from '#shared/types/fileType.js';
 
 type EntityFile = Partial<FileType> & {

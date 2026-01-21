@@ -10,10 +10,10 @@ import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { PaneLayout } from '#V2/Components/Layouts/PaneLayout';
-import { MetadataDisplay } from '#V2/Components/Metadata';
-import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons';
-import { Tabs } from '#V2/Components/UI';
+import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.jsx';
+import { MetadataDisplay } from '#V2/Components/Metadata/index.js';
+import { RelationshipPropertyIcon } from '#V2/Components/CustomIcons/index.js';
+import { Tabs } from '#V2/Components/UI/index.js';
 import {
   TabLabel,
   PDFView,

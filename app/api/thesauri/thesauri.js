@@ -1,5 +1,11 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
+import {
+  generateIds,
+  getUpdatedIds,
+  getUpdatedNames,
+  getDeletedProperties,
+} from '#api/utils/templateUtils.js';
 import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/templates/templates.js';
@@ -11,7 +17,6 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import model from '#api/thesauri/dictionariesModel.js';
 import { validateThesauri } from '#api/thesauri/validateThesauri.js';
-import { generateIds, getUpdatedIds, getUpdatedNames, getDeletedProperties } from '#api/utils/templateUtils.js';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
@@ -303,11 +308,11 @@ const thesauri = {
 const flatThesaurusValues = (thesaurus, includeRoots = false) =>
   includeRoots
     ? _.flatMapDeep(thesaurus?.values, tv => {
-      const { values = [], ...root } = tv;
-      const valuesCopy = Array.from(values);
-      valuesCopy.push(root);
-      return valuesCopy;
-    })
+        const { values = [], ...root } = tv;
+        const valuesCopy = Array.from(values);
+        valuesCopy.push(root);
+        return valuesCopy;
+      })
     : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 
 export default thesauri;

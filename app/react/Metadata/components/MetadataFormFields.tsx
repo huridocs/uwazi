@@ -30,7 +30,7 @@ import {
   Select,
   LookupMultiSelect,
   MediaField,
-} from '#app/ReactReduxForms/index.jsx';
+} from '#app/ReactReduxForms/index.js';
 import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
 import { MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
 import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.jsx';

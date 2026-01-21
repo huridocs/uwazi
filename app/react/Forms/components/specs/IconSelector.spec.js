@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import countries from 'world-countries';
-import { iconNames } from '#UI/Icon/library';
+import { iconNames } from '#UI/Icon/library.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import IconSelector from '#app/Forms/components/IconSelector.jsx';
 

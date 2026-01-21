@@ -2,15 +2,15 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
-import flattenDeep from 'lodash/flattenDeep.js';
+import _ from 'lodash';
 import { t } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import MarkdownViewer from '#app/Markdown/index.js';
 import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.jsx';
 import { MediaPlayer } from '#V2/Components/UI/index.js';
-import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.jsx';
+import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.js';
 import { RelationshipLink } from '#app/Metadata/components/RelationshipLink.jsx';
-import ValueList from '#app/Metadata/components/ValueList.jsx';
+import ValueList from '#app/Metadata/components/ValueList.js';
 import { ImageViewer } from '#app/Metadata/components/ImageViewer.jsx';
 
 const getMediaUrlAndName = fileUrl => {
@@ -125,7 +125,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
       break;
     default:
       if (prop.value && prop.value.map) {
-        const propValue = flattenDeep(
+        const propValue = _.flattenDeep(
           prop.value.map(_value =>
             _value.parent && Array.isArray(_value.value)
               ? flattenDeep(

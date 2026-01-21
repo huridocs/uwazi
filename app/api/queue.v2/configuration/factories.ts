@@ -1,15 +1,11 @@
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import {
-  getClient,
-  getConnection,
-  getSharedClient,
-  getSharedConnection,
-} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { DefaultLogger, SystemLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
-import { JobsRouter } from '../infrastructure/JobsRouter.js';
-import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
-import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
-import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
+import { getSharedConnection, getSharedClient, getConnection, getClient } from "#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js";
+import { MongoTransactionManager } from "#api/core/infrastructure/mongodb/common/MongoTransactionManager.js";
+import { DefaultLogger, SystemLogger } from "#api/core/libs/logger/infrastructure/StandardLogger.js";
+import { JobsRouter } from "#api/core/libs/queue/infrastructure/JobsRouter.js";
+import { MongoQueueAdapter } from "#api/core/libs/queue/infrastructure/MongoQueueAdapter.js";
+import { NamespacedDispatcher } from "#api/core/libs/queue/infrastructure/NamespacedDispatcher.js";
+import { RoundRobinMongoQueueAdapter } from "#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js";
+import { QueueOptions } from "#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js";
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(

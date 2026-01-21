@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
-import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight.js';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
 import { EventBus, PDFJSViewer, PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';

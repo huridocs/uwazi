@@ -1,5 +1,5 @@
 import React from 'react';
-import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.jsx';
+import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Translate } from '#app/I18N/index.js';

@@ -1,5 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
 
@@ -10,7 +11,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 import { FileType } from '#shared/types/fileType';
 // eslint-disable-next-line node/no-restricted-import

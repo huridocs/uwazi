@@ -13,8 +13,8 @@ import { renderConnectedContainer, defaultState } from '#app/utils/test/renderCo
 import { socket } from '#app/socket.js';
 import { Provider } from 'react-redux';
 import { OCRStatus } from '#app/Viewer/components/OCRStatus.jsx';
-import * as ocrActions from './../../actions/ocrActions.js';
-import * as documentActions from './../../actions/documentActions.js';
+import * as ocrActions from '#app/Viewer/actions/ocrActions.js';
+import * as documentActions from '#app/Viewer/actions/documentActions.js';
 
 describe('OCRStatus', () => {
   let file: FileType;

@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 
+import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
 
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 import {
@@ -11,7 +12,9 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
+import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
 
+import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
@@ -38,9 +41,9 @@ import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
   DefaultRelationshipDataSource,
+  DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
 } from '#api/relationships.v2/database/data_source_defaults.js';
-import { DefaultRelationshipMigrationFieldsDataSource } from '#api/relationships.v2/database/data_source_defaults.js';
 import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from '#api/relationships.v2/services/CreateRelationshipMigrationFieldService.js';
 import { CreateRelationshipService as GenericCreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
 import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from '#api/relationships.v2/services/DeleteRelationshipMigrationFieldService.js';
@@ -56,13 +59,6 @@ import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJ
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {

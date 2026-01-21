@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -9,8 +8,7 @@ import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelation
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { generateID } from '#shared/IDGenerator.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import _ from 'lodash';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 
 type Input = {
@@ -68,7 +66,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         const generatedIdProps = await this.dependencies.templatesDS
           .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
           .all();
-        const modifiedEntities = cloneDeep(entities);
+        const modifiedEntities = _.cloneDeep(entities);
 
         if (relationshipProps.length) {
           const relations = new RelationsV1Collection(

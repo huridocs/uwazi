@@ -5,7 +5,7 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import { Translate } from '#app/I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { Extractor } from '#V2/shared//ParagraphExtractionTypes.js';
+import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
 
 import { Button } from '#V2/Components/UI/index.js';
 

@@ -1,22 +1,20 @@
-import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
-import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { TemplateProperty } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
 
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { MultiLanguageEntity } from '#api/entities.v2/model/MultiLanguageEntity.js';
-import { EntityMappers } from '#api/entities.v2/database/EntityMapper.js';
-import { EntityDBO, MultiLanguageEntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO, EntityTemplateAggregation, MultiLanguageEntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { ResultType, Result } from '#api/core/libs/Result.js';
+import { Property } from '#app/apiResponseTypes.js';
+import { Entity } from '#api/entities.v2/model/Entity.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
-  implements MultiLanguageEntityDataSource
-{
+  implements MultiLanguageEntityDataSource {
   protected collectionName = 'entities';
 
   private modifiedSharedIds = new Set<string>();

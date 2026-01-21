@@ -1,4 +1,4 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
+import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
 import { TemplateProperty } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 

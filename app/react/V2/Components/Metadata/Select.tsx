@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/domain/entities/types';
+import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/domain/entities/types.js';
 import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
 import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.jsx';
 import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';

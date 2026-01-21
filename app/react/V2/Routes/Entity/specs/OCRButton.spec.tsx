@@ -4,8 +4,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { socket } from '#app/socket.js';
-import { TestRouterContext } from '#V2/testing';
-import * as files from '#V2/api/files';
+import { TestRouterContext } from '#V2/testing/index.js';
+import * as files from '#V2/api/files/index.js';
 import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.jsx';
 
 describe('OCRButton', () => {

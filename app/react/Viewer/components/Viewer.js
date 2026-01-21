@@ -4,23 +4,23 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { Map } from 'immutable';
 import { ConnectionsList } from '#app/ConnectionsList/index.js';
 import { CreateConnectionPanel } from '#app/Connections/index.js';
 import { CurrentLocationLink, Icon } from '#app/Layout/index.js';
 import { RelationshipsFormButtons } from '#app/Relationships/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { actions } from '#app/BasicReducer/index.js';
-import AddEntitiesPanel from '#app/Relationships/components/AddEntities.jsx';
+import AddEntitiesPanel from '#app/Relationships/components/AddEntities.js';
 import ContextMenu from '#app/ContextMenu/index.js';
-import Footer from '#app/App/Footer.jsx';
+import Footer from '#app/App/Footer.js';
 import Marker from '#app/Viewer/utils/Marker.js';
-import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.jsx';
+import RelationshipMetadata from '#app/Relationships/components/RelationshipMetadata.js';
 import ShowIf from '#app/App/ShowIf.jsx';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
-import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.jsx';
-import { PaginatorWithPage } from '#app/Viewer/components/Paginator.jsx';
+import V2NewRelationshipsBoard from '#app/Entities/components/V2NewRelationshipsBoard.js';
+import { PaginatorWithPage } from '#app/Viewer/components/Paginator.js';
 import { addReference as addReferenceAction } from '#app/Viewer/actions/referencesActions.js';
 import {
   loadDefaultViewerMenu,
@@ -28,17 +28,15 @@ import {
 } from '#app/Viewer/actions/documentActions.js';
 import { openPanel, toggleReferences } from '#app/Viewer/actions/uiActions.js';
 import { selectDoc } from '#app/Viewer/selectors.js';
-import ConfirmCloseForm from '#app/Viewer/components/ConfirmCloseForm.jsx';
+import ConfirmCloseForm from '#app/Viewer/components/ConfirmCloseForm.js';
 import ViewMetadataPanel from '#app/Viewer/components/ViewMetadataPanel.js';
-import ViewerDefaultMenu from '#app/Viewer/components/ViewerDefaultMenu.jsx';
-import ViewerTextSelectedMenu from '#app/Viewer/components/ViewerTextSelectedMenu.jsx';
+import ViewerDefaultMenu from '#app/Viewer/components/ViewerDefaultMenu.js';
+import ViewerTextSelectedMenu from '#app/Viewer/components/ViewerTextSelectedMenu.js';
 import SourceDocument from '#app/Viewer/components/SourceDocument.js';
 import TargetDocument from '#app/Viewer/components/TargetDocument.js';
-import determineDirection from './../utils/determineDirection.js';
+import determineDirection from '#app/utils/determineDirection';
 import { OCRStatus } from '#app/Viewer/components/OCRStatus.jsx';
-import Immutable from 'immutable';
 
-const { Map } = Immutable;
 class Viewer extends Component {
   constructor(props) {
     super(props);

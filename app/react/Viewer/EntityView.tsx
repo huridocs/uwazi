@@ -9,7 +9,7 @@ import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 
 import { notificationActions } from '#app/Notifications/index.js';
 import EntityViewer from '#app/Entities/components/EntityViewer.jsx';
-import { prepareAssets } from './pageAssets.js';
+import { prepareAssets } from '#app/Viewer/pageAssets.js';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 
 class Entity extends Component {

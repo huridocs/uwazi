@@ -7,7 +7,7 @@ import ShowIf from '#app/App/ShowIf.jsx';
 import { Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.jsx';
 
-import { resetSearch } from '../actions/actions';
+import { resetSearch } from '#app/ConnectionsList/actions/actions.js';
 
 class ResetSearch extends Component {
   render() {

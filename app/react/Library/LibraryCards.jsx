@@ -1,6 +1,6 @@
 import React from 'react';
 import { LibraryRootComponent } from '#app/Library/Library.jsx';
-import LibraryLayout from '#app/Library/LibraryLayout.jsx';
+import LibraryLayout from '#app/Library/LibraryLayout.js';
 import DocumentsList from '#app/Library/components/DocumentsList.js';
 import { withRouter } from '#app/componentWrappers.jsx';
 import { trackPage } from '#app/App/GoogleAnalytics.jsx';

@@ -7,7 +7,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import { Loader } from '#app/components/Elements/Loader.jsx';
 import { arrayUtils } from '#app/Charts/index.js';
-import PieChartLabel from './PieChartLabel.js';
+import PieChartLabel from '#app/Markdown/components/PieChartLabel.js';
 import markdownDatasets from '#app/Markdown/markdownDatasets.js';
 
 const formatData = (data, property, options) => {

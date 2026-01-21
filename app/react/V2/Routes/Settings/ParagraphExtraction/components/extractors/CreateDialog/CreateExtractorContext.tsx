@@ -5,8 +5,8 @@ import { useAtomValue } from 'jotai';
 
 import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import { AddExtractorSteps } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/index.js';
-import { formatTemplatesToOptions } from './../../../utils/formatters.js';
-import { filterPXQualifiedTemplates } from './../../../utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from '#V2/Routes/Settings/ParagraphExtraction/utils/formatters.js';
+import { filterPXQualifiedTemplates } from '#V2/Routes/Settings/ParagraphExtraction/utils/filterPXQualifiedTemplates.js';
 
 interface CreateExtractorContextType {
   targetTemplateId: string;

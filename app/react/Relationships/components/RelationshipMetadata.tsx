@@ -22,7 +22,7 @@ import {
   addEntity,
   setAddToData,
   reloadRelationships,
-} from '../actions/actions';
+} from '#app/Relationships/actions/actions.js';
 
 class RelationshipMetadata extends Component {
   constructor(props) {

@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import isUndefined from 'lodash/isUndefined.js';
+import _ from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as SettingsAPI from '#V2/api/settings/index.js';
@@ -100,7 +100,7 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
+    if (!_.isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
       delete data.newNameGeneration;
     }
     data.private = !data.private;

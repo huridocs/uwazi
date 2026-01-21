@@ -6,13 +6,12 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { CommonPropertyFactory } from '#api/core/domain/template/CommonPropertyFactory.js';
-import { PropertyCreatorServiceStrategy } from '#api/core/application/propertyCreatorService/PropertyCreatorServiceStrategy.js';
-import { ThesauriDataSource } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
+import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { CreateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
 import { PageService } from '#api/core/domain/template/PageService.js';
-import { Input } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
 
 type Output = Template;
 

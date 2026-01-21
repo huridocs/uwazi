@@ -1,9 +1,9 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router';
-import has from 'lodash/has.js';
+import _ from 'lodash';
 
-import Footer from '#app/App/Footer.jsx';
+import Footer from '#app/App/Footer.js';
 
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 
@@ -17,7 +17,7 @@ const GeneralError = () => {
 
   const { requestId } = searchParamsFromSearchParams(searchParams);
   const { status } =
-    errorCode && has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
+    errorCode && _.has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
   const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
   const error = handledErrors[status!];
   error.requestId = safeRequestId ? safeRequestId[0] : undefined;

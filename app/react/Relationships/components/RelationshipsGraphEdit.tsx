@@ -1,23 +1,29 @@
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import Icon from '#UI/Icon/Icon.jsx';
 import { Translate } from '#app/I18N/index.js';
-import * as actions from '#app/Metadata/actions/actions.js';
+import * as actions from '#app/Relationships/actions/actions.js';
+import LeftRelationship from '#app/Relationships/components/LeftRelationship.js';
+import RightRelationship from '#app/Relationships/components/RightRelationship.js';
+import { ClientEntitySchema, IStore } from '#app/istore.js';
 
-import LeftRelationship from './LeftRelationship.js';
-import RightRelationship from './RightRelationship.js';
-import Immutable from 'immutable';
+type RelationshipsGraphEditProps = {
+  searchResults: [];
+  parentEntity: ClientEntitySchema;
+  editing: boolean;
+  parseResults: (results: [], parentEntity: ClientEntitySchema, editing: boolean) => void;
+  hubs: [];
+  addHub: () => void;
+};
 
-const { Map, List } = Immutable;
-export class RelationshipsGraphEdit extends Component {
+export class RelationshipsGraphEdit extends Component<RelationshipsGraphEditProps> {
   componentDidMount() {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity, this.props.editing);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: RelationshipsGraphEdit['props']) {
     if (this.props.searchResults !== prevProps.searchResults) {
       this.props.parseResults(
         this.props.searchResults,
@@ -58,16 +64,7 @@ export class RelationshipsGraphEdit extends Component {
   }
 }
 
-RelationshipsGraphEdit.propTypes = {
-  parentEntity: PropTypes.instanceOf(Map).isRequired,
-  hubs: PropTypes.instanceOf(List).isRequired,
-  editing: PropTypes.bool.isRequired,
-  searchResults: PropTypes.instanceOf(Map).isRequired,
-  parseResults: PropTypes.func.isRequired,
-  addHub: PropTypes.func.isRequired,
-};
-
-export function mapStateToProps(state) {
+export function mapStateToProps(state: IStore) {
   const { relationships } = state;
   return {
     parentEntity: relationships.list.entity,
@@ -78,7 +75,7 @@ export function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<{}>) {
   return bindActionCreators(
     {
       parseResults: actions.parseResults,

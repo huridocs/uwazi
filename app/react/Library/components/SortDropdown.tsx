@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { I18NLink, t } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';

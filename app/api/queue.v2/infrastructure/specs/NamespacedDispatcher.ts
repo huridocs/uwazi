@@ -3,7 +3,7 @@ import { Dispatchable, HeartbeatCallback } from '#api/core/libs/queue/applicatio
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
-import { NamespacedDispatcher } from './NamespacedDispatcher.js';
+import { NamespacedDispatcher } from '#api/queue.v2/infrastructure/specs/NamespacedDispatcher.js';
 
 class TestJob implements Dispatchable {
   async handleDispatch(

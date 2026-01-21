@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { DateMetadataProperty, DateRangeMetadataProperty } from '#V2/domain/entities/types';
+import { DateMetadataProperty, DateRangeMetadataProperty } from '#V2/domain/entities/types.js';
 import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
 import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.jsx';
 import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';

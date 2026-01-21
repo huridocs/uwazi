@@ -1,10 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-import { Entity } from '#V2/domain';
-import * as files from '#V2/api/files';
-import * as search from '#V2/api/search';
-import * as container from '#V2/application/container/singletons';
+import { Entity } from '#V2/domain/index.js';
+import * as files from '#V2/api/files/index.js';
+import * as search from '#V2/api/search/index.js';
+import * as container from '#V2/application/container/singletons.js';
 import { entityLoader } from '#V2/Routes/Entity/loader.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 

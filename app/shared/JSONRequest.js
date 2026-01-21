@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
 import rison from '@huridocs/rison';
-import assign from 'lodash/assign.js';
+import _ from 'lodash';
 import { getResponseType } from '#shared/apiClient/httpResponses.js';
 
 let cookie;
@@ -122,7 +122,7 @@ const _fetch = (url, data, method, _headers) => {
       return Promise.all([res.json().catch(() => ({})), setCookie, res.headers]);
     })
     .then(([json, setCookie, responseHeaders]) => {
-      const processedResponse = assign(
+      const processedResponse = _.assign(
         {
           json,
           status: response.status,

@@ -21,9 +21,7 @@ config.plugins = config.plugins.concat([
 config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
 
-const outputPath = path.join(rootPath, 'dist');
 config.output = {
-  path: outputPath,
   publicPath: 'http://localhost:8080/',
   filename: '[name].js',
 };

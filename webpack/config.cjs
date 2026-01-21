@@ -69,12 +69,6 @@ module.exports = production => {
       extensions: ['.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
-    externals: (context, request, callback) => {
-      if (request && request.startsWith('#api/')) {
-        return callback(null, `commonjs ${request}`);
-      }
-      callback();
-    },
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -112,7 +106,7 @@ module.exports = production => {
           ],
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: true, esModule: true } },
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
             {
               loader: 'postcss-loader',
               options: {
@@ -132,7 +126,7 @@ module.exports = production => {
           ],
           use: [
             MiniCssExtractPlugin.loader,
-            { loader: 'css-loader', options: { url: false, sourceMap: true, esModule: true } },
+            { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
         },

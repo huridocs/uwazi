@@ -10,7 +10,7 @@ import Modal from '#app/Layout/Modal.jsx';
 import Immutable from 'immutable';
 
 import { LocalForm } from '#app/Forms/Form.js';
-import * as actions from './../../actions/exportActions.js';
+import * as actions from '#app/Library/actions/exportActions.js';
 
 describe('ExportButton', () => {
   let component: any;

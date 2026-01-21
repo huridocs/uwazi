@@ -7,10 +7,19 @@ import { NeedAuthorization } from '#app/Auth/index.js';
 import { t } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.jsx';
 
-import * as actions from '#app/Metadata/actions/actions.js';
+import * as actions from '#app/Relationships/actions/actions.js';
+import { ClientEntitySchema, IStore } from '#app/istore.js';
 
-class RelationshipsFormButtons extends Component {
-  constructor(props) {
+type RelationshipsFormButtonsProps = {
+  editing: boolean | undefined;
+  saving: boolean | undefined;
+  parentEntity: ClientEntitySchema;
+  searchResults: [];
+  edit: (value: boolean, searchResults: [], parentEntity: ClientEntitySchema) => () => void;
+  save: () => void;
+};
+class RelationshipsFormButtons extends Component<RelationshipsFormButtonsProps, MapDispatchToProps> {
+  constructor(props: RelationshipsFormButtonsProps) {
     super(props);
     this.edit = this.edit.bind(this);
   }
@@ -19,7 +28,7 @@ class RelationshipsFormButtons extends Component {
     this.edit(false)();
   }
 
-  edit(value) {
+  edit(value: boolean) {
     return () => {
       this.props.edit(value, this.props.searchResults, this.props.parentEntity);
     };
@@ -72,32 +81,32 @@ class RelationshipsFormButtons extends Component {
   }
 }
 
-RelationshipsFormButtons.propTypes = {
-  editing: PropTypes.bool,
-  saving: PropTypes.bool,
-  edit: PropTypes.func,
-  save: PropTypes.func,
-  parentEntity: PropTypes.object,
-  searchResults: PropTypes.object,
+type MapStateToProps = {
+  editing: boolean | undefined;
+  saving: boolean | undefined;
+  parentEntity: ClientEntitySchema;
+  searchResults: [];
 };
 
-const mapStateToProps = ({ relationships }) => ({
-  editing: relationships.hubActions.get('editing'),
-  saving: relationships.hubActions.get('saving'),
-  parentEntity: relationships.list.entity,
-  searchResults: relationships.list.searchResults,
+type MapDispatchToProps = {
+  edit: (value: boolean) => () => void;
+  save: () => void;
+};
+
+const mapStateToProps = (state: IStore) => ({
+  editing: state.relationships.hubActions.get('editing'),
+  saving: state.relationships.hubActions.get('saving'),
+  parentEntity: state.relationships.list.entity,
+  searchResults: state.relationships.list.searchResults,
 });
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      edit: actions.edit,
-      save: actions.saveRelationships,
-    },
-    dispatch
-  );
+function mapDispatchToProps(): MapDispatchToProps {
+  return {
+    edit: (value: boolean) => () => actions.edit(value),
+    save: () => actions.saveRelationships(),
+  };
 }
 
 export { RelationshipsFormButtons };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsFormButtons);
+export default connect<MapStateToProps, MapDispatchToProps, RelationshipsFormButtonsProps, IStore>(mapStateToProps, mapDispatchToProps)(RelationshipsFormButtons);

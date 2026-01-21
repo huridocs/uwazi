@@ -1,4 +1,4 @@
-import { SyncDBDataSource } from '#api/core/infrastructure/mongodb/common/SyncDBDataSource.js';
+import { SyncDBDataSource } from '#api/common.v2/database/SyncDBDataSource.js';
 import { legacyLogger } from '#api/log/index.js';
 import { ObjectId, UpdateOptions } from 'mongodb';
 import mongoose, {

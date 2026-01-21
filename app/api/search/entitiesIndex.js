@@ -4,14 +4,14 @@ import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
-import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
 import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.js';
+import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { elastic } from '#api/search/elastic.js';
 
 class IndexError extends Error { }

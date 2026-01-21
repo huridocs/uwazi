@@ -4,7 +4,7 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { TemplateMapper } from '#api/core/infrastructure//mongodb/template/Mapper.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { isClient } from '#app/utils/index.js';
-import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom';
+import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom.js';
 
 const MOBILE_VIEW_MAX_WIDTH = 768;
 

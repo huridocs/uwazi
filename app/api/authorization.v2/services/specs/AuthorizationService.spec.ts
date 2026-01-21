@@ -1,6 +1,6 @@
 import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
 
-import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
+import { UnauthorizedError } from '#api/externalIntegrations.v2/errors/UnauthorizedError.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 

@@ -1,18 +1,14 @@
+import uniqueID from '#shared/uniqueID.js';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-import path from 'path';
-import { readFileSync } from 'fs';
-import uniqueID from '#shared/uniqueID.js';
+import { dirname } from 'path';
 import { Tenant } from '#api/tenants/tenantContext.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const packageJsonPath = path.join(__dirname, '../../package.json');
-const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-const { version } = packageJson;
+import { version } from '../../package.json';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const {
   ACTIVITY_LOGS_FOLDER,

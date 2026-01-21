@@ -11,21 +11,13 @@ import {
   DenormalizationService as CreateDenormalizationService,
   CreateRelationshipService,
   DeleteRelationshipService,
-  DenormalizationService as CreateDenormalizationService,
 } from '#api/relationships.v2/services/service_factories.js';
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { DefaultRelationshipDataSource } from '#api/relationships.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
-import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
-import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
-import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
-import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = TransactionManagerFactory.default();

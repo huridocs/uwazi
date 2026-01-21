@@ -4,10 +4,10 @@ import { useLocation } from 'react-router';
 import { ChevronDownIcon, ChevronUpIcon, LanguageIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms';
+import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.jsx';
-import { NeedAuthorization } from '#V2/Components/UI';
+import { NeedAuthorization } from '#V2/Components/UI/index.js';
 
 interface LanguageDropdownProps {
   className?: string;

@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
-import groupBy from 'lodash/groupBy.js';
+import _ from 'lodash';
 
-import translations from '#api/i18n/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import templates from '#api/templates/index.js';
@@ -22,6 +21,7 @@ import { FullyIndexedTranslations, importEntity, translateEntity } from '#api/cs
 import importFile from '#api/csv/importFile.js';
 import { thesauriFromStream } from '#api/csv/importThesauri.js';
 import { validateColumns } from '#api/csv/validateColumns.js';
+import translations from '../i18n';
 
 const readResources = async (
   templateId: ObjectId | string
@@ -158,7 +158,7 @@ export class CSVLoader extends EventEmitter {
       .read();
 
     if (warnings.length > 0) {
-      const groupedWarnings = groupBy(warnings, warning => warning.reason);
+      const groupedWarnings = _.groupBy(warnings, warning => warning.reason);
       Object.keys(groupedWarnings).forEach(key => {
         groupedWarnings[key] = groupedWarnings[key].map(warning => ({
           index: warning.index,

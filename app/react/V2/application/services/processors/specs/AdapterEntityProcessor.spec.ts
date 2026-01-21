@@ -6,7 +6,7 @@ import {
   MultiSelectMetadataProperty,
   LinkMetadataProperty,
 } from '#V2/domain/entities/types.js';
-import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets';
+import { DEFAULT_ENTITY_BASE_PATH } from '#V2/application/optionsPresets.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { processingContext, rawEntity } from '#V2/application/services/processors/specs/PropertyProcessorsFixtures.js';
 import { AdapterEntityProcessor } from '#V2/application/services/processors/AdapterEntityProcessor.js';

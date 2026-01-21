@@ -3,7 +3,7 @@ import React from 'react';
 import HtmlToReact, { Parser } from 'html-to-react';
 import instanceMarkdownIt from 'markdown-it';
 import mdContainer from 'markdown-it-container';
-import * as CustomComponents from './components/index.jsx';
+import * as CustomComponents from '#app/Markdown/components/index.js';
 
 const components = Object.keys(CustomComponents).reduce(
   (map, key) => ({ ...map, [key.toLowerCase()]: CustomComponents[key] }),

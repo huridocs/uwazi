@@ -7,7 +7,7 @@ import { t } from '#app/I18N/index.js';
 import { showFilters, hideFilters } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import Icon from '#UI/Icon/Icon.jsx';
-import { unselectAllDocuments } from './../actions/libraryActions.js';
+import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 
 export class SearchButton extends Component {
   render() {

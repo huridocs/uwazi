@@ -13,10 +13,10 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { Button, Tabs } from '#V2/Components/UI/index.js';
 
-import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 import { ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
 import { notificationAtom } from '#V2/atoms/index.js';
+import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =

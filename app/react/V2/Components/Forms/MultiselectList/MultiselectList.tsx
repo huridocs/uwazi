@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 import React, { useEffect, useState, useRef } from 'react';
-import isString from 'lodash/isString.js';
+import _ from 'lodash';
 
 import { t, Translate } from '#app/I18N/index.js';
 
@@ -43,7 +43,7 @@ interface MultiselectListProps {
 }
 
 const WrapChild = ({ children }: { children: string | React.ReactNode }) =>
-  isString(children) ? <Translate>{children}</Translate> : children;
+  _.isString(children) ? <Translate>{children}</Translate> : children;
 
 const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
   const filtered: MultiselectListOption[] = [];

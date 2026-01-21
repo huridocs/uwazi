@@ -1,8 +1,8 @@
 import React from 'react';
 import { actions } from '#app/BasicReducer/index.js';
 import RouteHandler from '#app/App/RouteHandler.jsx';
-import ResultsViewer from './SemanticSearchResultsView.js';
-import semanticSearchAPI from './SemanticSearchAPI.js';
+import ResultsViewer from '#app/SemanticSearch/SemanticSearchResultsView.js';
+import semanticSearchAPI from '#app/SemanticSearch/SemanticSearchAPI.js';
 
 export default class SemanticSearchResultsView extends RouteHandler {
   static async requestState(requestParams, state) {

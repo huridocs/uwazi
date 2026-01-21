@@ -9,10 +9,10 @@ import {
   actions as connectionsActions,
   uiActions as connectionsUiActions,
 } from '#app/Connections/index.js';
+import { deleteDocument } from '#app/Viewer/actions/documentActions.js';
 import modals from '#app/Modals/index.js';
 
 import { closePanel } from '#app/Viewer/actions/uiActions.js';
-import { deleteDocument } from '#app/Library/actions/libraryActions.js';
 import {
   saveToc,
   editToc,

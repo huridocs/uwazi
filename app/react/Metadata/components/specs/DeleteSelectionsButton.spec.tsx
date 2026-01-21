@@ -11,7 +11,7 @@ import { defaultState, renderConnectedContainer } from '#app/utils/test/renderCo
 
 import { ClientFile } from '#app/istore.js';
 import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.jsx';
-import * as actions from './../../actions/metadataExtractionActions.js';
+import * as actions from '#app/Metadata/actions/metadataExtractionActions.js';
 
 describe('Delete selections button', () => {
   let renderResult: RenderResult;

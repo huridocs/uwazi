@@ -10,8 +10,8 @@ import Immutable from 'immutable';
 import { Translate, t } from '#app/I18N/index.js';
 import SearchDescription from '#app/Library/components/SearchDescription.jsx';
 import Icon from '#UI/Icon/Icon.jsx';
-import ResultsSidePanel from './ResultsSidePanel.js';
-import SemanticSearchMultieditPanel from './SemanticSearchMultieditPanel.js';
+import ResultsSidePanel from '#app/SemanticSearch/components/ResultsSidePanel.js';
+import SemanticSearchMultieditPanel from '#app/SemanticSearch/components/SemanticSearchMultieditPanel.js';
 
 function renderAditionalText(doc) {
   const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);

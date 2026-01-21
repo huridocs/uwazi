@@ -10,7 +10,7 @@ import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Slider from './slider.js';
+import Slider from '#app/Markdown/components/slider.js';
 import ImmutableLib from 'immutable';
 
 const { fromJS: Immutable } = ImmutableLib;

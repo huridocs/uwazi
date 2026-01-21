@@ -9,7 +9,7 @@ import SidePanel from '#app/Layout/SidePanel.jsx';
 import Icon from '#UI/Icon/Icon.jsx';
 import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from '#app/Uploads/actions/uploadsActions.js';
-import ImportProgress from './ImportProgress.js';
+import ImportProgress from '#app/Uploads/components/ImportProgress.js';
 
 class ImportPanel extends Component {
   constructor(props) {

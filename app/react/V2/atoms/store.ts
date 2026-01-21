@@ -19,7 +19,7 @@ import {
   RelationshipTypesType,
   ClientTranslationSchema,
 } from '#app/istore.js';
-import { serverIsMobileAtom } from './isMobileAtom';
+import { serverIsMobileAtom } from '#V2/atoms/isMobileAtom.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };

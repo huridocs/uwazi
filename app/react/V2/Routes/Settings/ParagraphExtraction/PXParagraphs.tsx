@@ -5,7 +5,7 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import type {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '#V2/shared//ParagraphExtractionTypes.js';
+} from '#V2/shared/ParagraphExtractionTypes.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { ParagraphsTable } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/Table.jsx';
 import { ViewParagraphSidePanel } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraphSidePanel.jsx';

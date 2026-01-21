@@ -1,11 +1,19 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
+// eslint-disable-next-line node/no-restricted-import
+import { copyFile } from 'fs/promises';
 import { appContext } from '#api/utils/AppContext.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
-
-import { setupTestUploadedPaths } from '#api/files/index.js';
+import { setupTestUploadedPaths, cleanupTestUploadedPaths, createDirIfNotExists } from '#api/files/filesystem.js';
+import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;

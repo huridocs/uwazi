@@ -11,7 +11,7 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 import { Card } from '#V2/Components/UI/index.js';
 
 import { getStats } from '#V2/api/settings/index.js';
-import { formatBytes } from '#app/V2/shared/formatHelpers.js';
+import { formatBytes } from '#V2/shared/formatHelpers.js';
 
 
 interface InstanceStats {

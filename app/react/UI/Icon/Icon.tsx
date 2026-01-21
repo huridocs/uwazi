@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { availableLanguages } from '#shared/language/index.js';
-import { loadIcons } from './library.js';
+import { loadIcons } from '#UI/Icon/library.js';
 import { FlipProp } from '@fortawesome/fontawesome-svg-core';
 
 loadIcons();

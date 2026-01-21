@@ -1,6 +1,6 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
-import groupBy from 'lodash/groupBy.js';
+import _ from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from '#app/istore.js';
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
 import * as uploadsActionTypes from '#app/Uploads/actions/actionTypes.js';
@@ -37,7 +37,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     )
     : [[], []];
 
-  const { oldDocuments = [], newDocuments = [] } = groupBy(entity.documents || [], document =>
+  const { oldDocuments = [], newDocuments = [] } = _.groupBy(entity.documents || [], document =>
     document._id !== undefined ? 'oldDocuments' : 'newDocuments'
   );
   const entityToSave = { ...entity, documents: oldDocuments };

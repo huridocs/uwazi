@@ -2,7 +2,7 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
-import entities, { model } from '#api/entities/index.js';
+import entities from '#api/entities/index.js';
 import { populateGeneratedIdByTemplate } from '#api/entities/generatedIdPropertyAutoFiller.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import translations from '#api/i18n/translations.js';
@@ -28,6 +28,7 @@ import {
 } from '#api/common.v2/database/data_source_defaults.js';
 import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
 import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
@@ -48,7 +49,8 @@ import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyP
 import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase.js';
 import { TemplateValidationService } from '#api/templates/validation/TemplateValidationService.js';
 import * as v2 from '#api/core/v1_layer/templates/v2_support.js';
-
+import model from '#api/core/v1_layer/templates/templatesModel.js';
+import { checkIfReindex } from '#api/templates/reindex.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { getUpdatedNames, getDeletedProperties, generateNames } from '#api/utils/templateUtils.js';
@@ -181,7 +183,7 @@ export default {
         pageService: new LegacyPageService(),
       }).execute(input);
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
     if (v2UpdateTemplateUseCase && template._id) {
@@ -233,7 +235,7 @@ export default {
         transactionManager,
       }).execute(input, language, fullReindex);
 
-      return TemplateMapper.toSchema(output);
+      return MongoTemplateMapper.toSchema(output);
     }
 
     // processing can not be saved from this interface, its an internal tracking property

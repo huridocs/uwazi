@@ -1,7 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table';
 
-import { TablePXEntityParagraphRow } from '#V2/shared//ParagraphExtractionTypes.js';
-import { generateTableHeader } from './../../../utils/generateTableHeader.js';
+import { TablePXEntityParagraphRow } from '#V2/shared/ParagraphExtractionTypes.js';
+import { generateTableHeader } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateTableHeader.jsx';
 import { LanguagesCell } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/TableElements/LanguagesCell.jsx';
 import { ParagraphCountCell } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/TableElements/ParagraphCountCell.jsx';
 import { ActionCell } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/TableElements/ActionCell.jsx';
