@@ -50,7 +50,7 @@ export class SelectPropertyAssignmentCreatorService implements PropertyAssignmen
       const value: SelectionEntry[] = existingThesaurusValues.map(thesaurusValue => {
         const label = translationCollection.getTranslation(language, thesaurusValue.label);
 
-        const group = thesaurus.getGroupById(thesaurusValue.id);
+        const group = thesaurus.getGroupByThesaurusValueId(thesaurusValue.id);
         const parent = group
           ? {
               value: group.id,
