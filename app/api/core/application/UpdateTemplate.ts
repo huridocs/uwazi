@@ -1,11 +1,10 @@
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { AbstractUseCase } from '#api/common.v2/contracts/UseCase.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { JobsDispatcher } from '../../queue.v2/application/contracts/JobsDispatcher.js';
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -21,8 +20,12 @@ import { PropertyCreatorServiceStrategy } from '../application/propertyCreatorSe
 import { ThesauriDataSource } from '../application/propertyCreatorService/SelectPropertyCreatorService.js';
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { UpdateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TemplatePostProcessService } from '#api/core/application/TemplatePostProcessService.js';
+import { TemplateDiff } from '#api/core/domain/template/TemplateDiff.js';
+import { InheritedPropertyCanNotBeDeleted } from '#api/core/domain/template/errors.js';
 
 type Input = UpdateTemplateDTO;
 type Output = Template;

@@ -12,6 +12,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

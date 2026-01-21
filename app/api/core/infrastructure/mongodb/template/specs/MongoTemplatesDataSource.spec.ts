@@ -13,6 +13,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

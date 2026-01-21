@@ -19,7 +19,7 @@ import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
 import { SearchBar } from '#app/Library/components/SearchBar.jsx';
 
-import { IStore } from '#V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 
@@ -57,7 +57,7 @@ describe('SearchBar', () => {
         },
         searchForm: { ...storeState.form },
       },
-      settings: { collection: Immutable.Immutable.fromJS({}) },
+      settings: { collection: Immutable.fromJS({}) },
     };
     ({ renderResult, store } = renderConnectedContainer(
       <SearchBar />,

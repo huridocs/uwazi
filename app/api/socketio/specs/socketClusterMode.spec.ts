@@ -17,6 +17,7 @@ import users from '#api/users/users.js';
 
 import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '#api/socketio/setupSockets.js';
 import { emitSocketEvent } from '#api/socketio/standaloneEmitSocketEvent.js';
+import { tenants } from '#api/tenants/index.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {

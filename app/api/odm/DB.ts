@@ -1,6 +1,7 @@
 import mongoose, { Connection, ConnectOptions } from 'mongoose';
 import { config } from '#api/config.js';
 import { DbOptions } from 'mongodb';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 let connection: Connection;
 

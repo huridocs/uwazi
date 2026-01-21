@@ -7,6 +7,7 @@ import testingDB from '#api/utils/testing_db.js';
 import { TestingRoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { createTestJob, pickJobs, pushJobsForNamespaces } from '#api/core/libs/queue/infrastructure/specs/fixtures.js';
 import { RoundRobinMongoQueueAdapter } from '#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js';
+import { tenants } from '#api/tenants/index.js';
 
 describe('RoundRobinQueueAdapter', () => {
   let adapter: RoundRobinMongoQueueAdapter;

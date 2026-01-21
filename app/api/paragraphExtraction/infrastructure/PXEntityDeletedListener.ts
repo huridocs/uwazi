@@ -8,6 +8,7 @@ import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandle
 import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

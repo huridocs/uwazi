@@ -7,6 +7,7 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoEntityPermissionChecker } from '#api/core/infrastructure/mongodb/entity/MongoEntityPermissionChecker.js';
+import { tenants } from '#api/tenants/index.js';
 
 class BulkDeleteEntityUseCaseFactory {
   static default() {

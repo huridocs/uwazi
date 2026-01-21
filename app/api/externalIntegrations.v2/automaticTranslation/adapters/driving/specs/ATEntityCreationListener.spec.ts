@@ -16,6 +16,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ATEntityCreationListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATEntityCreationListener.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

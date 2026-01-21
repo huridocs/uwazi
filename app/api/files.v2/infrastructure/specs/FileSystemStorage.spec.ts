@@ -8,6 +8,7 @@ import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { FileType } from '#api/core/domain/files/FileType.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { tenants } from '#api/tenants/index.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: FileType) => `TestFileSystemStorage${fileType}.txt`;

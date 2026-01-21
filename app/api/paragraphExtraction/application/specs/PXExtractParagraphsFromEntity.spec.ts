@@ -39,6 +39,9 @@ import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastr
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { PXExtractParagraphsFromEntity } from '#api/paragraphExtraction/application/PXExtractParagraphsFromEntity.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import {
   defaultTemplate,
   entity1,

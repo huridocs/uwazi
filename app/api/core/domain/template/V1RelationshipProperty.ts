@@ -4,9 +4,10 @@ import {
 } from '#api/core/domain/template/FilterableProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
-  PropertyRelationTypeMismatchError,
+  InvalidPropertyComparisonTypeError,
 } from '#api/core/domain/template/errors.js';
-import { Context, Property, PropertyTypes, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
+import { Context, Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 type Inherit = {
   property: string;

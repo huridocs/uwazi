@@ -4,6 +4,7 @@ import { SettingsLinkSchema } from '#shared/types/settingsType.js';
 import { Property, Template } from '#app/apiResponseTypes.js';
 import { ClientPropertySchema } from '#app/istore.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;

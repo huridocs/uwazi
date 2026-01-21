@@ -42,9 +42,7 @@ import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/Mo
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
-import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { LegacyPageService } from '#api/core/infrastructure/mongodb/page/LegacyPageService.js';
 import { denormalizeTemplateEntities } from '#api/templates/templateUpdateDenormalizeUseCase.js';
 import { TemplateValidationService } from '#api/templates/validation/TemplateValidationService.js';
@@ -54,6 +52,8 @@ import { checkIfReindex } from '#api/templates/reindex.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { getUpdatedNames, getDeletedProperties, generateNames } from '#api/utils/templateUtils.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { SyncDispatcherForTests } from '#api/queue.v2/infrastructure/SyncDispatcherForTests.js';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(

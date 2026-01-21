@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
-import documents from '#api/documents/documents.js.js';
+import documents from '#api/documents/documents.js';
 import translations from '#api/i18n/translations.js';
 import { elasticClient } from '#api/search/elastic.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';

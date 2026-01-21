@@ -25,6 +25,9 @@ import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defau
 import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

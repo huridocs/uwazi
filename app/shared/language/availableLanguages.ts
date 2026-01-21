@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6393 } from './languageISO639_3';
 
 type LanguageCode = 'elastic' | 'ISO639_3' | 'ISO639_1';
 

@@ -15,6 +15,7 @@ import { inlineEditAtom } from '#V2/atoms/index.js';
 import Confirm from '#app/App/Confirm.jsx';
 import { Menu } from '#app/App/Menu.jsx';
 import { AppMainContext } from '#app/App/AppMainContext.js';
+import { LegacyHeader } from '#app/App/LegacyHeader.tsx';
 import GoogleAnalytics from '#app/App/GoogleAnalytics.jsx';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';

@@ -12,7 +12,6 @@ import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-import { Page } from '#app/istore.js';
 
 import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
 
@@ -27,6 +26,7 @@ import {
   List,
 } from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
 import { FetchResponseError } from '#shared/JSONRequest.js';
+import { Page } from '#app/V2/shared/types.js';
 
 type TablePage = Page & { rowId: string };
 

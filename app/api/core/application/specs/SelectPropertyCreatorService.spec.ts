@@ -8,6 +8,10 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { SelectPropertyCreatorService } from '#api/core/application/propertyCreatorService/SelectPropertyCreatorService.js';
 import { SelectPropertyWithInvalidThesaurusError } from '#api/core/domain/template/errors.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 describe('SelectPropertyCreatorService', () => {
   beforeAll(async () => {

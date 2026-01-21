@@ -20,6 +20,7 @@ import { partialImplementation } from '#api/common.v2/testing/partialImplementat
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import { RelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/RelationshipPropertyUpdateStrategy.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

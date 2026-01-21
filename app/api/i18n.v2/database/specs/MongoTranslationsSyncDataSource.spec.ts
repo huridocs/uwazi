@@ -14,6 +14,7 @@ import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoTranslationsSyncDataSource } from '#api/i18n.v2/database/MongoTranslationsSyncDataSource.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const id = getIdMapper();
 

@@ -1,4 +1,5 @@
 import { Context, Property } from '#api/core/domain/template/Property.js';
+import { UnhandledPropertyTypeError } from '#api/core/domain/template/errors.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,

@@ -37,6 +37,6 @@ export class LoggerFactory {
 
   static fake() {
     // eslint-disable-next-line no-empty-function
-    return new StandardLogger(() => {}, getTenant());
+    return new StandardLogger(() => { }, getTenant());
   }
 }

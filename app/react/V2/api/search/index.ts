@@ -8,6 +8,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
+import { EntityResponse, EntitySearchResponse, SnippetsSearchResponse } from '../types';
 
 type SearchResponse = {
   data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];

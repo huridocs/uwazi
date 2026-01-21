@@ -11,6 +11,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   extractorsQueryFixtures,
   entityFixtures,

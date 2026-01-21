@@ -24,6 +24,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 
 import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { GetRelationshipService } from '#api/relationships.v2/services/GetRelationshipService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const fixtureFactory = getFixturesFactory();
 

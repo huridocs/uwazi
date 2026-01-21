@@ -26,6 +26,7 @@ import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskMana
 import { mockTaskManagerImpl } from '#api/tasksmanager/specs/TaskManagerImplementationMocker';
 import { fixtures, fixturesFactory } from '#api/services/ocr/specs/fixtures/fixtures.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
+import { tenants } from '#api/tenants/index.js';
 
 jest.mock('#api/services/tasksmanager/TaskManager.ts');
 

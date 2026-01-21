@@ -19,9 +19,7 @@ import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js'
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
 import { ATEntityCreationListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATEntityCreationListener.js';
 import { GenerateAutomaticTranslationsCofig } from '#api/externalIntegrations.v2/automaticTranslation/GenerateAutomaticTranslationConfig.js';

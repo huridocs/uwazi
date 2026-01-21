@@ -28,6 +28,8 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 import { Input, PXCreateExtractor } from '#api/paragraphExtraction/application/PXCreateExtractor.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 const f = getFixturesFactory();
 

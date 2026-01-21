@@ -10,6 +10,9 @@ import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 import { PXEntityStatusManager } from '#api/paragraphExtraction/application/PXEntityStatusManager.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
 export class PXEntityStatusManagerFactory {
   static createDefault() {

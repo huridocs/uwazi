@@ -4,12 +4,14 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.js';
 import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import _ from 'lodash';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 
 type Input = {
   entitiesIds: string[];
@@ -30,6 +32,7 @@ type Dependencies = {
   entitiesDS: MultiLanguageEntityDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
+  filesDS: FilesDataSource;
   transactionManager: TransactionManager;
 };
 

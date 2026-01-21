@@ -9,6 +9,7 @@ import entities from '#api/entities/entities.js';
 import templates from '#api/index.js';
 
 import relationtypes from '#api/relationtypes/index.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import {
   getTextWithAttachedImages,
   getTwitterImages,

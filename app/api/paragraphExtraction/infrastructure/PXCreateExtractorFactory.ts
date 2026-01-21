@@ -12,6 +12,8 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 
 import { PXCreateExtractor } from '#api/paragraphExtraction/application/PXCreateExtractor.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 interface PXCreateExtractorFactoryProps {
   tenantName: string;

@@ -10,6 +10,7 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { User } from '#api/users/usersModel.js';
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {

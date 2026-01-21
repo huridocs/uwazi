@@ -46,6 +46,7 @@ import { getRoutes } from '#app/Routes.jsx';
 import createReduxStore from '#app/store.js';
 import { ProtectedRoute } from '#app/ProtectedRoute.jsx';
 import { isMobileDevice } from '#shared/detectDevice.js';
+import { tenants } from '#api/tenants/index.js';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 

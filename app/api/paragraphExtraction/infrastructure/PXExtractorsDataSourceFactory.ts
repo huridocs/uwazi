@@ -8,6 +8,7 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { MongoPXExtractorsDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 type Props = {
   connection?: Db;

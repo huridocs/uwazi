@@ -8,7 +8,7 @@ import { Highlight } from '@huridocs/react-text-selection-handler/dist/Highlight
 import { Provider } from 'react-redux';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 
-import { IStore } from '#V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
 import { PageReferences, groupByRectangle } from '#app/Viewer/components/PageReferences.jsx';
@@ -27,7 +27,7 @@ describe('FormConfigInput', () => {
     pdfScale = 1;
   });
 
-  afterEach(() => {});
+  afterEach(() => { });
 
   const store = mockStoreCreator({
     documentViewer: {

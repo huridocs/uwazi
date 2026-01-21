@@ -1,6 +1,6 @@
-import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
-export const createMockLogger = (): Logger => ({
+export const createMockLogger = (): LoggerFactory => ({
   debug: jest.fn(),
   error: jest.fn(),
   info: jest.fn(),

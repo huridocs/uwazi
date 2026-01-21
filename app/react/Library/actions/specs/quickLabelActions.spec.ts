@@ -1,8 +1,7 @@
-import { actions } from '#app/reducer.js';
+import { actions } from '#app/BasicReducer/reducer.js';
 
 import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 
-import { QuickLabelState } from '#V2/shared/types.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
@@ -13,6 +12,7 @@ import { actions as formActions } from 'react-redux-form';
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
 import * as quickLabelActions from '#app/Library/actions/quickLabelActions.js';
 import { documents, templates, thesauri } from '#app/Library/actions/specs/fixtures.js';
+import { QuickLabelState } from '#app/istore.js';
 
 const libraryDispatch = wrapDispatch(store!.dispatch, 'library');
 

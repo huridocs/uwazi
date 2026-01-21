@@ -14,6 +14,8 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { IXSuggestionStateType } from '#shared/types/suggestionType.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 const fixtureFactory = getFixturesFactory();
 

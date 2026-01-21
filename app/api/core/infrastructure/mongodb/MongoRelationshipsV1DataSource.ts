@@ -6,6 +6,7 @@ import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
 import settings from '#api/settings/index.js';
 import { Relation } from '#api/relationships/RelationsV1Collection.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';

@@ -10,7 +10,7 @@ import * as actions from '#app/Uploads/actions/uploadsActions.js';
 import * as libraryTypes from '#app/Library/actions/actionTypes.js';
 import * as types from '#app/Uploads/actions/actionTypes.js';
 import entitiesApi from '#app/Entities/EntitiesAPI.js';
-import { mockID } from '#shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -133,8 +133,6 @@ describe('uploadsActions', () => {
         const file = getMockFile();
 
         store.dispatch(actions.importData([file], '123')).then(() => {
-import Immutable from 'immutable';
-
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
           done();

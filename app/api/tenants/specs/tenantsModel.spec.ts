@@ -7,6 +7,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB from '#api/utils/testing_db.js';
 import { TenantsModel, tenantsModel } from '#api/tenants/tenantsModel.js';
+import { tenants } from '#api/tenants/index.js';
 
 describe('tenantsModel', () => {
   let db: Db;

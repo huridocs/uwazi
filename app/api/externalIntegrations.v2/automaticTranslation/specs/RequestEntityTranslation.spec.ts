@@ -6,8 +6,6 @@ import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSch
 
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
 
-import { Logger } from '#api/core/infrastructure/factories/LoggerFactory.js';
-
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
@@ -28,6 +26,8 @@ import { ValidationError, Validator } from '#api/externalIntegrations.v2/automat
 import { ATTaskMessage, RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
 import { Redis } from '#api/infrastructure/Redis.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {
@@ -76,7 +76,7 @@ const fixtures: DBFixture = {
 };
 
 let taskManager: TaskManager<ATTaskMessage>;
-let mockLogger: Logger;
+let mockLogger: LoggerFactory;
 let requestEntityTranslation: RequestEntityTranslation;
 
 beforeEach(async () => {

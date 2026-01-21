@@ -11,6 +11,7 @@ import { DB } from '#api/odm/DB.js';
 import { instanceModel } from '#api/odm/model.js';
 
 import testingDB from '#api/utils/testing_db.js';
+import { tenants } from '#api/tenants/index.js';
 
 const testSchema = new mongoose.Schema({
   name: { type: String, index: true },

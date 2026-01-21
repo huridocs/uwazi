@@ -20,6 +20,7 @@ import fixtures, { templateId, simpleTemplateId, nonExistentId } from '#api/enti
 
 import { customErrorMessages } from '#api/entities/validation/metadataValidators.js';
 import { validateEntity } from '#api/entities/validateEntity.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 describe('validateEntity', () => {
   beforeEach(async () => {

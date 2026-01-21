@@ -8,6 +8,7 @@ import { BulkCleanupEntityUseCase } from '#api/core/application/BulkCleanupEntit
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { tenants } from '#api/tenants/index.js';
 
 class BulkCleanupEntityUseCaseFactory {
   static default() {

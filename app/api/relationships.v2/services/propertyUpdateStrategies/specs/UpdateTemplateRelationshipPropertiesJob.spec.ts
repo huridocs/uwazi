@@ -17,6 +17,7 @@ import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/f
 import { NamespacedDispatcher } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
 import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
 import { UpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const fixturesFactory = getFixturesFactory();
 

@@ -12,6 +12,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { MongoTranslationsDataSource } from '#api/i18n.v2/database/MongoTranslationsDataSource.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const fixtures: DBFixture = {
   translationsV2: [],

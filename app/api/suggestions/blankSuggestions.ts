@@ -11,6 +11,7 @@ import { ExtractorNotFound, Extractors } from '#api/services/informationextracti
 import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from '#api/suggestions/batchProcessing.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { CreateBlankSuggestionStrategy } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 // eslint-disable-next-line consistent-return
 async function createBlankStateSuggestionsBatch(

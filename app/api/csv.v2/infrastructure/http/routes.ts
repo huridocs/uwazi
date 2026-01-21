@@ -9,6 +9,7 @@ import { generateFileName } from '#api/files/filesystem.js';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { RegisterCsvImportController } from '#api/csv.v2/infrastructure/http/RegisterCsvImportController.js';
+import { tenants } from '#api/tenants/index.js';
 
 const csvImportRoutes = (app: Application) => {
   // eslint-disable-next-line max-statements

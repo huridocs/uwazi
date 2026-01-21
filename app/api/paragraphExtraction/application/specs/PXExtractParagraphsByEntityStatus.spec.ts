@@ -20,6 +20,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 import { PXExtractParagraphsByEntityStatus } from '#api/paragraphExtraction/application/PXExtractParagraphsByEntityStatus.js';
 import { PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const extractor1 = new ObjectId();
 const extractor2 = new ObjectId();

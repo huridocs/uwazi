@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users/usersModel.js';
+import { ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;

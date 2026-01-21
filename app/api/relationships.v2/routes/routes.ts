@@ -38,6 +38,8 @@ import { validateDeleteRelationshipMigrationField } from '#api/relationships.v2/
 import { validateUpsertRelationshipMigrationField } from '#api/relationships.v2/routes/validators/upsertRelationshipMigrationFields.js';
 
 import { validateGetMigrationHubRecordsRequest } from '#api/relationships.v2/routes/validators/getMigrationHubRecords.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (

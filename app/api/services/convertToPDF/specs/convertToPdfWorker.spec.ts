@@ -8,7 +8,7 @@ import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { tenants } from '#api/tenants/index.js';
 
-import * as handleError from '#api/utils/handleError.js.js';
+import * as handleError from '#api/utils/handleError.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
@@ -41,7 +41,7 @@ describe('convertToPdfWorker', () => {
     worker = new ConvertToPdfWorker();
     redisSMQ = new RedisSMQ({ client: redisClient });
     await testingDB.connect({ defaultTenant: false });
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
     await testingEnvironment.setUp({
       settings: [
         {
@@ -167,7 +167,7 @@ describe('convertToPdfWorker', () => {
     it('should throw with error message', async () => {
       const message = { success: false, error_message: 'error converting !' };
 
-      jest.spyOn(handleError, 'handleError').mockImplementationOnce(() => {});
+      jest.spyOn(handleError, 'handleError').mockImplementationOnce(() => { });
 
       await redisSMQ.sendMessageAsync({
         qname: 'development_convert-to-pdf_results',

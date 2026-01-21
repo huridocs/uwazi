@@ -32,6 +32,7 @@ import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infr
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { PXCreateParagraphs, PXCreateParagraphsInput } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

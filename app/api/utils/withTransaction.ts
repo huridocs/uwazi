@@ -1,11 +1,11 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { storage } from '#api/files/storage.js';
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
 
 import { search } from '#api/search/search.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 interface TransactionOperation {
   abort: () => Promise<void>;
@@ -62,7 +62,7 @@ const withTransaction = async <T>(
             const elapsedTime = performance.now() - startTime;
             logger.info(
               `[v1_transactions] Transactions ${logNamespace} was manually aborted,` +
-                ` session id -> ${inspect(transactionManager.getSession()?.id)} (${elapsedTime.toFixed(2)}ms)`
+              ` session id -> ${inspect(transactionManager.getSession()?.id)} (${elapsedTime.toFixed(2)}ms)`
             );
           }
         },

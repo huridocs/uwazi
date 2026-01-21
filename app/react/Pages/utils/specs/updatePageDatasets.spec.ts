@@ -6,7 +6,7 @@ import { Store } from 'redux';
 
 import create from '#app/store.js';
 
-import { IStore } from '#V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
 import Immutable from 'immutable';
 

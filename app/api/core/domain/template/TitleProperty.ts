@@ -1,6 +1,6 @@
 import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
 
-import { Context, PropertyTypes } from '#api/core/domain/template/Property.js';
+import { Context } from '#api/core/domain/template/Property.js';
 import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 

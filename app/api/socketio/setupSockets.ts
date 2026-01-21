@@ -12,6 +12,7 @@ import { DB } from '#api/odm/index.js';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
 import users from '#api/users/users.js';
+import { tenants } from '#api/tenants/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {

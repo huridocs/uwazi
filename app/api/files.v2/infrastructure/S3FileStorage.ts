@@ -13,6 +13,7 @@ import { CustomUpload } from '#api/core/domain/files/CustomUpload.js';
 import { StoredFile } from '#api/core/domain/files/StoredFile.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { File } from '../model/File.js';
+import { tenants } from '#api/tenants/index.js';
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;

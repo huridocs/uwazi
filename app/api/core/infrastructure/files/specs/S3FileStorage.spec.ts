@@ -22,6 +22,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { Readable } from 'node:stream';
 import { S3FileStorage } from '#api/core/infrastructure/files/S3FileStorage.js';
+import { tenants } from '#api/tenants/index.js';
 
 const f = getFixturesFactory();
 

@@ -3,21 +3,20 @@
 /* eslint-disable max-lines */
 import entities from '#api/entities/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 import { flatThesaurusValues } from '#api/thesauri/thesauri.js';
 import { ObjectId } from 'mongodb';
-import { tenants } from '#api/tenants/tenantContext.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 import { IndexTypes, objectIndex } from '#shared/data_utils/objectIndex.js';
 import { setIntersection } from '#shared/data_utils/setUtils.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { tenants } from '#api/tenants/index.js';
 
-class SuggestionAcceptanceError extends Error {}
+class SuggestionAcceptanceError extends Error { }
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -244,10 +243,10 @@ const getRawValueAsArray = (
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
   acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>
 ) => [
-  {
-    value: getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId),
-  },
-];
+    {
+      value: getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId),
+    },
+  ];
 
 const valueGetters = {
   text: getRawValueAsArray,
@@ -377,23 +376,23 @@ const updateEntitiesWithSuggestion = async (
       const updated =
         propertyName !== 'title'
           ? {
-              ...current,
-              metadata: {
-                ...current.metadata,
-                [propertyName]: getValue(
-                  property,
-                  current,
-                  suggestionsById,
-                  acceptedSuggestionsByEntityId,
-                  resources
-                ),
-              },
-              permissions: current.permissions || [],
-            }
+            ...current,
+            metadata: {
+              ...current.metadata,
+              [propertyName]: getValue(
+                property,
+                current,
+                suggestionsById,
+                acceptedSuggestionsByEntityId,
+                resources
+              ),
+            },
+            permissions: current.permissions || [],
+          }
           : {
-              ...current,
-              title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId),
-            };
+            ...current,
+            title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId),
+          };
 
       await entities.save(updated, { user: {}, language: current.language });
     } catch (e) {

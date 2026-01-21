@@ -10,7 +10,6 @@ import {
   RelationshipTargetTypeMismatchError,
   RelationshipTypeDoesNotExistError,
 } from '#api/core/domain/template/errors.js';
-import { AbstractPropertyCreatorService } from '#api/core/application/propertyCreatorService/AbstractPropertyCreatorService.js';
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;

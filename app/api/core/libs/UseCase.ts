@@ -7,6 +7,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
+import { tenants } from '#api/tenants/index.js';
 
 interface UseCase<Input, Output, Args extends any[] = []> {
   execute(input: Input, ...args: Args): Promise<Output>;

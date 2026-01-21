@@ -9,6 +9,7 @@ import ID from '#shared/uniqueID.js';
 import fs, { access } from 'fs/promises';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { tenants } from '#api/tenants/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

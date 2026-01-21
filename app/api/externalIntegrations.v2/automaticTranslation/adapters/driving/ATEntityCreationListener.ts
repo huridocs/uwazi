@@ -4,6 +4,7 @@ import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 export class ATEntityCreationListener {
   private eventBus: EventsBus;

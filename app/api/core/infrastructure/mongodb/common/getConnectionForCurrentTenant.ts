@@ -3,6 +3,7 @@ import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { config } from '#api/config.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 function getTenant(): Tenant {
   return tenants.current();

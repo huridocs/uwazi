@@ -4,7 +4,7 @@ import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatchableClass, JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { NonRetryableJobError, UnregisteredJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { Job, QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 

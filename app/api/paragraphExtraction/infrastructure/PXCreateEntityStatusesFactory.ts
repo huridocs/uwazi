@@ -11,6 +11,8 @@ import { PXCreateEntityStatuses } from '#api/paragraphExtraction/application/PXC
 import { PXEntityStatusesQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusesQueryServiceFactory.js';
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 type Props = {
   batchSize: number;

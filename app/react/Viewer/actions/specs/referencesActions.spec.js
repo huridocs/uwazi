@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
-import { mockID } from '#shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js';
 import { APIURL } from '#app/config.js';
 import * as connectionsActions from '#app/Connections/actions/actions.js';
 import { actions as relationshipsActions } from '#app/Relationships/index.js';
@@ -153,7 +153,7 @@ describe('Viewer referencesActions', () => {
         store = mockStore({});
         connection = { sourceDocument: 'sourceId' };
         targetRange = { text: 'target text' };
-        onCreate = () => {};
+        onCreate = () => { };
       });
 
       it('should unset the targetDocReferences', () => {

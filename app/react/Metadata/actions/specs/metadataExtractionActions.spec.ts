@@ -8,6 +8,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import { updateSelection, updateFormField, deleteSelection } from '#app/Metadata/actions/metadataExtractionActions.js';
 import { api } from '#app/Entities/index.js';
 import { actions } from '#app/BasicReducer/index.js';
+import { ClientFile } from '#app/istore.js';
 
 describe('metadataExtractionActions', () => {
   describe('updateFormField', () => {

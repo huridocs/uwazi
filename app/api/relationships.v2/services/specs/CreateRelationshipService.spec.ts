@@ -33,6 +33,7 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 import { CreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

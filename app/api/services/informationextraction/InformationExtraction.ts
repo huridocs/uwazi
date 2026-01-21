@@ -27,6 +27,8 @@ import settings from '#api/settings/settings.js';
 import request from '#shared/JSONRequest.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import {
   ExtractedMetadataSchema,
   LanguageISO6391,

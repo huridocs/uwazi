@@ -1,6 +1,8 @@
 import { tenants } from '#api/tenants/index.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
 interface QueueOptions {
   lockWindow?: number;

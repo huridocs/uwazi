@@ -10,6 +10,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { PXEntityStatusManagerFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusManagerFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 export class PXFileUpdatedListener {
   private eventBus: EventsBus;

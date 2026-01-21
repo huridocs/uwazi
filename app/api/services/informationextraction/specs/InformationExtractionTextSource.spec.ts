@@ -20,6 +20,8 @@ import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import { NoEntitiesForTraining } from '#api/services/informationextraction/TrainModelForText.js';
 import { getEntitiesForTraining } from '#api/services/informationextraction/ixMaterials.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 jest.mock('#api/socketio/setupSockets');
 jest.mock('#api/services/tasksmanager/TaskManager.ts');

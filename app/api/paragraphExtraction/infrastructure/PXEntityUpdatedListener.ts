@@ -22,6 +22,9 @@ import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEn
 import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;

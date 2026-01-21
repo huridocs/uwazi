@@ -6,6 +6,7 @@ import { handleError } from '#api/utils/index.js';
 import { ChangeStream, MongoError } from 'mongodb';
 
 import { Tenant } from '#api/tenants/tenantContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 const schemaValidator = {
   $jsonSchema: {

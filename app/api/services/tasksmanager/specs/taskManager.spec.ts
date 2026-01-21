@@ -5,7 +5,7 @@ import { TaskManager, Service } from '#api/services/tasksmanager/TaskManager.js'
 
 import { config } from '#api/config.js';
 
-import * as handleError from '#api/utils/handleError.js.js';
+import * as handleError from '#api/utils/handleError.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
 import { Redis } from '#api/infrastructure/Redis.js';
@@ -133,7 +133,7 @@ describe('taskManager', () => {
 
       await externalDummyService.sendFinishedMessage(task);
       service.processResults = jest.fn().mockRejectedValue('error');
-      jest.spyOn(handleError, 'handleError').mockImplementation(() => {});
+      jest.spyOn(handleError, 'handleError').mockImplementation(() => { });
 
       await waitForExpect(async () => {
         expect(service.processResults).toHaveBeenCalledWith(task);

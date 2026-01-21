@@ -1,8 +1,9 @@
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from '#api/common.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
@@ -11,7 +12,6 @@ import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/tem
 
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
 

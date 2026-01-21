@@ -6,12 +6,12 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
 
-import { DataType, UwaziFilterQuery } from '#api/index.js';
 
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { updateStates } from '#api/suggestions/updateState.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { UwaziFilterQuery, DataType } from '#api/odm/model.js';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
 

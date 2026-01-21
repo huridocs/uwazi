@@ -20,6 +20,9 @@ import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusMode
 
 import { extractorsQueryFixtures, extractor1 } from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
 import { PXGetExtractorStatuses } from '#api/paragraphExtraction/application/PXGetExtractorStatuses.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 

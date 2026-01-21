@@ -19,6 +19,9 @@ import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 import { AfterEntityUpdatedListener } from '#api/suggestions/listeners/afterEntityUpdatedListener.js';
 import { UpdateSuggestionsAfterEntityUpdate } from '#api/suggestions/useCases/updateSuggestionsAfterEntityUpdate.js';
 import { ProcessSuggestionsAfterTemplateChanged } from '#api/suggestions/useCases/processSuggestionsAfterTemplateChanged.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();

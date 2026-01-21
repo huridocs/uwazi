@@ -1,4 +1,5 @@
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
 export interface DispatchableClass<T extends Dispatchable> {
   new (...args: any[]): T;

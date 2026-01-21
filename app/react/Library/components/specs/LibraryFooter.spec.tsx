@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import Immutable from 'immutable';
 import {
   defaultState,
   renderConnected,
@@ -35,7 +36,6 @@ describe('LibraryFooter', () => {
     const component = renderConnected(LibraryFooter, props, {});
 
     const createButton = component.find({ icon: 'import-csv' }).parent();
-import Immutable from 'immutable';
 
     createButton.simulate('click');
     expect(uploadActions.showImportPanel).toHaveBeenCalled();

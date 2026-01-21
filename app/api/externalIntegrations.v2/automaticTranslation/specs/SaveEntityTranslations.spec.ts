@@ -19,6 +19,8 @@ import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTr
 import { TranslationResult, translationResultSchema } from '#api/externalIntegrations.v2/automaticTranslation/types/TranslationResult.js';
 import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
 import { saveEntityFixtures } from '#api/externalIntegrations.v2/automaticTranslation/specs/fixtures/SaveEntity.fixtures.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 const factory = getFixturesFactory();
 

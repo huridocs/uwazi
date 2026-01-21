@@ -22,6 +22,7 @@ import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/
 
 import { entity1, entity2, extractor } from '#api/paragraphExtraction/application/specs/fixtures.js';
 import { Input, PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const mongoEntityStatus1: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),

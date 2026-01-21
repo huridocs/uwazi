@@ -1,4 +1,4 @@
-import { AbstractUseCase } from '#api/common.v2/contracts/UseCase.js';
+import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
@@ -13,6 +13,7 @@ import { TranslationService } from '#api/core/domain/template/TranslationService
 import { CreateTemplateDTO } from '#api/core/application/TemplateDTOs.js';
 import { PageService } from '#api/core/domain/template/PageService.js';
 
+type Input = CreateTemplateDTO;
 type Output = Template;
 
 type Deps = {
@@ -22,6 +23,8 @@ type Deps = {
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
   pageService: PageService;
+  idGenerator: IdGenerator;
+  transactionManager: TransactionManager;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {

@@ -12,7 +12,7 @@ import { defaultState, renderConnectedContainer } from '#app/utils/test/renderCo
 
 import * as libraryActions from '#app/Library/actions/libraryActions.js';
 
-import { IStore } from '#V2/shared/types.js';
+import { IStore } from '#app/istore.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { Provider } from 'react-redux';

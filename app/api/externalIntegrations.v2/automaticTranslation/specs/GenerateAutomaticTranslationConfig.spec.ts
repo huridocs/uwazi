@@ -17,6 +17,7 @@ import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automa
 import testingDB from '#api/utils/testing_db.js';
 
 import { Settings } from '#shared/types/settingsType.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

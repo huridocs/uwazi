@@ -2,7 +2,8 @@ import { ObjectId } from 'mongodb';
 
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 
-import { Property, PropertyTypes } from '#api/core/domain/template/Property.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';
 

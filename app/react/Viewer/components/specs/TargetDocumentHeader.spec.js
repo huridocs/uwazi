@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 
-import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js.js';
+import { TargetDocumentHeader } from '#app/Viewer/components/TargetDocumentHeader.js';
 import Immutable from 'immutable';
 
 // Removed destructuring - use Immutable.fromJS directly
@@ -18,7 +18,7 @@ describe('TargetDocumentHeader', () => {
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
       cancelTargetDocument: jasmine.createSpy('cancelTargetDocument'),
-      addReference: () => {},
+      addReference: () => { },
       toggleReferences: jasmine.createSpy('toggleReferences'),
     };
   });

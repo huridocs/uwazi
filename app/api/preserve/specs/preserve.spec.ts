@@ -8,7 +8,7 @@ import thesauri from '#api/thesauri/thesauri.js';
 
 import request from '#shared/JSONRequest.js';
 
-import { PreserveConfig } from '#shared/types/settingsType.js.js';
+import { PreserveConfig } from '#shared/types/settingsType.js';
 import fixtures, { userId1, userId2 } from '#api/preserve/specs/fixtures.js';
 import { Preserve } from '#api/preserve/preserve.js';
 

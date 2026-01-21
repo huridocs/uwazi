@@ -23,6 +23,7 @@ import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { StoredFile } from '#api/core/domain/files/StoredFile.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { tenants } from '#api/tenants/index.js';
 
 const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
   try {

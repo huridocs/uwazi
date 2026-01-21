@@ -8,7 +8,7 @@ import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import api from '#app/utils/api.js';
 
-import { mockID } from '#shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js';
 import { documentsApi } from '#app/Documents/index.js';
 import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';

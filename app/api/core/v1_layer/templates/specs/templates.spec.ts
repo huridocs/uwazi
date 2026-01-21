@@ -8,7 +8,6 @@ import {
   TemplateWithDuplicatedPropertyError,
 } from '#api/core/domain/template/errors.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import fixtures, {
@@ -18,6 +17,7 @@ import fixtures, {
   templateToBeInherited,
   thesauriId1,
 } from '#api/core/v1_layer/templates/specs/fixtures/fixtures.js';
+import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 
 describe('templates', () => {
   beforeAll(async () => {

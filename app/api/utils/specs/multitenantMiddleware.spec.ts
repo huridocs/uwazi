@@ -1,9 +1,9 @@
 import request from 'supertest';
 import express, { Application } from 'express';
 
-import { tenants } from '#api/tenants/tenantContext.js';
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
+import { tenants } from '#api/tenants/index.js';
 
 const testingRoutes = (app: Application) => {
   app.get('/api/testGET', (_req, res, next) => {

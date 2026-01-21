@@ -5,7 +5,7 @@ import { actions as formActions } from 'react-redux-form';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { actions as basicActions } from '#app/reducer.js';
+import { actions as basicActions } from '#app/BasicReducer/reducer.js';
 
 import { notificationActions } from '#app/Notifications/index.js';
 

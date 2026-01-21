@@ -11,6 +11,7 @@ import {
 import { tenants } from '#api/tenants/tenantContext.js';
 import { DB } from '#api/odm/DB.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
+import { tenants } from '#api/tenants/index.js';
 
 export class MongooseModelWrapper<T> {
   dbs: { [k: string]: mongoose.Model<DataType<T>> };

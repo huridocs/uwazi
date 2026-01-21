@@ -12,6 +12,9 @@ import authRoutes from '#api/auth/routes.js';
 import entities from '#api/entities/index.js';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/translations.v2/database/data_source_defaults.js';
 import {
   attachmentsPath,
   customUploadsPath,

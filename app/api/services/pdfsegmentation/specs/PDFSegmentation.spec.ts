@@ -3,6 +3,7 @@
 /* eslint-disable max-lines */
 
 import testingDB, { fixturer } from '#api/utils/testing_db.js';
+import { tenants } from '#api/tenants/index.js';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -15,8 +16,6 @@ import {
 
 import { storage } from '#api/files/index.js';
 import path from 'path';
-
-import { tenants } from '#api/tenants/tenantContext.js';
 
 import { DB } from '#api/odm/index.js';
 import { Db } from 'mongodb';

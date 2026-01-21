@@ -1,7 +1,7 @@
-import { TriStateSelectValue } from '#V2/shared/types.js';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { MultiSelectProps, MultiSelectState, MultiSelectTristate } from '#app/Forms/components/MultiSelect.jsx';
+import { TriStateSelectValue } from '#app/istore.js';
 
 describe('MultiSelectTristate', () => {
   let component: ShallowWrapper<

@@ -1,4 +1,5 @@
 import { Context } from '#api/core/domain/template/Property.js';
+import { safeName } from '#api/core/domain/template/utils/propertyNameGeneration.js';
 
 class PropertyName {
   value: string;

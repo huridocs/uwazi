@@ -1,6 +1,5 @@
 import { Dispatch } from 'redux';
 
-import { IStore } from '#V2/shared/types.js';
 
 import { notificationActions } from '#app/Notifications/index.js';
 
@@ -13,6 +12,7 @@ import {
 import { PUBLIC_PERMISSION } from '#api/permissions/publicPermission.js';
 import * as api from '#app/Permissions/PermissionsAPI.js';
 import * as actions from '#app/Permissions/actions/actions.js';
+import { IStore } from '#app/istore.js';
 
 describe('Permissions actions', () => {
   let dispatch: Dispatch<IStore>;

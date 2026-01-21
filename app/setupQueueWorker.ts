@@ -8,7 +8,7 @@ import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { SystemLogger, withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatchableClass, JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { RoundRobinQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { QueueWorker, QueueWorkerErrorHandler } from '#api/core/libs/queue/infrastructure/QueueWorker.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
@@ -20,20 +20,21 @@ import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
 import { DB } from '#api/odm/index.js';
 
+
 type Props = {
   standAloneProcess?: boolean;
 };
 
 const replaceTenantWithJobNamespace =
   (writer: LogWriter): LogWriter =>
-  (log: LogEntry) => {
-    writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
-        ...log.metadata,
-        ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
-      })
-    );
-  };
+    (log: LogEntry) => {
+      writer(
+        new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+          ...log.metadata,
+          ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
+        })
+      );
+    };
 
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 

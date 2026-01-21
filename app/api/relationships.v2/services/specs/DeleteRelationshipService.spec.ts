@@ -22,6 +22,7 @@ import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/Mon
 import { MissingRelationshipError } from '#api/relationships.v2/errors/relationshipErrors.js';
 import { DeleteRelationshipService } from '#api/relationships.v2/services/DeleteRelationshipService.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();
 

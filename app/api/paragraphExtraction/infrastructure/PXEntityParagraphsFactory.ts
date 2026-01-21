@@ -11,6 +11,8 @@ import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source
 import { PXGetEntityParagraphs } from '#api/paragraphExtraction/application/PXGetEntityParagraphs.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 type Props = {
   connection?: Db;

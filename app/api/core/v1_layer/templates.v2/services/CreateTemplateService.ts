@@ -17,7 +17,7 @@ import { createError } from '#api/utils/index.js';
 
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 
-import { TransactionManager } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TransactionManager, TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { QueryMapper } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 import { TemplateInput, TemplateInputMappers } from '#api/core/v1_layer/templates.v2/services/TemplateInputMappers.js';

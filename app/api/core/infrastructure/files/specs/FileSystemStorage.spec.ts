@@ -12,6 +12,7 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
+import { tenants } from '#api/tenants/index.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;

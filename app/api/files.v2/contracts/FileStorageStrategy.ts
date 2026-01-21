@@ -3,6 +3,7 @@ import { FileStorage, GetFileInput } from '#api/core/application/contracts/FileS
 import { File } from '../model/File';
 import { StoredFile } from '#api/core/domain/files/StoredFile.js';
 import { UwaziFile } from '../model/UwaziFile';
+import { tenants } from '#api/tenants/index.js';
 
 type Strategy = {
   s3Storage: FileStorage;

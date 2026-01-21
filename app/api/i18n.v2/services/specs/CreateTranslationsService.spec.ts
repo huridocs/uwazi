@@ -1,4 +1,6 @@
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/translations.v2/database/data_source_defaults.js';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,

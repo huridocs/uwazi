@@ -14,6 +14,9 @@ import { DefaultTransactionManager } from '#api/common.v2/database/data_source_d
 import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { DefaultTranslationsDataSource } from '#api/translations.v2/database/data_source_defaults.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

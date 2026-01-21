@@ -22,6 +22,7 @@ import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/C
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
 import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { tenants } from '#api/tenants/index.js';
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];

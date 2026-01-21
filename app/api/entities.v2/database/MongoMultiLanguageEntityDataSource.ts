@@ -11,6 +11,7 @@ import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/Mongo
 import { ResultType, Result } from '#api/core/libs/Result.js';
 import { Property } from '#app/apiResponseTypes.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>

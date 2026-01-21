@@ -23,6 +23,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { PXDeleteExtractor } from '#api/paragraphExtraction/application/PXDeleteExtractor.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();

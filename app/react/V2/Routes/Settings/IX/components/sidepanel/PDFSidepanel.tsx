@@ -23,8 +23,6 @@ import {
 import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
 import { notificationAtom, pdfScaleAtom } from '#V2/atoms/index.js';
 import { secondsToISODate } from '#V2/shared/dateHelpers.js';
-import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { TableSuggestion } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 import {
   coerceValue,
   getFormValue,
@@ -36,6 +34,7 @@ import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/Side
 import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
 import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
 import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
+import { Checkbox } from '#app/V2/Components/Forms/index.js';
 
 enum HighlightColors {
   CURRENT = '#B1F7A3',

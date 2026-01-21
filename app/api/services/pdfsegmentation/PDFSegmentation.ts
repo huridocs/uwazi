@@ -25,6 +25,7 @@ import { Settings } from '#shared/types/settingsType.js';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
+import { tenants } from '#api/tenants/index.js';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';

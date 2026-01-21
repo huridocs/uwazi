@@ -14,6 +14,7 @@ import { factory, fixtures, patchFixturesWithPort } from '#api/services/informat
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;

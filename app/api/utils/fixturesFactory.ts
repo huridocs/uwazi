@@ -23,9 +23,10 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { getV2FixturesFactoryElements } from '#api/common.v2/testing/fixturesFactory.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
-import { MongoSegmentationBuilder } from '../files.v2/database/specs/MongoSegmentationBuilder.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { ConnectionSchema } from '#shared/types/connectionType.js';
+import { ProcessedPDFDBO, ThumbnailDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import { MongoSegmentationBuilder } from '#api/core/infrastructure/mongodb/files/specs/MongoSegmentationBuilder.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -155,8 +156,8 @@ function getFixturesFactory() {
       defaultProps: EntitySchema = {},
       propsPerLanguage:
         | {
-            [key: string]: EntitySchema;
-          }
+          [key: string]: EntitySchema;
+        }
         | undefined = undefined
     ): EntitySchema[] {
       return languages.map(language => {
@@ -275,25 +276,25 @@ function getFixturesFactory() {
       leftEntity: string,
       rightEntities: { entity: string; template: string | null }[]
     ) => [
-      {
-        _id: idMapper(`${hub}-1`),
-        entity: leftEntity,
-        hub: idMapper(hub),
-        template: null,
-        reference: {
-          text: `${hub} left text`,
+        {
+          _id: idMapper(`${hub}-1`),
+          entity: leftEntity,
+          hub: idMapper(hub),
+          template: null,
+          reference: {
+            text: `${hub} left text`,
+          },
         },
-      },
-      ...rightEntities.map(({ entity, template }) => ({
-        _id: idMapper(`${entity}-${hub}-2`),
-        entity,
-        hub: idMapper(hub),
-        template: template ? idMapper(template) : null,
-        reference: {
-          text: `${hub} right text`,
-        },
-      })),
-    ],
+        ...rightEntities.map(({ entity, template }) => ({
+          _id: idMapper(`${entity}-${hub}-2`),
+          entity,
+          hub: idMapper(hub),
+          template: template ? idMapper(template) : null,
+          reference: {
+            text: `${hub} right text`,
+          },
+        })),
+      ],
 
     bidirectionalHub: (
       hub: string,
@@ -364,8 +365,8 @@ function getFixturesFactory() {
             typeof item === 'string'
               ? [{ id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                  thesaurusNestedValues(rootValue, children)
-                );
+                thesaurusNestedValues(rootValue, children)
+              );
           return [...accumulator, ...nestedItems];
         },
         []

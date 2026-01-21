@@ -3,6 +3,11 @@
 import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
 
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
@@ -59,6 +64,7 @@ import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJ
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {

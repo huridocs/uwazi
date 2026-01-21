@@ -14,6 +14,7 @@ import { CsvCreateThesauriValuesJobHandler } from '#api/csv.v2/infrastructure/jo
 import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { CsvImportRow } from '#api/csv.v2/domain/CsvImportRow.js';
 import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js';
+import { tenants } from '#api/tenants/index.js';
 
 const fixturesFactory = getFixturesFactory();
 

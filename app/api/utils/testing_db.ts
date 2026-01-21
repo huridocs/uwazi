@@ -16,9 +16,9 @@ import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import uniqueID from '#shared/uniqueID.js';
 import { config } from '#api/config.js';
-import { UserSchema } from '#shared/types/userType';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { UserSchema } from '#shared/types/userType.js';
 
 mongoose.Promise = Promise;
 let connected = false;

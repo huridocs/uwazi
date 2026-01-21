@@ -3,7 +3,7 @@ import qs from 'qs';
 import thunk from 'redux-thunk';
 import api from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { mockID } from '#shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Connections/actions/actions.js';
 

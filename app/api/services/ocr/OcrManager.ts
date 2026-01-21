@@ -30,6 +30,7 @@ import { pipeline } from 'stream/promises';
 import urljoin from 'url-join';
 import { EnforcedWithId } from '#api/odm/model.js';
 import { OcrRecord, OcrStatus } from '#api/services/ocr/ocrModel.js';
+import { tenants } from '#api/tenants/index.js';
 import {
   createForFile,
   getForSourceFile,

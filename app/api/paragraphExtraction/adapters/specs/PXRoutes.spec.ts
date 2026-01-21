@@ -10,6 +10,8 @@ import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { tenants } from '#api/tenants/index.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import {
   EntityStatusDTO,
   PXCreateExtractorRequest,

@@ -8,6 +8,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,

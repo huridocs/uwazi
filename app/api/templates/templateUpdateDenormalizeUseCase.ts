@@ -6,12 +6,12 @@ import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/Mo
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { tenants } from '#api/tenants/index.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { SyncDispatcherForTests } from '#api/queue.v2/infrastructure/SyncDispatcherForTests.js';
+import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
 export const denormalizeTemplateEntities = async (
   template: Template,

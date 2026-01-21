@@ -9,7 +9,7 @@ import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react
 import { Map } from '#app/Map/index.jsx';
 import { renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 import * as MapHelper from '#app/Map/MapHelper.jsx';
-import { deletedEntityAtom } from '#V2/atoms/index.js';
+import { deletedEntityAtom, localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
 
 jest.mock('#app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),

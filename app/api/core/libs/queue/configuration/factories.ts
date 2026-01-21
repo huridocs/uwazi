@@ -30,7 +30,7 @@ export function DefaultTestingQueueAdapter(transactionManager?: TransactionManag
   return new MongoQueueAdapter(
     getConnection(),
     (transactionManager as MongoTransactionManager) ??
-      new MongoTransactionManager(getClient(), LoggerFactory.default())
+    new MongoTransactionManager(getClient(), LoggerFactory.default())
   );
 }
 

@@ -17,6 +17,9 @@ import {
   TemplateDoesNotExistError,
 } from '#api/core/domain/template/errors.js';
 import { RelationshipPropertyCreatorService } from '#api/core/application/propertyCreatorService/RelationshipPropertyCreatorService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 const factory = getFixturesFactory();
 

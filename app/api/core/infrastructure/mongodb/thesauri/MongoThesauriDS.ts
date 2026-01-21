@@ -2,6 +2,7 @@ import { Result, ResultType } from '#api/core/libs/Result.js';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 
 // Todo: This will eventually got removed from here to domain folder.
 interface ThesauriDataSource {

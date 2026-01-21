@@ -13,7 +13,7 @@ import * as types from '#app/Library/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
 import { documentsApi } from '#app/Documents/index.js';
-import { mockID } from '#shared/uniqueID.js.js';
+import { mockID } from '#shared/uniqueID.js';
 
 import { api } from '#app/Entities/index.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
@@ -148,9 +148,9 @@ describe('libraryActions', () => {
         .get(`${APIURL}search?searchTerm=batman`, { body: JSON.stringify(documentCollection) })
         .get(
           `${APIURL}search?searchTerm=batman` +
-            '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
-            '&aggregations=%5B%5D' +
-            '&types=%5B%22decision%22%5D',
+          '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
+          '&aggregations=%5B%5D' +
+          '&types=%5B%22decision%22%5D',
           { body: JSON.stringify({ rows: documentCollection, aggregations }) }
         )
         .get(

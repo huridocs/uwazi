@@ -53,6 +53,8 @@ import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '#api/services/informationextraction/ixMaterials.js';
+import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('#api/services/tasksmanager/TaskManager.ts');

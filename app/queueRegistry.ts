@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */ /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
@@ -18,17 +17,14 @@ import {
   HeartbeatCallback,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { MongoRelationshipsV1DataSource } from '#api/relationships/MongoRelationshipsV1DataSource.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { IXTaskService } from '#api/services/informationextraction/TaskService.js';
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
 import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import settings from '#api/settings/settings.js';
@@ -65,6 +61,7 @@ import { LegacyThesauriRepository } from '#api/csv.v2/infrastructure/services/Le
 import { LegacyTranslationsRepository } from '#api/csv.v2/infrastructure/services/LegacyTranslationsRepository.js';
 import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { BulkCleanupEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.js';
+import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included

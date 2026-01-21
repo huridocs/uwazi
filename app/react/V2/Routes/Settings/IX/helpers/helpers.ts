@@ -8,12 +8,12 @@ import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 
 import { t } from '#app/I18N/index.js';
 import { RadioProps } from '#V2/Components/Forms/index.js';
-import { ClientIXExtractorType } from '#shared/types.js';
 import { TableSuggestion, MultiValueSuggestion } from '#V2/Routes/Settings/IX/types.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
 } from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
+import { ClientIXExtractorType } from '#app/V2/shared/types.js';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };

@@ -5,6 +5,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { tenants } from '#api/tenants/index.js';
 import { AcceptSuggestionsUseCase } from '#api/suggestions/application/AcceptSuggestionsUseCase.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 type Props = { tenantName?: string; batchSize?: number };
 

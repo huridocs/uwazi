@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-import { ClientEntitySchema, ClientPropertySchema } from '#V2/shared/types.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 import {
@@ -14,6 +13,7 @@ import {
 } from '#V2/Routes/Settings/IX/helpers/sidepanelFunctions.js';
 
 import { EntitySuggestionType } from '#shared/types/suggestionType.js';
+import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 
 jest.mock('#V2/api/entities', () => ({
   formatter: {

@@ -1,4 +1,4 @@
-import { FileType } from './types/fileType.js';
+import { FileType } from '#shared/types/fileType.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 describe('entityDefaultDocument', () => {
