@@ -29,7 +29,7 @@ class BulkDeleteEntityController extends AbstractController<RequestDto> {
         namespace: 'Bulk_Delete_Entity',
         success: true,
 
-        deletedCount: this.request.body.sharedIds.length,
+        deletedCount: parsed.sharedIds.length,
         durationMs: Date.now() - startTime,
       });
       this.response.json('ok');
