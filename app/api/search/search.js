@@ -24,6 +24,7 @@ import templatesModel from '../core/v1_layer/templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
+import translations from 'api/i18n/translations';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -255,9 +256,10 @@ const _sanitizeAgregationNames = aggregations =>
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
-const indexedDictionaryValues = dictionary =>
+const indexedDictionaryValues = (dictionary, dictionaryTranslations) =>
   dictionary.values
     .reduce((values, v) => {
+      v.label = dictionaryTranslations?.[v.label] || v.label;
       if (v.values) {
         return values.concat(v.values, [v]);
       }
@@ -265,6 +267,7 @@ const indexedDictionaryValues = dictionary =>
       return values;
     }, [])
     .reduce((v, value) => {
+      value.label = dictionaryTranslations?.[value.label] || value.label;
       // eslint-disable-next-line no-param-reassign
       v[value.id] = value;
       return v;
@@ -299,7 +302,17 @@ const _getAggregationDictionary = async (
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
-    const dictionaryValues = indexedDictionaryValues(dictionary);
+    const dictionaryTranslations =
+      (
+        await translations.get({
+          locale: language,
+          context: dictionary._id.toString(),
+        })
+      )
+        .find(translation => translation.locale === language)
+        ?.contexts?.find(context => context.id === dictionary._id.toString())?.values || {};
+
+    const dictionaryValues = indexedDictionaryValues(dictionary, dictionaryTranslations);
     dictionaryCache[propContent] = [dictionary, dictionaryValues];
   }
   return dictionaryCache[propContent];
