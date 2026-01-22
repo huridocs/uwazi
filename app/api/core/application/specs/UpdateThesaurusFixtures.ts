@@ -168,5 +168,13 @@ export const fixtures: DBFixture = {
         },
       ],
     },
+    {
+      _id: factory.id('fruits'),
+      name: 'Fruits',
+      values: [
+        { id: randomUUID(), label: 'Apple' },
+        { id: randomUUID(), label: 'Banana' },
+      ],
+    },
   ],
 };
