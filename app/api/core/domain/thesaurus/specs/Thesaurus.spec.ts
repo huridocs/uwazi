@@ -187,6 +187,7 @@ describe('Thesaurus', () => {
         ],
         hashedValuesById: expect.any(Object),
         hashedValuesByLabel: expect.any(Object),
+        before: expect.any(Object),
       });
     });
 
@@ -234,6 +235,7 @@ describe('Thesaurus', () => {
         ],
         hashedValuesById: expect.any(Object),
         hashedValuesByLabel: expect.any(Object),
+        before: expect.any(Object),
       });
     });
   });
@@ -285,6 +287,7 @@ describe('Thesaurus', () => {
         ],
         hashedValuesById: expect.any(Object),
         hashedValuesByLabel: expect.any(Object),
+        before: expect.any(Object),
       });
 
       expect(updated2).toEqual({
@@ -307,6 +310,7 @@ describe('Thesaurus', () => {
         ],
         hashedValuesById: expect.any(Object),
         hashedValuesByLabel: expect.any(Object),
+        before: expect.any(Object),
       });
 
       expect(updated3).toEqual({
@@ -324,6 +328,7 @@ describe('Thesaurus', () => {
         ],
         hashedValuesById: expect.any(Object),
         hashedValuesByLabel: expect.any(Object),
+        before: expect.any(Object),
       });
     });
 

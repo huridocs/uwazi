@@ -2,6 +2,9 @@ import { TransactionManagerFactory } from 'api/core/infrastructure/factories/Tra
 import { CreateThesaurusUseCase } from 'api/core/application/CreateThesaurus';
 import { ThesaurusTranslationService } from 'api/core/application/thesaurusTranslationService/ThesaurusTranslationService';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { ThesauriService } from 'api/core/application/ThesauriService';
+import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
+import { tenants } from 'api/tenants';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 
@@ -18,10 +21,15 @@ class CreateThesaurusUseCaseFactory {
       translationsDS,
     });
 
-    const useCase = new CreateThesaurusUseCase({
-      transactionManager,
+    const thesauriService = new ThesauriService({
       thesauriDS,
       thesaurusTranslationService,
+      jobsDispatcher: DefaultDispatcher(tenants.current().name, transactionManager),
+    });
+
+    const useCase = new CreateThesaurusUseCase({
+      transactionManager,
+      thesauriService,
     });
 
     return useCase;

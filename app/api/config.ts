@@ -116,7 +116,6 @@ export const config = {
       v2BulkDeleteEntity: false,
       v2CSVImport: false,
       v2DeleteFile: false,
-      v2CreateThesaurus: false,
       v2UpdateThesaurus: false,
     },
   },
