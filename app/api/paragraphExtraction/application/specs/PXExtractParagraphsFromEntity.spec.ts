@@ -21,6 +21,9 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
   defaultTemplate,
@@ -56,7 +59,6 @@ import {
   targetTemplate,
   userId,
 } from './fixtures';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -103,18 +105,27 @@ const setUpUseCase = () => {
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 
-  const extractParagraphs = new PXExtractParagraphsFromEntity({
-    entitiesDS,
-    extractorsDS,
-    filesDS,
-    settingsDS,
-    extractionService,
-    fileStorage,
-    entitiesStatusDS,
-    idGenerator,
-    logger: createMockLogger(),
-    tenantName,
+  const entitiesService = EntitiesServiceFactory.default({
+    transactionManager: mongoTransactionManager,
   });
+
+  const extractParagraphs = new PXExtractParagraphsFromEntity(
+    {
+      transactionManager: mongoTransactionManager,
+      entitiesService,
+      entitiesDS,
+      extractorsDS,
+      filesDS,
+      settingsDS,
+      extractionService,
+      fileStorage,
+      entitiesStatusDS,
+      idGenerator,
+      logger: createMockLogger(),
+      tenantName,
+    },
+    { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+  );
 
   return {
     tenantName,
@@ -331,15 +342,12 @@ describe('PXExtractParagraphsFromEntity', () => {
     });
 
     const entities = await testingEnvironment.db.getAllFrom('entities');
-    const connections = await testingEnvironment.db.getAllFrom('connections');
 
+    // Entities (paragraphs) should be deleted synchronously
     expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
-    expect(connections).toMatchObject([
-      relationshipE2Hub1,
-      relationshipE2Hub2,
-      relationshipP4Hub1,
-      relationshipP5Hub2,
-    ]);
+
+    // Note: Connections are deleted asynchronously via BulkCleanupEntityJob,
+    // so they won't be deleted immediately after execute() returns
   });
 
   it('should throw if Extractor does not exist', async () => {

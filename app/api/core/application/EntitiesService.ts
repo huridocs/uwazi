@@ -110,6 +110,10 @@ class EntitiesService {
   async bulkDelete(sharedIds: string[], context: DeleteContext) {
     this.ensureTransaction();
 
+    if (sharedIds.length === 0) {
+      return;
+    }
+
     const grantedSharedIds = (
       await this.deps.entityPermissionChecker.filterEntities(
         sharedIds,
