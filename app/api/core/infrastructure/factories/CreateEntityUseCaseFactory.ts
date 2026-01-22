@@ -1,8 +1,6 @@
 import { CreateEntityUseCase } from 'api/core/application/CreateEntity';
-import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -13,6 +11,7 @@ import { TransactionManagerFactory } from './TransactionManagerFactory';
 import { IdGeneratorFactory } from './IdGeneratorFactory';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory';
+import { EntitiesServiceFactory } from './EntitiesServiceFactory';
 
 class CreateEntityUseCaseFactory {
   static default() {
@@ -24,7 +23,6 @@ class CreateEntityUseCaseFactory {
     const eventBus = applicationEventsBus;
 
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-    const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const thesauriDS = ThesauriDataSourceFactory.default(transactionManager);
     const entitiesDS = EntitiesDataSourceFactory.default(transactionManager);
     const translationsDS = DefaultTranslationsDataSource(transactionManager);
@@ -37,11 +35,10 @@ class CreateEntityUseCaseFactory {
         translationsDS,
       });
 
-    const entitiesService = new EntitiesService({
+    const entitiesService = EntitiesServiceFactory.default({
       entitiesDS,
       eventBus,
       settingsDS,
-      templatesDS,
       transactionManager,
       dispatcher: jobsDispatcher,
     });

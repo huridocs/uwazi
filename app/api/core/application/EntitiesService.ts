@@ -1,5 +1,8 @@
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { search } from 'api/search';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { User } from 'api/users.v2/model/User';
 import { Entity, EntityIcon } from '../domain/entity/Entity';
 import { SettingsDataSource } from './contracts/SettingsDataSource';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource';
@@ -7,6 +10,8 @@ import { EventsBus } from '../libs/eventsbus';
 import { TransactionManager } from './contracts/TransactionManager';
 import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatcher';
 import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob';
+import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
+import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -21,6 +26,8 @@ type Deps = {
   eventBus: EventsBus;
   transactionManager: TransactionManager;
   dispatcher: JobsDispatcher;
+  search: typeof search;
+  entityPermissionChecker: EntityPermissionChecker;
 };
 
 type InsertContext = {
@@ -28,8 +35,19 @@ type InsertContext = {
   actorId: string;
 };
 
+type DeleteContext = {
+  tenantName: string;
+  actor: User;
+};
+
 class EntitiesService {
   constructor(private deps: Deps) {}
+
+  private ensureTransaction() {
+    if (!this.deps.transactionManager.isRunning()) {
+      throw new Error('This operation must be called within a transaction');
+    }
+  }
 
   async create({ templateId, userId, icon }: CreateInput) {
     const [template, languages] = await Promise.all([
@@ -46,6 +64,8 @@ class EntitiesService {
   }
 
   async insert(entity: Entity, context: InsertContext) {
+    this.ensureTransaction();
+
     await this.deps.entitiesDS.create(entity);
 
     await this.deps.dispatcher.dispatch(RelationshipSyncJob, {
@@ -62,6 +82,8 @@ class EntitiesService {
   }
 
   async bulkInsert(entities: Entity[], context: InsertContext) {
+    this.ensureTransaction();
+
     await this.deps.entitiesDS.bulkInsert(entities);
 
     await this.deps.dispatcher.dispatchMany(async dispatch => {
@@ -85,6 +107,32 @@ class EntitiesService {
     });
   }
 
+  async bulkDelete(sharedIds: string[], context: DeleteContext) {
+    this.ensureTransaction();
+
+    const grantedSharedIds = (
+      await this.deps.entityPermissionChecker.filterEntities(
+        sharedIds,
+        Specification.createDeleteSpecification(context.actor)
+      )
+    ).getDataOrThrow();
+
+    const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
+
+    await this.deps.dispatcher.dispatchMany(async dispatch =>
+      chunks.forEach(chunk =>
+        dispatch(BulkCleanupEntityJob, {
+          sharedIds: chunk,
+          userId: context.actor._id,
+          tenantName: context.tenantName,
+        })
+      )
+    );
+
+    await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
+    await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
+  }
+
   private async getTemplateByIdOrDefault(templateId?: string) {
     if (templateId) {
       return (await this.deps.templatesDS.getById(templateId)).getDataOrThrow();
@@ -95,3 +143,4 @@ class EntitiesService {
 }
 
 export { EntitiesService };
+export type { Deps as EntitiesServiceDeps };

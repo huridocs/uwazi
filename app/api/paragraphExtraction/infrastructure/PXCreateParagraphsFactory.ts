@@ -1,6 +1,5 @@
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
-import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PropertyAssignmentCreatorServiceStrategy } from 'api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy';
 import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
 import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
@@ -11,6 +10,7 @@ import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { tenants } from 'api/tenants/tenantContext';
 
 import { ThesauriDataSourceFactory } from 'api/core/infrastructure/factories/ThesauriDataSourceFactory';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
@@ -35,11 +35,11 @@ export class PXCreateParagraphsFactory {
       translationsDS,
     });
 
-    const entitiesService = new EntitiesService({
+    const entitiesService = EntitiesServiceFactory.default({
+      templatesDS,
       entitiesDS,
       eventBus: applicationEventsBus,
       settingsDS,
-      templatesDS,
       transactionManager: mongoTransactionManager,
       dispatcher: jobsDispatcher,
     });
