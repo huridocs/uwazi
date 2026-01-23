@@ -2,7 +2,7 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-
+import Immutable from 'immutable';
 import { APIURL } from '#app/config.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import { actions as metadataActions } from '#app/Metadata/index.js';
