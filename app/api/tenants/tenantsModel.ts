@@ -37,7 +37,6 @@ const mongoSchema = new mongoose.Schema({
     v2CreateEntity: Boolean,
     v2BulkDeleteEntity: Boolean,
     fileCacheHeaders: Boolean,
-    v2UploadFile: Boolean,
     v2DeleteFile: Boolean,
     v2UpdateThesaurus: Boolean,
   },

@@ -14,10 +14,9 @@ import { FileType } from 'shared/types/fileType';
 
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
+import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
 import { tenants } from 'api/tenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
 import { UserSchema } from 'shared/types/userType';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { files } from '../files';
@@ -65,38 +64,21 @@ describe('upload routes', () => {
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
-  describe('POST /files/upload/documents V2 only', () => {
+  describe('POST /files/upload/documents', () => {
+    let pathManager: PathManager;
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+      await testingEnvironment.cleanupUploadPaths();
+      pathManager = new PathManager({ tenant: tenants.current() });
+    });
+
     it('should throw error if entity does not exist', async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags: { v2UploadFile: true },
-      });
       const response = await request(app)
         .post('/api/files/upload/document')
         .field('entity', 'non_existent_shared_id')
         .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
 
       expect(response).toHaveStatus(422);
-    });
-  });
-
-  describe.each([
-    {
-      title: 'POST /files/upload/documents V1',
-      featureFlags: { v2UploadFile: false },
-    },
-    {
-      title: 'POST /files/upload/documents V2',
-      featureFlags: { v2UploadFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
-    let pathManager: PathManager;
-    beforeAll(async () => {
-      await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags,
-      });
-      await testingEnvironment.cleanupUploadPaths();
-      pathManager = new PathManager({ tenant: tenants.current() });
     });
 
     it('should upload the file', async () => {
@@ -252,7 +234,7 @@ describe('upload routes', () => {
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'conversionFailed',
-          TestEmitSources.session,
+          TestEmitSources.currentTenant,
           'sharedId1',
           expect.objectContaining({ status: 'failed' })
         );
@@ -368,19 +350,9 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
     });
   });
 
-  describe.each([
-    {
-      title: 'DELETE /files V1',
-      featureFlags: { v2DeleteFile: false },
-    },
-    {
-      title: 'DELETE /files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('DELETE /files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({ featureFlags });
     });
     it('should delete thumbnails asociated with documents deleted', async () => {
       mockCurrentUser(adminUser);

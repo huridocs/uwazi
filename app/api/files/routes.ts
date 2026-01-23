@@ -73,40 +73,11 @@ export default (app: Application) => {
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(
-          req,
-          res,
-          next
-        );
-      } else {
-        await uploadMiddleware('document')(req, res, next);
-      }
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next);
     },
     async (req, res) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
-      if (tenants.current().featureFlags?.v2UploadFile) {
-        await DocumentUploadController.createHandler()(req, res);
-      } else {
-        if (!req.file) {
-          throw new Error('File is not available on request object');
-        }
-        const savedFile = await createProcessingFile(req.body.entity, req.file);
-        res.json(savedFile);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        convertPDF(
-          savedFile,
-          req.body.entity,
-          req.file,
-          true,
-          processedFile => {
-            req.emitToSessionSocket('documentProcessed', req.body.entity, processedFile);
-          },
-          (_e, failedFile) => {
-            req.emitToSessionSocket('conversionFailed', req.body.entity, failedFile);
-          }
-        );
-      }
+      await DocumentUploadController.createHandler()(req, res);
     },
     activitylogMiddleware
   );
