@@ -47,6 +47,7 @@ export class PXExtractParagraphsFromEntityFactory {
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity(
       {
+        transactionManager: mongoTransactionManager,
         entitiesService,
         entitiesDS,
         entitiesStatusDS,
