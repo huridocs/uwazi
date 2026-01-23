@@ -91,7 +91,7 @@ const ThesaurusForm = ({
           enableSelections
           header={
             <InputField
-              clearFieldAction={() => { }}
+              clearFieldAction={() => {}}
               id="thesauri-name"
               placeholder={t('System', 'Thesauri name', null, false)}
               hasErrors={!!errors.name}

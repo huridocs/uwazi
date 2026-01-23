@@ -98,29 +98,29 @@ const activityLogLoader =
     headers?: IncomingHttpHeaders,
     _handlerContext?: { settings?: ClientSettings }
   ): LoaderFunction =>
-    async ({ request }) => {
-      const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-      const searchParams = searchParamsFromSearchParams(urlSearchParams);
-      const params = getQueryParamsBySearchParams(searchParams);
-      const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
-      if (activityLogList.message !== undefined) {
-        return {
-          error: activityLogList.message,
-          activityLogData: [],
-          totalPages: 0,
-          page: 0,
-          total: 0,
-        };
-      }
-      const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
-
+  async ({ request }) => {
+    const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
+    const searchParams = searchParamsFromSearchParams(urlSearchParams);
+    const params = getQueryParamsBySearchParams(searchParams);
+    const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
+    if (activityLogList.message !== undefined) {
       return {
-        activityLogData: activityLogList.rows.map(row => ({ ...row, rowId: row._id })),
-        totalPages,
-        page: params.page,
-        total: activityLogList.totalRows,
+        error: activityLogList.message,
+        activityLogData: [],
+        totalPages: 0,
+        page: 0,
+        total: 0,
       };
+    }
+    const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
+
+    return {
+      activityLogData: activityLogList.rows.map(row => ({ ...row, rowId: row._id })),
+      totalPages,
+      page: params.page,
+      total: activityLogList.totalRows,
     };
+  };
 
 export interface ActivityLogSearch {
   username?: string;

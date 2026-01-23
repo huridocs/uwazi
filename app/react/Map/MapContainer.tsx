@@ -49,11 +49,11 @@ const Map = ({ ...props }: MapProps) => {
             });
             loader
               .load()
-              .then(() => { })
-              .catch(() => { });
+              .then(() => {})
+              .catch(() => {});
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [tilesProvider, mapApiKey]);
 
@@ -62,11 +62,11 @@ const Map = ({ ...props }: MapProps) => {
       ...info,
       ...(t
         ? {
-          [t._id]: {
-            color: t.color,
-            name: t.name,
-          },
-        }
+            [t._id]: {
+              color: t.color,
+              name: t.name,
+            },
+          }
         : {}),
     }),
     {}

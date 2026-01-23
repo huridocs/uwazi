@@ -6,7 +6,6 @@ import { FunnelIcon } from '@heroicons/react/24/outline';
 
 import { Translate } from '#app/I18N/index.js';
 
-
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
 import { Button, PaginationState, Paginator, Pill, Table } from '#V2/Components/UI/index.js';

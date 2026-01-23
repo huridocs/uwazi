@@ -28,7 +28,7 @@ describe('Library DocumentsList container', () => {
       selectedDocuments: Immutable.fromJS([]),
       search: { sort: 'sort' },
       filters: Immutable.fromJS({ documentTypes: [] }),
-      searchDocuments: () => { },
+      searchDocuments: () => {},
       user: Immutable.fromJS({}),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       selectDocument: jasmine.createSpy('selectDocument'),
@@ -36,7 +36,7 @@ describe('Library DocumentsList container', () => {
       unselectDocument: jasmine.createSpy('unselectDocument'),
       storeKey: 'library',
       location: {},
-      navigate: () => { },
+      navigate: () => {},
     };
   });
 
@@ -117,7 +117,11 @@ describe('Library DocumentsList container', () => {
         library: {
           documents,
           filters,
-          ui: Immutable.fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
+          ui: Immutable.fromJS({
+            filtersPanel: 'panel',
+            selectedDocuments: ['selected'],
+            zoomLevel: 2,
+          }),
           search: { sort: 'sortProperty' },
         },
         user: Immutable.fromJS({ _id: 'uid' }),
