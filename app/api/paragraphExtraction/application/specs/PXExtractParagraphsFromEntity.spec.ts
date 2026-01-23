@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import { ApiResponse } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
@@ -14,7 +13,6 @@ import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrast
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
-import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -24,6 +22,7 @@ import { FileStorage } from 'api/core/application/contracts/FileStorage';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { search } from 'api/search';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
   defaultTemplate,
@@ -107,6 +106,9 @@ const setUpUseCase = () => {
 
   const entitiesService = EntitiesServiceFactory.default({
     transactionManager: mongoTransactionManager,
+    search: TestUtils.mockClass<typeof search>({
+      bulkDeleteBySharedId: jest.fn(),
+    }),
   });
 
   const extractParagraphs = new PXExtractParagraphsFromEntity(
@@ -136,13 +138,12 @@ const setUpUseCase = () => {
 };
 
 describe('PXExtractParagraphsFromEntity', () => {
+  beforeAll(async () =>
+    testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity')
+  );
+
   beforeEach(async () => {
-    jest
-      .spyOn(search, 'delete')
-      .mockImplementation(
-        async () => Promise.resolve() as any as ApiResponse<Record<string, any>, unknown>
-      );
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setFixtures(createFixtures());
   });
 
   afterAll(async () => {
