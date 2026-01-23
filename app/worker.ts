@@ -2,7 +2,7 @@
 
 import { config } from '#api/config.js';
 import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 
 import { DB } from '#api/odm/index.js';
 import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';

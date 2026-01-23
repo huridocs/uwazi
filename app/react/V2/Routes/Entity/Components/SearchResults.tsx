@@ -10,7 +10,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
 import { Panel } from '#V2/Components/Layouts/Panel.jsx';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { ClientTemplateSchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '#V2/Routes/Entity/urlParams.js';
 import { searchHintsModalAtom } from '#V2/Routes/Entity/Components/atoms.js';
 import { LoaderResponse } from '#V2/Routes/Entity/types.js';

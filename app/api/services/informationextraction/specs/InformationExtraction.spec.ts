@@ -48,13 +48,11 @@ import {
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
 } from '#api/services/informationextraction/InformationExtraction.js';
-import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '#api/services/informationextraction/ixMaterials.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
+import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('#api/services/tasksmanager/TaskManager.ts');
@@ -197,7 +195,7 @@ describe('InformationExtraction', () => {
     IXExternalService.reset();
     jest.resetAllMocks();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
   });
 
   afterEach(async () => {
@@ -1739,7 +1737,7 @@ describe('InformationExtraction', () => {
       await IXModelsModel.save(model);
 
       const message: IXResultsMessage = {
-        task: 'any_task',
+        task: 'suggestions',
         data_url: 'some/url',
         error_message: '',
         params: {

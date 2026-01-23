@@ -7,7 +7,7 @@ import { Repeater } from '#api/utils/Repeater.js';
 import { config } from '#api/config.js';
 
 import { handleError } from '#api/utils/index.js';
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 
 type DefaultTaskType = string;
 

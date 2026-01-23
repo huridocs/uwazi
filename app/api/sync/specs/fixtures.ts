@@ -2,10 +2,10 @@
 
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import { UpdateLog } from '#api/index.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
+import { UpdateLog } from '#api/updatelogs/updatelogsModel.js';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();

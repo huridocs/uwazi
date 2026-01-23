@@ -1,6 +1,6 @@
 import translations from '#api/i18n/translations.js';
 import relationships from '#api/relationships/relationships.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '#api/utils/templateUtils.js';

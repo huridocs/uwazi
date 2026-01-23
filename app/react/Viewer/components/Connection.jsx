@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import immutable from 'immutable';
 import { createSelector } from 'reselect';
-import Icon from '#UI/Icon/Icon.js';
+import Icon from '#UI/Icon/Icon.jsx';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { withContext } from '#app/componentWrappers.jsx';
@@ -18,7 +19,6 @@ import {
 } from '#app/Viewer/actions/uiActions.js';
 import { Item } from '#app/Layout/index.js';
 import helpers from '#app/Documents/helpers.js';
-import Immutable from 'immutable';
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,
   s => s.documentViewer.doc,

@@ -1,4 +1,4 @@
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';

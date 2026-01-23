@@ -24,7 +24,7 @@ type CreateSutProps = {
 
 const createFailingFileContents = (error: Error) =>
   new FileContents(async function* fileData() {
-    yield Buffer.from('partial data');
+    yield new Uint8Array(Buffer.from('partial data'));
     throw error;
   });
 

@@ -4,7 +4,7 @@ import translations from '#api/i18n/translations.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { TemplateSchema } from '../../../../../shared/types/templateType.js';
-import { TemplateMapper } from './Mapper.js';
+import { MongoTemplateMapper } from './MongoTemplateMapper.js';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {

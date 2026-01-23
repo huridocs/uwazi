@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
 
-import templates from '#api/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 

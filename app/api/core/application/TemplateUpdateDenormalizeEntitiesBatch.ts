@@ -2,6 +2,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { Entity } from '#api/entities.v2/model/Entity.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
@@ -9,7 +10,7 @@ import { RelationsV1Collection } from '#api/relationships/RelationsV1Collection.
 import { search } from '#api/search/index.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
@@ -55,8 +56,14 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
       await search.indexEntities({ sharedId: { $in: entitiesIds } }, '+fullText', 10);
     }
     await this.dependencies.transactionManager.run(async () => {
-      await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
-      await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
+      if (Object.keys(renamedProperties).length) {
+        await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
+        await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
+      }
+      if (deletedProperties.length) {
+        await this.dependencies.filesDS.deleteExtractedMetadata(deletedProperties, entitiesIds);
+        await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
+      }
 
       if (modifiedRelationshipsProps.length || newGeneratedIdProps.length) {
         const entities = await (
@@ -69,7 +76,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         const generatedIdProps = await this.dependencies.templatesDS
           .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
           .all();
-        const modifiedEntities = _.cloneDeep(entities);
+        const modifiedEntities = cloneDeep(entities);
 
         if (relationshipProps.length) {
           const relations = new RelationsV1Collection(
@@ -109,7 +116,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
           )
         );
 
-        await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, [
+        await this.dependencies.entitiesDS.bulkUpdateDeprecated(modifiedEntities, [
           ...relationshipProps,
           ...generatedIdProps,
         ]);

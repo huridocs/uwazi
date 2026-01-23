@@ -1,5 +1,4 @@
-import { templateUtils } from '#api/index.js';
-
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';

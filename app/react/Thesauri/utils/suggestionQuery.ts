@@ -1,3 +1,4 @@
+import { AggregationBucket } from '#shared/types/aggregations.js';
 import { LabelCountSchema } from '../types/labelCountType';
 
 /* An Un-sanitized Elastic Search Result
@@ -41,9 +42,9 @@ export function buildLabelCounts(
   ) {
     const { buckets: rawValues } = raw.aggregations.all[suggestionFieldName];
     const totalValues: { [key: string]: number } = {};
-    rawValues.forEach(rawResult => {
+    rawValues.forEach((rawResult: AggregationBucket) => {
       totalValues[rawResult.key] = rawResult.filtered.doc_count;
-      result.totalLabels += rawResult.filtered.doc_count;
+      result.totalLabels = (result.totalLabels || 0) + rawResult.filtered.doc_count;
     });
     result.thesaurus = {
       propertyName: thesaurusPropertyName,

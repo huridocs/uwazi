@@ -114,8 +114,14 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 }
 
 export function loadTargetDocument(sharedId) {
-  return (dispatch, getState) =>
-    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+  return (dispatch, getState) => {
+    if (!sharedId) {
+      return Promise.resolve();
+    }
+    return getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+      if (!entity) {
+        return undefined;
+      }
       dispatch(actions.set('viewer/targetDoc', entity));
       return referencesAPI
         .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
@@ -123,6 +129,7 @@ export function loadTargetDocument(sharedId) {
           dispatch(actions.set('viewer/targetDocReferences', references));
         });
     });
+  };
 }
 
 export function reloadDocument(sharedId) {

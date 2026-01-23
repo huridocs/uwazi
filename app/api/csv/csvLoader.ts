@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import thesauri from '#api/thesauri/index.js';
 import { EventEmitter } from 'events';
 

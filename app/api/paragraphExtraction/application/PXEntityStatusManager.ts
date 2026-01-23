@@ -8,9 +8,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
-
-import { Document } from '#api/files.v2/model/Document.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 

@@ -42,9 +42,9 @@ const InputField = React.forwardRef(
       autoComplete = 'on',
       name = '',
       clearFieldAction,
-      onChange = () => {},
-      onSelect = () => {},
-      onBlur = () => {},
+      onChange = () => { },
+      onSelect = () => { },
+      onBlur = () => { },
     }: InputFieldProps,
     ref: Ref<any>
   ) => {
@@ -87,9 +87,8 @@ const InputField = React.forwardRef(
             ref={ref}
             disabled={disabled}
             value={value}
-            className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
-              type !== 'file' ? 'p-2.5' : ''
-            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
+            className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${type !== 'file' ? 'p-2.5' : ''
+              } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (

@@ -8,7 +8,7 @@ import { config } from '#api/config.js';
 import * as handleError from '#api/utils/handleError.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;

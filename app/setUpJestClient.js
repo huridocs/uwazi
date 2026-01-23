@@ -23,24 +23,27 @@ process.on('unhandledRejection', err => {
   fail(err);
 });
 
-jasmine.createSpyObj = (name, methodNames) => {
-  let names = methodNames;
-  if (Array.isArray(name)) {
-    names = name;
-  }
+if (typeof global.jasmine === 'undefined') {
+  global.jasmine = {
+    createSpyObj: (name, methodNames) => {
+      let names = methodNames;
+      if (Array.isArray(name)) {
+        names = name;
+      }
 
-  const obj = {};
+      const obj = {};
 
-  for (let i = 0; i < names.length; i += 1) {
-    obj[names[i]] = jasmine.createSpy(names[i]);
-  }
+      for (let i = 0; i < names.length; i += 1) {
+        obj[names[i]] = jest.fn();
+      }
 
-  return obj;
-};
-
-const clock = {
-  install: jest.useFakeTimers,
-  uninstall: jest.clearAllTimers,
-  tick: jest.advanceTimersByTime,
-};
-jasmine.clock = () => clock;
+      return obj;
+    },
+    createSpy: jest.fn,
+    clock: () => ({
+      install: jest.useFakeTimers,
+      uninstall: jest.clearAllTimers,
+      tick: jest.advanceTimersByTime,
+    }),
+  };
+}

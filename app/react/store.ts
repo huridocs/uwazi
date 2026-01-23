@@ -5,10 +5,10 @@ import thunkModule from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 
-const thunk: Middleware = (thunkModule.default?.default || thunkModule.default || thunkModule) as Middleware;
 import reducer from '#app/reducer.js';
 import { IStore } from './istore';
 
+const thunk: Middleware = ((thunkModule as { default?: Middleware }).default || thunkModule) as Middleware;
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 

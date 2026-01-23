@@ -25,9 +25,9 @@ import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automa
 import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
 import { ATTaskMessage, RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {
@@ -76,7 +76,7 @@ const fixtures: DBFixture = {
 };
 
 let taskManager: TaskManager<ATTaskMessage>;
-let mockLogger: LoggerFactory;
+let mockLogger: Logger;
 let requestEntityTranslation: RequestEntityTranslation;
 
 beforeEach(async () => {

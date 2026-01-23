@@ -16,6 +16,8 @@ import { routes } from '#api/thesauri/routes.js';
 import { thesauri } from '#api/thesauri/thesauri.js';
 import { fixtures } from '#api/thesauri/specs/fixtures.js';
 import { tenants } from '#api/tenants/index.js';
+import { ObjectId } from 'mongodb';
+import { CreateThesaurusController } from '#api/core/infrastructure/express/thesaurus/CreateThesaurusController.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

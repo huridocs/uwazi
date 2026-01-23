@@ -3,7 +3,7 @@ import { PageType } from '#shared/types/pageType.js';
 import { validatePage } from '#shared/types/pageSchema.js';
 
 import date from '#api/utils/date.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
 import { UwaziFilterQuery } from '#api/odm/index.js';
 import { User } from '#api/users/usersModel.js';

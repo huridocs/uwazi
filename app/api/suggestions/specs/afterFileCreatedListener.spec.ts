@@ -6,12 +6,12 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-import { SettingsDataSource, SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
 import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';
 import { ExtractorsNotAvailableError } from '#api/suggestions/ixValidationError.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
 const factory = getFixturesFactory();
 

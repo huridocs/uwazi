@@ -1,6 +1,6 @@
 import { elastic } from '#api/search/index.js';
 import { SearchQuery } from '#shared/types/SearchQueryType.js';
-import templatesModel from '#api/templates/templates.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 import propertiesHelper from '#shared/commonProperties.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 

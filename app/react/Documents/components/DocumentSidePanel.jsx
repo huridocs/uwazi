@@ -10,7 +10,7 @@ import { MetadataFormButtons, ShowMetadata } from '#app/Metadata/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { I18NLinkV2 as I18NLink, t, Translate } from '#app/I18N/index.js';
 import { FileList, AttachmentsList } from '#app/Attachments/index.js';
-import Connections from '#app/Viewer/components/Connection.jsx';
+import Connections from '#app/Viewer/components/ConnectionsList.jsx';
 import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
 import ShowIf from '#app/App/ShowIf.jsx';
 import SidePanel from '#app/Layout/SidePanel.jsx';

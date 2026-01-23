@@ -22,7 +22,7 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import templatesModel from '#api/templates/templates.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
@@ -44,6 +44,7 @@ import { ObjectId } from 'mongodb';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
+import { deriveTrainingPropertyValue } from './propertyValue';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;

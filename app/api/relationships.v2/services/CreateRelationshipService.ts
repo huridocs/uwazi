@@ -1,14 +1,14 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
-import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 
-import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 
@@ -63,11 +63,11 @@ function mapDataToSelection(data: ReferencePointerData['selections']) {
 function mapDataToPointer(data: CreateRelationshipData['from' | 'to']) {
   return data.type === 'text'
     ? new TextReferencePointer(
-        data.entity,
-        data.file,
-        mapDataToSelection(data.selections),
-        data.text
-      )
+      data.entity,
+      data.file,
+      mapDataToSelection(data.selections),
+      data.text
+    )
     : new EntityPointer(data.entity);
 }
 

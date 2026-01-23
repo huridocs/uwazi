@@ -1,5 +1,5 @@
 import { SyncConfig } from '#api/sync/syncWorker.js';
-import templatesModel from '../templates/templatesModel.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 import { model as updateLog, UpdateLog } from '#api/updatelogs/index.js';
 import { explicitOrdering } from '#shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';

@@ -8,7 +8,7 @@ import {
 } from '#api/utils/templateUtils.js';
 import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
-import templates from '#api/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import settings from '#api/settings/settings.js';
 import translations from '#api/i18n/translations.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';

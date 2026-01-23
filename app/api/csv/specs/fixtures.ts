@@ -2,7 +2,7 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { templateUtils } from '#api/templates/index.js';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
 

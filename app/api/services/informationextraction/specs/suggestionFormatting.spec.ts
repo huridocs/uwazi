@@ -403,6 +403,7 @@ describe('formatSuggestion', () => {
       const cb = async () =>
         formatSuggestionFacade.formatSuggestionPdfSource(
           property,
+          // @ts-expect-error
           rawSuggestion,
           currentSuggestion,
           entity,

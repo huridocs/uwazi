@@ -5,7 +5,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 
 export class MongoSettingsDataSource

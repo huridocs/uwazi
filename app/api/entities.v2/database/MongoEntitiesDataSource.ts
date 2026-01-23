@@ -17,7 +17,7 @@ import { search } from '#api/search/index.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';

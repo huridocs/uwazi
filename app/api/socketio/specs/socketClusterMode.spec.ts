@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 
-import { tenants, Tenant } from '#api/tenants/tenantContext.js';
+import { Tenant } from '#api/tenants/tenantContext.js';
 
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 

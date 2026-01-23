@@ -15,7 +15,7 @@ import {
 
 import EntitiesModel from '#api/entities/entitiesModel.js';
 
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';
 

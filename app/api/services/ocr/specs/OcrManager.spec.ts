@@ -8,7 +8,6 @@ import * as filesApi from '#api/files/filesystem.js';
 
 import * as processDocumentApi from '#api/files/processDocument.js';
 
-import { tenants } from '#api/tenants/tenantContext.js';
 
 import settings from '#api/settings/settings.js';
 
@@ -23,10 +22,10 @@ import * as handleError from '#api/utils/handleError.js';
 import { getOcrStatus, OcrManager } from '#api/services/ocr/OcrManager.js';
 import { OcrModel, OcrStatus } from '#api/services/ocr/ocrModel.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { mockTaskManagerImpl } from '#api/tasksmanager/specs/TaskManagerImplementationMocker';
 import { fixtures, fixturesFactory } from '#api/services/ocr/specs/fixtures/fixtures.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 import { tenants } from '#api/tenants/index.js';
+import { mockTaskManagerImpl } from '#api/services/tasksmanager/specs/TaskManagerImplementationMocker.js';
 
 jest.mock('#api/services/tasksmanager/TaskManager.ts');
 
@@ -62,10 +61,10 @@ class Mocks {
           type: 'document',
         }),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
-      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
+      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => { }),
       'handleError.handleError': jest
         .spyOn(handleError, 'handleError')
-        .mockImplementation(() => {}),
+        .mockImplementation(() => { }),
     };
 
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);

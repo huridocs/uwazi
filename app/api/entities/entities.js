@@ -7,7 +7,7 @@ import { PDF, files } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
-import templates from '#api/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import date from '#api/utils/date.js';
 import { unique } from '#api/utils/filters.js';
 import { propertyTypes } from '#shared/propertyTypes.js';

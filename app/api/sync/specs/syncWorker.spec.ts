@@ -32,7 +32,7 @@ import relationtypes from '#api/relationtypes/index.js';
 
 import syncRoutes from '#api/sync/routes.js';
 
-import templates from '#api/templates/templates.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 
 import { tenants } from '#api/tenants/index.js';
 

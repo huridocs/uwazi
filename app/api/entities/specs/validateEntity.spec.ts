@@ -11,7 +11,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import templates from '#api/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
 

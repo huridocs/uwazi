@@ -5,7 +5,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 
 
 
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 
 
 
@@ -25,7 +25,7 @@ export class PXExtractParagraphsFromEntityFactory {
     const mongoTransactionManager = TransactionManagerFactory.default();
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
-      entityDS: DefaultEntitiesDataSource(mongoTransactionManager),
+      entitiesDS: new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager),
       entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
         connection,
         mongoTransactionManager,

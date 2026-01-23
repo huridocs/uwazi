@@ -3,8 +3,9 @@
  */
 import fetchMock from 'fetch-mock';
 
-import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { wrapEntityMetadata, prepareMetadataAndFiles } from '#app/Metadata/helpers/wrapper.js';
+import { ClientTemplateSchema } from '#app/istore.js';
+import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 
 describe('wrapEntityMetadata', () => {
   const template = {
@@ -207,7 +208,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'some/mimetype' },
     });
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const wrappedEntity = await prepareMetadataAndFiles(
       entity,
       [document],
@@ -257,7 +258,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     // Should process the File object directly, not the blob URL
@@ -285,7 +286,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     expect(wrappedEntity.metadata).toEqual({
@@ -334,7 +335,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'image/jpeg' },
     });
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     // File object should be processed directly
@@ -434,7 +435,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'image/jpeg' },
     });
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     // Blob URLs should be skipped (set to empty)
@@ -497,7 +498,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     // Should fallback to originalFile and create proper metadata linking
@@ -539,7 +540,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
-    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const mediaProperties = template.properties?.filter((prop: PropertySchema) => prop.type === 'image') || [];
     const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
     // Should fallback to originalFile despite fetch failure

@@ -2,7 +2,7 @@ import { partialImplementation } from '#api/common.v2/testing/partialImplementat
 
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
 
 it('should execute the updater and reindex the entity', async () => {
@@ -24,7 +24,7 @@ it('should execute the updater and reindex the entity', async () => {
   });
   const job = new UpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
 
-  await job.handleDispatch(async () => {}, { entityIds: ['entity'] });
+  await job.handleDispatch(async () => { }, { entityIds: ['entity'] });
   expect(updater.update).toHaveBeenCalledWith(['entity']);
   expect(indexEntity).toHaveBeenCalledWith(['entity']);
 });

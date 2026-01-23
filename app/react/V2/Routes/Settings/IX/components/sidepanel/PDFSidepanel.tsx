@@ -20,9 +20,8 @@ import {
   Truncate,
   VerticalDrawer,
 } from '#V2/Components/UI/index.js';
-import { PDF, selectionHandlers } from '#V2/Components/PDFViewer/index.js';
+import { PDF, selectionHandlers, pdfEventBus } from '#V2/Components/PDFViewer/index.js';
 import { notificationAtom, pdfScaleAtom } from '#V2/atoms/index.js';
-import { secondsToISODate } from '#V2/shared/dateHelpers.js';
 import {
   coerceValue,
   getFormValue,
@@ -199,13 +198,11 @@ const PDFSidepanel = ({
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
         } else {
-          const value =
-            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
+          setValue('field', coercedValue.value, { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
-        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
+        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ') || '';
         setValue('field', sanitizedText, { shouldDirty: true });
       }
     }

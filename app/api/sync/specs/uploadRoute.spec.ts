@@ -8,6 +8,7 @@ import {
   deleteFile,
   setupTestUploadedPaths,
   storage,
+  uploadsPath,
 } from '#api/files/index.js';
 
 import { testingTenants } from '#api/utils/testingTenants.js';

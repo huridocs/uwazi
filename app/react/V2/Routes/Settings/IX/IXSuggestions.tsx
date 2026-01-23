@@ -22,6 +22,7 @@ import { notificationAtom } from '#V2/atoms/index.js';
 
 import { t, Translate } from '#app/I18N/index.js';
 
+import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { ClientPropertySchema } from '#app/istore.js';
 import { SuggestionsTitle } from '#V2/Routes/Settings/IX/components/SuggestionsTitle.jsx';
 import { FiltersSidepanel } from '#V2/Routes/Settings/IX/components/FiltersSidepanel.jsx';
@@ -499,7 +500,7 @@ const IXSuggestionsLoader =
       const extractors = await extractorsAPI.getById(extractorId, headers);
       const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
       const currentStatus = await suggestionsAPI.status(extractorId, headers);
-      const templates = await templatesAPI.get(headers);
+      const templates: ClientTemplateSchema[] = await templatesAPI.get(headers);
 
       const template = templates.find(temp => extractors[0].templates.includes(temp._id));
       const property =

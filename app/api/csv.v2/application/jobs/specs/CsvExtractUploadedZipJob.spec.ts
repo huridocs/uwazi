@@ -18,10 +18,10 @@ import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { CsvPreflightJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler.js';
 import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
 import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
 import { CsvExtractUploadedZipJob, Callbacks } from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
-import { tenants } from '#api/tenants/index.js';
 
 const callbacks: Callbacks = {
   onStart: jest.fn(),
@@ -70,10 +70,10 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       filesIO: new FileContentsIO(),
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options?.batchSize });
-    const jobsDispatcher: jest.Mocked<JobsDispatcher> = {
+    const jobsDispatcher: JobsDispatcher = TestUtils.mockClass<JobsDispatcher>({
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
-    };
+    });
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,
       fileNormalizer,

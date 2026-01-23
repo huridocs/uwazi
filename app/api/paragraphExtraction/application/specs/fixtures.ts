@@ -1,5 +1,3 @@
-import { FileBuilder } from '#api/files.v2/model/specs/utils/FileBuilder.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';

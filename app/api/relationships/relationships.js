@@ -2,7 +2,7 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import templatesAPI from '#api/templates/index.js';
+import templatesAPI from '#api/core/v1_layer/templates/index.js';
 import settings from '#api/settings/index.js';
 import relationtypes from '#api/relationtypes/index.js';
 import entities from '#api/entities/entities.js';

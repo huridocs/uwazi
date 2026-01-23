@@ -16,8 +16,6 @@ import { createUploadedInputFile } from '#api/core/infrastructure/files/specs/In
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { CsvImportEntities } from '#api/csv.v2/CsvImportEntities.js';
 import { CSVImportEntitiesFactories } from '#api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories.js';
-import { tenants } from '#api/tenants/index.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 class FakeCsvExtractUploadedZipJobDispatcher {
   public calls: Array<{ params: any; jobInfo?: any }> = [];

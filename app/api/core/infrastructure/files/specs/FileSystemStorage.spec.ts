@@ -12,7 +12,6 @@ import path from 'path';
 import { Readable } from 'stream';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
-import { tenants } from '#api/tenants/index.js';
 
 const createFileContent = (text: string) => `This is a test file content ${text}`;
 const createFileName = (fileType: string) => `TestFileSystemStorage${fileType}.txt`;
@@ -27,8 +26,8 @@ describe('FileSystemStorage', () => {
 
   const toString = async (file: Readable) => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
-      const _buf: Buffer[] = [];
-      file.on('data', (chunk: any) => _buf.push(chunk));
+      const _buf: Uint8Array[] = [];
+      file.on('data', (chunk: Uint8Array) => _buf.push(new Uint8Array(chunk)));
       file.on('end', () => resolve(Buffer.concat(_buf)));
       file.on('error', (err: unknown) => reject(err));
     });

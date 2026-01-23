@@ -6,7 +6,6 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { CsvImportsDataSource } from '#api/csv.v2/application/contracts/CsvImportsDataSource.js';
 import { CsvImportDomain } from '#api/csv.v2/domain/CsvImport.js';
 import { CsvExtractUploadedZipJobHandler } from '#api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler.js';
-import { tenants } from '#api/tenants/index.js';
 
 type Deps = {
   csvImportsDS: CsvImportsDataSource;

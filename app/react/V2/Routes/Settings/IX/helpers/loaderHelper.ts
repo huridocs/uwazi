@@ -6,7 +6,8 @@ import isEmpty from 'lodash/isEmpty.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 import { SuggestionValue, EntitySuggestion } from '#V2/Routes/Settings/IX/types.js';
-import { ClientPropertySchema, ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientPropertySchema, ClientEntitySchema } from '#app/istore.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { search } from '#V2/api/search/index.js';
 
 type TransformedSuggestion = EntitySuggestion & {

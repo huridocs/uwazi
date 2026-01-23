@@ -86,7 +86,7 @@
   },
   "jest": {
     "projects": [
-      "app/jest.client.config.js",
+      "app/jest.client.config.cjs",
       "app/jest.server.config.json"
     ]
   },

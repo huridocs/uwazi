@@ -8,7 +8,6 @@ import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
 
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
 
-import { legacyLogger } from '#api/log/index.js';
 
 import connections from '#api/relationships/index.js';
 
@@ -20,7 +19,8 @@ import { appContext } from '#api/utils/AppContext.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { setUpApp, socketEmit } from '#api/utils/testingRoutes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 
 import db from '#api/utils/testing_db.js';
 

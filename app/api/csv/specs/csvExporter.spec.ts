@@ -1,6 +1,6 @@
 import { ObjectWritableMock } from 'stream-mock';
 
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import translations from '#api/i18n/translations.js';
 

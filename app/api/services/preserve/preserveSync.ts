@@ -1,16 +1,15 @@
-import entities from '#api/index.js';
+import entities from '#api/entities/entities.js';
 
 import { files, generateFileName, storage } from '#api/files/index.js';
 
-import { legacyLogger } from '#api/index.js';
+import { legacyLogger } from '#api/log/legacyLogger.js';
 
-import { EnforcedWithId } from '#api/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
-import settings from '#api/index.js';
+import settings from '#api/settings/settings.js';
 
-import templates from '#api/index.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 
-import { newThesauriId } from '#api/utils/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 
@@ -39,6 +38,9 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
 import { preserveSyncModel } from '#api/services/preserve/preserveSyncModel.js';
+import { newThesauriId } from '#api/utils/templateUtils.js';
+
+type PreserveDownload = { path: string };
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
   const [value] = await dictionariesModel.db.aggregate([
@@ -102,61 +104,61 @@ const extractDate = async (
 
   return hasDateProperty
     ? {
-        preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
-      }
+      preservation_date: [{ value: Date.parse(evidence.attributes.date) / 1000 }],
+    }
     : {};
 };
 
 const saveEvidence =
   (config: PreserveConfig['config'][0], host: string) =>
-  async (previous: Promise<EntitySchema>, evidence: any) => {
-    await previous;
+    async (previous: Promise<EntitySchema>, evidence: any) => {
+      await previous;
 
-    try {
-      const template = await templates.getById(config.template);
-      const user = await users.getById(config.user);
+      try {
+        const template = await templates.getById(config.template);
+        const user = await users.getById(config.user);
 
-      if (user) {
-        appContext.set('user', user);
-      }
+        if (user) {
+          appContext.set('user', user);
+        }
 
-      const { sharedId } = await entities.save(
-        {
-          title: evidence.attributes.title,
-          template: config.template,
-          metadata: {
-            ...(await extractURL(template, evidence)),
-            ...(await extractSource(template, evidence)),
-            ...(await extractDate(template, evidence)),
+        const { sharedId } = await entities.save(
+          {
+            title: evidence.attributes.title,
+            template: config.template,
+            metadata: {
+              ...(await extractURL(template, evidence)),
+              ...(await extractSource(template, evidence)),
+              ...(await extractDate(template, evidence)),
+            },
           },
-        },
-        { language: 'en', user: user || {} }
-      );
-      await Promise.all(
-        evidence.attributes.downloads.map(async download => {
-          const fileName = generateFileName({ originalname: path.basename(download.path) });
-          const fileStream = (
-            await fetch(new URL(path.join(host, download.path)).toString(), {
-              headers: { Authorization: config.token },
-            })
-          ).body as unknown as Readable;
-          if (fileStream) {
-            await storage.storeFile(fileName, fileStream, 'attachment');
+          { language: 'en', user: user || {} }
+        );
+        await Promise.all(
+          evidence.attributes.downloads.map(async (download: PreserveDownload) => {
+            const fileName = generateFileName({ originalname: path.basename(download.path) });
+            const fileStream = (
+              await fetch(new URL(path.join(host, download.path)).toString(), {
+                headers: { Authorization: config.token },
+              })
+            ).body as unknown as Readable;
+            if (fileStream) {
+              await storage.storeFile(fileName, fileStream, 'attachment');
 
-            await files.save({
-              entity: sharedId,
-              type: 'attachment',
-              filename: fileName,
-              originalname: path.basename(download.path),
-              mimetype: mimetypes.lookup(path.extname(fileName)) || 'application/octet-stream',
-            });
-          }
-        })
-      );
-    } catch (error) {
-      legacyLogger.error(error);
-    }
-  };
+              await files.save({
+                entity: sharedId,
+                type: 'attachment',
+                filename: fileName,
+                originalname: path.basename(download.path),
+                mimetype: mimetypes.lookup(path.extname(fileName)) || 'application/octet-stream',
+              });
+            }
+          })
+        );
+      } catch (error) {
+        legacyLogger.error(error);
+      }
+    };
 
 const preserveSync = {
   async syncAllTenants() {

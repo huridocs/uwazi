@@ -15,7 +15,7 @@ import { search } from '#api/search/index.js';
 
 import db from '#api/utils/testing_db.js';
 
-import { advancedSort } from '#api/utils/advancedSort.js';
+import { advancedSort } from '#app/utils/advancedSort.js';
 import * as os from 'os';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

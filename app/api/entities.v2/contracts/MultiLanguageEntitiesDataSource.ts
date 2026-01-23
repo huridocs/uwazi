@@ -1,11 +1,12 @@
-import { ResultSet } from '#api/common.v2/contracts/ResultSet.js';
-import { TemplateProperty } from '#api/core/domain/template/Template.js';
+import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-
-import { MultiLanguageEntity } from '#api/entities.v2/model/MultiLanguageEntity.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { ResultType } from '#api/core/libs/Result.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
 
 export interface MultiLanguageEntityDataSource {
-  bulkUpdate(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
+  bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
+  bulkUpdate(entities: Entity[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
   bulkDelete(sharedIds: string[]): Promise<void>;
@@ -25,6 +26,8 @@ export interface MultiLanguageEntityDataSource {
     entities: Entity[],
     properties: V1RelationshipProperty[]
   ): Promise<ResultSet<Entity>>;
+  getSharedIdsUsingThesaurus(thesaurusId: string): Promise<string[]>;
 
   create(entity: Entity): Promise<void>;
+  bulkInsert(entities: Entity[]): Promise<void>;
 }

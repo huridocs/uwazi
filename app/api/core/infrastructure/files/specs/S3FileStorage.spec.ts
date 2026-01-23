@@ -34,8 +34,8 @@ describe('S3FileStorage', () => {
 
   const toString = async (s3File: GetObjectCommandOutput) => {
     const buffer = await new Promise<Buffer>((resolve, reject) => {
-      const _buf: Buffer[] = [];
-      (s3File.Body as Readable).on('data', (chunk: any) => _buf.push(chunk));
+      const _buf: Uint8Array[] = [];
+      (s3File.Body as Readable).on('data', (chunk: Uint8Array) => _buf.push(new Uint8Array(chunk)));
       (s3File.Body as Readable).on('end', () => resolve(Buffer.concat(_buf)));
       (s3File.Body as Readable).on('error', (err: unknown) => reject(err));
     });

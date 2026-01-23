@@ -4,10 +4,11 @@ import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
 import { pdfScaleAtom } from '#V2/atoms/index.js';
-import { EventBus, PDFJSViewer, PDFJS } from '#V2/Components/PDFViewer/pdfjs.js';
-import { TextHighlight } from '#V2/Components/PDFViewer/types.js';
+import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
+import { TextHighlight } from './types.js';
 import { calculateScaling } from '#V2/Components/PDFViewer/functions/calculateScaling.js';
 import { adjustSelectionsToScale } from '#V2/Components/PDFViewer/functions/handleTextSelection.js';
+import { pdfEventBus } from './events.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
@@ -55,7 +56,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
           pageViewer.setPdfPage(pdfPage);
           pageViewerRef.current = pageViewer;
 
-          const handleIntersection: IntersectionObserverCallback = (entries: any) => {
+          const handleIntersection: IntersectionObserverCallback = entries => {
             const [entry] = entries;
             if (entry.isIntersecting) {
               pageViewer.update({ scale: pageViewer.scale });

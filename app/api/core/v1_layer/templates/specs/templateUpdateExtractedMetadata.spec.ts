@@ -2,6 +2,8 @@ import { files } from '#api/files/index.js';
 
 import translations from '#api/i18n/translations.js';
 
+import * as setupSockets from '#api/socketio/setupSockets.js';
+import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';

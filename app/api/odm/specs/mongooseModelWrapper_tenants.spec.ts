@@ -10,7 +10,6 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { instanceModel } from '#api/odm/index.js';
 
 import testingDB from '#api/utils/testing_db.js';
-import { tenants } from '#api/tenants/index.js';
 
 const testSchema = new mongoose.Schema({
   name: String,

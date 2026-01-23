@@ -3,7 +3,7 @@ import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
-import { validateFormat, ValidateFormatError } from '#api/csv/index.js';
+import { validateFormat, ValidateFormatError } from '#api/csv/csv.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 

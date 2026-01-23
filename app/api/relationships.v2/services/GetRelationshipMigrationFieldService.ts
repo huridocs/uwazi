@@ -1,4 +1,4 @@
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 

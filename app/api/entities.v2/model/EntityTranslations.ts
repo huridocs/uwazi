@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 
-import { TemplateProperty } from '#api/core/domain/template/Template.js';
+import { Property } from '#api/core/domain/template/Property.js';
 
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 
@@ -36,11 +36,11 @@ export class EntityTranslations {
     return this.getTranslation(language).icon;
   }
 
-  getValue(property: TemplateProperty, language: LanguageISO6391): EntityMetadata[] {
+  getValue(property: Property, language: LanguageISO6391): EntityMetadata[] {
     return this.getTranslation(language).metadata[property.name] || [];
   }
 
-  setValue(property: TemplateProperty, value: BaseMetadataValue[], language?: LanguageISO6391) {
+  setValue(property: Property, value: BaseMetadataValue[], language?: LanguageISO6391) {
     if (property instanceof V1RelationshipProperty) {
       this.setValueInAllLanguages(property.name, value);
     } else if (property.type === 'text') {
@@ -51,7 +51,7 @@ export class EntityTranslations {
   }
 
   private setSingleLanguageValue(
-    property: TemplateProperty,
+    property: Property,
     value: BaseMetadataValue[],
     language?: LanguageISO6391
   ) {

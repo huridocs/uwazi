@@ -18,13 +18,14 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { getEntitiesForTraining } from '#api/services/informationextraction/ixMaterials.js';
 import { PropertySourceMaterials } from '#api/services/informationextraction/InformationExtraction.js';
 import { IXTaskService } from '#api/services/informationextraction/TaskService.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey.js';
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { getPropertyTrainingEntities } from './FetchMaterialsForTraining';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -47,7 +48,7 @@ class NoEntitiesForTraining extends Error {
 }
 
 class TrainModelForText implements UseCase<Input, Output> {
-  constructor(private props: Dependencies) {}
+  constructor(private props: Dependencies) { }
 
   async execute({ extractor }: Input): Promise<Output> {
     try {

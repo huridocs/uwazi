@@ -1,7 +1,7 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { ObjectId } from 'mongodb';
 
-import { EnforcedWithId } from '#api/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
 import { IXModelType } from '#shared/types/IXModelType.js';
 
@@ -52,7 +52,7 @@ type Dependencies = {
 };
 
 export class ProcessSuggestions implements UseCase<Input, Output> {
-  constructor(private readonly deps: Dependencies) {}
+  constructor(private readonly deps: Dependencies) { }
 
   private static async getExtractorAndModel(extractorId: string) {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);

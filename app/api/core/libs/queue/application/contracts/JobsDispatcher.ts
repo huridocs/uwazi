@@ -1,11 +1,15 @@
-import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { Dispatchable } from './Dispatchable.js';
 
 export interface DispatchableClass<T extends Dispatchable> {
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 export interface JobsDispatcher {
+  deleteByParams<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void>;
+
   dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]

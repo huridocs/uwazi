@@ -192,6 +192,7 @@ const UserFormSidepanel = ({
                     id="username"
                     errorMessage={getFieldError('username', errors.username?.type)}
                     //break autocomplete token for Chrome
+                    //@ts-expect-error
                     autoComplete="new-username"
                     className="mb-1"
                     {...register('username', {
@@ -227,6 +228,7 @@ const UserFormSidepanel = ({
                     label={<Translate className="block mb-1 font-semibold">Email</Translate>}
                     type="email"
                     //break autocomplete token for Chrome
+                    //@ts-expect-error
                     autoComplete="new-email"
                     id="email"
                     className="mb-1"
@@ -253,6 +255,7 @@ const UserFormSidepanel = ({
                   id="password"
                   type="password"
                   //break autocomplete token for Chrome
+                  //@ts-expect-error
                   autoComplete="new-password"
                   errorMessage={getFieldError('password', errors.password?.type)}
                   className="mb-4"

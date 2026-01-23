@@ -2,7 +2,6 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 
 import { LanguageDoesNotExist } from '#api/i18n.v2/errors/translationErrors.js';
 
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -10,13 +9,11 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/translations.v2/database/data_source_defaults.js';
 
 const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;

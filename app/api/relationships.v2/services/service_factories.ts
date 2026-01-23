@@ -8,26 +8,16 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
-import {
-  DefaultIdGenerator,
-  DefaultTransactionManager,
-} from '#api/common.v2/database/data_source_defaults.js';
 
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
-import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
-
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
 import { search } from '#api/search/index.js';
 
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
 import { User } from '#api/users.v2/model/User.js';
 
@@ -62,6 +52,7 @@ import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/
 import { QueuedRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob.js';
+import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from '#api/relationships.v2/services/UpsertRelationshipMigrationFieldService.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';

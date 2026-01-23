@@ -2,7 +2,7 @@ import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { EnforcedWithId } from '#api/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 
 import { IXModelType } from '#shared/types/IXModelType.js';
 

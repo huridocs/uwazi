@@ -21,7 +21,7 @@ describe('triggerScroll', () => {
 
     requestAnimationFrameSpy = jest
       .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation(cb => {
+      .mockImplementation((cb: FrameRequestCallback) => {
         setTimeout(cb, 0);
         return 1;
       });

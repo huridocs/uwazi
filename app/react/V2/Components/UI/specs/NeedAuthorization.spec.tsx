@@ -12,8 +12,8 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
+import { ClientEntitySchema } from '#app/istore.js';
 
-import { ClientEntitySchema } from '#V2/shared/types.js';
 
 describe('NeedAuthorization', () => {
   const editorUser = {

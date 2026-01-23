@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import { PXParagraphsResultListener, ResultMessage } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 
@@ -24,10 +25,10 @@ const resultMessage: ResultMessage = {
 };
 
 const createSut = () => {
-  const dispatcher: JobsDispatcher = {
+  const dispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn(),
     dispatchMany: jest.fn(),
-  };
+  });
 
   const listener = new PXParagraphsResultListener(() => dispatcher);
 

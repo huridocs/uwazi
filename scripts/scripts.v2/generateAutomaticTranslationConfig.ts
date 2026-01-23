@@ -3,9 +3,10 @@ import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automa
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
 (async () => {
-  const { configPath, tenant } = await yargs
+  const { configPath, tenant } = yargs(hideBin(process.argv))
     .option('configPath', {
       alias: 'c',
       type: 'string',
@@ -17,7 +18,7 @@ import yargs from 'yargs';
       type: 'string',
       describe: 'Tenant to configure',
       default: 'default',
-    }).argv;
+    }).parseSync();
 
   const semanticConfig = (await import(configPath)).default;
   await DB.connect(config.DBHOST, config.DBAUTH);

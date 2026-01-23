@@ -1,6 +1,6 @@
 import path from 'path';
-
 import { Tenant } from '#api/tenants/tenantContext.js';
+import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FileType } from '#api/core/domain/files/FileType.js';
 import { tenants } from '#api/tenants/index.js';
 

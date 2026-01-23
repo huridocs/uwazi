@@ -28,8 +28,7 @@ import { MatchingPropertiesTable } from '#V2/Routes/Settings/Templates/component
 import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
 import { PropertyRow } from '#V2/Routes/Settings/Templates/types.js';
 import { GeneratedIdField } from '#V2/Routes/Settings/Templates/components/fields/GeneratedIdField.jsx';
-import { ClientTemplateSchema } from '#app/istore.js';
-import { ClientProperty } from '#V2/shared/types.js';
+import { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 
 interface ConfigPropertyPanelProps {
   isOpen: boolean;

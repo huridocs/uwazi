@@ -10,7 +10,7 @@ import {
   ExtractParagraphInput,
   GetParagraphsResultOutput,
   PXExtractionService,
-} from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
+} from '#api/paragraphExtraction/domain/PXExtractionService.js';
 import { GetParagraphsResultDTO } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/types.js';
 import { PXExtractionMapper } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/PXExtractionMapper.js';
 

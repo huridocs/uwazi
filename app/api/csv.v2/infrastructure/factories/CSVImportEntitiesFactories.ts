@@ -14,7 +14,6 @@ import { CsvPreflightJob } from '#api/csv.v2/application/jobs/CsvPreflightJob.js
 import { MongoCsvImportsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportsDataSource.js';
 import { MongoCsvImportRowsDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportRowsDataSource.js';
 import { MongoCsvImportThesauriValuesDataSource } from '#api/csv.v2/infrastructure/mongodb/MongoCsvImportThesauriValuesDataSource.js';
-import { tenants } from '#api/tenants/index.js';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {

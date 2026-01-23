@@ -10,7 +10,7 @@ import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntities
 
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 
-import { MongoFilesDataSource } from '#api/files.v2/database/MongoFilesDataSource.js';
+import { MongoFilesDataSource } from '#api/core/infrastructure/mongodb/files/MongoFilesDataSource.js';
 
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 

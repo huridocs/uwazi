@@ -1,13 +1,9 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
@@ -24,6 +20,7 @@ import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/Mon
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
@@ -42,10 +39,10 @@ const setUpUseCase = () => {
     mongoTransactionManager,
   });
 
-  const mockDispatcher: jest.Mocked<JobsDispatcher> = {
+  const mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
     dispatchMany: jest.fn().mockResolvedValue(undefined),
-  };
+  });
 
   const createExtractor = new PXCreateExtractor({
     extractorDS,

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-lines */
-import Ajv from 'ajv';
+import Ajv, { Schema } from 'ajv';
 
 import date from '#api/utils/date.js';
 
@@ -39,7 +39,7 @@ type TitleAsProperty = {
   type: 'title';
 };
 
-const createAjvValidator = schema => {
+const createAjvValidator = (schema: Schema) => {
   const ajv = new Ajv({ allErrors: true });
   ajv.addVocabulary(['tsType']);
   return syncWrapValidator(ajv.compile(schema));
@@ -89,9 +89,8 @@ const simpleSuggestion = (
   suggestedValue,
   segment: rawSuggestion.segment_text,
   selectionRectangles: rawSuggestion.segments_boxes.map(box => {
-    const rect = { ...box, page: box.page_number.toString() };
-    delete rect.page_number;
-    return rect;
+    const { page_number, ...rect } = box;
+    return { ...rect, page: page_number.toString() };
   }),
 });
 
@@ -239,9 +238,9 @@ const readMessageSuccess = (message: InternalIXResultsMessage) =>
   message.success
     ? {}
     : {
-        status: 'failed' as 'failed',
-        error: message.error_message ? message.error_message : 'Unknown error',
-      };
+      status: 'failed' as 'failed',
+      error: message.error_message ? message.error_message : 'Unknown error',
+    };
 
 class SuggestionTextSourceFormatter {
   private static title({ text, segment_text }: RawSuggestion) {

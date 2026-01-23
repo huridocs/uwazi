@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Tenant } from '#api/tenants/tenantContext.js';
 import { version } from '../../package.json';
-import { tenants } from '#api/tenants/index.js';
 
 dotenv.config();
 

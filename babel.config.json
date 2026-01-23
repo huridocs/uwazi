@@ -13,6 +13,12 @@
   ],
   "retainLines": true,
   "env": {
+    "test": {
+      "plugins": [
+        "./babel-plugin-fix-import-meta.cjs",
+        "./babel-plugin-fix-js-imports.cjs"
+      ]
+    },
     "production": {
       "plugins": [
         "babel-plugin-transform-react-remove-prop-types",

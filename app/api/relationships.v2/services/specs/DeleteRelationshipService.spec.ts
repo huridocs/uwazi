@@ -1,4 +1,3 @@
-import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
 
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
@@ -17,12 +16,12 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { MissingRelationshipError } from '#api/relationships.v2/errors/relationshipErrors.js';
 import { DeleteRelationshipService } from '#api/relationships.v2/services/DeleteRelationshipService.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
 
 const factory = getFixturesFactory();
 

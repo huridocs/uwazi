@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 
-import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
+import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 

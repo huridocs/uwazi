@@ -1,23 +1,12 @@
-import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
-
-import { setUpApp } from '#api/utils/testingRoutes.js';
-
-import testingDB from '#api/utils/testing_db.js';
-
+import settings from '#api/settings/settings.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import {
-  fixtures,
-  fileName1,
-  restrictedFileName,
-  uploadId,
-  collabUser,
-  writerUser,
-  adminUser,
-  customPdfFileName,
-  fileOnPublicEntity,
-} from '#api/files/specs/fixtures.js';
-
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { Application, NextFunction, Request, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
+import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';
+import path from 'path';
+import request, { Response as SuperTestResponse } from 'supertest';
 import uploadRoutes from '#api/files/routes.js';
 import {
   adminUser,

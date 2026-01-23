@@ -13,8 +13,8 @@ import { FileType } from '#shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { FileNotFound } from '#api/files/FileNotFound.js';
+import { buildS3Client } from '#api/infrastructure/S3Client.js';
 import {
   activityLogPath,
   attachmentsPath,
@@ -48,8 +48,8 @@ const paths: { [k in FileTypes]: (filename: string) => string } = {
 
 const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   new Promise((resolve, reject) => {
-    const _buf: Buffer[] = [];
-    stream.on('data', (chunk: any) => _buf.push(chunk));
+    const _buf: Uint8Array[] = [];
+    stream.on('data', (chunk: Uint8Array) => _buf.push(new Uint8Array(chunk)));
     stream.on('end', () => resolve(Buffer.concat(_buf)));
     stream.on('error', (err: unknown) => reject(err));
   });

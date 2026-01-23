@@ -1,7 +1,7 @@
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
-import { Property, PropertyTypes } from '#api/core/domain/template/Property.js';
-
+import { Property } from '#api/core/domain/template/Property.js';
+import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 
 type MappedPropertyTypes = Exclude<PropertyType, 'preview' | 'newRelationship'>;

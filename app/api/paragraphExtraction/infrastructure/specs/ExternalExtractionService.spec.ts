@@ -64,7 +64,7 @@ describe('ExternalExtractionService', () => {
       });
 
       async function* streamCallback() {
-        yield Buffer.from('default content');
+        yield new Uint8Array(Buffer.from('default content'));
       }
 
       await externalExtractionService.extractParagraphs({

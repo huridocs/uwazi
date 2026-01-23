@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import { ClientPropertySchema } from '#V2/shared/types.js';
 
+import { ClientPropertySchema } from '#app/istore.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   searchRelatedEntities,

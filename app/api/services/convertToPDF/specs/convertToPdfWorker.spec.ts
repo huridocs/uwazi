@@ -1,6 +1,6 @@
 import { files, storage, testingUploadPaths } from '#api/files/index.js';
 
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 

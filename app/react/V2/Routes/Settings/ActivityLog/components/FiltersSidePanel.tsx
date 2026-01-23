@@ -9,22 +9,8 @@ import { Translate, t } from '#app/I18N/index.js';
 import { InputField, DateRangePicker, MultiSelect } from '#V2/Components/Forms/index.js';
 import { useAtomValue } from 'jotai';
 
-import { ClientSettings } from '#app/apiResponseTypes.js';
-
-import { settingsAtom, localeAtom } from '#V2/atoms/index.js';
-interface ActivityLogSearch {
-  username: string;
-  search: string;
-  page: number;
-  dateRange: {
-    from: string;
-    to: string;
-  };
-  to: string;
-  sort: string;
-  order: string;
-  method: string[];
-}
+import { localeAtom } from '#V2/atoms/index.js';
+import type { ActivityLogSearch } from '../ActivityLogLoader.js';
 
 interface FiltersSidePanelProps {
   isOpen: boolean;
@@ -100,7 +86,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <InputField
                 id="search"
@@ -113,7 +99,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <Controller
                 control={control}

@@ -1,6 +1,6 @@
 import { EnforcedWithId } from '#api/odm/index.js';
 
-import templatesModel from '#api/templates/templates.js';
+import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 
@@ -48,17 +48,19 @@ type SaveModelProcessOptions = {
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
     const template = await templatesModel.getById(extractor.templates[0]);
-    const property = extractor.property === 'title';
-    template?.commonProperties?.find(p => p.name === extractor.property);
-    template?.properties?.find(p => p.name === extractor.property);
+    const property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(p => p.name === extractor.property)
+        : template?.properties?.find(p => p.name === extractor.property);
 
     return property!;
   }
 
   static extractTargetProperty(extractor: IXExtractorType, template: TemplateSchema) {
-    const property = extractor.property === 'title';
-    template?.commonProperties?.find(p => p.name === extractor.property);
-    template?.properties?.find(p => p.name === extractor.property);
+    const property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(p => p.name === extractor.property)
+        : template?.properties?.find(p => p.name === extractor.property);
 
     return property!;
   }

@@ -14,7 +14,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
-import { Logger } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { SaveEntityTranslations } from '#api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations.js';
 import { TranslationResult, translationResultSchema } from '#api/externalIntegrations.v2/automaticTranslation/types/TranslationResult.js';
 import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';

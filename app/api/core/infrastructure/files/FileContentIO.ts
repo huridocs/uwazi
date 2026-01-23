@@ -32,9 +32,9 @@ export class FileContentsIO {
   async toBuffer(content: FileContents) {
     try {
       const iterable = content.read();
-      const chunks: Buffer[] = [];
+      const chunks: Uint8Array[] = [];
       for await (const chunk of iterable) {
-        chunks.push(Buffer.from(chunk));
+        chunks.push(chunk);
       }
       return Result.ok(Buffer.concat(chunks));
     } catch (e) {

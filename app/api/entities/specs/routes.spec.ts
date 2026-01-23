@@ -12,7 +12,7 @@ import routes from '#api/entities/routes.js';
 
 import { legacyLogger } from '#api/log/index.js';
 
-import templates from '#api/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 

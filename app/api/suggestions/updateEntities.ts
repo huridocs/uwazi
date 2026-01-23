@@ -15,6 +15,7 @@ import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { tenants } from '#api/tenants/index.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 
 class SuggestionAcceptanceError extends Error { }
 

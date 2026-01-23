@@ -14,7 +14,7 @@ import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/Files
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
-import { SyncDispatcherForTests } from '#api/queue.v2/infrastructure/SyncDispatcherForTests.js';
+import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { tenants } from '#api/tenants/index.js';
 
 class DeleteTemplateUseCaseFactory {

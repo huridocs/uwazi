@@ -2,7 +2,6 @@ import { tenants } from '#api/tenants/index.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass, JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 interface QueueOptions {
   lockWindow?: number;
@@ -19,6 +18,12 @@ export class SyncDispatcherForTests implements JobsDispatcher {
   constructor(jobRegistry: Registry) {
     this.registry = jobRegistry;
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  async deleteByParams<T extends Dispatchable>(
+    _dispatchable: DispatchableClass<T>,
+    _params: Partial<Parameters<T['handleDispatch']>[1]>
+  ): Promise<void> {}
 
   // eslint-disable-next-line class-methods-use-this
   async dispatch<T extends Dispatchable>(

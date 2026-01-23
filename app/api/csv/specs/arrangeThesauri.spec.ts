@@ -12,7 +12,7 @@ import { propertyTypes } from '#shared/propertyTypes.js';
 
 import { arrangeThesauri, ArrangeThesauriError } from '#api/csv/arrangeThesauri.js';
 import translations from '#api/i18n/translations.js';
-import { templateUtils } from '#api/templates/index.js';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 
 const createTestFixtures = () => {
   const selectThesaurusId = db.id();

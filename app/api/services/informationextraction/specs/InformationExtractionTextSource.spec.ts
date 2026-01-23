@@ -20,8 +20,6 @@ import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import { NoEntitiesForTraining } from '#api/services/informationextraction/TrainModelForText.js';
 import { getEntitiesForTraining } from '#api/services/informationextraction/ixMaterials.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 jest.mock('#api/socketio/setupSockets');
 jest.mock('#api/services/tasksmanager/TaskManager.ts');
@@ -72,7 +70,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
     await IXExternalService.start();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
   });
 
   beforeEach(async () => {

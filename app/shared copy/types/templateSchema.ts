@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 
 import model from '#api/core/v1_layer/templates/templatesModel.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import pages from '#api/pages/index.js';
 import { thesauri } from '#api/thesauri/thesauri.js';
 

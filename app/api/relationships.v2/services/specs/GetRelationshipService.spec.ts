@@ -1,4 +1,3 @@
-import { MongoPermissionsDataSource } from '../../database/MongoPermissionsDataSource.js';
 
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
@@ -22,9 +21,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { GetRelationshipService } from '#api/relationships.v2/services/GetRelationshipService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoPermissionsDataSource } from '#api/authorization.v2/database/MongoPermissionsDataSource.js';
 
 const fixtureFactory = getFixturesFactory();
 

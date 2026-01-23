@@ -9,8 +9,8 @@ import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FileDropzone } from '#V2/Components/Forms/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
-import { UploadService } from '#app/files/index.js';
 import { uploadProgressAtom } from '#V2/Routes/Settings/CustomUploads/components/uploadProgressAtom.js';
+import { UploadService } from '#app/V2/api/files/index.js';
 
 type DropzoneModalProps = {
   notify: (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => void;

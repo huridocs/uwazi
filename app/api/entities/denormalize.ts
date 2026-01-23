@@ -2,7 +2,7 @@
 import { WithId } from '#api/odm/index.js';
 import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
 import { search } from '#api/search/index.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';

@@ -10,11 +10,10 @@ import * as setupSockets from '#api/socketio/setupSockets.js';
 
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
-import { factory, fixtures, patchFixturesWithPort } from '#api/services/informationextraction/specs/fixtures.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
-import { ExternalDummyService } from '#api/tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
+import { factory, fixtures, patchFixturesWithPort } from './fixtures.js';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
@@ -47,7 +46,7 @@ describe('InformationExtraction Error Handling', () => {
     });
     IXExternalService.reset();
     jest.resetAllMocks();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
   }, 30000);
 
   afterEach(async () => {

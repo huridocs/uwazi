@@ -12,11 +12,9 @@ import {
   CreateRelationshipService,
   DeleteRelationshipService,
 } from '#api/relationships.v2/services/service_factories.js';
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { TemplateMappers } from '#api/templates.v2/database/TemplateMappers.js';
 import { arrayBidirectionalDiff } from '#shared/data_utils/arrayBidirectionalDiff.js';
 
 const newRelationshipsEnabled = async () => {

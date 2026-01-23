@@ -108,11 +108,12 @@ function processFilters(filters, properties, dictionaries) {
 }
 
 function getContent(property, allProperties, newRelationshipsEnabled) {
+  const inherited = property.inherit
+    ? propertiesHelper.getInheritedProperty(property, allProperties)
+    : null;
   return (
     v2.deducePropertyContent(property, newRelationshipsEnabled) ||
-    (property.inherit
-      ? propertiesHelper.getInheritedProperty(property, allProperties).content
-      : property.content)
+    (inherited ? inherited.content : property.content)
   );
 }
 
@@ -152,7 +153,8 @@ async function aggregationProperties(propertiesToBeAggregated, allProperties) {
         type === propertyTypes.newRelationship
       );
     })
-    .map(toAggregationData(allProperties, newRelationshipsEnabled));
+    .map(toAggregationData(allProperties, newRelationshipsEnabled))
+    .filter(property => property.content);
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -465,11 +467,25 @@ const _denormalizeAndLimitAggregations = async (
       property = _key in propertiesByName ? propertiesByName[_key] : null;
     }
 
+    if (!property) {
+      // eslint-disable-next-line no-console
+      console.error('Missing aggregation property', {
+        key,
+        templatesCount: templates.length,
+        propertiesCount: properties.length,
+        sampleProperties: properties.slice(0, 5).map(p => p.name),
+      });
+      return;
+    }
+
     if (property.inherit) {
       property = propertiesHelper.getInheritedProperty(property, properties, propertiesById);
     }
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
+    if (!property) {
+      return;
+    }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],

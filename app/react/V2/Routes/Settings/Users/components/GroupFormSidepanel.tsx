@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
 
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { InputField, MultiSelect } from '#V2/Components/Forms/index.js';
 

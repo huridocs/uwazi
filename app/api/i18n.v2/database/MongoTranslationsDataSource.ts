@@ -6,7 +6,11 @@ import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js'
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import {
+  BulkDeleteKeysByContext,
+  TranslationsDataSource,
+  UpdateKeysByContextProps,
+} from '#api/i18n.v2/contracts/TranslationsDataSource.js';
 import { TranslationMappers } from '#api/i18n.v2/database/TranslationMappers.js';
 import { Translation } from '#api/i18n.v2/model/Translation.js';
 import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
@@ -101,6 +105,30 @@ export class MongoTranslationsDataSource
       );
     }, Promise.resolve());
     await stream.flush();
+  }
+
+  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
+    await this.getCollection().bulkWrite(
+      Object.entries(props.keyChanges).map(([from, to]) => ({
+        updateMany: {
+          filter: {
+            'context.id': props.contextId,
+            key: from,
+          },
+          update: [
+            {
+              $set: {
+                key: to,
+                value: {
+                  $cond: [{ $eq: ['$language', props.defaultLanguage] }, to, '$value'],
+                },
+              },
+            },
+          ],
+          upsert: false,
+        },
+      }))
+    );
   }
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {

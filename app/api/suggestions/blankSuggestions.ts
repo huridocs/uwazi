@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import { tenants } from '#api/tenants/index.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';

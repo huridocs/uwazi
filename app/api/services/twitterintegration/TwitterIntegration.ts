@@ -6,7 +6,7 @@ import settings from '#api/settings/settings.js';
 
 import entities from '#api/entities/entities.js';
 
-import templates from '#api/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 
 import relationtypes from '#api/relationtypes/index.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
@@ -18,6 +18,7 @@ import {
 } from '#api/services/twitterintegration/getTwitterImages.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
 interface TweetParamsType {
   title: string;

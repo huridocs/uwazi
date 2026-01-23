@@ -2,7 +2,7 @@ import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TestJob } from '#app/queueRegistry.js';
+import { TestJob } from '../../app/queueRegistry.js';
 
 (async () => {
   await DB.connect(config.DBHOST, config.DBAUTH);

@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import groupBy from 'lodash/groupBy.js';
 import map from 'lodash/map.js';
+import flatMap from 'lodash/flatMap.js';
 import { Entity, MetadataProperty } from '#V2/domain/index.js';
 import {
   DateMetadataProperty,

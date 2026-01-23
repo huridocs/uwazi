@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 
 // eslint-disable-next-line max-classes-per-file
-import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 
 import { SaveStream } from '#api/common.v2/contracts/SaveStream.js';
 
@@ -28,7 +28,7 @@ import { MigrationHubRecord } from '#api/relationships.v2/model/MigrationHubReco
 
 const HUB_BATCH_SIZE = 1000;
 
-class MissingFileNotRepairedError extends Error {}
+class MissingFileNotRepairedError extends Error { }
 
 type MigrationPlan = TestOneHubRequest['migrationPlan'];
 

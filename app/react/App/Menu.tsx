@@ -29,7 +29,7 @@ import Immutable from 'immutable';
 
 interface MenuProps {
   className: string;
-  defaultLibraryView: any;
+  defaultLibraryView?: string;
   toggleMobileMenu: (visible: boolean) => void;
 }
 
@@ -58,6 +58,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 
+const isLibraryView = (value: string | undefined): value is keyof typeof libraryViewInfo =>
+  typeof value === 'string' && value in libraryViewInfo;
+
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
@@ -67,9 +70,10 @@ const MenuComponent = ({
   setSidePanelView,
   showSemanticSearch,
   links = Immutable.fromJS([]),
-  defaultLibraryView = 'cards',
+  defaultLibraryView,
   privateInstance,
 }: mappedProps) => {
+  const resolvedLibraryView = isLibraryView(defaultLibraryView) ? defaultLibraryView : 'cards';
   const hideMobileMenu = () => toggleMobileMenu(false);
 
   const libraryUrl = () => {
@@ -80,8 +84,7 @@ const MenuComponent = ({
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
     newParams.searchTerm = searchTerm;
 
-    // @ts-ignore
-    return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(newParams)}`;
+    return `/${libraryViewInfo[resolvedLibraryView].url}/${encodeSearch(newParams)}`;
   };
 
   const navLinks = links
@@ -166,7 +169,7 @@ const MenuComponent = ({
                 activeclassname="active-link"
                 aria-label={t('System', 'Library', null, false)}
               >
-                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                <Icon icon={libraryViewInfo[resolvedLibraryView].icon} />
                 <span className="tab-link-label">
                   <Translate>Library</Translate>
                 </span>

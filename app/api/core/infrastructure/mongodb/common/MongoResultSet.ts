@@ -2,7 +2,7 @@
 import { AggregationCursor, FindCursor } from 'mongodb';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
+import { BreakLoopSignal, ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;

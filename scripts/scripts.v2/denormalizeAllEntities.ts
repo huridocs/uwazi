@@ -14,8 +14,9 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 import { inspect } from 'util';
+import { hideBin } from 'yargs/helpers';
 
-const { tenant, allTenants } = await yargs
+const { tenant, allTenants } = yargs(hideBin(process.argv))
   .option('tenant', {
     alias: 't',
     type: 'string',
@@ -27,7 +28,7 @@ const { tenant, allTenants } = await yargs
     type: 'boolean',
     describe: 'All tenants',
     default: false,
-  }).argv;
+  }).parseSync();
 
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {

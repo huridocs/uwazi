@@ -71,7 +71,7 @@ const formatPropertyValue = (
 
 const formatProperty = (item: FormattedPropertyValueSchema) => {
   const values: unknown[] = !isArray(item.value) || !item.value.length ? [item] : item.value;
-  const formattedItem = values.map(target => {
+  const formattedItem = values.map((target: any) => {
     const relatedEntity = pickEntityFields(target.relatedEntity);
     const metadataField = metadataFields(item);
     const value = formatPropertyValue(target, metadataField);

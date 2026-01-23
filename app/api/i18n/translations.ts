@@ -56,11 +56,11 @@ function prepareContexts(contexts: TranslationContext[] = []) {
         : context.type,
     values: context.values
       ? context.values.reduce((values, value) => {
-          if (value.key && value.value) {
-            values[value.key] = value.value; //eslint-disable-line no-param-reassign
-          }
-          return values;
-        }, {} as IndexedContextValues)
+        if (value.key && value.value) {
+          values[value.key] = value.value; //eslint-disable-line no-param-reassign
+        }
+        return values;
+      }, {} as IndexedContextValues)
       : {},
   }));
 }
@@ -164,12 +164,12 @@ const propagateTranslation = async (
 const translationTypeToIndexedTranslation = (translations?: EnforcedWithId<TranslationType>[]) =>
   translations
     ? translations.map(
-        translation =>
-          ({
-            ...translation,
-            contexts: prepareContexts(translation.contexts),
-          }) as IndexedTranslations
-      )
+      translation =>
+        ({
+          ...translation,
+          contexts: prepareContexts(translation.contexts),
+        }) as IndexedTranslations
+    )
     : [];
 
 export default {

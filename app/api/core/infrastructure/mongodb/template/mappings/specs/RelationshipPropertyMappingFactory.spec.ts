@@ -2,7 +2,8 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 
-import { TemplatesDataSource, TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
+import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 
 import { Property } from '#api/core/domain/template/Property.js';
 

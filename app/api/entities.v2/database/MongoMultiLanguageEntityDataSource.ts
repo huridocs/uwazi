@@ -1,21 +1,22 @@
-import { search } from '#api/search/index.js';
-import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
-import { Db, Filter, ObjectId } from 'mongodb';
-
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { EntityDBO, EntityTemplateAggregation, MultiLanguageEntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
 import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { search } from '#api/search/index.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
-import { ResultType, Result } from '#api/core/libs/Result.js';
-import { Property } from '#app/apiResponseTypes.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
-import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { Property } from '#api/core/domain/template/Property.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
+import { EntityDBO, EntityTemplateAggregation } from '#api/entities.v2/database/schemas/EntityTypes.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
-  implements MultiLanguageEntityDataSource {
+  implements MultiLanguageEntityDataSource
+{
   protected collectionName = 'entities';
 
   private modifiedSharedIds = new Set<string>();
@@ -25,6 +26,25 @@ export class MongoMultiLanguageEntityDataSource
     transactionManager.onCommitted(async () => {
       await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
     });
+  }
+
+  async bulkUpdate(entities: Entity[]): Promise<void> {
+    const updates = entities.flatMap(entity => {
+      const dbos = MongoEntityMapper.toDBO(entity);
+
+      return dbos.map(dbo => ({
+        replaceOne: {
+          filter: { _id: dbo._id },
+          replacement: dbo,
+        },
+      }));
+    });
+
+    if (updates.length > 0) {
+      await this.getCollection().bulkWrite(updates, { ignoreUndefined: true });
+    }
+
+    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
   private async getReferencePropertyNames(): Promise<string[]> {
@@ -45,6 +65,72 @@ export class MongoMultiLanguageEntityDataSource
       .toArray();
 
     return result.map((doc: any) => doc._id);
+  }
+
+  private async findTemplatesUsingThesaurus(thesaurusId: string) {
+    const directTemplates = await this.getCollection<TemplateDBO>('templates')
+      .find({ 'properties.content': thesaurusId })
+      .project({ _id: 1 })
+      .toArray();
+
+    const relatedTemplates = await this.getCollection<TemplateDBO>('templates')
+      .find({
+        'properties.type': 'relationship',
+        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+      })
+      .project({ _id: 1 })
+      .toArray();
+
+    const allTemplates = [...directTemplates, ...relatedTemplates];
+
+    return Array.from(new Set(allTemplates.map(t => t._id)));
+  }
+
+  async getSharedIdsUsingThesaurus(thesaurusId: string) {
+    const settings = await this.getCollection<SettingsType>('settings').findOne();
+    const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
+
+    if (!defaultLanguage) {
+      throw new Error('Default language not found in settings when trying to delete references');
+    }
+
+    const uniqueTemplateIds = await this.findTemplatesUsingThesaurus(thesaurusId);
+
+    const entities = await this.getCollection()
+      .aggregate([
+        {
+          $match: {
+            language: defaultLanguage,
+            template: { $in: uniqueTemplateIds },
+          },
+        },
+        {
+          $addFields: {
+            hasNonEmptyMetadata: {
+              $anyElementTrue: {
+                $map: {
+                  input: { $objectToArray: '$metadata' },
+                  as: 'field',
+                  in: { $gt: [{ $size: '$$field.v' }, 0] },
+                },
+              },
+            },
+          },
+        },
+        {
+          $match: {
+            hasNonEmptyMetadata: true,
+          },
+        },
+        {
+          $project: {
+            sharedId: 1,
+          },
+        },
+      ])
+      .toArray();
+
+    return entities.map(e => e.sharedId);
   }
 
   private async findAffectedSharedIds(
@@ -155,7 +241,7 @@ export class MongoMultiLanguageEntityDataSource
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
   }
 
-  async bulkUpdate(entitiesToSave: Entity[], properties: Property[] = []) {
+  async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
     await this.getCollection().bulkWrite(
       entitiesToSave
         .map(entity =>
@@ -261,5 +347,14 @@ export class MongoMultiLanguageEntityDataSource
     const dbos = MongoEntityMapper.toDBO(entity);
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
     this.modifiedSharedIds.add(entity.sharedId);
+  }
+
+  async bulkInsert(entities: Entity[]): Promise<void> {
+    if (entities.length === 0) {
+      return;
+    }
+    const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
+    await this.getCollection().insertMany(allDbos, { ignoreUndefined: true, ordered: false });
+    entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 }

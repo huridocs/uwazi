@@ -4,10 +4,15 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import { createStore, Provider } from 'jotai';
-import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  RenderResult,
+  screen,
+  waitFor,
+  render as renderComponent,
+} from '@testing-library/react';
 
 import { Map } from '#app/Map/index.jsx';
-import { renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
 import * as MapHelper from '#app/Map/MapHelper.jsx';
 import { deletedEntityAtom, localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
 

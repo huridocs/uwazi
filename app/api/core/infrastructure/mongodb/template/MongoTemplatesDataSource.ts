@@ -4,11 +4,16 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import { MongoTemplateMapper, MongoTemplatePropertyMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-
+import { Result, ResultType } from '#api/core/libs/Result.js';
+import {
+  DefaultTemplateNotFoundError,
+  TemplateDoesNotExistError,
+} from '#api/core/domain/template/errors.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { RelationshipProperty } from '#api/core/domain/template/RelationshipProperty.js';

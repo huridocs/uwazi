@@ -1,4 +1,4 @@
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
 
@@ -125,13 +125,13 @@ export class DenormalizationService {
     findCandidatesCallback: (id: Id) => Promise<
       (
         | {
-            sharedId: string;
-            property: string;
-          }
+          sharedId: string;
+          property: string;
+        }
         | {
-            sharedId: string;
-            properties: string[];
-          }
+          sharedId: string;
+          properties: string[];
+        }
       )[]
     >,
     invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>,

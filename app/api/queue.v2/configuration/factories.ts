@@ -6,8 +6,6 @@ import { MongoQueueAdapter } from "#api/core/libs/queue/infrastructure/MongoQueu
 import { NamespacedDispatcher } from "#api/core/libs/queue/infrastructure/NamespacedDispatcher.js";
 import { RoundRobinMongoQueueAdapter } from "#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js";
 import { QueueOptions } from "#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js";
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { SyncDispatcherForTests } from '#api/core/libs/queue/application/contracts/SyncDispatcherForTests.js';
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(

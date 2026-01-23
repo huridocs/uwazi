@@ -7,14 +7,15 @@ import {
   SettingsSublinkSchema,
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
-import templates from '#api/templates/index.js';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
-import { TemplateSchema } from '#shared/types/templateType.js';
 import { validateSettings } from '#shared/types/settingsSchema.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 

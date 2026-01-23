@@ -58,11 +58,16 @@ const setUpJob = (mockDispatcher: JobsDispatcher) => {
 const mockHeartbeat = async () => Promise.resolve();
 
 describe('CreateParagraphExtractionEntityStatusesJob', () => {
-  let mockDispatcher: jest.Mocked<JobsDispatcher>;
+  let mockDispatcher: JobsDispatcher & {
+    deleteByParams: jest.Mock;
+    dispatch: jest.Mock;
+    dispatchMany: jest.Mock;
+  };
 
   beforeEach(async () => {
     await testingEnvironment.setUp(createBaseFixtures());
     mockDispatcher = {
+      deleteByParams: jest.fn().mockResolvedValue(undefined),
       dispatch: jest.fn().mockResolvedValue(undefined),
       dispatchMany: jest.fn().mockResolvedValue(undefined),
     };

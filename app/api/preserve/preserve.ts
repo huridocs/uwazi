@@ -2,7 +2,7 @@ import { WithId } from '#api/odm/index.js';
 
 import thesauri from '#api/thesauri/thesauri.js';
 import settings from '#api/settings/index.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import request from '#shared/JSONRequest.js';
 import createError from '#api/utils/Error.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
@@ -11,6 +11,7 @@ import { User } from '#api/users/usersModel.js';
 import { PreserveConfig } from '#shared/types/settingsType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
+import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {

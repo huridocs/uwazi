@@ -3,9 +3,9 @@
 import { ObjectId } from 'mongodb';
 
 import { files } from '#api/files/files.js';
-import { EnforcedWithId } from '#api/odm/index.js';
+import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import templates from '#api/templates/index.js';
+import templates from '#api/core/v1_layer/templates/index.js';
 import { syncedPromiseLoop } from '#shared/data_utils/promiseUtils.js';
 import {
   ExtractedMetadataSchema,
@@ -375,7 +375,7 @@ const Suggestions = {
       $set: { 'state.obsolete': true, 'state.match': null },
     }),
 
-  markSuggestionsWithoutSegmentation: async query => {
+  markSuggestionsWithoutSegmentation: async (query: UwaziFilterQuery<IXSuggestionType>) => {
     const segmentedFilesIds = await getSegmentedFilesIds();
     await IXSuggestionsModel.updateMany(
       {

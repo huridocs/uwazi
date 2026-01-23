@@ -25,11 +25,11 @@ type CreateModelTaskInput = {
 };
 
 export class IXTaskService {
-  constructor(private props: Props) {}
+  constructor(private props: Props) { }
 
   // eslint-disable-next-line max-statements
   async createModelTask({ extractor }: CreateModelTaskInput) {
-    const targetProperty = await IXServices.getTargetProperty({ extractor });
+    const targetProperty = await IXServices.getTargetProperty({ extractor }) as PropertySchema;
 
     const params: TaskParameters = {
       id: extractor._id.toString(),

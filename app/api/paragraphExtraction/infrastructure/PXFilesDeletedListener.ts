@@ -6,21 +6,15 @@ import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
-import { Document } from '#api/files.v2/model/Document.js';
-
-import { FileMappers } from '#api/files.v2/database/FilesMappers.js';
-
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
+import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
+import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
-
-import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import { featureFlaggedHandler } from '#api/common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';

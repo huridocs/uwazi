@@ -2,7 +2,7 @@ import db from '#api/utils/testing_db.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { templateUtils } from '#api/templates/index.js';
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 

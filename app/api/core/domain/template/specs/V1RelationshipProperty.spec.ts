@@ -1,7 +1,6 @@
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
-  PropertyRelationTypeMismatchError,
   PropertyTypeMismatchError,
 } from '#api/core/domain/template/errors.js';
 

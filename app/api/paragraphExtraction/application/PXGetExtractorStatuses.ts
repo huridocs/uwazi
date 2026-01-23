@@ -4,7 +4,7 @@ import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
-import { FilesDataSource } from '#api/files.v2/contracts/FilesDataSource.js';
+import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 
 import {
   GetExtractorStatusesInput,

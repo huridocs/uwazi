@@ -23,8 +23,8 @@ describe('PDFService', () => {
 
   async function filesAreIdentical(file1: string, file2: string) {
     const [buf1, buf2] = await Promise.all([readFile(file1), readFile(file2)]);
-    const hash1 = createHash('sha256').update(buf1).digest('hex');
-    const hash2 = createHash('sha256').update(buf2).digest('hex');
+    const hash1 = createHash('sha256').update(new Uint8Array(buf1)).digest('hex');
+    const hash2 = createHash('sha256').update(new Uint8Array(buf2)).digest('hex');
     return hash1 === hash2;
   }
 

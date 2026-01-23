@@ -1,12 +1,12 @@
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 
-import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 
 import relationshipTypeDS from '#api/relationtypes/index.js';
 
-import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
-import { UseCase } from '#api/common.v2/contracts/UseCase.js';
+import { UseCase } from '#api/core/libs/UseCase.js';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';

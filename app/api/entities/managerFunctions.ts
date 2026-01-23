@@ -5,6 +5,7 @@ import { WithId } from '#api/odm/index.js';
 
 import { files as filesAPI, storage } from '#api/files/index.js';
 import { processDocument } from '#api/files/processDocument.js';
+import { search } from '#api/search/index.js';
 
 import { legacyLogger } from '#api/log/index.js';
 import { handleError, prettifyError } from '#api/utils/handleError.js';

@@ -2,7 +2,7 @@
 import * as Sentry from '@sentry/node';
 import { registerEventListeners } from '#api/eventListeners.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { Redis } from '#api/infrastructure/Redis.js';
+import { Redis } from 'app/api/infrastructure/Redis.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { SystemLogger, withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';

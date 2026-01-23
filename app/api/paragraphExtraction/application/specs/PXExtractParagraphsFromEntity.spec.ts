@@ -4,19 +4,11 @@ import { ObjectId } from 'mongodb';
 
 import { search } from '#api/search/index.js';
 
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
-
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultFilesDataSource } from '#api/files.v2/database/data_source_defaults.js';
-
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
 
@@ -76,6 +68,7 @@ import {
   targetTemplate,
   userId,
 } from '#api/paragraphExtraction/application/specs/fixtures.js';
+import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -106,7 +99,7 @@ const setUpUseCase = () => {
 
   const connection = getConnection();
   const mongoTransactionManager = TransactionManagerFactory.default();
-  const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
+  const entityDS = new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager);
   const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
   const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
 
@@ -123,7 +116,7 @@ const setUpUseCase = () => {
   const tenantName = tenants.current().name;
 
   const extractParagraphs = new PXExtractParagraphsFromEntity({
-    entityDS,
+    entitiesDS: entityDS,
     extractorsDS,
     filesDS,
     settingsDS,
