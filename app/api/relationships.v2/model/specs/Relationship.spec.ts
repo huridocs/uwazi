@@ -1,4 +1,9 @@
-import { TextReferencePointer, Selection, Relationship, EntityPointer } from '#api/relationships.v2/model/Relationship.js';
+import {
+  TextReferencePointer,
+  Selection,
+  Relationship,
+  EntityPointer,
+} from '#api/relationships.v2/model/Relationship.js';
 
 describe('getEntities()', () => {
   it('should return the entities from all relationships as a set', () => {

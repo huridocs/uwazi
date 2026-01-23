@@ -32,7 +32,7 @@ const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  let formDispatch: Function = () => { };
+  let formDispatch: Function = () => {};
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {

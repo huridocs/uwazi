@@ -1,6 +1,10 @@
 import { MetadataProperty } from '#V2/domain/entities/types.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
-import { AdapterMetadataProperty, ProcessingContext, PropertyTypeProcessor } from '#V2/application/services/processors/types.js';
+import {
+  AdapterMetadataProperty,
+  ProcessingContext,
+  PropertyTypeProcessor,
+} from '#V2/application/services/processors/types.js';
 
 export abstract class BasePropertyProcessor implements PropertyTypeProcessor {
   abstract readonly name: string;

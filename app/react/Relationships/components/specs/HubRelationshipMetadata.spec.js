@@ -3,10 +3,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
-import HubRelationshipMetadata, { mapStateToProps } from '#app/Relationships/components/HubRelationshipMetadata.jsx';
+import HubRelationshipMetadata, {
+  mapStateToProps,
+} from '#app/Relationships/components/HubRelationshipMetadata.jsx';
 import Immutable from 'immutable';
-
 
 describe('HubRelationshipMetadata', () => {
   let props;

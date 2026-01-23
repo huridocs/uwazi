@@ -24,7 +24,10 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import { mongoPXExtractorsCollection } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { Input, PXCreateExtractor } from '#api/paragraphExtraction/application/PXCreateExtractor.js';
+import {
+  Input,
+  PXCreateExtractor,
+} from '#api/paragraphExtraction/application/PXCreateExtractor.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 

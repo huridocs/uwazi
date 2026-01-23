@@ -1,5 +1,3 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 

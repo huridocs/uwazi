@@ -12,7 +12,10 @@ import { RelationshipProperty } from '#api/core/domain/template/RelationshipProp
 import { Template } from '#api/core/domain/template/Template.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { TraverseQueryDBO } from '#api/core/infrastructure/mongodb/template/DBOs/RelationshipsQueryDBO.js';
-import { TemplateDBO, RelationshipPropertyDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
+import {
+  TemplateDBO,
+  RelationshipPropertyDBO,
+} from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { mapPropertyQuery } from '#api/core/infrastructure/mongodb/template/QueryMapper.js';
 
 type PropertyDBO = TemplateDBO['properties'][number];

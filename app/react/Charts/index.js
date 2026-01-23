@@ -23,4 +23,13 @@ const StackedDualBarChart = loadable(
     )
 );
 
-export { Bar, ColoredBar, ExtendedTooltip, Pie, StackedDualBarChart, colorScheme, arrayUtils, light };
+export {
+  Bar,
+  ColoredBar,
+  ExtendedTooltip,
+  Pie,
+  StackedDualBarChart,
+  colorScheme,
+  arrayUtils,
+  light,
+};

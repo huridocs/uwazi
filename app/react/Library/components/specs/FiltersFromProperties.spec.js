@@ -4,7 +4,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { t } from '#app/I18N/index.js';
-import { FiltersFromProperties, mapStateToProps } from '#app/Library/components/FiltersFromProperties.jsx';
+import {
+  FiltersFromProperties,
+  mapStateToProps,
+} from '#app/Library/components/FiltersFromProperties.jsx';
 import DateFilter from '#app/Library/components/DateFilter.jsx';
 import NestedFilter from '#app/Library/components/NestedFilter.jsx';
 import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.jsx';

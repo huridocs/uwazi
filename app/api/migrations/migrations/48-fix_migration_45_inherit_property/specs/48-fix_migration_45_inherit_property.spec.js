@@ -1,6 +1,10 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/48-fix_migration_45_inherit_property/index.js';
-import fixtures, { text, numeric, multiselect } from '#api/migrations/migrations/48-fix_migration_45_inherit_property/specs/fixtures.js';
+import fixtures, {
+  text,
+  numeric,
+  multiselect,
+} from '#api/migrations/migrations/48-fix_migration_45_inherit_property/specs/fixtures.js';
 
 describe('migration fix_migration_45_inherit_property', () => {
   beforeEach(async () => {

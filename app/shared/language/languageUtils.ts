@@ -1,5 +1,10 @@
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import { Language, LanguageCode, availableLanguages, otherLanguageSchema } from '#shared/language/availableLanguages.js';
+import {
+  Language,
+  LanguageCode,
+  availableLanguages,
+  otherLanguageSchema,
+} from '#shared/language/availableLanguages.js';
 import { LanguageISO6393 } from './languageISO639_3';
 
 class LanguageUtils {

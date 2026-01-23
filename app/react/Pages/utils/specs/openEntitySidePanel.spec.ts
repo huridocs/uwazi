@@ -21,7 +21,9 @@ describe('openEntitySidePanel', () => {
     const storeDispatchMock = jest.fn();
 
     jest.resetModules();
-    jest.doMock('#app/store', () => ({ store: { dispatch: storeDispatchMock } }), { virtual: true });
+    jest.doMock('#app/store', () => ({ store: { dispatch: storeDispatchMock } }), {
+      virtual: true,
+    });
     jest.doMock(
       '#app/BasicReducer',
       () => ({

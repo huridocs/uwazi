@@ -24,19 +24,19 @@ import { Link, sanitizeIds } from '#V2/Routes/Settings/MenuConfig/shared.js';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
-        const linkWithRowId: Link = { ...link, rowId: link._id! };
-        if (link.sublinks) {
-          linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
-            ...sublink,
-            rowId: `${link._id}-${index}`,
-          }));
-        }
-        return linkWithRowId;
-      });
-      return tableRows;
-    };
+  async () => {
+    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+      const linkWithRowId: Link = { ...link, rowId: link._id! };
+      if (link.sublinks) {
+        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+          ...sublink,
+          rowId: `${link._id}-${index}`,
+        }));
+      }
+      return linkWithRowId;
+    });
+    return tableRows;
+  };
 
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
@@ -184,8 +184,9 @@ const MenuConfig = () => {
       <Sidepanel
         title={
           <Translate className="uppercase">
-            {`${formValues?.title === '' ? 'New' : 'Edit'} ${formValues?.type === 'group' ? 'Group' : 'Link'
-              }`}
+            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
+              formValues?.type === 'group' ? 'Group' : 'Link'
+            }`}
           </Translate>
         }
         isOpen={isSidepanelOpen}

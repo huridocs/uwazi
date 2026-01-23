@@ -6,7 +6,9 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';
-import AddThesauriValueModal, { AddThesauriValueModalProps } from '#app/Metadata/components/AddThesauriValueModal.jsx';
+import AddThesauriValueModal, {
+  AddThesauriValueModalProps,
+} from '#app/Metadata/components/AddThesauriValueModal.jsx';
 
 describe('Add Add thesauri value', () => {
   const render = (props: AddThesauriValueModalProps) => {

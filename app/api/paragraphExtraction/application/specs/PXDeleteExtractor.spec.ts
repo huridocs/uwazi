@@ -1,7 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';

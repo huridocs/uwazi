@@ -4,7 +4,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from '#V2/domain/entities/Entity.js';
-import { TestAtomStoreProvider, TestRouterContext, setupMatchMediaMock } from '#V2/testing/index.js';
+import {
+  TestAtomStoreProvider,
+  TestRouterContext,
+  setupMatchMediaMock,
+} from '#V2/testing/index.js';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';

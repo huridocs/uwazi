@@ -19,7 +19,10 @@ import {
 import { UserSchema } from '#shared/types/userType.js';
 import { MongoMultiLanguageEntityDataSource } from '#api/entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { BulkDeleteEntityInput, BulkDeleteEntityUseCase } from '#api/core/application/BulkDeleteEntity.js';
+import {
+  BulkDeleteEntityInput,
+  BulkDeleteEntityUseCase,
+} from '#api/core/application/BulkDeleteEntity.js';
 
 const factory = getFixturesFactory();
 

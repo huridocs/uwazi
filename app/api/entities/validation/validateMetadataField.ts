@@ -218,12 +218,12 @@ const validateSameRelationshipsMatch = (
   return valid
     ? []
     : [
-      validationError(
-        { message: customErrorMessages.relationship_values_should_match },
-        property,
-        entity
-      ),
-    ];
+        validationError(
+          { message: customErrorMessages.relationship_values_should_match },
+          property,
+          entity
+        ),
+      ];
 };
 
 export const validateMetadataField = async (

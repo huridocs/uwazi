@@ -7,7 +7,7 @@ import { Icon } from '#UI/Icon/Icon.jsx';
 
 import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
 import { MetadataFormButtons } from '#app/Metadata/components/MetadataFormButtons.jsx';
-import Immutable from 'immutable';
+import immutable from 'immutable';
 
 // Removed - use Immutable.fromJS: immutable directly
 describe('MetadataFormButtons', () => {

@@ -6,7 +6,6 @@ import { getDocument } from '#app/Viewer/actions/documentActions.js';
 import * as routeActions from '#app/Viewer/actions/routeActions.js';
 import Immutable from 'immutable';
 
-
 jest.mock('#app/Viewer/actions/documentActions');
 jest.mock('#app/Viewer/referencesAPI');
 

@@ -10,7 +10,6 @@ import { ViewerRouteComponent as ViewerRoute } from '#app/Viewer/ViewerRoute.jsx
 import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
 import Immutable from 'immutable';
 
-
 describe('ViewerRoute', () => {
   describe('Entity views', () => {
     const entity = { _id: 1, sharedId: 'sid', documents: [{}] };
@@ -28,7 +27,9 @@ describe('ViewerRoute', () => {
           const state = await ViewerRoute.requestState(request, {
             templates: 'templates',
             settings: {
-              collection: Immutable.fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
+              collection: Immutable.fromJS({
+                languages: [{ key: 'en', label: 'English', default: true }],
+              }),
             },
           });
           expect(state).toBe('PDFView state');
@@ -81,7 +82,9 @@ describe('ViewerRoute', () => {
         await ViewerRoute.requestState(request, {
           templates: 'templates',
           settings: {
-            collection: Immutable.fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
+            collection: Immutable.fromJS({
+              languages: [{ key: 'en', label: 'English', default: true }],
+            }),
           },
         });
         fail('Should throw error');

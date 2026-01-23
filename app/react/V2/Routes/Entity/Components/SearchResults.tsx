@@ -44,7 +44,7 @@ const createNode = (node: ChildNode, key: number): React.ReactNode => {
       'b',
       { key },
       element.children &&
-      element.children.map((child: ChildNode, index: number) => createNode(child, index))
+        element.children.map((child: ChildNode, index: number) => createNode(child, index))
     );
   }
 
@@ -170,30 +170,16 @@ const SearchResults = () => {
 
                       {fullText?.length
                         ? fullText.map((pageText, j) => {
-                          const snippetKey = `${i}-${j}`;
-                          const isActive = activeSnippet === snippetKey;
+                            const snippetKey = `${i}-${j}`;
+                            const isActive = activeSnippet === snippetKey;
 
-                          return (
-                            <div
-                              key={snippetKey}
-                              role="button"
-                              tabIndex={0}
-                              aria-pressed={isActive}
-                              onClick={() => {
-                                const newActive =
-                                  activeSnippet === snippetKey ? null : snippetKey;
-                                setActiveSnippet(newActive);
-
-                                if (newActive) {
-                                  scrollToSnippet(
-                                    { text: pageText.text, page: pageText.page },
-                                    currentPage
-                                  );
-                                }
-                              }}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
+                            return (
+                              <div
+                                key={snippetKey}
+                                role="button"
+                                tabIndex={0}
+                                aria-pressed={isActive}
+                                onClick={() => {
                                   const newActive =
                                     activeSnippet === snippetKey ? null : snippetKey;
                                   setActiveSnippet(newActive);
@@ -204,18 +190,32 @@ const SearchResults = () => {
                                       currentPage
                                     );
                                   }
-                                }
-                              }}
-                              className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
+                                }}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    const newActive =
+                                      activeSnippet === snippetKey ? null : snippetKey;
+                                    setActiveSnippet(newActive);
+
+                                    if (newActive) {
+                                      scrollToSnippet(
+                                        { text: pageText.text, page: pageText.page },
+                                        currentPage
+                                      );
+                                    }
+                                  }
+                                }}
+                                className={`p-4 border shadow-md rounded-lg cursor-pointer hover:bg-gray-50 transition
                               ${isActive ? 'border-primary-400' : 'border-gray-100'}`}
-                            >
-                              <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
-                              <p className="font-bold float-right">
-                                {t('System', 'Page', null, false)} {pageText.page}
-                              </p>
-                            </div>
-                          );
-                        })
+                              >
+                                <p className="mb-4 px-2">{parseSnippetToNodes(pageText.text)}</p>
+                                <p className="font-bold float-right">
+                                  {t('System', 'Page', null, false)} {pageText.page}
+                                </p>
+                              </div>
+                            );
+                          })
                         : null}
                     </div>
                   );

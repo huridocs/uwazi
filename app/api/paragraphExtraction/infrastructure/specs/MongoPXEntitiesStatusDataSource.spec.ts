@@ -1,9 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';

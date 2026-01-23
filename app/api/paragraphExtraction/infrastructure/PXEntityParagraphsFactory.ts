@@ -2,11 +2,7 @@ import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { PXGetEntityParagraphs } from '#api/paragraphExtraction/application/PXGetEntityParagraphs.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';

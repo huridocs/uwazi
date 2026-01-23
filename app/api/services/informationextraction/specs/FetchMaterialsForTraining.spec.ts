@@ -8,7 +8,10 @@ import { Extractors } from '#api/services/informationextraction/ixextractors.js'
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { factory, fixtures } from '#api/services/informationextraction/specs/fixtures.js';
-import { getPropertyTrainingEntities, getPdfTrainingProcess } from '#api/services/informationextraction/FetchMaterialsForTraining.js';
+import {
+  getPropertyTrainingEntities,
+  getPdfTrainingProcess,
+} from '#api/services/informationextraction/FetchMaterialsForTraining.js';
 
 describe('FetchMaterialsForTraining selection', () => {
   let extractorProp: EnforcedWithId<IXExtractorType>;

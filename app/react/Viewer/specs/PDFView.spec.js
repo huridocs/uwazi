@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { shallow } from 'enzyme';
+import Immutable from 'immutable';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/V2/BasicReducer/reducer.js';
 import { PDFView, PDFViewComponent } from '#app/Viewer/PDFView.jsx';
@@ -53,7 +54,7 @@ jest.mock('react-router', () => ({
   useSearchParams: () => mockUseSearchParams(),
   useLocation: () => mockUseLocation(),
   useNavigate: () => path => mockNavigate(path),
-  useMatches: () => { },
+  useMatches: () => {},
 }));
 jest.mock('#app/ContextMenu', () => () => <div>ContextMenu</div>);
 jest.mock('#app/App/Footer', () => () => <div>Footer</div>);
@@ -188,6 +189,7 @@ describe('PDFView', () => {
     });
 
     it('should modify raw to true if is server side rendered', () => {
+      // eslint-disable-next-line no-import-assign
       utils.isClient = false;
       const requestParams = new RequestParams({
         documentId: 'documentId',

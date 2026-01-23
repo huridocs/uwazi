@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & FileOwnProps;
 class File extends Component<FileOwnProps, FileState> {
-  static defaultProps = { updateFile: () => { }, deleteFile: () => { }, readonly: false };
+  static defaultProps = { updateFile: () => {}, deleteFile: () => {}, readonly: false };
 
   constructor(props: FileOwnProps) {
     super(props);

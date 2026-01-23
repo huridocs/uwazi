@@ -8,7 +8,6 @@ import { editorUser } from '#api/entities/specs/entitySavingManagerFixtures.js';
 
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from '#api/core/libs/eventsbus/eventTesting.js';
 
-
 import connections from '#api/relationships/index.js';
 
 import { search } from '#api/search/index.js';

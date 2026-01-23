@@ -8,8 +8,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import testingDB from '#api/utils/testing_db.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

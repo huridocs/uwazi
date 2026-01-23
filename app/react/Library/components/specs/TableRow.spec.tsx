@@ -12,7 +12,6 @@ import { TableRow } from '#app/Library/components/TableRow.jsx';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-
 import { IImmutable } from '#shared/types/Immutable.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
 import { TableViewColumn } from '#app/istore.js';

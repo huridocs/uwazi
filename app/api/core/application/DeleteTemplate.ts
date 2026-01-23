@@ -3,7 +3,10 @@ import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSourc
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
-import { DefaultTemplateDeletionError, TemplateInUseError } from '#api/core/domain/template/errors.js';
+import {
+  DefaultTemplateDeletionError,
+  TemplateInUseError,
+} from '#api/core/domain/template/errors.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';

@@ -17,13 +17,16 @@ import { Subset } from '#shared/tsUtils.js';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorModel as model } from '#api/services/informationextraction/IXExtractorModel.js';
-import { IXErrorCode, IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import {
+  IXErrorCode,
+  IXValidationError,
+} from '#api/services/informationextraction/IXValidationError.js';
 
 type AllowedPropertyTypes =
   | Subset<
-    PropertyTypeSchema,
-    'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
-  >
+      PropertyTypeSchema,
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
+    >
   | 'title';
 
 interface ExtractorType extends IXExtractorType {

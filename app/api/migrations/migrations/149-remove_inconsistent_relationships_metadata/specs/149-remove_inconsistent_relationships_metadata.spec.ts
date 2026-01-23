@@ -2,7 +2,11 @@ import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/149-remove_inconsistent_relationships_metadata/index.js';
-import { fixtures, ids, noReindexFixtures } from '#api/migrations/migrations/149-remove_inconsistent_relationships_metadata/specs/fixtures.js';
+import {
+  fixtures,
+  ids,
+  noReindexFixtures,
+} from '#api/migrations/migrations/149-remove_inconsistent_relationships_metadata/specs/fixtures.js';
 import { EntitySchema } from '#api/migrations/migrations/149-remove_inconsistent_relationships_metadata/types.js';
 
 beforeAll(async () => {

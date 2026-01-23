@@ -3,7 +3,11 @@ import React from 'react';
 import Immutable from 'immutable';
 
 import { store } from '#app/store.js';
-import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '#app/Metadata/components/CopyFromEntity.jsx';
+import {
+  CopyFromEntity,
+  CopyFromEntityProps,
+  CopyFromEntityState,
+} from '#app/Metadata/components/CopyFromEntity.jsx';
 import { SearchEntities } from '#app/Metadata/components/SearchEntities.jsx';
 
 describe('CopyFromEntity', () => {

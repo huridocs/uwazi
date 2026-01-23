@@ -21,7 +21,10 @@ import { CsvImportDoesNotExistError } from '#api/csv.v2/domain/csvImporErrors.js
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportFileNormalizer } from '#api/csv.v2/application/services/CsvImportFileNormalizer.js';
 import { CsvImportRowsStager } from '#api/csv.v2/application/services/CsvImportRowsStager.js';
-import { CsvExtractUploadedZipJob, Callbacks } from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
+import {
+  CsvExtractUploadedZipJob,
+  Callbacks,
+} from '#api/csv.v2/application/jobs/CsvExtractUploadedZipJob.js';
 
 const callbacks: Callbacks = {
   onStart: jest.fn(),

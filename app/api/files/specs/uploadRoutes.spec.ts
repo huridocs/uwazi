@@ -22,7 +22,13 @@ import { UserSchema } from '#shared/types/userType.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
 import { files } from '#api/files/files.js';
 import uploadRoutes from '#api/files/routes.js';
-import { adminUser, collabUser, fixtures, importTemplate, templateId } from '#api/files/specs/fixtures.js';
+import {
+  adminUser,
+  collabUser,
+  fixtures,
+  importTemplate,
+  templateId,
+} from '#api/files/specs/fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

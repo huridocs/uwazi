@@ -1,6 +1,8 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/119-update_problematic_UI_translations/index.js';
-import fixtures, { templateContext } from '#api/migrations/migrations/119-update_problematic_UI_translations/specs/fixtures.js';
+import fixtures, {
+  templateContext,
+} from '#api/migrations/migrations/119-update_problematic_UI_translations/specs/fixtures.js';
 
 describe('migration update translations of settings tooltips', () => {
   beforeEach(async () => {

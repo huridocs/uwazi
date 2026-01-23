@@ -8,7 +8,6 @@ import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import Immutable from 'immutable';
 
-
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.jsx';

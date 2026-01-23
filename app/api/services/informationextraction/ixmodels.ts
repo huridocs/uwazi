@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { IXModelType } from '#shared/types/IXModelType.js';

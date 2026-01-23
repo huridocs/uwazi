@@ -54,10 +54,10 @@ const getToggleSearchIcon = (search: SearchOptions) =>
 const validateSearch = (search: SearchOptions): SearchOptions =>
   search.sort === '_score' && !search.searchTerm
     ? {
-      sort: 'creationDate',
-      order: 'desc',
-      searchTerm: search.searchTerm,
-    }
+        sort: 'creationDate',
+        order: 'desc',
+        searchTerm: search.searchTerm,
+      }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
 const sortDirection = (condition: string) => {

@@ -2,7 +2,10 @@ import { FilePropertyTypes, MediaMetadataProperty, Timelink } from '#V2/domain/e
 import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import { ProcessingContext, AdapterMetadataProperty } from '#V2/application/services/processors/types.js';
+import {
+  ProcessingContext,
+  AdapterMetadataProperty,
+} from '#V2/application/services/processors/types.js';
 import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
 
 export class MediaPropertyProcessor extends BasePropertyProcessor {

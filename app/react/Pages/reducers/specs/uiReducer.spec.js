@@ -1,9 +1,6 @@
-
-
 import * as actions from '#app/Pages/actions/actionTypes.js';
 import reducer from '#app/Pages/reducers/uiReducer.js';
 import Immutable from 'immutable';
-
 
 describe('uiReducer', () => {
   describe('when state is undefined', () => {

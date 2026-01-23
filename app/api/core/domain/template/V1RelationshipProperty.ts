@@ -9,9 +9,17 @@ import {
 import { z } from 'zod';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { Context, CreatePropertyAssignmentInput, Property, PropertyUpdateInfo } from '#api/core/domain/template/Property.js';
+import {
+  Context,
+  CreatePropertyAssignmentInput,
+  Property,
+  PropertyUpdateInfo,
+} from '#api/core/domain/template/Property.js';
 import { PropertyType, PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
-import { RelationshipEntry, RelationshipPropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
+import {
+  RelationshipEntry,
+  RelationshipPropertyAssignment,
+} from '#api/core/domain/template/PropertyValue.js';
 
 type Inherit = {
   property: string;

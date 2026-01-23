@@ -55,7 +55,7 @@ const Matomo = () => {
     ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
     //silent fail
     // eslint-disable-next-line no-empty
-  } catch (e) { }
+  } catch (e) {}
 
   useEffect(() => {
     if (!scriptIsPresent.current) {

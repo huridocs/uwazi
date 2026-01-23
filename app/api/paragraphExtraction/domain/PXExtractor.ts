@@ -5,7 +5,10 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { ParagraphOutput } from '#api/paragraphExtraction/domain/PXExtractionService.js';
-import { PXErrorCode, PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import {
+  PXErrorCode,
+  PXValidationError,
+} from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { EntityTranslation } from '#api/core/domain/entity/EntityTranslation.js';
 
 export type PXExtractorProps = {

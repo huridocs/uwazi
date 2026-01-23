@@ -2,7 +2,6 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
-import moment from 'moment';
 
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 

@@ -5,8 +5,14 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { V1ConnectionsDataSource } from '#api/relationships.v2/contracts/V1ConnectionsDataSource.js';
 import { V1Connection, ReadableV1Connection } from '#api/relationships.v2/model/V1Connection.js';
-import { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo } from '#api/relationships.v2/database/schemas/v1ConnectionTypes.js';
-import { mapConnectionToApp, mapConnectionsWithEntityInfoToApp } from '#api/relationships.v2/database/v1ConnectionMappers.js';
+import {
+  V1ConnectionDBO,
+  V1ConnectionDBOWithEntityInfo,
+} from '#api/relationships.v2/database/schemas/v1ConnectionTypes.js';
+import {
+  mapConnectionToApp,
+  mapConnectionsWithEntityInfoToApp,
+} from '#api/relationships.v2/database/v1ConnectionMappers.js';
 
 export class MongoV1ConnectionsDataSource
   extends MongoDataSource<V1ConnectionDBO>

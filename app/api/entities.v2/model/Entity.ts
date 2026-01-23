@@ -1,4 +1,3 @@
-
 import { Property } from '#api/core/domain/template/Property.js';
 import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
 import { EntityInputModel } from '../types/EntityInputDataType';

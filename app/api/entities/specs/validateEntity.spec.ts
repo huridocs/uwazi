@@ -16,7 +16,11 @@ import templates from '#api/core/v1_layer/templates/index.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 import * as entitiesIndex from '#api/search/entitiesIndex.js';
-import fixtures, { templateId, simpleTemplateId, nonExistentId } from '#api/entities/specs/validatorFixtures.js';
+import fixtures, {
+  templateId,
+  simpleTemplateId,
+  nonExistentId,
+} from '#api/entities/specs/validatorFixtures.js';
 
 import { customErrorMessages } from '#api/entities/validation/metadataValidators.js';
 import { validateEntity } from '#api/entities/validateEntity.js';

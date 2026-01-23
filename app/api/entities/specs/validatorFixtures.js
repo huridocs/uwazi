@@ -1,4 +1,5 @@
 import db from '#api/utils/testing_db.js';
+import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 
 const templateId = db.id();
 const simpleTemplateId = db.id();

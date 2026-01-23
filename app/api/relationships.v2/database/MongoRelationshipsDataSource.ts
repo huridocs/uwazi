@@ -6,7 +6,10 @@ import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoRes
 
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
-import { TraversalResult, RelationshipMappers } from '#api/relationships.v2/database/RelationshipMappers.js';
+import {
+  TraversalResult,
+  RelationshipMappers,
+} from '#api/relationships.v2/database/RelationshipMappers.js';
 import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import { compileQuery } from '#api/relationships.v2/database/MongoGraphQueryCompiler.js';

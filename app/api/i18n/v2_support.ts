@@ -1,4 +1,3 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -14,7 +13,6 @@ import { GetTranslationsService } from '#api/i18n.v2/services/GetTranslationsSer
 import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { EnforcedWithId, models } from '#api/odm/index.js';
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexedContextValues } from '#api/i18n/translations.js';

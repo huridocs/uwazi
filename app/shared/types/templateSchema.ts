@@ -1,16 +1,6 @@
 import Ajv from 'ajv';
 
-import model from '#api/core/v1_layer/templates/templatesModel.js';
-import templates from '#api/core/v1_layer/templates/index.js';
-import pages from '#api/pages/index.js';
-import { thesauri } from '#api/thesauri/thesauri.js';
-
-import { ensure, wrapValidator } from '#shared/tsUtils.js';
 import { objectIdSchema, propertySchema } from '#shared/types/commonSchemas.js';
-import { getCompatibleTypes } from '#shared/propertyTypes.js';
-
-import { TemplateSchema } from './templateType.js';
-import { PropertySchema } from './commonTypes.js';
 
 export const emitSchemaTypes = true;
 

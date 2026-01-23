@@ -4,8 +4,6 @@ import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { IStore } from '#app/istore.js';
 
-
-
 const defaultState = {
   locale: 'en',
   inlineEdit: Immutable.fromJS({ inlineEdit: false }),

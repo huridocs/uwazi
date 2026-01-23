@@ -193,8 +193,9 @@ const MediaModalComponent = ({
             </div>
           </div>
           <div
-            className={`tab-content attachments-modal__tabs-content ${!filteredAttachments.length ? 'centered' : ''
-              }`}
+            className={`tab-content attachments-modal__tabs-content ${
+              !filteredAttachments.length ? 'centered' : ''
+            }`}
           >
             <MediaModalFileList
               filteredAttachments={filteredAttachments}

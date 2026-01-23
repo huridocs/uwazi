@@ -115,8 +115,9 @@ const I18NMenu = () => {
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
             {languageList?.map(language => {
-              const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search
-                }`;
+              const url = `/${language.key}${path}${
+                path.match('document') ? '' : urlLocation.search
+              }`;
 
               return (
                 <li

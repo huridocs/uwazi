@@ -8,7 +8,6 @@ import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskMana
 
 import settings from '#api/settings/settings.js';
 
-
 import { handleError } from '#api/utils/index.js';
 import path from 'path';
 
@@ -149,7 +148,8 @@ class PDFSegmentation {
 
     if (!fileStream) {
       throw new Error(
-        `Error requesting for segmentation file: ${message.params!.filename}, tenant: ${message.tenant
+        `Error requesting for segmentation file: ${message.params!.filename}, tenant: ${
+          message.tenant
         }`
       );
     }

@@ -19,6 +19,7 @@ import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { requestIdMiddleware } from '#api/utils/requestIdMiddleware.js';
 import { Redis } from 'app/api/infrastructure/Redis.js';
 import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
+import { elasticClient } from '#api/search/elastic.js';
 import uwaziMessage from '../message.js';
 import apiRoutes from '#api/api.js';
 import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';

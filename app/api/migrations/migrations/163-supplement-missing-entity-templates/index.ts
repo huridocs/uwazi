@@ -1,5 +1,10 @@
 import { Db, ObjectId } from 'mongodb';
-import { Language, Settings, Template, TranslationDBO } from '#api/migrations/migrations/163-supplement-missing-entity-templates/types.js';
+import {
+  Language,
+  Settings,
+  Template,
+  TranslationDBO,
+} from '#api/migrations/migrations/163-supplement-missing-entity-templates/types.js';
 
 const recoveryTemplateId = new ObjectId();
 

@@ -12,7 +12,6 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { PDFUpload } from '#app/Metadata/components/PDFUpload.jsx';
 import Immutable from 'immutable';
 
-
 describe('PDF upload', () => {
   const reduxStore = {
     library: {

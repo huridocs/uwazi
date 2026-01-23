@@ -38,7 +38,10 @@ import {
   processProperties,
   confirmationMessages,
 } from '#V2/Routes/Settings/Templates/helpers.js';
-import { propertyColumns, PropertyRow } from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
+import {
+  propertyColumns,
+  PropertyRow,
+} from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
 import { TemplateMetadata } from '#V2/Routes/Settings/Templates/components/TemplateMetadata.jsx';
 import { AddRelationshipTypeModal } from '#V2/Routes/Settings/Templates/components/AddRelationshipTypeModal.jsx';
 import { AddThesaurusModal } from '#V2/Routes/Settings/Templates/components/AddThesaurusModal.jsx';
@@ -47,31 +50,31 @@ import { ConfigPropertyPanel } from '#V2/Routes/Settings/Templates/components/Co
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params }) => {
-      const allPages = await pagesAPI.get(headers);
-      const pages = allPages.filter((page: any) => page.entityView);
-      const pagesOptions = pages.map((page: Page) => ({
-        value: page.sharedId,
-        label: page.title,
-      }));
-      let loadedTemplate = emptyTemplate;
-      const templates = await templatesAPI.get(headers);
+  async ({ params }) => {
+    const allPages = await pagesAPI.get(headers);
+    const pages = allPages.filter((page: any) => page.entityView);
+    const pagesOptions = pages.map((page: Page) => ({
+      value: page.sharedId,
+      label: page.title,
+    }));
+    let loadedTemplate = emptyTemplate;
+    const templates = await templatesAPI.get(headers);
 
-      let entityCount = 0;
+    let entityCount = 0;
 
-      if (params.templateId) {
-        const templateToEdit = templates.find(template => template._id === params.templateId);
-        if (templateToEdit) {
-          entityCount =
-            (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
+    if (params.templateId) {
+      const templateToEdit = templates.find(template => template._id === params.templateId);
+      if (templateToEdit) {
+        entityCount =
+          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
             templateToEdit._id
-            ] || 0;
-          loadedTemplate = templateToEdit as ClientTemplateSchema;
-        }
+          ] || 0;
+        loadedTemplate = templateToEdit as ClientTemplateSchema;
       }
+    }
 
-      return { loadedTemplate, pagesOptions, entityCount };
-    };
+    return { loadedTemplate, pagesOptions, entityCount };
+  };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();

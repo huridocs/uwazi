@@ -60,11 +60,8 @@ import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslati
 
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { Db, ObjectId } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';

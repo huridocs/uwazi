@@ -5,7 +5,10 @@ import multiReducer from '#app/Multireducer/index.js';
 import { actions as basicActions } from '#app/V2/BasicReducer/reducer.js';
 import actions from '#app/SemanticSearch/actions/index.js';
 
-import DocumentResultsPanel, { mapDispatchToProps, mapStateToProps } from '#app/SemanticSearch/components/DocumentResultsPanel.js';
+import DocumentResultsPanel, {
+  mapDispatchToProps,
+  mapStateToProps,
+} from '#app/SemanticSearch/components/DocumentResultsPanel.js';
 
 describe('DocumentResultsPanel', () => {
   let state;

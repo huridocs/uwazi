@@ -116,7 +116,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
         <button
           type="button"
           disabled={currentQuery.sort === '_score' ? true : undefined}
-          onClick={() => { }}
+          onClick={() => {}}
           className="sorting-toggle"
         >
           <span style={{ display: 'none' }}>

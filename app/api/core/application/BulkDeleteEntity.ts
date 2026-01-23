@@ -3,7 +3,10 @@ import { search } from '#api/search/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
-import { EntityPermissionChecker, Specification } from '#api/core/domain/entity/EntityPermissionChecker.js';
+import {
+  EntityPermissionChecker,
+  Specification,
+} from '#api/core/domain/entity/EntityPermissionChecker.js';
 import { BulkCleanupEntityJob } from '#api/core/infrastructure/jobs/BulkCleanupEntityJob.js';
 
 const InputSchema = z.object({

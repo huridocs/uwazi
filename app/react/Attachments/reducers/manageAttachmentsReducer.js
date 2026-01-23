@@ -1,4 +1,3 @@
-
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
 import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
 import Immutable from 'immutable';
@@ -26,7 +25,10 @@ export const manageAttachmentsReducer =
       getSharedId(state, setInArray) === action.doc
     ) {
       const documents = getDocuments(state, setInArray);
-      return state.setIn(setInArray.concat(['documents']), documents.push(Immutable.fromJS(action.file)));
+      return state.setIn(
+        setInArray.concat(['documents']),
+        documents.push(Immutable.fromJS(action.file))
+      );
     }
 
     if (

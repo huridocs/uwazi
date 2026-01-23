@@ -3,7 +3,10 @@
 import { Db, ObjectId } from 'mongodb';
 
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import { EntitySchema, TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import {
+  EntitySchema,
+  TemplateSchema,
+} from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 
 export default {
   delta: 143,

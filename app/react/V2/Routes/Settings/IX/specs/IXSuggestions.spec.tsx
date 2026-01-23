@@ -9,7 +9,13 @@ import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
 import { IXSuggestions } from '#V2/Routes/Settings/IX/IXSuggestions.jsx';
-import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from '#V2/Routes/Settings/IX/specs/fixtures.js';
+import {
+  loaderData,
+  thesauri,
+  entity1,
+  entity2,
+  nestedSuggestions,
+} from '#V2/Routes/Settings/IX/specs/fixtures.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '#V2/Routes/Settings/IX/types.js';
 
 jest.mock('#V2/api/entities', () => ({

@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { RowList } from '#app/Layout/Lists.jsx';
 import { I18NLink } from '#app/I18N/index.js';
 import { ItemList } from '#app/Markdown/components/ItemList.jsx';

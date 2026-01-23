@@ -3,7 +3,10 @@ import { Db } from 'mongodb';
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/167-default_empty_metadata/index.js';
 import { Entity, Fixture } from '#api/migrations/migrations/167-default_empty_metadata/types.js';
-import { fixtures, correctFixtures } from '#api/migrations/migrations/167-default_empty_metadata/specs/fixtures.js';
+import {
+  fixtures,
+  correctFixtures,
+} from '#api/migrations/migrations/167-default_empty_metadata/specs/fixtures.js';
 
 let db: Db | null;
 

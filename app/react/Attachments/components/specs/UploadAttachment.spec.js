@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { UploadAttachment } from '#app/Attachments/components/UploadAttachment.jsx';
 import Immutable from 'immutable';
 

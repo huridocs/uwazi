@@ -2,7 +2,10 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import { ItemFooter } from '#app/Layout/Lists.jsx';
-import { UploadEntityStatus, mapStateToProps } from '#app/Library/components/UploadEntityStatus.jsx';
+import {
+  UploadEntityStatus,
+  mapStateToProps,
+} from '#app/Library/components/UploadEntityStatus.jsx';
 import Immutable from 'immutable';
 
 // Removed destructuring - use Immutable.fromJS directly

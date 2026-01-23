@@ -26,8 +26,6 @@ import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 
 import { propertyTypes } from '#shared/propertyTypes.js';
 
-import { ensure } from '#shared/tsUtils.js';
-
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
 
 import { Entity } from '#api/entities.v2/model/Entity.js';

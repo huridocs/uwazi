@@ -1,6 +1,10 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/140-update_translations/index.js';
-import { translations, thesauri, system } from '#api/migrations/migrations/140-update_translations/specs/fixtures.js';
+import {
+  translations,
+  thesauri,
+  system,
+} from '#api/migrations/migrations/140-update_translations/specs/fixtures.js';
 
 describe('migration to update translations adding new keys and removing old ones', () => {
   beforeEach(async () => {

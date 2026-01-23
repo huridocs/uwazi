@@ -1,7 +1,10 @@
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { UserAwareDispatchable, UserAwareDispatchableParams } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import {
+  UserAwareDispatchable,
+  UserAwareDispatchableParams,
+} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 
 type Params = UserAwareDispatchableParams & {
   entitiesIds: string[];

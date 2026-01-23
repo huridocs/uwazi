@@ -5,13 +5,11 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 
-
 import { ILink } from '#V2/shared/types.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
 import Immutable from 'immutable';
-
 
 const links: ILink[] = [
   {

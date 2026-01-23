@@ -6,7 +6,11 @@ import SearchInput from '#app/Layout/SearchInput.jsx';
 import { sleep } from '#shared/tsUtils.js';
 
 import SearchApi from '#app/Search/SearchAPI.js';
-import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '#app/Metadata/components/SearchEntities.jsx';
+import {
+  SearchEntities,
+  SearchEntitiesProps,
+  SearchEntitiesState,
+} from '#app/Metadata/components/SearchEntities.jsx';
 
 import SearchResults from '#app/Connections/components/SearchResults.jsx';
 

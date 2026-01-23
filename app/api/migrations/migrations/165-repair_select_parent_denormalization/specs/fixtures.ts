@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { Fixture, Metadata, TestedLanguages, Translation } from '#api/migrations/migrations/165-repair_select_parent_denormalization/types.js';
+import {
+  Fixture,
+  Metadata,
+  TestedLanguages,
+  Translation,
+} from '#api/migrations/migrations/165-repair_select_parent_denormalization/types.js';
 
 const ids: { [key: string]: ObjectId } = {
   dict: new ObjectId(),

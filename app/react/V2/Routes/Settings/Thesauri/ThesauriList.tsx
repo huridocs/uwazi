@@ -18,8 +18,8 @@ import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      ThesauriAPI.get({}, headers);
+  async () =>
+    ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();

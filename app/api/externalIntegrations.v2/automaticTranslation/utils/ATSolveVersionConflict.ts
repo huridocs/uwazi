@@ -1,4 +1,3 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { Entity } from '#api/entities.v2/model/Entity.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';

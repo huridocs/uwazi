@@ -4,7 +4,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Icon } from '#UI/Icon/Icon.jsx';
 
-import { MultipleEditionFieldWarningBase, mapStateToProps } from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
+import {
+  MultipleEditionFieldWarningBase,
+  mapStateToProps,
+} from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
 
 describe('FormGroup', () => {
   let component;

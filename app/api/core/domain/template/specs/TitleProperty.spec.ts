@@ -1,4 +1,7 @@
-import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import {
+  TitlePropertyInvalidNameError,
+  PropertyTypeInvalidTypeError,
+} from '#api/core/domain/template/errors.js';
 import { TitleProperty } from '#api/core/domain/template/TitleProperty.js';
 
 describe('TitleProperty', () => {

@@ -83,20 +83,20 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   const form = useForm<ClientProperty>({
     defaultValues: propertyToEdit
       ? {
-        type: propertyToEdit.type,
-        label: propertyToEdit.label || '',
-        noLabel: propertyToEdit.noLabel || false,
-        required: propertyToEdit.required || false,
-        showInCard: propertyToEdit.showInCard || false,
-        filter: propertyToEdit.filter || false,
-        defaultfilter: propertyToEdit.defaultfilter || false,
-        prioritySorting: propertyToEdit.prioritySorting || false,
-        style: propertyToEdit.style || '',
-        content: propertyToEdit.content || '',
-        relationType: propertyToEdit.relationType || '',
-        inherit: propertyToEdit.inherit,
-        generatedId: propertyToEdit.generatedId || false,
-      }
+          type: propertyToEdit.type,
+          label: propertyToEdit.label || '',
+          noLabel: propertyToEdit.noLabel || false,
+          required: propertyToEdit.required || false,
+          showInCard: propertyToEdit.showInCard || false,
+          filter: propertyToEdit.filter || false,
+          defaultfilter: propertyToEdit.defaultfilter || false,
+          prioritySorting: propertyToEdit.prioritySorting || false,
+          style: propertyToEdit.style || '',
+          content: propertyToEdit.content || '',
+          relationType: propertyToEdit.relationType || '',
+          inherit: propertyToEdit.inherit,
+          generatedId: propertyToEdit.generatedId || false,
+        }
       : { ...emptyProperty },
   });
 

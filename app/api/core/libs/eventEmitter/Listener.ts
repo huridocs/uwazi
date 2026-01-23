@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DispatchableClass, JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UserAwareDispatchable } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { Event } from '#api/core/libs/eventEmitter/Event.js';
 

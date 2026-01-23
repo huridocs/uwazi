@@ -1,6 +1,11 @@
 import { testingDB } from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/116-add_system_key_translations/index.js';
-import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from '#api/migrations/migrations/116-add_system_key_translations/specs/fixtures.js';
+import {
+  fixtures,
+  templateId,
+  defaultTemplateName,
+  defaultTemplateTitle,
+} from '#api/migrations/migrations/116-add_system_key_translations/specs/fixtures.js';
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [

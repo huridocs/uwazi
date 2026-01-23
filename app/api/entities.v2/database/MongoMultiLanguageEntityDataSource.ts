@@ -1,4 +1,7 @@
-import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
@@ -11,7 +14,10 @@ import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { EntityDBO, EntityTemplateAggregation } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import {
+  EntityDBO,
+  EntityTemplateAggregation,
+} from '#api/entities.v2/database/schemas/EntityTypes.js';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>

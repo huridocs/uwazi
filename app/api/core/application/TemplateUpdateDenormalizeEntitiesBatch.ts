@@ -2,7 +2,6 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { UseCase } from '#api/common.v2/contracts/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';

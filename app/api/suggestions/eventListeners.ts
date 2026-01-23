@@ -9,9 +9,6 @@ import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateD
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
 import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';

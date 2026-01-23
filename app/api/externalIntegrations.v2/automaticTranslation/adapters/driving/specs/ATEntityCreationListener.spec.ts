@@ -1,5 +1,3 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';

@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { ConnectionsGroups } from '#app/ConnectionsList/components/ConnectionsGroups.jsx';
 import ConnectionsGroup from '#app/ConnectionsList/components/ConnectionsGroup.jsx';
 import Immutable from 'immutable';

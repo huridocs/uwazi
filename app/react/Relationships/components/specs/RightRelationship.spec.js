@@ -8,7 +8,6 @@ import { RightRelationship } from '#app/Relationships/components/RightRelationsh
 import HubRelationshipMetadata from '#app/Relationships/components/HubRelationshipMetadata.jsx';
 import Immutable from 'immutable';
 
-
 describe('RelationshipsGraphEdit', () => {
   let component;
   let props;

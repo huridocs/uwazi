@@ -26,6 +26,8 @@ import { atomStore } from '#V2/atoms/index.js';
 import { store } from '#app/store.js';
 import { routes } from '#app/appRoutes.js';
 
+window.__entryClientLoaded = true;
+
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
     release: window.UWAZI_VERSION,

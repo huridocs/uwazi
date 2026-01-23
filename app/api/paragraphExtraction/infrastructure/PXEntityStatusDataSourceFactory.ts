@@ -1,7 +1,4 @@
 import { Db } from 'mongodb';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
-
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 import { MongoPXEntitiesStatusDataSource } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';

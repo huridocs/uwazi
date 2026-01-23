@@ -8,6 +8,7 @@ import { actions } from '#app/V2/BasicReducer/reducer.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
 import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
+import * as sidePanelUtils from '#app/Pages/utils/openEntitySidePanel.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';

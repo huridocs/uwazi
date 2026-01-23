@@ -1,7 +1,10 @@
 /* eslint-disable max-lines */
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
-import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
@@ -17,7 +20,10 @@ import {
   GetExistingInput,
   PXEntitiesStatusDataSource,
 } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';
-import { EntityStatus, PXEntityStatusModel } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
+import {
+  EntityStatus,
+  PXEntityStatusModel,
+} from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';

@@ -3,7 +3,11 @@ import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { Validator } from '#api/core/domain/Validator.js';
 
 import { TemplateWithDuplicatedPropertyValidator } from '#api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
-import { Property, PropertyUpdateInfo, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
+import {
+  Property,
+  PropertyUpdateInfo,
+  CreatePropertyAssignmentInput,
+} from '#api/core/domain/template/Property.js';
 import {
   DefaultTemplateConflictError,
   PropertyNotFoundError,

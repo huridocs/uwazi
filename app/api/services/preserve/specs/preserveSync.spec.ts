@@ -31,7 +31,13 @@ import { Tenant } from '#api/tenants/tenantContext.js';
 import { createReadStream } from 'fs';
 import { preserveSync } from '#api/services/preserve/preserveSync.js';
 import { preserveSyncModel } from '#api/services/preserve/preserveSyncModel.js';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from '#api/services/preserve/specs/fixtures.js';
+import {
+  anotherTemplateId,
+  fixtures,
+  templateId,
+  thesauri1Id,
+  user,
+} from '#api/services/preserve/specs/fixtures.js';
 import { legacyLogger } from '#api/log/index.js';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {

@@ -7,8 +7,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

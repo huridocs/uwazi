@@ -1,4 +1,3 @@
-
 import * as selectors from '#app/Viewer/selectors.js';
 import Immutable from 'immutable';
 

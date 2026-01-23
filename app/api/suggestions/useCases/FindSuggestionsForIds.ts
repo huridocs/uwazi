@@ -10,7 +10,10 @@ import { IXExtractorType } from '#shared/types/extractorType.js';
 
 import { EnforcedWithId } from '#api/odm/index.js';
 
-import { Extractors, ModelNotReadyError } from '#api/services/informationextraction/ixextractors.js';
+import {
+  Extractors,
+  ModelNotReadyError,
+} from '#api/services/informationextraction/ixextractors.js';
 
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
@@ -32,7 +35,7 @@ type UpdateFindRunQueueOptions = {
 };
 
 export class FindSuggestionsForIds implements UseCase<Input, Output> {
-  constructor(private informationExtraction: InformationExtraction) { }
+  constructor(private informationExtraction: InformationExtraction) {}
 
   async execute({ extractorId, sharedIds }: Input): Promise<Output> {
     const [extractor, model] = await FindSuggestionsForIds.getExtractorAndModel(extractorId);

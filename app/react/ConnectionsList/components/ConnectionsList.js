@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-
 import SearchBar from '#app/ConnectionsList/components/SearchBar.jsx';
 import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
 import LoadMoreRelationshipsButton from '#app/Relationships/components/LoadMoreRelationshipsButton.jsx';

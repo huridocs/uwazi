@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { Item } from '#app/Layout/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { mapStateToProps } from '#app/Library/components/Doc.jsx';

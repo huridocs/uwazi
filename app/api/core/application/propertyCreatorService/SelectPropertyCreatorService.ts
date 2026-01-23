@@ -7,7 +7,10 @@ import {
   MultiSelectPropertyProps,
   MultiSelectProperty,
 } from '#api/core/domain/template/select/MultiSelectProperty.js';
-import { SelectPropertyProps, SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
+import {
+  SelectPropertyProps,
+  SelectProperty,
+} from '#api/core/domain/template/select/SelectProperty.js';
 
 type Deps = {
   thesauriDS: ThesauriDataSource;

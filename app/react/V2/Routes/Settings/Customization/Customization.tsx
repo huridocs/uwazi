@@ -21,10 +21,10 @@ type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'cust
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
-    async () => {
-      const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-      return { allowcustomJS, customCSS, customJS };
-    };
+  async () => {
+    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
+    return { allowcustomJS, customCSS, customJS };
+  };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;

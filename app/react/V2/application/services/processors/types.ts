@@ -1,4 +1,9 @@
-import { Template, ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
+import {
+  Template,
+  ClientSettings,
+  ClientThesaurus,
+  ClientUserSchema,
+} from '#app/apiResponseTypes.js';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
 import { Entity } from '#V2/domain/index.js';
 import {

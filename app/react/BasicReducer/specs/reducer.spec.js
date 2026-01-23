@@ -1,8 +1,6 @@
 /* eslint-disable max-lines */
 /** @format */
 
-
-
 import createReducer, * as actions from '#app/BasicReducer/reducer.js';
 import Immutable from 'immutable';
 

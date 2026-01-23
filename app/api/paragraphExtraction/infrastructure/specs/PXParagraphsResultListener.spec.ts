@@ -6,7 +6,10 @@ import { ObjectId } from 'mongodb';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
-import { PXParagraphsResultListener, ResultMessage } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
+import {
+  PXParagraphsResultListener,
+  ResultMessage,
+} from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 
 jest.mock('#api/services/tasksmanager/TaskManager');
 

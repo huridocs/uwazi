@@ -68,7 +68,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={isSubmitting ? () => { } : closeSidepanel}
+      closeSidepanelFunction={isSubmitting ? () => {} : closeSidepanel}
       title={<Translate>Edit File</Translate>}
     >
       <form onSubmit={handleSubmit(save)} className="flex flex-col h-full" id="file-edit-form">

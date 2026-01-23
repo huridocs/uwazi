@@ -1,6 +1,9 @@
 import { Context } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { AbstractImageProperty, AbstractImagePropertyProps } from '#api/core/domain/template/AbstractImageProperty.js';
+import {
+  AbstractImageProperty,
+  AbstractImagePropertyProps,
+} from '#api/core/domain/template/AbstractImageProperty.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { PreviewEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 

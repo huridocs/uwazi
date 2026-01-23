@@ -8,7 +8,6 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import referencesAPI from '#app/Viewer/referencesAPI.js';
 import Immutable from 'immutable';
 
-
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
     const filteredTemplates = connectionsGroups.reduce(

@@ -1,6 +1,5 @@
 import { Dispatch } from 'redux';
 
-
 import { notificationActions } from '#app/Notifications/index.js';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';

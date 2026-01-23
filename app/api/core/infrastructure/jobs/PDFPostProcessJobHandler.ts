@@ -1,7 +1,10 @@
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
 import { ProcessingFileFailed, ProcessingFileNotFound } from '#api/core/domain/files/errors.js';
-import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { FileIsNotAPDF } from '#api/core/infrastructure/services/PDFService.js';
 

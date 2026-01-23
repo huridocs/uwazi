@@ -7,7 +7,6 @@ import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import Immutable from 'immutable';
 
-
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
   const searchTerm =

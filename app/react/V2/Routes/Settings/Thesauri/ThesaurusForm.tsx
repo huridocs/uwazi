@@ -5,7 +5,7 @@ import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 
-import { Translate } from '#app/I18N/index.js';
+import { t, Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
 import * as thesauriAPI from '#V2/api/thesauri/index.js';
@@ -14,7 +14,10 @@ import { notificationAtom } from '#V2/atoms/index.js';
 import { Table } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { addSelection, sanitizeThesaurusValues } from '#V2/Routes/Settings/Thesauri/helpers.js';
-import { columnsThesaurus, ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
+import {
+  columnsThesaurus,
+  ThesaurusRow,
+} from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
@@ -77,10 +80,6 @@ const ThesaurusForm = ({
       });
     }
   };
-
-  function t(arg0: string, arg1: string, arg2: null, arg3: boolean): string | undefined {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">

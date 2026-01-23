@@ -1,7 +1,7 @@
 import { Dispatchable } from './Dispatchable.js';
 
 export interface DispatchableClass<T extends Dispatchable> {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 export interface JobsDispatcher {

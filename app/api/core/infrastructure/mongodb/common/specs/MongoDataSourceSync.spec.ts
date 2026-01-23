@@ -10,7 +10,11 @@ import testingDB from '#api/utils/testing_db.js';
 import { MongoClient, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { getClient, getConnection, getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import {
+  getClient,
+  getConnection,
+  getTenant,
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 const id = getIdMapper();
 

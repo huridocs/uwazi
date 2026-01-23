@@ -14,7 +14,7 @@ import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { elastic } from '#api/search/elastic.js';
 
-class IndexError extends Error { }
+class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const db = getConnection();
@@ -167,7 +167,7 @@ const indexEntities = async ({
   query,
   select = '',
   limit = 50,
-  batchCallback = () => { },
+  batchCallback = () => {},
   searchInstance,
 }) => {
   const totalRows = await entities.count(query);

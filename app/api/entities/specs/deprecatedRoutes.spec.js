@@ -7,7 +7,11 @@ import instrumentRoutes from '#api/utils/instrumentRoutes.js';
 import entities from '#api/entities/entities.js';
 import * as entitiesSavingManager from '#api/entities/entitySavingManager.js';
 import documentRoutes from '#api/entities/routes.js';
-import fixtures, { batmanFinishesId, templateId, unpublishedDocId } from '#api/entities/specs/fixtures.js';
+import fixtures, {
+  batmanFinishesId,
+  templateId,
+  unpublishedDocId,
+} from '#api/entities/specs/fixtures.js';
 
 describe('entities', () => {
   let routes;

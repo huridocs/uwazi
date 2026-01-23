@@ -16,8 +16,10 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-import { AccessLevels, AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
+import {
+  AccessLevels,
+  AuthorizationService,
+} from '#api/authorization.v2/services/AuthorizationService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();

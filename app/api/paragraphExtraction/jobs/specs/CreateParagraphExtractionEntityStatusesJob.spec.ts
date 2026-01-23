@@ -1,8 +1,6 @@
 /* eslint-disable max-statements */
 import { WithId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -31,7 +29,13 @@ import { ConnectionSchema } from '#shared/types/connectionType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 import { PXCreateEntityStatusesFactory } from '#api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory.js';
-import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from '#api/paragraphExtraction/jobs/specs/fixtures.js';
+import {
+  f,
+  createBaseFixtures,
+  sourceTemplate,
+  targetTemplate,
+  extractorId,
+} from '#api/paragraphExtraction/jobs/specs/fixtures.js';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
 

@@ -16,7 +16,6 @@ import { MetadataSchema } from '#shared/types/commonTypes.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { MongoEntitiesDataSource } from '#api/entities.v2/database/MongoEntitiesDataSource.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 

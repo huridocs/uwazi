@@ -1,7 +1,5 @@
-
 import * as types from '#app/Relationships/actions/actionTypes.js';
 import Immutable from 'immutable';
-
 
 const initialState = {
   editing: false,

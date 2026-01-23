@@ -15,9 +15,9 @@ describe('MetadataExtractor', () => {
   let selected: Selection | undefined;
 
   beforeEach(() => {
-    spyOn(actions, 'updateSelection').and.returnValue(() => { });
-    spyOn(actions, 'updateFormField').and.returnValue(() => { });
-    spyOn(notificationActions, 'notify').and.returnValue(() => { });
+    spyOn(actions, 'updateSelection').and.returnValue(() => {});
+    spyOn(actions, 'updateFormField').and.returnValue(() => {});
+    spyOn(notificationActions, 'notify').and.returnValue(() => {});
     selected = {
       text: 'a user selected text',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 1, page: '1' }],

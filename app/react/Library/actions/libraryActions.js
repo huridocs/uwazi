@@ -14,7 +14,10 @@ import referencesAPI from '#app/Viewer/referencesAPI.js';
 import searchAPI from '#app/Search/SearchAPI.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
-import { selectedDocumentsChanged, maybeSaveQuickLabels } from '#app/Library/actions/quickLabelActions.js';
+import {
+  selectedDocumentsChanged,
+  maybeSaveQuickLabels,
+} from '#app/Library/actions/quickLabelActions.js';
 import { filterToQuery } from '#app/Library/helpers/publishedStatusFilter.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 

@@ -25,7 +25,10 @@ import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
 import { escapeLucene, searchRelatedEntities } from '#V2/Routes/Settings/IX/helpers/index.js';
 import { SuggestionValue, TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
-import { textSelectionAtom, selectionErrorAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import {
+  textSelectionAtom,
+  selectionErrorAtom,
+} from '#V2/Routes/Settings/IX/components/atoms/index.js';
 import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
 
 const updateOptionsWithSelection = (
@@ -274,10 +277,11 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
-        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-        : `title:(${escapedText}*)`
-        } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && fieldName
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
+      } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 

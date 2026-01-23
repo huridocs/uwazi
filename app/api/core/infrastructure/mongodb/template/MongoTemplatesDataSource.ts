@@ -1,10 +1,16 @@
 /* eslint-disable max-lines */
-import { MongoDataSource, MongoDSOptions } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import {
+  MongoDataSource,
+  MongoDSOptions,
+} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
-import { MongoTemplateMapper, MongoTemplatePropertyMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
+import {
+  MongoTemplateMapper,
+  MongoTemplatePropertyMapper,
+} from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';

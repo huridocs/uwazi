@@ -44,8 +44,8 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       return id
         ? String(id)
         : `obj_${JSON.stringify(value)
-          .slice(0, 20)
-          .replace(/[^a-zA-Z0-9]/g, '_')}`;
+            .slice(0, 20)
+            .replace(/[^a-zA-Z0-9]/g, '_')}`;
     }
     return String(value);
   };

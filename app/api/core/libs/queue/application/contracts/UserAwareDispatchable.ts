@@ -4,7 +4,11 @@ import users from '#api/users/users.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 
-import { Dispatchable, HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 

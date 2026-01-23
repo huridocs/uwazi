@@ -25,16 +25,16 @@ const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
 const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
   const [attachments, supportingFiles] = entity.attachments
     ? entity.attachments.reduce(
-      (accumulator, attachmentInfo) => {
-        const { serializedFile, ...attachment } = attachmentInfo;
-        accumulator[0].push(attachment);
-        if (serializedFile) {
-          accumulator[1].push(constructFile(attachmentInfo));
-        }
-        return accumulator;
-      },
-      [[], []] as [ClientFile[], File[]]
-    )
+        (accumulator, attachmentInfo) => {
+          const { serializedFile, ...attachment } = attachmentInfo;
+          accumulator[0].push(attachment);
+          if (serializedFile) {
+            accumulator[1].push(constructFile(attachmentInfo));
+          }
+          return accumulator;
+        },
+        [[], []] as [ClientFile[], File[]]
+      )
     : [[], []];
 
   const { oldDocuments = [], newDocuments = [] } = _.groupBy(entity.documents || [], document =>

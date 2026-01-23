@@ -70,7 +70,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
     await IXExternalService.start();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
   beforeEach(async () => {

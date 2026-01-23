@@ -10,7 +10,7 @@ import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
@@ -21,8 +21,6 @@ import {
 import { Checkbox } from '#V2/Components/Forms/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { secondsToISODate } from '#V2/shared/dateHelpers.js';
-import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { TableSuggestion } from '#V2/Routes/Settings/IX/types.js';
 import {
   coerceValue,
   getFormValue,
@@ -31,7 +29,11 @@ import {
   SELECT_TYPES,
 } from '#V2/Routes/Settings/IX/helpers/index.js';
 import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.jsx';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import {
+  highlightsAtom,
+  selectionErrorAtom,
+  textSelectionAtom,
+} from '#V2/Routes/Settings/IX/components/atoms/index.js';
 import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
 import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 

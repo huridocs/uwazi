@@ -1,4 +1,7 @@
-import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,

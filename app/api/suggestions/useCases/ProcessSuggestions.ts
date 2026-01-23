@@ -7,7 +7,10 @@ import { IXModelType } from '#shared/types/IXModelType.js';
 
 import { IXExtractorType } from '#shared/types/extractorType.js';
 
-import { Extractors, ModelNotReadyError } from '#api/services/informationextraction/ixextractors.js';
+import {
+  Extractors,
+  ModelNotReadyError,
+} from '#api/services/informationextraction/ixextractors.js';
 
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
@@ -52,7 +55,7 @@ type Dependencies = {
 };
 
 export class ProcessSuggestions implements UseCase<Input, Output> {
-  constructor(private readonly deps: Dependencies) { }
+  constructor(private readonly deps: Dependencies) {}
 
   private static async getExtractorAndModel(extractorId: string) {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);

@@ -21,7 +21,7 @@ export class AfterEntityUpdatedListener {
   constructor(
     private eventBus: EventsBus,
     private depsFactory: () => Dependencies
-  ) { }
+  ) {}
 
   private get deps() {
     return this.depsFactory();

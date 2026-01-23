@@ -105,8 +105,9 @@ const TableRowComponent = ({
   const [firstCell, ...rowCells] = cells;
   return (
     <tr
-      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
-        }`}
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${
+        deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
+      }`}
       onClick={selectRow}
     >
       {firstCell && (
@@ -115,7 +116,7 @@ const TableRowComponent = ({
             <div className="checkbox-cell" onClick={checkEntity}>
               <input
                 type="checkbox"
-                onChange={() => { }}
+                onChange={() => {}}
                 checked={multipleSelection && selected}
                 onClick={checkEntity}
               />

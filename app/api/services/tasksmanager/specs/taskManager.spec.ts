@@ -133,7 +133,7 @@ describe('taskManager', () => {
 
       await externalDummyService.sendFinishedMessage(task);
       service.processResults = jest.fn().mockRejectedValue('error');
-      jest.spyOn(handleError, 'handleError').mockImplementation(() => { });
+      jest.spyOn(handleError, 'handleError').mockImplementation(() => {});
 
       await waitForExpect(async () => {
         expect(service.processResults).toHaveBeenCalledWith(task);

@@ -5,8 +5,15 @@ import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
-import { NoEntitiesForTraining, TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '#api/services/informationextraction/ixMaterials.js';
+import {
+  NoEntitiesForTraining,
+  TrainModelForText,
+} from '#api/services/informationextraction/TrainModelForText.js';
+import {
+  NoFilesForTraining,
+  NoLabeledEntities,
+  NoSegmentedFiles,
+} from '#api/services/informationextraction/ixMaterials.js';
 import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
 
 type Props = {

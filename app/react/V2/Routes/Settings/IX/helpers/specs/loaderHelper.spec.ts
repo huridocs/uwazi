@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-
 import { ClientPropertySchema } from '#app/istore.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {

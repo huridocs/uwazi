@@ -1,7 +1,10 @@
 import { Db } from 'mongodb';
 
 import testingDB from '#api/utils/testing_db.js';
-import migration, { newKeys, deletedKeys } from '#api/migrations/migrations/161-update-translations/index.js';
+import migration, {
+  newKeys,
+  deletedKeys,
+} from '#api/migrations/migrations/161-update-translations/index.js';
 import { fixtures } from '#api/migrations/migrations/161-update-translations/specs/fixtures.js';
 import { Fixture } from '#api/migrations/migrations/161-update-translations/types.js';
 

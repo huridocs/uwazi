@@ -21,7 +21,6 @@ import { LibraryHeader, LibraryHeaderOwnProps } from '#app/Library/components/Li
 import { SearchBar } from '#app/Library/components/SearchBar.jsx';
 import Immutable from 'immutable';
 
-
 jest.mock('../SortDropdown', () => ({
   __esModule: true,
   SortDropdown: () => <>Sort Dropdown</>,

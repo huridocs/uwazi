@@ -205,10 +205,10 @@ const IXDashboard = () => {
 
 const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const extractors = await extractorsAPI.get(headers);
-      const templates = await templatesAPI.get(headers);
-      return { extractors, templates };
-    };
+  async () => {
+    const extractors = await extractorsAPI.get(headers);
+    const templates = await templatesAPI.get(headers);
+    return { extractors, templates };
+  };
 
 export { IXDashboard, IXdashboardLoader, formatExtractors };

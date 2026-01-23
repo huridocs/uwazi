@@ -31,12 +31,12 @@ import {
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
-    async () => {
-      const { filters } = await settingsAPI.get(headers);
-      const templates = await templatesAPI.get(headers);
-      const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
-      return { filters: tableFilters, templates };
-    };
+  async () => {
+    const { filters } = await settingsAPI.get(headers);
+    const templates = await templatesAPI.get(headers);
+    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+    return { filters: tableFilters, templates };
+  };
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;

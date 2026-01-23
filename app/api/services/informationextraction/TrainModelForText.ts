@@ -48,7 +48,7 @@ class NoEntitiesForTraining extends Error {
 }
 
 class TrainModelForText implements UseCase<Input, Output> {
-  constructor(private props: Dependencies) { }
+  constructor(private props: Dependencies) {}
 
   async execute({ extractor }: Input): Promise<Output> {
     try {

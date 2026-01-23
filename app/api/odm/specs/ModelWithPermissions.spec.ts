@@ -2,7 +2,10 @@ import { PermissionSchema } from '#shared/types/permissionType.js';
 
 import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 
-import { instanceModelWithPermissions, ModelWithPermissions } from '#api/odm/ModelWithPermissions.js';
+import {
+  instanceModelWithPermissions,
+  ModelWithPermissions,
+} from '#api/odm/ModelWithPermissions.js';
 
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 

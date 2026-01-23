@@ -5,7 +5,10 @@ import { Application, NextFunction } from 'express';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import request from 'supertest';
 import templateRoutes from '#api/core/infrastructure/express/template/routes.js';
-import { fixtureFactory, fixtures } from '#api/core/infrastructure/express/template/specs/routesFixtures.js';
+import {
+  fixtureFactory,
+  fixtures,
+} from '#api/core/infrastructure/express/template/specs/routesFixtures.js';
 
 jest.mock(
   '../../../../../auth/authMiddleware.ts',

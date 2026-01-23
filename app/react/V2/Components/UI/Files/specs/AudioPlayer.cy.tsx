@@ -2,7 +2,10 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import AudioPlayer from '#V2/Components/UI/Files/AudioPlayer.jsx';
-import { setupMediaIntercepts, setupMediaElement } from '#V2/Components/UI/Files/specs/testHelpers.js';
+import {
+  setupMediaIntercepts,
+  setupMediaElement,
+} from '#V2/Components/UI/Files/specs/testHelpers.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
 
 describe('AudioPlayer', () => {

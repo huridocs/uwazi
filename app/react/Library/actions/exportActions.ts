@@ -1,5 +1,3 @@
-
-
 import superagent from 'superagent';
 import { actions } from '#app/BasicReducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
@@ -16,7 +14,6 @@ import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { processFilters } from '#app/Library/actions/libraryActions.js';
 import { ExportStore } from '../reducers/ExportStoreType';
 import Immutable from 'immutable';
-
 
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));

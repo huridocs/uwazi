@@ -8,7 +8,8 @@ import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 import reducer from '#app/reducer.js';
 import { IStore } from './istore';
 
-const thunk: Middleware = ((thunkModule as { default?: Middleware }).default || thunkModule) as Middleware;
+const thunk: Middleware = ((thunkModule as { default?: Middleware }).default ||
+  thunkModule) as Middleware;
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 

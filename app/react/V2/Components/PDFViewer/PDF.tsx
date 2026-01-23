@@ -10,7 +10,10 @@ import { PDFJS, CMAP_URL, EventBus } from '#V2/Components/PDFViewer/pdfjs.js';
 import { TextHighlight } from '#V2/Components/PDFViewer/types.js';
 import { triggerScroll } from '#V2/Components/PDFViewer/functions/helpers.js';
 import { pdfEventBus } from '#V2/Components/PDFViewer/events.js';
-import { highlightSnippetInPage, clearSnippets } from '#V2/Components/PDFViewer/functions/snippetToHighlight.js';
+import {
+  highlightSnippetInPage,
+  clearSnippets,
+} from '#V2/Components/PDFViewer/functions/snippetToHighlight.js';
 
 const PDFPage = loadable(
   async () => (await import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage')).PDFPage

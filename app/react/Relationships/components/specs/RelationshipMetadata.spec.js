@@ -4,7 +4,10 @@ import { shallow } from 'enzyme';
 import { ShowMetadata, MetadataForm } from '#app/Metadata/index.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
 import * as saveEntityWithFiles from '#app/Library/actions/saveEntityWithFiles.js';
-import { RelationshipMetadata, mapStateToProps } from '#app/Relationships/components/RelationshipMetadata.jsx';
+import {
+  RelationshipMetadata,
+  mapStateToProps,
+} from '#app/Relationships/components/RelationshipMetadata.jsx';
 import * as routeUtils from '#app/Relationships/utils/routeUtils.js';
 
 import * as actions from '#app/actions/actions';

@@ -13,7 +13,11 @@ import { Button } from '#V2/Components/UI/Button.jsx';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { BlankState } from '#V2/Routes/Entity/Components/BlankState.jsx';
-import { ToC, type ProcessedTocEntry, sortTocEntries } from '#V2/Routes/Entity/Components/ToC/ToC.jsx';
+import {
+  ToC,
+  type ProcessedTocEntry,
+  sortTocEntries,
+} from '#V2/Routes/Entity/Components/ToC/ToC.jsx';
 import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useToc, useTocActions } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';

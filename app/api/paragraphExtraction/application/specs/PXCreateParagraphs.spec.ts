@@ -1,8 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
@@ -31,7 +29,10 @@ import { PXEntitiesStatusDataSourceFactory } from '#api/paragraphExtraction/infr
 
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
-import { PXCreateParagraphs, PXCreateParagraphsInput } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
+import {
+  PXCreateParagraphs,
+  PXCreateParagraphsInput,
+} from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const factory = getFixturesFactory();

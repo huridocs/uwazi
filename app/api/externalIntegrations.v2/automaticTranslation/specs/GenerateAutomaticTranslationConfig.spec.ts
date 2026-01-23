@@ -4,14 +4,18 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { GenerateAutomaticTranslationsCofig } from '#api/externalIntegrations.v2/automaticTranslation/GenerateAutomaticTranslationConfig.js';
 import { MongoATConfigDataSource } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource.js';
 import { GenerateATConfigError } from '#api/externalIntegrations.v2/automaticTranslation/errors/generateATErrors.js';
-import { SemanticConfig, semanticConfigSchema } from '#api/externalIntegrations.v2/automaticTranslation/types/SemanticConfig.js';
-import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
+import {
+  SemanticConfig,
+  semanticConfigSchema,
+} from '#api/externalIntegrations.v2/automaticTranslation/types/SemanticConfig.js';
+import {
+  ValidationError,
+  Validator,
+} from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 
 import testingDB from '#api/utils/testing_db.js';

@@ -9,7 +9,6 @@ import { defaultState, renderConnectedContainer } from '#app/utils/test/renderCo
 import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
 import Immutable from 'immutable';
 
-
 describe('Sort dropdown', () => {
   let props: any;
   let renderResult: RenderResult;

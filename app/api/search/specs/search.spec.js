@@ -7,7 +7,11 @@ import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import * as searchLimitsConfig from '#shared/config.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import elasticResult from '#api/search/specs/elasticResult.js';
-import { fixtures as elasticFixtures, fixturesTimeOut, ids } from '#api/search/specs/fixtures_elastic.js';
+import {
+  fixtures as elasticFixtures,
+  fixturesTimeOut,
+  ids,
+} from '#api/search/specs/fixtures_elastic.js';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 

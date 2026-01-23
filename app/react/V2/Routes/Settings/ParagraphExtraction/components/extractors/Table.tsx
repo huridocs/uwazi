@@ -2,7 +2,10 @@ import React from 'react';
 import { Table } from '#V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';
-import { columns, NoDataCell } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/index.js';
+import {
+  columns,
+  NoDataCell,
+} from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/index.js';
 import { PXTable } from '../../types';
 
 interface ExtractorsTableProps {

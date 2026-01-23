@@ -19,7 +19,7 @@ import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/Feat
 import { IStore } from '#app/istore.js';
 import { Form } from '#app/Forms/Form.js';
 
-interface SearchBarOwnProps { }
+interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {
   const { search, filters } = state.library;
   return {

@@ -9,7 +9,10 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { JobsRouter } from '#api/core/libs/queue/infrastructure/JobsRouter.js';
 import { MongoQueueAdapter } from '#api/core/libs/queue/infrastructure/MongoQueueAdapter.js';
-import { NamespacedDispatcher, QueueOptions } from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
+import {
+  NamespacedDispatcher,
+  QueueOptions,
+} from '#api/core/libs/queue/infrastructure/NamespacedDispatcher.js';
 import { RoundRobinMongoQueueAdapter } from '#api/core/libs/queue/infrastructure/RoundRobinQueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
@@ -30,7 +33,7 @@ export function DefaultTestingQueueAdapter(transactionManager?: TransactionManag
   return new MongoQueueAdapter(
     getConnection(),
     (transactionManager as MongoTransactionManager) ??
-    new MongoTransactionManager(getClient(), LoggerFactory.default())
+      new MongoTransactionManager(getClient(), LoggerFactory.default())
   );
 }
 

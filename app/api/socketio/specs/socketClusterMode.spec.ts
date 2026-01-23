@@ -15,7 +15,12 @@ import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
 import users from '#api/users/users.js';
 
-import { endSocketServer, setupApiSockets, emitToTenantAdmins, __testUtils } from '#api/socketio/setupSockets.js';
+import {
+  endSocketServer,
+  setupApiSockets,
+  emitToTenantAdmins,
+  __testUtils,
+} from '#api/socketio/setupSockets.js';
 import { emitSocketEvent } from '#api/socketio/standaloneEmitSocketEvent.js';
 import { tenants } from '#api/tenants/index.js';
 

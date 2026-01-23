@@ -34,17 +34,17 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
   ) {
     return this.useSyncedCollection
       ? new SyncedCollection<Collection>(
-        new SessionScopedCollection<Collection>(
+          new SessionScopedCollection<Collection>(
+            this.db.collection<Collection>(collectionName),
+            this.transactionManager
+          ),
+          this.transactionManager,
+          this.db
+        )
+      : new SessionScopedCollection<Collection>(
           this.db.collection<Collection>(collectionName),
           this.transactionManager
-        ),
-        this.transactionManager,
-        this.db
-      )
-      : new SessionScopedCollection<Collection>(
-        this.db.collection<Collection>(collectionName),
-        this.transactionManager
-      );
+        );
   }
 
   protected async collectionExists(): Promise<boolean> {

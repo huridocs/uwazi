@@ -10,7 +10,6 @@ import { IStore } from '#app/istore.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
 import Immutable from 'immutable';
 
-
 describe('Update page datasets', () => {
   let ReduxStore: Store<IStore>;
 

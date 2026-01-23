@@ -132,9 +132,9 @@ const _fetch = (url, data, method, _headers) => {
         },
         !response.ok
           ? {
-            ok: response.ok,
-            message: json.message || response.statusText,
-          }
+              ok: response.ok,
+              message: json.message || response.statusText,
+            }
           : {}
       );
       if (!response.ok) {

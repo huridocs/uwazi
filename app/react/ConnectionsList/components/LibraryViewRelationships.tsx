@@ -14,7 +14,6 @@ import { IStore } from '#app/istore.js';
 import Item from '#app/Layout/Item.jsx';
 import Immutable from 'immutable';
 
-
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
 }

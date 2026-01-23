@@ -6,7 +6,6 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 import entities from '#api/entities/entities.js';
 
-
 import relationshipsDS from '#api/relationships/index.js';
 
 import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEntitiesStatusDataSource.js';

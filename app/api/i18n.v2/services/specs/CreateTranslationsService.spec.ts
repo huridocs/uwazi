@@ -6,7 +6,6 @@ import {
   TranslationMissingLanguages,
 } from '#api/i18n.v2/errors/translationErrors.js';
 
-
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

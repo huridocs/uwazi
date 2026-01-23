@@ -427,14 +427,14 @@ export class AdapterEntityProcessor {
     return references.map(reference =>
       reference.targetEntity?.template?._id
         ? {
-          ...reference,
-          targetEntity: {
-            ...reference.targetEntity,
-            template:
-              templatesById.get(reference.targetEntity.template._id) ??
-              reference.targetEntity.template,
-          },
-        }
+            ...reference,
+            targetEntity: {
+              ...reference.targetEntity,
+              template:
+                templatesById.get(reference.targetEntity.template._id) ??
+                reference.targetEntity.template,
+            },
+          }
         : reference
     );
   }

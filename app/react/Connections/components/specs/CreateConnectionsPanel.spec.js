@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import SidePanel from '#app/Layout/SidePanel.jsx';
 
 import { Icon } from '#UI/Icon/Icon.jsx';
@@ -32,9 +31,9 @@ describe('CreateConnectionPanel', () => {
       searchResults: Immutable.fromJS([{ _id: 'sr1' }, { _id: 'sr2' }]),
       uiState: Immutable.fromJS({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
-      setTargetDocument: () => { },
+      setTargetDocument: () => {},
       onCreate: jasmine.createSpy('onCreate'),
-      onRangedConnect: () => { },
+      onRangedConnect: () => {},
     };
   });
 

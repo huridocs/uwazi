@@ -125,13 +125,13 @@ export class DenormalizationService {
     findCandidatesCallback: (id: Id) => Promise<
       (
         | {
-          sharedId: string;
-          property: string;
-        }
+            sharedId: string;
+            property: string;
+          }
         | {
-          sharedId: string;
-          properties: string[];
-        }
+            sharedId: string;
+            properties: string[];
+          }
       )[]
     >,
     invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>,

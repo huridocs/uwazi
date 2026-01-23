@@ -10,9 +10,11 @@ import * as viewerModule from '#app/Viewer/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 
 import ShowToc from '#app/Documents/components/ShowToc.jsx';
-import { DocumentSidePanel, mapStateToProps } from '#app/Documents/components/DocumentSidePanel.jsx';
+import {
+  DocumentSidePanel,
+  mapStateToProps,
+} from '#app/Documents/components/DocumentSidePanel.jsx';
 import Immutable from 'immutable';
-
 
 jest.mock('#shared/entityDefaultDocument');
 

@@ -1,7 +1,10 @@
 import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { z } from 'zod';
 import { PropertyName } from '#api/core/domain/template/PropertyName.js';
-import { FilterableProperty, FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
+import {
+  FilterableProperty,
+  FilterablePropertyProps,
+} from '#api/core/domain/template/FilterableProperty.js';
 import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { NestedEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
@@ -21,8 +24,7 @@ const EntrySchema = z.object({
   label: z.string().optional(),
 });
 
-const createSchema = (required: boolean) =>
-  z.array(EntrySchema).min(required ? 1 : 0);
+const createSchema = (required: boolean) => z.array(EntrySchema).min(required ? 1 : 0);
 
 class NestedProperty extends FilterableProperty {
   nestedProperties: string[];

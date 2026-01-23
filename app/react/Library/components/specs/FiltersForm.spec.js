@@ -149,7 +149,10 @@ describe('FiltersForm', () => {
       const store = {
         library: {
           ui: Immutable.fromJS({ searchTerm: 'do a barrel roll' }),
-          filters: Immutable.fromJS({ properties: [{ name: 'author' }], documentTypes: { a: true } }),
+          filters: Immutable.fromJS({
+            properties: [{ name: 'author' }],
+            documentTypes: { a: true },
+          }),
         },
         form: {
           filters: 'filtersForm',

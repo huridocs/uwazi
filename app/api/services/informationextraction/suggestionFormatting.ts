@@ -21,7 +21,10 @@ import {
 
 import { syncWrapValidator } from '#shared/tsUtils.js';
 import { InternalIXResultsMessage } from '#api/services/informationextraction/InformationExtraction.js';
-import { AllowedPropertyTypes, checkTypeIsAllowed } from '#api/services/informationextraction/ixextractors.js';
+import {
+  AllowedPropertyTypes,
+  checkTypeIsAllowed,
+} from '#api/services/informationextraction/ixextractors.js';
 
 type RawSuggestion = {
   entity_name?: string;
@@ -238,9 +241,9 @@ const readMessageSuccess = (message: InternalIXResultsMessage) =>
   message.success
     ? {}
     : {
-      status: 'failed' as 'failed',
-      error: message.error_message ? message.error_message : 'Unknown error',
-    };
+        status: 'failed' as 'failed',
+        error: message.error_message ? message.error_message : 'Unknown error',
+      };
 
 class SuggestionTextSourceFormatter {
   private static title({ text, segment_text }: RawSuggestion) {

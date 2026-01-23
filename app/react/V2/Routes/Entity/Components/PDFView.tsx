@@ -14,7 +14,10 @@ import { PlainText } from '#V2/Routes/Entity/Components/PlainText.jsx';
 import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.jsx';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/urlParams.js';
 import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
-import { useTocActions, convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
+import {
+  useTocActions,
+  convertTextSelectionToTocEntry,
+} from '#V2/Routes/Entity/Components/ToC/tocAtom.js';
 
 // eslint-disable-next-line max-statements
 const PDFView = ({ entity, pagePlaintext }: { entity: Entity; pagePlaintext?: string }) => {

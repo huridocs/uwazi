@@ -19,12 +19,7 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
-import {
-  Button,
-  CopyValueInput,
-  Tabs,
-  ConfirmNavigationModal,
-} from '#V2/Components/UI/index.js';
+import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 
 import { EnableButtonCheckbox, InputField } from '#V2/Components/Forms/index.js';
@@ -32,20 +27,23 @@ import { notificationAtom } from '#V2/atoms/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { getPageUrl } from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
-import { HTMLNotification, JSNotification } from '#V2/Routes/Settings/Pages/components/PageEditorComponents.jsx';
+import {
+  HTMLNotification,
+  JSNotification,
+} from '#V2/Routes/Settings/Pages/components/PageEditorComponents.jsx';
 import { Page } from '#app/V2/shared/types.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params }) => {
-      if (params.sharedId) {
-        const page = await pagesAPI.getBySharedId(params.sharedId, headers);
+  async ({ params }) => {
+    if (params.sharedId) {
+      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
 
-        return page;
-      }
+      return page;
+    }
 
-      return {};
-    };
+    return {};
+  };
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;
@@ -54,7 +52,10 @@ const PageEditor = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
 
-  const debouncedChangeHandler = useMemo(() => (handler: () => void) => _.debounce(handler, 500), []);
+  const debouncedChangeHandler = useMemo(
+    () => (handler: () => void) => _.debounce(handler, 500),
+    []
+  );
 
   const {
     register,

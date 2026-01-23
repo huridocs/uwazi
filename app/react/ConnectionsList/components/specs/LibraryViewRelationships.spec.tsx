@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-
 import { Collapsible } from '#app/App/Collapsible.jsx';
 import { LibraryViewRelationshipsComp } from '#app/ConnectionsList/components/LibraryViewRelationships.jsx';
 import Immutable from 'immutable';

@@ -4,8 +4,6 @@ import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
 
-import { DefaultLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
-
 import { LanguageUtils } from '#shared/language/index.js';
 import { inspect } from 'util';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';

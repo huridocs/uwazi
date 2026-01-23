@@ -1,4 +1,3 @@
-
 import * as types from '#app/Attachments/actions/actionTypes.js';
 import Immutable from 'immutable';
 const initialState = {};

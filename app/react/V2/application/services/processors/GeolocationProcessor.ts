@@ -4,7 +4,11 @@ import {
 } from '#V2/domain/entities/types.js';
 import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
 import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
-import { ProcessingContext, PropertyTypeProcessor, AdapterMetadataProperty } from '#V2/application/services/processors/types.js';
+import {
+  ProcessingContext,
+  PropertyTypeProcessor,
+  AdapterMetadataProperty,
+} from '#V2/application/services/processors/types.js';
 
 export class GeolocationProcessor extends BasePropertyProcessor {
   readonly name = 'GeolocationProcessor';

@@ -1,6 +1,10 @@
 import Ajv, { ErrorObject } from 'ajv';
 import { wrapValidator } from '#shared/tsUtils.js';
-import { objectIdSchema, languagesListSchema, geolocationSchema } from '#shared/types/commonSchemas.js';
+import {
+  objectIdSchema,
+  languagesListSchema,
+  geolocationSchema,
+} from '#shared/types/commonSchemas.js';
 import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
 import { QueuedRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
 import { Settings } from './settingsType';

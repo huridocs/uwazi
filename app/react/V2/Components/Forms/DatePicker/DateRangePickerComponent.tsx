@@ -10,7 +10,11 @@ import uniqueID from '#shared/uniqueID.js';
 import { Label } from '#V2/Components/Forms/Label.jsx';
 import { InputError } from '#V2/Components/Forms/InputError.jsx';
 import { InputField } from '#V2/Components/Forms/InputField.jsx';
-import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from '#V2/Components/Forms/DatePicker/DatePickerComponent.jsx';
+import {
+  DatePickerProps,
+  datePickerOptionsByLocale,
+  validateLocale,
+} from '#V2/Components/Forms/DatePicker/DatePickerComponent.jsx';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;

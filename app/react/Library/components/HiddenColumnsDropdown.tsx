@@ -20,7 +20,6 @@ import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
 import { TableViewColumn, IStore } from '#app/istore.js';
 import Immutable from 'immutable';
 
-
 interface HideColumnsComponentProps {
   columns: Immutable.List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;

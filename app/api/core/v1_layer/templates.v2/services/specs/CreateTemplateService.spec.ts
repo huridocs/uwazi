@@ -22,7 +22,6 @@ import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/
 
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { CreateTemplateService } from '#api/core/v1_layer/templates.v2/services/CreateTemplateService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 

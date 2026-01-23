@@ -13,7 +13,6 @@ import { Card } from '#V2/Components/UI/index.js';
 import { getStats } from '#V2/api/settings/index.js';
 import { formatBytes } from '#V2/shared/formatHelpers.js';
 
-
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
   entities: { total: number };
@@ -23,8 +22,8 @@ interface InstanceStats {
 
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      getStats(headers);
+  async () =>
+    getStats(headers);
 
 const Dashboard = () => {
   const stats = useLoaderData() as InstanceStats;

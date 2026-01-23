@@ -12,7 +12,10 @@ import { readFile, writeFile } from 'fs/promises';
 
 import JSONRequest from '#shared/JSONRequest.js';
 import { Readable } from 'stream';
-import { convertToPDFService, MimeTypeNotSupportedForConversion } from '#api/services/convertToPDF/convertToPdfService.js';
+import {
+  convertToPDFService,
+  MimeTypeNotSupportedForConversion,
+} from '#api/services/convertToPDF/convertToPdfService.js';
 
 describe('ConvertToPDFService', () => {
   const serviceURL = 'http://service.uwazi.io/';

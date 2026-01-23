@@ -11,7 +11,6 @@ import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { Button, Card, CopyValueInput } from '#V2/Components/UI/index.js';
 import { requestToken } from '#V2/api/preserve/index.js';
 
-
 const Preserve = () => {
   const settings = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);

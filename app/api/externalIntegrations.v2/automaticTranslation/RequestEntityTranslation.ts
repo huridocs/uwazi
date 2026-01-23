@@ -1,8 +1,6 @@
-
 import { Entity } from '#api/entities.v2/model/Entity.js';
 
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
-
 
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 

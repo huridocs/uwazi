@@ -1,14 +1,24 @@
 /* eslint-disable max-statements */
 
-import { Dispatchable, HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 import { tenants } from '#api/tenants/index.js';
 
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
-import { NoEntitiesForTraining, TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '#api/services/informationextraction/ixMaterials.js';
+import {
+  NoEntitiesForTraining,
+  TrainModelForText,
+} from '#api/services/informationextraction/TrainModelForText.js';
+import {
+  NoFilesForTraining,
+  NoLabeledEntities,
+  NoSegmentedFiles,
+} from '#api/services/informationextraction/ixMaterials.js';
 
 type CustomParams = {
   extractorId: string;

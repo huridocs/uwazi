@@ -19,6 +19,7 @@ declare global {
     __featureFlags__?: ClientFeatureFlags;
     __loadingError__?: RequestError;
     __reduxData__: any;
+    __entryClientLoaded?: boolean;
     store: Store<IStore>;
     updatePageDatasets: typeof updatePageDatasets;
     openEntitySidePanel: typeof openEntitySidePanel;

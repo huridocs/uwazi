@@ -1,15 +1,10 @@
 import uuid from 'node-uuid';
 
 import settings from '#api/settings/settings.js';
-import { files } from '#api/files/index.js';
-import propertiesHelper from '#shared/commonProperties.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { safeName as sharedSafeName } from '#shared/propertyNames.js';
-import { ensure } from '#shared/tsUtils.js';
-import { ExtractedMetadataSchema, PropertySchema } from '#shared/types/commonTypes.js';
-import { TemplateSchema } from '#shared/types/templateType.js';
+import { PropertySchema } from '#shared/types/commonTypes.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import model from '#api/core/v1_layer/templates/templatesModel.js';
 
 const safeName = sharedSafeName;
 

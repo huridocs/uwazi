@@ -11,7 +11,10 @@ import dictionatiesModel from '#api/thesauri/dictionariesModel.js';
 import _ from 'lodash';
 
 import { EnforcedWithId } from '#api/odm/index.js';
-import { IXTaskManager, TaskParameters } from '#api/services/informationextraction/InformationExtraction.js';
+import {
+  IXTaskManager,
+  TaskParameters,
+} from '#api/services/informationextraction/InformationExtraction.js';
 import { propertyTypeIsSelectOrMultiSelect } from '#api/services/informationextraction/ixMaterials.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
 
@@ -25,11 +28,11 @@ type CreateModelTaskInput = {
 };
 
 export class IXTaskService {
-  constructor(private props: Props) { }
+  constructor(private props: Props) {}
 
   // eslint-disable-next-line max-statements
   async createModelTask({ extractor }: CreateModelTaskInput) {
-    const targetProperty = await IXServices.getTargetProperty({ extractor }) as PropertySchema;
+    const targetProperty = (await IXServices.getTargetProperty({ extractor })) as PropertySchema;
 
     const params: TaskParameters = {
       id: extractor._id.toString(),

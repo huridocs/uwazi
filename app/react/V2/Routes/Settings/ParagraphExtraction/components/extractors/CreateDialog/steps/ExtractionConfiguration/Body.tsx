@@ -24,12 +24,12 @@ const getTemplateProperties = (
 ): OptionSchema[] =>
   targetTemplate?.properties
     ? targetTemplate.properties
-      .filter(property => property.type === type)
-      .map(property => ({
-        key: property._id?.toString(),
-        value: property._id?.toString() ?? '',
-        label: property.label,
-      }))
+        .filter(property => property.type === type)
+        .map(property => ({
+          key: property._id?.toString(),
+          value: property._id?.toString() ?? '',
+          label: property.label,
+        }))
     : [];
 
 const Body = () => {

@@ -8,7 +8,11 @@ import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { ExtractorNotFound, Extractors } from '#api/services/informationextraction/ixextractors.js';
-import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from '#api/suggestions/batchProcessing.js';
+import {
+  BatchRange,
+  calculateBatches,
+  fetchEntitiesDataForBatch,
+} from '#api/suggestions/batchProcessing.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
 import { CreateBlankSuggestionStrategy } from '#api/suggestions/useCases/createBlankSuggestionStrategy.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

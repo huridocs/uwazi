@@ -4,8 +4,14 @@ import { useAtom, useAtomValue } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
 import { Button, Sidepanel } from '#V2/Components/UI/index.js';
-import { EntityFilter, Filters } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/Filters.jsx';
-import { filterSidepanelAtom, filterSidepanelStatusAtom } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
+import {
+  EntityFilter,
+  Filters,
+} from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/Filters.jsx';
+import {
+  filterSidepanelAtom,
+  filterSidepanelStatusAtom,
+} from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
 import { Extractor } from '#V2/shared/ParagraphExtractionTypes.js';
 
 const getFilterStatus = (

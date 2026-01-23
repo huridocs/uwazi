@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientSettings } from '#app/apiResponseTypes.js';
 
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
@@ -27,7 +25,6 @@ import {
   ITEMS_PER_PAGE,
   buildPageURL,
 } from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
-import { settingsAtom } from '#V2/atoms/index.js';
 
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';

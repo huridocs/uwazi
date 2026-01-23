@@ -6,7 +6,10 @@ import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
 import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
-import { FileAttachmentDBO, fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
+import {
+  FileAttachmentDBO,
+  fileDBO,
+} from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
 
 export const FileMappers = {
   toModel(dbo: fileDBO, { contentLoader }: { contentLoader: FileContentLoader }) {

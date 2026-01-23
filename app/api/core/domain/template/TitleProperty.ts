@@ -1,7 +1,10 @@
 import { CommonProperty, CommonPropertyProps } from '#api/core/domain/template/CommonProperty.js';
 
 import { Context } from '#api/core/domain/template/Property.js';
-import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
+import {
+  TitlePropertyInvalidNameError,
+  PropertyTypeInvalidTypeError,
+} from '#api/core/domain/template/errors.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 
 type Props = { prioritySorting?: boolean; generatedId?: boolean; type?: PropertyType } & Omit<

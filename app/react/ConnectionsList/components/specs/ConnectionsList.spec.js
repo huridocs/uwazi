@@ -1,4 +1,3 @@
-
 import RelationshipsGraph from '#app/Relationships/components/RelationshipsGraphEdit.jsx';
 import { mapStateToProps } from '#app/ConnectionsList/components/ConnectionsList.js';
 import Immutable from 'immutable';

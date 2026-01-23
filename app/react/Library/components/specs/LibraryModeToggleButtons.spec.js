@@ -4,7 +4,10 @@ import Immutable from 'immutable';
 import { I18NLink } from '#app/I18N/index.js';
 
 import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
-import { LibraryModeToggleButtons, mapStateToProps } from '#app/Library/components/LibraryModeToggleButtons.jsx';
+import {
+  LibraryModeToggleButtons,
+  mapStateToProps,
+} from '#app/Library/components/LibraryModeToggleButtons.jsx';
 
 describe('LibraryModeToggleButtons', () => {
   let component;

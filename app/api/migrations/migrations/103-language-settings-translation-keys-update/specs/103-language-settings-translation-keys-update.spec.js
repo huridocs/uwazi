@@ -1,6 +1,11 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/103-language-settings-translation-keys-update/index.js';
-import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from '#api/migrations/migrations/103-language-settings-translation-keys-update/specs/fixtures.js';
+import {
+  fixtures,
+  templateId,
+  defaultTemplateName,
+  defaultTemplateTitle,
+} from '#api/migrations/migrations/103-language-settings-translation-keys-update/specs/fixtures.js';
 
 describe('migration remove-obsolete-translation-keys', () => {
   const locales = ['en', 'es', 'hu'];

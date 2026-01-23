@@ -1,5 +1,3 @@
-
-
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 
 import { ConnectedComponent as TemplatesFilterComponent } from '#app/Library/components/TemplatesFilter.jsx';
@@ -10,7 +8,6 @@ import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
 import * as redux from 'redux';
 import DocumentTypesList from '#app/Library/components/DocumentTypesList.jsx';
 import Immutable from 'immutable';
-
 
 jest.mock('#app/Library/actions/filterActions');
 

@@ -5,6 +5,6 @@ interface FilesDeletedData {
   files: FileType[];
 }
 
-class FilesDeletedEvent extends AbstractEvent<FilesDeletedData> { }
+class FilesDeletedEvent extends AbstractEvent<FilesDeletedData> {}
 
 export { FilesDeletedEvent };

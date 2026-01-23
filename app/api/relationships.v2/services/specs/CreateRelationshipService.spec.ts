@@ -29,7 +29,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 import { CreateRelationshipService } from '#api/relationships.v2/services/CreateRelationshipService.js';
 import { DenormalizationService } from '#api/relationships.v2/services/DenormalizationService.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';

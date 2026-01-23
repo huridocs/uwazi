@@ -8,7 +8,6 @@ import * as filesApi from '#api/files/filesystem.js';
 
 import * as processDocumentApi from '#api/files/processDocument.js';
 
-
 import settings from '#api/settings/settings.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -61,10 +60,10 @@ class Mocks {
           type: 'document',
         }),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
-      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => { }),
+      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
       'handleError.handleError': jest
         .spyOn(handleError, 'handleError')
-        .mockImplementation(() => { }),
+        .mockImplementation(() => {}),
     };
 
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);

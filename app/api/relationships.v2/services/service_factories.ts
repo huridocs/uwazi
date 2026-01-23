@@ -13,11 +13,9 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 
-
 import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 
 import { search } from '#api/search/index.js';
-
 
 import { User } from '#api/users.v2/model/User.js';
 

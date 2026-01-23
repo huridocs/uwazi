@@ -16,7 +16,10 @@ import {
   ExistsInput,
   PXExtractorsDataSource,
 } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
-import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import {
+  MongoPXDenormalizedExtractorDBO,
+  MongoPXExtractorDBO,
+} from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 import { mongoPXEntitiesStatusCollection } from '#api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { PXExtractorsQueryService } from '#api/paragraphExtraction/domain/PXExtractorsQueryService.js';

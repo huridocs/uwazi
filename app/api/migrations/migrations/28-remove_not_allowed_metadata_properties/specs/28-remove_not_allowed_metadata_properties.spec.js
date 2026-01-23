@@ -1,6 +1,9 @@
 import { testingDB } from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/28-remove_not_allowed_metadata_properties/index.js';
-import fixtures, { template1, template2 } from '#api/migrations/migrations/28-remove_not_allowed_metadata_properties/specs/fixtures.js';
+import fixtures, {
+  template1,
+  template2,
+} from '#api/migrations/migrations/28-remove_not_allowed_metadata_properties/specs/fixtures.js';
 
 describe('migration remove_not_allowed_metadata_properties', () => {
   beforeEach(async () => {

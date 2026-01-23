@@ -5,7 +5,11 @@ import Immutable from 'immutable';
 import { Markers } from '#app/Map/index.jsx';
 
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { mapStateToProps, mapDispatchToProps, MapComponent } from '#app/Markdown/components/Map.jsx';
+import {
+  mapStateToProps,
+  mapDispatchToProps,
+  MapComponent,
+} from '#app/Markdown/components/Map.jsx';
 import markdownDatasets from '#app/Markdown/markdownDatasets.js';
 
 describe('Map Markdown component', () => {

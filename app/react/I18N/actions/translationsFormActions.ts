@@ -5,7 +5,7 @@ import { ClientTranslationSchema } from '#app/istore.js';
 import filter from 'lodash/filter.js';
 import find from 'lodash/find.js';
 
-type LocaleTranslation = { locale: string;[key: string]: string };
+type LocaleTranslation = { locale: string; [key: string]: string };
 
 type formDataType = {
   key: string;

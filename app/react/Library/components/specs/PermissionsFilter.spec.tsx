@@ -3,13 +3,14 @@ import { shallow } from 'enzyme';
 
 import { Aggregations } from '#shared/types/aggregations.js';
 
-
 import { MultiSelect } from '#app/Forms/index.js';
 
 import { renderConnected } from '#app/utils/test/renderConnected.jsx';
-import { PermissionsFilter, PermissionsFilterUncontrolled } from '#app/Library/components/PermissionsFilter.jsx';
+import {
+  PermissionsFilter,
+  PermissionsFilterUncontrolled,
+} from '#app/Library/components/PermissionsFilter.jsx';
 import Immutable from 'immutable';
-
 
 describe('Permissions Filter', () => {
   let component: any;

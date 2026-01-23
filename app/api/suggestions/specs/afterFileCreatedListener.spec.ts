@@ -6,7 +6,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { AfterFileUpdatedListener } from '#api/suggestions/listeners/afterFileCreatedListener.js';
 import { CreateBlankSuggestionsFromDocument } from '#api/suggestions/useCases/createBlankSuggestionsFromDocument.js';

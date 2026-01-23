@@ -51,7 +51,11 @@ import {
 import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
-import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '#api/services/informationextraction/ixMaterials.js';
+import {
+  FileWithAggregation,
+  NoFilesForTraining,
+  NoLabeledEntities,
+} from '#api/services/informationextraction/ixMaterials.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 
 let informationExtractionForJob: InformationExtraction;
@@ -195,7 +199,7 @@ describe('InformationExtraction', () => {
     IXExternalService.reset();
     jest.resetAllMocks();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
   afterEach(async () => {

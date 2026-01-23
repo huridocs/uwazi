@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { isClient } from '#app/utils/index.js';
+import React from 'react';
 import { PaneLayoutProps } from '#V2/Components/Layouts/PaneLayout/types.js';
 import { PaneLayoutDesktop } from '#V2/Components/Layouts/PaneLayout/PaneLayoutDesktop.jsx';
 import { Pane } from '#V2/Components/Layouts/PaneLayout/Pane.jsx';

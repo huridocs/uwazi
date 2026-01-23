@@ -31,11 +31,11 @@ import { CollectionOptionToggle } from '#V2/Routes/Settings/Collection/Collectio
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const settings = await SettingsAPI.get(headers);
-      const templates = await TemplatesAPI.get(headers);
-      return { settings, templates };
-    };
+  async () => {
+    const settings = await SettingsAPI.get(headers);
+    const templates = await TemplatesAPI.get(headers);
+    return { settings, templates };
+  };
 
 const dateOptions = () => {
   const date = new Date();

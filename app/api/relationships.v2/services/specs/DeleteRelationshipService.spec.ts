@@ -1,4 +1,3 @@
-
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';

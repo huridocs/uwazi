@@ -9,7 +9,6 @@ import { renderConnectedContainer, defaultState } from '#app/utils/test/renderCo
 import { GeneralError } from '#V2/Components/ErrorHandling/GeneralError.jsx';
 import Immutable from 'immutable';
 
-
 let requestId = '';
 let errorCode = 500;
 

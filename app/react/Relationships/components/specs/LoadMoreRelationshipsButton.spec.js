@@ -1,9 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { LoadMoreRelationshipsButton, mapStateToProps } from '#app/Relationships/components/LoadMoreRelationshipsButton.jsx';
+import {
+  LoadMoreRelationshipsButton,
+  mapStateToProps,
+} from '#app/Relationships/components/LoadMoreRelationshipsButton.jsx';
 import Immutable from 'immutable';
-
 
 jest.mock('#app/I18N', () => ({
   t: (_context, key) => key,
@@ -55,7 +57,10 @@ describe('LoadMoreRelationshipsButton', () => {
       const state = {
         relationships: {
           list: {
-            searchResults: Immutable.fromJS({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs' }),
+            searchResults: Immutable.fromJS({
+              totalHubs: 'totalHubs',
+              requestedHubs: 'requestedHubs',
+            }),
           },
         },
       };

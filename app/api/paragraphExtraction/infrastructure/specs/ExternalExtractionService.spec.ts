@@ -9,7 +9,11 @@ import { GetParagraphsResultOutput } from '#api/paragraphExtraction/domain/PXExt
 
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import { PXExternalExtractionService } from '#api/paragraphExtraction/infrastructure/ExternalExtractionService/ExternalExtractionService.js';
-import { document, mockGetParagraphsResult, segmentation } from '#api/paragraphExtraction/infrastructure/specs/fixtures.js';
+import {
+  document,
+  mockGetParagraphsResult,
+  segmentation,
+} from '#api/paragraphExtraction/infrastructure/specs/fixtures.js';
 
 const upload = multer();
 const app = express();

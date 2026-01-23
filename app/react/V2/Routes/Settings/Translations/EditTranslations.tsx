@@ -39,49 +39,49 @@ import { LanguagePill } from '#V2/Routes/Settings/Translations/components/Langua
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params }: { params: Params }) => {
-      const translations = await translationsAPI.get(headers, params);
-      const settings = await settingsAPI.get(headers);
+  async ({ params }: { params: Params }) => {
+    const translations = await translationsAPI.get(headers, params);
+    const settings = await settingsAPI.get(headers);
 
-      const sortedTranslations = translations.map(language => {
-        const sortedContexts = language.contexts.map(context => {
-          const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
+    const sortedTranslations = translations.map(language => {
+      const sortedContexts = language.contexts.map(context => {
+        const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
-          const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
-            const value = context.values[contextKey];
-            return { ...results, [contextKey]: value };
-          }, {});
+        const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
+          const value = context.values[contextKey];
+          return { ...results, [contextKey]: value };
+        }, {});
 
-          return { ...context, values: sortedContext };
-        });
-
-        return { ...language, contexts: sortedContexts };
+        return { ...context, values: sortedContext };
       });
 
-      return { translations: sortedTranslations, settings };
-    };
+      return { ...language, contexts: sortedContexts };
+    });
+
+    return { translations: sortedTranslations, settings };
+  };
 
 const editTranslationsAction =
   (): ActionFunction =>
-    // eslint-disable-next-line max-statements
-    async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
-      const formData = await request.formData();
-      const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
-      const { context } = params;
-      let response: ClientTranslationSchema[] | FetchResponseError = [];
+  // eslint-disable-next-line max-statements
+  async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
+    const formData = await request.formData();
+    const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
+    const { context } = params;
+    let response: ClientTranslationSchema[] | FetchResponseError = [];
 
-      if (formIntent === 'form-submit' && context) {
-        const formValues = formData.get('data') as string;
-        response = await translationsAPI.post(JSON.parse(formValues), context);
-      }
+    if (formIntent === 'form-submit' && context) {
+      const formValues = formData.get('data') as string;
+      response = await translationsAPI.post(JSON.parse(formValues), context);
+    }
 
-      if (formIntent === 'file-upload') {
-        const file = formData.get('data') as File;
-        response = await translationsAPI.importTranslations(file, 'System');
-      }
+    if (formIntent === 'file-upload') {
+      const file = formData.get('data') as File;
+      response = await translationsAPI.importTranslations(file, 'System');
+    }
 
-      return response;
-    };
+    return response;
+  };
 
 type formValuesType = {
   _id?: string;

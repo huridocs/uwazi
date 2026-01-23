@@ -2,7 +2,6 @@ import { actions } from '#app/BasicReducer/reducer.js';
 
 import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 
-
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
 import { store } from '#app/store.js';

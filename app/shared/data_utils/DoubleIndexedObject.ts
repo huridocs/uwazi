@@ -3,7 +3,7 @@ type IndexTypes = string | number | symbol;
 
 type Values<T extends IndexTypes = IndexTypes, U = any> = Record<T, Record<T, U>>;
 
-class DoubleIndexedObjectError extends Error { }
+class DoubleIndexedObjectError extends Error {}
 
 class DoubleIndexedObject<T extends IndexTypes = IndexTypes, U = any> {
   obj = {} as Values<T, U>;

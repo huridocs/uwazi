@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import _ from 'lodash';
 
-class ArraysError extends Error { }
+class ArraysError extends Error {}
 
 class Arrays<T> {
   arr: { [key: string]: T[] };

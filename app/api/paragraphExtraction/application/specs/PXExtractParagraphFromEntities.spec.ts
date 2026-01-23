@@ -4,8 +4,6 @@ import { DBFixture } from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -21,8 +19,15 @@ import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusMode
 import { MongoPXEntityStatusDBO } from '#api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { entity1, entity2, extractor } from '#api/paragraphExtraction/application/specs/fixtures.js';
-import { Input, PXExtractParagraphsFromEntities } from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
+import {
+  entity1,
+  entity2,
+  extractor,
+} from '#api/paragraphExtraction/application/specs/fixtures.js';
+import {
+  Input,
+  PXExtractParagraphsFromEntities,
+} from '#api/paragraphExtraction/application/PXExtractParagraphFromEntities.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const mongoEntityStatus1: MongoPXEntityStatusDBO = {

@@ -1,4 +1,3 @@
-
 import * as types from '#app/Connections/actions/actionTypes.js';
 import Immutable from 'immutable';
 const initialState = { open: false, connecting: false };

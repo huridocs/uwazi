@@ -11,7 +11,11 @@ import {
   CompositionResult,
   ProcessingContext,
 } from '#V2/application/services/processors/types.js';
-import { cardViewOptions, fullDetailOptions, editionModeOptions } from '#V2/application/optionsPresets.js';
+import {
+  cardViewOptions,
+  fullDetailOptions,
+  editionModeOptions,
+} from '#V2/application/optionsPresets.js';
 
 export class EntityCompositionUseCase {
   constructor(

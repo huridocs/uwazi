@@ -12,7 +12,6 @@ import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
 
-
 import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
 
 import {
@@ -32,8 +31,8 @@ type TablePage = Page & { rowId: string };
 
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () =>
-      (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
+  async () =>
+    (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
 
 const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
   type: !hasErrors ? 'success' : 'error',

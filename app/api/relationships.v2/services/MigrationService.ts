@@ -15,7 +15,11 @@ import { TestOneHubRequest } from '#shared/types/api.v2/relationships.testOneHub
 import { RelationshipsDataSource } from '#api/relationships.v2/contracts/RelationshipsDataSource.js';
 import { HubDataSource } from '#api/relationships.v2/contracts/HubDataSource.js';
 import { V1ConnectionsDataSource } from '#api/relationships.v2/contracts/V1ConnectionsDataSource.js';
-import { V1Connection, ReadableV1Connection, V1TextReference } from '#api/relationships.v2/model/V1Connection.js';
+import {
+  V1Connection,
+  ReadableV1Connection,
+  V1TextReference,
+} from '#api/relationships.v2/model/V1Connection.js';
 import {
   EntityPointer,
   FilePointer,
@@ -28,7 +32,7 @@ import { MigrationHubRecord } from '#api/relationships.v2/model/MigrationHubReco
 
 const HUB_BATCH_SIZE = 1000;
 
-class MissingFileNotRepairedError extends Error { }
+class MissingFileNotRepairedError extends Error {}
 
 type MigrationPlan = TestOneHubRequest['migrationPlan'];
 

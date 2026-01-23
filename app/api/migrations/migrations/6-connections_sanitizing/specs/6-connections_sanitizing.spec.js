@@ -1,6 +1,14 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/6-connections_sanitizing/index.js';
-import fixtures, { hub1, hub3, shared1, shared2, shared3, shared4, shared5 } from '#api/migrations/migrations/6-connections_sanitizing/specs/fixtures.js';
+import fixtures, {
+  hub1,
+  hub3,
+  shared1,
+  shared2,
+  shared3,
+  shared4,
+  shared5,
+} from '#api/migrations/migrations/6-connections_sanitizing/specs/fixtures.js';
 
 describe('migration connections_sanitizing', () => {
   beforeEach(async () => {

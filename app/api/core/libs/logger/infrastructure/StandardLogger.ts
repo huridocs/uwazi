@@ -4,7 +4,6 @@ import { LogEntry, LogMetadata } from '#api/core/libs/logger/infrastructure/LogE
 import { LogLevel, LogLevels } from '#api/core/libs/logger/infrastructure/LogLevels.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { tenants } from '#api/tenants/index.js';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -46,14 +45,14 @@ class StandardLogger implements Logger {
 
 export const withFeature =
   (writer: LogWriter, featureName: string): LogWriter =>
-    (log: LogEntry) => {
-      writer(
-        new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
-          ...log.metadata,
-          feature: featureName,
-        })
-      );
-    };
+  (log: LogEntry) => {
+    writer(
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+        ...log.metadata,
+        feature: featureName,
+      })
+    );
+  };
 
 export { StandardLogger };
 

@@ -1,4 +1,3 @@
-
 import { actions as formActions } from 'react-redux-form';
 
 import { notificationActions } from '#app/Notifications/index.js';

@@ -2,9 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-
-
-import { clickOnDocument, selectAllDocuments, mapStateToProps } from '#app/Library/components/DocumentsList.js';
+import {
+  clickOnDocument,
+  selectAllDocuments,
+  mapStateToProps,
+} from '#app/Library/components/DocumentsList.js';
 import { DocumentsList } from '#app/Layout/DocumentsList.jsx';
 
 describe('Library DocumentsList container', () => {
@@ -26,7 +28,7 @@ describe('Library DocumentsList container', () => {
       selectedDocuments: Immutable.fromJS([]),
       search: { sort: 'sort' },
       filters: Immutable.fromJS({ documentTypes: [] }),
-      searchDocuments: () => {},
+      searchDocuments: () => { },
       user: Immutable.fromJS({}),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       selectDocument: jasmine.createSpy('selectDocument'),
@@ -34,7 +36,7 @@ describe('Library DocumentsList container', () => {
       unselectDocument: jasmine.createSpy('unselectDocument'),
       storeKey: 'library',
       location: {},
-      navigate: () => {},
+      navigate: () => { },
     };
   });
 
@@ -109,16 +111,16 @@ describe('Library DocumentsList container', () => {
 
   describe('maped state', () => {
     it('should contain the documents, library filters and search options', () => {
-      const filters = fromJS({ documentTypes: [] });
+      const filters = Immutable.fromJS({ documentTypes: [] });
 
       const store = {
         library: {
           documents,
           filters,
-          ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
+          ui: Immutable.fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
           search: { sort: 'sortProperty' },
         },
-        user: fromJS({ _id: 'uid' }),
+        user: Immutable.fromJS({ _id: 'uid' }),
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });

@@ -3,7 +3,10 @@ import { objectIndex, objectIndexToArrays } from '#shared/data_utils/objectIndex
 
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { LanguageDoesNotExist, TranslationMissingLanguages } from '#api/i18n.v2/errors/translationErrors.js';
+import {
+  LanguageDoesNotExist,
+  TranslationMissingLanguages,
+} from '#api/i18n.v2/errors/translationErrors.js';
 import { Translation } from '#api/i18n.v2/model/Translation.js';
 import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
 

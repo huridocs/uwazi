@@ -1,18 +1,18 @@
 import { isClient } from '#app/utils/index.js';
+import Mark from 'mark.js';
 
-let Mark;
 if (isClient) {
-  Mark = require('mark.js');
   window.Marker = Mark;
 }
 
 let marker;
 export default {
   init(selector) {
-    marker = new Mark(selector);
-    if (isClient) {
-      window.Marker = marker;
+    if (!isClient) {
+      return;
     }
+    marker = new Mark(selector);
+    window.Marker = marker;
   },
 
   markRegExp(regexp, options) {

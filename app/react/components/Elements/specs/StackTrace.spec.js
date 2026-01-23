@@ -8,7 +8,6 @@ import { Icon } from '#UI/Icon/Icon.jsx';
 import StackTrace from '#app/components/Elements/StackTrace.jsx';
 import Immutable from 'immutable';
 
-
 describe('StackTrace', () => {
   let component;
   const props = {

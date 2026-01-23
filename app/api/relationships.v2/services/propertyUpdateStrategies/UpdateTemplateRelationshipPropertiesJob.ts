@@ -4,7 +4,10 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 
 import { Template } from '#api/core/domain/template/Template.js';
 
-import { Dispatchable, HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { UpdateRelationshipPropertiesJob } from '#api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob.js';
 
 export class UpdateTemplateRelationshipPropertiesJob implements Dispatchable {

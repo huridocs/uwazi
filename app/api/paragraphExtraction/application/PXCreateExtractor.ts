@@ -13,7 +13,10 @@ import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtrac
 
 import { PXExtractor } from '#api/paragraphExtraction/domain/PXExtractor.js';
 import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
-import { PXErrorCode, PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import {
+  PXErrorCode,
+  PXValidationError,
+} from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 type Input = {
   targetTemplateId: string;

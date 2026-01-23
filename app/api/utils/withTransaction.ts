@@ -62,7 +62,7 @@ const withTransaction = async <T>(
             const elapsedTime = performance.now() - startTime;
             logger.info(
               `[v1_transactions] Transactions ${logNamespace} was manually aborted,` +
-              ` session id -> ${inspect(transactionManager.getSession()?.id)} (${elapsedTime.toFixed(2)}ms)`
+                ` session id -> ${inspect(transactionManager.getSession()?.id)} (${elapsedTime.toFixed(2)}ms)`
             );
           }
         },

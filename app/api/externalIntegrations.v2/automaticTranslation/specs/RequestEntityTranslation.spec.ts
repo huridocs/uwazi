@@ -1,7 +1,4 @@
 /* eslint-disable max-classes-per-file */
-
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
@@ -22,8 +19,14 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-import { ValidationError, Validator } from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
-import { ATTaskMessage, RequestEntityTranslation } from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
+import {
+  ValidationError,
+  Validator,
+} from '#api/externalIntegrations.v2/automaticTranslation/infrastructure/Validator.js';
+import {
+  ATTaskMessage,
+  RequestEntityTranslation,
+} from '#api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation.js';
 
 import { Redis } from 'app/api/infrastructure/Redis.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

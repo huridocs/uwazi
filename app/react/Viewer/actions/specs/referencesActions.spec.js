@@ -153,7 +153,7 @@ describe('Viewer referencesActions', () => {
         store = mockStore({});
         connection = { sourceDocument: 'sourceId' };
         targetRange = { text: 'target text' };
-        onCreate = () => { };
+        onCreate = () => {};
       });
 
       it('should unset the targetDocReferences', () => {

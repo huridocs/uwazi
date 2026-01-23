@@ -46,7 +46,7 @@ describe('InformationExtraction Error Handling', () => {
     });
     IXExternalService.reset();
     jest.resetAllMocks();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => { });
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   }, 30000);
 
   afterEach(async () => {

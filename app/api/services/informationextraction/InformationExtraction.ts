@@ -14,7 +14,6 @@ import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationMod
 
 import { EnforcedWithId } from '#api/odm/index.js';
 
-
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 
 import { filesModel } from '#api/files/filesModel.js';
@@ -141,8 +140,8 @@ interface TextSelectionMaterialsData extends LabeledMaterialsData {
   entity_name?: string;
   source_text?: string;
   label_segments_boxes:
-  | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
-  | undefined;
+    | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
+    | undefined;
 }
 
 interface ValuesSelectionMaterialsData extends LabeledMaterialsData {

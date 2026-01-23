@@ -24,8 +24,15 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { Translate } from '#app/I18N/index.js';
-import { DraggableRow, RowDragHandleCell, DnDHeader } from '#V2/Components/UI/Table/DnDComponents.jsx';
-import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from '#V2/Components/UI/Table/RowSelectComponents.jsx';
+import {
+  DraggableRow,
+  RowDragHandleCell,
+  DnDHeader,
+} from '#V2/Components/UI/Table/DnDComponents.jsx';
+import {
+  IndeterminateCheckboxHeader,
+  IndeterminateCheckboxRow,
+} from '#V2/Components/UI/Table/RowSelectComponents.jsx';
 import { dndSortHandler, getRowIds } from '#V2/Components/UI/Table/helpers.js';
 import { SortingChevrons } from '#V2/Components/UI/Table/SortingChevrons.jsx';
 import { GroupCell, GroupHeader } from '#V2/Components/UI/Table/GroupComponents.jsx';

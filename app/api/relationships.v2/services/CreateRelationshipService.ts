@@ -63,11 +63,11 @@ function mapDataToSelection(data: ReferencePointerData['selections']) {
 function mapDataToPointer(data: CreateRelationshipData['from' | 'to']) {
   return data.type === 'text'
     ? new TextReferencePointer(
-      data.entity,
-      data.file,
-      mapDataToSelection(data.selections),
-      data.text
-    )
+        data.entity,
+        data.file,
+        mapDataToSelection(data.selections),
+        data.text
+      )
     : new EntityPointer(data.entity);
 }
 

@@ -5,7 +5,10 @@ import {
 } from '#api/csv.v2/domain/CsvImportThesauriValues.js';
 import { ThesauriRepository } from '#api/csv.v2/application/contracts/ThesauriRepository.js';
 import { TranslationsRepository } from '#api/csv.v2/application/contracts/TranslationsRepository.js';
-import { CsvThesauriValuesDiff, ThesauriDiffResult } from '#api/csv.v2/application/services/CsvThesauriValuesDiff.js';
+import {
+  CsvThesauriValuesDiff,
+  ThesauriDiffResult,
+} from '#api/csv.v2/application/services/CsvThesauriValuesDiff.js';
 
 type Deps = {
   thesauriRepo: ThesauriRepository;

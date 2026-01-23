@@ -24,7 +24,7 @@ it('should execute the updater and reindex the entity', async () => {
   });
   const job = new UpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
 
-  await job.handleDispatch(async () => { }, { entityIds: ['entity'] });
+  await job.handleDispatch(async () => {}, { entityIds: ['entity'] });
   expect(updater.update).toHaveBeenCalledWith(['entity']);
   expect(indexEntity).toHaveBeenCalledWith(['entity']);
 });

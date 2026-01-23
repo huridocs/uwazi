@@ -1,5 +1,3 @@
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 
 import { PXCreateParagraphs } from '#api/paragraphExtraction/application/PXCreateParagraphs.js';
@@ -11,8 +9,6 @@ import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey
 import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-
-import { DefaultSettingsDataSource } from '#api/settings.v2/database/data_source_defaults.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';

@@ -12,7 +12,6 @@ import settings from '#api/settings/settings.js';
 
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 
-
 import createError from '#api/utils/Error.js';
 
 import { handleError } from '#api/utils/handleError.js';

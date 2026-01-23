@@ -1,4 +1,3 @@
-
 import prioritySorting from '#app/utils/prioritySortingCriteria.js';
 import Immutable from 'immutable';
 

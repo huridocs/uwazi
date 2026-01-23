@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-
 import { ActionButton, mapStateToProps } from '#app/Connections/components/ActionButton.jsx';
 import Immutable from 'immutable';
 

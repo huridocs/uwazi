@@ -4,7 +4,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 
-
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';

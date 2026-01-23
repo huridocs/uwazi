@@ -12,7 +12,7 @@ import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
+import { ClientEntitySchema, ClientTemplateSchema } from '#app/istore.js';
 import {
   Button,
   Sidepanel,
@@ -30,7 +30,12 @@ import {
   SELECT_TYPES,
 } from '#V2/Routes/Settings/IX/helpers/index.js';
 import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.jsx';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from '#V2/Routes/Settings/IX/components/atoms/index.js';
+import {
+  highlightsAtom,
+  selectionErrorAtom,
+  textSelectionAtom,
+  selectionsAtom,
+} from '#V2/Routes/Settings/IX/components/atoms/index.js';
 import { selectAndSearchAtom } from '#V2/Routes/Settings/IX/components/atoms/selectAndSearchAtom.js';
 import { SidepanelProps } from '#V2/Routes/Settings/IX/components/sidepanel/types.js';
 import { Checkbox } from '#app/V2/Components/Forms/index.js';

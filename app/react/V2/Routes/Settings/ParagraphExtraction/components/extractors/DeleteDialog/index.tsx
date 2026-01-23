@@ -13,7 +13,7 @@ const DeleteDialog = ({
   onSuccess,
   selected,
   isOpen = false,
-  setIsOpen = () => { },
+  setIsOpen = () => {},
 }: {
   setIsProcessing: (value: boolean) => void;
   selected: PXTable[];

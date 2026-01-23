@@ -6,7 +6,6 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
 
-
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 
 import { updateStates } from '#api/suggestions/updateState.js';

@@ -18,7 +18,10 @@ import { PXEntitiesStatusDataSource } from '#api/paragraphExtraction/domain/PXEn
 import { PXExtractionKey } from '#api/paragraphExtraction/domain/PXExtractionKey.js';
 import { PXExtractionService } from '#api/paragraphExtraction/domain/PXExtractionService.js';
 import { PXExtractorsDataSource } from '#api/paragraphExtraction/domain/PXExtractorDataSource.js';
-import { PXErrorCode, PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
+import {
+  PXErrorCode,
+  PXValidationError,
+} from '#api/paragraphExtraction/domain/PXValidationError.js';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;

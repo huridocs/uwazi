@@ -6,7 +6,6 @@ import Ajv from 'ajv';
 import fs from 'fs/promises';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
-import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import relationships from '#api/relationships/index.js';
 import { storage, uploadsPath } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
@@ -17,7 +16,11 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import entities from '#api/entities/index.js';
+import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import entities from '../entities.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';

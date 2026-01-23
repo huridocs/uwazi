@@ -14,7 +14,13 @@ import {
 
 import { Map } from '#app/Map/index.jsx';
 import * as MapHelper from '#app/Map/MapHelper.jsx';
-import { deletedEntityAtom, localeAtom, settingsAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
+import {
+  deletedEntityAtom,
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+  translationsAtom,
+} from '#V2/atoms/index.js';
 
 jest.mock('#app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),

@@ -13,7 +13,11 @@ import { RenderAttachment } from '#app/Attachments/components/RenderAttachment.j
 import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
 
 import * as supportingFileActions from '#app/Metadata/actions/supportingFilesActions.js';
-import { MediaModal, MediaModalProps, MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
+import {
+  MediaModal,
+  MediaModalProps,
+  MediaModalType,
+} from '#app/Metadata/components/MediaModal.jsx';
 
 const store = {
   library: {

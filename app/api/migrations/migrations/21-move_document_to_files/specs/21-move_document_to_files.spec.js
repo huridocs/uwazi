@@ -3,7 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { config } from '#api/config.js';
 import testingDB from '#api/utils/testing_db.js';
-import migration, { fileExists } from '#api/migrations/migrations/21-move_document_to_files/index.js';
+import migration, {
+  fileExists,
+} from '#api/migrations/migrations/21-move_document_to_files/index.js';
 import fixtures from '#api/migrations/migrations/21-move_document_to_files/specs/fixtures.js';
 
 const unique = (v, i, a) => a.indexOf(v) === i;

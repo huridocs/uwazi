@@ -32,10 +32,10 @@ type CustomUpload = FileType & { rowId: string };
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<CustomUpload[]> =>
-    async () => {
-      const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
-      return files;
-    };
+  async () => {
+    const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
+    return files;
+  };
 
 const uploadService = new UploadService('custom');
 
@@ -53,7 +53,7 @@ const CustomUploads = () => {
     action: () => void;
     items: CustomUpload[];
   }>({
-    action: () => { },
+    action: () => {},
     items: [],
   });
 

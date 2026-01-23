@@ -10,7 +10,10 @@ import {
   SelectPropertyAssignment,
   TextPropertyValue,
 } from '#api/core/domain/template/PropertyValue.js';
-import { PropertyDoesNotExistError, PropertyTypeMismatchOnSetError } from '#api/core/domain/entity/errors.js';
+import {
+  PropertyDoesNotExistError,
+  PropertyTypeMismatchOnSetError,
+} from '#api/core/domain/entity/errors.js';
 
 type Props = {
   language: LanguageISO6391;

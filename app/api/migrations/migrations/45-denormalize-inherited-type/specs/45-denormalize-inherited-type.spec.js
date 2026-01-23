@@ -1,6 +1,10 @@
 import testingDB from '#api/utils/testing_db.js';
 import migration from '#api/migrations/migrations/45-denormalize-inherited-type/index.js';
-import fixtures, { text, multiselect, numeric } from '#api/migrations/migrations/45-denormalize-inherited-type/specs/fixtures.js';
+import fixtures, {
+  text,
+  multiselect,
+  numeric,
+} from '#api/migrations/migrations/45-denormalize-inherited-type/specs/fixtures.js';
 
 describe('migration denormalize-inherited-type', () => {
   beforeEach(async () => {

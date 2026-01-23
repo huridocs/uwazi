@@ -23,7 +23,7 @@ const ColumnItem = ({ item }: { item: SelectableColumn }) => (
       ref={updateIndeterminate(item)}
       type="checkbox"
       checked={!item.hidden}
-      onChange={() => { }}
+      onChange={() => {}}
     />
     comment to see the full error message
     <Translate context={item.translationContext}>{item.label}</Translate>

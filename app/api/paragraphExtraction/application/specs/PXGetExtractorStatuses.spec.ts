@@ -12,7 +12,10 @@ import { GetExtractorStatusesInput } from '#api/paragraphExtraction/domain/PXExt
 
 import { EntityStatus } from '#api/paragraphExtraction/domain/PXEntityStatusModel.js';
 
-import { extractorsQueryFixtures, extractor1 } from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
+import {
+  extractorsQueryFixtures,
+  extractor1,
+} from '#api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures.js';
 import { PXGetExtractorStatuses } from '#api/paragraphExtraction/application/PXGetExtractorStatuses.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';

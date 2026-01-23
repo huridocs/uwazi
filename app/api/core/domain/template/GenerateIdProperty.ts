@@ -2,7 +2,10 @@ import { z } from 'zod';
 import { generateID } from '#shared/IDGenerator.js';
 import { Context, CreatePropertyAssignmentInput } from '#api/core/domain/template/Property.js';
 import { PropertyTypeInvalidTypeError } from '#api/core/domain/template/errors.js';
-import { FilterableProperty, FilterablePropertyProps } from '#api/core/domain/template/FilterableProperty.js';
+import {
+  FilterableProperty,
+  FilterablePropertyProps,
+} from '#api/core/domain/template/FilterableProperty.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { GeneratedIdEntry, PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 

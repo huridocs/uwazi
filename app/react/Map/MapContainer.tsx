@@ -6,7 +6,6 @@ import { isClient } from '#app/utils/index.js';
 import { LMap } from '#app/Map/index.jsx';
 
 import { DataMarker, MarkerInput } from '#app/Map/MapHelper.jsx';
-import { IStore } from '#app/istore.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -39,20 +38,22 @@ const Map = ({ ...props }: MapProps) => {
 
   useEffect(() => {
     if (tilesProvider === 'google' && mapApiKey && isClient) {
-      import('@googlemaps/js-api-loader').then(module => {
-        const GoogleMapsLoader = module.default || module;
-        const Loader = GoogleMapsLoader.Loader || module.Loader;
-        if (Loader) {
-          const loader = new Loader({
-            apiKey: mapApiKey,
-            retries: 0,
-          });
-          loader
-            .load()
-            .then(() => {})
-            .catch(() => {});
-        }
-      }).catch(() => {});
+      import('@googlemaps/js-api-loader')
+        .then(module => {
+          const GoogleMapsLoader = module.default || module;
+          const Loader = GoogleMapsLoader.Loader || module.Loader;
+          if (Loader) {
+            const loader = new Loader({
+              apiKey: mapApiKey,
+              retries: 0,
+            });
+            loader
+              .load()
+              .then(() => { })
+              .catch(() => { });
+          }
+        })
+        .catch(() => { });
     }
   }, [tilesProvider, mapApiKey]);
 
@@ -61,11 +62,11 @@ const Map = ({ ...props }: MapProps) => {
       ...info,
       ...(t
         ? {
-            [t._id]: {
-              color: t.color,
-              name: t.name,
-            },
-          }
+          [t._id]: {
+            color: t.color,
+            name: t.name,
+          },
+        }
         : {}),
     }),
     {}

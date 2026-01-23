@@ -8,7 +8,10 @@ import testingDB from '#api/utils/testing_db.js';
 import { MongoClient, MongoError } from 'mongodb';
 
 import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
-import { getClient, getTenant } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import {
+  getClient,
+  getTenant,
+} from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 const ids = getIdMapper();

@@ -1,5 +1,3 @@
-
-
 import reducer from '#app/Connections/reducers/connectionReducer.js';
 import Immutable from 'immutable';
 
@@ -49,7 +47,10 @@ describe('Connections connection reducer', () => {
 
   describe('SET_TARGET_DOCUMENT', () => {
     it('should set the target document', () => {
-      const newState = reducer(Immutable.fromJS({}), { type: 'SET_TARGET_DOCUMENT', id: 'targetId' });
+      const newState = reducer(Immutable.fromJS({}), {
+        type: 'SET_TARGET_DOCUMENT',
+        id: 'targetId',
+      });
       expect(newState.toJS()).toEqual({ targetDocument: 'targetId' });
     });
   });

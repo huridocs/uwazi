@@ -7,7 +7,6 @@ import { actions } from '#app/V2/BasicReducer/reducer.js';
 import { ViewDocButton, mapDispatchToProps } from '#app/Library/components/ViewDocButton.jsx';
 import Immutable from 'immutable';
 
-
 describe('ViewDocButton', () => {
   let props;
   let component;

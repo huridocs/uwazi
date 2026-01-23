@@ -11,7 +11,10 @@ import { ClientUserSchema } from '#app/apiResponseTypes.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
 import Immutable from 'immutable';
-import { FiltrableLevel, filtrableLevels } from '#app/Library/components/FiltrablePermissionsLevels.js';
+import {
+  FiltrableLevel,
+  filtrableLevels,
+} from '#app/Library/components/FiltrablePermissionsLevels.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 
 interface PermissionsValue {

@@ -27,7 +27,7 @@ describe('FormConfigInput', () => {
     pdfScale = 1;
   });
 
-  afterEach(() => { });
+  afterEach(() => {});
 
   const store = mockStoreCreator({
     documentViewer: {

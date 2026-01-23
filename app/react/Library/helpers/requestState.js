@@ -68,11 +68,11 @@ const requestState = (
 
   const markersRequest = options.geolocation
     ? api.search(
-      requestParams.set({
-        ...docsQuery,
-        geolocation: true,
-      })
-    )
+        requestParams.set({
+          ...docsQuery,
+          geolocation: true,
+        })
+      )
     : { rows: [] };
 
   return Promise.all([api.search(documentsRequest), markersRequest]).then(

@@ -83,9 +83,9 @@ export const ShareEntityModalComponent = ({
         const publicPermission = findPublicPermission(permissions);
         setOriginalPublicLevel(publicPermission?.level || false);
 
-        searchAndLoadCollabs('', loadedAssignments).catch(() => { });
+        searchAndLoadCollabs('', loadedAssignments).catch(() => {});
       })
-      .catch(() => { });
+      .catch(() => {});
 
     return () => {
       setAssignments([]);

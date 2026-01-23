@@ -14,7 +14,6 @@ import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { ClientEntitySchema } from '#app/istore.js';
 
-
 describe('NeedAuthorization', () => {
   const editorUser = {
     _id: 'userId',

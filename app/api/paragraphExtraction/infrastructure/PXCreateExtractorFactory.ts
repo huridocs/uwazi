@@ -1,10 +1,6 @@
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 
-import { DefaultTemplatesDataSource } from '#api/templates.v2/database/data_source_defaults.js';
-
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-
-import { DefaultTransactionManager } from '#api/common.v2/database/data_source_defaults.js';
 
 import relationshipTypeDS from '#api/relationtypes/index.js';
 
