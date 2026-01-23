@@ -64,6 +64,42 @@ describe('upload routes', () => {
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
+  describe('POST /files/upload/attachment', () => {
+    it('should save file on the body', async () => {
+      const entityId = 'sharedId2';
+      await request(app)
+        .post('/api/files/upload/attachment')
+        .field('entity', entityId.toString())
+        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
+        .expect(200);
+
+      const [attachment] = await files.get({ entity: entityId.toString() });
+      expect(attachment).toEqual(
+        expect.objectContaining({
+          originalname: 'Dont bring me down - 1979',
+          type: 'attachment',
+        })
+      );
+    });
+
+    it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+      'should accept the filename %s in a field',
+      async filename => {
+        const res = await request(app)
+          .post('/api/files/upload/attachment')
+          .field('originalname', filename)
+          .attach('file', path.join(__dirname, filename));
+
+        expect(res).toHaveStatus(200);
+        const [file]: FileType[] = await files.get({
+          originalname: filename,
+          type: 'attachment',
+        });
+        expect(file).not.toBe(undefined);
+      }
+    );
+  });
+
   describe('POST /files/upload/documents', () => {
     let pathManager: PathManager;
     beforeAll(async () => {
@@ -71,6 +107,26 @@ describe('upload routes', () => {
       await testingEnvironment.cleanupUploadPaths();
       pathManager = new PathManager({ tenant: tenants.current() });
     });
+
+    it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+      'should accept the filename %s in a field',
+      async filename => {
+        const res = await socketEmit('documentProcessed', async () =>
+          request(app)
+            .post('/api/files/upload/document')
+            .field('originalname', filename)
+            .field('entity', 'sharedId1')
+            .attach('file', path.join(__dirname, filename))
+        );
+
+        expect(res).toHaveStatus(200);
+        const [file]: FileType[] = await files.get({
+          originalname: filename,
+          type: 'document',
+        });
+        expect(file).not.toBe(undefined);
+      }
+    );
 
     it('should throw error if entity does not exist', async () => {
       const response = await request(app)
@@ -161,12 +217,13 @@ describe('upload routes', () => {
       );
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
+      const file = dbFiles.find(f => f.originalname === 'english_testing_file.pdf');
       const {
         filename = '',
         language,
         mimetype,
         size,
-      } = dbFiles.find(f => f.type === 'thumbnail' && f.entity === 'sharedId1') as FileType;
+      } = dbFiles.find(f => f.filename?.match(file?._id.toString())) as FileType;
 
       expect(language).toBe('eng');
       expect(mimetype).toEqual('image/jpeg');
