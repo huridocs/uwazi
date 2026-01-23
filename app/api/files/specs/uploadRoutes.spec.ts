@@ -87,6 +87,7 @@ describe('upload routes', () => {
       async filename => {
         const res = await request(app)
           .post('/api/files/upload/attachment')
+          .field('entity', 'sharedId2')
           .field('originalname', filename)
           .attach('file', path.join(__dirname, filename));
 

@@ -2,7 +2,7 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { DownloadFileController } from 'api/core/infrastructure/express/DownloadFileController';
-import { DocumentUploadController } from 'api/core/infrastructure/express/files/DocumentUploadController';
+import { EntityFileUploadController } from 'api/core/infrastructure/express/files/EntityFileUploadController';
 import { FileDeleteController } from 'api/core/infrastructure/express/files/FileDeleteController';
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
@@ -77,7 +77,7 @@ export default (app: Application) => {
     },
     async (req, res) => {
       req.emitToSessionSocket('conversionStart', req.body.entity);
-      await DocumentUploadController.createHandler()(req, res);
+      await EntityFileUploadController.forDocument()(req, res);
     },
     activitylogMiddleware
   );
@@ -100,20 +100,17 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware('attachment'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({
-          ...req.file,
-          ...req.body,
-          type: 'attachment',
-        })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
+    async (req, res, next) => {
+      await new UploadMiddleware(LoggerFactory.default()).singleUpload('attachment')(
+        req,
+        res,
+        next
+      );
+    },
+    async (req, res) => {
+      await EntityFileUploadController.forAttachment()(req, res);
+    },
+    activitylogMiddleware
   );
 
   app.post(
