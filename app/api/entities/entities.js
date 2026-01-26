@@ -631,23 +631,6 @@ export default {
     );
   },
 
-  async deleteMultiple(sharedIds) {
-    let entitiesDeleted = [];
-
-    try {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const sharedId of sharedIds) {
-        // eslint-disable-next-line no-await-in-loop
-        entitiesDeleted = entitiesDeleted.concat(await this.delete(sharedId, false));
-      }
-    } catch (e) {
-      await search.bulkDelete(entitiesDeleted);
-      throw e;
-    }
-
-    await search.bulkDelete(entitiesDeleted);
-  },
-
   async delete(sharedId, deleteIndex = true) {
     const docs = await this.get({ sharedId });
     if (!docs.length) {

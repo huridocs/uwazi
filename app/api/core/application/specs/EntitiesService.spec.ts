@@ -10,8 +10,6 @@ import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder'
 import { TextProperty } from 'api/core/domain/template/TextProperty';
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
 import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
-import { SettingsDataSourceFactory } from 'api/core/infrastructure/factories/SettingsDataSourceFactory';
-import { TemplatesDataSourceFactory } from 'api/core/infrastructure/factories/TemplatesDataSourceFactory';
 import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
 import { FileContentsIO } from 'api/core/infrastructure/files/FileContentIO';
 import { FileSystemStorage } from 'api/core/infrastructure/files/FileSystemStorage';
@@ -23,12 +21,11 @@ import { MongoTemplateMapper } from 'api/core/infrastructure/mongodb/template/Mo
 import { PDFService } from 'api/core/infrastructure/services/PDFService';
 import { applicationEventsBus, EventsBus } from 'api/core/libs/eventsbus';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
-import { EntitiesService } from '../EntitiesService';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
 import { FilesService } from '../FilesService';
 
 const factory = getFixturesFactory();
@@ -55,10 +52,6 @@ const fixtures: DBFixture = {
 const createSut = () => {
   const transactionManager = TransactionManagerFactory.default();
   const idGenerator = IdGeneratorFactory.default();
-  const settingsDS = SettingsDataSourceFactory.default(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
-
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
 
   const filesDS = FilesDataSourceFactory.default(transactionManager);
 
@@ -84,11 +77,8 @@ const createSut = () => {
     await callback(jest.fn());
   });
 
-  const sut = new EntitiesService({
-    entitiesDS,
+  const sut = EntitiesServiceFactory.default({
     eventBus,
-    settingsDS,
-    templatesDS,
     transactionManager,
     dispatcher: jobsDispatcher,
   });
@@ -146,10 +136,11 @@ describe('EntitiesService', () => {
       const { sut, eventBus, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      });
 
       const [entityCreated] = await testingEnvironment.db.getAllFrom('entities');
-      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(entityCreated.sharedId).toEqual(entity.sharedId);
 
@@ -164,21 +155,24 @@ describe('EntitiesService', () => {
     it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
       const { sut, transactionManager, eventBus } = createSut();
       const entity = createEntitySample();
+      let emitCalledDuringTransaction = false;
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
+      });
 
-      expect(eventBus.emit).not.toHaveBeenCalled();
-
-      await transactionManager.executeOnCommitHandlers(undefined);
-
+      expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalled();
     });
 
     it('should dispatch a RelationshipSyncJob', async () => {
-      const { sut, dispatcher } = createSut();
+      const { sut, dispatcher, transactionManager } = createSut();
       const entity = createEntitySample();
 
-      await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      await transactionManager.run(async () => {
+        await sut.insert(entity, { actorId: 'actorId', tenantName: 'tenantName' });
+      });
 
       expect(dispatcher.dispatch).toHaveBeenCalledWith(RelationshipSyncJob, {
         sharedId: entity.sharedId,
@@ -192,14 +186,16 @@ describe('EntitiesService', () => {
 
   describe('when bulk inserting Entities', () => {
     it('should insert multiple entities into the database', async () => {
-      const { sut } = createSut();
+      const { sut, transactionManager } = createSut();
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
       const entity3 = createEntitySample();
 
-      await sut.bulkInsert([entity1, entity2, entity3], {
-        actorId: 'actorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
 
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
@@ -213,7 +209,7 @@ describe('EntitiesService', () => {
     });
 
     it('should dispatch RelationshipSyncJob for each entity with correct context', async () => {
-      const { sut, dispatcher } = createSut();
+      const { sut, dispatcher, transactionManager } = createSut();
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
       const entity3 = createEntitySample();
@@ -223,9 +219,11 @@ describe('EntitiesService', () => {
         await callback(dispatchMock);
       });
 
-      await sut.bulkInsert([entity1, entity2, entity3], {
-        actorId: 'testActor',
-        tenantName: 'testTenant',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2, entity3], {
+          actorId: 'testActor',
+          tenantName: 'testTenant',
+        });
       });
 
       expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
@@ -261,12 +259,12 @@ describe('EntitiesService', () => {
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
 
-      await sut.bulkInsert([entity1, entity2], {
-        actorId: 'actorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
-
-      await transactionManager.executeOnCommitHandlers(undefined);
 
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
 
@@ -289,25 +287,28 @@ describe('EntitiesService', () => {
       const { sut, eventBus, transactionManager } = createSut();
       const entity1 = createEntitySample();
       const entity2 = createEntitySample();
+      let emitCalledDuringTransaction = false;
 
-      await sut.bulkInsert([entity1, entity2], {
-        actorId: 'actorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
+        emitCalledDuringTransaction = (eventBus.emit as any).mock.calls.length > 0;
       });
 
-      expect(eventBus.emit).not.toHaveBeenCalled();
-
-      await transactionManager.executeOnCommitHandlers(undefined);
-
+      expect(emitCalledDuringTransaction).toBe(false);
       expect(eventBus.emit).toHaveBeenCalledTimes(2);
     });
 
     it('should handle empty array gracefully', async () => {
-      const { sut, dispatcher, eventBus } = createSut();
+      const { sut, dispatcher, eventBus, transactionManager } = createSut();
 
-      await sut.bulkInsert([], {
-        actorId: 'actorId',
-        tenantName: 'tenantName',
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([], {
+          actorId: 'actorId',
+          tenantName: 'tenantName',
+        });
       });
 
       const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
