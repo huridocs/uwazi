@@ -10,7 +10,7 @@ import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
+import { setUpApp } from 'api/utils/testingRoutes';
 import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';

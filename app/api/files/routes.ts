@@ -7,8 +7,6 @@ import { FileDeleteController } from 'api/core/infrastructure/express/files/File
 import { UploadMiddleware } from 'api/core/infrastructure/express/middlewares/UploadMiddleware';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 import entities from 'api/entities';
-import { convertPDF, createProcessingFile } from 'api/files/processDocument';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants/tenantContext';
 import { withTransaction } from 'api/utils/withTransaction';
@@ -83,21 +81,6 @@ export default (app: Application) => {
   );
 
   app.post(
-    '/api/files/upload/custom',
-    needsAuthorization(['admin']),
-    uploadMiddleware('custom'),
-    activitylogMiddleware,
-    (req, res, next) => {
-      files
-        .save({ ...req.file, type: 'custom' })
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
-  );
-
-  app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     async (req, res, next) => {
@@ -157,7 +140,6 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/assets/:filename', DownloadFileController.customHandler(['custom']));
   app.get('/files/thumbnails/:filename', DownloadFileController.customHandler(['thumbnail']));
   app.get('/files/:filename', DownloadFileController.customHandler(['document', 'attachment']));
 

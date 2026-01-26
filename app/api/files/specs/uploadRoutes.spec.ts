@@ -7,7 +7,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
-import { customUploadsPath, fileExistsOnPath } from 'api/files';
+import { fileExistsOnPath } from 'api/files';
 import { search } from 'api/search';
 import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
@@ -297,34 +297,6 @@ describe('upload routes', () => {
           expect.objectContaining({ status: 'failed' })
         );
       });
-    });
-  });
-
-  describe('POST/files/upload/custom', () => {
-    it('should save the upload and return it', async () => {
-      const response: SuperTestResponse = await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          type: 'custom',
-          filename: expect.stringMatching(/.*\.txt/),
-          mimetype: 'text/plain',
-          originalname: 'test.txt',
-          size: 5,
-        })
-      );
-    });
-
-    it('should save the file on customUploads path', async () => {
-      await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-
-      expect(await fs.readFile(customUploadsPath(file.filename || ''))).toBeDefined();
     });
   });
 
