@@ -6,7 +6,7 @@ import { IdGenerator } from 'api/core/application/contracts/IdGenerator';
 import { SettingsDataSource } from 'api/core/application/contracts/SettingsDataSource';
 import { Segmentation } from 'api/core/domain/files/Segmentation';
 import { Logger } from 'api/core/libs/logger/contracts/Logger';
-import { UseCase } from 'api/core/libs/UseCase';
+import { AbstractUseCase } from 'api/core/libs/UseCase';
 import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 
 import { ArrayUtils } from 'api/common.v2/utils/Array';
@@ -14,6 +14,7 @@ import { Entity } from 'api/core/domain/entity/Entity';
 import { FileContents } from 'api/core/domain/files/FileContents';
 import { ProcessedPDF } from 'api/core/domain/files/ProcessedPDF';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
+import { EntitiesService } from 'api/core/application/EntitiesService';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtractionService } from '../domain/PXExtractionService';
@@ -29,7 +30,7 @@ type PXExtractParagraphsFromEntityInput = {
 
 type Output = void;
 
-type Dependencies = {
+type Deps = {
   extractorsDS: PXExtractorsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
   filesDS: FilesDataSource;
@@ -40,13 +41,14 @@ type Dependencies = {
   idGenerator: IdGenerator;
   logger: Logger;
   tenantName: string;
+  entitiesService: EntitiesService;
 };
 
-export class PXExtractParagraphsFromEntity
-  implements UseCase<PXExtractParagraphsFromEntityInput, Output>
-{
-  constructor(private dependencies: Dependencies) {}
-
+export class PXExtractParagraphsFromEntity extends AbstractUseCase<
+  PXExtractParagraphsFromEntityInput,
+  Output,
+  Deps
+> {
   // eslint-disable-next-line max-statements
   async execute(input: PXExtractParagraphsFromEntityInput, isRetriable = false): Promise<Output> {
     try {
@@ -60,7 +62,7 @@ export class PXExtractParagraphsFromEntity
       const files = await this.getSegmentationFiles(segmentations);
 
       const extractionKey = PXExtractionKey.create({
-        tenantName: this.dependencies.tenantName,
+        tenantName: this.deps.tenantName,
         userId: input.userId,
         entityStatusId: input.entityStatusId,
       });
@@ -70,12 +72,19 @@ export class PXExtractParagraphsFromEntity
         defaultLanguage
       );
 
-      await this.dependencies.extractorsDS.deleteParagraphs({
+      const paragraphs = await this.deps.extractorsDS.getParagraphsIds({
         extractorId: extractor.id,
         entitySharedId: input.entitySharedId,
       });
 
-      await this.dependencies.extractionService.extractParagraphs({
+      await this.transactionManager.run(async () =>
+        this.deps.entitiesService.bulkDelete(paragraphs, {
+          actor: this.getActor(),
+          tenantName: this.tenant.name,
+        })
+      );
+
+      await this.deps.extractionService.extractParagraphs({
         documents,
         segmentations,
         mainLanguage,
@@ -83,7 +92,7 @@ export class PXExtractParagraphsFromEntity
         files,
       });
 
-      this.dependencies.logger.info(
+      this.deps.logger.info(
         `[PX] - Extract Paragraphs Request - ${JSON.stringify({
           entitySharedId: entity.sharedId,
           extractorId: extractor.id,
@@ -91,7 +100,7 @@ export class PXExtractParagraphsFromEntity
       );
     } catch (e) {
       if (!isRetriable) {
-        await this.dependencies.entitiesStatusDS.markAsError(input.entityStatusId);
+        await this.deps.entitiesStatusDS.markAsError(input.entityStatusId);
       }
 
       throw e;
@@ -109,9 +118,9 @@ export class PXExtractParagraphsFromEntity
   // eslint-disable-next-line max-statements
   private async getInitialData(input: PXExtractParagraphsFromEntityInput) {
     const [extractor, entity, installedLanguages] = await Promise.all([
-      this.dependencies.extractorsDS.getById(input.extractorId),
-      (await this.dependencies.entitiesDS.getEntitiesBySharedIds([input.entitySharedId])).first(),
-      this.dependencies.settingsDS.getInstalledLanguages(),
+      this.deps.extractorsDS.getById(input.extractorId),
+      (await this.deps.entitiesDS.getEntitiesBySharedIds([input.entitySharedId])).first(),
+      this.deps.settingsDS.getInstalledLanguages(),
     ]);
 
     const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
@@ -145,7 +154,7 @@ export class PXExtractParagraphsFromEntity
       segmentations,
       async segmentation => ({
         filename: segmentation.xmlname!,
-        contents: await this.dependencies.fileStorage.getFile({
+        contents: await this.deps.fileStorage.getFile({
           filename: segmentation.xmlname!,
           type: 'segmentation',
         }),
@@ -160,9 +169,7 @@ export class PXExtractParagraphsFromEntity
     installedLanguages: LanguagesListSchema,
     defaultLanguage: LanguageISO6391
   ) {
-    const documents = await this.dependencies.filesDS
-      .getProcessedDocsForEntity(entity.sharedId)
-      .all();
+    const documents = await this.deps.filesDS.getProcessedDocsForEntity(entity.sharedId).all();
 
     const filteredDocuments = documents.filter(document =>
       installedLanguages.some(language => language.key === document.language)
@@ -204,7 +211,7 @@ export class PXExtractParagraphsFromEntity
     entity: Entity,
     defaultLanguage: LanguageISO6391
   ) {
-    const segmentations = await this.dependencies.filesDS
+    const segmentations = await this.deps.filesDS
       .getSegmentations(documents.map(document => document.id))
       .all();
 

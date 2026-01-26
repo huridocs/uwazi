@@ -35,7 +35,6 @@ const mongoSchema = new mongoose.Schema({
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
     v2CreateEntity: Boolean,
-    v2BulkDeleteEntity: Boolean,
     fileCacheHeaders: Boolean,
     v2UploadFile: Boolean,
     v2DeleteFile: Boolean,

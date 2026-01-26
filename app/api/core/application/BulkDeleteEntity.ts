@@ -1,10 +1,6 @@
 import { z } from 'zod';
-import { search } from 'api/search';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { AbstractUseCase } from '../libs/UseCase';
-import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
-import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
+import { EntitiesService } from './EntitiesService';
 
 const InputSchema = z.object({
   sharedIds: z
@@ -18,38 +14,19 @@ type Input = z.infer<typeof InputSchema>;
 type Output = Input;
 
 type Deps = {
-  entitiesDS: MultiLanguageEntityDataSource;
-  search: typeof search;
-  entityPermissionChecker: EntityPermissionChecker;
+  entitiesService: EntitiesService;
 };
 
 class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   static InputSchema = InputSchema;
 
   async execute({ sharedIds }: Input): Promise<Output> {
-    const grantedSharedIds = (
-      await this.deps.entityPermissionChecker.filterEntities(
-        sharedIds,
-        Specification.createDeleteSpecification(this.getActor())
-      )
-    ).getDataOrThrow();
-
-    const chunks = ArrayUtils.splitInChunks(grantedSharedIds, 100);
-
-    await this.transactionManager.run(async () => {
-      await this.jobsDispatcher.dispatchMany(async dispatch =>
-        chunks.forEach(chunk =>
-          dispatch(BulkCleanupEntityJob, {
-            sharedIds: chunk,
-            userId: this.getActor()._id,
-            tenantName: this.tenant.name,
-          })
-        )
-      );
-
-      await this.deps.entitiesDS.bulkDelete(grantedSharedIds);
-      await this.deps.search.bulkDeleteBySharedId(grantedSharedIds);
-    });
+    await this.transactionManager.run(async () =>
+      this.deps.entitiesService.bulkDelete(sharedIds, {
+        actor: this.getActor(),
+        tenantName: this.tenant.name,
+      })
+    );
 
     return { sharedIds };
   }

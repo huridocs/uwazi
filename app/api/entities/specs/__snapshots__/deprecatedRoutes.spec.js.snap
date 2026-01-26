@@ -43,28 +43,3 @@ Object {
   "type": "object",
 }
 `;
-
-exports[`entities POST /api/entities/bulkdelete should have a validation schema 1`] = `
-Object {
-  "properties": Object {
-    "body": Object {
-      "properties": Object {
-        "sharedIds": Object {
-          "items": Object {
-            "type": "string",
-          },
-          "type": "array",
-        },
-      },
-      "required": Array [
-        "sharedIds",
-      ],
-      "type": "object",
-    },
-  },
-  "required": Array [
-    "body",
-  ],
-  "type": "object",
-}
-`;
