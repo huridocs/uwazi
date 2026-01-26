@@ -6,7 +6,10 @@ import { FileStorageFactory } from 'api/core/infrastructure/files/FileStorageFac
 import { MongoIdHandler } from 'api/core/infrastructure/mongodb/common/MongoIdGenerator';
 import { getConnection } from 'api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant';
 
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { EntitiesDataSourceFactory } from 'api/core/infrastructure/factories/EntitiesDataSourceFactory';
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
@@ -17,24 +20,48 @@ export class PXExtractParagraphsFromEntityFactory {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
-      entitiesDS: new MongoMultiLanguageEntityDataSource(connection, mongoTransactionManager),
-      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      }),
-      extractionService: PXExtractionServiceFactory.createDefault(),
-      extractorsDS: PXExtractorsDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      }),
-      filesDS: FilesDataSourceFactory.default(mongoTransactionManager),
-      fileStorage: FileStorageFactory.default(),
-      idGenerator: MongoIdHandler,
-      settingsDS: SettingsDataSourceFactory.default(mongoTransactionManager),
-      logger: LoggerFactory.default(),
-      tenantName,
+    const entitiesDS = EntitiesDataSourceFactory.default(mongoTransactionManager);
+
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
     });
+
+    const extractionService = PXExtractionServiceFactory.createDefault();
+
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+    const filesDS = FilesDataSourceFactory.default(mongoTransactionManager);
+    const settingsDS = SettingsDataSourceFactory.default(mongoTransactionManager);
+    const fileStorage = FileStorageFactory.default();
+    const idGenerator = MongoIdHandler;
+    const logger = LoggerFactory.default();
+
+    const entitiesService = EntitiesServiceFactory.default({
+      entitiesDS,
+      settingsDS,
+      transactionManager: mongoTransactionManager,
+    });
+
+    const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity(
+      {
+        transactionManager: mongoTransactionManager,
+        entitiesService,
+        entitiesDS,
+        entitiesStatusDS,
+        extractionService,
+        extractorsDS,
+        filesDS,
+        settingsDS,
+        fileStorage,
+        idGenerator,
+        logger,
+        tenantName,
+      },
+      { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+    );
 
     return extractParagraphsFromEntity;
   }

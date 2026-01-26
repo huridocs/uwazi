@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import { ApiResponse } from '@elastic/elasticsearch';
 import { ObjectId } from 'mongodb';
 
 import { FilesDataSourceFactory } from 'api/core/infrastructure/factories/FilesDataSourceFactory';
@@ -14,13 +13,16 @@ import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrast
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
-import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { FileStorage } from 'api/core/application/contracts/FileStorage';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { EntitiesServiceFactory } from 'api/core/infrastructure/factories/EntitiesServiceFactory';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { search } from 'api/search';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
   defaultTemplate,
@@ -56,7 +58,6 @@ import {
   targetTemplate,
   userId,
 } from './fixtures';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -103,18 +104,30 @@ const setUpUseCase = () => {
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 
-  const extractParagraphs = new PXExtractParagraphsFromEntity({
-    entitiesDS,
-    extractorsDS,
-    filesDS,
-    settingsDS,
-    extractionService,
-    fileStorage,
-    entitiesStatusDS,
-    idGenerator,
-    logger: createMockLogger(),
-    tenantName,
+  const entitiesService = EntitiesServiceFactory.default({
+    transactionManager: mongoTransactionManager,
+    search: TestUtils.mockClass<typeof search>({
+      bulkDeleteBySharedId: jest.fn(),
+    }),
   });
+
+  const extractParagraphs = new PXExtractParagraphsFromEntity(
+    {
+      transactionManager: mongoTransactionManager,
+      entitiesService,
+      entitiesDS,
+      extractorsDS,
+      filesDS,
+      settingsDS,
+      extractionService,
+      fileStorage,
+      entitiesStatusDS,
+      idGenerator,
+      logger: createMockLogger(),
+      tenantName,
+    },
+    { tenant: tenants.current(), actor: permissionsContext.getUserInContext()! }
+  );
 
   return {
     tenantName,
@@ -125,13 +138,12 @@ const setUpUseCase = () => {
 };
 
 describe('PXExtractParagraphsFromEntity', () => {
+  beforeAll(async () =>
+    testingEnvironment.setUp(createFixtures(), 'px_extract_paragraphs_from_entity')
+  );
+
   beforeEach(async () => {
-    jest
-      .spyOn(search, 'delete')
-      .mockImplementation(
-        async () => Promise.resolve() as any as ApiResponse<Record<string, any>, unknown>
-      );
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setFixtures(createFixtures());
   });
 
   afterAll(async () => {
@@ -331,15 +343,12 @@ describe('PXExtractParagraphsFromEntity', () => {
     });
 
     const entities = await testingEnvironment.db.getAllFrom('entities');
-    const connections = await testingEnvironment.db.getAllFrom('connections');
 
+    // Entities (paragraphs) should be deleted synchronously
     expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
-    expect(connections).toMatchObject([
-      relationshipE2Hub1,
-      relationshipE2Hub2,
-      relationshipP4Hub1,
-      relationshipP5Hub2,
-    ]);
+
+    // Note: Connections are deleted asynchronously via BulkCleanupEntityJob,
+    // so they won't be deleted immediately after execute() returns
   });
 
   it('should throw if Extractor does not exist', async () => {
