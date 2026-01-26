@@ -26,9 +26,7 @@ describe('BulkDeleteEntityController', () => {
   const useCaseExecuteSpy: jest.SpyInstance = jest.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
-    jest.spyOn(tenants, 'current').mockReturnValue({
-      featureFlags: { v2BulkDeleteEntity: true },
-    } as any);
+    jest.spyOn(tenants, 'current').mockReturnValue({} as any);
 
     jest.spyOn(BulkDeleteEntityUseCaseFactory, 'default').mockReturnValue({
       execute: useCaseExecuteSpy,
