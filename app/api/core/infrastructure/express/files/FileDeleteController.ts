@@ -3,6 +3,8 @@ import { FileDelete } from 'api/core/application/FileDelete';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/core/libs/queue/configuration/factories';
 import { SyncDispatcherForTests } from 'api/core/libs/queue/infrastructure/SyncDispatcherForTests';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { tenants } from 'api/tenants';
 import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory';
 import { LoggerFactory } from '../../factories/LoggerFactory';
@@ -11,8 +13,6 @@ import { FileStorageFactory } from '../../files/FileStorageFactory';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler';
 import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker';
 import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { tenants } from 'api/tenants';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -22,7 +22,7 @@ class FileDeleteController extends AbstractController {
 
       this.response.json(
         await this.useCase().execute(
-          FileDelete.inputSchema.parse({ fileId: this.request.query._id })
+          FileDelete.InputSchema.parse({ fileId: this.request.query._id })
         )
       );
 
