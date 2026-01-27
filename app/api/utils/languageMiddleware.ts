@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import settings from 'api/settings/settings';
+import { LogBuilder } from 'api/core/libs/logger/infrastructure/LogBuilder';
+import { appContext } from './AppContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
@@ -11,6 +13,9 @@ declare global {
 }
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
+  const logBuilder = appContext.get('logBuilder') as LogBuilder;
+  const endTimer = logBuilder?.startTimer('language_middleware');
+
   try {
     let lang = req.get('content-language');
     if (!lang && req.cookies) {
@@ -28,5 +33,7 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
     next();
   } catch (e) {
     next(e);
+  } finally {
+    endTimer?.();
   }
 };

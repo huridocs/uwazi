@@ -15,6 +15,7 @@ import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
+import { observabilityMiddleware } from 'api/utils/observabilityMiddleware';
 import { Redis } from 'api/infrastructure/Redis';
 import { maskMongoPassword } from 'api/utils/maskMongoPassword';
 import { elasticClient } from 'api/search/elastic';
@@ -129,6 +130,7 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(requestIdMiddleware);
+app.use(observabilityMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
