@@ -5,6 +5,7 @@ import { DiskFile } from 'api/core/infrastructure/files/DiskFile';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import date from 'api/utils/date';
 import path from 'path';
+import { CustomUpload } from '../../domain/files/CustomUpload';
 import { FileAttachment } from '../../domain/files/FileAttachment';
 import { FileContents } from '../../domain/files/FileContents';
 import { ProcessingPDF } from '../../domain/files/ProcessingPDF';
@@ -30,11 +31,11 @@ type CreateUrlAttachmentProps = {
 export class InputFile {
   private _metadata: FileMetadata;
 
-  private type: 'document' | 'attachment' | 'url_attachment' | 'raw';
+  private type: 'document' | 'attachment' | 'url_attachment' | 'custom' | 'raw';
 
   constructor(
     metadata: FileMetadata,
-    type: 'document' | 'attachment' | 'url_attachment' | 'raw' = 'raw'
+    type: 'document' | 'attachment' | 'url_attachment' | 'custom' | 'raw' = 'raw'
   ) {
     this._metadata = metadata;
     this.type = type;
@@ -103,6 +104,17 @@ export class InputFile {
       default:
         throw new Error(`${this.type} is not a valid inputFile type`);
     }
+  }
+
+  toCustomFile(id: string) {
+    if (this.type !== 'custom') {
+      throw new Error('toCustomFile can only be called on custom type InputFiles');
+    }
+    return new CustomUpload({
+      id,
+      creationDate: date.currentUTC(),
+      ...this.fileProps(),
+    });
   }
 
   static createUrlAttachment({ originalname, url }: CreateUrlAttachmentProps) {
