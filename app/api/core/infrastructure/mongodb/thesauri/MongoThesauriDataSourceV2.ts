@@ -37,7 +37,7 @@ class MongoThesauriDataSourceV2
       return Result.fail(new ThesaurusNotFoundError(id));
     }
 
-    const thesaurus = MongoThesaurusMapper.toDomain(dbo);
+    const thesaurus = MongoThesaurusMapper.toDomain(dbo, false);
 
     return Result.ok(thesaurus);
   }
