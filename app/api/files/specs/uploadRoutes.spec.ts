@@ -7,17 +7,16 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
-import { customUploadsPath, fileExistsOnPath } from 'api/files';
+import { fileExistsOnPath } from 'api/files';
 import { search } from 'api/search';
 import { iosocket, setUpApp, socketEmit, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 
 import { PathManager } from 'api/core/infrastructure/files/PathManager';
 import { toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
+import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
 import { tenants } from 'api/tenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { csvImportRoutes } from 'api/csv.v2/infrastructure/http/routes';
 import { UserSchema } from 'shared/types/userType';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { files } from '../files';
@@ -65,38 +64,78 @@ describe('upload routes', () => {
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
-  describe('POST /files/upload/documents V2 only', () => {
+  describe('POST /files/upload/attachment', () => {
+    it('should save file on the body', async () => {
+      const entityId = 'sharedId2';
+      await request(app)
+        .post('/api/files/upload/attachment')
+        .field('entity', entityId.toString())
+        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
+        .expect(200);
+
+      const [attachment] = await files.get({ entity: entityId.toString() });
+      expect(attachment).toEqual(
+        expect.objectContaining({
+          originalname: 'Dont bring me down - 1979',
+          type: 'attachment',
+        })
+      );
+    });
+
+    it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+      'should accept the filename %s in a field',
+      async filename => {
+        const res = await request(app)
+          .post('/api/files/upload/attachment')
+          .field('entity', 'sharedId2')
+          .field('originalname', filename)
+          .attach('file', path.join(__dirname, filename));
+
+        expect(res).toHaveStatus(200);
+        const [file]: FileType[] = await files.get({
+          originalname: filename,
+          type: 'attachment',
+        });
+        expect(file).not.toBe(undefined);
+      }
+    );
+  });
+
+  describe('POST /files/upload/documents', () => {
+    let pathManager: PathManager;
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures);
+      await testingEnvironment.cleanupUploadPaths();
+      pathManager = new PathManager({ tenant: tenants.current() });
+    });
+
+    it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+      'should accept the filename %s in a field',
+      async filename => {
+        const res = await socketEmit('documentProcessed', async () =>
+          request(app)
+            .post('/api/files/upload/document')
+            .field('originalname', filename)
+            .field('entity', 'sharedId1')
+            .attach('file', path.join(__dirname, filename))
+        );
+
+        expect(res).toHaveStatus(200);
+        const [file]: FileType[] = await files.get({
+          originalname: filename,
+          type: 'document',
+        });
+        expect(file).not.toBe(undefined);
+      }
+    );
+
     it('should throw error if entity does not exist', async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags: { v2UploadFile: true },
-      });
       const response = await request(app)
         .post('/api/files/upload/document')
         .field('entity', 'non_existent_shared_id')
         .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
 
       expect(response).toHaveStatus(422);
-    });
-  });
-
-  describe.each([
-    {
-      title: 'POST /files/upload/documents V1',
-      featureFlags: { v2UploadFile: false },
-    },
-    {
-      title: 'POST /files/upload/documents V2',
-      featureFlags: { v2UploadFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
-    let pathManager: PathManager;
-    beforeAll(async () => {
-      await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags,
-      });
-      await testingEnvironment.cleanupUploadPaths();
-      pathManager = new PathManager({ tenant: tenants.current() });
     });
 
     it('should upload the file', async () => {
@@ -179,12 +218,13 @@ describe('upload routes', () => {
       );
 
       const dbFiles = await testingEnvironment.db.getAllFrom('files');
+      const file = dbFiles.find(f => f.originalname === 'english_testing_file.pdf');
       const {
         filename = '',
         language,
         mimetype,
         size,
-      } = dbFiles.find(f => f.type === 'thumbnail' && f.entity === 'sharedId1') as FileType;
+      } = dbFiles.find(f => f.filename?.match(file?._id.toString())) as FileType;
 
       expect(language).toBe('eng');
       expect(mimetype).toEqual('image/jpeg');
@@ -252,39 +292,11 @@ describe('upload routes', () => {
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'conversionFailed',
-          TestEmitSources.session,
+          TestEmitSources.currentTenant,
           'sharedId1',
           expect.objectContaining({ status: 'failed' })
         );
       });
-    });
-  });
-
-  describe('POST/files/upload/custom', () => {
-    it('should save the upload and return it', async () => {
-      const response: SuperTestResponse = await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          type: 'custom',
-          filename: expect.stringMatching(/.*\.txt/),
-          mimetype: 'text/plain',
-          originalname: 'test.txt',
-          size: 5,
-        })
-      );
-    });
-
-    it('should save the file on customUploads path', async () => {
-      await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-
-      expect(await fs.readFile(customUploadsPath(file.filename || ''))).toBeDefined();
     });
   });
 
@@ -368,19 +380,9 @@ imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
     });
   });
 
-  describe.each([
-    {
-      title: 'DELETE /files V1',
-      featureFlags: { v2DeleteFile: false },
-    },
-    {
-      title: 'DELETE /files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('DELETE /files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({ featureFlags });
     });
     it('should delete thumbnails asociated with documents deleted', async () => {
       mockCurrentUser(adminUser);
