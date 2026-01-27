@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { UpdateThesaurusUseCaseInput } from 'api/core/application/UpdateThesaurus';
 import { CSVLoader } from 'api/csv';
 import { ObjectId } from 'mongodb';
+import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
 import { MongoThesaurusMapper } from '../../mongodb/thesauri/MongoThesaurusMapper';
@@ -41,6 +42,7 @@ type RequestDto = z.infer<typeof RequestSchema>;
 type ResponseDto = ThesaurusDBO;
 
 class UpdateThesaurusController extends AbstractController<RequestDto> {
+  @TimedMethod('update_thesaurus_controller')
   protected async handle(): Promise<void> {
     const logger = LoggerFactory.default();
     const useCase = UpdateThesaurusUseCaseFactory.default();

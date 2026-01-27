@@ -11,7 +11,7 @@ class LogBuilder {
     this.fields = { ...this.fields, ...fields };
   }
 
-  time(operationName: string) {
+  timeStart(operationName: string) {
     this.timers[operationName] = Date.now();
   }
 
@@ -19,25 +19,8 @@ class LogBuilder {
     const startTime = this.timers[operationName];
     if (startTime) {
       this.timings[`${operationName}_ms`] = Date.now() - startTime;
-      delete this.timers[operationName]; // Clean up to save memory
-    }
-  }
 
-  /**
-   * Automatically times an async operation, ensuring timeEnd is called even if error is thrown
-   * @param operationName Name for the timing metric
-   * @param fn Async function to execute
-   * @returns Result of the async function
-   *
-   * @example
-   * const user = await logBuilder.timeAsync('fetch_user', () => db.users.findOne({ id }));
-   */
-  async timeAsync<T>(operationName: string, fn: () => Promise<T>): Promise<T> {
-    this.time(operationName);
-    try {
-      return await fn();
-    } finally {
-      this.timeEnd(operationName);
+      delete this.timers[operationName];
     }
   }
 
@@ -55,7 +38,7 @@ class LogBuilder {
    * }
    */
   startTimer(operationName: string): () => void {
-    this.time(operationName);
+    this.timeStart(operationName);
     let called = false;
     return () => {
       if (!called) {
@@ -65,21 +48,18 @@ class LogBuilder {
     };
   }
 
-  increment(counterName: string, amount: number = 1) {
-    this.fields[counterName] = (this.fields[counterName] || 0) + amount;
-  }
-
-  error(error: Error | string) {
-    this.fields.error = error instanceof Error ? error.message : error;
-    if (error instanceof Error && error.stack) {
-      this.fields.error_stack = error.stack;
-    }
-  }
-
   build() {
-    return { ...this.fields, ...this.timings };
+    const enriched = Object.entries(this.timings).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: `${value}ms - ${((value / this.timings.request_ms) * 100).toFixed(2)}%`,
+      }),
+      {}
+    );
+
+    return { ...this.fields, ...enriched };
   }
 }
 
 export { LogBuilder };
-export { TimedController, TimeAsync, TimedMethod } from './decorators';
+export { TimedMethod } from './decorators';

@@ -2,6 +2,7 @@ import { AbstractController } from 'api/common.v2/infrastructure/AbstractControl
 import { CreateThesaurusUseCaseInput } from 'api/core/application/CreateThesaurus';
 import { CSVLoader } from 'api/csv';
 import { ObjectId } from 'mongodb';
+import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory';
 import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';
@@ -12,6 +13,7 @@ type RequestDto = CreateThesaurusUseCaseInput;
 type ResponseDto = ThesaurusDBO;
 
 class CreateThesaurusController extends AbstractController<RequestDto> {
+  @TimedMethod('create_thesaurus_controller')
   protected async handle(): Promise<void> {
     const logger = LoggerFactory.default();
     const useCase = CreateThesaurusUseCaseFactory.default();

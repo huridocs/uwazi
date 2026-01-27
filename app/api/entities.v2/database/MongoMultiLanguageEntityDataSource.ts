@@ -13,6 +13,7 @@ import { Property } from 'api/core/domain/template/Property';
 import { Result, ResultType } from 'api/core/libs/Result';
 import { Settings as SettingsType } from 'shared/types/settingsType';
 import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/TemplateDBO';
+import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource';
 import { Entity } from '../../core/domain/entity/Entity';
 import { EntityDBO, EntityTemplateAggregation } from './schemas/EntityTypes';
@@ -347,6 +348,7 @@ export class MongoMultiLanguageEntityDataSource
     );
   }
 
+  @TimedMethod('mongo_entity_DS_create')
   async create(entity: Entity): Promise<void> {
     const dbos = MongoEntityMapper.toDBO(entity);
     await this.getCollection().insertMany(dbos, { ignoreUndefined: true });
