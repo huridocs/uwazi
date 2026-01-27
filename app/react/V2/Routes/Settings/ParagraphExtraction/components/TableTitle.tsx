@@ -2,7 +2,7 @@ import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 
 import { Translate } from '#app/I18N/index.js';
-import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.jsx';
+import { DisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/components/DisplayPills.js';
 
 const TableTitle = ({
   items = [],

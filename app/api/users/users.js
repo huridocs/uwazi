@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import SHA256 from 'crypto-js/sha256';
+import SHA256 from 'crypto-js/sha256.js';
 
 import { createError } from '#api/utils/index.js';
 import random from '#shared/uniqueID.js';

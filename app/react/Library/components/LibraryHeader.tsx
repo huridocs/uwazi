@@ -9,9 +9,9 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import Icon from '#UI/Icon/Icon.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { SortDropdown } from '#app/Library/components/SortDropdown.jsx';
-import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.jsx';
-import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.jsx';
+import { SortDropdown } from '#app/Library/components/SortDropdown.js';
+import LibraryModeToggleButtons from '#app/Library/components/LibraryModeToggleButtons.js';
+import { SearchBar as SearchBarComponent } from '#app/Library/components/SearchBar.js';
 import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
@@ -20,7 +20,7 @@ import { showFilters as showFiltersAction } from '#app/Entities/actions/uiAction
 import { IStore } from '#app/istore.js';
 
 import { IImmutable } from '#shared/types/Immutable.js';
-import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.jsx';
+import { HiddenColumnsDropdown } from '#app/Library/components/HiddenColumnsDropdown.js';
 
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;

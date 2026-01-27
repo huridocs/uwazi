@@ -3,13 +3,13 @@ import { isClient } from '#app/utils/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 import ViewMetadataPanel from '#app/Library/components/ViewMetadataPanel.js';
 import SelectMultiplePanelContainer from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { withRouter } from '#app/componentWrappers.jsx';
-import { trackPage } from '#app/App/GoogleAnalytics.jsx';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
-import { PageViewer } from '#app/Pages/components/PageViewer.jsx';
+import { withRouter } from '#app/componentWrappers.js';
+import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { PageViewer } from '#app/Pages/components/PageViewer.js';
 import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
 

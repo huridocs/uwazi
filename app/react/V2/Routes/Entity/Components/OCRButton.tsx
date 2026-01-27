@@ -8,7 +8,7 @@ import { socket } from '#app/socket.js';
 import { getOcrStatus, OcrStatus, postToOcr } from '#V2/api/files/index.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import { secondsToDate } from '#V2/shared/dateHelpers.js';
 
 const ocrStatusTips = {

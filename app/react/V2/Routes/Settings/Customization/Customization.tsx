@@ -9,7 +9,7 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 
 import { Translate } from '#app/I18N/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Button, Tabs } from '#V2/Components/UI/index.js';
 

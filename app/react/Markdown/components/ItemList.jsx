@@ -3,14 +3,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 
-import { RowList } from '#app/Layout/Lists.jsx';
-import Doc from '#app/Library/components/Doc.jsx';
+import { RowList } from '#app/Layout/Lists.js';
+import Doc from '#app/Library/components/Doc.js';
 import { t, I18NLink } from '#app/I18N/index.js';
 import { selectSingleDocument } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Slider from '#app/Markdown/components/slider.jsx';
+import Slider from '#app/Markdown/components/slider.js';
 import Immutable from 'immutable';
 class ItemList extends Component {
   render() {

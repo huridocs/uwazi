@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import markdownDatasets from '#app/Markdown/markdownDatasets.js';
-import PagesContext from '#app/Markdown/components/Context.jsx';
+import PagesContext from '#app/Markdown/components/Context.js';
 import { objectPath } from '#app/Markdown/utils.js';
 
 export class ValueComponent extends Component {

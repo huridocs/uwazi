@@ -8,7 +8,7 @@ import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { getPageAssets } from '#app/Pages/utils/getPageAssets.js';
 
 import { notificationActions } from '#app/Notifications/index.js';
-import EntityViewer from '#app/Entities/components/EntityViewer.jsx';
+import EntityViewer from '#app/Entities/components/EntityViewer.js';
 import entitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { prepareAssets } from '#app/Viewer/pageAssets.js';
 

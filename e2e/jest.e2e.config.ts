@@ -6,5 +6,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/setupJestPuppeteer.js'],
   transform: {
     '\\.[jt]sx?$': ['babel-jest', { rootMode: 'upward' }],
+    '^.*/setupJestPuppeteer\\.js$': ['babel-jest', { rootMode: 'upward' }],
   },
 };

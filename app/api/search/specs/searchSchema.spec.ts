@@ -1,4 +1,4 @@
-import ValidationError from 'ajv/dist/runtime/validation_error';
+import ValidationError from 'ajv/dist/runtime/validation_error.js';
 
 import { validation } from '#api/utils/index.js';
 

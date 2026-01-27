@@ -7,12 +7,12 @@ import { Translate } from '#app/I18N/index.js';
 
 import * as ThesauriAPI from '#V2/api/thesauri/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Button, ConfirmationModal } from '#V2/Components/UI/index.js';
 
-import { ThesauriTable } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
-import type { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
+import { ThesauriTable } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.js';
+import type { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.js';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 

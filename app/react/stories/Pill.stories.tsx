@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Pill } from '#V2/Components/UI/Pill.jsx';
+import { Pill } from '#V2/Components/UI/Pill.js';
 
 const meta: Meta<typeof Pill> = {
   title: 'Components/Pill',

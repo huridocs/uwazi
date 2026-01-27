@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { setTargetDocument } from '#app/Connections/actions/actions.js';
-import SearchForm from '#app/Connections/components/SearchForm.jsx';
-import SearchResults from '#app/Connections/components/SearchResults.jsx';
+import SearchForm from '#app/Connections/components/SearchForm.js';
+import SearchResults from '#app/Connections/components/SearchResults.js';
 import Icon from '#UI/Icon/Icon.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import {

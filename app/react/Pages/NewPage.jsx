@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageCreator } from '#app/Pages/components/PageCreator.js';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 
 export default class NewPage extends RouteHandler {
   render() {

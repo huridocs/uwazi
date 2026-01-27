@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
-import { withContext } from '#app/componentWrappers.jsx';
+import { withContext } from '#app/componentWrappers.js';
 import { t, Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { updateFile, deleteFile } from '#app/Attachments/actions/actions.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
@@ -18,11 +18,11 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
-import { ViewDocumentLink } from '#app/Attachments/components/ViewDocumentLink.jsx';
+import { ViewDocumentLink } from '#app/Attachments/components/ViewDocumentLink.js';
 import { APIURL } from '#app/config.js';
 import { ClientBlobFile } from '#app/istore.js';
 import wrapDispatch from '#app/Multireducer/wrapDispatch.js';
-import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.jsx';
+import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;

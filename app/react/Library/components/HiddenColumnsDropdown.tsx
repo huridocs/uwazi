@@ -8,7 +8,7 @@ import {
   ColumnItem,
   ValueItem,
   SelectableColumn,
-} from '#app/Library/components/HiddenColumnsDropdownItem.jsx';
+} from '#app/Library/components/HiddenColumnsDropdownItem.js';
 import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,

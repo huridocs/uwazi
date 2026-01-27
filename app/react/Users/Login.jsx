@@ -6,9 +6,9 @@ import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import Icon from '#UI/Icon/Icon.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { reconnectSocket } from '#app/socket.js';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
-import { withRouter } from '#app/componentWrappers.jsx';
+import { withRouter } from '#app/componentWrappers.js';
 import auth from '#app/Auth/index.js';
 
 const reloadHome = () => {
@@ -86,7 +86,10 @@ class LoginComponent extends RouteHandler {
   }
 
   componentDidMount() {
+    console.log('[Login] componentDidMount executing');
+    window.__loginComponentDidMount = true;
     this.setState({ render: true });
+    console.log('[Login] componentDidMount complete, render set to true');
   }
 
   render() {

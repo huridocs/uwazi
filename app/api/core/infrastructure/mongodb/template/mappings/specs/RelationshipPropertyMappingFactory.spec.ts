@@ -7,7 +7,7 @@ import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDa
 import { Property } from '#api/core/domain/template/Property.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { propertyMappings } from 'database/elastic_mapping/mappings';
+import { propertyMappings } from '../../../../../../../../database/elastic_mapping/mappings.js';
 import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mongodb/template/mappings/RelationshipPropertyMappingFactory.js';
 
 const fixtureFactory = getFixturesFactory();

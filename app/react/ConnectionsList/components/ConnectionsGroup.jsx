@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { t } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.jsx';
+import ShowIf from '#app/App/ShowIf.js';
 import Icon from '#UI/Icon/Icon.js';
 
 import { setFilter } from '#app/ConnectionsList/actions/actions.js';

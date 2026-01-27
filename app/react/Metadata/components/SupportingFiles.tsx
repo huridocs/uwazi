@@ -2,12 +2,12 @@ import React from 'react';
 
 import { ClientFile } from '#app/istore.js';
 import { Translate } from '#app/I18N/index.js';
-import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.jsx';
+import UploadSupportingFile from '#app/Attachments/components/UploadSupportingFile.js';
 import {
   uploadLocalAttachment,
   uploadLocalAttachmentFromUrl,
 } from '#app/Metadata/actions/supportingFilesActions.js';
-import { MetadataFormFiles } from '#app/Metadata/components/MetadataFormFiles.jsx';
+import { MetadataFormFiles } from '#app/Metadata/components/MetadataFormFiles.js';
 
 type SupportingFilesProps = {
   model: string;

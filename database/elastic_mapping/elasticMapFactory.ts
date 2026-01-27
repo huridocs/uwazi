@@ -4,7 +4,7 @@ import { RelationshipPropertyMappingFactory } from '#api/core/infrastructure/mon
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { propertyMappings } from './mappings';
+import { propertyMappings } from './mappings.js';
 
 const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();

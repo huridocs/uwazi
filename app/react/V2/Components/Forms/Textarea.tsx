@@ -2,8 +2,8 @@ import React, { ChangeEventHandler, CSSProperties } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
 import { Translate } from '#app/I18N/index.js';
-import { InputError } from '#V2/Components/Forms/InputError.jsx';
-import { Label } from '#V2/Components/Forms/Label.jsx';
+import { InputError } from '#V2/Components/Forms/InputError.js';
+import { Label } from '#V2/Components/Forms/Label.js';
 
 interface TextareaProps {
   id: string;

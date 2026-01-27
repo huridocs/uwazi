@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { t, Translate } from '#app/I18N/index.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 interface PaginationProps {
   resetActivePage?: boolean;

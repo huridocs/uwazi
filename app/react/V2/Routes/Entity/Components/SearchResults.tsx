@@ -8,14 +8,14 @@ import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { t, Translate } from '#app/I18N/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { SEARCH_PARAM } from '#V2/Routes/Entity/urlParams.js';
 import { searchHintsModalAtom } from '#V2/Routes/Entity/Components/atoms.js';
 import { LoaderResponse } from '#V2/Routes/Entity/types.js';
 import { scrollToSnippet } from '#V2/Routes/Entity/Components/functions.js';
-import { NoSearch, NoResults } from '#V2/Routes/Entity/Components/BlankState.jsx';
+import { NoSearch, NoResults } from '#V2/Routes/Entity/Components/BlankState.js';
 
 type FormValues = {
   search: string;

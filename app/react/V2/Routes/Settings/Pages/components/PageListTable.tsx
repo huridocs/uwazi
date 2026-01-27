@@ -6,7 +6,7 @@ import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from '#V2/Components/UI/index.js';
 
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
-import { TablePage } from '#V2/Routes/Settings/Pages/PagesList.jsx';
+import { TablePage } from '#V2/Routes/Settings/Pages/PagesList.js';
 
 const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
 

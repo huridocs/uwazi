@@ -5,16 +5,16 @@ import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { t } from '#app/I18N/index.js';
-import FormGroup from '#app/DocumentForm/components/FormGroup.jsx';
+import FormGroup from '#app/DocumentForm/components/FormGroup.js';
 import { getAggregationSuggestions } from '#app/Library/actions/libraryActions.js';
 import { selectTemplates } from '#app/utils/coreSelectors.js';
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
 
-import DateFilter from '#app/Library/components/DateFilter.jsx';
-import NestedFilter from '#app/Library/components/NestedFilter.jsx';
-import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.jsx';
-import SelectFilter from '#app/Library/components/SelectFilter.jsx';
-import TextFilter from '#app/Library/components/TextFilter.jsx';
+import DateFilter from '#app/Library/components/DateFilter.js';
+import NestedFilter from '#app/Library/components/NestedFilter.js';
+import NumberRangeFilter from '#app/Library/components/NumberRangeFilter.js';
+import SelectFilter from '#app/Library/components/SelectFilter.js';
+import TextFilter from '#app/Library/components/TextFilter.js';
 
 const extractRelationshipLabel = (filteredProperty, label, templates) => {
   const relatedTemplate = templates.find(template => template._id === filteredProperty.content);

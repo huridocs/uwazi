@@ -9,15 +9,15 @@ import { Translate } from '#app/I18N/index.js';
 import uniqueID from '#shared/uniqueID.js';
 
 import { AttachmentSchema } from '#shared/types/commonTypes.js';
-import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.jsx';
+import { WebMediaResourceForm } from '#app/Attachments/components/WebMediaResourceForm.js';
 import { uploadLocalAttachment } from '#app/Metadata/actions/supportingFilesActions.js';
 
-import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.jsx';
-import { MediaModalUploadFileButton } from '#app/Metadata/components/MediaModalUploadFileButton.jsx';
-import { validImageFile, validMediaFile } from '#app/Metadata/helpers/validator.jsx';
+import { MediaModalFileList } from '#app/Metadata/components/MediaModalFileList.js';
+import { MediaModalUploadFileButton } from '#app/Metadata/components/MediaModalUploadFileButton.js';
+import { validImageFile, validMediaFile } from '#app/Metadata/helpers/validator.js';
 import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
 import { ClientFile, IStore } from '#app/istore.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 enum MediaModalType {
   Image,

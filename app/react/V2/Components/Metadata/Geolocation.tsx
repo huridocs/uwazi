@@ -1,9 +1,9 @@
 import React from 'react';
-import { Map } from '#app/Map/index.jsx';
-import { MapProps } from '#app/Map/MapContainer.jsx';
+import { Map } from '#app/Map/index.js';
+import { MapProps } from '#app/Map/MapContainer.js';
 import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
-import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.jsx';
-import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';
+import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.js';
+import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.js';
 import { GeolocationMetadataProperty } from '#V2/domain/entities/types.js';
 
 type GeolocationProps = MetadataFieldProps & {

@@ -1,26 +1,26 @@
-import DropdownList from 'react-widgets/lib/DropdownList';
-import Select from '#app/Forms/components/Select.jsx';
-import DatePicker from '#app/Forms/components/DatePicker.jsx';
-import Captcha from '#app/Forms/components/Captcha.jsx';
-import DateRange from '#app/Forms/components/DateRange.jsx';
-import FormGroup from '#app/Forms/components/FormGroup.jsx';
-import { MultiSelect, MultiSelectTristate } from '#app/Forms/components/MultiSelect.jsx';
-import { LookupMultiSelect } from '#app/Forms/components/LookupMultiSelect.jsx';
-import { MarkDown } from '#app/Forms/components/MarkDown.jsx';
-import Nested from '#app/Forms/components/Nested.jsx';
-import NestedMultiselect from '#app/Forms/components/NestedMultiselect.jsx';
-import MultiDate from '#app/Forms/components/MultiDate.jsx';
-import MultiDateRange from '#app/Forms/components/MultiDateRange.jsx';
-import IconSelector from '#app/Forms/components/IconSelector.jsx';
-import Numeric from '#app/Forms/components/Numeric.jsx';
-import NumericRange from '#app/Forms/components/NumericRange.jsx';
-import NumericRangeSlide from '#app/Forms/components/NumericRangeSlide.jsx';
-import RadioButtons from '#app/Forms/components/RadioButtons.jsx';
-import { Switcher } from '#app/Forms/components/Switcher.jsx';
-import Geolocation from '#app/Forms/components/Geolocation.jsx';
-import LinkField from '#app/Forms/components/LinkField.jsx';
+import DropdownList from 'react-widgets/lib/DropdownList.js';
+import Select from '#app/Forms/components/Select.js';
+import DatePicker from '#app/Forms/components/DatePicker.js';
+import Captcha from '#app/Forms/components/Captcha.js';
+import DateRange from '#app/Forms/components/DateRange.js';
+import FormGroup from '#app/Forms/components/FormGroup.js';
+import { MultiSelect, MultiSelectTristate } from '#app/Forms/components/MultiSelect.js';
+import { LookupMultiSelect } from '#app/Forms/components/LookupMultiSelect.js';
+import { MarkDown } from '#app/Forms/components/MarkDown.js';
+import Nested from '#app/Forms/components/Nested.js';
+import NestedMultiselect from '#app/Forms/components/NestedMultiselect.js';
+import MultiDate from '#app/Forms/components/MultiDate.js';
+import MultiDateRange from '#app/Forms/components/MultiDateRange.js';
+import IconSelector from '#app/Forms/components/IconSelector.js';
+import Numeric from '#app/Forms/components/Numeric.js';
+import NumericRange from '#app/Forms/components/NumericRange.js';
+import NumericRangeSlide from '#app/Forms/components/NumericRangeSlide.js';
+import RadioButtons from '#app/Forms/components/RadioButtons.js';
+import { Switcher } from '#app/Forms/components/Switcher.js';
+import Geolocation from '#app/Forms/components/Geolocation.js';
+import LinkField from '#app/Forms/components/LinkField.js';
 import FormValue from '#app/Forms/components/FormValue.js';
-import MediaField from '#app/Forms/components/MediaField.jsx';
+import MediaField from '#app/Forms/components/MediaField.js';
 
 export {
   Select,

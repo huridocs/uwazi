@@ -4,7 +4,7 @@ import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracke
 import { BulkWriteStream } from '#api/core/infrastructure/mongodb/common/BulkWriteStream.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { SyncedCollection } from '#api/core/infrastructure/mongodb/common/SyncedCollection.js';
-import { SessionScopedCollection } from './SessionScopedCollection';
+import { SessionScopedCollection } from './SessionScopedCollection.js';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;

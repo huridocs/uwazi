@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { t } from '#app/I18N/index.js';
-import { useIsMobile } from '#V2/CustomHooks/useIsMobile.jsx';
-import { Menu } from '#app/App/Menu.jsx';
-import { SiteName } from '#app/App/SiteName.jsx';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
+import { Menu } from '#app/App/Menu.js';
+import { SiteName } from '#app/App/SiteName.js';
 import { Icon } from '#UI/index.js';
 
 const LegacyHeader = () => {

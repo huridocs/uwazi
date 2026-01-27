@@ -6,7 +6,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { applyMiddleware, createStore, Store, Middleware } from 'redux';
 
 import reducer from '#app/reducer.js';
-import { IStore } from './istore';
+import { IStore } from './istore.js';
 
 const thunk: Middleware = ((thunkModule as { default?: Middleware }).default ||
   thunkModule) as Middleware;

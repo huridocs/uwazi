@@ -3,8 +3,8 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Sidepanel, Button } from '#V2/Components/UI/index.js';
 
-import { SidePanelProps } from '#V2/Components/UI/Sidepanel.jsx';
-import { GeneratedContent } from '#app/stories/helpers/GeneratedContent.jsx';
+import { SidePanelProps } from '#V2/Components/UI/Sidepanel.js';
+import { GeneratedContent } from '#app/stories/helpers/GeneratedContent.js';
 
 const meta: Meta<typeof Sidepanel> = {
   title: 'Components/Sidepanel',

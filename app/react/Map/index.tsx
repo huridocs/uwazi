@@ -2,7 +2,7 @@
 import loadable from '@loadable/component';
 import React from 'react';
 
-import { Map, Layer } from '#app/Map/MapContainer.jsx';
+import { Map, Layer } from '#app/Map/MapContainer.js';
 import * as helper from '#app/Map/helper.js';
 
 const LMap = loadable(async () => {

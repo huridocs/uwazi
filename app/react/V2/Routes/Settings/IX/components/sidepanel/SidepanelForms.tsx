@@ -20,7 +20,7 @@ import {
 } from '#V2/Components/Forms/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
-import { MultiselectItemLabel } from '#V2/Routes/Settings/IX/components/MultiselectItemLabel.jsx';
+import { MultiselectItemLabel } from '#V2/Routes/Settings/IX/components/MultiselectItemLabel.js';
 import { ClientEntitySchema, ClientPropertySchema } from '#app/istore.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
 import { escapeLucene, searchRelatedEntities } from '#V2/Routes/Settings/IX/helpers/index.js';

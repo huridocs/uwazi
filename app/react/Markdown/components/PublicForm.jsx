@@ -13,10 +13,13 @@ import { Translate } from '#app/I18N/index.js';
 import { publicSubmit } from '#app/Uploads/actions/uploadsActions.js';
 import { FormGroup } from '#app/Forms/index.js';
 import Icon from '#UI/Icon/Icon.js';
-import { Loader } from '#app/components/Elements/Loader.jsx';
-import './scss/public-form.scss';
+import { Loader } from '#app/components/Elements/Loader.js';
+
+if (typeof window !== 'undefined') {
+  import('./scss/public-form.scss');
+}
 import { generateID } from '#shared/IDGenerator.js';
-import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.jsx';
+import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.js';
 
 class PublicFormComponent extends Component {
   static renderTitle(template) {

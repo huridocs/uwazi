@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Helmet } from 'react-helmet';
-import { RowList } from '#app/Layout/Lists.jsx';
-import Doc from '#app/Library/components/Doc.jsx';
+import { RowList } from '#app/Layout/Lists.js';
+import Doc from '#app/Library/components/Doc.js';
 import * as semanticSearchActions from '#app/SemanticSearch/actions/actions.js';
 import Immutable from 'immutable';
 import { Translate, t } from '#app/I18N/index.js';
-import SearchDescription from '#app/Library/components/SearchDescription.jsx';
+import SearchDescription from '#app/Library/components/SearchDescription.js';
 import Icon from '#UI/Icon/Icon.js';
-import ResultsSidePanel from '#app/SemanticSearch/components/ResultsSidePanel.jsx';
-import SemanticSearchMultieditPanel from '#app/SemanticSearch/components/SemanticSearchMultieditPanel.jsx';
+import ResultsSidePanel from '#app/SemanticSearch/components/ResultsSidePanel.js';
+import SemanticSearchMultieditPanel from '#app/SemanticSearch/components/SemanticSearchMultieditPanel.js';
 
 function renderAditionalText(doc) {
   const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);

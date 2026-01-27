@@ -6,9 +6,9 @@ import {
   TrashIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
-import { TriangleIcon } from '#V2/Components/UI/TriangleIcon.jsx';
+import { TriangleIcon } from '#V2/Components/UI/TriangleIcon.js';
 import type { ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/types.js';
-import { DeleteConfirmation } from '#V2/Routes/Entity/Components/ToC/DeleteConfirmation.jsx';
+import { DeleteConfirmation } from '#V2/Routes/Entity/Components/ToC/DeleteConfirmation.js';
 
 const getPageNumber = (entry: { selectionRectangles?: Array<{ page?: string }> }) => {
   const page = entry.selectionRectangles?.find(rect => rect.page)?.page;

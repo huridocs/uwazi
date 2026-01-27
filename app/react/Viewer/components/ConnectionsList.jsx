@@ -6,10 +6,12 @@ import { t, Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 import { Warning } from '#app/Layout/index.js';
 import { closePanel, deactivateReference } from '#app/Viewer/actions/uiActions.js';
-import Connection from '#app/Viewer/components/Connection.jsx';
+import Connection from '#app/Viewer/components/Connection.js';
 import { sortTextSelections } from '#app/Viewer/utils/sortTextSelections.js';
 
-import '#app/Viewer/scss/viewReferencesPanel.scss';
+if (typeof window !== 'undefined') {
+  import('#app/Viewer/scss/viewReferencesPanel.scss');
+}
 
 class ConnectionsList extends Component {
   static blankStateMessage(title, message) {

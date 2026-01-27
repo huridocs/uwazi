@@ -7,14 +7,14 @@ import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
 
 import uniqueID from '#shared/uniqueID.js';
-import { Label } from '#V2/Components/Forms/Label.jsx';
-import { InputError } from '#V2/Components/Forms/InputError.jsx';
-import { InputField } from '#V2/Components/Forms/InputField.jsx';
+import { Label } from '#V2/Components/Forms/Label.js';
+import { InputError } from '#V2/Components/Forms/InputError.js';
+import { InputField } from '#V2/Components/Forms/InputField.js';
 import {
   DatePickerProps,
   datePickerOptionsByLocale,
   validateLocale,
-} from '#V2/Components/Forms/DatePicker/DatePickerComponent.jsx';
+} from '#V2/Components/Forms/DatePicker/DatePickerComponent.js';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   dateFormat?: string;

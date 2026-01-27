@@ -8,9 +8,9 @@ import Icon from '#UI/Icon/Icon.js';
 import { t, Translate } from '#app/I18N/index.js';
 import * as metadataActions from '#app/Metadata/actions/actions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import SidePanel from '#app/Layout/SidePanel.jsx';
+import SidePanel from '#app/Layout/SidePanel.js';
 import commonTemplate from '#app/Metadata/helpers/comonTemplate.js';
-import MetadataForm from '#app/Metadata/components/MetadataForm.jsx';
+import MetadataForm from '#app/Metadata/components/MetadataForm.js';
 import { setEditSearchEntities, getSearch } from '#app/SemanticSearch/actions/actions.js';
 
 const getTemplates = createSelector(

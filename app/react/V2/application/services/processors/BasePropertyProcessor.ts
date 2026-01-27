@@ -1,5 +1,5 @@
 import { MetadataProperty } from '#V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import {
   AdapterMetadataProperty,
   ProcessingContext,

@@ -14,12 +14,12 @@ import { searchDocuments } from '#app/Library/actions/libraryActions.js';
 import { Translate } from '#app/I18N/index.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { FilterTocGeneration } from '#app/ToggledFeatures/tocGeneration/index.js';
-import { TemplatesFilter } from '#app/Library/components/TemplatesFilter.jsx';
-import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.jsx';
-import { withRouter } from '#app/componentWrappers.jsx';
-import { PermissionsFilter } from '#app/Library/components/PermissionsFilter.jsx';
-import { PublishedFilters } from '#app/Library/components/PublishedFilters.jsx';
-import Filters from '#app/Library/components/FiltersFromProperties.jsx';
+import { TemplatesFilter } from '#app/Library/components/TemplatesFilter.js';
+import { AssigneeFilter } from '#app/Library/components/AssigneeFilter.js';
+import { withRouter } from '#app/componentWrappers.js';
+import { PermissionsFilter } from '#app/Library/components/PermissionsFilter.js';
+import { PublishedFilters } from '#app/Library/components/PublishedFilters.js';
+import Filters from '#app/Library/components/FiltersFromProperties.js';
 
 class FiltersForm extends Component {
   constructor(props) {

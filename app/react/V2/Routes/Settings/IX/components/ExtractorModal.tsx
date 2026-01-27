@@ -8,10 +8,10 @@ import { t, Translate } from '#app/I18N/index.js';
 
 import { ClientPropertySchema, ClientTemplateSchema } from '#app/istore.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { InputField } from '#V2/Components/Forms/InputField.jsx';
+import { InputField } from '#V2/Components/Forms/InputField.js';
 import { defaultSearch, MultiselectList, RadioSelect } from '#V2/Components/Forms/index.js';
 import { Modal, Button, Pill } from '#V2/Components/UI/index.js';
-import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
 import {
   getAvailableSources,
   getPropertyNameFromExtractPair,

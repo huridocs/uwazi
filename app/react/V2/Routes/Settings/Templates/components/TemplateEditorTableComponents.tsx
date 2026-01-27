@@ -1,12 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Button } from '#V2/Components/UI/Button.jsx';
+import { Button } from '#V2/Components/UI/Button.js';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
 
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
-import { Translate } from '#app/I18N/Translate.jsx';
-import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
+import { Translate } from '#app/I18N/Translate.js';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
 import { Pill } from '#V2/Components/UI/index.js';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';

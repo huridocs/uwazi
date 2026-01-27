@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 
 export default class Welcome extends Component {

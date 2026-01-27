@@ -1,5 +1,5 @@
 import { FilePropertyTypes, MediaMetadataProperty, Timelink } from '#V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { PropertyValueSchema } from '#shared/types/commonTypes.js';
 import {

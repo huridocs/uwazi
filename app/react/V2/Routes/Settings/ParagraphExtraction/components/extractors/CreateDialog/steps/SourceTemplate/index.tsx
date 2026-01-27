@@ -1,6 +1,6 @@
 import React from 'react';
-import { Body } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/SourceTemplate/Body.jsx';
-import { Footer } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/SourceTemplate/Footer.jsx';
+import { Body } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/SourceTemplate/Body.js';
+import { Footer } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/SourceTemplate/Footer.js';
 
 import { Translate } from '#app/I18N/index.js';
 

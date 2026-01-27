@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Entity } from '#V2/domain/index.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
-import { EntityFile, FileCard } from '#V2/Components/UI/Files/FileCard.jsx';
+import { EntityFile, FileCard } from '#V2/Components/UI/Files/FileCard.js';
 
 type FileListProps = {
   entity: Entity;

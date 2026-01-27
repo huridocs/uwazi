@@ -6,16 +6,16 @@ import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import Icon from '#UI/Icon/Icon.js';
-import { withContext } from '#app/componentWrappers.jsx';
+import { withContext } from '#app/componentWrappers.js';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from '#app/Metadata/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
-import SidePanel from '#app/Layout/SidePanel.jsx';
-import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
+import SidePanel from '#app/Layout/SidePanel.js';
+import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { saveEntityWithFiles } from '#app/Library/actions/saveEntityWithFiles.js';
 import { AttachmentsList } from '#app/Attachments/index.js';
-import { FileList } from '#app/Attachments/components/FileList.jsx';
+import { FileList } from '#app/Attachments/components/FileList.js';
 import {
   unselectConnection,
   updateRelationshipEntityData,

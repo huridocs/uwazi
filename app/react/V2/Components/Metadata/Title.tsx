@@ -1,7 +1,7 @@
 import React from 'react';
 import { MetadataFieldProps } from '#V2/Components/Metadata/types.js';
 import { CountryFlag } from '#V2/Components/CustomIcons/index.js';
-import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.jsx';
+import { PropertyLabel } from '#V2/Components/Metadata/PropertyLabel.js';
 
 type TitleProps = MetadataFieldProps & {
   title: string;

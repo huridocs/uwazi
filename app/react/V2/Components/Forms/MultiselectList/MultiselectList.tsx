@@ -7,10 +7,10 @@ import _ from 'lodash';
 import { t, Translate } from '#app/I18N/index.js';
 
 import { debounce } from '#app/utils/index.js';
-import { Label } from '#V2/Components/Forms/Label.jsx';
-import { Checkbox } from '#V2/Components/Forms/Checkbox.jsx';
-import { MultiselectListButtonItem } from '#V2/Components/Forms/MultiselectList/MultiselectListButtonItem.jsx';
-import { MultiselectListGroup } from '#V2/Components/Forms/MultiselectList/MultiselectListGroup.jsx';
+import { Label } from '#V2/Components/Forms/Label.js';
+import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
+import { MultiselectListButtonItem } from '#V2/Components/Forms/MultiselectList/MultiselectListButtonItem.js';
+import { MultiselectListGroup } from '#V2/Components/Forms/MultiselectList/MultiselectListGroup.js';
 import { InputField, RadioSelect } from '#V2/Components/Forms/index.js';
 
 interface MultiselectListOption {

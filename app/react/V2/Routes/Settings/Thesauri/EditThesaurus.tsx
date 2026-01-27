@@ -9,7 +9,7 @@ import isEmpty from 'lodash/isEmpty.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
@@ -33,8 +33,8 @@ import {
   ThesaurusActions,
 } from '#V2/Routes/Settings/Thesauri/components/index.js';
 import type { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/index.js';
-import { ThesaurusForm } from '#V2/Routes/Settings/Thesauri/ThesaurusForm.jsx';
-import { ImportButton } from '#V2/Routes/Settings/Thesauri/components/ImportButton.jsx';
+import { ThesaurusForm } from '#V2/Routes/Settings/Thesauri/ThesaurusForm.js';
+import { ImportButton } from '#V2/Routes/Settings/Thesauri/components/ImportButton.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();

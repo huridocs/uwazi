@@ -10,7 +10,7 @@ import * as extractorsAPI from '#V2/api/paragraphExtractor/extractors.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.jsx';
+import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
 import { isClient } from '#app/utils/index.js';
 
 const Footer = () => {

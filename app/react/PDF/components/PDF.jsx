@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 // import { SelectionRegion } from '@huridocs/react-text-selection-handler/dist/SelectionRegion.js';
 // import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist/HandleTextSelection.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import PDFPage from '#app/PDF/components/PDFPage.jsx';
+import PDFPage from '#app/PDF/components/PDFPage.js';
 import { isClient } from '#app/utils/index.js';
 import PDFJS from '#app/PDF/PDFJS.js';
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 
 import { PageCreator } from '#app/Pages/components/PageCreator.js';
-import { withRouter } from '#app/componentWrappers.jsx';
+import { withRouter } from '#app/componentWrappers.js';
 import pagesAPI from '#app/Pages/PagesAPI.js';
 
 class EditPageComponent extends RouteHandler {

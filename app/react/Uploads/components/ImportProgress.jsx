@@ -8,7 +8,7 @@ import Icon from '#UI/Icon/Icon.js';
 import { bindActionCreators } from 'redux';
 import { closeImportProgress } from '#app/Uploads/actions/uploadsActions.js';
 import Immutable from 'immutable';
-import StackTrace from '#app/components/Elements/StackTrace.jsx';
+import StackTrace from '#app/components/Elements/StackTrace.js';
 
 export class ImportProgress extends Component {
   render() {

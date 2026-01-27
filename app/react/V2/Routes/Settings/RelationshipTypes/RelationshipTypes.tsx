@@ -16,13 +16,13 @@ import { notificationAtom, templatesAtom, relationshipTypesAtom } from '#V2/atom
 
 import { Button, Table, Sidepanel, ConfirmationModal } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import {
   columns,
   Relationships,
   TableRelationshipType,
-} from '#V2/Routes/Settings/RelationshipTypes/components/TableComponents.jsx';
-import { Form } from '#V2/Routes/Settings/RelationshipTypes/components/Form.jsx';
+} from '#V2/Routes/Settings/RelationshipTypes/components/TableComponents.js';
+import { Form } from '#V2/Routes/Settings/RelationshipTypes/components/Form.js';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

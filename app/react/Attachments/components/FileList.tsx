@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { withContext } from '#app/componentWrappers.jsx';
+import { withContext } from '#app/componentWrappers.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { FileType } from '#shared/types/fileType.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
-import UploadButton from '#app/Metadata/components/UploadButton.jsx';
+import UploadButton from '#app/Metadata/components/UploadButton.js';
 
 import { LanguageUtils } from '#shared/language/index.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { ConnectedFile as File } from '#app/Attachments/components/File.jsx';
+import { ConnectedFile as File } from '#app/Attachments/components/File.js';
 import './scss/filelist.scss';
 
 const defaultProps = {

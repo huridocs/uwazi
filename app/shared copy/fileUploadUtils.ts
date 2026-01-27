@@ -1,5 +1,5 @@
 import { ClientFile } from '../react/istore.js';
-import { AttachmentSchema } from './types/commonTypes';
+import { AttachmentSchema } from './types/commonTypes.js';
 
 export const isSerializedFile = (file: ClientFile | AttachmentSchema): file is ClientFile =>
   (<ClientFile>file).serializedFile !== undefined;

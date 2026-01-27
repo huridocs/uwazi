@@ -6,7 +6,7 @@ import {
   MultiSelectProps,
   Option,
   defaultProps,
-} from '#app/Forms/components/MultiSelect.jsx';
+} from '#app/Forms/components/MultiSelect.js';
 
 interface LookupMultiSelectProps extends MultiSelectProps<string[]> {
   lookup: Function;

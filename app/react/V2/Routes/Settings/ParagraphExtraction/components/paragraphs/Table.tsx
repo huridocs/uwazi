@@ -11,8 +11,8 @@ import {
 
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { TableTitle } from '#V2/Routes/Settings/ParagraphExtraction/components/TableTitle.jsx';
-import { PXTableFooter } from '#V2/Routes/Settings/ParagraphExtraction/components/PXTableFooter.jsx';
+import { TableTitle } from '#V2/Routes/Settings/ParagraphExtraction/components/TableTitle.js';
+import { PXTableFooter } from '#V2/Routes/Settings/ParagraphExtraction/components/PXTableFooter.js';
 import { tableBuilder } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/TableElements/index.js';
 
 interface ParagraphsTableProps {

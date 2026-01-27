@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 
 const updateDatasetScript = `window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:
 {all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:

@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { wrapValidator } from '#shared/tsUtils.js';
-import { SegmentationType } from './segmentationType';
+import { SegmentationType } from './segmentationType.js';
 
 export const emitSchemaTypes = true;
 

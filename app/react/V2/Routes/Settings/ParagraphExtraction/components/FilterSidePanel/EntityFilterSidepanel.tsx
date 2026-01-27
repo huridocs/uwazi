@@ -7,7 +7,7 @@ import { Button, Sidepanel } from '#V2/Components/UI/index.js';
 import {
   EntityFilter,
   Filters,
-} from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/Filters.jsx';
+} from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/Filters.js';
 import {
   filterSidepanelAtom,
   filterSidepanelStatusAtom,

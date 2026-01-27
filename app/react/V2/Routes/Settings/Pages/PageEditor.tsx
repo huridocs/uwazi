@@ -18,7 +18,7 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import { Translate, t } from '#app/I18N/index.js';
 import * as pagesAPI from '#V2/api/pages/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { CodeEditor } from '#V2/Components/CodeEditor/index.js';
 
@@ -26,11 +26,11 @@ import { EnableButtonCheckbox, InputField } from '#V2/Components/Forms/index.js'
 import { notificationAtom } from '#V2/atoms/index.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { getPageUrl } from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
+import { getPageUrl } from '#V2/Routes/Settings/Pages/components/PageListTable.js';
 import {
   HTMLNotification,
   JSNotification,
-} from '#V2/Routes/Settings/Pages/components/PageEditorComponents.jsx';
+} from '#V2/Routes/Settings/Pages/components/PageEditorComponents.js';
 import { Page } from '#app/V2/shared/types.js';
 
 const pageEditorLoader =

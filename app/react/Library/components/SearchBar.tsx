@@ -4,7 +4,7 @@ import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
@@ -12,10 +12,10 @@ import {
 import { t, Translate } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import ModalTips from '#app/App/ModalTips.jsx';
-import { SearchTipsContent } from '#app/App/SearchTipsContent.jsx';
+import ModalTips from '#app/App/ModalTips.js';
+import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { submitNewSearch } from '#app/SemanticSearch/actions/actions.js';
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
 import { IStore } from '#app/istore.js';
 import { Form } from '#app/Forms/Form.js';
 

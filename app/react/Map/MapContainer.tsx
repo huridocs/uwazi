@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { isClient } from '#app/utils/index.js';
 
-import { LMap } from '#app/Map/index.jsx';
+import { LMap } from '#app/Map/index.js';
 
-import { DataMarker, MarkerInput } from '#app/Map/MapHelper.jsx';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
+import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 

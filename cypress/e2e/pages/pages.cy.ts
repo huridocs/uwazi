@@ -1,6 +1,6 @@
 import 'cypress-axe';
-import { clearCookiesAndLogin } from '../helpers/login';
-import { contents, script } from '../helpers/entityViewPageFixtures';
+import { clearCookiesAndLogin } from '../helpers/login.js';
+import { contents, script } from '../helpers/entityViewPageFixtures.js';
 import { logA11yViolations } from '../../support/helpers/a11y.js';
 
 describe('Pages', () => {

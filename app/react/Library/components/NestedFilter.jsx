@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { NestedMultiselect } from '#app/ReactReduxForms/index.jsx';
+import { NestedMultiselect } from '#app/ReactReduxForms/index.js';
 
 class NestedFilter extends Component {
   render() {

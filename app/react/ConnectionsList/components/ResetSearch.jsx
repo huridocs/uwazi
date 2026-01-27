@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import ShowIf from '#app/App/ShowIf.jsx';
+import ShowIf from '#app/App/ShowIf.js';
 import { Translate } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 

@@ -13,7 +13,7 @@ import { Button, Card, ConfirmationModal, Sidepanel } from '#V2/Components/UI/in
 
 import { UserRole } from '#shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { PermissionsListModal } from '#V2/Routes/Settings/Users/components/PermissionsListModal.jsx';
+import { PermissionsListModal } from '#V2/Routes/Settings/Users/components/PermissionsListModal.js';
 import { User, Group } from '#V2/Routes/Settings/Users/types.js';
 import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import DatePicker from '#app/Forms/components/DatePicker.jsx';
+import DatePicker from '#app/Forms/components/DatePicker.js';
 
 class DateRange extends Component {
   onChange(prop, propValue) {

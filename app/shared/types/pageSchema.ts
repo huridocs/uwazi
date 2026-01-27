@@ -4,7 +4,7 @@ import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
 
 import { objectIdSchema } from '#shared/types/commonSchemas.js';
 import { wrapValidator } from '#shared/tsUtils.js';
-import { PageType } from './pageType';
+import { PageType } from './pageType.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

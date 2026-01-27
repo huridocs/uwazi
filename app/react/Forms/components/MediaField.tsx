@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import isObject from 'lodash/isObject.js';
 import { Translate } from '#app/I18N/index.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { ClientFile } from '#app/istore.js';
 
 import { prepareHTMLMediaView } from '#shared/fileUploadUtils.js';
@@ -10,9 +10,9 @@ import {
   MediaModal,
   MediaModalProps,
   MediaModalType,
-} from '#app/Metadata/components/MediaModal.jsx';
-import MarkdownMedia, { TimeLink } from '#app/Markdown/components/MarkdownMedia.jsx';
-import { ImageViewer } from '#app/Metadata/components/ImageViewer.jsx';
+} from '#app/Metadata/components/MediaModal.js';
+import MarkdownMedia, { TimeLink } from '#app/Markdown/components/MarkdownMedia.js';
+import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: Partial<File> } | null;

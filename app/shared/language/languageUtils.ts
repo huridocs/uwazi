@@ -5,7 +5,7 @@ import {
   availableLanguages,
   otherLanguageSchema,
 } from '#shared/language/availableLanguages.js';
-import { LanguageISO6393 } from './languageISO639_3';
+import { LanguageISO6393 } from './languageISO639_3.js';
 
 class LanguageUtils {
   private static createLanguageIndex(code: LanguageCode) {

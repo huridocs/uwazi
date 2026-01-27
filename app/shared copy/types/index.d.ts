@@ -1,6 +1,6 @@
 import { Store } from 'redux';
 import { ClientFeatureFlags } from '#shared/types.js';
-import { RequestError } from '#V2/shared/errorUtils.jsx';
+import { RequestError } from '#V2/shared/errorUtils.js';
 import { IStore } from '#app/istore.js';
 import { updatePageDatasets } from '#app/Pages/utils/updatePageDatasets.js';
 import { AtomStoreData } from '#V2/atoms/index.js';

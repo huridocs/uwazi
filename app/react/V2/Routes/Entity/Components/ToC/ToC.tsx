@@ -1,7 +1,7 @@
 /* eslint-disable max-lines, react/require-default-props */
 import React, { useMemo, useEffect } from 'react';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { ToCItem } from '#V2/Routes/Entity/Components/ToC/ToCItem.jsx';
+import { ToCItem } from '#V2/Routes/Entity/Components/ToC/ToCItem.js';
 import type { ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/types.js';
 import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';
 

@@ -363,6 +363,7 @@
     "eslint-plugin-react": "v7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-storybook": "^0.11.2",
+    "expect-puppeteer": "^11.0.0",
     "fetch-mock": "^9.11.0",
     "flowbite-typography": "^1.0.3",
     "identity-obj-proxy": "^3.0.0",

@@ -1,1 +1,1 @@
-export { FavoriteBanner } from '#app/Favorites/components/FavoriteBanner.jsx';
+export { FavoriteBanner } from '#app/Favorites/components/FavoriteBanner.js';

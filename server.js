@@ -21,7 +21,7 @@ process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 (async () => {
   if (NODE_ENV === 'production') {
     try {
-      require('./app/server.js');
+      await import('./app/server.js');
     } catch (e) {
       console.error(e);
       console.error(

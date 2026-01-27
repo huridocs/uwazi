@@ -5,7 +5,7 @@ import { IStore, TableViewColumn } from '#app/istore.js';
 
 import { Icon as PropertyIcon } from '#app/Layout/index.js';
 import formatter from '#app/Metadata/helpers/formater.js';
-import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.jsx';
+import { FormattedMetadataValue, TableCell } from '#app/Library/components/TableCell.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';

@@ -9,7 +9,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
 import { TemplateSchema } from '#shared/types/templateType.js';
-import ValidationError from 'ajv/dist/runtime/validation_error';
+import ValidationError from 'ajv/dist/runtime/validation_error.js';
 
 import { validateMetadataField } from '#api/entities/validation/validateMetadataField.js';
 import { customErrorMessages, validators } from '#api/entities/validation/metadataValidators.js';

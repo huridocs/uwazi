@@ -5,7 +5,8 @@
       {
         "targets": {
           "node": "current"
-        }
+        },
+        "modules": false
       }
     ],
     "@babel/preset-react",
@@ -14,6 +15,19 @@
   "retainLines": true,
   "env": {
     "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            },
+            "modules": "cjs"
+          }
+        ],
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+      ],
       "plugins": [
         "./babel-plugin-fix-import-meta.cjs",
         "./babel-plugin-fix-js-imports.cjs"
@@ -21,11 +35,33 @@
     },
     "production": {
       "plugins": [
+        [
+          "babel-plugin-module-resolver",
+          {
+            "root": ["./"],
+            "alias": {
+              "app": "./app",
+              "app/*": "./app/*"
+            }
+          }
+        ],
         "babel-plugin-transform-react-remove-prop-types",
         "@babel/plugin-transform-react-inline-elements"
       ]
     },
     "debug": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ],
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+      ],
       "sourceMaps": "inline",
       "retainLines": true
     }

@@ -1,4 +1,4 @@
-import MarkdownViewer from '#app/Markdown/MarkdownViewer.jsx';
+import MarkdownViewer from '#app/Markdown/MarkdownViewer.js';
 
 export { default as markdownDatasets } from '#app/Markdown/markdownDatasets.js';
 

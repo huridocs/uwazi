@@ -6,16 +6,16 @@ import { FunnelIcon } from '@heroicons/react/24/outline';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Button, PaginationState, Paginator, Pill, Table } from '#V2/Components/UI/index.js';
 
 import { useIsFirstRender } from '#V2/CustomHooks/useIsFirstRender.js';
 
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
-import { getActivityLogColumns } from '#V2/Routes/Settings/ActivityLog/components/TableElements.jsx';
-import { ActivityLogSidePanel } from '#V2/Routes/Settings/ActivityLog/components/ActivityLogSidePanel.jsx';
-import { FiltersSidePanel } from '#V2/Routes/Settings/ActivityLog/components/FiltersSidePanel.jsx';
+import { getActivityLogColumns } from '#V2/Routes/Settings/ActivityLog/components/TableElements.js';
+import { ActivityLogSidePanel } from '#V2/Routes/Settings/ActivityLog/components/ActivityLogSidePanel.js';
+import { FiltersSidePanel } from '#V2/Routes/Settings/ActivityLog/components/FiltersSidePanel.js';
 import type { LoaderData } from '#V2/Routes/Settings/ActivityLog/ActivityLogLoader.js';
 import {
   getAppliedFilters,

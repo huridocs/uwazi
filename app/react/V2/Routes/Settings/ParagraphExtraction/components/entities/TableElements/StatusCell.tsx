@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
-import { PXEntityStatus } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/PXEntityStatus.jsx';
+import { PXEntityStatus } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/PXEntityStatus.js';
 
 const StatusCell = ({ cell }: CellContext<TablePXEntityRow, TablePXEntityRow['status']>) => (
   <div className="flex items-center gap-2">

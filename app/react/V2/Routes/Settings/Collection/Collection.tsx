@@ -19,15 +19,15 @@ import { Button, Card } from '#V2/Components/UI/index.js';
 
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Translate, t } from '#app/I18N/index.js';
 
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import * as tips from '#V2/Routes/Settings/Collection/collectionSettingsTips.jsx';
-import { CollectionOptionToggle } from '#V2/Routes/Settings/Collection/CollectionOptionToggle.jsx';
+import * as tips from '#V2/Routes/Settings/Collection/collectionSettingsTips.js';
+import { CollectionOptionToggle } from '#V2/Routes/Settings/Collection/CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

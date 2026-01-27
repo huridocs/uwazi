@@ -1,5 +1,5 @@
 import { ImageMetadataProperty } from '#V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import { MetadataObjectSchema } from '#shared/types/commonTypes.js';
 import {
   ProcessingContext,

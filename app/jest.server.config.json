@@ -13,7 +13,8 @@
   },
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
   "transform": {
-    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }]
+    "\\.[jt]sx?$": ["babel-jest", { "rootMode": "upward" }],
+    "^.*/setUpJestServer\\.js$": ["babel-jest", { "rootMode": "upward" }]
   },
   "moduleNameMapper": {
     "^#api/(.*)\\.js$": "<rootDir>/api/$1",

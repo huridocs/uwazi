@@ -1,6 +1,6 @@
-export { AddTemplatesModal } from '#V2/Routes/Settings/Filters/components/AddTemplatesModal.jsx';
-export { createColumns } from '#V2/Routes/Settings/Filters/components/TableComponents.jsx';
-export { FiltersSidepanel } from '#V2/Routes/Settings/Filters/components/FiltersSidepanel.jsx';
+export { AddTemplatesModal } from '#V2/Routes/Settings/Filters/components/AddTemplatesModal.js';
+export { createColumns } from '#V2/Routes/Settings/Filters/components/TableComponents.js';
+export { FiltersSidepanel } from '#V2/Routes/Settings/Filters/components/FiltersSidepanel.js';
 export {
   filterAvailableTemplates,
   updateFilters,

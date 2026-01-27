@@ -6,12 +6,12 @@ import _ from 'lodash';
 import { t } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 import MarkdownViewer from '#app/Markdown/index.js';
-import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.jsx';
+import { GroupedGeolocationViewer } from '#app/Metadata/components/GroupedGeolocationViewer.js';
 import { MediaPlayer } from '#V2/Components/UI/index.js';
-import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.jsx';
-import { RelationshipLink } from '#app/Metadata/components/RelationshipLink.jsx';
-import ValueList from '#app/Metadata/components/ValueList.jsx';
-import { ImageViewer } from '#app/Metadata/components/ImageViewer.jsx';
+import GeolocationViewer from '#app/Metadata/components/GeolocationViewer.js';
+import { RelationshipLink } from '#app/Metadata/components/RelationshipLink.js';
+import ValueList from '#app/Metadata/components/ValueList.js';
+import { ImageViewer } from '#app/Metadata/components/ImageViewer.js';
 
 const getMediaUrlAndName = fileUrl => {
   let url = fileUrl;

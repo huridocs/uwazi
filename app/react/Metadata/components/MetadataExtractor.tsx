@@ -13,7 +13,7 @@ import {
   updateFormField,
 } from '#app/Metadata/actions/metadataExtractionActions.js';
 import { IStore } from '#app/istore.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 type OwnPropTypes = {
   fieldName: string;

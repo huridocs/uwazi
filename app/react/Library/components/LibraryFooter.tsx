@@ -2,7 +2,7 @@ import { Translate } from '#app/I18N/index.js';
 
 import { wrapDispatch } from '#app/Multireducer/index.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
@@ -12,8 +12,8 @@ import {
 import { connect } from 'react-redux';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import Export from '#app/Library/components/ExportButton.jsx';
-import { PDFUploadButton } from '#app/Library/components/PDFUploadButton.jsx';
+import Export from '#app/Library/components/ExportButton.js';
+import { PDFUploadButton } from '#app/Library/components/PDFUploadButton.js';
 
 interface LibraryFooterOwnProps {
   storeKey: string;

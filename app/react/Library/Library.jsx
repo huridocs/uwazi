@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, matchPath } from 'react-router';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
 import { actions } from '#app/BasicReducer/index.js';
 import {
   enterLibrary,
@@ -9,7 +9,7 @@ import {
   zoomOut,
 } from '#app/Library/actions/libraryActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
-import { withRouter } from '#app/componentWrappers.jsx';
+import { withRouter } from '#app/componentWrappers.js';
 import { routes as appRoutes } from '#app/appRoutes.js';
 
 class LibraryRootComponent extends RouteHandler {

@@ -23,7 +23,7 @@ import { ClientTranslationSchema } from '#app/istore.js';
 
 import { InputField } from '#V2/Components/Forms/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import * as translationsAPI from '#V2/api/translations/index.js';
@@ -35,7 +35,7 @@ import { availableLanguages } from '#shared/language/index.js';
 import { Settings } from '#shared/types/settingsType.js';
 
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { LanguagePill } from '#V2/Routes/Settings/Translations/components/LanguagePill.jsx';
+import { LanguagePill } from '#V2/Routes/Settings/Translations/components/LanguagePill.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

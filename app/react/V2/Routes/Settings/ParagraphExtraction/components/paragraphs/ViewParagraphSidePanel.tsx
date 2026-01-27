@@ -5,10 +5,10 @@ import { Translate } from '#app/I18N/index.js';
 
 import { Button } from '#V2/Components/UI/index.js';
 
-import { Sidepanel } from '#V2/Components/UI/Sidepanel.jsx';
+import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 
 import { TablePXEntityParagraphRow } from '#V2/shared/ParagraphExtractionTypes.js';
-import { ViewParagraph } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraph.jsx';
+import { ViewParagraph } from '#V2/Routes/Settings/ParagraphExtraction/components/paragraphs/ViewParagraph.js';
 
 type ViewParagraphSidePanelProps = {
   isSidePanelOpen: boolean;

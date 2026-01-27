@@ -14,15 +14,15 @@ import { processFilters, encodeSearch } from '#app/Library/actions/libraryAction
 
 import { showSemanticSearch as showSemanticSearchAction } from '#app/SemanticSearch/actions/actions.js';
 
-import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.jsx';
+import { FeatureToggleSemanticSearch } from '#app/SemanticSearch/components/FeatureToggleSemanticSearch.js';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 import { actions } from '#app/BasicReducer/index.js';
 import { IStore } from '#app/istore.js';
 
 import { searchParamsFromLocationSearch } from '#app/utils/routeHelpers.js';
-import { DropdownMenu } from '#app/App/DropdownMenu.jsx';
+import { DropdownMenu } from '#app/App/DropdownMenu.js';
 import Immutable from 'immutable';
 
 interface MenuProps {

@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 
 import { socket } from '#app/socket.js';
 import Icon from '#UI/Icon/Icon.js';
-import ShowIf from '#app/App/ShowIf.jsx';
+import ShowIf from '#app/App/ShowIf.js';
 
-import SidePanel from '#app/Layout/SidePanel.jsx';
+import SidePanel from '#app/Layout/SidePanel.js';
 import {
   fetchSearches,
   submitNewSearch,
@@ -16,7 +16,7 @@ import {
   hideSemanticSearch,
 } from '#app/SemanticSearch/actions/actions.js';
 
-import SearchList from '#app/SemanticSearch/components/SearchList.jsx';
+import SearchList from '#app/SemanticSearch/components/SearchList.js';
 import Immutable from 'immutable';
 
 

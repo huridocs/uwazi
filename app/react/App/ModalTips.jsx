@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from '#app/I18N/index.js';
-import Modal from '#app/Layout/Modal.jsx';
+import Modal from '#app/Layout/Modal.js';
 // eslint-disable-next-line import/exports-last
 export default class ModalTips extends Component {
   constructor(props) {

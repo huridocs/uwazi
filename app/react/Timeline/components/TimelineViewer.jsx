@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Loader } from '#app/components/Elements/Loader.jsx';
+import { Loader } from '#app/components/Elements/Loader.js';
 import { t as translate, I18NLink } from '#app/I18N/index.js';
-import ShowIf from '#app/App/ShowIf.jsx';
+import ShowIf from '#app/App/ShowIf.js';
 
 import DocumentsAPI from '#app/Documents/DocumentsAPI.js';
 import EntitiesAPI from '#app/Entities/EntitiesAPI.js';

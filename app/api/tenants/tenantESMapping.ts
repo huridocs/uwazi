@@ -1,5 +1,5 @@
 import { tenants } from '#api/tenants/index.js';
-import elasticMapping from 'database/elastic_mapping/elastic_mapping.js';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping.js';
 
 const getTenantESMapping = () => {
   const tenantElasticMapping = {

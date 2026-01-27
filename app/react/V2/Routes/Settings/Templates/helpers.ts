@@ -4,7 +4,7 @@ import { PropertySchema } from '#shared/types/commonTypes.js';
 import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 
 import { t } from '#app/I18N/index.js';
-import { PropertyRow } from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
+import { PropertyRow } from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.js';
 
 const commonPropertyTitle: ClientProperty = {
   label: 'Title',

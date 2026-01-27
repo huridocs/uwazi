@@ -17,7 +17,7 @@ import { addSelection, sanitizeThesaurusValues } from '#V2/Routes/Settings/Thesa
 import {
   columnsThesaurus,
   ThesaurusRow,
-} from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
+} from '#V2/Routes/Settings/Thesauri/components/TableComponents.js';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { TocSchema } from '#shared/types/commonTypes.js';
-import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/ToC.jsx';
+import { ToC, type ProcessedTocEntry } from '#V2/Routes/Entity/Components/ToC/ToC.js';
 import { normalizeToc, findItemsWithChildren } from '#V2/Routes/Entity/Components/ToC/utils.js';
 
 const meta: Meta<typeof ToC> = {

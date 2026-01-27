@@ -6,7 +6,7 @@ import {
   columns,
   NoDataCell,
 } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/TableElements/index.js';
-import { PXTable } from '../../types';
+import { PXTable } from '../../types.js';
 
 interface ExtractorsTableProps {
   paragraphExtractorData: PXTable[];

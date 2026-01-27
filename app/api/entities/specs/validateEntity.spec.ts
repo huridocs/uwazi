@@ -3,7 +3,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { ErrorObject } from 'ajv';
-import ValidationError from 'ajv/dist/runtime/validation_error';
+import ValidationError from 'ajv/dist/runtime/validation_error.js';
 
 import db from '#api/utils/testing_db.js';
 

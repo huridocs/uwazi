@@ -3,7 +3,7 @@ import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import { Translate } from '#app/I18N/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button } from '#V2/Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -12,10 +12,10 @@ import {
   type TablePXEntityRow,
 } from '#V2/shared/ParagraphExtractionTypes.js';
 import * as entitiesAPI from '#V2/api/paragraphExtractor/entities.js';
-import { EntitiesTable } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/Table.jsx';
-import { generateDisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateDisplayPill.jsx';
-import { ExtractEntitiesDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/ExtractEntitiesDialog/index.jsx';
-import { EntityFilterSidepanel } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/EntityFilterSidepanel.jsx';
+import { EntitiesTable } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/Table.js';
+import { generateDisplayPill } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateDisplayPill.js';
+import { ExtractEntitiesDialog } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/ExtractEntitiesDialog/index.js';
+import { EntityFilterSidepanel } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/EntityFilterSidepanel.js';
 import { filterSidepanelStatusAtom } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/filterSidepanelAtom.js';
 
 const DisplayPill = generateDisplayPill({

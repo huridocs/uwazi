@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable max-statements */
-import Modal from '#app/Layout/Modal.jsx';
+import Modal from '#app/Layout/Modal.js';
 import React, { useState, useEffect } from 'react';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
@@ -11,8 +11,8 @@ import { saveEntitiesPermissions } from '#app/Permissions/actions/actions.js';
 import { connect } from 'react-redux';
 
 import { PermissionsDataSchema } from '#shared/types/permissionType.js';
-import { UserGroupsLookupField } from '#app/Permissions/components/UserGroupsLookupField.jsx';
-import { MembersList } from '#app/Permissions/components/MembersList.jsx';
+import { UserGroupsLookupField } from '#app/Permissions/components/UserGroupsLookupField.js';
+import { MembersList } from '#app/Permissions/components/MembersList.js';
 import { loadGrantedPermissions, searchCollaborators } from '#app/Permissions/PermissionsAPI.js';
 
 export interface ShareEntityModalProps {

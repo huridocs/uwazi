@@ -2,7 +2,7 @@ import React from 'react';
 import loadable from '@loadable/component';
 
 import { Translate } from '#app/I18N/index.js';
-import { CodeEditorProps } from '#V2/Components/CodeEditor/CodeEditorComponent.jsx';
+import { CodeEditorProps } from '#V2/Components/CodeEditor/CodeEditorComponent.js';
 
 const CodeEditorComponent = loadable(
   async () => {

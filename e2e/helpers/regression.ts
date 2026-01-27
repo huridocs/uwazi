@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 
 import { ensure } from '../../app/shared/tsUtils.js';
-import { host, BROWSER_WINDOW_SIZE } from '../config';
+import { host, BROWSER_WINDOW_SIZE } from '../config.js';
 
 const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.3;
 

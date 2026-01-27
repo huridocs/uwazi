@@ -15,12 +15,12 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { Button, Table, ConfirmationModal } from '#V2/Components/UI/index.js';
-import { useApiCaller } from '#V2/CustomHooks/useApiCaller.jsx';
+import { useApiCaller } from '#V2/CustomHooks/useApiCaller.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { InstallLanguagesModal } from '#V2/Routes/Settings/Languages/components/InstallLanguagesModal.jsx';
+import { InstallLanguagesModal } from '#V2/Routes/Settings/Languages/components/InstallLanguagesModal.js';
 import {
   DefaultHeader,
   LabelHeader,
@@ -30,7 +30,7 @@ import {
   ResetButton,
   UninstallButton,
   LanguageLabel,
-} from '#V2/Routes/Settings/Languages/components/TableComponents.jsx';
+} from '#V2/Routes/Settings/Languages/components/TableComponents.js';
 
 type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();

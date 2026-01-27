@@ -20,16 +20,20 @@ config.plugins = config.plugins.concat([
 
 config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
+config.optimization.splitChunks = false;
+config.optimization.runtimeChunk = false;
+config.optimization.chunkIds = 'named';
 
 config.output = {
   ...config.output,
   publicPath: 'http://localhost:8080/',
   filename: '[name].js',
+  chunkFilename: '[name].bundle.js',
 };
 
 config.entry.main = [
   'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
-  path.join(rootPath, 'app/react/entry-client-bootstrap.ts'),
+  path.join(rootPath, 'app/react/entry-client.tsx'),
 ];
 
 config.watchOptions = {

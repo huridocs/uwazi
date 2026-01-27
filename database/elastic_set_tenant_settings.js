@@ -4,7 +4,7 @@ import { IndexError } from '../app/api/search/entitiesIndex.js';
 import { tenants } from '../app/api/tenants/tenantContext.js';
 
 import { elastic } from '../app/api/search/index.js';
-import { legacyLogger } from '../app/api/log';
+import { legacyLogger } from '../app/api/log.js';
 
 const setIndexSettings = async numberOfReplicas => {
   const body = { index: { number_of_replicas: numberOfReplicas } };

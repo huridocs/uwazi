@@ -42,7 +42,7 @@ import { ObjectId } from 'mongodb';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
-import { deriveTrainingPropertyValue } from './propertyValue';
+import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;

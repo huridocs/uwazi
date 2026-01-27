@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { NumericRange } from '#app/ReactReduxForms/index.jsx';
+import { NumericRange } from '#app/ReactReduxForms/index.js';
 
 const NumberRangeFilter = ({ onChange, model, label }) => (
   <ul className="search__filter is-active">

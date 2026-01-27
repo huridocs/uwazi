@@ -8,7 +8,7 @@ import { NeedAuthorization } from '#app/Auth/index.js';
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import Icon from '#UI/Icon/Icon.js';
 
-import { ShareButton } from '#app/Permissions/components/ShareButton.jsx';
+import { ShareButton } from '#app/Permissions/components/ShareButton.js';
 import * as actions from '#app/Metadata/actions/actions.js';
 
 class MetadataFormButtons extends Component {

@@ -18,7 +18,7 @@ import {
   Table,
   ConfirmNavigationModal,
 } from '#V2/Components/UI/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import {
   createColumns,

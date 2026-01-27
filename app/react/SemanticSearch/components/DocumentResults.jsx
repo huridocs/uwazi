@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
 import { Translate, t } from '#app/I18N/index.js';
-import SnippetList from '#app/Documents/components/SnippetList.jsx';
+import SnippetList from '#app/Documents/components/SnippetList.js';
 import { selectSnippet } from '#app/Viewer/actions/uiActions.js';
 import { Form } from 'react-redux-form';
-import { NumericRangeSlide } from '#app/ReactReduxForms/index.jsx';
-import { Icon } from '#app/Layout/Icon.jsx';
+import { NumericRangeSlide } from '#app/ReactReduxForms/index.js';
+import { Icon } from '#app/Layout/Icon.js';
 import { TemplateLabel, DocumentLanguage } from '#app/Layout/index.js';
 
 const findResultsAboveThreshold = (results, threshold) => {

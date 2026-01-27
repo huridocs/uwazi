@@ -7,9 +7,9 @@ import get from 'lodash/get.js';
 import { Link, useRevalidator } from 'react-router';
 import { CheckCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from '#V2/Components/UI/index.js';
-import { EmbededButton } from '#V2/Components/UI/EmbededButton.jsx';
+import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
-import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
 
 import { ClientPropertySchema } from '#app/istore.js';
 
@@ -21,10 +21,10 @@ import {
   MultiValueSuggestion,
   SuggestionValue,
 } from '#V2/Routes/Settings/IX/types.js';
-import { Dot } from '#V2/Routes/Settings/IX/components/Dot.jsx';
-import { SuggestedValue } from '#V2/Routes/Settings/IX/components/SuggestedValue.jsx';
+import { Dot } from '#V2/Routes/Settings/IX/components/Dot.js';
+import { SuggestedValue } from '#V2/Routes/Settings/IX/components/SuggestedValue.js';
 import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/index.js';
-import { ContextCell } from '#V2/Routes/Settings/IX/components/ContextCell.jsx';
+import { ContextCell } from '#V2/Routes/Settings/IX/components/ContextCell.js';
 import { calculateOptimalProportions } from '#V2/Routes/Settings/IX/helpers/contextHelpers.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();

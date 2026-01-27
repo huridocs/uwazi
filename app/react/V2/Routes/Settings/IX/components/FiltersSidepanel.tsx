@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router';
 import { Translate } from '#app/I18N/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
-import { StatsTooltip } from '#V2/Routes/Settings/IX/components/Tooltip.jsx';
+import { StatsTooltip } from '#V2/Routes/Settings/IX/components/Tooltip.js';
 import { IXFilters } from '#V2/Routes/Settings/IX/types.js';
 
 type Aggregations = {

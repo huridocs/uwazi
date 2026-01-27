@@ -1,6 +1,6 @@
 import React from 'react';
-import Icon from '#UI/Icon/Icon.jsx';
-import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
+import Icon from '#UI/Icon/Icon.js';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { ClientFile } from '#app/istore.js';

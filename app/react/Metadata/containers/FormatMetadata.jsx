@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Immutable from 'immutable';
 import { metadataSelectors } from '#app/Metadata/selectors.js';
-import Metadata from '#app/Metadata/components/Metadata.jsx';
+import Metadata from '#app/Metadata/components/Metadata.js';
 
 const removeUneededProps = ({ templates, thesauris, settings, excludePreview, ...rest }) => rest;
 

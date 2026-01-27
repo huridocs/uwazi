@@ -4,12 +4,12 @@ import { permissionsContext } from '../app/api/permissions/permissionsContext.js
 import { elastic, search } from '../app/api/search/index.js';
 import { IndexError } from '../app/api/search/entitiesIndex.js';
 import { tenants } from '../app/api/tenants/tenantContext.js';
-import elasticMapping from './elastic_mapping/elastic_mapping';
+import elasticMapping from './elastic_mapping/elastic_mapping.js';
 
-import { legacyLogger } from '../app/api/log';
-import templatesModel from '../app/api/core/v1_layer/templates';
-import elasticMapFactory from './elastic_mapping/elasticMapFactory';
-import { tenantsModel } from 'api/tenants/tenantsModel';
+import { legacyLogger } from '../app/api/log.js';
+import templatesModel from '../app/api/core/v1_layer/templates.js';
+import elasticMapFactory from './elastic_mapping/elasticMapFactory.js';
+import { tenantsModel } from '#api/tenants/tenantsModel.js';
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
   elastic.indices.putSettings({

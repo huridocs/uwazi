@@ -40,7 +40,7 @@ module.exports = production => {
       },
     },
     entry: {
-      main: path.join(rootPath, 'app/react/entry-client-bootstrap'),
+      main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {

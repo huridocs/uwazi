@@ -16,7 +16,7 @@ import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from '#V2/api/ix/extractors.js';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 
@@ -24,9 +24,9 @@ import { t, Translate } from '#app/I18N/index.js';
 
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { ClientPropertySchema } from '#app/istore.js';
-import { SuggestionsTitle } from '#V2/Routes/Settings/IX/components/SuggestionsTitle.jsx';
-import { FiltersSidepanel } from '#V2/Routes/Settings/IX/components/FiltersSidepanel.jsx';
-import { suggestionsTableColumnsBuilder } from '#V2/Routes/Settings/IX/components/TableElements.jsx';
+import { SuggestionsTitle } from '#V2/Routes/Settings/IX/components/SuggestionsTitle.js';
+import { FiltersSidepanel } from '#V2/Routes/Settings/IX/components/FiltersSidepanel.js';
+import { suggestionsTableColumnsBuilder } from '#V2/Routes/Settings/IX/components/TableElements.js';
 import { generateChildrenRows, formatAccepted } from '#V2/Routes/Settings/IX/helpers/index.js';
 import {
   TableSuggestion,
@@ -38,10 +38,10 @@ import {
 } from '#V2/Routes/Settings/IX/types.js';
 import { useEventHandler } from '#V2/Routes/Settings/IX/hooks/useEventHandler.js';
 import { acceptedSuggestions } from '#V2/Routes/Settings/IX/components/atoms/index.js';
-import { PDFSidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PDFSidepanel.jsx';
-import { PropertySidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PropertySidepanel.jsx';
-import { TrainModelModal } from '#V2/Routes/Settings/IX/components/TrainModelModal.jsx';
-import { ProcessExtractorModal } from '#V2/Routes/Settings/IX/components/ProcessExtractorModal.jsx';
+import { PDFSidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PDFSidepanel.js';
+import { PropertySidepanel } from '#V2/Routes/Settings/IX/components/sidepanel/PropertySidepanel.js';
+import { TrainModelModal } from '#V2/Routes/Settings/IX/components/TrainModelModal.js';
+import { ProcessExtractorModal } from '#V2/Routes/Settings/IX/components/ProcessExtractorModal.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,

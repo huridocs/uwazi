@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Field, actions } from 'react-redux-form';
 import { ClientFile } from '#app/istore.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { getFileExtension } from '#app/utils/getFileExtension.js';
 

@@ -12,7 +12,7 @@ import { Translate } from '#app/I18N/index.js';
 import { notificationAtom, settingsAtom } from '#V2/atoms/index.js';
 import * as settingsAPI from '#V2/api/settings/index.js';
 import * as templatesAPI from '#V2/api/templates/index.js';
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import {
   createColumns,

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Translate, t } from '#app/I18N/index.js';
 import isString from 'lodash/isString.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
-import { modalSizeType } from '#V2/Components/UI/Modal.jsx';
+import { modalSizeType } from '#V2/Components/UI/Modal.js';
 
 type confirmationModalType = {
   size?: modalSizeType;

@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from '../helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login.js';
 import 'cypress-axe';
 
 const stringToTranslate = "*please keep this key secret and don't share it.";

@@ -7,7 +7,7 @@ import {
 } from '#shared/types/commonSchemas.js';
 import { OnlineRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy.js';
 import { QueuedRelationshipPropertyUpdateStrategy } from '#api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy.js';
-import { Settings } from './settingsType';
+import { Settings } from './settingsType.js';
 
 const emitSchemaTypes = true;
 

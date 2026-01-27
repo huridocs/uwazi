@@ -6,7 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { availableLanguages } from '#shared/language/index.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
-loadIcons();
+if (typeof window !== 'undefined') {
+  loadIcons();
+}
 
 const Icon = ({ locale: propLocale = '', ...ownProps }) => {
   const atomLocale = useAtomValue(localeAtom);

@@ -10,7 +10,7 @@ import { InputField, Select } from '#V2/Components/Forms/index.js';
 import { Button, Card, Sidepanel } from '#V2/Components/UI/index.js';
 
 import uniqueID from '#shared/uniqueID.js';
-import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.jsx';
+import { ThesaurusRow } from '#V2/Routes/Settings/Thesauri/components/TableComponents.js';
 import { sanitizeThesaurusLabel } from '#V2/Routes/Settings/Thesauri/helpers.js';
 
 interface ThesauriValueFormSidepanelProps {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.jsx';
-import { BlankState } from '#V2/Routes/Entity/Components/BlankState.jsx';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
+import { BlankState } from '#V2/Routes/Entity/Components/BlankState.js';
 import { EntityReference } from '#V2/domain/entities/types.js';
 
 type ReferencesPanelProps = {

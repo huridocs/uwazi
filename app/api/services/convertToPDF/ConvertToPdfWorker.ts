@@ -1,4 +1,4 @@
-import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
+import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd.js';
 
 import { files, generateFileName, storage } from '#api/files/index.js';
 

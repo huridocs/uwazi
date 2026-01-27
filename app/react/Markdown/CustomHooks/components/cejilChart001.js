@@ -4,7 +4,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import api from '#app/Search/SearchAPI.js';
 import { t } from '#app/I18N/index.js';
 
-import CejilChart from '#app/Markdown/CustomHooks/components/CejilChart.jsx';
+import CejilChart from '#app/Markdown/CustomHooks/components/CejilChart.js';
 import parsingUtils from '#app/Markdown/CustomHooks/utils/parsingUtils.js';
 const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';

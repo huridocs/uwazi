@@ -1,5 +1,7 @@
 import { connect } from 'react-redux';
-import 'react-datepicker/dist/react-datepicker.css';
+if (typeof window !== 'undefined') {
+  import('react-datepicker/dist/react-datepicker.css');
+}
 
 import DatePickerComponent, { registerLocale } from 'react-datepicker';
 // Note: react-datepicker requires date-fns for locale registration

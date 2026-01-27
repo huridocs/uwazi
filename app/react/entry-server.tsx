@@ -34,16 +34,16 @@ import translationsApi, { IndexedTranslations } from '#api/i18n/translations.js'
 import settingsApi from '#api/settings/settings.js';
 import { config } from '#api/config.js';
 import CustomProvider from '#app/App/Provider.js';
-import Root from '#app/App/Root.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import Root from '#app/App/Root.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import { ClientFeatureFlags } from '#V2/shared/types.js';
 import { atomStore, hydrateAtomStore } from '#V2/atoms/index.js';
 import { I18NUtils } from '#app/I18N/index.js';
-import { IStore } from './istore';
-import { getRoutes } from '#app/Routes.jsx';
+import { IStore } from './istore.js';
+import { getRoutes } from '#app/Routes.js';
 import createReduxStore from '#app/store.js';
-import { ProtectedRoute } from '#app/ProtectedRoute.jsx';
+import { ProtectedRoute } from '#app/ProtectedRoute.js';
 import { isMobileDevice } from '#shared/detectDevice.js';
 import { tenants } from '#api/tenants/index.js';
 

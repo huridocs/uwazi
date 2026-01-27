@@ -10,7 +10,7 @@ import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoS
 import { LanguageUtils } from '#shared/language/index.js';
 import { otherLanguageSchema } from '#shared/language/availableLanguages.js';
 import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
-import elasticMapFactory from 'database/elastic_mapping/elasticMapFactory.js';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { elastic } from '#api/search/elastic.js';
 

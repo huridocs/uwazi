@@ -1,14 +1,14 @@
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import React from 'react';
 import { Navigate } from 'react-router';
-import LibraryRoot from '#app/Library/Library.jsx';
-import { LibraryCards } from '#app/Library/LibraryCards.jsx';
-import { LibraryMap } from '#app/Library/LibraryMap.jsx';
-import { LibraryTable } from '#app/Library/LibraryTable.jsx';
-import { PageView } from '#app/Pages/PageView.jsx';
-import { Login } from '#app/Users/Login.jsx';
+import LibraryRoot from '#app/Library/Library.js';
+import { LibraryCards } from '#app/Library/LibraryCards.js';
+import { LibraryMap } from '#app/Library/LibraryMap.js';
+import { LibraryTable } from '#app/Library/LibraryTable.js';
+import { PageView } from '#app/Pages/PageView.js';
+import { Login } from '#app/Users/Login.js';
 import { validateHomePageRoute } from '#app/utils/routeHelpers.js';
-import { ViewerRoute } from '#app/Viewer/ViewerRoute.jsx';
+import { ViewerRoute } from '#app/Viewer/ViewerRoute.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';

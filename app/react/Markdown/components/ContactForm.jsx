@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { actions, Field } from 'react-redux-form';
-import { FormGroup } from '#app/ReactReduxForms/index.jsx';
+import { FormGroup } from '#app/ReactReduxForms/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import api from '#app/utils/api.js';
 import Icon from '#UI/Icon/Icon.js';
@@ -10,7 +10,7 @@ import { bindActionCreators } from 'redux';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { LocalForm } from '#app/Forms/Form.js';
-import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.jsx';
+import { FormCaptcha } from '#app/Markdown/components/FormCaptcha.js';
 
 class ContactForm extends Component {
   constructor(props, context) {

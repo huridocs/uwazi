@@ -1,7 +1,7 @@
 import React from 'react';
 import { actions } from '#app/BasicReducer/index.js';
-import RouteHandler from '#app/App/RouteHandler.jsx';
-import ResultsViewer from '#app/SemanticSearch/components/SemanticSearchResults.jsx';
+import RouteHandler from '#app/App/RouteHandler.js';
+import ResultsViewer from '#app/SemanticSearch/components/SemanticSearchResults.js';
 import semanticSearchAPI from '#app/SemanticSearch/SemanticSearchAPI.js';
 
 export default class SemanticSearchResultsView extends RouteHandler {

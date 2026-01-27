@@ -5,7 +5,7 @@ import Icon from '#UI/Icon/Icon.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 
 import { debounce } from '#app/utils/index.js';
-import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.jsx';
+import { MemberListItemInfo } from '#app/Permissions/components/MemberListItemInfo.js';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;

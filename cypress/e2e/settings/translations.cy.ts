@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { changeLanguage, clearCookiesAndLogin } from '../helpers';
+import { changeLanguage, clearCookiesAndLogin } from '../helpers/index.js';
 import 'cypress-axe';
 
 describe('Translations', () => {

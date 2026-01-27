@@ -6,12 +6,12 @@ import { Entity } from '#V2/domain/index.js';
 import { PDF, pdfEventBus } from '#V2/Components/PDFViewer/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/index.js';
 import { NeedAuthorization, Truncate, Button } from '#V2/Components/UI/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { isClient } from '#app/utils/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { PlainText } from '#V2/Routes/Entity/Components/PlainText.jsx';
-import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.jsx';
+import { PlainText } from '#V2/Routes/Entity/Components/PlainText.js';
+import { OCRButton } from '#V2/Routes/Entity/Components/OCRButton.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '#V2/Routes/Entity/urlParams.js';
 import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
 import {

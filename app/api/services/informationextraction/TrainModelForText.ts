@@ -25,7 +25,7 @@ import { ExtractionKey } from '#api/services/informationextraction/ExtractionKey
 import { IXWebSocketEvents } from '#api/services/informationextraction/WebSocketEvents.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import { getPropertyTrainingEntities } from './FetchMaterialsForTraining';
+import { getPropertyTrainingEntities } from './FetchMaterialsForTraining.js';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;

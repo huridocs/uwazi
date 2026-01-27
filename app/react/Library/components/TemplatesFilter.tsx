@@ -2,16 +2,16 @@ import React from 'react';
 import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Switcher } from '#app/ReactReduxForms/index.jsx';
+import { Switcher } from '#app/ReactReduxForms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { IStore } from '#app/istore.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { withRouter } from '#app/componentWrappers.jsx';
+import { withRouter } from '#app/componentWrappers.js';
 
 import { SettingsFilterSchema } from '#shared/types/settingsType.js';
 import { filterDocumentTypes } from '#app/Library/actions/filterActions.js';
-import DocumentTypesList from '#app/Library/components/DocumentTypesList.jsx';
+import DocumentTypesList from '#app/Library/components/DocumentTypesList.js';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;

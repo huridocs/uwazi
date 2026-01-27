@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { PreserveIcon } from '#app/Layout/PreserveIcon.jsx';
+import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
 import { useAtomValue } from 'jotai';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
 

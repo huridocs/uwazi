@@ -15,7 +15,7 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
-} from '#app/Map/MapHelper.jsx';
+} from '#app/Map/MapHelper.js';
 import { getMapProvider } from '#app/Map/TilesProviderFactory.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from '#app/I18N/index.js';
-import Modal from '#app/Layout/Modal.jsx';
+import Modal from '#app/Layout/Modal.js';
 
 class ConfirmModal extends Component {
   render() {

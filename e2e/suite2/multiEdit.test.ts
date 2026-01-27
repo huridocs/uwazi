@@ -2,10 +2,10 @@
 /* eslint-disable no-await-in-loop */
 /*global page*/
 
-import { adminLogin, logout } from '../helpers/login';
-import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import { refreshIndex } from '../helpers/elastichelpers';
+import { adminLogin, logout } from '../helpers/login.js';
+import proxyMock from '../helpers/proxyMock.js';
+import insertFixtures from '../helpers/insertFixtures.js';
+import { refreshIndex } from '../helpers/elastichelpers.js';
 
 describe('multi edit', () => {
   beforeAll(async () => {

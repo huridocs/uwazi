@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import EntityView from '#app/Viewer/EntityView.jsx';
-import { Loader } from '#app/components/Elements/Loader.jsx';
+import EntityView from '#app/Viewer/EntityView.js';
+import { Loader } from '#app/components/Elements/Loader.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { t } from '#app/I18N/index.js';
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
-import { PDFView } from '#app/Viewer/PDFView.jsx';
+import { PDFView } from '#app/Viewer/PDFView.js';
 import Immutable from 'immutable';
 
 

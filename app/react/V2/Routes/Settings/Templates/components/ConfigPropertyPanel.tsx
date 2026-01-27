@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Sidepanel } from '#V2/Components/UI/Sidepanel.jsx';
+import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
 
 import { t, Translate } from '#app/I18N/index.js';
-import { Button } from '#V2/Components/UI/Button.jsx';
+import { Button } from '#V2/Components/UI/Button.js';
 
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { propertyIcons } from '#V2/Components/UI/Icons.jsx';
+import { propertyIcons } from '#V2/Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -22,12 +22,12 @@ import {
   StyleField,
   FullWidthField,
 } from '#V2/Routes/Settings/Templates/components/fields/index.js';
-import { ThesaurusField } from '#V2/Routes/Settings/Templates/components/fields/ThesaurusField.jsx';
-import { RelationshipFields } from '#V2/Routes/Settings/Templates/components/fields/RelationshipFields.jsx';
-import { MatchingPropertiesTable } from '#V2/Routes/Settings/Templates/components/MatchingPropertiesTable.jsx';
+import { ThesaurusField } from '#V2/Routes/Settings/Templates/components/fields/ThesaurusField.js';
+import { RelationshipFields } from '#V2/Routes/Settings/Templates/components/fields/RelationshipFields.js';
+import { MatchingPropertiesTable } from '#V2/Routes/Settings/Templates/components/MatchingPropertiesTable.js';
 import { translationsKeys } from '#V2/Routes/Settings/Templates/helpers.js';
 import { PropertyRow } from '#V2/Routes/Settings/Templates/types.js';
-import { GeneratedIdField } from '#V2/Routes/Settings/Templates/components/fields/GeneratedIdField.jsx';
+import { GeneratedIdField } from '#V2/Routes/Settings/Templates/components/fields/GeneratedIdField.js';
 import { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 
 interface ConfigPropertyPanelProps {

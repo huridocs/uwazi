@@ -1,5 +1,5 @@
 import React from 'react';
-import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 
 import { FileType } from '#shared/types/fileType.js';
 

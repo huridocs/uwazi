@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
 import { Table } from '#V2/Components/UI/index.js';
-import { propertyIconsSmall } from '#V2/Components/UI/Icons.jsx';
+import { propertyIconsSmall } from '#V2/Components/UI/Icons.js';
 
 import { Translate, t } from '#app/I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';

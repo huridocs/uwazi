@@ -6,7 +6,7 @@ import { LoaderFunction, useLoaderData } from 'react-router';
 
 import { Translate } from '#app/I18N/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { Card } from '#V2/Components/UI/index.js';
 

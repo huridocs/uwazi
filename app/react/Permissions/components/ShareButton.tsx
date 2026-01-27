@@ -1,8 +1,8 @@
 import { Translate } from '#app/I18N/index.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import React, { useState } from 'react';
-import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.jsx';
+import { ShareEntityModal } from '#app/Permissions/components/ShareEntityModal.js';
 
 interface ShareButtonProps {
   sharedIds: string[];

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from '#UI/index.js';
-import DropdownList from 'react-widgets/lib/DropdownList';
-import IconSelectorItem from '#app/Forms/components/IconSelectorItem.jsx';
+import DropdownList from 'react-widgets/lib/DropdownList.js';
+import IconSelectorItem from '#app/Forms/components/IconSelectorItem.js';
 
 export default class IconSelector extends Component {
   constructor(props) {

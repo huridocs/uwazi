@@ -14,6 +14,7 @@ module.exports = {
   },
   transform: {
     '\\.[jt]sx?$': ['babel-jest', { rootMode: 'upward' }],
+    '^.*/setUpJestClient\\.js$': ['babel-jest', { rootMode: 'upward' }],
   },
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy',

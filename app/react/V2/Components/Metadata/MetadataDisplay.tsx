@@ -1,20 +1,20 @@
 import React, { Fragment, useCallback } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { Entity, MetadataProperty } from '#V2/domain/index.js';
-import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { Date } from '#V2/Components/Metadata/Date.jsx';
-import { Geolocation } from '#V2/Components/Metadata/Geolocation.jsx';
-import { Relationship } from '#V2/Components/Metadata/Relationship.jsx';
-import { Media } from '#V2/Components/Metadata/Media.jsx';
-import { Image } from '#V2/Components/Metadata/Image.jsx';
-import { SimpleValue } from '#V2/Components/Metadata/SimpleValue.jsx';
-import { Title } from '#V2/Components/Metadata/Title.jsx';
-import { Markdown } from '#V2/Components/Metadata/Markdown.jsx';
-import { Select } from '#V2/Components/Metadata/Select.jsx';
-import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.jsx';
-import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.jsx';
-import { LinkProperty } from '#V2/Components/Metadata/LinkProperty.jsx';
+import { Date } from '#V2/Components/Metadata/Date.js';
+import { Geolocation } from '#V2/Components/Metadata/Geolocation.js';
+import { Relationship } from '#V2/Components/Metadata/Relationship.js';
+import { Media } from '#V2/Components/Metadata/Media.js';
+import { Image } from '#V2/Components/Metadata/Image.js';
+import { SimpleValue } from '#V2/Components/Metadata/SimpleValue.js';
+import { Title } from '#V2/Components/Metadata/Title.js';
+import { Markdown } from '#V2/Components/Metadata/Markdown.js';
+import { Select } from '#V2/Components/Metadata/Select.js';
+import { MetadataCard } from '#V2/Components/Metadata/MetadataCard.js';
+import { TemplateLabel } from '#V2/Components/Metadata/TemplateLabel.js';
+import { LinkProperty } from '#V2/Components/Metadata/LinkProperty.js';
 
 type MetadataDisplayProps = {
   entity: Entity;

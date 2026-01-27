@@ -14,7 +14,7 @@ import { LanguageSchema } from '#shared/types/commonTypes.js';
 
 import { RequestParams } from '#app/utils/RequestParams.js';
 
-import { useApiCaller } from '#V2/CustomHooks/useApiCaller.jsx';
+import { useApiCaller } from '#V2/CustomHooks/useApiCaller.js';
 
 type InstallLanguagesModalProps = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;

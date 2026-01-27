@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import ShowIf from '#app/App/ShowIf.jsx';
+import ShowIf from '#app/App/ShowIf.js';
 import { t } from '#app/I18N/index.js';
-import UploadEntityStatus from '#app/Library/components/UploadEntityStatus.jsx';
-import ViewDocButton from '#app/Library/components/ViewDocButton.jsx';
+import UploadEntityStatus from '#app/Library/components/UploadEntityStatus.js';
+import ViewDocButton from '#app/Library/components/ViewDocButton.js';
 import Icon from '#UI/Icon/Icon.js';
 import { atomStore, deletedEntityAtom } from '#V2/atoms/index.js';
 

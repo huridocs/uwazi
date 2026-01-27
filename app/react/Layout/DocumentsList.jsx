@@ -4,20 +4,20 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import rison from '@huridocs/rison';
-import { SearchBar } from '#app/Library/components/SearchBar.jsx';
-import ConnectionSearchBar from '#app/ConnectionsList/components/SearchBar.jsx';
-import { Loader } from '#app/components/Elements/Loader.jsx';
-import Footer from '#app/App/Footer.jsx';
+import { SearchBar } from '#app/Library/components/SearchBar.js';
+import ConnectionSearchBar from '#app/ConnectionsList/components/SearchBar.js';
+import { Loader } from '#app/components/Elements/Loader.js';
+import Footer from '#app/App/Footer.js';
 
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { DocumentCounter } from '#app/Layout/DocumentCounter.jsx';
+import { DocumentCounter } from '#app/Layout/DocumentCounter.js';
 import Icon from '#UI/Icon/Icon.js';
-import { withRouter } from '#app/componentWrappers.jsx';
-import { LibraryHeader } from '#app/Library/components/LibraryHeader.jsx';
+import { withRouter } from '#app/componentWrappers.js';
+import { LibraryHeader } from '#app/Library/components/LibraryHeader.js';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import Welcome from '#app/Layout/components/Welcome.jsx';
-import { TilesViewer } from '#app/Layout/TilesViewer.jsx';
+import Welcome from '#app/Layout/components/Welcome.js';
+import { TilesViewer } from '#app/Layout/TilesViewer.js';
 import blankState from '#app/Library/helpers/blankState.js';
 
 const selectAllEntities = command => {

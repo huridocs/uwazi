@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { objectIdSchema, tocSchema, extractedMetadataSchema } from '#shared/types/commonSchemas.js';
 import { wrapValidator } from '#shared/tsUtils.js';
-import { FileType } from './fileType';
+import { FileType } from './fileType.js';
 
 const emitSchemaTypes = true;
 

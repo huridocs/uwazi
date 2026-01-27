@@ -5,9 +5,9 @@ export default async (app, server) => {
     { default: CSRFMiddleware },
     { default: languageMiddleware },
   ] = await Promise.all([
-    import('./activitylog/activitylogMiddleware.ts'),
-    import('./auth/CSRFMiddleware.ts'),
-    import('./utils/languageMiddleware.ts'),
+    import('./activitylog/activitylogMiddleware.js'),
+    import('./auth/CSRFMiddleware.js'),
+    import('./utils/languageMiddleware.js'),
   ]);
 
   //common middlewares

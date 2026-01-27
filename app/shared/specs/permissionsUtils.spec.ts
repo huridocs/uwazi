@@ -1,5 +1,5 @@
 import { UserRole } from '#shared/types/userSchema.js';
-import { PermissionSchema } from '../types/permissionType';
+import { PermissionSchema } from '../types/permissionType.js';
 import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { UserSchema } from '#shared/types/userType.js';
 

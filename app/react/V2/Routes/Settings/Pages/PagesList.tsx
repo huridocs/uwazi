@@ -10,7 +10,7 @@ import * as pagesAPI from '#V2/api/pages/index.js';
 
 import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 
 import { notificationAtom, notificationAtomType } from '#V2/atoms/index.js';
 
@@ -23,7 +23,7 @@ import {
   UrlCell,
   ActionHeader,
   List,
-} from '#V2/Routes/Settings/Pages/components/PageListTable.jsx';
+} from '#V2/Routes/Settings/Pages/components/PageListTable.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { Page } from '#app/V2/shared/types.js';
 

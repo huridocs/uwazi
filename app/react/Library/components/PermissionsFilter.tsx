@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import FormGroup from '#app/DocumentForm/components/FormGroup.jsx';
+import FormGroup from '#app/DocumentForm/components/FormGroup.js';
 import { MultiSelect } from '#app/Forms/index.js';
 
 import { Aggregations } from '#shared/types/aggregations.js';

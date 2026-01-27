@@ -1,10 +1,10 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
-import { DisplayCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/DisplayCell.jsx';
-import { LanguagesCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/LanguagesCell.jsx';
-import { StatusCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/StatusCell.jsx';
-import { generateTableHeader } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateTableHeader.jsx';
-import { ActionCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/ActionCell.jsx';
+import { DisplayCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/DisplayCell.js';
+import { LanguagesCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/LanguagesCell.js';
+import { StatusCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/StatusCell.js';
+import { generateTableHeader } from '#V2/Routes/Settings/ParagraphExtraction/utils/generateTableHeader.js';
+import { ActionCell } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/ActionCell.js';
 
 const pxColumnHelper = createColumnHelper<TablePXEntityRow>();
 

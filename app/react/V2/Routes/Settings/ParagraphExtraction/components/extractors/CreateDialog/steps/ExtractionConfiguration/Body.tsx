@@ -7,7 +7,7 @@ import { useAtomValue } from 'jotai';
 
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.jsx';
+import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
 
 const getOptions = (options: OptionSchema[]) => [
   {

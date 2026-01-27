@@ -17,9 +17,9 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
 import { Button, Table, Sidepanel, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
-import { MenuForm } from '#V2/Routes/Settings/MenuConfig/components/MenuForm.jsx';
-import { columns } from '#V2/Routes/Settings/MenuConfig/components/TableComponents.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
+import { MenuForm } from '#V2/Routes/Settings/MenuConfig/components/MenuForm.js';
+import { columns } from '#V2/Routes/Settings/MenuConfig/components/TableComponents.js';
 import { Link, sanitizeIds } from '#V2/Routes/Settings/MenuConfig/shared.js';
 
 const menuConfigloader =

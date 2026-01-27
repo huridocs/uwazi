@@ -6,7 +6,7 @@ import { t, Translate } from '#app/I18N/index.js';
 import { Button, Pill } from '#V2/Components/UI/index.js';
 
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
-import { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.jsx';
+import { ThesauriRow } from '#V2/Routes/Settings/Thesauri/components/ThesauriTable.js';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 

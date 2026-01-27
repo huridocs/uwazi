@@ -1,4 +1,4 @@
-import { PermissionSchema } from './types/permissionType';
+import { PermissionSchema } from './types/permissionType.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 export const checkWritePermissions = (

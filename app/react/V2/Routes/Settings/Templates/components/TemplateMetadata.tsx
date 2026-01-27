@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-import { ColorPicker } from '#V2/Components/Forms/ColorPicker.jsx';
+import { ColorPicker } from '#V2/Components/Forms/ColorPicker.js';
 
-import { InputField } from '#V2/Components/Forms/InputField.jsx';
+import { InputField } from '#V2/Components/Forms/InputField.js';
 
-import { Checkbox } from '#V2/Components/Forms/Checkbox.jsx';
+import { Checkbox } from '#V2/Components/Forms/Checkbox.js';
 
-import { Select, OptionSchema } from '#V2/Components/Forms/Select.jsx';
+import { Select, OptionSchema } from '#V2/Components/Forms/Select.js';
 
-import { Translate } from '#app/I18N/Translate.jsx';
+import { Translate } from '#app/I18N/Translate.js';
 import { t } from '#app/I18N/index.js';
 
 const templateColors = [

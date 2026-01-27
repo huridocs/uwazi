@@ -2,7 +2,7 @@ import {
   GeolocationMetadataProperty,
   GeolocationPropertyTypes,
 } from '#V2/domain/entities/types.js';
-import { reportErrorToSentry } from '#V2/shared/errorUtils.jsx';
+import { reportErrorToSentry } from '#V2/shared/errorUtils.js';
 import { BasePropertyProcessor } from '#V2/application/services/processors/BasePropertyProcessor.js';
 import {
   ProcessingContext,

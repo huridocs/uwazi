@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { User } from '#api/users/usersModel.js';
 import usersModel from '#api/users/users.js';
 import { comparePasswords } from '#api/auth/encryptPassword.js';

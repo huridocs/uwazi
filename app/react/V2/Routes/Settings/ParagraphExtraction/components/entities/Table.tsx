@@ -3,10 +3,10 @@ import { Table } from '#V2/Components/UI/index.js';
 import { TablePXEntityRow } from '#V2/shared/ParagraphExtractionTypes.js';
 
 import { Template } from '#app/apiResponseTypes.js';
-import { TableTitle } from '#V2/Routes/Settings/ParagraphExtraction/components/TableTitle.jsx';
-import { PXTableFooter } from '#V2/Routes/Settings/ParagraphExtraction/components/PXTableFooter.jsx';
+import { TableTitle } from '#V2/Routes/Settings/ParagraphExtraction/components/TableTitle.js';
+import { PXTableFooter } from '#V2/Routes/Settings/ParagraphExtraction/components/PXTableFooter.js';
 import { columns } from '#V2/Routes/Settings/ParagraphExtraction/components/entities/TableElements/index.js';
-import { FilterSidepanelButton } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/FilterSidepanelButton.jsx';
+import { FilterSidepanelButton } from '#V2/Routes/Settings/ParagraphExtraction/components/FilterSidePanel/FilterSidepanelButton.js';
 
 interface EntitiesTableProps {
   pxEntitiesData: TablePXEntityRow[];

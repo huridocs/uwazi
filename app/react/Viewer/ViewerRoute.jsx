@@ -1,16 +1,16 @@
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
-import { withRouter } from '#app/componentWrappers.jsx';
-import RouteHandler from '#app/App/RouteHandler.jsx';
+import { withRouter } from '#app/componentWrappers.js';
+import RouteHandler from '#app/App/RouteHandler.js';
 import EntitiesAPI from '#app/Entities/EntitiesAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
-import { trackPage } from '#app/App/GoogleAnalytics.jsx';
-import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.jsx';
-import { PDFViewComponent } from '#app/Viewer/PDFView.jsx';
-import EntityView from '#app/Viewer/EntityView.jsx';
-import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.jsx';
+import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
+import { PDFViewComponent } from '#app/Viewer/PDFView.js';
+import EntityView from '#app/Viewer/EntityView.js';
+import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
 import { setReferences } from '#app/Viewer/actions/referencesActions.js';
 
 class ViewerRouteComponent extends RouteHandler {

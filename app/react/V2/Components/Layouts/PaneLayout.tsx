@@ -1,9 +1,9 @@
 import React from 'react';
 import { PaneLayoutProps } from '#V2/Components/Layouts/PaneLayout/types.js';
-import { PaneLayoutDesktop } from '#V2/Components/Layouts/PaneLayout/PaneLayoutDesktop.jsx';
-import { Pane } from '#V2/Components/Layouts/PaneLayout/Pane.jsx';
-import { PaneLayoutMobile } from '#V2/Components/Layouts/PaneLayout/PaneLayoutMobile.jsx';
-import { useIsMobile } from '#V2/CustomHooks/useIsMobile.jsx';
+import { PaneLayoutDesktop } from '#V2/Components/Layouts/PaneLayout/PaneLayoutDesktop.js';
+import { Pane } from '#V2/Components/Layouts/PaneLayout/Pane.js';
+import { PaneLayoutMobile } from '#V2/Components/Layouts/PaneLayout/PaneLayoutMobile.js';
+import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
 
 const PaneLayout = ({
   children,

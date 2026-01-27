@@ -5,7 +5,7 @@ import { Sidepanel } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
-import { ActionPill } from '#V2/Routes/Settings/ActivityLog/components/TableElements.jsx';
+import { ActionPill } from '#V2/Routes/Settings/ActivityLog/components/TableElements.js';
 
 interface ActivityLogSidePanelProps {
   selectedEntry?: ActivityLogEntryType;

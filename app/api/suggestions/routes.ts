@@ -1,4 +1,4 @@
-import { Application, Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';

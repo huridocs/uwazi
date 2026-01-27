@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import settings from '#api/settings/index.js';
 import { captchaAuthorization } from '#api/auth/index.js';
 

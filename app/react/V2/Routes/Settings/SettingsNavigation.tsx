@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { I18NLinkV2 as I18NLink, Translate } from '#app/I18N/index.js';
-import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.jsx';
+import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
-import { PreserveIcon } from '#app/Layout/PreserveIcon.jsx';
-import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.jsx';
+import { PreserveIcon } from '#app/Layout/PreserveIcon.js';
+import { FeatureToggle } from '#V2/Components/UI/FeatureToggle.js';
 import { useAtomValue } from 'jotai';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 

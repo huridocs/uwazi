@@ -3,8 +3,8 @@ import { Modal } from '#V2/Components/UI/index.js';
 
 import { Translate } from '#app/I18N/index.js';
 import { AddExtractorSteps } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/steps/index.js';
-import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.jsx';
-import { Steppers } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/Steppers.jsx';
+import { useCreateExtractorContext } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/CreateExtractorContext.js';
+import { Steppers } from '#V2/Routes/Settings/ParagraphExtraction/components/extractors/CreateDialog/Steppers.js';
 
 const Dialog = () => {
   const { step, setShowModal, targetTemplateOptions } = useCreateExtractorContext();

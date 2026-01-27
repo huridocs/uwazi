@@ -5,19 +5,19 @@ import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import { Tooltip } from 'flowbite-react';
-import { Panel } from '#V2/Components/Layouts/Panel.jsx';
+import { Panel } from '#V2/Components/Layouts/Panel.js';
 import { update as updateFile } from '#V2/api/files/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { Button } from '#V2/Components/UI/Button.jsx';
+import { Button } from '#V2/Components/UI/Button.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { notificationAtom } from '#V2/atoms/index.js';
-import { BlankState } from '#V2/Routes/Entity/Components/BlankState.jsx';
+import { BlankState } from '#V2/Routes/Entity/Components/BlankState.js';
 import {
   ToC,
   type ProcessedTocEntry,
   sortTocEntries,
-} from '#V2/Routes/Entity/Components/ToC/ToC.jsx';
+} from '#V2/Routes/Entity/Components/ToC/ToC.js';
 import { scrollToPage } from '#V2/Routes/Entity/Components/functions.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useToc, useTocActions } from '#V2/Routes/Entity/Components/ToC/tocAtom.js';

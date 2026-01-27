@@ -1,4 +1,4 @@
-import { DateRange } from '#app/ReactReduxForms/index.jsx';
+import { DateRange } from '#app/ReactReduxForms/index.js';
 import PropTypes from 'prop-types';
 import React from 'react';
 

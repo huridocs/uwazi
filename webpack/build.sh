@@ -25,7 +25,7 @@ echo "  ✅ Static assets copied in ${STATIC_TIME}s"
 
 echo "⚙️  Step 2: Compiling backend API and shared code..."
 APP_START=$(date +%s)
-yarn babel -D -d prod/app --extensions .js,.ts,.tsx --ignore ./**/specs/* app
+yarn babel -D -d prod/app --extensions .js,.jsx,.ts,.tsx --ignore ./**/specs/* app
 APP_TIME=$(($(date +%s) - APP_START))
 echo "  ✅ Backend API and shared code compiled in ${APP_TIME}s"
 

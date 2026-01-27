@@ -10,7 +10,7 @@ import uuid from 'node-uuid';
 import { FormGroup } from '#app/Forms/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { getSuggestions } from '#app/Metadata/actions/actions.js';
-import Tip from '#app/Layout/Tip.jsx';
+import Tip from '#app/Layout/Tip.js';
 import { generateID } from '#shared/IDGenerator.js';
 
 import { saveThesaurus } from '#app/Thesauri/actions/thesauriActions.js';
@@ -30,12 +30,12 @@ import {
   Select,
   LookupMultiSelect,
   MediaField,
-} from '#app/ReactReduxForms/index.jsx';
-import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.jsx';
-import { MediaModalType } from '#app/Metadata/components/MediaModal.jsx';
-import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.jsx';
-import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.jsx';
-import { AddThesauriValueButton } from '#app/Metadata/components/AddThesauriValueButton.jsx';
+} from '#app/ReactReduxForms/index.js';
+import MultipleEditionFieldWarning from '#app/Metadata/components/MultipleEditionFieldWarning.js';
+import { MediaModalType } from '#app/Metadata/components/MediaModal.js';
+import { MetadataExtractor } from '#app/Metadata/components/MetadataExtractor.js';
+import { DeleteSelectionButton } from '#app/Metadata/components/DeleteSelectionButton.js';
+import { AddThesauriValueButton } from '#app/Metadata/components/AddThesauriValueButton.js';
 
 const translateOptions = thesauri =>
   thesauri

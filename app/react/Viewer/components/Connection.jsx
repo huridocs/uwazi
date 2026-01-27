@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 
 import immutable from 'immutable';
 import { createSelector } from 'reselect';
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 import { I18NLink } from '#app/I18N/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
-import { withContext } from '#app/componentWrappers.jsx';
-import ShowIf from '#app/App/ShowIf.jsx';
+import { withContext } from '#app/componentWrappers.js';
+import ShowIf from '#app/App/ShowIf.js';
 import { deleteReference } from '#app/Viewer/actions/referencesActions.js';
 import {
   highlightReference,

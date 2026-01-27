@@ -5,32 +5,35 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import Icon from '#UI/Icon/Icon.js';
-import { withContext, withRouter } from '#app/componentWrappers.jsx';
+import { withContext, withRouter } from '#app/componentWrappers.js';
 import { MetadataFormButtons, ShowMetadata } from '#app/Metadata/index.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { I18NLinkV2 as I18NLink, t, Translate } from '#app/I18N/index.js';
 import { FileList, AttachmentsList } from '#app/Attachments/index.js';
-import Connections from '#app/Viewer/components/ConnectionsList.jsx';
+import Connections from '#app/Viewer/components/ConnectionsList.js';
 import { ConnectionsGroups } from '#app/ConnectionsList/index.js';
-import ShowIf from '#app/App/ShowIf.jsx';
-import SidePanel from '#app/Layout/SidePanel.jsx';
-import DocumentSemanticSearchResults from '#app/SemanticSearch/components/DocumentResults.jsx';
-import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.jsx';
-import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.jsx';
+import ShowIf from '#app/App/ShowIf.js';
+import SidePanel from '#app/Layout/SidePanel.js';
+import DocumentSemanticSearchResults from '#app/SemanticSearch/components/DocumentResults.js';
+import { CopyFromEntity } from '#app/Metadata/components/CopyFromEntity.js';
+import { TocGeneratedLabel } from '#app/ToggledFeatures/tocGeneration/TocGeneratedLabel.js';
 import { ReviewTocButton } from '#app/ToggledFeatures/tocGeneration/index.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { Item } from '#app/Layout/index.js';
 import * as viewerModule from '#app/Viewer/index.js';
 import * as viewerActions from '#app/Viewer/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
-import ViewDocButton from '#app/Library/components/ViewDocButton.jsx';
+import ViewDocButton from '#app/Library/components/ViewDocButton.js';
 import { getDocumentReferences } from '#app/Library/actions/libraryActions.js';
 import { store } from '#app/store.js';
-import SearchText from '#app/Documents/components/SearchText.jsx';
-import ShowToc from '#app/Documents/components/ShowToc.jsx';
-import SnippetsTab from '#app/Documents/components/SnippetsTab.jsx';
+import SearchText from '#app/Documents/components/SearchText.js';
+import ShowToc from '#app/Documents/components/ShowToc.js';
+import SnippetsTab from '#app/Documents/components/SnippetsTab.js';
 import helpers from '#app/Documents/helpers.js';
-import './scss/toc.scss';
+
+if (typeof window !== 'undefined') {
+  import('./scss/toc.scss');
+}
 
 class DocumentSidePanel extends Component {
   constructor(props) {

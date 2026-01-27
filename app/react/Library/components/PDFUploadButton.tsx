@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 import { EntitySchema } from '#shared/types/entityType.js';
 

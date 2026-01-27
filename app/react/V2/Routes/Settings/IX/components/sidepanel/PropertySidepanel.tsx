@@ -28,7 +28,7 @@ import {
   loadSidepanelData,
   SELECT_TYPES,
 } from '#V2/Routes/Settings/IX/helpers/index.js';
-import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.jsx';
+import { SidepanelForms } from '#V2/Routes/Settings/IX/components/sidepanel/SidepanelForms.js';
 import {
   highlightsAtom,
   selectionErrorAtom,

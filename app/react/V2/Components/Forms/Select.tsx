@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Label } from '#V2/Components/Forms/Label.jsx';
+import { Label } from '#V2/Components/Forms/Label.js';
 
 type OptionSchema = { key?: string; value: string; label?: string | React.ReactNode };
 interface SelectProps {

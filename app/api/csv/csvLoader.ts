@@ -21,7 +21,7 @@ import { FullyIndexedTranslations, importEntity, translateEntity } from '#api/cs
 import importFile from '#api/csv/importFile.js';
 import { thesauriFromStream } from '#api/csv/importThesauri.js';
 import { validateColumns } from '#api/csv/validateColumns.js';
-import translations from '../i18n';
+import translations from '../i18n/index.js';
 
 const readResources = async (
   templateId: ObjectId | string

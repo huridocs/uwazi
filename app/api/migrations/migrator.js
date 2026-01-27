@@ -25,7 +25,9 @@ const getMigrations = async migrationsDir => {
   const migrations = await Promise.all(
     files.map(async migration => {
       const migrationPath = path.join(migrationsDir, migration);
-      const migrationUrl = pathToFileURL(migrationPath).href;
+      const stats = await fs.stat(migrationPath);
+      const finalPath = stats.isDirectory() ? path.join(migrationPath, 'index.js') : migrationPath;
+      const migrationUrl = pathToFileURL(finalPath).href;
       const module = await import(migrationUrl);
       return module.default;
     })

@@ -1,6 +1,12 @@
 //eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import csv from '#api/csv/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };
@@ -15,12 +21,9 @@ const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
 };
 
 const getTranslationChanges = async () => {
-  const keysToInsertPath =
-    '#app/api/migrations/migrations/119-update_problematic_UI_translations/system_keys.csv';
-  const keysToUpdatePath =
-    '#app/api/migrations/migrations/119-update_problematic_UI_translations/updated_keys.csv';
-  const keysToDeletePath =
-    '#app/api/migrations/migrations/119-update_problematic_UI_translations/removed_keys.csv';
+  const keysToInsertPath = path.join(__dirname, 'system_keys.csv');
+  const keysToUpdatePath = path.join(__dirname, 'updated_keys.csv');
+  const keysToDeletePath = path.join(__dirname, 'removed_keys.csv');
 
   let fstream = fs.createReadStream(keysToInsertPath);
   const keysToInsert = await csv(fstream).read();

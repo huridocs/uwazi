@@ -14,7 +14,7 @@ import { InputField } from '#V2/Components/Forms/index.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 import { notificationAtom } from '#V2/atoms/index.js';
 import { update } from '#V2/api/files/index.js';
-import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.jsx';
+import { CustomUpload } from '#V2/Routes/Settings/CustomUploads/CustomUploads.js';
 
 type EditFileSidepanelProps = {
   showSidepanel: boolean;

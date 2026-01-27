@@ -8,7 +8,7 @@ import { Translate } from '#app/I18N/index.js';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '#app/istore.js';
 import { Table } from '#V2/Components/UI/index.js';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import * as translationsAPI from '#V2/api/translations/index.js';
 import {
   ContextPill,
@@ -16,7 +16,7 @@ import {
   LabelHeader,
   TypeHeader,
   ActionHeader,
-} from '#V2/Routes/Settings/Translations/components/TableComponents.jsx';
+} from '#V2/Routes/Settings/Translations/components/TableComponents.js';
 
 type TranslationContext = ClientTranslationContextSchema & { rowId: string };
 

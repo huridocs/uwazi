@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Icon from '#UI/Icon/Icon.jsx';
+import Icon from '#UI/Icon/Icon.js';
 
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 

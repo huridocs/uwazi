@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
-import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.jsx';
+import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import {
   Table,
   ConfirmNavigationModal,
@@ -10,7 +10,7 @@ import {
   ProgressBar,
 } from '#V2/Components/UI/index.js';
 
-import { Translate } from '#app/I18N/Translate.jsx';
+import { Translate } from '#app/I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -41,12 +41,12 @@ import {
 import {
   propertyColumns,
   PropertyRow,
-} from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.jsx';
-import { TemplateMetadata } from '#V2/Routes/Settings/Templates/components/TemplateMetadata.jsx';
-import { AddRelationshipTypeModal } from '#V2/Routes/Settings/Templates/components/AddRelationshipTypeModal.jsx';
-import { AddThesaurusModal } from '#V2/Routes/Settings/Templates/components/AddThesaurusModal.jsx';
-import { TemplatesEditorFooter } from '#V2/Routes/Settings/Templates/components/TemplatesEditorFooter.jsx';
-import { ConfigPropertyPanel } from '#V2/Routes/Settings/Templates/components/ConfigPropertyPanel.jsx';
+} from '#V2/Routes/Settings/Templates/components/TemplateEditorTableComponents.js';
+import { TemplateMetadata } from '#V2/Routes/Settings/Templates/components/TemplateMetadata.js';
+import { AddRelationshipTypeModal } from '#V2/Routes/Settings/Templates/components/AddRelationshipTypeModal.js';
+import { AddThesaurusModal } from '#V2/Routes/Settings/Templates/components/AddThesaurusModal.js';
+import { TemplatesEditorFooter } from '#V2/Routes/Settings/Templates/components/TemplatesEditorFooter.js';
+import { ConfigPropertyPanel } from '#V2/Routes/Settings/Templates/components/ConfigPropertyPanel.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

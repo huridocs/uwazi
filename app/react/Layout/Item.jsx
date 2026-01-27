@@ -5,16 +5,16 @@ import React, { Component } from 'react';
 import { FormatMetadata } from '#app/Metadata/index.js';
 import prioritySortingCriteria from '#app/utils/prioritySortingCriteria.js';
 
-import { FeatureToggle } from '#app/components/Elements/FeatureToggle.jsx';
+import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { FavoriteBanner } from '#app/Favorites/index.js';
 import helpers from '#app/Documents/helpers.js';
 import { Translate } from '#app/I18N/index.js';
-import { RowList, ItemFooter } from '#app/Layout/Lists.jsx';
-import DocumentLanguage from '#app/Layout/DocumentLanguage.jsx';
-import Icon from '#app/Layout/Icon.jsx';
-import Tip from '#app/Layout/Tip.jsx';
-import ItemSnippet from '#app/Layout/ItemSnippet.jsx';
-import TemplateLabel from '#app/Layout/TemplateLabel.jsx';
+import { RowList, ItemFooter } from '#app/Layout/Lists.js';
+import DocumentLanguage from '#app/Layout/DocumentLanguage.js';
+import Icon from '#app/Layout/Icon.js';
+import Tip from '#app/Layout/Tip.js';
+import ItemSnippet from '#app/Layout/ItemSnippet.js';
+import TemplateLabel from '#app/Layout/TemplateLabel.js';
 
 class Item extends Component {
   getSearchSnipett(doc) {

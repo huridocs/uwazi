@@ -9,8 +9,8 @@ import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { store } from '#app/store.js';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from '#app/Markdown/components/index.js';
 import CustomHookComponents from '#app/Markdown/CustomHooks/index.js';
-import markdownToReact from '#app/Markdown/markdownToReact.jsx';
-import { ValidatedElement } from '#app/Markdown/ValidatedElement.jsx';
+import markdownToReact from '#app/Markdown/markdownToReact.js';
+import { ValidatedElement } from '#app/Markdown/ValidatedElement.js';
 import { errorCollector, visualizationHtmlTags } from '#app/Markdown/utils.js';
 
 class MarkdownViewer extends Component {

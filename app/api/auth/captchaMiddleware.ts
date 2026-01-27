@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { CaptchaModel } from '#api/auth/CaptchaModel.js';
 import { CaptchaValue } from '#shared/types/Captcha';
 

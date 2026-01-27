@@ -4,7 +4,7 @@ import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoS
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { ElasticHit } from './elasticTypes';
+import { ElasticHit } from './elasticTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();

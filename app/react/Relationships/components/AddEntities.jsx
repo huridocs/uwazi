@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 
-import SidePanel from '#app/Layout/SidePanel.jsx';
-import SearchResults from '#app/Connections/components/SearchResults.jsx';
+import SidePanel from '#app/Layout/SidePanel.js';
+import SearchResults from '#app/Connections/components/SearchResults.js';
 import { loadInReduxForm } from '#app/Metadata/actions/actions.js';
 import Icon from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { closePanel } from '#app/Relationships/actions/uiActions.js';
-import SearchForm from '#app/Relationships/components/SearchEntitiesForm.jsx';
+import SearchForm from '#app/Relationships/components/SearchEntitiesForm.js';
 import * as actions from '#app/Relationships/actions/actions.js';
 
 class AddEntities extends Component {

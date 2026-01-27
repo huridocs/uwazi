@@ -4,7 +4,7 @@ import { createStore, Provider } from 'jotai';
 import { Entity } from '#V2/domain/index.js';
 import { FileType } from '#shared/types/fileType.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { FileList } from '#V2/Routes/Entity/Components/FileList.jsx';
+import { FileList } from '#V2/Routes/Entity/Components/FileList.js';
 
 const store = createStore();
 store.set(settingsAtom, { languages: [{ key: 'en', label: 'English' }] });
