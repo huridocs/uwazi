@@ -303,6 +303,22 @@ describe('files routes', () => {
       const [file] = await files.get({ _id: externalUrlFileId.toString() });
       expect(file).toBeUndefined();
     });
+
+    it('should return an array with the deleted file in the response', async () => {
+      const [fileBeforeDelete] = await files.get({ _id: uploadId2.toString() });
+
+      const response = await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+
+      expect(response).toHaveStatus(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        _id: uploadId2.toString(),
+        originalname: fileBeforeDelete.originalname,
+        entity: fileBeforeDelete.entity,
+      });
+    });
+
     it('should delete upload and return the response', async () => {
       await request(app)
         .post('/api/files/upload/document')
