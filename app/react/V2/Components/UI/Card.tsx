@@ -19,7 +19,7 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
   }
 
   return (
-    <div className={`border mb-3 rounded-md border-gray-50 shadow-md ${className}`}>
+    <div className={`border rounded-md border-gray-50 shadow-md ${className}`}>
       {title && (
         <div className={`block w-full font-semibold text-base p-4 ${headerColor}`}>{title}</div>
       )}
