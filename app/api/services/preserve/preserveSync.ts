@@ -1,5 +1,4 @@
 import entities from 'api/entities';
-import { files, generateFileName, storage } from 'api/files';
 import { legacyLogger } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
@@ -21,6 +20,10 @@ import { PreserveConfig } from 'shared/types/settingsType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
+import { FilesServiceFactory } from 'api/core/infrastructure/factories/FilesServiceFactory';
+import { IdGeneratorFactory } from 'api/core/infrastructure/factories/IdGeneratorFactory';
+import { TransactionManagerFactory } from 'api/core/infrastructure/factories/TransactionManagerFactory';
+import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { preserveSyncModel } from './preserveSyncModel';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
@@ -117,23 +120,33 @@ const saveEvidence =
       );
       await Promise.all(
         evidence.attributes.downloads.map(async (download: any) => {
-          const fileName = generateFileName({ originalname: path.basename(download.path) });
           const fileStream = (
             await fetch(new URL(path.join(host, download.path)).toString(), {
               headers: { Authorization: config.token },
             })
           ).body as unknown as Readable;
-          if (fileStream) {
-            await storage.storeFile(fileName, fileStream, 'attachment');
 
-            await files.save({
-              entity: sharedId,
-              type: 'attachment',
-              filename: fileName,
-              originalname: path.basename(download.path),
-              mimetype: mimetypes.lookup(path.extname(fileName)) || 'application/octet-stream',
-            });
+          if (!fileStream) {
+            throw new Error(`Failed to fetch file from: ${download.path}`);
           }
+
+          const inputFile = await InputFile.fromStream({
+            stream: fileStream,
+            originalname: path.basename(download.path),
+            mimetype: mimetypes.lookup(path.extname(download.path)) || 'application/octet-stream',
+            type: 'attachment',
+          });
+
+          const fileId = IdGeneratorFactory.default().generate();
+          const attachment = inputFile.toEntityFile(sharedId, fileId);
+
+          const transactionManager = TransactionManagerFactory.default();
+          const filesService = FilesServiceFactory.default(transactionManager);
+          await filesService.storeFiles([attachment]);
+
+          await transactionManager.run(async () => {
+            await filesService.insert([attachment]);
+          });
         })
       );
     } catch (error) {
