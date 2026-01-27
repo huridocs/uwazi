@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
 import { FileUploadForEntity } from 'api/core/application/FileUploadForEntity';
 import { JobsDispatcher } from 'api/core/libs/queue/application/contracts/JobsDispatcher';
@@ -11,9 +12,38 @@ import { TransactionManagerFactory } from '../../factories/TransactionManagerFac
 import { PDFPostProcessJobHandler } from '../../jobs/PDFPostProcessJobHandler';
 import { V1WebSocketsWrapper } from '../../services/V1WebSocketsWrapper';
 
-class DocumentUploadController extends AbstractController {
+class EntityFileUploadController extends AbstractController {
+  private fileType: 'document' | 'attachment' = 'document';
+
+  /**
+   * Creates a handler for document uploads.
+   * Documents trigger PDF post-processing and emit socket events.
+   */
+  static forDocument() {
+    return async (request: Request, response: Response) => {
+      const instance = new EntityFileUploadController({ request, response });
+      instance.fileType = 'document';
+      await instance.handleAsync();
+    };
+  }
+
+  /**
+   * Creates a handler for attachment uploads.
+   * Attachments do not trigger PDF post-processing.
+   */
+  static forAttachment() {
+    return async (request: Request, response: Response) => {
+      const instance = new EntityFileUploadController({ request, response });
+      instance.fileType = 'attachment';
+      await instance.handleAsync();
+    };
+  }
+
   protected async handle(): Promise<void> {
     const logger = LoggerFactory.default();
+    const namespace = this.fileType === 'document' ? 'Document_Upload' : 'Attachment_Upload';
+    const fileTypeLabel = this.fileType.charAt(0).toUpperCase() + this.fileType.slice(1);
+
     try {
       const startTime = Date.now();
       const input = FileUploadForEntity.inputSchema.parse({
@@ -23,18 +53,17 @@ class DocumentUploadController extends AbstractController {
 
       this.response.json(await this.useCase().execute(input));
 
-      logger.info('Document upload executed successfully', {
-        namespace: 'Document_Upload',
+      logger.info(`${fileTypeLabel} upload executed successfully`, {
+        namespace,
         success: true,
         durationMs: Date.now() - startTime,
       });
     } catch (error: unknown) {
       logger.info(
-        `Document upload execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `${fileTypeLabel} upload execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
-          namespace: 'Document_Upload',
+          namespace,
           success: false,
-
           dto: JSON.stringify({
             uploadedFile: this.request?.inputFile || {},
             entityId: this.request?.body?.entity || {},
@@ -67,4 +96,4 @@ class DocumentUploadController extends AbstractController {
   }
 }
 
-export { DocumentUploadController };
+export { EntityFileUploadController };

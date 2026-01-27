@@ -32,15 +32,15 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
       throw new EntityNotFoundError(entityId);
     }
 
-    const document = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
+    const file = uploadedFile.toEntityFile(entityId, this.idGenerator.generate());
 
-    await this.deps.filesService.storeFiles([document]);
+    await this.deps.filesService.storeFiles([file]);
 
     await this.transactionManager.run(async () => {
-      await this.deps.filesService.insert([document]);
+      await this.deps.filesService.insert([file]);
     });
 
-    const dto = document.toDTO();
+    const dto = file.toDTO();
     await this.eventBus.emit(
       new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
     );
