@@ -63,7 +63,7 @@ class UploadMiddleware {
     return file.originalname;
   }
 
-  singleUpload(type: 'document' | 'attachment') {
+  singleUpload(type: 'document' | 'attachment' | 'custom' | 'raw' = 'raw') {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
         await new Promise<void>((resolve, reject) => {

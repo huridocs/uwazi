@@ -63,8 +63,6 @@ describe('files routes download', () => {
     { file: downloadFixtures.publicEntityFile, endpoint: '/files' },
 
     { file: downloadFixtures.thumbnail, endpoint: '/files/thumbnails' },
-
-    { file: downloadFixtures.customPDF, endpoint: '/assets' },
   ])('Get $endpoint, $file.filename', ({ file, endpoint }) => {
     it('should get the file', async () => {
       const response = await request(app).get(path.join(endpoint, file.filename));
@@ -142,11 +140,6 @@ describe('files routes download', () => {
       endpoint: '/files/thumbnails',
       desc: 'when not the type allowed',
     },
-    {
-      file: downloadFixtures.mainDoc,
-      endpoint: '/assets',
-      desc: 'when not the type allowed',
-    },
   ])('GET $endpoint $file.filename, $desc', ({ file, endpoint }) => {
     it('should respond with 404', async () => {
       app = setAppWithUser(uploadRoutes, collabUser);
@@ -217,7 +210,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set "public, no-cache" for documents from published entities accessed without authentication $endpoint',
         async ({ endpoint, file }) => {
@@ -234,7 +226,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified header based on file creationDate ($endpoint)',
         async ({ endpoint, file }) => {
@@ -251,7 +242,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set X-Cache-Policy to "yes-store" for public unauthenticated access ($endpoint)',
         async ({ endpoint, file }) => {
@@ -278,7 +268,6 @@ describe('files routes download', () => {
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
         { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set Last-Modified and "private, max-age=3600" ($endpoint/$file.filename)',
         async ({ endpoint, file }) => {
@@ -297,7 +286,6 @@ describe('files routes download', () => {
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
         { endpoint: deprecatedEndpoint, file: downloadFixtures.customPDF },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should set X-Cache-Policy to "no-store" for authenticated users ($endpoint/$file.filename)',
         async ({ endpoint, file }) => {
@@ -320,7 +308,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should return 304 when If-Modified-Since matches Last-Modified ($endpoint)',
         async ({ endpoint, file }) => {
@@ -347,7 +334,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should return 304 when If-Modified-Since is after Last-Modified ($endpoint)',
         async ({ endpoint, file }) => {
@@ -375,7 +361,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should return 200 when If-Modified-Since is before Last-Modified ($endpoint)',
         async ({ endpoint, file }) => {
@@ -401,7 +386,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should return 200 when no If-Modified-Since header is sent ($endpoint)',
         async ({ endpoint, file }) => {
@@ -430,7 +414,6 @@ describe('files routes download', () => {
         { endpoint: '/files', file: downloadFixtures.mainDoc },
         { endpoint: '/files', file: downloadFixtures.attachment },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])('should respond unauthorized 401 ($endpoint)', async ({ endpoint, file }) => {
         const response = await request(app).get(path.join(endpoint, file.filename));
         expect(response).toHaveStatus(401);
@@ -451,7 +434,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should not set Cache-Control and Last-Modifeid headers ($endpoint)',
         async ({ endpoint, file }) => {
@@ -469,7 +451,6 @@ describe('files routes download', () => {
         { endpoint: deprecatedEndpoint },
         { endpoint: '/files' },
         { endpoint: '/files/thumbnails', file: downloadFixtures.thumbnail },
-        { endpoint: '/assets', file: downloadFixtures.customPDF },
       ])(
         'should not set X-Cache-Policy header when feature flag disabled ($endpoint)',
         async ({ endpoint, file }) => {
