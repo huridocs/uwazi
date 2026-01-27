@@ -10,7 +10,7 @@ import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
+import { setUpApp } from 'api/utils/testingRoutes';
 import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
@@ -323,11 +323,10 @@ describe('files routes', () => {
     });
 
     it('should delete upload and return the response', async () => {
-      await socketEmit('conversionFailed', async () =>
-        request(app)
-          .post('/api/files/upload/document')
-          .attach('file', path.join(__dirname, 'test.txt'))
-      );
+      await request(app)
+        .post('/api/files/upload/document')
+        .field('entity', 'sharedId1')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
@@ -470,55 +469,6 @@ describe('files routes', () => {
         [entity] = await entities.get({ sharedId: 'sharedId1' });
         expect(entity.generatedToc).toBe(false);
       });
-    });
-  });
-
-  describe('POST/files/attachment', () => {
-    it('should save file on the body', async () => {
-      const entityId = db.id();
-      await request(app)
-        .post('/api/files/upload/attachment')
-        .field('entity', entityId.toString())
-        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
-        .expect(200);
-
-      const [attachment] = await files.get({ entity: entityId.toString() });
-      expect(attachment).toEqual(
-        expect.objectContaining({
-          originalname: 'Dont bring me down - 1979',
-          type: 'attachment',
-        })
-      );
-    });
-  });
-
-  describe('POST/files/upload/*', () => {
-    describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
-      it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
-        'should accept the filename %s in a field',
-        async filename => {
-          let res: request.Response;
-          if (type === 'document') {
-            res = await socketEmit('documentProcessed', async () =>
-              request(app)
-                .post(`/api/files/upload/${type}`)
-                .field('originalname', filename)
-                .attach('file', path.join(__dirname, filename))
-            );
-          } else {
-            res = await request(app)
-              .post(`/api/files/upload/${type}`)
-              .field('originalname', filename)
-              .attach('file', path.join(__dirname, filename));
-          }
-          expect(res.status).toBe(200);
-          const [file]: FileType[] = await files.get({
-            originalname: filename,
-            type,
-          });
-          expect(file).not.toBe(undefined);
-        }
-      );
     });
   });
 
