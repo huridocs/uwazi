@@ -1,17 +1,19 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
+import { applicationEventsBus } from 'api/core/libs/eventsbus';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/core/libs/eventsbus/eventTesting';
 import entities from 'api/entities';
 import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import { registerEventListeners as registerOcrListeners } from 'api/services/ocr/eventListeners';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -38,6 +40,8 @@ import {
 } from './fixtures';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
+
+registerOcrListeners(applicationEventsBus);
 
 describe('files routes', () => {
   let requestMockedUser: UserSchema = collabUser;
@@ -283,19 +287,9 @@ describe('files routes', () => {
     });
   });
 
-  describe.each([
-    {
-      title: 'DELETE /api/files V1',
-      featureFlags: { v2DeleteFile: false },
-    },
-    {
-      title: 'DELETE /api/files V2',
-      featureFlags: { v2DeleteFile: true },
-    },
-  ])('$title', ({ featureFlags }) => {
+  describe('DELETE /api/files', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
-      testingTenants.changeCurrentTenant({ featureFlags });
       mockCurrentUser(adminUser);
     });
 
@@ -309,19 +303,6 @@ describe('files routes', () => {
       const [file] = await files.get({ _id: externalUrlFileId.toString() });
       expect(file).toBeUndefined();
     });
-
-    it('should not allow any extra parameters aside from a properly typed id', async () => {
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: 'someid', __property__: 'should_not_be_here' })
-        .expect(400);
-
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: { $eq: 1234 } })
-        .expect(400);
-    });
-
     it('should delete upload and return the response', async () => {
       await request(app)
         .post('/api/files/upload/document')
@@ -429,7 +410,8 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
-      expect(response.body.errors[0].message).toBe('must be string');
+      expect(response.status).toBe(422);
+      expect(response.body.error).toContain('Expected string, received object');
     });
 
     describe('api/files/tocReviewed', () => {

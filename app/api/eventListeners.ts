@@ -4,11 +4,13 @@ import { PXEntityDeletedListener } from './paragraphExtraction/infrastructure/PX
 import { PXEntityUpdatedListener } from './paragraphExtraction/infrastructure/PXEntityUpdatedListener';
 import { PXFilesDeletedListener } from './paragraphExtraction/infrastructure/PXFilesDeletedListener';
 import { PXFileUpdatedListener } from './paragraphExtraction/infrastructure/PXFileUpdatedListener';
+import { registerEventListeners as registerOcrListeners } from './services/ocr/eventListeners';
 import { registerEventListeners as registerSegmentationListeners } from './services/pdfsegmentation/eventListeners';
 import { Suggestions } from './suggestions/suggestions';
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   Suggestions.registerEventListeners(eventsBus);
+  registerOcrListeners(eventsBus);
   registerSegmentationListeners(eventsBus);
   AutomaticTranslationFactory.defaultATEntityCreationListener(eventsBus).start();
   new PXFileUpdatedListener(eventsBus).start();
