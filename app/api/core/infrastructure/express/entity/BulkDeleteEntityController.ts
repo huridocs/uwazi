@@ -4,7 +4,7 @@ import {
   BulkDeleteEntityUseCase,
 } from 'api/core/application/BulkDeleteEntity';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 

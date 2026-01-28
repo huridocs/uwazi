@@ -2,7 +2,7 @@ import { AbstractController } from 'api/common.v2/infrastructure/AbstractControl
 import { CreateThesaurusUseCaseInput } from 'api/core/application/CreateThesaurus';
 import { CSVLoader } from 'api/csv';
 import { ObjectId } from 'mongodb';
-import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 import { CreateThesaurusUseCaseFactory } from '../../factories/CreateThesaurusUseCaseFactory';
 import { ThesaurusDBO } from '../../mongodb/thesauri/ThesaurusDBO';

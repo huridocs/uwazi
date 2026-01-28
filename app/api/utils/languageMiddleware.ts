@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import settings from 'api/settings/settings';
-import { LogBuilder } from 'api/core/libs/logger/infrastructure/LogBuilder';
+import { TelemetryCollector } from 'api/core/libs/logger/TelemetryCollector';
 import { appContext } from './AppContext';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,8 +13,8 @@ declare global {
 }
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
-  const logBuilder = appContext.get('logBuilder') as LogBuilder;
-  const endTimer = logBuilder?.startTimer('language_middleware');
+  const telemetryCollector = appContext.get('telemetryCollector') as TelemetryCollector;
+  telemetryCollector.timeStart('language_middleware');
 
   try {
     let lang = req.get('content-language');
@@ -30,10 +30,9 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
     //@ts-ignore
     req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
 
+    telemetryCollector.timeEnd('language_middleware');
     next();
   } catch (e) {
     next(e);
-  } finally {
-    endTimer?.();
   }
 };

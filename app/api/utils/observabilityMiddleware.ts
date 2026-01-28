@@ -1,32 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 import { appContext } from 'api/utils/AppContext';
-import { LogBuilder } from 'api/core/libs/logger/infrastructure/LogBuilder';
+import { TelemetryCollector } from 'api/core/libs/logger/TelemetryCollector';
 import { LoggerFactory } from 'api/core/infrastructure/factories/LoggerFactory';
 
 const observabilityMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const logBuilder = new LogBuilder();
+  const telemetryCollector = new TelemetryCollector('request');
   const logger = LoggerFactory.default();
 
-  logBuilder.timeStart('request');
-
-  logBuilder.add({
+  telemetryCollector.add({
     method: req.method,
     path: req.path,
   });
 
   res.on('finish', () => {
-    logBuilder.timeEnd('request');
-
-    logBuilder.add({
+    telemetryCollector.add({
       status_code: res.statusCode,
     });
 
-    const logData = logBuilder.build();
+    const logData = telemetryCollector.build();
 
     logger.info('HTTP Request', logData);
   });
 
-  appContext.set('logBuilder', logBuilder);
+  appContext.set('telemetryCollector', telemetryCollector);
 
   return next();
 };

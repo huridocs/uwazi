@@ -6,6 +6,7 @@ import {
   ThesaurusNameAlreadyExistsError,
   ThesaurusNotFoundError,
 } from 'api/core/domain/thesaurus/errors';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { MongoDataSource } from '../common/MongoDataSource';
 import { MongoThesaurusMapper } from './MongoThesaurusMapper';
 import { ThesaurusDBO } from './ThesaurusDBO';
@@ -42,12 +43,14 @@ class MongoThesauriDataSourceV2
     return Result.ok(thesaurus);
   }
 
+  @TimedMethod('thesauri_data_source_create')
   async create(thesaurus: Thesaurus): Promise<void> {
     const dbo = MongoThesaurusMapper.toDBO(thesaurus);
 
     await this.getCollection().insertOne(dbo, { ignoreUndefined: true });
   }
 
+  @TimedMethod('thesauri_data_source_exists')
   async exists(thesaurus: Thesaurus): Promise<ResultType<false, Error>> {
     const count = await this.getCollection().countDocuments(
       { name: thesaurus.name, _id: { $ne: new ObjectId(thesaurus.id) } },

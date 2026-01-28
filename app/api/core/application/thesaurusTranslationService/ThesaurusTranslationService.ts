@@ -3,6 +3,7 @@ import { Thesaurus } from 'api/core/domain/thesaurus/Thesaurus';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import { TranslationsDataSource } from 'api/i18n.v2/contracts/TranslationsDataSource';
 import { ThesaurusDiff } from 'api/core/domain/thesaurus/ThesaurusDiff';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 
 type Deps = {
@@ -58,6 +59,7 @@ class ThesaurusTranslationService {
     return translations;
   }
 
+  @TimedMethod('thesaurus_translation_service_create')
   async create(thesaurus: Thesaurus) {
     const labels = this.createLabelsFromThesaurusValues(thesaurus.values);
     labels.add(thesaurus.name);

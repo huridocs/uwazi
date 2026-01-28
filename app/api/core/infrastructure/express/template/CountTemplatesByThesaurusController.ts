@@ -5,7 +5,7 @@ import { TemplateDBO } from 'api/core/infrastructure/mongodb/template/DBOs/Templ
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { z } from 'zod';
-import { TimedMethod } from 'api/core/libs/logger/infrastructure/decorators';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 
 const RequestSchema = z.object({
   _id: z.string({ message: 'You should provide an Id' }),
