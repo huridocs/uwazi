@@ -2,8 +2,6 @@
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { fileDBO } from 'api/core/infrastructure/mongodb/files/schemas/filesTypes';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
-import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase';
 import { FilesService } from './FilesService';
@@ -40,10 +38,6 @@ export class FileUploadForEntity extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.filesService.insert([file]);
     });
 
-    const dto = file.toDTO();
-    await this.eventBus.emit(
-      new FileCreatedEvent({ newFile: { ...dto, _id: new ObjectId(dto._id) } })
-    );
-    return dto;
+    return file.toDTO();
   }
 }
