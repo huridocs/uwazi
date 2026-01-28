@@ -8,8 +8,11 @@ const observabilityMiddleware = (req: Request, res: Response, next: NextFunction
   const logger = LoggerFactory.default();
 
   telemetryCollector.add({
+    request_id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
     method: req.method,
     path: req.path,
+    user_agent: req.headers['user-agent'],
   });
 
   res.on('finish', () => {
