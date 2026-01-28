@@ -1,5 +1,4 @@
 import { appContext } from 'api/utils/AppContext';
-import { TelemetryCollector } from './TelemetryCollector';
 
 export function TimedMethod(operationName: string) {
   return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {

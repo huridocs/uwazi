@@ -12,6 +12,7 @@ import { JobsDispatcher } from '../libs/queue/application/contracts/JobsDispatch
 import { RelationshipSyncJob } from '../infrastructure/jobs/RelationshipSyncJob';
 import { BulkCleanupEntityJob } from '../infrastructure/jobs/BulkCleanupEntityJob';
 import { EntityPermissionChecker, Specification } from '../domain/entity/EntityPermissionChecker';
+import { TimedMethod } from '../libs/logger/TimedMethodDecorator';
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -49,6 +50,7 @@ class EntitiesService {
     }
   }
 
+  @TimedMethod('entities_service_create')
   async create({ templateId, userId, icon }: CreateInput) {
     const [template, languages] = await Promise.all([
       this.getTemplateByIdOrDefault(templateId),
@@ -63,6 +65,7 @@ class EntitiesService {
     });
   }
 
+  @TimedMethod('entities_service_insert')
   async insert(entity: Entity, context: InsertContext) {
     this.ensureTransaction();
 

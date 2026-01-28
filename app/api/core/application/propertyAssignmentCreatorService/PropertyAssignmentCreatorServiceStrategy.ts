@@ -16,6 +16,7 @@ import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssign
 import { ImagePropertyAssignmentCreatorService } from './ImagePropertyAssignmentCreatorService';
 import { MediaPropertyAssignmentCreatorService } from './MediaPropertyAssignmentCreatorService';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 
 type Props = {
   default: DefaultPropertyAssignmentCreatorService;
@@ -51,6 +52,7 @@ class PropertyAssignmentCreatorServiceStrategy {
     }
   }
 
+  @TimedMethod('property_assignment_creator_service_bulk_create')
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,

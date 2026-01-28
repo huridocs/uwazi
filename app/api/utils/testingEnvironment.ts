@@ -12,6 +12,7 @@ import path from 'path';
 import { UserSchema } from 'shared/types/userType';
 
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
+let appContextGetTelemetryCollectorMock: jest.SpyInstance<any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
 const testingEnvironment = {
@@ -97,6 +98,10 @@ const testingEnvironment = {
         return originalAppContextGet(key);
       });
       appContextSetMock = jest.spyOn(appContext, 'set').mockImplementation(() => {});
+
+      appContextGetTelemetryCollectorMock = jest
+        .spyOn(appContext, 'getTelemetryCollector')
+        .mockImplementation();
     }
   },
 
@@ -106,6 +111,9 @@ const testingEnvironment = {
     }
     if (jest.isMockFunction(appContext.set)) {
       appContextSetMock.mockRestore();
+    }
+    if (jest.isMockFunction(appContext.getTelemetryCollector)) {
+      appContextGetTelemetryCollectorMock.mockRestore();
     }
   },
 

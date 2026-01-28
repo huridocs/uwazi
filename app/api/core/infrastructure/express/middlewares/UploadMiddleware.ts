@@ -5,6 +5,7 @@ import { Logger } from 'api/core/libs/logger/contracts/Logger';
 import { generateFileName } from 'api/files';
 import { InputFile } from 'api/core/infrastructure/files/InputFile';
 import { tenants } from 'api/tenants';
+import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -88,6 +89,7 @@ class UploadMiddleware {
     };
   }
 
+  // @TimedMethod('upload_middleware_multiple')
   multiple() {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
