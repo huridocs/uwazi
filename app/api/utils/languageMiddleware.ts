@@ -13,7 +13,7 @@ declare global {
 }
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
-  const telemetryCollector = appContext.get('telemetryCollector') as TelemetryCollector;
+  const telemetryCollector = appContext.getTelemetryCollector();
   telemetryCollector.timeStart('language_middleware');
 
   try {

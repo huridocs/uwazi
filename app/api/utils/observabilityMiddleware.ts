@@ -25,7 +25,7 @@ const observabilityMiddleware = (req: Request, res: Response, next: NextFunction
     logger.info('HTTP Request', logData);
   });
 
-  appContext.set('telemetryCollector', telemetryCollector);
+  appContext.setTelemetryCollector(telemetryCollector);
 
   return next();
 };
