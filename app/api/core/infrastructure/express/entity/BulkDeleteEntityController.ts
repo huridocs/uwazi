@@ -4,7 +4,6 @@ import {
   BulkDeleteEntityUseCase,
 } from 'api/core/application/BulkDeleteEntity';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { TimedMethod } from 'api/core/libs/logger/TimedMethodDecorator';
 import { BulkDeleteEntityUseCaseFactory } from '../../factories/BulkDeleteEntityUseCaseFactory';
 import { LoggerFactory } from '../../factories/LoggerFactory';
 
@@ -14,7 +13,6 @@ type RequestDto = BulkDeleteEntityInput;
 type ResponseDto = string;
 
 class BulkDeleteEntityController extends AbstractController<RequestDto> {
-  @TimedMethod('bulk_delete_entity_controller')
   protected async handle(): Promise<void> {
     const logger = LoggerFactory.default();
     const useCase = BulkDeleteEntityUseCaseFactory.default();

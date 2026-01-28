@@ -59,7 +59,6 @@ class ThesaurusTranslationService {
     return translations;
   }
 
-  @TimedMethod('thesaurus_translation_service_create')
   async create(thesaurus: Thesaurus) {
     const labels = this.createLabelsFromThesaurusValues(thesaurus.values);
     labels.add(thesaurus.name);

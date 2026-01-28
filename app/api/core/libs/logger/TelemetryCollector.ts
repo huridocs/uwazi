@@ -51,13 +51,9 @@ class TelemetryCollector {
 
   build() {
     const enriched: Record<string, any> = {};
-    const requestDuration = this.time.get(this.mainProcess)!;
 
     this.time.forEach((timeEntry, operationName) => {
       enriched[`${operationName}_duration_ms`] = timeEntry.duration();
-
-      // enriched[`${operationName}_duration_percent`] =
-      //   `${((timeEntry.duration() / requestDuration.duration()) * 100).toFixed(2)}%`;
     });
 
     return { ...this.metadata, ...enriched };
