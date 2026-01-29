@@ -72,12 +72,16 @@ describe('CsvCreateThesauriValuesJob', () => {
     const translationsRepo = {
       updateEntries: jest.fn().mockResolvedValue(undefined),
     };
+    const jobsDispatcher = {
+      dispatch: jest.fn().mockResolvedValue(undefined),
+    };
     const useCase = new CsvCreateThesauriValuesJob({
       csvImportsDS: csvImportsDS as any,
       thesauriValuesDS: thesauriValuesDS as any,
       thesauriRepo: thesauriRepo as any,
       translationsRepo: translationsRepo as any,
       transactionManager,
+      jobsDispatcher: jobsDispatcher as any,
     });
 
     const callbacks = {
@@ -87,7 +91,12 @@ describe('CsvCreateThesauriValuesJob', () => {
       onError: jest.fn(),
     };
 
-    await useCase.execute({ importId: 'import-id', callbacks });
+    await useCase.execute({
+      importId: 'import-id',
+      tenantName: 'tenant',
+      userId: 'user-id',
+      callbacks,
+    });
 
     expect(thesauriRepo.appendValues).toHaveBeenCalled();
     expect(translationsRepo.updateEntries).toHaveBeenCalledWith('thes', {

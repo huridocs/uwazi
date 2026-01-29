@@ -58,8 +58,6 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
         },
       });
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      heartbeat();
       if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
         await this.deps.useCase.markAsFailed(this.params.importId);
       }

@@ -7,6 +7,8 @@ enum CsvImportStatus {
   PreflightThesauriDone = 'preflight:thesauri:done',
   PreflightThesauriCreate = 'preflight:thesauri:create',
   PreflightThesauriCreateDone = 'preflight:thesauri:create:done',
+  PreflightRelationships = 'preflight:relationships',
+  PreflightRelationshipsDone = 'preflight:relationships:done',
   ImportEntities = 'import:entities',
   ImportEntitiesDone = 'import:entities:done',
   Retrying = 'retrying',

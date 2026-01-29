@@ -7,6 +7,8 @@
 
 - We **exclude relationships entirely** for the initial entities-import pass. Treat `relationship` properties as unsupported/ignored for now.
 - Current pipeline: registration → extraction/staging → preflight (thesauri) → thesaurus creation.
+- **Latest handoff note (Jan 2026):** See [`csv-v2-context-07.md`](./csv-v2-context-07.md) for the
+  updated pipeline chain (dummy relationships preflight) and agent handoff notes.
 - Next big steps:
   1. Fix thesaurus applied-values to include **existing** value IDs (not just newly created).
   2. Implement the **Entities Import job** that consumes staged rows, ignoring relationships.

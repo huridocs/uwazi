@@ -10,6 +10,8 @@
   - Read in order: [`csv-v2-context-01.md`](./csv-v2-context-01.md) → [`csv-v2-context-02.md`](./csv-v2-context-02.md) → [`csv-v2-context-03.md`](./csv-v2-context-03.md) plus the addenda:
     - [`csv-v2-context-03-headerAnalyzer.md`](./csv-v2-context-03-headerAnalyzer.md)
     - [`csv-v2-context-03-thesaurusAnalyzer.md`](./csv-v2-context-03-thesaurusAnalyzer.md)
+- **Latest handoff note (Jan 2026):** See [`csv-v2-context-07.md`](./csv-v2-context-07.md) for the most
+  recent pipeline updates, dummy relationships stage, and agent handoff notes.
 - This doc:
   - Summarizes **what is implemented today** in code (csv.v2 + socket layer + tests).
   - Clarifies **revised decisions** made during recent iterations (e.g., dispatch locations, notification model, removal of `sessionId` from jobs).

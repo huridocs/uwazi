@@ -36,6 +36,7 @@ import { CsvImportEntitiesJob } from 'api/csv.v2/application/jobs/CsvImportEntit
 import { CsvEntitiesImportMapper } from 'api/csv.v2/application/services/CsvEntitiesImportMapper';
 import { CsvExtractUploadedZipJob } from 'api/csv.v2/application/jobs/CsvExtractUploadedZipJob';
 import { CsvPreflightJob } from 'api/csv.v2/application/jobs/CsvPreflightJob';
+import { CsvPreflightRelationshipsJob } from 'api/csv.v2/application/jobs/CsvPreflightRelationshipsJob';
 import { CsvImportFileNormalizer } from 'api/csv.v2/application/services/CsvImportFileNormalizer';
 import { CsvImportRowsStager } from 'api/csv.v2/application/services/CsvImportRowsStager';
 import { CSVImportEntitiesFactories } from 'api/csv.v2/infrastructure/factories/CSVImportEntitiesFactories';
@@ -43,6 +44,7 @@ import { CsvCreateThesauriValuesJobHandler } from 'api/csv.v2/infrastructure/job
 import { CsvImportEntitiesJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvImportEntitiesJobHandler';
 import { CsvExtractUploadedZipJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvExtractUploadedZipJobHandler';
 import { CsvPreflightJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightJobHandler';
+import { CsvPreflightRelationshipsJobHandler } from 'api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler';
 import { LegacyThesauriRepository } from 'api/csv.v2/infrastructure/services/LegacyThesauriRepository';
 import { LegacyTranslationsRepository } from 'api/csv.v2/infrastructure/services/LegacyTranslationsRepository';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
@@ -280,15 +282,32 @@ export function registerJobs(
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const thesauriValuesDS =
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     const useCase = new CsvCreateThesauriValuesJob({
       csvImportsDS,
       thesauriValuesDS,
       thesauriRepo: new LegacyThesauriRepository(),
       translationsRepo: new LegacyTranslationsRepository(),
       transactionManager,
+      jobsDispatcher,
     });
     const sockets = new V1WebSocketsWrapper();
     return new CsvCreateThesauriValuesJobHandler({ useCase, sockets });
+  });
+
+  register(CsvPreflightRelationshipsJobHandler, async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
+    const tenant = tenants.current();
+    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const useCase = new CsvPreflightRelationshipsJob({
+      csvImportsDS,
+      transactionManager,
+      jobsDispatcher,
+    });
+    const sockets = new V1WebSocketsWrapper();
+    return new CsvPreflightRelationshipsJobHandler({ useCase, sockets });
   });
 
   register(CsvImportEntitiesJobHandler, async () => {

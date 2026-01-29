@@ -4,21 +4,18 @@ import {
 } from 'api/core/libs/queue/application/contracts/UserAwareDispatchable';
 import { HeartbeatCallback, JobInfo } from 'api/core/libs/queue/application/contracts/Dispatchable';
 import { V1WebSocketsWrapper } from 'api/core/infrastructure/services/V1WebSocketsWrapper';
-import {
-  CsvCreateThesauriValuesJob,
-  ThesauriCreationProgress,
-} from '../../application/jobs/CsvCreateThesauriValuesJob';
+import { CsvPreflightRelationshipsJob } from '../../application/jobs/CsvPreflightRelationshipsJob';
 
 type Params = UserAwareDispatchableParams & {
   importId: string;
 };
 
 type Deps = {
-  useCase: CsvCreateThesauriValuesJob;
+  useCase: CsvPreflightRelationshipsJob;
   sockets: V1WebSocketsWrapper;
 };
 
-export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Params> {
+export class CsvPreflightRelationshipsJobHandler extends UserAwareDispatchable<Params> {
   constructor(private deps: Deps) {
     super();
   }
@@ -32,44 +29,31 @@ export class CsvCreateThesauriValuesJobHandler extends UserAwareDispatchable<Par
         tenantName,
         userId: this.params.userId,
         callbacks: {
-          onStart: ({ importId }: { importId: string }) => {
+          onStart: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:thesauri:create:start',
+              'csvImport:preflight:relationships:start',
               { importId }
             );
           },
-          onProgress: (info: ThesauriCreationProgress) => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            heartbeat();
+          onSuccess: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:thesauri:create:progress',
-              {
-                importId: info.importId,
-                thesaurusId: info.thesaurusId,
-                processedThesauri: info.processedThesauri,
-                totalThesauri: info.totalThesauri,
-                createdValues: info.createdValues,
-              }
-            );
-          },
-          onSuccess: ({ importId }: { importId: string }) => {
-            this.deps.sockets.emitToTenantAdmins(
-              tenantName,
-              'csvImport:preflight:thesauri:create:success',
+              'csvImport:preflight:relationships:success',
               { importId }
             );
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {
             this.deps.sockets.emitToTenantAdmins(
               tenantName,
-              'csvImport:preflight:thesauri:create:error',
+              'csvImport:preflight:relationships:error',
               { importId, message: error.message }
             );
           },
         },
       });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      heartbeat();
     } catch (error) {
       if (jobInfo && jobInfo.retryCount + 1 >= jobInfo.maxRetries) {
         await this.deps.useCase.markAsFailed(this.params.importId);
