@@ -113,7 +113,6 @@ export const config = {
       testing: DEV_FLAG_TESTING === 'true' || false,
       v2CreateEntity: false,
       v2CSVImport: false,
-      v2DeleteFile: false,
       v2UpdateThesaurus: false,
     },
   },
