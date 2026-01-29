@@ -334,7 +334,9 @@ export function registerJobs(
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
-    const mapper = new CsvEntitiesImportMapper(thesauriValuesDS);
+    const relationshipValuesDS =
+      CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
+    const mapper = new CsvEntitiesImportMapper(thesauriValuesDS, relationshipValuesDS);
     const fileStorage = FileStorageFactory.default();
     const useCase = new CsvImportEntitiesJob({
       csvImportsDS,

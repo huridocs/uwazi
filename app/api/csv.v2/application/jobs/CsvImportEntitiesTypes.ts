@@ -21,6 +21,7 @@ type ImportContext = BatchContext & {
   languages: LanguageISO6391[];
   totalRows: number;
   thesaurusIndex: Awaited<ReturnType<CsvEntitiesImportMapper['buildAppliedValuesIndex']>>;
+  relationshipIndex: Awaited<ReturnType<CsvEntitiesImportMapper['buildRelationshipValuesIndex']>>;
   sanitizedHeaders: string[];
   headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
 };

@@ -22,6 +22,7 @@ type BatchContext = {
   defaultLanguage: LanguageISO6391;
   dateFormat?: string;
   thesaurusIndex: AppliedValueIndex;
+  relationshipIndex: Awaited<ReturnType<CsvEntitiesImportMapper['buildRelationshipValuesIndex']>>;
   sanitizedHeaders: string[];
   headerAnalysis: ReturnType<typeof CsvHeaderAnalyzer.analyze>;
 };
@@ -40,6 +41,7 @@ const buildEntityFromRow = (context: BatchContext, rowValues: string[]) => {
     defaultLanguage,
     dateFormat,
     thesaurusIndex,
+    relationshipIndex,
     sanitizedHeaders,
     headerAnalysis,
     csvImport,
@@ -51,6 +53,7 @@ const buildEntityFromRow = (context: BatchContext, rowValues: string[]) => {
     sanitizedHeaders,
     rowValues,
     thesaurusIndex,
+    relationshipIndex,
     languages,
     defaultLanguage,
     dateFormat,

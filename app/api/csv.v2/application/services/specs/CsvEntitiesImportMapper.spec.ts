@@ -29,8 +29,15 @@ const buildAssignments = (params: {
   headers: string[];
   rowValues: string[];
   thesaurusIndex?: AppliedValueIndex;
+  relationshipIndex?: Map<string, Map<string, { sharedId: string; label: string }>>;
 }) => {
-  const { properties, headers, rowValues, thesaurusIndex = new Map() } = params;
+  const {
+    properties,
+    headers,
+    rowValues,
+    thesaurusIndex = new Map(),
+    relationshipIndex = new Map(),
+  } = params;
   const template = TemplateBuilder.aTemplate({
     id: TEMPLATE_ID,
     properties,
@@ -47,6 +54,7 @@ const buildAssignments = (params: {
     sanitizedHeaders,
     rowValues,
     thesaurusIndex,
+    relationshipIndex,
     languages: LANGUAGES,
     defaultLanguage: DEFAULT_LANGUAGE,
   });
@@ -167,22 +175,36 @@ describe('CsvEntitiesImportMapper', () => {
       'relationship',
       'Relationship',
       'related',
-      TEMPLATE_ID
+      TEMPLATE_ID,
+      'related-template'
     );
     const headers = ['image', 'media', 'preview', 'relationship'];
-    const rowValues = ['photo.jpg', 'video.mp4', 'ignored', 'related-title'];
+    const rowValues = ['photo.jpg', 'video.mp4', 'ignored', 'related-title|related-two'];
+    const relationshipIndex = new Map([
+      [
+        'related-template',
+        new Map([
+          ['related-title', { sharedId: 'shared-1', label: 'related-title' }],
+          ['related-two', { sharedId: 'shared-2', label: 'related-two' }],
+        ]),
+      ],
+    ]);
 
     const assignments = buildAssignments({
       properties: [image, media, preview, relationship],
       headers,
       rowValues,
+      relationshipIndex,
     });
     const byName = Object.fromEntries(assignments.map(a => [a.value.name, a.value]));
 
     expect(byName.image.value[0].value).toBe('/api/files/photo.jpg');
     expect(byName.media.value[0].value).toBe('video.mp4');
     expect(byName.preview.value).toEqual([]);
-    expect(assignments.find(a => a.value.name === 'relationship')).toBeUndefined();
+    expect(byName.relationship.value).toEqual([
+      { value: 'shared-1', label: 'related-title', type: 'entity' },
+      { value: 'shared-2', label: 'related-two', type: 'entity' },
+    ]);
   });
 
   it('should skip generatedid when CSV value is empty', () => {

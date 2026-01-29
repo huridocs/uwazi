@@ -89,15 +89,23 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
   private async loadContext(importId: string): Promise<ImportContext> {
     const csvImport = (await this.deps.csvImportsDS.getById(importId)).getDataOrThrow();
     const template = (await this.deps.templatesDS.getById(csvImport.templateId)).getDataOrThrow();
-    const [availableLanguages, defaultLanguage, settings, totalRows, firstRow, thesaurusIndex] =
-      await Promise.all([
-        this.deps.settingsDS.getLanguageKeys(),
-        this.deps.settingsDS.getDefaultLanguageKey(),
-        this.deps.settingsDS.get(),
-        this.deps.rowsDS.countByImport(importId),
-        this.deps.rowsDS.getByImport(importId, 0, 1),
-        this.deps.mapper.buildAppliedValuesIndex(importId),
-      ]);
+    const [
+      availableLanguages,
+      defaultLanguage,
+      settings,
+      totalRows,
+      firstRow,
+      thesaurusIndex,
+      relationshipIndex,
+    ] = await Promise.all([
+      this.deps.settingsDS.getLanguageKeys(),
+      this.deps.settingsDS.getDefaultLanguageKey(),
+      this.deps.settingsDS.get(),
+      this.deps.rowsDS.countByImport(importId),
+      this.deps.rowsDS.getByImport(importId, 0, 1),
+      this.deps.mapper.buildAppliedValuesIndex(importId),
+      this.deps.mapper.buildRelationshipValuesIndex(importId),
+    ]);
 
     if (!totalRows || !firstRow.length) {
       throw new NonRetryableJobError(new Error(`No staged rows found for import ${importId}`));
@@ -125,6 +133,7 @@ class CsvImportEntitiesJob extends AbstractUseCase<Input, void, Deps> {
       dateFormat: settings?.dateFormat,
       totalRows,
       thesaurusIndex,
+      relationshipIndex,
       sanitizedHeaders,
       headerAnalysis,
     };

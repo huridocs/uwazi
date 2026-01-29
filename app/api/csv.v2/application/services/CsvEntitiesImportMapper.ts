@@ -10,6 +10,8 @@ import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import { SelectProperty } from 'api/core/domain/template/select/SelectProperty';
 import { CsvHeaderAnalyzer } from './CsvHeaderAnalyzer';
 import { CsvImportThesauriValuesDataSource } from '../contracts/CsvImportThesauriValuesDataSource';
+import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
+import { V1RelationshipProperty } from 'api/core/domain/template/V1RelationshipProperty';
 
 type AppliedValueIndex = Map<
   string,
@@ -25,6 +27,8 @@ type AppliedValueDoc = {
   thesaurusId: string;
   appliedValues?: Array<{ label: string; parentLabel?: string; valueId: string }>;
 };
+
+type RelationshipValueIndex = Map<string, Map<string, { sharedId: string; label: string }>>;
 
 const sanitizeHeaders = (headers: string[], newNameGeneration: boolean) =>
   headers.map(header => PropertyName.fromLabel(header, { newNameGeneration }).value);
@@ -177,6 +181,49 @@ const buildMultiselectAssignments = ({
         },
         true
       ),
+      language,
+    },
+  ];
+};
+
+const buildRelationshipAssignments = ({
+  property,
+  value,
+  language,
+  relationshipIndex,
+}: {
+  property: V1RelationshipProperty;
+  value: string;
+  language: LanguageISO6391;
+  relationshipIndex: RelationshipValueIndex;
+}): MappedAssignment[] => {
+  if (!property.content) {
+    return [];
+  }
+  const titles = splitMultiValues(value);
+  if (!titles.length) {
+    return [];
+  }
+  const map = relationshipIndex.get(property.content);
+  if (!map) {
+    return [];
+  }
+  const entries = titles
+    .map(title => map.get(title))
+    .filter(Boolean)
+    .map(entry => ({
+      value: entry!.sharedId,
+      label: entry!.label,
+      type: 'entity' as const,
+    }));
+
+  if (!entries.length) {
+    return [];
+  }
+
+  return [
+    {
+      value: property.createPropertyAssignment({ value: entries, language }, true),
       language,
     },
   ];
@@ -413,6 +460,7 @@ function buildAssignmentsForProperty(params: {
   sanitizedHeaders: string[];
   rowValues: string[];
   thesaurusIndex: AppliedValueIndex;
+  relationshipIndex: RelationshipValueIndex;
 }): MappedAssignment[] {
   const {
     property,
@@ -423,9 +471,29 @@ function buildAssignmentsForProperty(params: {
     sanitizedHeaders,
     rowValues,
     thesaurusIndex,
+    relationshipIndex,
   } = params;
 
   if (property.type === 'relationship') {
+    if (property instanceof V1RelationshipProperty) {
+      const value = getValueForLanguage({
+        propName: property.name,
+        language: defaultLanguage,
+        defaultLanguage,
+        languagesPerHeader: headerAnalysis.languagesPerHeader,
+        sanitizedHeaders,
+        rowValues,
+      });
+      if (!value) {
+        return [];
+      }
+      return buildRelationshipAssignments({
+        property,
+        value,
+        language: defaultLanguage,
+        relationshipIndex,
+      });
+    }
     return [];
   }
 
@@ -450,7 +518,10 @@ function buildAssignmentsForProperty(params: {
 }
 
 class CsvEntitiesImportMapper {
-  constructor(private thesauriValuesDS: CsvImportThesauriValuesDataSource) {}
+  constructor(
+    private thesauriValuesDS: CsvImportThesauriValuesDataSource,
+    private relationshipValuesDS: CsvImportRelationshipValuesDataSource
+  ) {}
 
   private static mapDocAppliedValues(doc: AppliedValueDoc, normalizeFn: (label: string) => string) {
     const byLabel = new Map<string, { valueId: string; label: string; parentLabel?: string }>();
@@ -479,6 +550,19 @@ class CsvEntitiesImportMapper {
     return index;
   }
 
+  async buildRelationshipValuesIndex(importId: string) {
+    const docs = await this.relationshipValuesDS.getByImport(importId);
+    const index: RelationshipValueIndex = new Map();
+    docs.forEach(doc => {
+      const values = new Map<string, { sharedId: string; label: string }>();
+      doc.values.forEach(value => {
+        values.set(value.label.trim(), { sharedId: value.sharedId, label: value.label });
+      });
+      index.set(doc.templateId, values);
+    });
+    return index;
+  }
+
   static sanitizeHeaders(headers: string[], newNameGeneration: boolean) {
     return sanitizeHeaders(headers, newNameGeneration);
   }
@@ -489,6 +573,7 @@ class CsvEntitiesImportMapper {
     sanitizedHeaders: string[];
     rowValues: string[];
     thesaurusIndex: AppliedValueIndex;
+    relationshipIndex: RelationshipValueIndex;
     languages: LanguageISO6391[];
     defaultLanguage: LanguageISO6391;
     dateFormat?: string;
@@ -499,6 +584,7 @@ class CsvEntitiesImportMapper {
       sanitizedHeaders,
       rowValues,
       thesaurusIndex,
+      relationshipIndex,
       languages,
       defaultLanguage,
       dateFormat,
@@ -514,10 +600,11 @@ class CsvEntitiesImportMapper {
         sanitizedHeaders,
         rowValues,
         thesaurusIndex,
+        relationshipIndex,
       })
     );
   }
 }
 
 export { CsvEntitiesImportMapper };
-export type { MappedAssignment, AppliedValueIndex };
+export type { MappedAssignment, AppliedValueIndex, RelationshipValueIndex };
