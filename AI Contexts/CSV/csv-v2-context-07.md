@@ -28,8 +28,9 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 #### 3.2 V1 parity gaps (deferred)
 
-- Relationship parsing/creation semantics (from v1 `typeParsers/relationship.ts`) are not
-  in v2 yet.
+- Relationship parsing/creation semantics (from v1 `typeParsers/relationship.ts`) are
+  now wired into v2 import using preflight-applied values, but full parity (warnings,
+  sanitization behavior) is still pending.
 - **CRITICAL:** Files/attachments handling from v1 (`image`, `media`, `file`, `attachments`)
   is still missing in v2. We need a decided approach for attaching files from row data
   (parity with v1 `importEntity`), including extraction/storage and metadata rewrite, plus tests.
@@ -137,9 +138,15 @@ It is also a handoff guide: a new agent should be able to continue by reading th
      prevent duplicates across chunks during the same import.
 
 8. **Relationship applied-values persistence**
+
    - Added `csv_import_relationships_values` persistence (existing + newly created).
    - New DS: `MongoCsvImportRelationshipValuesDataSource` with `replaceValues` + `getByImport`.
    - Preflight now stores `label → sharedId` entries per template for later import usage.
+
+9. **Relationships wired into entities import**
+   - `CsvImportEntitiesJob` now loads relationship mappings and passes them to the mapper.
+   - `CsvEntitiesImportMapper` applies relationship assignments during row import using
+     preflight-applied values, matching v1's title-based relationship resolution.
 
 ### 7) Agent-specific notes (handoff)
 
