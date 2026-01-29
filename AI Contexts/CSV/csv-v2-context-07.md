@@ -74,6 +74,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
   assignments. This must be connected later once relationship parsing logic is finalized.
 - **Refactor TODO**: remove ESLint/TS disables in `CsvPreflightRelationshipsJob` by
   extracting smaller helpers and simplifying control flow (do not do this yet).
+- **Refactor TODO**: `CsvPreflightRelationshipsJob` is now 460+ lines and needs to be split
+  into helper modules/services to keep it readable and testable.
 
 ### 6) What was completed in this iteration (Jan 2026)
 
@@ -124,6 +126,11 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - Title lookups are now chunked to avoid large `$in` queries.
    - Creation runs in the same chunk size and updates an in-memory `knownTitles` set to
      prevent duplicates across chunks during the same import.
+
+8. **Relationship applied-values persistence**
+   - Added `csv_import_relationships_values` persistence (existing + newly created).
+   - New DS: `MongoCsvImportRelationshipValuesDataSource` with `replaceValues` + `getByImport`.
+   - Preflight now stores `label → sharedId` entries per template for later import usage.
 
 ### 7) Agent-specific notes (handoff)
 

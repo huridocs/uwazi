@@ -16,7 +16,12 @@ import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper';
 import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
+import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRelationshipValuesDataSource';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks';
+import {
+  CsvImportRelationshipValue,
+  CsvImportRelationshipValues,
+} from '../../domain/CsvImportRelationshipValues';
 
 type RelationshipsProgress = {
   importId: string;
@@ -42,6 +47,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
   entitiesDS: MultiLanguageEntityDataSource;
+  relationshipValuesDS: CsvImportRelationshipValuesDataSource;
   transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
   batchSize?: number;
@@ -238,6 +244,47 @@ const createMissingEntitiesForTitles = async (params: {
 
   return createdEntities;
 };
+
+// eslint-disable-next-line max-statements
+const buildRelationshipAppliedValues = async (params: {
+  deps: Deps;
+  importId: string;
+  titlesByTemplate: Map<string, Set<string>>;
+  chunkSize: number;
+}) => {
+  const { deps, importId, titlesByTemplate, chunkSize } = params;
+  const docs: CsvImportRelationshipValues[] = [];
+
+  for (const [templateId, titlesSet] of titlesByTemplate.entries()) {
+    const titles = Array.from(titlesSet);
+    if (titles.length) {
+      const chunks = chunkList(titles, chunkSize);
+      const values: CsvImportRelationshipValue[] = [];
+      const seen = new Set<string>();
+      for (const chunk of chunks) {
+        // eslint-disable-next-line no-await-in-loop
+        const existing = await deps.entitiesDS.getSharedIdsByTemplateAndTitles(templateId, chunk);
+        existing.forEach(entry => {
+          if (seen.has(entry.sharedId)) {
+            return;
+          }
+          seen.add(entry.sharedId);
+          values.push({ label: entry.title, sharedId: entry.sharedId });
+        });
+      }
+      docs.push(
+        CsvImportRelationshipValues.create({
+          importId,
+          templateId,
+          values,
+          createdAt: Date.now(),
+        })
+      );
+    }
+  }
+
+  return docs;
+};
 class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
   private getBatchSize() {
     return Math.max(1, this.deps.batchSize ?? DEFAULT_BATCH_SIZE);
@@ -339,11 +386,12 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
 
   private async finalizeSuccess(params: {
     csvImport: CsvImport;
+    relationshipDocs: CsvImportRelationshipValues[];
     importId: string;
     tenantName: string;
     userId: string;
   }) {
-    const { csvImport, importId, tenantName, userId } = params;
+    const { csvImport, relationshipDocs, importId, tenantName, userId } = params;
     await this.transactionManager.run(async () => {
       const cleared = CsvImportDomain.clearFailure(csvImport);
       const withStatus = CsvImportDomain.withStatus(
@@ -351,6 +399,7 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
         CsvImportStatus.PreflightRelationshipsDone
       );
       await this.deps.csvImportsDS.update(withStatus);
+      await this.deps.relationshipValuesDS.replaceValues(importId, relationshipDocs);
       await this.deps.jobsDispatcher.dispatch(CsvImportEntitiesJobHandler, {
         tenantName,
         userId,
@@ -380,6 +429,12 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
         defaultLanguage: context.defaultLanguage,
         userId: context.csvImport.createdBy,
       });
+      const relationshipDocs = await buildRelationshipAppliedValues({
+        deps: this.deps,
+        importId,
+        titlesByTemplate,
+        chunkSize: RELATIONSHIP_TITLES_CHUNK_SIZE,
+      });
       callbacks.onProgress({
         importId,
         processedRows: context.totalRows,
@@ -388,6 +443,7 @@ class CsvPreflightRelationshipsJob extends AbstractUseCase<Input, void, Deps> {
       });
       await this.finalizeSuccess({
         csvImport: context.csvImport,
+        relationshipDocs,
         importId,
         tenantName,
         userId,

@@ -15,6 +15,7 @@ import { MongoCsvImportsDataSource } from '../mongodb/MongoCsvImportsDataSource'
 import { MongoCsvImportRowsDataSource } from '../mongodb/MongoCsvImportRowsDataSource';
 import { MongoCsvImportThesauriValuesDataSource } from '../mongodb/MongoCsvImportThesauriValuesDataSource';
 import { MongoCsvImportRowErrorsDataSource } from '../mongodb/MongoCsvImportRowErrorsDataSource';
+import { MongoCsvImportRelationshipValuesDataSource } from '../mongodb/MongoCsvImportRelationshipValuesDataSource';
 
 export class CSVImportEntitiesFactories {
   static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
@@ -35,6 +36,11 @@ export class CSVImportEntitiesFactories {
   static CSVImportRowErrorsDSDefault(transactionManager: MongoTransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRowErrorsDataSource(db, transactionManager);
+  }
+
+  static CSVImportRelationshipValuesDSDefault(transactionManager: MongoTransactionManager) {
+    const db = getConnection();
+    return new MongoCsvImportRelationshipValuesDataSource(db, transactionManager);
   }
 
   static default() {

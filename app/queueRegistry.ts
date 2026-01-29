@@ -303,6 +303,8 @@ export function registerJobs(
     const transactionManager = TransactionManagerFactory.default();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
+    const relationshipValuesDS =
+      CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default(transactionManager);
     const settingsDS = SettingsDataSourceFactory.default(transactionManager);
     const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
@@ -311,6 +313,7 @@ export function registerJobs(
     const useCase = new CsvPreflightRelationshipsJob({
       csvImportsDS,
       rowsDS,
+      relationshipValuesDS,
       templatesDS,
       settingsDS,
       entitiesDS,
