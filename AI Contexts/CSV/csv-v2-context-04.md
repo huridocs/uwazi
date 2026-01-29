@@ -409,6 +409,15 @@ This section merges and deduplicates ToDos from `csv-v2-context-01/02/03` and th
       - Ensures deletes are idempotent and safe under retries.
       - Never deletes files that have been moved into permanent document storage.
 
+#### 4.7 Files / attachments (critical gap)
+
+16. **Files/attachments import support**
+    - CSV rows may reference `image`, `media`, `file`, or `attachments` columns.
+    - V2 is missing the end-to-end handling (extract/store/rewrite metadata) that v1
+      `importEntity` performed.
+    - Approach is **TBD** (entities v2 capability vs a dedicated process), but it must
+      be defined and covered by tests.
+
 ---
 
 This document should be kept in sync with the code and tests. When you make a significant change to the CSV V2 pipeline, **update this file and the relevant earlier contexts** so the next person has a clear, accurate map of the system and its remaining work. Use this ToDo list as your checklist when planning subsequent iterations.

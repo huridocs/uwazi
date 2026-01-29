@@ -87,17 +87,18 @@ Goal: ensure every V1 CSV parsing behavior is covered in V2, unless the Entities
 | multiselect                | Split by `                                                                  | `, parse parent/child, dedupe; warns on missing           | Validates selection entries; dedup in domain                            | V2 resolves using `appliedValues`, split by ` | `/`;` (OK), **default-language column enforced** |
 | relationship               | Creates missing related entities (if `content`); returns `sharedId`         | Domain supports relationship assignments                  | **Intentionally deferred** in V2                                        |
 | generatedid                | If empty, auto‑generates ID                                                 | Domain auto‑generates ID if empty                         | **Covered by domain** (no extra V2 parsing needed)                      |
-| image                      | Accepts file path or URL; V1 stores file and uses `/api/files/...`          | Domain validates URL; adds `/api/files/` prefix if needed | **Files handling intentionally deferred**                               |
-| media                      | Similar to image; expects file path                                         | Domain validates non‑empty string                         | **Files handling intentionally deferred**                               |
+| image                      | Accepts file path or URL; V1 stores file and uses `/api/files/...`          | Domain validates URL; adds `/api/files/` prefix if needed | **Files handling missing; approach TBD**                                |
+| media                      | Similar to image; expects file path                                         | Domain validates non‑empty string                         | **Files handling missing; approach TBD**                                |
 | preview                    | V1 passes value; mainly derived                                             | Domain creates empty assignment                           | V2 ignores (probably fine)                                              |
-| attachments / file columns | Special handling in `importEntity` (extract files, store, rewrite metadata) | Not handled in domain                                     | **Files handling intentionally deferred**                               |
+| attachments / file columns | Special handling in `importEntity` (extract files, store, rewrite metadata) | Not handled in domain                                     | **Files handling missing; approach TBD**                                |
 
 Notes:
 
 - Entities V2 domain **validates types** and **coerces numeric**, but does **not** parse dates/links/geo from strings. Those need CSV‑specific parsing like V1.
 - V1 used **default language** for select/multiselect labels even in translated columns; V2 must mirror that and rely on `appliedValues` from thesauri preflight.
 - Sanitization warnings and row‑level parsing warnings exist in V1; V2 currently drops these.
-- Files/attachments handling is **intentionally deferred** (image/media/file/attachments) until the dedicated file import stage is defined.
+- Files/attachments handling is **still missing** (image/media/file/attachments); the
+  approach is undecided (entities v2 vs a dedicated process).
 
 ### 4.2) Row-level error reporting (implementation state)
 

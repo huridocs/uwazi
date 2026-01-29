@@ -30,8 +30,9 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 
 - Relationship parsing/creation semantics (from v1 `typeParsers/relationship.ts`) are not
   in v2 yet.
-- Files/attachments handling from v1 (`image`, `media`, `file`, `attachments`) remains
-  intentionally deferred in v2.
+- **CRITICAL:** Files/attachments handling from v1 (`image`, `media`, `file`, `attachments`)
+  is still missing in v2. We need a decided approach for attaching files from row data
+  (parity with v1 `importEntity`), including extraction/storage and metadata rewrite, plus tests.
 - Sanitization warnings and row-level warnings are not surfaced in v2; only row errors
   are persisted.
 
@@ -62,7 +63,8 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 ### 4) Immediate next steps (agreed direction)
 
 1. **Keep future work scoped**
-   - Files/attachments remain intentionally deferred.
+   - Files/attachments handling is critical but the approach is still TBD
+     (entities v2 vs a dedicated process).
 
 ### 5) Follow-up work (after the dummy stage is in place)
 
@@ -72,6 +74,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 - **TODO:** Relationship resolution is **not wired into entities import yet**.
   Preflight creates missing entities, but `CsvImportEntitiesJob` still ignores relationship
   assignments. This must be connected later once relationship parsing logic is finalized.
+
 9. **Relationships preflight refactor (done)**
    - Extracted helper logic into `CsvPreflightRelationshipsService`.
    - Removed ESLint/TS disables from `CsvPreflightRelationshipsJob`.
@@ -79,6 +82,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 ### 6) What was completed in this iteration (Jan 2026)
 
 1. **Relationships preflight stage implemented**
+
    - Job: `app/api/csv.v2/application/jobs/CsvPreflightRelationshipsJob.ts`.
    - Handler: `app/api/csv.v2/infrastructure/jobHandlers/CsvPreflightRelationshipsJobHandler.ts`.
    - Reads staged rows, collects relationship titles (split by `|`), and creates
@@ -93,6 +97,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
      - `csvImport:preflight:relationships:start|progress|success|error`
 
 2. **Pipeline chaining completed**
+
    - `CsvCreateThesauriValuesJob` now dispatches `CsvPreflightRelationshipsJobHandler`
      inside the same transaction that sets `preflight:thesauri:create:done`.
    - `CsvPreflightRelationshipsJob` dispatches `CsvImportEntitiesJobHandler`
@@ -100,6 +105,7 @@ It is also a handoff guide: a new agent should be able to continue by reading th
    - Queue registry wiring added for the new handler.
 
 3. **Job handler heartbeat behavior aligned**
+
    - Removed catch-path `heartbeat()` calls from:
      - `CsvPreflightRelationshipsJobHandler`
      - `CsvImportEntitiesJobHandler`
@@ -107,19 +113,23 @@ It is also a handoff guide: a new agent should be able to continue by reading th
      extra heartbeats beyond normal progress callbacks.
 
 4. **Simplified `CsvCreateThesauriValuesJob` flow**
+
    - Removed the early `if (!pendingDocs.length)` guard.
    - Empty list now naturally falls through the same finalize/success path.
 
 5. **Spec fix for new dispatch requirements**
+
    - `CsvCreateThesauriValuesJob.spec.ts` updated with a `jobsDispatcher` mock and
      added `tenantName`/`userId` to `execute` input.
 
 6. **Core entities DS additions**
+
    - Added `getSharedIdsByTemplateAndTitles` to `MultiLanguageEntityDataSource` and
      implemented it in `MongoMultiLanguageEntityDataSource`.
    - Added unit test coverage in `MongoMultiLanguageEntityDataSource.spec.ts`.
 
 7. **Relationships preflight batching improvements**
+
    - Added a configurable, top-of-file constant in `CsvPreflightRelationshipsJob`:
      `RELATIONSHIP_TITLES_CHUNK_SIZE`.
    - Title lookups are now chunked to avoid large `$in` queries.
@@ -158,5 +168,3 @@ It is also a handoff guide: a new agent should be able to continue by reading th
 6. Update tests if you touch `CsvCreateThesauriValuesJob` input shape (it now requires
    `tenantName` and `userId`).
 7. Run ESLint/TS checks on touched files before handing off.
-
-
