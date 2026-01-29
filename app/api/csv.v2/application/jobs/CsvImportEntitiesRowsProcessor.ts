@@ -1,9 +1,9 @@
+import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { CsvImport } from '../../domain/CsvImport';
 import { CsvImportRowErrorsDataSource } from '../contracts/CsvImportRowErrorsDataSource';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource';
-import { TransactionManager } from 'api/core/application/contracts/TransactionManager';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { processImportBatch } from './CsvImportEntitiesBatchProcessor';
 import { evaluateStopPolicy } from '../services/CsvImportEntitiesErrorReporting';
 import { Callbacks, ImportContext } from './CsvImportEntitiesTypes';
@@ -91,10 +91,7 @@ const processImportRows = async (params: {
     const stopDecision = evaluateStopPolicy({
       processedRows,
       totalFailures,
-      maxConsecutiveFailures: Math.max(
-        consecutiveFailures,
-        batchResult.maxConsecutiveFailures
-      ),
+      maxConsecutiveFailures: Math.max(consecutiveFailures, batchResult.maxConsecutiveFailures),
       warmupRows: failurePolicy.warmupRows,
       failureRatioStop: failurePolicy.failureRatioStop,
       consecutiveStop: failurePolicy.consecutiveStop,

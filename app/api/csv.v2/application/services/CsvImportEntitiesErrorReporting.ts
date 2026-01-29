@@ -45,7 +45,7 @@ const buildFailedRowsCsv = async (params: {
   if (!rows.length) {
     return undefined;
   }
-  const headers = rows[0].headers;
+  const { headers } = rows[0];
   const lines = [buildCsvRow(headers)];
   rows.forEach(row => {
     lines.push(buildCsvRow(row.values));
@@ -62,8 +62,15 @@ const persistRowErrorsReport = async (params: {
   transactionManager: TransactionManager;
   fileStorage: FileStorage;
 }): Promise<RowErrorsReport> => {
-  const { importId, totalRows, rowErrorsDS, rowsDS, csvImportsDS, transactionManager, fileStorage } =
-    params;
+  const {
+    importId,
+    totalRows,
+    rowErrorsDS,
+    rowsDS,
+    csvImportsDS,
+    transactionManager,
+    fileStorage,
+  } = params;
   const failedRows = await rowErrorsDS.countByImport(importId);
   if (!failedRows) {
     await transactionManager.run(async () => {
